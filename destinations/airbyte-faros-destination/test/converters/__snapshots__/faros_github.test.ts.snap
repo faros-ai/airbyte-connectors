@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 5 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 226 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_OrganizationTool\\\\\\":1,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 227 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":1,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -18,7 +18,7 @@ Array [
       "inactive": false,
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "tool": Object {
@@ -32,7 +32,7 @@ Array [
       "inactive": false,
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "startedAt": "2021-08-04T00:00:00.000Z",
@@ -49,7 +49,7 @@ Array [
     "vcs_UserToolUsage": Object {
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "tool": Object {
@@ -68,7 +68,7 @@ Array [
       "inactive": false,
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "startedAt": "2021-09-24T00:00:00.000Z",
@@ -85,7 +85,7 @@ Array [
     "vcs_UserToolUsage": Object {
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "tool": Object {
@@ -103,7 +103,7 @@ Array [
       "inactive": true,
       "organization": Object {
         "source": "GitHub",
-        "uid": "faros-ai",
+        "uid": "github",
       },
       "source": "GitHub",
       "tool": Object {
@@ -119,8 +119,8 @@ Array [
     "faros_Tag": Object {
       "key": "copilotOrg",
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai",
-      "value": "faros-ai",
+      "uid": "copilotOrg__github",
+      "value": "github",
     },
   },
   Object {
@@ -218,7 +218,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-15",
       "value": "200",
     },
   },
@@ -226,13 +226,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-15",
       },
     },
   },
@@ -247,7 +247,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-15",
       },
     },
   },
@@ -258,7 +258,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
       "value": "50",
     },
   },
@@ -288,7 +288,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -302,7 +302,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -310,13 +310,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -331,7 +331,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -342,7 +342,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
       "value": "100",
     },
   },
@@ -364,7 +364,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -378,7 +378,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -386,13 +386,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -407,7 +407,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -418,7 +418,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
       "value": "50",
     },
   },
@@ -440,7 +440,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -454,7 +454,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -462,13 +462,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -483,7 +483,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -494,7 +494,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-15",
       "value": "800",
     },
   },
@@ -502,13 +502,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-15",
       },
     },
   },
@@ -523,7 +523,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-15",
       },
     },
   },
@@ -534,7 +534,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
       "value": "250",
     },
   },
@@ -548,7 +548,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -562,7 +562,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -570,13 +570,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -591,7 +591,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -602,7 +602,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
       "value": "200",
     },
   },
@@ -616,7 +616,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -630,7 +630,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -638,13 +638,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -659,7 +659,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -670,7 +670,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
       "value": "350",
     },
   },
@@ -684,7 +684,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -698,7 +698,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -706,13 +706,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -727,7 +727,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -738,7 +738,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-15",
       "value": "600",
     },
   },
@@ -746,13 +746,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-15",
       },
     },
   },
@@ -767,7 +767,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-15",
       },
     },
   },
@@ -778,7 +778,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
       "value": "200",
     },
   },
@@ -792,7 +792,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -806,7 +806,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -814,13 +814,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -835,7 +835,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
       },
     },
   },
@@ -846,7 +846,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
       "value": "100",
     },
   },
@@ -860,7 +860,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -874,7 +874,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -882,13 +882,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -903,7 +903,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -914,7 +914,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
       "value": "300",
     },
   },
@@ -928,7 +928,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -942,7 +942,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -950,13 +950,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -971,7 +971,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -982,7 +982,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-15",
       "value": "1200",
     },
   },
@@ -990,13 +990,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-15",
       },
     },
   },
@@ -1011,7 +1011,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-15",
       },
     },
   },
@@ -1022,7 +1022,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
       "value": "700",
     },
   },
@@ -1036,7 +1036,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -1050,7 +1050,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -1058,13 +1058,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -1079,7 +1079,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
       },
     },
   },
@@ -1090,7 +1090,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
       "value": "300",
     },
   },
@@ -1104,7 +1104,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1118,7 +1118,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1126,13 +1126,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1147,7 +1147,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1158,7 +1158,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
       "value": "200",
     },
   },
@@ -1172,7 +1172,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1186,7 +1186,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1194,13 +1194,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1215,7 +1215,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1226,7 +1226,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-15",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-15",
       "value": "10",
     },
   },
@@ -1234,13 +1234,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-15",
       },
     },
   },
@@ -1255,7 +1255,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-15",
       },
     },
   },
@@ -1266,7 +1266,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
       "value": "5",
     },
   },
@@ -1280,7 +1280,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
       },
     },
   },
@@ -1294,7 +1294,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
       },
     },
   },
@@ -1302,13 +1302,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
       },
     },
   },
@@ -1323,7 +1323,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
       },
     },
   },
@@ -1334,7 +1334,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
       "value": "2",
     },
   },
@@ -1348,7 +1348,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1362,7 +1362,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1370,13 +1370,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1391,7 +1391,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
       },
     },
   },
@@ -1402,7 +1402,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
       "value": "3",
     },
   },
@@ -1416,7 +1416,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1430,7 +1430,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1438,13 +1438,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1459,7 +1459,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
       },
     },
   },
@@ -1470,7 +1470,7 @@ Array [
         "uid": "DailyChatAcceptanceCount",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-15",
+      "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-15",
       "value": "32",
     },
   },
@@ -1478,13 +1478,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyChatAcceptanceCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-15",
+        "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-15",
       },
     },
   },
@@ -1499,7 +1499,7 @@ Array [
         "definition": Object {
           "uid": "DailyChatAcceptanceCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-15",
+        "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-15",
       },
     },
   },
@@ -1510,7 +1510,7 @@ Array [
         "uid": "DailyChatTurnCount",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-15",
+      "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-15",
       "value": "200",
     },
   },
@@ -1518,13 +1518,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyChatTurnCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-15",
+        "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-15",
       },
     },
   },
@@ -1539,7 +1539,7 @@ Array [
         "definition": Object {
           "uid": "DailyChatTurnCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-15",
+        "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-15",
       },
     },
   },
@@ -1550,7 +1550,7 @@ Array [
         "uid": "DailyActiveChatUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-15",
+      "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-15",
       "value": "4",
     },
   },
@@ -1558,13 +1558,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveChatUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-15",
       },
     },
   },
@@ -1579,7 +1579,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveChatUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-15",
+        "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-15",
       },
     },
   },
@@ -1587,8 +1587,8 @@ Array [
     "faros_Tag": Object {
       "key": "copilotOrg",
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai",
-      "value": "faros-ai",
+      "uid": "copilotOrg__github",
+      "value": "github",
     },
   },
   Object {
@@ -1686,7 +1686,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-16",
       "value": "200",
     },
   },
@@ -1694,13 +1694,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-16",
       },
     },
   },
@@ -1715,7 +1715,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-16",
       },
     },
   },
@@ -1726,7 +1726,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       "value": "100",
     },
   },
@@ -1740,7 +1740,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -1754,7 +1754,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -1762,13 +1762,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -1783,7 +1783,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -1794,7 +1794,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
       "value": "150",
     },
   },
@@ -1808,7 +1808,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -1822,7 +1822,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -1830,13 +1830,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -1851,7 +1851,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -1862,7 +1862,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
       "value": "50",
     },
   },
@@ -1876,7 +1876,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -1890,7 +1890,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -1898,13 +1898,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -1919,7 +1919,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -1930,7 +1930,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-16",
       "value": "600",
     },
   },
@@ -1938,13 +1938,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-16",
       },
     },
   },
@@ -1959,7 +1959,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-16",
       },
     },
   },
@@ -1970,7 +1970,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
       "value": "200",
     },
   },
@@ -1984,7 +1984,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -1998,7 +1998,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2006,13 +2006,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2027,7 +2027,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2038,7 +2038,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
       "value": "150",
     },
   },
@@ -2052,7 +2052,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2066,7 +2066,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2074,13 +2074,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2095,7 +2095,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2106,7 +2106,7 @@ Array [
         "uid": "DailySuggestionReferenceCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
       "value": "150",
     },
   },
@@ -2120,7 +2120,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2134,7 +2134,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2142,13 +2142,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2163,7 +2163,7 @@ Array [
         "definition": Object {
           "uid": "DailySuggestionReferenceCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2174,7 +2174,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-16",
       "value": "400",
     },
   },
@@ -2182,13 +2182,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-16",
       },
     },
   },
@@ -2203,7 +2203,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-16",
       },
     },
   },
@@ -2214,7 +2214,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       "value": "300",
     },
   },
@@ -2228,7 +2228,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -2242,7 +2242,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -2250,13 +2250,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -2271,7 +2271,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       },
     },
   },
@@ -2282,7 +2282,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
       "value": "50",
     },
   },
@@ -2296,7 +2296,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2310,7 +2310,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2318,13 +2318,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2339,7 +2339,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2350,7 +2350,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Discard",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
       "value": "50",
     },
   },
@@ -2364,7 +2364,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2378,7 +2378,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2386,13 +2386,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2407,7 +2407,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Discard",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2418,7 +2418,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-16",
       "value": "700",
     },
   },
@@ -2426,13 +2426,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-16",
       },
     },
   },
@@ -2447,7 +2447,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-16",
       },
     },
   },
@@ -2458,7 +2458,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
       "value": "300",
     },
   },
@@ -2472,7 +2472,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2486,7 +2486,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2494,13 +2494,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2515,7 +2515,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
       },
     },
   },
@@ -2526,7 +2526,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
       "value": "250",
     },
   },
@@ -2540,7 +2540,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2554,7 +2554,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2562,13 +2562,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2583,7 +2583,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2594,7 +2594,7 @@ Array [
         "uid": "DailyGeneratedLineCount_Accept",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
       "value": "150",
     },
   },
@@ -2608,7 +2608,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2622,7 +2622,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2630,13 +2630,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2651,7 +2651,7 @@ Array [
         "definition": Object {
           "uid": "DailyGeneratedLineCount_Accept",
         },
-        "uid": "copilotOrg__faros-ai-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2662,7 +2662,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-16",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-16",
       "value": "12",
     },
   },
@@ -2670,13 +2670,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-16",
       },
     },
   },
@@ -2691,7 +2691,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-16",
       },
     },
   },
@@ -2702,7 +2702,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
       "value": "2",
     },
   },
@@ -2716,7 +2716,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
       },
     },
   },
@@ -2730,7 +2730,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
       },
     },
   },
@@ -2738,13 +2738,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
       },
     },
   },
@@ -2759,7 +2759,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
       },
     },
   },
@@ -2770,7 +2770,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
       "value": "6",
     },
   },
@@ -2784,7 +2784,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2798,7 +2798,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2806,13 +2806,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2827,7 +2827,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
       },
     },
   },
@@ -2838,7 +2838,7 @@ Array [
         "uid": "DailyActiveUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+      "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
       "value": "3",
     },
   },
@@ -2852,7 +2852,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2866,7 +2866,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2874,13 +2874,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2895,7 +2895,7 @@ Array [
         "definition": Object {
           "uid": "DailyActiveUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
       },
     },
   },
@@ -2906,7 +2906,7 @@ Array [
         "uid": "DailyChatAcceptanceCount",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-16",
+      "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-16",
       "value": "57",
     },
   },
@@ -2914,13 +2914,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyChatAcceptanceCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-16",
+        "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-16",
       },
     },
   },
@@ -2935,7 +2935,7 @@ Array [
         "definition": Object {
           "uid": "DailyChatAcceptanceCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatAcceptanceCount-2023-10-16",
+        "uid": "copilotOrg__github-DailyChatAcceptanceCount-2023-10-16",
       },
     },
   },
@@ -2946,7 +2946,7 @@ Array [
         "uid": "DailyChatTurnCount",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-16",
+      "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-16",
       "value": "426",
     },
   },
@@ -2954,13 +2954,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyChatTurnCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-16",
+        "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-16",
       },
     },
   },
@@ -2975,7 +2975,7 @@ Array [
         "definition": Object {
           "uid": "DailyChatTurnCount",
         },
-        "uid": "copilotOrg__faros-ai-DailyChatTurnCount-2023-10-16",
+        "uid": "copilotOrg__github-DailyChatTurnCount-2023-10-16",
       },
     },
   },
@@ -2986,7 +2986,7 @@ Array [
         "uid": "DailyActiveChatUserTrend",
       },
       "source": "GitHub",
-      "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-16",
+      "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-16",
       "value": "8",
     },
   },
@@ -2994,13 +2994,13 @@ Array [
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
-        "uid": "copilotOrg__faros-ai",
+        "uid": "copilotOrg__github",
       },
       "value": Object {
         "definition": Object {
           "uid": "DailyActiveChatUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-16",
       },
     },
   },
@@ -3015,8 +3015,21 @@ Array [
         "definition": Object {
           "uid": "DailyActiveChatUserTrend",
         },
-        "uid": "copilotOrg__faros-ai-DailyActiveChatUserTrend-2023-10-16",
+        "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-16",
       },
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "createdAt": "2008-01-14T04:33:35.000Z",
+      "htmlUrl": "https://github.com/octocat",
+      "name": "github",
+      "source": "GitHub",
+      "type": Object {
+        "category": "Organization",
+        "detail": "Organization",
+      },
+      "uid": "github",
     },
   },
 ]

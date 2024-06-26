@@ -56,15 +56,15 @@ export class GitHub {
   }
 
   @Memoize()
-  async getOrganizations(): Promise<ReadonlyArray<Organization>> {
-    const orgs: Organization[] = [];
-    for await (const org of this.getOrganizationsIterator()) {
+  async getAccessibleOrganizations(): Promise<ReadonlyArray<string>> {
+    const orgs: string[] = [];
+    for await (const org of this.getAccessibleOrganizationsIterator()) {
       orgs.push(org);
     }
     return orgs;
   }
 
-  async *getOrganizationsIterator(): AsyncGenerator<Organization> {
+  async *getAccessibleOrganizationsIterator(): AsyncGenerator<string> {
     if (this.authType === 'token') {
       const iter = this.octokit.paginate.iterator(
         this.octokit.orgs.listForAuthenticatedUser,
@@ -74,7 +74,7 @@ export class GitHub {
       );
       for await (const res of iter) {
         for (const org of res.data) {
-          yield pick(org, ['login']);
+          yield org.login;
         }
       }
     } else if (this.authType === 'app') {
@@ -88,12 +88,15 @@ export class GitHub {
         for (const installation of res.data) {
           if (installation.target_type !== 'Organization') continue;
           if (installation.suspended_at) continue;
-          yield {
-            login: installation.account.login,
-          };
+          yield installation.account.login;
         }
       }
     }
+  }
+
+  async getOrganization(orgLogin: string): Promise<Organization> {
+    const org = await this.octokit.orgs.get({org: orgLogin});
+    return org.data;
   }
 
   async *getCopilotSeats(

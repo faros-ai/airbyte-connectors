@@ -176,21 +176,41 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - organizations', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'organizations/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getOrganizationsMockedImplementation(
+            readTestResourceAsJSON('organizations/organization.json')
+          ),
+          res.config as GitHubConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHub(
       {
+        ...octokitMock,
         paginate: {
           iterator: (fn: () => any) => iterate([{data: fn()}]),
         },
         orgs: {
+          ...octokitMock.orgs,
           listForAuthenticatedUser: jest
             .fn()
-            .mockReturnValue([{login: 'faros-ai'}]),
+            .mockReturnValue([{login: 'github'}]),
         },
-        ...octokitMock,
       },
       sourceConfig.authentication.auth,
       new AirbyteLogger()
@@ -217,6 +237,12 @@ const getCopilotSeatsMockedImplementation = (res: any) => ({
 const getCopilotUsageMockedImplementation = (res: any) => ({
   copilot: {
     usageMetricsForOrg: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getOrganizationsMockedImplementation = (res: any) => ({
+  orgs: {
+    get: jest.fn().mockReturnValue({data: res}),
   },
 });
 
