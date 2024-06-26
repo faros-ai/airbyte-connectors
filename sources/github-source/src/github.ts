@@ -1,19 +1,20 @@
 import {Octokit} from '@octokit/rest';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
+  AppInstallation,
   CopilotSeat,
   CopilotUsageSummary,
   GitHubTool,
-  Organization,
 } from 'faros-airbyte-common/github';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
 import {isEmpty, isNil, pick, toLower} from 'lodash';
 import path from 'path';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {makeOctokitClient} from './octokit';
-import {GitHubAuth, GitHubConfig} from './types';
+import {GitHubConfig} from './types';
 
 const USER_TOOL_QUERY = fs.readFileSync(
   path.join(__dirname, '..', 'resources', 'queries', 'vcs-user-tool.gql'),
@@ -25,75 +26,43 @@ export const DEFAULT_GRAPH = 'default';
 
 export const PAGE_SIZE = 100;
 
-export class GitHub {
+export abstract class GitHub {
   private static github: GitHub;
 
   constructor(
-    private readonly octokit: Octokit,
-    private readonly authType: GitHubAuth['auth'],
-    private readonly logger: AirbyteLogger
+    protected readonly config: GitHubConfig,
+    protected readonly baseOctokit: Octokit,
+    protected readonly logger: AirbyteLogger
   ) {}
 
   static async instance(
     cfg: GitHubConfig,
     logger: AirbyteLogger
   ): Promise<GitHub> {
-    if (GitHub.github) return GitHub.github;
-
-    const octokit = makeOctokitClient(cfg, logger);
-
-    GitHub.github = new GitHub(octokit, cfg.authentication.auth, logger);
-    await GitHub.github.checkConnection();
-    return GitHub.github;
-  }
-
-  async checkConnection(): Promise<void> {
-    if (this.authType === 'token') {
-      await this.octokit.users.getAuthenticated();
-    } else if (this.authType === 'app') {
-      await this.octokit.apps.getAuthenticated();
+    if (GitHub.github) {
+      return GitHub.github;
     }
+    const github =
+      cfg.authentication.type === 'token'
+        ? await GitHubToken.instance(cfg, logger)
+        : await GitHubApp.instance(cfg, logger);
+    GitHub.github = github;
+    return github;
   }
+
+  abstract checkConnection(): Promise<void>;
+
+  abstract octokit(org: string): Octokit;
+
+  abstract getOrganizationsIterator(): AsyncGenerator<string>;
 
   @Memoize()
-  async getOrganizations(): Promise<ReadonlyArray<Organization>> {
-    const orgs: Organization[] = [];
+  async getOrganizations(): Promise<ReadonlyArray<string>> {
+    const orgs: string[] = [];
     for await (const org of this.getOrganizationsIterator()) {
       orgs.push(org);
     }
     return orgs;
-  }
-
-  async *getOrganizationsIterator(): AsyncGenerator<Organization> {
-    if (this.authType === 'token') {
-      const iter = this.octokit.paginate.iterator(
-        this.octokit.orgs.listForAuthenticatedUser,
-        {
-          per_page: PAGE_SIZE,
-        }
-      );
-      for await (const res of iter) {
-        for (const org of res.data) {
-          yield pick(org, ['login']);
-        }
-      }
-    } else if (this.authType === 'app') {
-      const iter = this.octokit.paginate.iterator(
-        this.octokit.apps.listInstallations,
-        {
-          per_page: PAGE_SIZE,
-        }
-      );
-      for await (const res of iter) {
-        for (const installation of res.data) {
-          if (installation.target_type !== 'Organization') continue;
-          if (installation.suspended_at) continue;
-          yield {
-            login: installation.account.login,
-          };
-        }
-      }
-    }
   }
 
   async *getCopilotSeats(
@@ -102,8 +71,8 @@ export class GitHub {
     graph?: string
   ): AsyncGenerator<CopilotSeat> {
     const currentAssignees = new Set<string>();
-    const iter = this.octokit.paginate.iterator(
-      this.octokit.copilot.listCopilotSeats,
+    const iter = this.octokit(org).paginate.iterator(
+      this.baseOctokit.copilot.listCopilotSeats,
       {
         org,
         per_page: PAGE_SIZE,
@@ -168,7 +137,7 @@ export class GitHub {
 
   async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
     try {
-      const res = await this.octokit.copilot.usageMetricsForOrg({
+      const res = await this.octokit(org).copilot.usageMetricsForOrg({
         org,
       });
       if (isNil(res.data) || isEmpty(res.data)) {
@@ -192,5 +161,99 @@ export class GitHub {
       }
       throw err;
     }
+  }
+}
+
+export class GitHubToken extends GitHub {
+  static async instance(
+    cfg: GitHubConfig,
+    logger: AirbyteLogger
+  ): Promise<GitHub> {
+    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
+    const github = new GitHubToken(cfg, baseOctokit, logger);
+    await github.checkConnection();
+    return github;
+  }
+
+  octokit(): Octokit {
+    return this.baseOctokit;
+  }
+
+  async checkConnection(): Promise<void> {
+    await this.baseOctokit.users.getAuthenticated();
+  }
+
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
+    const iter = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.orgs.listForAuthenticatedUser,
+      {
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const org of res.data) {
+        yield org.login;
+      }
+    }
+  }
+}
+
+export class GitHubApp extends GitHub {
+  private readonly octokitByInstallationOrg: Map<string, Octokit> = new Map();
+
+  static async instance(
+    cfg: GitHubConfig,
+    logger: AirbyteLogger
+  ): Promise<GitHub> {
+    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
+    const github = new GitHubApp(cfg, baseOctokit, logger);
+    await github.checkConnection();
+    const installations = await github.getAppInstallations();
+    for (const installation of installations) {
+      if (installation.target_type !== 'Organization') continue;
+      if (installation.suspended_at) {
+        logger.warn(
+          `Skipping suspended app installation for org ${installation.account.login}`
+        );
+        continue;
+      }
+      const octokit = makeOctokitClient(cfg, installation.id, logger);
+      github.octokitByInstallationOrg.set(installation.account.login, octokit);
+    }
+    return github;
+  }
+
+  octokit(org: string): Octokit {
+    if (!this.octokitByInstallationOrg.has(org)) {
+      throw new VError(`No active app installation found for org ${org}`);
+    }
+    return this.octokitByInstallationOrg.get(org);
+  }
+
+  async checkConnection(): Promise<void> {
+    await this.baseOctokit.apps.getAuthenticated();
+  }
+
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
+    for (const org of this.octokitByInstallationOrg.keys()) {
+      yield org;
+    }
+  }
+
+  @Memoize()
+  private async getAppInstallations(): Promise<ReadonlyArray<AppInstallation>> {
+    const installations: AppInstallation[] = [];
+    const iter = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.apps.listInstallations,
+      {
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const installation of res.data) {
+        installations.push(installation);
+      }
+    }
+    return installations;
   }
 }

@@ -20,7 +20,7 @@ export class OrgRepoFilter {
       if (!this.config.orgs) {
         const orgs = await github.getOrganizations();
         for await (const org of orgs) {
-          this.orgs.add(org.login);
+          this.orgs.add(org);
         }
       } else {
         for (const org of this.config.orgs) {

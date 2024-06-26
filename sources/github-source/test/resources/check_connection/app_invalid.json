@@ -1,5 +1,5 @@
 {
   "authentication": {
-    "auth": "app"
+    "type": "app"
   }
 }
