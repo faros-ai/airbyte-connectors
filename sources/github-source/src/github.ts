@@ -56,15 +56,15 @@ export class GitHub {
   }
 
   @Memoize()
-  async getAccessibleOrganizations(): Promise<ReadonlyArray<string>> {
+  async getOrganizations(): Promise<ReadonlyArray<string>> {
     const orgs: string[] = [];
-    for await (const org of this.getAccessibleOrganizationsIterator()) {
+    for await (const org of this.getOrganizationsIterator()) {
       orgs.push(org);
     }
     return orgs;
   }
 
-  async *getAccessibleOrganizationsIterator(): AsyncGenerator<string> {
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
     if (this.authType === 'token') {
       const iter = this.octokit.paginate.iterator(
         this.octokit.orgs.listForAuthenticatedUser,

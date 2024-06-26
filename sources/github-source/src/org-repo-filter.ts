@@ -19,7 +19,7 @@ export class OrgRepoFilter {
       this.orgs = new Set();
       const github = await GitHub.instance(this.config, this.logger);
       if (!this.config.orgs) {
-        const orgs = await github.getAccessibleOrganizations();
+        const orgs = await github.getOrganizations();
         for await (const org of orgs) {
           this.orgs.add(org);
         }
