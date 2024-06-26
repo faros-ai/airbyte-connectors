@@ -8,6 +8,10 @@ export type Organization = Pick<
   'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
+export type AppInstallation = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.apps.listInstallations
+>[0];
+
 export interface CopilotSeat {
   org: string;
   user: string;

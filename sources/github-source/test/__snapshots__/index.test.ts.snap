@@ -1,58 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`index check connection - app auth missing 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "message": "Invalid value for authentication.app_cfg.auth",
-    "status": "FAILED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
-exports[`index check connection - app client invalid 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "message": "Invalid app client configuration: client_id and client_secret are required",
-    "status": "FAILED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
-exports[`index check connection - app client valid 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "status": "SUCCEEDED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
-exports[`index check connection - app installation invalid 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "message": "Invalid app installation configuration: installation_id is required",
-    "status": "FAILED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
-exports[`index check connection - app installation valid 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "status": "SUCCEEDED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
 exports[`index check connection - app invalid 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "Invalid app configuration: app_id, private_key and app_cfg are required",
+    "message": "Invalid app configuration: app_id and private_key are required",
     "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - app valid 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
   },
   "type": "CONNECTION_STATUS",
 }
@@ -61,7 +22,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - authentication missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "Invalid value for authentication.auth",
+    "message": "Invalid authentication configuration: type should be "token" or "app"",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
@@ -71,7 +32,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "Invalid token configuration: Personal access token is required",
+    "message": "Invalid token configuration: personal_access_token is required",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
