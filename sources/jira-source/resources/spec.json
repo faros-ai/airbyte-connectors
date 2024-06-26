@@ -101,10 +101,10 @@
         "title": "Use Users Prefix Search",
         "default": false
       },
-      "projects_included": {
+      "projects": {
         "order": 14,
-        "title": "Project Keys Included",
-        "description": "List of Jira project keys from which to fetch data. By default, all projects are included.",
+        "title": "Project Keys",
+        "description": "List of Jira project keys from which to fetch data. By default, all projects are included. ",
         "type": "array",
         "items": {
           "type": "string"
@@ -114,10 +114,10 @@
           "DEV"
         ]
       },
-      "projects_excluded": {
+      "exclude_projects": {
         "order": 15,
-        "title": "Project Keys Excluded",
-        "description": "List of Jira project keys from which data wont be fetched. By default, no projects are excluded.",
+        "title": "Exclude Project Keys",
+        "description": "List of Jira project keys from which data wont be fetched. By default, no projects are excluded. If projects list is specified, this list will be ignored.",
         "type": "array",
         "items": {
         "type": "string"
@@ -141,19 +141,19 @@
         "default": 0,
         "description": "Apply lag to the end cutoff saved in the state. Objects updated after this will be rewritten during the next sync."
       },
-      "boards_included": {
+      "boards": {
         "order": 18,
-        "title": "Board IDs Included",
+        "title": "Board IDs",
         "description": "List of Jira board IDs from which to fetch data. By default, all boards are included.",
         "type": "array",
         "items": {
           "type": "string"
         }
       },
-      "boards_excluded": {
+      "excluded_boards": {
         "order": 19,
         "title": "Board IDs Excluded",
-        "description": "List of Jira board IDs from which data wont be fetched. By default, no boards are excluded.",
+        "description": "List of Jira board IDs from which data wont be fetched. By default, no boards are excluded. If boards list is specified, this list will be ignored.",
         "type": "array",
         "items": {
           "type": "string"

@@ -22,13 +22,6 @@ exports[`ProjectBoardFilter getBoardsFromFaros - specific boards included 1`] = 
 ]
 `;
 
-exports[`ProjectBoardFilter getBoardsFromFaros - specific boards included and excluded 1`] = `
-[
-  "1",
-  "2",
-]
-`;
-
 exports[`ProjectBoardFilter getProjectsFromFaros - all projects 1`] = `
 [
   "TEST-1",
@@ -45,13 +38,6 @@ exports[`ProjectBoardFilter getProjectsFromFaros - specific projects excluded 1`
 `;
 
 exports[`ProjectBoardFilter getProjectsFromFaros - specific projects included 1`] = `
-[
-  "TEST-1",
-  "TEST-2",
-]
-`;
-
-exports[`ProjectBoardFilter getProjectsFromFaros - specific projects included and excluded 1`] = `
 [
   "TEST-1",
   "TEST-2",

@@ -1,8 +1,8 @@
 {
-  "url": "https://attlassian.jira.com",
+  "url": "https://jira.com",
   "username": "user",
   "password": "pass",
-  "projects_included": [
+  "projects": [
     "TEST"
   ],
   "bucket_id": 1,

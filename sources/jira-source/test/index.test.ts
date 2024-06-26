@@ -15,7 +15,7 @@ import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
 import {JiraConfig} from '../src/jira';
 import {RunMode} from '../src/streams/common';
-import {paginate, setupJiraInstance} from './resources/common';
+import {paginate, setupJiraInstance} from './utils/test-utils';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -386,7 +386,7 @@ describe('index', () => {
     );
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects_included: undefined},
+      {...readTestResourceFile('config.json'), projects: undefined},
       {v2: {projects: {searchProjects}}}
     );
     expect(searchProjects).toHaveBeenCalledWith({
@@ -406,7 +406,7 @@ describe('index', () => {
     );
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects_included: keys},
+      {...readTestResourceFile('config.json'), projects: keys},
       {v2: {projects: {searchProjects}}}
     );
     expect(searchProjects).toHaveBeenCalledWith({
@@ -423,7 +423,7 @@ describe('index', () => {
       5,
       {
         ...readTestResourceFile('config.json'),
-        projects_included: undefined,
+        projects: undefined,
         url: 'https://jira-server.com',
       },
       {
@@ -445,7 +445,7 @@ describe('index', () => {
 
   test('streams - projects - Jira Server - project list', async () => {
     const serverConfig = readTestResourceFile('config.json');
-    serverConfig.projects_included = ['TEST-1', 'TEST-2'];
+    serverConfig.projects = ['TEST-1', 'TEST-2'];
     serverConfig.url = 'https://jira-server.com';
 
     await testStream(
@@ -502,7 +502,7 @@ describe('index', () => {
       ...config,
       bucket_total: 2,
       bucket_id: 1,
-      projects_included: ['TEST', 'TEST2', 'TEST3'],
+      projects: ['TEST', 'TEST2', 'TEST3'],
     });
   });
 
@@ -512,7 +512,7 @@ describe('index', () => {
       ...config,
       bucket_total: 2,
       bucket_id: 2,
-      projects_included: ['TEST', 'TEST2', 'TEST3'],
+      projects: ['TEST', 'TEST2', 'TEST3'],
     });
   });
 

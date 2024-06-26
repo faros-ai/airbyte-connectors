@@ -22,7 +22,7 @@ export class ProjectBoardFilter {
       this.projects = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
-      if (!this.config.projects_included) {
+      if (!this.config.projects) {
         const projects = this.supportsFarosClient()
           ? jira.getProjectsFromGraph(
               this.farosClient,
@@ -30,17 +30,12 @@ export class ProjectBoardFilter {
             )
           : await jira.getProjects();
         for await (const project of projects) {
-          if (!this.config.projects_excluded?.includes(project.key)) {
+          if (!this.config.exclude_projects?.includes(project.key)) {
             this.projects.add(project.key);
           }
         }
       } else {
-        if (this.config.projects_excluded) {
-          this.logger.info(
-            'Both projects_included and projects_excluded are specified, projects_excluded will be ignored.'
-          );
-        }
-        for (const project of this.config.projects_included) {
+        for (const project of this.config.projects) {
           if (jira.isProjectInBucket(project))
             this.projects.add(toUpper(project));
         }
@@ -59,11 +54,6 @@ export class ProjectBoardFilter {
       // Ensure projects is populated
       await this.getProjects();
 
-      if (this.config.boards_included && this.config.boards_excluded) {
-        this.logger.info(
-          'Both boards_included and boards_excluded are specified, boards_excluded will be ignored.'
-        );
-      }
       if (this.supportsFarosClient()) {
         await this.getBoardsFromFaros(jira);
       } else {
@@ -71,6 +61,17 @@ export class ProjectBoardFilter {
       }
     }
     return Array.from(this.boards);
+  }
+
+  boardIsIncluded(board: string): boolean {
+    const {boards, exclude_boards} = this.config;
+    if (boards?.length) {
+      return boards.includes(board);
+    }
+    if (exclude_boards?.length) {
+      return !exclude_boards.includes(board);
+    }
+    return true;
   }
 
   private async getBoardsFromJira(jira: Jira): Promise<void> {
@@ -97,19 +98,6 @@ export class ProjectBoardFilter {
         }
       }
     }
-  }
-
-  private boardIsIncluded(board: string): boolean {
-    if (!this.config.boards_included && !this.config.boards_excluded) {
-      return true;
-    }
-    if (this.config.boards_included?.includes(board)) {
-      return true;
-    }
-    return (
-      !this.config.boards_included &&
-      !this.config.boards_excluded?.includes(board)
-    );
   }
 
   private supportsFarosClient(): boolean {
