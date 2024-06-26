@@ -10,29 +10,14 @@ export interface GitHubConfig extends AirbyteConfig {
 }
 
 type GitHubToken = {
-  auth: 'token';
+  type: 'token';
   personal_access_token: string;
 };
 
-type PartialGitHubApp = {
-  auth: 'app';
+type GitHubApp = {
+  type: 'app';
   app_id: number;
   private_key: string;
 };
 
-type GitHubAppInstallation = PartialGitHubApp & {
-  app_cfg: {
-    auth: 'installation';
-    installation_id: number;
-  };
-};
-
-type GitHubAppClient = PartialGitHubApp & {
-  app_cfg: {
-    auth: 'client';
-    client_id: string;
-    client_secret: string;
-  };
-};
-
-export type GitHubAuth = GitHubToken | GitHubAppClient | GitHubAppInstallation;
+export type GitHubAuth = GitHubToken | GitHubApp;

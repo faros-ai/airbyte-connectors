@@ -1,7 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket, calculateDateRange} from 'faros-airbyte-common/common';
+import {bucket} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -55,9 +55,11 @@ export interface JiraConfig extends AirbyteConfig {
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
   readonly projects?: ReadonlyArray<string>;
+  readonly excluded_projects?: ReadonlyArray<string>;
+  readonly boards?: ReadonlyArray<string>;
+  readonly excluded_boards?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
-  readonly boards?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly bucket_id?: number;
   readonly bucket_total?: number;

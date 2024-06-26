@@ -3,6 +3,10 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 const octokit: Octokit = new Octokit();
 
+export type AppInstallation = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.apps.listInstallations
+>[0];
+
 export interface Organization {
   login: string;
 }
