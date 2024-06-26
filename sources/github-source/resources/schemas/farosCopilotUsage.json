@@ -1,72 +1,91 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Copilot Usage Metrics",
+  "description": "Summary of Copilot usage.",
   "type": "object",
   "properties": {
     "day": {
       "type": "string",
-      "format": "date"
+      "format": "date",
+      "description": "The date for which the usage metrics are reported, in `YYYY-MM-DD` format."
     },
     "total_suggestions_count": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of Copilot code completion suggestions shown to users."
     },
     "total_acceptances_count": {
-      "type": "number"
-    },
-    "total_discards_count": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of Copilot code completion suggestions accepted by users."
     },
     "total_lines_suggested": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of lines of code completions suggested by Copilot."
     },
     "total_lines_accepted": {
-      "type": "number"
-    },
-    "total_lines_discarded": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of lines of code completions accepted by users."
     },
     "total_active_users": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of users who were shown Copilot code completion suggestions during the day specified."
     },
     "total_chat_acceptances": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total instances of users who accepted code suggested by Copilot Chat in the IDE (panel and inline)."
     },
     "total_chat_turns": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of chat turns (prompt and response pairs) sent between users and Copilot Chat in the IDE."
     },
     "total_active_chat_users": {
-      "type": "number"
+      "type": "integer",
+      "description": "The total number of users who interacted with Copilot Chat in the IDE during the day specified."
     },
     "breakdown": {
-      "type": "object",
-      "properties": {
-        "language": {
-          "type": "string"
-        },
-        "editor": {
-          "type": "string"
-        },
-        "suggestions_count": {
-          "type": "number"
-        },
-        "acceptances_count": {
-          "type": "number"
-        },
-        "discards_count": {
-          "type": "number"
-        },
-        "lines_suggested": {
-          "type": "number"
-        },
-        "lines_accepted": {
-          "type": "number"
-        },
-        "lines_discarded": {
-          "type": "number"
-        },
-        "active_users": {
-          "type": "number"
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "Breakdown of Copilot code completions usage by language and editor",
+      "items": {
+        "type": "object",
+        "description": "Breakdown of Copilot usage by editor for this language",
+        "additionalProperties": true,
+        "properties": {
+          "language": {
+            "type": "string",
+            "description": "The language in which Copilot suggestions were shown to users in the specified editor."
+          },
+          "editor": {
+            "type": "string",
+            "description": "The editor in which Copilot suggestions were shown to users for the specified language."
+          },
+          "suggestions_count": {
+            "type": "integer",
+            "description": "The number of Copilot suggestions shown to users in the editor specified during the day specified."
+          },
+          "acceptances_count": {
+            "type": "integer",
+            "description": "The number of Copilot suggestions accepted by users in the editor specified during the day specified."
+          },
+          "lines_suggested": {
+            "type": "integer",
+            "description": "The number of lines of code suggested by Copilot in the editor specified during the day specified."
+          },
+          "lines_accepted": {
+            "type": "integer",
+            "description": "The number of lines of code accepted by users in the editor specified during the day specified."
+          },
+          "active_users": {
+            "type": "integer",
+            "description": "The number of users who were shown Copilot completion suggestions in the editor specified during the day specified."
+          }
         }
       }
     }
-  }
+  },
+  "required": [
+    "day",
+    "breakdown"
+  ],
+  "additionalProperties": false
 }
