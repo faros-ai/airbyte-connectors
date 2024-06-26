@@ -5,6 +5,7 @@ import {
   CopilotSeat,
   CopilotUsageSummary,
   GitHubTool,
+  Organization,
 } from 'faros-airbyte-common/github';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
@@ -63,6 +64,18 @@ export abstract class GitHub {
       orgs.push(org);
     }
     return orgs;
+  }
+
+  async getOrganization(orgLogin: string): Promise<Organization> {
+    const org = await this.octokit(orgLogin).orgs.get({org: orgLogin});
+    return pick(org.data, [
+      'login',
+      'name',
+      'type',
+      'html_url',
+      'created_at',
+      'updated_at',
+    ]);
   }
 
   async *getCopilotSeats(

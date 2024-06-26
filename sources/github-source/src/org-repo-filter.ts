@@ -1,5 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
@@ -24,7 +25,7 @@ export class OrgRepoFilter {
         }
       } else {
         for (const org of this.config.orgs) {
-          this.orgs.add(org);
+          this.orgs.add(toLower(org));
         }
       }
     }

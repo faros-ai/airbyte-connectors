@@ -54,7 +54,7 @@ exports[`index streams - copilot seats 1`] = `
     "created_at": "2021-08-03T18:00:00-06:00",
     "inactive": false,
     "last_activity_at": "2021-10-14T00:53:32-06:00",
-    "org": "faros-ai",
+    "org": "github",
     "pending_cancellation_date": null,
     "updated_at": "2021-09-23T15:00:00-06:00",
     "user": "octocat",
@@ -63,7 +63,7 @@ exports[`index streams - copilot seats 1`] = `
     "created_at": "2021-09-23T18:00:00-06:00",
     "inactive": false,
     "last_activity_at": "2021-10-13T00:53:32-06:00",
-    "org": "faros-ai",
+    "org": "github",
     "pending_cancellation_date": "2021-11-01",
     "updated_at": "2021-09-23T15:00:00-06:00",
     "user": "octokitten",
@@ -75,7 +75,7 @@ exports[`index streams - copilot seats with inactive seats inference using faros
 [
   {
     "inactive": true,
-    "org": "faros-ai",
+    "org": "github",
     "user": "oldkit",
   },
 ]
@@ -114,7 +114,7 @@ exports[`index streams - copilot usage 1`] = `
       },
     ],
     "day": "2023-10-15",
-    "org": "faros-ai",
+    "org": "github",
     "total_acceptances_count": 800,
     "total_active_chat_users": 4,
     "total_active_users": 10,
@@ -155,7 +155,7 @@ exports[`index streams - copilot usage 1`] = `
       },
     ],
     "day": "2023-10-16",
-    "org": "faros-ai",
+    "org": "github",
     "total_acceptances_count": 600,
     "total_active_chat_users": 8,
     "total_active_users": 12,
@@ -164,6 +164,19 @@ exports[`index streams - copilot usage 1`] = `
     "total_lines_accepted": 700,
     "total_lines_suggested": 1100,
     "total_suggestions_count": 800,
+  },
+]
+`;
+
+exports[`index streams - organizations 1`] = `
+[
+  {
+    "created_at": "2008-01-14T04:33:35Z",
+    "html_url": "https://github.com/octocat",
+    "login": "github",
+    "name": "github",
+    "type": "Organization",
+    "updated_at": "2014-03-03T18:58:10Z",
   },
 ]
 `;

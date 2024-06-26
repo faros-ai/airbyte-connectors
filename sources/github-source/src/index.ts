@@ -12,6 +12,7 @@ import VError from 'verror';
 import {DEFAULT_API_URL, GitHub} from './github';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
+import {FarosOrganizations} from './streams/faros_organizations';
 import {GitHubConfig} from './types';
 
 export function mainCommand(): Command {
@@ -54,6 +55,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return [
       new FarosCopilotSeats(config, this.logger, farosClient),
       new FarosCopilotUsage(config, this.logger),
+      new FarosOrganizations(config, this.logger),
     ];
   }
 }
