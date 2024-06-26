@@ -13,8 +13,9 @@ import VError from 'verror';
 
 import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
-import {Jira, JiraConfig} from '../src/jira';
+import {JiraConfig} from '../src/jira';
 import {RunMode} from '../src/streams/common';
+import {paginate, setupJiraInstance} from './utils/test-utils';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -95,24 +96,6 @@ describe('index', () => {
       configOrPath: 'check_connection/valid.json',
     });
   });
-
-  function paginate<V>(
-    items: V[],
-    itemsField = 'values',
-    pageSize = 1
-  ): jest.Mock {
-    const fn = jest.fn();
-    let count = 0;
-    do {
-      const slice = items.slice(count, count + pageSize);
-      count += slice.length;
-      fn.mockResolvedValueOnce({
-        isLast: count === items.length,
-        [itemsField]: slice,
-      });
-    } while (count < items.length);
-    return fn;
-  }
 
   const testStream = async (
     streamIndex: any,
@@ -438,7 +421,11 @@ describe('index', () => {
   test('streams - projects - Jira Server', async () => {
     await testStream(
       5,
-      {...readTestResourceFile('config.json'), projects: undefined},
+      {
+        ...readTestResourceFile('config.json'),
+        projects: undefined,
+        url: 'https://jira-server.com',
+      },
       {
         v2: {
           permissions: {
@@ -459,6 +446,7 @@ describe('index', () => {
   test('streams - projects - Jira Server - project list', async () => {
     const serverConfig = readTestResourceFile('config.json');
     serverConfig.projects = ['TEST-1', 'TEST-2'];
+    serverConfig.url = 'https://jira-server.com';
 
     await testStream(
       5,
@@ -495,6 +483,26 @@ describe('index', () => {
     const catalog = readTestResourceFile('catalog.json');
     const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
     expect(newCatalog).toMatchSnapshot();
+  });
+
+  test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
+    const source = new sut.JiraSource(logger);
+    const catalog = readTestResourceFile('catalog.json');
+    const {config: processedConfig} = await source.onBeforeRead(
+      {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
+      catalog
+    );
+    expect(processedConfig.excluded_projects).toBeUndefined();
+  });
+
+  test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
+    const source = new sut.JiraSource(logger);
+    const catalog = readTestResourceFile('catalog.json');
+    const {config: processedConfig} = await source.onBeforeRead(
+      {...config, boards: ['1'], excluded_boards: ['2']},
+      catalog
+    );
+    expect(processedConfig.excluded_boards).toBeUndefined();
   });
 
   async function testStreamSlices(config: JiraConfig): Promise<void> {
@@ -635,33 +643,3 @@ describe('index', () => {
     );
   });
 });
-function setupJiraInstance(
-  mockedImplementation: any,
-  isCloud: boolean,
-  sourceConfig: JiraConfig,
-  logger: AirbyteLogger
-) {
-  Jira.instance = jest.fn().mockImplementation(() => {
-    return new Jira(
-      'https://jira.com',
-      mockedImplementation ?? ({} as any),
-      {} as any,
-      new Map([
-        ['field_001', 'Development'],
-        ['customfield_10000', 'Custom Number Filed'],
-        ['customfield_10001', 'Custom String Field'],
-      ]),
-      50,
-      new Map(),
-      isCloud,
-      5,
-      100,
-      sourceConfig.bucket_id,
-      sourceConfig.bucket_total,
-      logger,
-      undefined,
-      sourceConfig?.requestedStreams,
-      sourceConfig?.use_sprints_reverse_search
-    );
-  });
-}

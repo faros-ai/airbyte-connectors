@@ -21,7 +21,9 @@ export class FarosProjects extends StreamBase {
       ? new Set(this.config.projects.map((key) => toUpper(key)))
       : undefined;
     for (const project of await jira.getProjects(projectKeys)) {
-      yield project;
+      if (!this.config.excluded_projects?.includes(project.key)) {
+        yield project;
+      }
     }
   }
 }

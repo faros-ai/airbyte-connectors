@@ -110,8 +110,30 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    let {excluded_projects, excluded_boards} = config;
+    if (config.projects?.length && excluded_projects?.length) {
+      this.logger.warn(
+        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
+      );
+      excluded_projects = undefined;
+    }
+
+    if (config.boards?.length && excluded_boards?.length) {
+      this.logger.warn(
+        'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
+      );
+      excluded_boards = undefined;
+    }
+
     return {
-      config: {...config, requestedStreams, startDate, endDate},
+      config: {
+        ...config,
+        requestedStreams,
+        startDate,
+        endDate,
+        excluded_projects,
+        excluded_boards,
+      },
       catalog: {streams},
       state,
     };
