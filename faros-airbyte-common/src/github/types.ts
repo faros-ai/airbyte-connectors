@@ -3,8 +3,9 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 const octokit: Octokit = new Octokit();
 
-export type Organization = GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.orgs.get
+export type Organization = Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.orgs.get>,
+  'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
 export interface CopilotSeat {

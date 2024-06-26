@@ -96,7 +96,14 @@ export class GitHub {
 
   async getOrganization(orgLogin: string): Promise<Organization> {
     const org = await this.octokit.orgs.get({org: orgLogin});
-    return org.data;
+    return pick(org.data, [
+      'login',
+      'name',
+      'type',
+      'html_url',
+      'created_at',
+      'updated_at',
+    ]);
   }
 
   async *getCopilotSeats(
