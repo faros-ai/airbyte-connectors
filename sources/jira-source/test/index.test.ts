@@ -9,7 +9,6 @@ import {
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 import {Dictionary} from 'ts-essentials';
-import VError from 'verror';
 
 import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
@@ -42,50 +41,33 @@ describe('index', () => {
   });
 
   test('check connection - missing url', async () => {
-    const source = new sut.JiraSource(logger);
     const configs = [{}, {url: undefined}, {url: null}, {url: ''}];
-
     for (const config of configs) {
-      await expect(
-        source.checkConnection(config as any)
-      ).resolves.toStrictEqual([
-        false,
-        new VError('Please provide a Jira URL'),
-      ]);
+      await sourceCheckTest({
+        source,
+        configOrPath: config,
+      });
     }
   });
 
   test('check connection - missing credentials ', async () => {
-    const source = new sut.JiraSource(logger);
-    await expect(
-      source.checkConnection({url: 'https://jira.com'} as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        'Either Jira personal token or Jira username and password must be provided'
-      ),
-    ]);
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/missing_credentials.json',
+    });
   });
 
   test('check connection - invalid bucketing config - out of range', async () => {
-    const source = new sut.JiraSource(logger);
-    const bucketTotal = 2;
-    await expect(
-      source.checkConnection({
-        ...config,
-        bucket_id: 3,
-        bucket_total: bucketTotal,
-      })
-    ).resolves.toStrictEqual([
-      false,
-      new VError(`bucket_id must be between 1 and ${bucketTotal}`),
-    ]);
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/bucket_out_of_range.json',
+    });
   });
 
   test('check connection - invalid bucketing config - non positive integer', async () => {
     await sourceCheckTest({
       source,
-      configOrPath: {...config, bucket_id: 1, bucket_total: -1},
+      configOrPath: 'check_connection/bucket_negative.json',
     });
   });
 
@@ -170,6 +152,7 @@ describe('index', () => {
           .fn()
           .mockResolvedValue(readTestResourceFile('board.json')),
         getAllSprints: paginate(readTestResourceFile('sprints.json')),
+        getAllBoards: paginate([readTestResourceFile('boards.json')[0]]),
       },
     },
     getSprintReport: jest
@@ -237,8 +220,21 @@ describe('index', () => {
   });
 
   test('streams - sprint_reports', async () => {
-    await testStream(1, config, getSprintReportsMockedImplementation(), {
-      board: '1',
+    await sourceReadTest({
+      source,
+      configOrPath: 'sprint_reports/config.json',
+      catalogOrPath: 'sprint_reports/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          getSprintReportsMockedImplementation(),
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
   });
 
