@@ -117,7 +117,7 @@
       "exclude_projects": {
         "order": 15,
         "title": "Exclude Project Keys",
-        "description": "List of Jira project keys from which data wont be fetched. By default, no projects are excluded. If projects list is specified, this list will be ignored.",
+        "description": "List of Jira project keys from which data won't be fetched. By default, no projects are excluded. If projects list is specified, this list will be ignored.",
         "type": "array",
         "items": {
         "type": "string"
@@ -153,7 +153,7 @@
       "excluded_boards": {
         "order": 19,
         "title": "Board IDs Excluded",
-        "description": "List of Jira board IDs from which data wont be fetched. By default, no boards are excluded. If boards list is specified, this list will be ignored.",
+        "description": "List of Jira board IDs from which data won't be fetched. By default, no boards are excluded. If boards list is specified, this list will be ignored.",
         "type": "array",
         "items": {
           "type": "string"
