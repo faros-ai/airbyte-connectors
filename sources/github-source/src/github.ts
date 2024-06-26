@@ -54,12 +54,12 @@ export abstract class GitHub {
 
   abstract octokit(org: string): Octokit;
 
-  abstract getAccessibleOrganizationsIterator(): AsyncGenerator<string>;
+  abstract getOrganizationsIterator(): AsyncGenerator<string>;
 
   @Memoize()
-  async getAccessibleOrganizations(): Promise<ReadonlyArray<string>> {
+  async getOrganizations(): Promise<ReadonlyArray<string>> {
     const orgs: string[] = [];
-    for await (const org of this.getAccessibleOrganizationsIterator()) {
+    for await (const org of this.getOrganizationsIterator()) {
       orgs.push(org);
     }
     return orgs;
@@ -183,7 +183,7 @@ export class TokenGitHub extends GitHub {
     await this.baseOctokit.users.getAuthenticated();
   }
 
-  async *getAccessibleOrganizationsIterator(): AsyncGenerator<string> {
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
     const iter = this.baseOctokit.paginate.iterator(
       this.baseOctokit.orgs.listForAuthenticatedUser,
       {
@@ -234,7 +234,7 @@ export class AppGitHub extends GitHub {
     await this.baseOctokit.apps.getAuthenticated();
   }
 
-  async *getAccessibleOrganizationsIterator(): AsyncGenerator<string> {
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
     for (const org of this.octokitByInstallationOrg.keys()) {
       yield org;
     }
