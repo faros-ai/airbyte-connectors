@@ -23,8 +23,8 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     cursorField?: string[],
     streamSlice?: OrgStreamSlice
   ): AsyncGenerator<CopilotSeat> {
-    const github = await GitHub.instance(this.config, this.logger);
     const org = streamSlice?.org;
+    const github = await GitHub.instance(this.config, this.logger);
     yield* github.getCopilotSeats(org, this.farosClient, this.config.graph);
   }
 }

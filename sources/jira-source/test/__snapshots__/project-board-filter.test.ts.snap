@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectBoardFilter getBoardsFromFaros - all boards 1`] = `
+[
+  "1",
+  "2",
+  "3",
+]
+`;
+
+exports[`ProjectBoardFilter getBoardsFromFaros - specific boards excluded 1`] = `
+[
+  "1",
+  "3",
+]
+`;
+
+exports[`ProjectBoardFilter getBoardsFromFaros - specific boards included 1`] = `
+[
+  "2",
+  "3",
+]
+`;
+
+exports[`ProjectBoardFilter getProjectsFromFaros - all projects 1`] = `
+[
+  "TEST-1",
+  "TEST-2",
+  "TEST-3",
+]
+`;
+
+exports[`ProjectBoardFilter getProjectsFromFaros - specific projects excluded 1`] = `
+[
+  "TEST-2",
+  "TEST-3",
+]
+`;
+
+exports[`ProjectBoardFilter getProjectsFromFaros - specific projects included 1`] = `
+[
+  "TEST-1",
+  "TEST-2",
+]
+`;

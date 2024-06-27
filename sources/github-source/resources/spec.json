@@ -19,7 +19,7 @@
             "type": "object",
             "title": "Personal Access Token",
             "properties": {
-              "auth": {
+              "type": {
                 "type": "string",
                 "const": "token",
                 "order": 0
@@ -32,7 +32,7 @@
               }
             },
             "required": [
-              "auth",
+              "type",
               "personal_access_token"
             ]
           },
@@ -40,7 +40,7 @@
             "type": "object",
             "title": "GitHub App",
             "properties": {
-              "auth": {
+              "type": {
                 "type": "string",
                 "const": "app",
                 "order": 0
@@ -58,81 +58,22 @@
                 "airbyte_secret": true,
                 "multiline": true,
                 "order": 2
-              },
-              "app_cfg": {
-                "title": "App Config",
-                "description": "Choose your GitHub App authentication method",
-                "type": "object",
-                "order": 3,
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "title": "App Installation",
-                    "properties": {
-                      "auth": {
-                        "type": "string",
-                        "const": "installation",
-                        "order": 0
-                      },
-                      "installation_id": {
-                        "type": "integer",
-                        "title": "Installation ID",
-                        "description": "GitHub App Installation ID",
-                        "order": 1
-                      }
-                    },
-                    "required": [
-                      "auth",
-                      "installation_id"
-                    ]
-                  },
-                  {
-                    "type": "object",
-                    "title": "Client Auth",
-                    "properties": {
-                      "auth": {
-                        "type": "string",
-                        "const": "client",
-                        "order": 0
-                      },
-                      "client_id": {
-                        "type": "string",
-                        "title": "Client ID",
-                        "description": "GitHub App Client ID",
-                        "order:": 1
-                      },
-                      "client_secret": {
-                        "type": "string",
-                        "title": "Client Secret",
-                        "description": "GitHub App Client Secret",
-                        "airbyte_secret": true,
-                        "order": 2
-                      }
-                    },
-                    "required": [
-                      "auth",
-                      "client_id",
-                      "client_secret"
-                    ]
-                  }
-                ]
               }
             },
             "required": [
-              "auth",
+              "type",
               "app_id",
-              "private_key",
-              "app_cfg"
+              "private_key"
             ]
           }
         ]
       },
       "url": {
+        "order": 1,
         "type": "string",
         "title": "GitHub API URL",
         "description": "GitHub API URL, e.g for GitHub Enterprise: https://my-ghe-host.com/api/v3",
-        "default": "https://api.github.com",
-        "order": 1
+        "default": "https://api.github.com"
       },
       "orgs": {
         "order": 2,
@@ -148,20 +89,21 @@
         ]
       },
       "concurrency_limit": {
+        "order": 3,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
-        "default": 4,
-        "order": 2
+        "default": 4
       },
       "reject_unauthorized": {
+        "order": 4,
         "type": "boolean",
         "title": "Enable certificate validation",
         "description": "Enable certificate validation for the GitHub server",
-        "default": true,
-        "order": 3
+        "default": true
       },
       "previews": {
+        "order": 5,
         "type": "array",
         "examples": [
           "dorian",
@@ -174,25 +116,24 @@
         "description": "GitHub API previews. See https://docs.github.com/en/enterprise-server@3.1/rest/overview/api-previews",
         "items": {
           "type": "string"
-        },
-        "order": 4
+        }
       },
       "api_url": {
-        "order": 5,
+        "order": 6,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 6,
+        "order": 7,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 7,
+        "order": 8,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
