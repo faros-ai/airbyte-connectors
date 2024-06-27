@@ -102,7 +102,7 @@ describe('index', () => {
     });
   });
 
-  test('streams - copilot seats with inactive seats inference using faros graph', async () => {
+  test('streams - copilot seats (empty)', async () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
@@ -112,18 +112,6 @@ describe('index', () => {
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
           ),
-          res.config as GitHubConfig
-        );
-        setupFarosClientMock(
-          {
-            nodeIterable: jest
-              .fn()
-              .mockReturnValue(
-                iterate(
-                  readTestResourceAsJSON('copilot_seats/vcs_user_tool.json')
-                )
-              ),
-          },
           res.config as GitHubConfig
         );
       },
@@ -191,16 +179,6 @@ function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
       new AirbyteLogger()
     );
   });
-}
-
-function setupFarosClientMock(
-  farosClientMock: any,
-  sourceConfig: GitHubConfig
-) {
-  (sourceConfig as any).api_key = 'faros-api-key';
-  jest
-    .spyOn(sut.GitHubSource.prototype, 'makeFarosClient')
-    .mockImplementation(() => farosClientMock);
 }
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({

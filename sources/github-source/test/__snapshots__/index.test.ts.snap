@@ -48,11 +48,19 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - copilot seats (empty) 1`] = `
+[
+  {
+    "empty": true,
+    "org": "github",
+  },
+]
+`;
+
 exports[`index streams - copilot seats 1`] = `
 [
   {
     "created_at": "2021-08-03T18:00:00-06:00",
-    "inactive": false,
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": null,
@@ -61,22 +69,11 @@ exports[`index streams - copilot seats 1`] = `
   },
   {
     "created_at": "2021-09-23T18:00:00-06:00",
-    "inactive": false,
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
     "updated_at": "2021-09-23T15:00:00-06:00",
     "user": "octokitten",
-  },
-]
-`;
-
-exports[`index streams - copilot seats with inactive seats inference using faros graph 1`] = `
-[
-  {
-    "inactive": true,
-    "org": "github",
-    "user": "oldkit",
   },
 ]
 `;

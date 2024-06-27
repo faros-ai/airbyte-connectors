@@ -117,27 +117,6 @@
         "items": {
           "type": "string"
         }
-      },
-      "api_url": {
-        "order": 6,
-        "type": "string",
-        "title": "Faros API URL",
-        "description": "The Faros API URL.",
-        "default": "https://prod.api.faros.ai"
-      },
-      "api_key": {
-        "order": 7,
-        "title": "Faros API Key",
-        "type": "string",
-        "description": "The Faros API key to use to access the API.",
-        "airbyte_secret": true
-      },
-      "graph": {
-        "order": 8,
-        "type": "string",
-        "title": "Graph name",
-        "description": "The Faros graph name.",
-        "default": "default"
       }
     }
   }

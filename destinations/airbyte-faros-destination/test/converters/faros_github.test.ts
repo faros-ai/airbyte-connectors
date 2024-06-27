@@ -13,6 +13,32 @@ describe('faros_github', () => {
       api_url: mockttp.url,
       log_records: true,
     });
+    await mockttp
+      .forPost('/graphs/test-graph/graphql')
+      .thenCallback(async (req) => {
+        const body = await req.body.getJson();
+        const query = body['query'];
+        if (query.includes('vcs_UserTool')) {
+          return {
+            status: 200,
+            body: JSON.stringify({
+              data: {
+                vcs_UserTool: [
+                  {
+                    _id: '1',
+                    user: {
+                      uid: 'oldkit',
+                    },
+                    toolCategory: 'GitHubCopilot',
+                    inactive: false,
+                  },
+                ],
+              },
+            }),
+          };
+        }
+        throw new Error(`Not mocked`);
+      });
   });
 
   afterEach(async () => {

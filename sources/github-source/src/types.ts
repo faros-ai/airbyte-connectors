@@ -7,9 +7,6 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
-  readonly api_url?: string;
-  readonly api_key?: string;
-  readonly graph?: string;
 }
 
 type GitHubToken = {

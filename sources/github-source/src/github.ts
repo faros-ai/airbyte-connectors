@@ -2,28 +2,16 @@ import {Octokit} from '@octokit/rest';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   AppInstallation,
-  CopilotSeat,
+  CopilotSeatsStreamRecord,
   CopilotUsageSummary,
-  GitHubTool,
   Organization,
 } from 'faros-airbyte-common/github';
-import {FarosClient, paginatedQueryV2} from 'faros-js-client';
-import fs from 'fs';
-import {isEmpty, isNil, pick, toLower} from 'lodash';
-import path from 'path';
+import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {makeOctokitClient} from './octokit';
 import {GitHubConfig} from './types';
-
-const USER_TOOL_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'vcs-user-tool.gql'),
-  'utf8'
-);
-
-export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
-export const DEFAULT_GRAPH = 'default';
 
 export const PAGE_SIZE = 100;
 
@@ -79,11 +67,9 @@ export abstract class GitHub {
   }
 
   async *getCopilotSeats(
-    org: string,
-    farosClient?: FarosClient,
-    graph?: string
-  ): AsyncGenerator<CopilotSeat> {
-    const currentAssignees = new Set<string>();
+    org: string
+  ): AsyncGenerator<CopilotSeatsStreamRecord> {
+    let seatsFound: boolean = false;
     const iter = this.octokit(org).paginate.iterator(
       this.baseOctokit.copilot.listCopilotSeats,
       {
@@ -94,11 +80,10 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const seat of res.data.seats) {
-          currentAssignees.add(seat.assignee.login as string);
+          if (!seatsFound) seatsFound = true;
           yield {
             org,
             user: seat.assignee.login as string,
-            inactive: false,
             ...pick(seat, [
               'created_at',
               'updated_at',
@@ -119,32 +104,11 @@ export abstract class GitHub {
       }
       throw err;
     }
-    if (!farosClient) {
-      this.logger.warn(
-        `Skipping inactive GitHub Copilot seats inference for org ${org}. Faros client not configured.`
-      );
-      return;
-    }
-    const previousAssigneesQuery = farosClient.nodeIterable(
-      graph ?? DEFAULT_GRAPH,
-      USER_TOOL_QUERY,
-      100,
-      paginatedQueryV2,
-      new Map<string, any>([
-        ['source', 'GitHub'],
-        ['organizationUid', toLower(org)],
-        ['toolCategory', GitHubTool.Copilot],
-        ['inactive', false],
-      ])
-    );
-    for await (const res of previousAssigneesQuery) {
-      if (!currentAssignees.has(res.user.uid)) {
-        yield {
-          org,
-          user: res.user.uid,
-          inactive: true,
-        };
-      }
+    if (!seatsFound) {
+      yield {
+        empty: true,
+        org,
+      };
     }
   }
 
