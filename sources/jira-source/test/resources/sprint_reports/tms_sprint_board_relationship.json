@@ -1,0 +1,12 @@
+{
+  "tms_SprintBoardRelationship": [
+    {
+      "sprint": {
+        "uid": "1",
+        "name": "Sprint 1",
+        "state": "closed",
+        "closedAt": "2024-01-01T00:00:00Z"
+      }
+    }
+  ]
+}

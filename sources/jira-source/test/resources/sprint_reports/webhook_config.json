@@ -14,5 +14,8 @@
   "reject_unauthorized": true,
   "sync_additional_fields": true,
   "timeout": 120000,
-  "run_mode": "Full"
+  "run_mode": "WebhookSupplement",
+  "api_key": "SECRET",
+  "api_url": "https://dev.api.faros.ai",
+  "graph": "test"
 }

@@ -2,6 +2,7 @@ import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
+  readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   SyncMode,
@@ -135,7 +136,9 @@ describe('index', () => {
           .fn()
           .mockResolvedValue(readTestResourceFile('board.json')),
         getAllSprints: paginate(readTestResourceFile('sprints.json')),
-        getAllBoards: paginate([readTestResourceFile('boards.json')[0]]),
+        getAllBoards: paginate(
+          readTestResourceAsJSON('common/boards_unique.json')
+        ),
       },
     },
     getSprintReport: jest
@@ -224,64 +227,80 @@ describe('index', () => {
   test('streams - sprint_reports with run mode WebhookSupplement using Faros client', async () => {
     const gqlMock = jest.spyOn(FarosClient.prototype, 'gql');
     gqlMock.mockReturnValueOnce(
-      Promise.resolve({
-        tms_SprintBoardRelationship: [
-          {
-            sprint: {
-              uid: '1',
-              name: 'Sprint 1',
-              state: 'closed',
-              closedAt: '2024-01-01T00:00:00Z',
-            },
-          },
-        ],
-      })
+      Promise.resolve(readTestResourceAsJSON('sprint_reports/tms_project.json'))
+    );
+    gqlMock.mockReturnValueOnce(Promise.resolve({tms_Project: []}));
+    gqlMock.mockReturnValueOnce(
+      Promise.resolve(
+        readTestResourceAsJSON(
+          'sprint_reports/tms_sprint_board_relationship.json'
+        )
+      )
     );
     gqlMock.mockReturnValueOnce(
       Promise.resolve({tms_SprintBoardRelationship: []})
     );
-    const reportsConfig = {
-      ...config,
-      run_mode: RunMode.WebhookSupplement,
-      api_key: 'SECRET',
-      api_url: 'https://dev.api.faros.ai',
-      graph: 'test',
-    };
-    await testStream(1, reportsConfig, getSprintReportsMockedImplementation(), {
-      board: '1',
+    await sourceReadTest({
+      source,
+      configOrPath: 'sprint_reports/webhook_config.json',
+      catalogOrPath: 'sprint_reports/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          getSprintReportsMockedImplementation(),
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
   });
 
   test('streams - board_issues using board ids', async () => {
-    await testStream(
-      2,
-      readTestResourceFile('config.json'),
-      {
-        agile: {
-          board: {
-            getConfiguration: jest
-              .fn()
-              .mockResolvedValue(
-                readTestResourceFile('board_configuration.json')
-              ),
+    await sourceReadTest({
+      source,
+      configOrPath: 'board_issues/config.json',
+      catalogOrPath: 'board_issues/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            agile: {
+              board: {
+                getConfiguration: jest
+                  .fn()
+                  .mockResolvedValue(
+                    readTestResourceFile('board_configuration.json')
+                  ),
+                getAllBoards: paginate(
+                  readTestResourceAsJSON('common/boards_unique.json')
+                ),
+              },
+            },
+            v2: {
+              filters: {
+                getFilter: jest
+                  .fn()
+                  .mockResolvedValue(readTestResourceFile('board_filter.json')),
+              },
+              issueSearch: {
+                searchForIssuesUsingJql: paginate(
+                  readTestResourceFile('issues_from_board.json'),
+                  'issues'
+                ),
+              },
+            },
           },
-        },
-        v2: {
-          filters: {
-            getFilter: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('board_filter.json')),
-          },
-          issueSearch: {
-            searchForIssuesUsingJql: paginate(
-              readTestResourceFile('issues_from_board.json'),
-              'issues'
-            ),
-          },
-        },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
       },
-      {board: '1'}
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('streams - sprints', async () => {
