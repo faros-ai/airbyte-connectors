@@ -304,21 +304,34 @@ describe('index', () => {
   });
 
   test('streams - sprints', async () => {
-    await testStream(
-      3,
-      config,
-      {
-        agile: {
-          board: {
-            getBoard: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('board.json')),
-            getAllSprints: paginate(readTestResourceFile('sprints.json')),
+    await sourceReadTest({
+      source,
+      configOrPath: 'sprints/config.json',
+      catalogOrPath: 'sprints/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            agile: {
+              board: {
+                getBoard: jest
+                  .fn()
+                  .mockResolvedValue(readTestResourceFile('board.json')),
+                getAllSprints: paginate(readTestResourceFile('sprints.json')),
+                getAllBoards: paginate(
+                  readTestResourceAsJSON('common/boards_unique.json')
+                ),
+              },
+            },
           },
-        },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
       },
-      {board: '1'}
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('streams - sprints using most recent', async () => {
@@ -339,23 +352,35 @@ describe('index', () => {
         values: Array(7).fill(sprint),
       });
 
-    await testStream(
-      3,
-      {...config, use_sprints_reverse_search: true},
-      {
-        agile: {
-          board: {
-            getBoard: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('board.json')),
-            getAllSprints: getAllSprintsfn,
+    const config = readTestResourceAsJSON('sprints/config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, use_sprints_reverse_search: true},
+      catalogOrPath: 'sprints/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            agile: {
+              board: {
+                getBoard: jest
+                  .fn()
+                  .mockResolvedValue(readTestResourceFile('board.json')),
+                getAllSprints: getAllSprintsfn,
+                getAllBoards: paginate(
+                  readTestResourceAsJSON('common/boards_unique.json')
+                ),
+              },
+            },
           },
-        },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
       },
-      {board: '1'},
-      true,
-      58
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
 
     expect(getAllSprintsfn).toHaveBeenCalledTimes(4);
     expect(getAllSprintsfn).toHaveBeenNthCalledWith(1, {
@@ -384,11 +409,28 @@ describe('index', () => {
   });
 
   test('streams - users', async () => {
-    await testStream(4, readTestResourceFile('config.json'), {
-      v2: {
-        users: {
-          getAllUsersDefault: paginate(readTestResourceFile('users.json')),
-        },
+    await sourceReadTest({
+      source,
+      configOrPath: 'users/config.json',
+      catalogOrPath: 'users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              users: {
+                getAllUsersDefault: paginate(
+                  readTestResourceFile('users.json')
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
       },
     });
   });
@@ -399,11 +441,22 @@ describe('index', () => {
       'values',
       50
     );
-    await testStream(
-      5,
-      {...readTestResourceFile('config.json'), projects: undefined},
-      {v2: {projects: {searchProjects}}}
-    );
+    await sourceReadTest({
+      source,
+      configOrPath: 'projects/config.json',
+      catalogOrPath: 'projects/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {v2: {projects: {searchProjects}}},
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
     expect(searchProjects).toHaveBeenCalledWith({
       action: 'browse',
       expand: 'description',
@@ -413,74 +466,262 @@ describe('index', () => {
   });
 
   test('streams - projects - Cloud project list', async () => {
-    const keys = ['TEST-1', 'TEST-2', 'TEST-3', 'TEST-4'];
+    const projects = ['TEST-1', 'TEST-2', 'TEST-3', 'TEST-4'];
     const searchProjects = paginate(
       readTestResourceFile('projects.json'),
       'values',
       50
     );
-    await testStream(
-      5,
-      {...readTestResourceFile('config.json'), projects: keys},
-      {v2: {projects: {searchProjects}}}
-    );
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('projects/config.json'),
+        projects,
+      },
+      catalogOrPath: 'projects/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {v2: {projects: {searchProjects}}},
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
     expect(searchProjects).toHaveBeenCalledWith({
       action: 'browse',
       expand: 'description',
-      keys,
+      keys: projects,
       maxResults: 100,
       startAt: 0,
     });
   });
 
   test('streams - projects - Jira Server', async () => {
-    await testStream(
-      5,
-      {
-        ...readTestResourceFile('config.json'),
-        projects: undefined,
-        url: 'https://jira-server.com',
-      },
-      {
-        v2: {
-          permissions: {
-            getMyPermissions: jest
+    await sourceReadTest({
+      source,
+      configOrPath: 'projects/config.json',
+      catalogOrPath: 'projects/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              permissions: {
+                getMyPermissions: jest
+                  .fn()
+                  .mockResolvedValue(readTestResourceFile('permissions.json')),
+              },
+            },
+            getAllProjects: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('permissions.json')),
+              .mockResolvedValue(readTestResourceFile('projects.json')),
           },
-        },
-        getAllProjects: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('projects.json')),
+          false,
+          res.config as JiraConfig,
+          logger
+        );
       },
-      undefined,
-      false
-    );
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('streams - projects - Jira Server - project list', async () => {
-    const serverConfig = readTestResourceFile('config.json');
-    serverConfig.projects = ['TEST-1', 'TEST-2'];
-    serverConfig.url = 'https://jira-server.com';
-
-    await testStream(
-      5,
-      serverConfig,
-      {
-        v2: {
-          permissions: {
-            getMyPermissions: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('permissions.json')),
-          },
-        },
-        getAllProjects: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('projects.json')),
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('projects/config.json'),
+        projects: ['TEST-1', 'TEST-2'],
       },
-      undefined,
-      false
-    );
+      catalogOrPath: 'projects/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              permissions: {
+                getMyPermissions: jest
+                  .fn()
+                  .mockResolvedValue(readTestResourceFile('permissions.json')),
+              },
+            },
+            getAllProjects: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('projects.json')),
+          },
+          false,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - boards', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'boards/config.json',
+      catalogOrPath: 'boards/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            agile: {
+              board: {
+                getAllBoards: paginate(readTestResourceFile('boards.json')),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - project versions', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'project_versions/config.json',
+      catalogOrPath: 'project_versions/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              projectVersions: {
+                getProjectVersionsPaginated: paginate(
+                  readTestResourceFile('project_versions.json')
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - project version issues', async () => {
+    const version = readTestResourceFile('project_versions.json')[0];
+    await sourceReadTest({
+      source,
+      configOrPath: 'project_version_issues/config.json',
+      catalogOrPath: 'project_version_issues/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              issueSearch: {
+                searchForIssuesUsingJql: paginate(
+                  readTestResourceFile('project_version_issues.json'),
+                  'issues'
+                ),
+              },
+              projectVersions: {
+                getProjectVersionsPaginated: paginate([version]),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'teams/config.json',
+      catalogOrPath: 'teams/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            graphql: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('teams.json')),
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - team memberships', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'team_memberships/config.json',
+      catalogOrPath: 'team_memberships/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            graphql: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('teams.json')),
+            getTeamMemberships: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('team_memberships.json')),
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - additional fields', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'additional_fields/config.json',
+      catalogOrPath: 'additional_fields/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              issueSearch: {
+                searchForIssuesUsingJql: paginate(
+                  readTestResourceFile('issues_with_additional_fields.json'),
+                  'issues'
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
@@ -549,112 +790,5 @@ describe('index', () => {
       bucket_id: 2,
       projects: ['TEST', 'TEST2', 'TEST3'],
     });
-  });
-
-  test('streams - boards', async () => {
-    await testStream(
-      7,
-      config,
-      {
-        agile: {
-          board: {
-            getAllBoards: paginate(readTestResourceFile('boards.json')),
-          },
-        },
-      },
-      {project: 'TEST'}
-    );
-  });
-
-  test('streams - project versions', async () => {
-    await testStream(
-      8,
-      config,
-      {
-        v2: {
-          projectVersions: {
-            getProjectVersionsPaginated: paginate(
-              readTestResourceFile('project_versions.json')
-            ),
-          },
-        },
-      },
-      {project: 'TEST'}
-    );
-  });
-
-  test('streams - project version issues', async () => {
-    const version = readTestResourceFile('project_versions.json')[0];
-    await testStream(9, config, {
-      v2: {
-        issueSearch: {
-          searchForIssuesUsingJql: paginate(
-            readTestResourceFile('project_version_issues.json'),
-            'issues'
-          ),
-        },
-        projectVersions: {
-          getProjectVersionsPaginated: paginate([version]),
-        },
-      },
-    });
-  });
-
-  test('streams - teams', async () => {
-    await testStream(
-      10,
-      {
-        ...config,
-        fetch_teams: true,
-        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
-      },
-      {
-        graphql: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('teams.json')),
-      }
-    );
-  });
-
-  test('streams - team memberships', async () => {
-    await testStream(
-      11,
-      {
-        ...config,
-        fetch_team_memberships: true,
-        organization_id: 'aaaa22211-1234-aaaa-bb22-123122dds',
-      },
-      {
-        graphql: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('teams.json')),
-        getTeamMemberships: jest
-          .fn()
-          .mockResolvedValue(readTestResourceFile('team_memberships.json')),
-      }
-    );
-  });
-
-  test('streams - additional fields', async () => {
-    await testStream(
-      12,
-      {
-        ...config,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-30'),
-        additional_fields: ['customfield_10000', 'customfield_10001'],
-      },
-      {
-        v2: {
-          issueSearch: {
-            searchForIssuesUsingJql: paginate(
-              readTestResourceFile('issues_with_additional_fields.json'),
-              'issues'
-            ),
-          },
-        },
-      },
-      {project: 'TEST'}
-    );
   });
 });
