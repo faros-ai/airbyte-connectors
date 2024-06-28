@@ -30,6 +30,10 @@ export type IssueStreamState = {
   };
 };
 
+export type BoardIssuesState = {
+  cutoff: number;
+};
+
 export enum RunMode {
   Full = 'Full',
   Minimum = 'Minimum',

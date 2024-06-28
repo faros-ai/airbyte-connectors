@@ -4,7 +4,11 @@ import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {BoardStreamSlice, StreamWithBoardSlices} from './common';
+import {
+  BoardIssuesState,
+  BoardStreamSlice,
+  StreamWithBoardSlices,
+} from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
   get dependencies(): ReadonlyArray<string> {
@@ -28,8 +32,15 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const boardId = streamSlice.board;
     const boardConfig = await jira.getBoardConfiguration(boardId);
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
+    // Only fetch board issues updated since we started since not all issues on the board since they will
+    // be phantoms
+    const updatedAt = this.config.startDate;
+    const jql = updatedAt
+      ? `updated >= ${updatedAt.getTime()} AND ${boardJql}`
+      : boardJql;
+    this.logger.debug(`Fetching issues for board ${boardId} using JQL ${jql}`);
     try {
-      for await (const issue of jira.getIssuesKeys(boardJql)) {
+      for await (const issue of jira.getIssuesKeys(jql)) {
         yield {
           key: issue,
           boardId,

@@ -340,6 +340,7 @@ export class Jira {
         }
         count++;
       }
+      this.logger?.debug(`Fetched ${count} items out of ${res.total}`);
       // Pagination is inconsistent across the API, so we need to check various
       // conditions. Preference is given to the 'isLast' property.
       const isLast = res.isLast ?? (count === res.total || items.length === 0);
@@ -693,13 +694,15 @@ export class Jira {
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
+    // https://developer.atlassian.com/cloud/jira/platform/change-notice-for-get-search-max-results/
+    const maxResults = this.isCloud ? 1000 : this.maxPageSize;
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
           fields: ['key'],
-          maxResults: this.maxPageSize,
+          maxResults,
         }),
       async (item: any) => {
         return item.key;
