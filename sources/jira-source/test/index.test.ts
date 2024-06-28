@@ -723,7 +723,6 @@ describe('index', () => {
   });
 
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
-    const source = new sut.JiraSource(logger);
     const catalog = readTestResourceAsJSON('common/catalog.json');
     const {catalog: newCatalog} = await source.onBeforeRead(
       {...config, run_mode: RunMode.WebhookSupplement},
@@ -733,7 +732,6 @@ describe('index', () => {
   });
 
   test('onBeforeRead without run_mode defaults to full mode streams', async () => {
-    const source = new sut.JiraSource(logger);
     const catalog = readTestResourceAsJSON('common/catalog.json');
     const {catalog: newCatalog} = await source.onBeforeRead(
       {...config, run_mode: RunMode.Full},
@@ -743,7 +741,6 @@ describe('index', () => {
   });
 
   test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
-    const source = new sut.JiraSource(logger);
     const catalog = readTestResourceAsJSON('common/catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
       {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
@@ -753,7 +750,6 @@ describe('index', () => {
   });
 
   test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
-    const source = new sut.JiraSource(logger);
     const catalog = readTestResourceAsJSON('common/catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
       {...config, boards: ['1'], excluded_boards: ['2']},
