@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "faros_additional_fields",
+        "name": "faros_issue_additional_fields",
         "jsonSchema": {},
         "supportedSyncModes": [
           "full_refresh"

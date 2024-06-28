@@ -5,7 +5,6 @@ import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  SyncMode,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
@@ -21,10 +20,6 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
-
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -34,7 +29,7 @@ describe('index', () => {
   );
 
   const source = new sut.JiraSource(logger);
-  const config = readTestResourceFile('config.json');
+  const config = readTestResourceAsJSON('common/config.json');
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
@@ -80,53 +75,27 @@ describe('index', () => {
     });
   });
 
-  const testStream = async (
-    streamIndex: any,
-    sourceConfig: JiraConfig,
-    mockedImplementation?: any,
-    streamSlice?: any,
-    isCloud = true,
-    // only use if we do not want to write data snapshot
-    expectedResultLength?: number
-  ) => {
-    setupJiraInstance(mockedImplementation, isCloud, sourceConfig, logger);
-
-    const source = new sut.JiraSource(logger);
-    const streams = source.streams(sourceConfig);
-    const stream = streams[streamIndex];
-    const iter = stream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      streamSlice,
-      {}
-    );
-
-    const items = [];
-    for await (const item of iter) {
-      items.push(item);
-    }
-    if (!expectedResultLength) {
-      expect(items).toMatchSnapshot();
-    } else {
-      expect(items).toHaveLength(expectedResultLength);
-    }
-  };
-
   const getIssuePullRequestsMockedImplementation = () => ({
     v2: {
       issueSearch: {
         searchForIssuesUsingJql: paginate(
-          readTestResourceFile('issues_with_pull_requests.json'),
+          readTestResourceAsJSON(
+            'issue_pull_requests/issues_with_pull_requests.json'
+          ),
           'issues'
         ),
       },
     },
     getDevStatusSummary: jest
       .fn()
-      .mockResolvedValue(readTestResourceFile('dev_status_summary.json')),
+      .mockResolvedValue(
+        readTestResourceAsJSON('issue_pull_requests/dev_status_summary.json')
+      ),
     getDevStatusDetail: jest
       .fn()
-      .mockResolvedValue(readTestResourceFile('dev_status_detail.json')),
+      .mockResolvedValue(
+        readTestResourceAsJSON('issue_pull_requests/dev_status_detail.json')
+      ),
   });
 
   const getSprintReportsMockedImplementation = () => ({
@@ -134,8 +103,8 @@ describe('index', () => {
       board: {
         getBoard: jest
           .fn()
-          .mockResolvedValue(readTestResourceFile('board.json')),
-        getAllSprints: paginate(readTestResourceFile('sprints.json')),
+          .mockResolvedValue(readTestResourceAsJSON('common/board.json')),
+        getAllSprints: paginate(readTestResourceAsJSON('sprints/sprints.json')),
         getAllBoards: paginate(
           readTestResourceAsJSON('common/boards_unique.json')
         ),
@@ -143,7 +112,9 @@ describe('index', () => {
     },
     getSprintReport: jest
       .fn()
-      .mockResolvedValue(readTestResourceFile('sprint_report.json')),
+      .mockResolvedValue(
+        readTestResourceAsJSON('sprint_reports/sprint_report.json')
+      ),
   });
 
   test('streams - json schema fields', async () => {
@@ -261,7 +232,7 @@ describe('index', () => {
   test('streams - board_issues using board ids', async () => {
     await sourceReadTest({
       source,
-      configOrPath: 'board_issues/config.json',
+      configOrPath: config,
       catalogOrPath: 'board_issues/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
@@ -271,7 +242,9 @@ describe('index', () => {
                 getConfiguration: jest
                   .fn()
                   .mockResolvedValue(
-                    readTestResourceFile('board_configuration.json')
+                    readTestResourceAsJSON(
+                      'board_issues/board_configuration.json'
+                    )
                   ),
                 getAllBoards: paginate(
                   readTestResourceAsJSON('common/boards_unique.json')
@@ -282,11 +255,13 @@ describe('index', () => {
               filters: {
                 getFilter: jest
                   .fn()
-                  .mockResolvedValue(readTestResourceFile('board_filter.json')),
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('board_issues/board_filter.json')
+                  ),
               },
               issueSearch: {
                 searchForIssuesUsingJql: paginate(
-                  readTestResourceFile('issues_from_board.json'),
+                  readTestResourceAsJSON('board_issues/issues_from_board.json'),
                   'issues'
                 ),
               },
@@ -315,8 +290,12 @@ describe('index', () => {
               board: {
                 getBoard: jest
                   .fn()
-                  .mockResolvedValue(readTestResourceFile('board.json')),
-                getAllSprints: paginate(readTestResourceFile('sprints.json')),
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('common/board.json')
+                  ),
+                getAllSprints: paginate(
+                  readTestResourceAsJSON('sprints/sprints.json')
+                ),
                 getAllBoards: paginate(
                   readTestResourceAsJSON('common/boards_unique.json')
                 ),
@@ -335,7 +314,7 @@ describe('index', () => {
   });
 
   test('streams - sprints using most recent', async () => {
-    const sprint = readTestResourceFile('sprints.json')[0];
+    const sprint = readTestResourceAsJSON('sprints/sprints.json')[0];
     const getAllSprintsfn = jest
       .fn()
       .mockResolvedValueOnce({total: 1, values: [sprint]})
@@ -364,7 +343,9 @@ describe('index', () => {
               board: {
                 getBoard: jest
                   .fn()
-                  .mockResolvedValue(readTestResourceFile('board.json')),
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('common/board.json')
+                  ),
                 getAllSprints: getAllSprintsfn,
                 getAllBoards: paginate(
                   readTestResourceAsJSON('common/boards_unique.json')
@@ -419,7 +400,7 @@ describe('index', () => {
             v2: {
               users: {
                 getAllUsersDefault: paginate(
-                  readTestResourceFile('users.json')
+                  readTestResourceAsJSON('users/users.json')
                 ),
               },
             },
@@ -437,7 +418,7 @@ describe('index', () => {
 
   test('streams - projects - pull all projects', async () => {
     const searchProjects = paginate(
-      readTestResourceFile('projects.json'),
+      readTestResourceAsJSON('projects/projects.json'),
       'values',
       50
     );
@@ -468,7 +449,7 @@ describe('index', () => {
   test('streams - projects - Cloud project list', async () => {
     const projects = ['TEST-1', 'TEST-2', 'TEST-3', 'TEST-4'];
     const searchProjects = paginate(
-      readTestResourceFile('projects.json'),
+      readTestResourceAsJSON('projects/projects.json'),
       'values',
       50
     );
@@ -512,12 +493,16 @@ describe('index', () => {
               permissions: {
                 getMyPermissions: jest
                   .fn()
-                  .mockResolvedValue(readTestResourceFile('permissions.json')),
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('projects/permissions.json')
+                  ),
               },
             },
             getAllProjects: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('projects.json')),
+              .mockResolvedValue(
+                readTestResourceAsJSON('projects/projects.json')
+              ),
           },
           false,
           res.config as JiraConfig,
@@ -545,12 +530,16 @@ describe('index', () => {
               permissions: {
                 getMyPermissions: jest
                   .fn()
-                  .mockResolvedValue(readTestResourceFile('permissions.json')),
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('projects/permissions.json')
+                  ),
               },
             },
             getAllProjects: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('projects.json')),
+              .mockResolvedValue(
+                readTestResourceAsJSON('projects/projects.json')
+              ),
           },
           false,
           res.config as JiraConfig,
@@ -566,14 +555,16 @@ describe('index', () => {
   test('streams - boards', async () => {
     await sourceReadTest({
       source,
-      configOrPath: 'boards/config.json',
+      configOrPath: config,
       catalogOrPath: 'boards/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
           {
             agile: {
               board: {
-                getAllBoards: paginate(readTestResourceFile('boards.json')),
+                getAllBoards: paginate(
+                  readTestResourceAsJSON('boards/boards.json')
+                ),
               },
             },
           },
@@ -591,7 +582,7 @@ describe('index', () => {
   test('streams - project versions', async () => {
     await sourceReadTest({
       source,
-      configOrPath: 'project_versions/config.json',
+      configOrPath: config,
       catalogOrPath: 'project_versions/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
@@ -599,7 +590,9 @@ describe('index', () => {
             v2: {
               projectVersions: {
                 getProjectVersionsPaginated: paginate(
-                  readTestResourceFile('project_versions.json')
+                  readTestResourceAsJSON(
+                    'project_versions/project_versions.json'
+                  )
                 ),
               },
             },
@@ -616,10 +609,12 @@ describe('index', () => {
   });
 
   test('streams - project version issues', async () => {
-    const version = readTestResourceFile('project_versions.json')[0];
+    const version = readTestResourceAsJSON(
+      'project_versions/project_versions.json'
+    )[0];
     await sourceReadTest({
       source,
-      configOrPath: 'project_version_issues/config.json',
+      configOrPath: config,
       catalogOrPath: 'project_version_issues/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
@@ -627,7 +622,9 @@ describe('index', () => {
             v2: {
               issueSearch: {
                 searchForIssuesUsingJql: paginate(
-                  readTestResourceFile('project_version_issues.json'),
+                  readTestResourceAsJSON(
+                    'project_version_issues/project_version_issues.json'
+                  ),
                   'issues'
                 ),
               },
@@ -657,7 +654,7 @@ describe('index', () => {
           {
             graphql: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('teams.json')),
+              .mockResolvedValue(readTestResourceAsJSON('teams/teams.json')),
           },
           true,
           res.config as JiraConfig,
@@ -680,10 +677,12 @@ describe('index', () => {
           {
             graphql: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('teams.json')),
+              .mockResolvedValue(readTestResourceAsJSON('teams/teams.json')),
             getTeamMemberships: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('team_memberships.json')),
+              .mockResolvedValue(
+                readTestResourceAsJSON('team_memberships/team_memberships.json')
+              ),
           },
           true,
           res.config as JiraConfig,
@@ -699,15 +698,17 @@ describe('index', () => {
   test('streams - additional fields', async () => {
     await sourceReadTest({
       source,
-      configOrPath: 'additional_fields/config.json',
-      catalogOrPath: 'additional_fields/catalog.json',
+      configOrPath: 'issue_additional_fields/config.json',
+      catalogOrPath: 'issue_additional_fields/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
           {
             v2: {
               issueSearch: {
                 searchForIssuesUsingJql: paginate(
-                  readTestResourceFile('issues_with_additional_fields.json'),
+                  readTestResourceAsJSON(
+                    'issue_additional_fields/issues_with_additional_fields.json'
+                  ),
                   'issues'
                 ),
               },
@@ -726,7 +727,7 @@ describe('index', () => {
 
   test('onBeforeRead with run_mode WebhookSupplement should filter streams', async () => {
     const source = new sut.JiraSource(logger);
-    const catalog = readTestResourceFile('catalog.json');
+    const catalog = readTestResourceAsJSON('common/catalog.json');
     const {catalog: newCatalog} = await source.onBeforeRead(
       {...config, run_mode: RunMode.WebhookSupplement},
       catalog
@@ -736,14 +737,17 @@ describe('index', () => {
 
   test('onBeforeRead without run_mode defaults to full mode streams', async () => {
     const source = new sut.JiraSource(logger);
-    const catalog = readTestResourceFile('catalog.json');
-    const {catalog: newCatalog} = await source.onBeforeRead(config, catalog);
+    const catalog = readTestResourceAsJSON('common/catalog.json');
+    const {catalog: newCatalog} = await source.onBeforeRead(
+      {...config, run_mode: RunMode.Full},
+      catalog
+    );
     expect(newCatalog).toMatchSnapshot();
   });
 
   test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
     const source = new sut.JiraSource(logger);
-    const catalog = readTestResourceFile('catalog.json');
+    const catalog = readTestResourceAsJSON('common/catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
       {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
       catalog
@@ -753,7 +757,7 @@ describe('index', () => {
 
   test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
     const source = new sut.JiraSource(logger);
-    const catalog = readTestResourceFile('catalog.json');
+    const catalog = readTestResourceAsJSON('common/catalog.json');
     const {config: processedConfig} = await source.onBeforeRead(
       {...config, boards: ['1'], excluded_boards: ['2']},
       catalog
