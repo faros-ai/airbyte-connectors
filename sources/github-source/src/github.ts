@@ -6,19 +6,13 @@ import {
   Organization,
   User,
 } from 'faros-airbyte-common/github';
-import fs from 'fs';
 import {isEmpty, isNil, pick} from 'lodash';
-import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
+import {ORG_MEMBERS_QUERY} from './queries';
 import {GitHubConfig, GraphQLErrorResponse, OrgMembers} from './types';
-
-const ORG_MEMBERS_QUERY = fs.readFileSync(
-  path.join(__dirname, '..', 'resources', 'queries', 'list-members-query.gql'),
-  'utf8'
-);
 
 export const PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
