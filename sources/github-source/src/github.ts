@@ -1,26 +1,34 @@
-import {Octokit} from '@octokit/rest';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   AppInstallation,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
+  User,
 } from 'faros-airbyte-common/github';
+import fs from 'fs';
 import {isEmpty, isNil, pick} from 'lodash';
+import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {makeOctokitClient} from './octokit';
-import {GitHubConfig} from './types';
+import {ExtendedOctokit, makeOctokitClient} from './octokit';
+import {GitHubConfig, GraphQLErrorResponse, OrgMembers} from './types';
+
+const ORG_MEMBERS_QUERY = fs.readFileSync(
+  path.join(__dirname, '..', 'resources', 'queries', 'list-members-query.gql'),
+  'utf8'
+);
 
 export const PAGE_SIZE = 100;
+const PROMISE_TIMEOUT_MS = 120_000;
 
 export abstract class GitHub {
   private static github: GitHub;
 
   constructor(
     protected readonly config: GitHubConfig,
-    protected readonly baseOctokit: Octokit,
+    protected readonly baseOctokit: ExtendedOctokit,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -41,7 +49,7 @@ export abstract class GitHub {
 
   abstract checkConnection(): Promise<void>;
 
-  abstract octokit(org: string): Octokit;
+  abstract octokit(org: string): ExtendedOctokit;
 
   abstract getOrganizationsIterator(): AsyncGenerator<string>;
 
@@ -64,6 +72,30 @@ export abstract class GitHub {
       'created_at',
       'updated_at',
     ]);
+  }
+
+  async *getOrganizationMembers(org: string): AsyncGenerator<User> {
+    const iter = this.octokit(org).graphql.paginate.iterator<OrgMembers>(
+      ORG_MEMBERS_QUERY,
+      {
+        login: org,
+        page_size: PAGE_SIZE,
+      }
+    );
+    for await (const res of this.wrapIterable(
+      iter,
+      this.timeout,
+      this.acceptPartialResponseWrapper(`org users for ${org}`)
+    )) {
+      for (const member of res.organization.membersWithRole.nodes) {
+        if (member && member.login) {
+          yield {
+            org,
+            ...member,
+          };
+        }
+      }
+    }
   }
 
   async *getCopilotSeats(
@@ -139,6 +171,75 @@ export abstract class GitHub {
       throw err;
     }
   }
+
+  // GitHub GraphQL API may return partial data with a non 2xx status when
+  // a particular record in a result list is not found (null) for some reason
+  private async acceptPartialResponse<T>(
+    dataType: string,
+    promise: Promise<T>
+  ): Promise<T> {
+    try {
+      return await promise;
+    } catch (err: any) {
+      const resp = err as GraphQLErrorResponse<T>;
+      if (
+        resp?.response?.data &&
+        !resp?.response?.errors?.find((e) => e.type !== 'NOT_FOUND')
+      ) {
+        this.logger.warn(
+          `Received a partial response while fetching ${dataType} - ${JSON.stringify(
+            {errors: resp.response.errors}
+          )}`
+        );
+        return resp.response.data;
+      }
+      throw err;
+    }
+  }
+
+  private acceptPartialResponseWrapper<T>(
+    dataType: string
+  ): (promise: Promise<T>) => Promise<T> {
+    return (promise: Promise<T>) =>
+      this.acceptPartialResponse(dataType, promise);
+  }
+
+  private async timeout<T>(promise: Promise<T>): Promise<T> {
+    let timeoutId: NodeJS.Timeout;
+    const timeout: Promise<T> = new Promise((resolve, reject) => {
+      timeoutId = setTimeout(
+        () =>
+          reject(new Error(`Promise timed out after ${PROMISE_TIMEOUT_MS} ms`)),
+        PROMISE_TIMEOUT_MS
+      );
+    });
+
+    try {
+      return await Promise.race([promise, timeout]);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  private wrapIterable<T>(
+    iter: AsyncIterable<T>,
+    ...wrappers: ((
+      p: Promise<IteratorResult<T>>
+    ) => Promise<IteratorResult<T>>)[]
+  ): AsyncIterable<T> {
+    const iterator = iter[Symbol.asyncIterator]();
+    return {
+      [Symbol.asyncIterator]: () => ({
+        next: (): Promise<IteratorResult<T>> => {
+          let p = iterator.next();
+          for (const wrapper of wrappers) {
+            p = wrapper(p);
+          }
+          return p;
+        },
+      }),
+    };
+  }
 }
 
 export class GitHubToken extends GitHub {
@@ -152,7 +253,7 @@ export class GitHubToken extends GitHub {
     return github;
   }
 
-  octokit(): Octokit {
+  octokit(): ExtendedOctokit {
     return this.baseOctokit;
   }
 
@@ -176,7 +277,8 @@ export class GitHubToken extends GitHub {
 }
 
 export class GitHubApp extends GitHub {
-  private readonly octokitByInstallationOrg: Map<string, Octokit> = new Map();
+  private readonly octokitByInstallationOrg: Map<string, ExtendedOctokit> =
+    new Map();
 
   static async instance(
     cfg: GitHubConfig,
@@ -200,7 +302,7 @@ export class GitHubApp extends GitHub {
     return github;
   }
 
-  octokit(org: string): Octokit {
+  octokit(org: string): ExtendedOctokit {
     if (!this.octokitByInstallationOrg.has(org)) {
       throw new VError(`No active app installation found for org ${org}`);
     }

@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
+import {isEmpty, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {RepoKey} from '../common/vcs';
@@ -213,6 +214,65 @@ export abstract class GitHubConverter extends Converter {
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected convertUser(user: User): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    if (
+      !isEmpty(user.email) &&
+      !user.email.includes('@users.noreply.github.com')
+    ) {
+      res.push({
+        model: 'vcs_UserEmail',
+        record: {
+          user: {uid: user.login, source: this.streamName.source},
+          email: user.email,
+        },
+      });
+    }
+    const type = ((): {category: string; detail: string} => {
+      if (!user.type) {
+        return {category: 'Custom', detail: 'unknown'};
+      }
+      const userTypeLower = user.type.toLowerCase();
+      switch (userTypeLower) {
+        case 'enterpriseuseraccount':
+        case 'user':
+          return {category: 'User', detail: userTypeLower};
+        case 'bot':
+          return {category: 'Bot', detail: userTypeLower};
+        case 'organization':
+          return {category: 'Organization', detail: userTypeLower};
+        case 'mannequin':
+          return {category: 'Mannequin', detail: userTypeLower};
+        default:
+          return {category: 'Custom', detail: userTypeLower};
+      }
+    })();
+    res.push({
+      model: 'vcs_User',
+      record: {
+        uid: user.login,
+        source: this.streamName.source,
+        ...(user.name && {name: user.name}),
+        ...(user.email && {email: user.email}),
+        ...(user.html_url && {htmlUrl: user.html_url}),
+        type,
+      },
+    });
+    return res;
+  }
+
+  protected convertMembership(user: User, org: string): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    res.push({
+      model: 'vcs_Membership',
+      record: {
+        user: {uid: user.login, source: this.streamName.source},
+        organization: {uid: toLower(org), source: this.streamName.source},
+      },
+    });
+    return res;
   }
 }
 

@@ -177,3 +177,24 @@ exports[`index streams - organizations 1`] = `
   },
 ]
 `;
+
+exports[`index streams - users 1`] = `
+[
+  {
+    "email": "",
+    "html_url": "https://github.com/octocat",
+    "login": "octocat",
+    "name": "Octocat",
+    "org": "github",
+    "type": "User",
+  },
+  {
+    "email": "",
+    "html_url": "https://github.com/octokitten",
+    "login": "octokitten",
+    "name": "Octokitten",
+    "org": "github",
+    "type": "User",
+  },
+]
+`;

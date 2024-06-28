@@ -12,6 +12,15 @@ export type Organization = Pick<
   'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
+export type User = {
+  org: string;
+  login: string;
+  name?: string;
+  email?: string;
+  type: string;
+  html_url: string;
+};
+
 export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeat = {
