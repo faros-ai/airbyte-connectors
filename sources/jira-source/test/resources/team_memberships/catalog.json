@@ -1,0 +1,15 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_team_memberships",
+        "jsonSchema": {},
+        "supportedSyncModes": [
+          "full_refresh"
+        ],
+        "sync_mode": "full_refresh",
+        "destination_sync_mode": "overwrite"
+      }
+    }
+  ]
+}

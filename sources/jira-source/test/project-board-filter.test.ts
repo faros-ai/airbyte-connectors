@@ -15,17 +15,17 @@ describe('ProjectBoardFilter', () => {
 
   beforeAll(() => {
     logger = new AirbyteLogger(AirbyteLogLevel.DEBUG);
-    config = readTestResourceAsJSON('project-board-filter/config.json');
+    config = readTestResourceAsJSON('project_board_filter/config.json');
   });
 
   beforeEach(() => {
     const searchProjects = paginate(
-      readTestResourceAsJSON('project-board-filter/projects.json'),
+      readTestResourceAsJSON('project_board_filter/projects.json'),
       'values',
       50
     );
     const getAllBoards = paginate(
-      readTestResourceAsJSON('project-board-filter/boards.json'),
+      readTestResourceAsJSON('project_board_filter/boards.json'),
       'values',
       50,
       true
