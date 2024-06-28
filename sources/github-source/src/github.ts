@@ -5,6 +5,7 @@ import {
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
+  Team,
 } from 'faros-airbyte-common/github';
 import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -64,6 +65,25 @@ export abstract class GitHub {
       'created_at',
       'updated_at',
     ]);
+  }
+
+  async *getTeams(org: string): AsyncGenerator<Team> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).teams.list,
+      {
+        org,
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const team of res.data) {
+        yield {
+          org,
+          parentSlug: team.parent?.slug ?? null,
+          ...pick(team, ['name', 'slug', 'description']),
+        };
+      }
+    }
   }
 
   async *getCopilotSeats(

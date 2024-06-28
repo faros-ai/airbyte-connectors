@@ -177,3 +177,15 @@ exports[`index streams - organizations 1`] = `
   },
 ]
 `;
+
+exports[`index streams - teams 1`] = `
+[
+  {
+    "description": "A great team.",
+    "name": "Justice League",
+    "org": "github",
+    "parentSlug": null,
+    "slug": "justice-league",
+  },
+]
+`;
