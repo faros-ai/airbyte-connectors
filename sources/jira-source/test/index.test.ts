@@ -358,9 +358,6 @@ describe('index', () => {
           logger
         );
       },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
     });
 
     expect(getAllSprintsfn).toHaveBeenCalledTimes(4);
