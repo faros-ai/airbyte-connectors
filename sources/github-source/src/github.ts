@@ -88,7 +88,7 @@ export abstract class GitHub {
       this.acceptPartialResponseWrapper(`org users for ${org}`)
     )) {
       for (const member of res.organization.membersWithRole.nodes) {
-        if (member && member.login) {
+        if (member?.login) {
           yield {
             org,
             ...member,

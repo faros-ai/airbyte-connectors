@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {isEmpty, toLower} from 'lodash';
+import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {RepoKey} from '../common/vcs';
@@ -233,14 +233,17 @@ export abstract class GitHubConverter extends Converter {
     const type = GitHubCommon.vcs_UserType(user);
     res.push({
       model: 'vcs_User',
-      record: {
-        uid: user.login,
-        source: this.streamName.source,
-        ...(user.name && {name: user.name}),
-        ...(user.email && {email: user.email}),
-        ...(user.html_url && {htmlUrl: user.html_url}),
-        type,
-      },
+      record: omitBy(
+        {
+          uid: user.login,
+          source: this.streamName.source,
+          name: user.name,
+          email: user.email,
+          htmlUrl: user.html_url,
+          type,
+        },
+        (value) => isNil(value) || isEmpty(value)
+      ),
     });
     return res;
   }

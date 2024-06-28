@@ -15,10 +15,10 @@ export class FarosUsers extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const res: DestinationRecord[] = [];
     const user = record.record.data as User;
-    res.push(...this.convertUser(user));
-    res.push(...this.convertMembership(user, user.org));
-    return res;
+    return [
+      ...this.convertUser(user),
+      ...this.convertMembership(user, user.org),
+    ];
   }
 }

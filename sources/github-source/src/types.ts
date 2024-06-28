@@ -43,18 +43,16 @@ export interface GraphQLErrorResponse<T> {
 export type OrgMembers = {
   organization: {
     membersWithRole: {
-      nodes: User[];
+      nodes: {
+        login: string;
+        name?: string;
+        email?: string;
+        type: string;
+        html_url: string;
+      }[];
       pageInfo: PageInfo;
     };
   };
-};
-
-export type User = {
-  login: string;
-  name?: string;
-  email?: string;
-  type: string;
-  html_url: string;
 };
 
 type PageInfo = {
