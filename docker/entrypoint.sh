@@ -15,6 +15,7 @@ get_container_memory_limit() {
   CGROUP_MEMORY_LIMIT_FILES="
     /sys/fs/cgroup/memory/memory.limit_in_bytes
     /sys/fs/cgroup/memory.max
+    /sys/fs/cgroup/memory/memory.max_usage_in_bytes
   "
 
   for file_path in $CGROUP_MEMORY_LIMIT_FILES; do
