@@ -75,6 +75,7 @@ export class AirbyteDestinationRunner<
       )
       .action(
         async (opts: {config: string; catalog: string; dryRun: boolean}) => {
+          this.logNodeOptions('Destination');
           const {catalog, spec, config} = await this.loadConfig(opts);
           const redactedConfig = redactConfig(config, spec);
           this.logger.info(`Destination version: ${ConnectorVersion}`);
