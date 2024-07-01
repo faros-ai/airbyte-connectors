@@ -102,10 +102,12 @@ export abstract class GitHub {
       );
       for await (const res of iter) {
         for (const member of res.data) {
-          yield {
-            team: team.slug,
-            user: member.login,
-          };
+          if (member.login) {
+            yield {
+              team: team.slug,
+              user: member.login,
+            };
+          }
         }
       }
     }
@@ -116,7 +118,7 @@ export abstract class GitHub {
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
     const iter = this.octokit(org).paginate.iterator(
-      this.baseOctokit.copilot.listCopilotSeats,
+      this.octokit(org).copilot.listCopilotSeats,
       {
         org,
         per_page: PAGE_SIZE,
