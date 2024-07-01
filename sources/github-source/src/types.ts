@@ -21,3 +21,41 @@ type GitHubApp = {
 };
 
 export type GitHubAuth = GitHubToken | GitHubApp;
+
+// Copied from @octokit/graphql/dist-types/types.d.ts
+export interface GraphQLErrorResponse<T> {
+  request: {[key: string]: any};
+  headers: {[key: string]: any};
+  response?: {
+    data?: T;
+    errors?: [
+      {
+        type: string;
+        message: string;
+        path?: string[];
+        extensions?: {[key: string]: any};
+        locations?: {line: number; column: number}[];
+      },
+    ];
+  };
+}
+
+export type OrgMembers = {
+  organization: {
+    membersWithRole: {
+      nodes: {
+        login: string;
+        name?: string;
+        email?: string;
+        type: string;
+        html_url: string;
+      }[];
+      pageInfo: PageInfo;
+    };
+  };
+};
+
+type PageInfo = {
+  endCursor: string;
+  hasNextPage: boolean;
+};

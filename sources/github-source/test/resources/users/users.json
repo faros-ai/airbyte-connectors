@@ -1,0 +1,26 @@
+{
+  "organization": {
+    "membersWithRole": {
+      "nodes": [
+        {
+          "login": "octocat",
+          "name": "Octocat",
+          "email": "",
+          "html_url": "https://github.com/octocat",
+          "type": "User"
+        },
+        {
+          "login": "octokitten",
+          "name": "Octokitten",
+          "email": "",
+          "html_url": "https://github.com/octokitten",
+          "type": "User"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "Y3Vyc29yOnYyOpHOCicgxA==",
+        "hasNextPage": false
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+query listMembers($login: String!, $cursor: String, $page_size: Int = 100) {
+  organization(login: $login) {
+    membersWithRole(first: $page_size, after: $cursor) {
+      nodes {
+        login
+        name
+        email
+        html_url: url
+        type: __typename
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

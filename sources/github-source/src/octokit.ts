@@ -1,4 +1,5 @@
 import {createAppAuth} from '@octokit/auth-app';
+import {paginateGraphql} from '@octokit/plugin-paginate-graphql';
 import {retry} from '@octokit/plugin-retry';
 import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
 import {Octokit} from '@octokit/rest';
@@ -16,7 +17,12 @@ import {GitHubConfig} from './types';
 
 export type RateLimitHandler = (reason?: Error) => boolean;
 
-const ExtendedOctokit = Octokit.plugin(retry, throttling);
+export type ExtendedOctokit = Octokit & ReturnType<typeof paginateGraphql>;
+const ExtendedOctokitConstructor = Octokit.plugin(
+  paginateGraphql,
+  retry,
+  throttling
+);
 
 export const GITHUB_API_URL = 'https://api.github.com';
 
@@ -28,7 +34,7 @@ export function makeOctokitClient(
   logger?: AirbyteLogger,
   onRateLimit?: RateLimitHandler,
   maxRetries = 3
-): Octokit {
+): ExtendedOctokit {
   const throttle = getThrottle(cfg, logger, onRateLimit, maxRetries);
   const baseUrl = cfg.url ?? GITHUB_API_URL;
   // Check whether the protocol matches 'https:'
@@ -44,7 +50,7 @@ export function makeOctokitClient(
 
   const auth = getOctokitAuth(cfg, installationId);
 
-  const kit = new ExtendedOctokit({
+  const kit = new ExtendedOctokitConstructor({
     auth,
     authStrategy: cfg.authentication.type === 'app' ? createAppAuth : undefined,
     baseUrl,

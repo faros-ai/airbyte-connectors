@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
+import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {RepoKey} from '../common/vcs';
@@ -213,6 +214,50 @@ export abstract class GitHubConverter extends Converter {
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected convertUser(user: User): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    if (
+      !isEmpty(user.email) &&
+      !user.email.includes('@users.noreply.github.com')
+    ) {
+      res.push({
+        model: 'vcs_UserEmail',
+        record: {
+          user: {uid: user.login, source: this.streamName.source},
+          email: user.email,
+        },
+      });
+    }
+    const type = GitHubCommon.vcs_UserType(user);
+    res.push({
+      model: 'vcs_User',
+      record: omitBy(
+        {
+          uid: user.login,
+          source: this.streamName.source,
+          name: user.name,
+          email: user.email,
+          htmlUrl: user.html_url,
+          type,
+        },
+        (value) => isNil(value) || isEmpty(value)
+      ),
+    });
+    return res;
+  }
+
+  protected convertMembership(user: User, org: string): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    res.push({
+      model: 'vcs_Membership',
+      record: {
+        user: {uid: user.login, source: this.streamName.source},
+        organization: {uid: toLower(org), source: this.streamName.source},
+      },
+    });
+    return res;
   }
 }
 
