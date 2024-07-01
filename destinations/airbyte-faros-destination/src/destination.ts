@@ -923,6 +923,21 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           .every((m) => m === DestinationSyncMode.OVERWRITE);
 
       if (
+        sourceConfigReceived &&
+        !sourceSucceeded &&
+        !syncErrors.fatal.length &&
+        !syncErrors.nonFatal.length
+      ) {
+        syncErrors.fatal.push({
+          summary:
+            'No success status received from Faros Source. It may have crashed before it could report an error.',
+          code: 0, // placeholder
+          action: 'Check your connector execution environment for errors',
+          type: 'ERROR',
+        });
+      }
+
+      if (
         this.shouldResetData({
           sourceErrors: syncErrors.fatal.concat(syncErrors.nonFatal),
           skipSourceSuccessCheck: config.skip_source_success_check,

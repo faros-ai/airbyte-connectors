@@ -21,6 +21,14 @@ export type User = {
   html_url: string;
 };
 
+export type Team = {
+  org: string;
+  parentSlug: string | null;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.teams.list>[0],
+  'name' | 'slug' | 'description'
+>;
+
 export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeat = {

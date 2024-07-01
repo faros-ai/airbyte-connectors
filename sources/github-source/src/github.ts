@@ -4,6 +4,7 @@ import {
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
+  Team,
   User,
 } from 'faros-airbyte-common/github';
 import {isEmpty, isNil, pick} from 'lodash';
@@ -90,6 +91,27 @@ export abstract class GitHub {
         }
       }
     }
+  }
+
+  async getTeams(org: string): Promise<ReadonlyArray<Team>> {
+    const teams: Team[] = [];
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).teams.list,
+      {
+        org,
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const team of res.data) {
+        teams.push({
+          org,
+          parentSlug: team.parent?.slug ?? null,
+          ...pick(team, ['name', 'slug', 'description']),
+        });
+      }
+    }
+    return teams;
   }
 
   async *getCopilotSeats(

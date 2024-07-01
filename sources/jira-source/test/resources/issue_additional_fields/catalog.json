@@ -1,0 +1,15 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_issue_additional_fields",
+        "jsonSchema": {},
+        "supportedSyncModes": [
+          "full_refresh"
+        ],
+        "sync_mode": "full_refresh",
+        "destination_sync_mode": "overwrite"
+      }
+    }
+  ]
+}

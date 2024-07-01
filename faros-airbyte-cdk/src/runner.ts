@@ -13,4 +13,12 @@ export abstract class Runner {
       process.exit(1);
     });
   }
+
+  protected logNodeOptions(connectorType: 'Source' | 'Destination'): void {
+    if (process.env['NODE_OPTIONS']) {
+      this.logger.info(
+        `${connectorType} NODE_OPTIONS: ${process.env['NODE_OPTIONS']}`
+      );
+    }
+  }
 }
