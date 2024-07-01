@@ -118,6 +118,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             for await (const message of iter) {
               this.logger.write(message);
             }
+            await this.source.onAfterRead(config);
           } catch (e: any) {
             const w = wrapApiError(e);
             const s = JSON.stringify(w);

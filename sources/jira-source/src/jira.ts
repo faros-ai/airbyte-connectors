@@ -1440,4 +1440,8 @@ export class Jira {
       yield teamMembership;
     }
   }
+
+  getClientStats(): {[key: string]: number} {
+    return this.api.getStats();
+  }
 }
