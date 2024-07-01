@@ -12,6 +12,14 @@ export type Organization = Pick<
   'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
+export type Team = {
+  org: string;
+  parentSlug: string | null;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.teams.list>[0],
+  'name' | 'slug' | 'description'
+>;
+
 export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeat = {

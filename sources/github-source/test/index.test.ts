@@ -11,7 +11,6 @@ import fs from 'fs-extra';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
-import {GitHubConfig} from '../src/types';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -92,8 +91,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -111,8 +109,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -130,8 +127,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotUsageMockedImplementation(
             readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -149,8 +145,25 @@ describe('index', () => {
         setupGitHubInstance(
           getOrganizationsMockedImplementation(
             readTestResourceAsJSON('organizations/organization.json')
-          ),
-          res.config as GitHubConfig
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'teams/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getTeamsMockedImplementation(
+            readTestResourceAsJSON('teams/teams.json')
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -160,7 +173,7 @@ describe('index', () => {
   });
 });
 
-function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
+function setupGitHubInstance(octokitMock: any) {
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHubToken(
       readTestResourceAsJSON('config.json'),
@@ -196,6 +209,12 @@ const getCopilotUsageMockedImplementation = (res: any) => ({
 const getOrganizationsMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getTeamsMockedImplementation = (res: any) => ({
+  teams: {
+    list: jest.fn().mockReturnValue(res),
   },
 });
 
