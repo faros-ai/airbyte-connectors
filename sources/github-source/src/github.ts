@@ -102,10 +102,12 @@ export abstract class GitHub {
       );
       for await (const res of iter) {
         for (const member of res.data) {
-          yield {
-            team: team.slug,
-            user: member.login,
-          };
+          if (member.login) {
+            yield {
+              team: team.slug,
+              user: member.login,
+            };
+          }
         }
       }
     }
