@@ -6,6 +6,7 @@ import {
   CopilotUsageSummary,
   Organization,
   Team,
+  TeamMembership,
 } from 'faros-airbyte-common/github';
 import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -67,6 +68,7 @@ export abstract class GitHub {
     ]);
   }
 
+  @Memoize()
   async getTeams(org: string): Promise<ReadonlyArray<Team>> {
     const teams: Team[] = [];
     const iter = this.octokit(org).paginate.iterator(
@@ -86,6 +88,27 @@ export abstract class GitHub {
       }
     }
     return teams;
+  }
+
+  async *getTeamMemberships(org: string): AsyncGenerator<TeamMembership> {
+    for (const team of await this.getTeams(org)) {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).teams.listMembersInOrg,
+        {
+          org,
+          team_slug: team.slug,
+          per_page: PAGE_SIZE,
+        }
+      );
+      for await (const res of iter) {
+        for (const member of res.data) {
+          yield {
+            team: team.slug,
+            user: member.login,
+          };
+        }
+      }
+    }
   }
 
   async *getCopilotSeats(
