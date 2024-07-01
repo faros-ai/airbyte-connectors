@@ -67,7 +67,8 @@ export abstract class GitHub {
     ]);
   }
 
-  async *getTeams(org: string): AsyncGenerator<Team> {
+  async getTeams(org: string): Promise<ReadonlyArray<Team>> {
+    const teams: Team[] = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).teams.list,
       {
@@ -77,13 +78,14 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const team of res.data) {
-        yield {
+        teams.push({
           org,
           parentSlug: team.parent?.slug ?? null,
           ...pick(team, ['name', 'slug', 'description']),
-        };
+        });
       }
     }
+    return teams;
   }
 
   async *getCopilotSeats(

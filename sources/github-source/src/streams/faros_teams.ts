@@ -21,6 +21,9 @@ export class FarosTeams extends StreamWithOrgSlices {
   ): AsyncGenerator<Team> {
     const github = await GitHub.instance(this.config, this.logger);
     const org = streamSlice?.org;
-    yield* github.getTeams(org);
+    const teams = await github.getTeams(org);
+    for (const team of teams) {
+      yield team;
+    }
   }
 }
