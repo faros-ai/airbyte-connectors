@@ -173,6 +173,24 @@ describe('index', () => {
     });
   });
 
+  test('streams - users', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getOrganizationUsersMockedImplementation(
+            readTestResourceAsJSON('users/users.json')
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - team memberships', async () => {
     await sourceReadTest({
       source,
@@ -233,6 +251,19 @@ const getCopilotUsageMockedImplementation = (res: any) => ({
 const getOrganizationsMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getOrganizationUsersMockedImplementation = (res: any) => ({
+  graphql: {
+    paginate: {
+      iterator: jest.fn().mockImplementation((query: string) => {
+        if (!query.includes('listMembers')) {
+          throw new Error('Not mocked');
+        }
+        return iterate([res]);
+      }),
+    },
   },
 });
 

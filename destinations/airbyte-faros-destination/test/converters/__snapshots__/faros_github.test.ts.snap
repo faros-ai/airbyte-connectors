@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 8 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 231 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 10 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 235 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3000,6 +3000,56 @@ Array [
         "detail": "Organization",
       },
       "uid": "github",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octocat",
+      "name": "Octocat",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octocat",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octokitten",
+      "name": "Octokitten",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octokitten",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
     },
   },
   Object {
