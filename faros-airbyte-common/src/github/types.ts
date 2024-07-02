@@ -29,6 +29,11 @@ export type Team = {
   'name' | 'slug' | 'description'
 >;
 
+export type TeamMembership = {
+  team: string;
+  user: string;
+};
+
 export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeat = {

@@ -7,3 +7,4 @@
 {"record":{"stream":"mytestsource__github__faros_users","emitted_at":1719552733829,"data":{"org":"github","login":"octocat","name":"Octocat","email":"","html_url":"https://github.com/octocat","type":"User"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__github__faros_users","emitted_at":1719552733829,"data":{"org":"github","login":"octokitten","name":"Octokitten","email":"","html_url":"https://github.com/octokitten","type":"User"}},"type":"RECORD"}
 {"record":{"stream":"mytestsource__github__faros_teams","emitted_at":1719613663657,"data":{"org":"github","parentSlug":null,"name":"Justice League","slug":"justice-league","description":"A great team."}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__github__faros_team_memberships","emitted_at":1719613663657,"data":{"team":"justice-league","user":"octocat"}},"type":"RECORD"}

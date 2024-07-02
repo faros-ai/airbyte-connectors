@@ -178,6 +178,15 @@ exports[`index streams - organizations 1`] = `
 ]
 `;
 
+exports[`index streams - team memberships 1`] = `
+[
+  {
+    "team": "justice-league",
+    "user": "octocat",
+  },
+]
+`;
+
 exports[`index streams - teams 1`] = `
 [
   {

@@ -8,6 +8,7 @@ import {
   sourceReadTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
@@ -189,6 +190,29 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - team memberships', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'team_memberships/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getTeamMembershipsMockedImplementation(
+              readTestResourceAsJSON('team_memberships/team_memberships.json')
+            )
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function setupGitHubInstance(octokitMock: any) {
@@ -246,6 +270,12 @@ const getOrganizationUsersMockedImplementation = (res: any) => ({
 const getTeamsMockedImplementation = (res: any) => ({
   teams: {
     list: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getTeamMembershipsMockedImplementation = (res: any) => ({
+  teams: {
+    listMembersInOrg: jest.fn().mockReturnValue(res),
   },
 });
 

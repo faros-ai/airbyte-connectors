@@ -12,6 +12,7 @@ import {GitHub} from './github';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosOrganizations} from './streams/faros_organizations';
+import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
 import {GitHubConfig} from './types';
@@ -48,6 +49,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosOrganizations(config, this.logger),
       new FarosUsers(config, this.logger),
       new FarosTeams(config, this.logger),
+      new FarosTeamMemberships(config, this.logger),
     ];
   }
 }
