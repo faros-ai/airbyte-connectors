@@ -1,12 +1,16 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 
+import {RunMode} from './streams/common';
+
 export interface GitHubConfig extends AirbyteConfig {
   readonly authentication: GitHubAuth;
   readonly url?: string;
-  readonly orgs?: ReadonlyArray<string>;
+  readonly organizations?: ReadonlyArray<string>;
+  readonly fetch_teams?: boolean;
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
+  readonly run_mode?: RunMode;
 }
 
 type GitHubToken = {

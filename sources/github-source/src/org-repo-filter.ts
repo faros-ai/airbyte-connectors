@@ -1,12 +1,13 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import {toLower} from 'lodash';
+import {Memoize} from 'typescript-memoize';
 
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
 
 export class OrgRepoFilter {
-  orgs: Set<string> | undefined;
+  organizations: Set<string> | undefined;
 
   constructor(
     private readonly config: GitHubConfig,
@@ -14,21 +15,22 @@ export class OrgRepoFilter {
     private readonly farosClient?: FarosClient
   ) {}
 
-  async getOrgs(): Promise<ReadonlyArray<string>> {
-    if (!this.orgs) {
-      this.orgs = new Set();
+  @Memoize()
+  async getOrganizations(): Promise<ReadonlyArray<string>> {
+    if (!this.organizations) {
+      this.organizations = new Set();
       const github = await GitHub.instance(this.config, this.logger);
-      if (!this.config.orgs) {
+      if (!this.config.organizations) {
         const orgs = await github.getOrganizations();
         for await (const org of orgs) {
-          this.orgs.add(org);
+          this.organizations.add(org);
         }
       } else {
-        for (const org of this.config.orgs) {
-          this.orgs.add(toLower(org));
+        for (const org of this.config.organizations) {
+          this.organizations.add(toLower(org));
         }
       }
     }
-    return Array.from(this.orgs);
+    return Array.from(this.organizations);
   }
 }
