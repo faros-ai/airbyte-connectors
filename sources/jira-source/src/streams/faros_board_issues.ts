@@ -36,7 +36,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     // Only fetch board issues updated since start of date range and not all issues on the board.
     const state = streamState?.earliestIssueUpdateTimestamp;
     const since = this.getUpdateRange(state)[0];
-    const jql = `updated >= ${since.getTime()} AND ${boardJql}`;
+    const jql = `updated >= ${since.getTime()} AND (${boardJql})`;
     this.logger.debug(`Fetching issues for board ${boardId} using JQL ${jql}`);
     try {
       for await (const issue of jira.getIssuesKeys(jql)) {
