@@ -46,7 +46,9 @@ export function calculateDateRange(options: {
     if (cutoff_days) {
       logger('Cutoff days provided, calculating start date from end date');
       startDate = DateTime.fromJSDate(endDate)
+        .toUTC()
         .minus({days: cutoff_days})
+        .startOf('day')
         .toJSDate();
     } else {
       throw new Error('Either start_date or cutoff_days must be provided');

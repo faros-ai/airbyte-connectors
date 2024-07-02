@@ -138,6 +138,7 @@ export interface ProjectVersion extends Version2Models.Version {
 
 export interface IssueProjectVersion {
   readonly key: string;
+  readonly updated: Date;
   readonly projectVersionId: string;
 }
 
