@@ -8,6 +8,48 @@ export type OrgStreamSlice = {
   org: string;
 };
 
+export enum RunMode {
+  MarketplaceApp = 'MarketplaceApp',
+  CopilotEvaluation = 'CopilotEvaluation',
+  Minimum = 'Minimum',
+  Standard = 'Standard',
+}
+
+export const MarketplaceAppStreamNames = [
+  'faros_copilot_seats',
+  'faros_copilot_usage',
+  'faros_organizations',
+  'faros_users',
+];
+
+// todo: fill as streams are developed
+export const CopilotEvaluationStreamNames = [
+  'faros_copilot_seats',
+  'faros_copilot_usage',
+  'faros_organizations',
+  'faros_users',
+];
+
+// todo: fill as streams are developed
+export const MinimumStreamNames = ['faros_organizations', 'faros_users'];
+
+// todo: fill as streams are developed
+export const StandardStreamNames = [
+  'faros_copilot_seats',
+  'faros_copilot_usage',
+  'faros_organizations',
+  'faros_users',
+];
+
+export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
+
+export const RunModeStreams = {
+  [RunMode.MarketplaceApp]: MarketplaceAppStreamNames,
+  [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
+  [RunMode.Minimum]: MinimumStreamNames,
+  [RunMode.Standard]: StandardStreamNames,
+};
+
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly orgRepoFilter: OrgRepoFilter;
   constructor(
@@ -22,7 +64,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithOrgSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
-    for (const org of await this.orgRepoFilter.getOrgs()) {
+    for (const org of await this.orgRepoFilter.getOrganizations()) {
       yield {org};
     }
   }

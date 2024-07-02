@@ -1,14 +1,17 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {GitHub} from './github';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -51,5 +54,31 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
     ];
+  }
+
+  async onBeforeRead(
+    config: GitHubConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: GitHubConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? RunMode.Standard],
+    ];
+    if (config.fetch_teams) {
+      streamNames.push(...TeamStreamNames);
+    }
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
+
+    return {
+      config,
+      catalog: {streams},
+      state,
+    };
   }
 }

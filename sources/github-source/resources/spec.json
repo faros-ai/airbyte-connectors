@@ -75,7 +75,7 @@
         "description": "GitHub API URL, e.g for GitHub Enterprise: https://my-ghe-host.com/api/v3",
         "default": "https://api.github.com"
       },
-      "orgs": {
+      "organizations": {
         "order": 2,
         "title": "Organizations list",
         "description": "List of GitHub organization from which to fetch data. If none passed, all visible organizations for the authenticated user/app will be used.",
@@ -117,6 +117,19 @@
         "items": {
           "type": "string"
         }
+      },
+      "run_mode": {
+        "order": 6,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Standard",
+        "enum": [
+          "MarketplaceApp",
+          "CopilotEvaluation",
+          "Minimum",
+          "Standard"
+        ]
       }
     }
   }
