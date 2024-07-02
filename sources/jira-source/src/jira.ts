@@ -693,19 +693,19 @@ export class Jira {
     return statusByName;
   }
 
-  getIssuesKeys(jql: string): AsyncIterableIterator<IssueCompact> {
+  getIssuesKeys(jql: string): AsyncIterableIterator<string> {
+    // For keys and ids we can fetch upto 1000 issues at a time
+    // https://developer.atlassian.com/cloud/jira/platform/change-notice-for-get-search-max-results/
+    const maxResults = this.isCloud ? 1000 : this.maxPageSize;
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields: ['key', 'updated'],
-          maxResults: this.maxPageSize,
+          fields: ['key'],
+          maxResults,
         }),
-      async (item: any) => ({
-        key: item.key,
-        updated: Utils.toDate(item.fields.updated),
-      }),
+      async (item: any) => item.key,
       'issues'
     );
   }
