@@ -31,7 +31,11 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
     for (const version of await jira.getProjectVersions(projectKey)) {
       const releaseJQL = new JqlBuilder(`fixVersion = ${version.id}`).build();
       for await (const issue of jira.getIssuesKeys(releaseJQL)) {
-        yield {key: issue, projectVersionId: version.id};
+        yield {
+          key: issue.key,
+          updated: issue.updated,
+          projectVersionId: version.id,
+        };
       }
     }
   }
