@@ -75,7 +75,11 @@ export function WithRetry<T extends Retryable>(
           if (!Retry._isRetryable(err)) {
             break;
           }
-          const delay = Retry.getDelay(attempt, err?.cause?.response);
+          logger.info(`Response error: ${JSON.stringify(err)}`);
+          logger.info(
+            `Response headers: ${JSON.stringify(err?.cause.response)}`
+          );
+          const delay = Retry.getDelay(attempt, err?.cause.response);
           logger?.warn(
             `Retry attempt ${attempt} of ${this._maxAttempts}. Retrying in ${delay} milliseconds`
           );

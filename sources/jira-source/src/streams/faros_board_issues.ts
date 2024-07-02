@@ -36,7 +36,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     // Only fetch board issues updated since start of date range and not all issues on the board.
     const state = streamState?.earliestIssueUpdateTimestamp;
     const since = this.getUpdateRange(state)[0];
-    const jql = `updated >= ${since.getTime()} AND (${boardJql})`;
+    const jql = `updated >= ${since.getTime()} AND ${this.wrapJqlBeforeOrderBy(boardJql)}`;
     this.logger.debug(`Fetching issues for board ${boardId} using JQL ${jql}`);
     try {
       for await (const issue of jira.getIssuesKeys(jql)) {
@@ -72,5 +72,21 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     );
 
     return {earliestIssueUpdateTimestamp};
+  }
+
+  private wrapJqlBeforeOrderBy(jql: string): string {
+    const orderByPattern = /\sORDER BY\s/i;
+    const match = jql.match(orderByPattern);
+
+    if (match) {
+      const orderByIndex = match.index!;
+      const queryBeforeOrderBy = jql.slice(0, orderByIndex);
+      const orderByClause = jql.slice(orderByIndex);
+
+      return `(${queryBeforeOrderBy.trim()})${orderByClause}`;
+    }
+
+    // If no "ORDER BY" found, just return the original query in brackets
+    return `(${jql.trim()})`;
   }
 }
