@@ -1,3 +1,4 @@
+import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 
 export interface GitHubConfig extends AirbyteConfig {
@@ -22,23 +23,7 @@ type GitHubApp = {
 
 export type GitHubAuth = GitHubToken | GitHubApp;
 
-// Copied from @octokit/graphql/dist-types/types.d.ts
-export interface GraphQLErrorResponse<T> {
-  request: {[key: string]: any};
-  headers: {[key: string]: any};
-  response?: {
-    data?: T;
-    errors?: [
-      {
-        type: string;
-        message: string;
-        path?: string[];
-        extensions?: {[key: string]: any};
-        locations?: {line: number; column: number}[];
-      },
-    ];
-  };
-}
+export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
 
 export type OrgMembers = {
   organization: {
