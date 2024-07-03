@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 10 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 235 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 236 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3074,6 +3074,31 @@ Array [
       "team": Object {
         "uid": "justice-league",
       },
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "createdAt": "2011-01-26T19:01:12.000Z",
+      "description": "This your first repo!",
+      "fullName": "octocat/Hello-World",
+      "htmlUrl": "https://github.com/octocat/Hello-World",
+      "language": null,
+      "mainBranch": "master",
+      "name": "hello-world",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "private": false,
+      "size": 108,
+      "source": "GitHub",
+      "topics": Array [
+        "octocat",
+        "atom",
+        "electron",
+        "api",
+      ],
+      "updatedAt": "2011-01-26T19:14:43.000Z",
     },
   },
   Object {

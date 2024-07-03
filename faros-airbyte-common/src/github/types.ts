@@ -12,6 +12,23 @@ export type Organization = Pick<
   'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
+export type Repository = {
+  org: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
+  | 'name'
+  | 'full_name'
+  | 'private'
+  | 'description'
+  | 'language'
+  | 'size'
+  | 'default_branch'
+  | 'html_url'
+  | 'topics'
+  | 'created_at'
+  | 'updated_at'
+>;
+
 export type User = {
   org: string;
   login: string;

@@ -4,6 +4,7 @@ import {
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
+  Repository,
   Team,
   TeamMembership,
   User,
@@ -68,6 +69,40 @@ export abstract class GitHub {
       'created_at',
       'updated_at',
     ]);
+  }
+
+  @Memoize()
+  async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    const repos: Repository[] = [];
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listForOrg,
+      {
+        org,
+        type: 'all',
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const repo of res.data) {
+        repos.push({
+          org,
+          ...pick(repo, [
+            'name',
+            'full_name',
+            'private',
+            'description',
+            'language',
+            'size',
+            'default_branch',
+            'html_url',
+            'topics',
+            'created_at',
+            'updated_at',
+          ]),
+        });
+      }
+    }
+    return repos;
   }
 
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {
