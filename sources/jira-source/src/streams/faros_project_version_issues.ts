@@ -1,6 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueProjectVersion} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
+import {DateTime} from 'luxon';
 import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 
@@ -51,14 +52,22 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
     latestRecord: IssueProjectVersion
   ): StreamState {
     const currentCutoff = Utils.toDate(
-      currentStreamState?.[latestRecord.projectKey]?.cutoff ?? 0
+      currentStreamState?.[latestRecord.projectKey]?.cutoff
     );
+    if (!currentCutoff) {
+      return {
+        ...currentStreamState,
+        [latestRecord.projectKey]: {
+          cutoff: this.config.startDate.getTime(),
+        },
+      };
+    }
 
-    const adjustedLatestRecordCutoff = moment(currentCutoff)
-      .subtract(this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS, 'days')
-      .toDate();
+    const adjustedLatestRecordCutoff = DateTime.fromJSDate(currentCutoff)
+      .minus({days: this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS})
+      .toJSDate();
 
-    if (adjustedLatestRecordCutoff > currentCutoff) {
+    if (adjustedLatestRecordCutoff < currentCutoff) {
       const newState = {
         cutoff: adjustedLatestRecordCutoff.getTime(),
       };
@@ -68,14 +77,6 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
       };
     }
 
-    if (currentCutoff < this.config.startDate) {
-      return currentStreamState;
-    }
-    return {
-      ...currentStreamState,
-      [latestRecord.projectKey]: {
-        cutoff: this.config.startDate.getTime(),
-      },
-    };
+    return currentStreamState;
   }
 }

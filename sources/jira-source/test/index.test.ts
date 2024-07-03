@@ -570,19 +570,24 @@ describe('index', () => {
 
   test('streams - project version issues', async () => {
     const version = readTestResourceFile('project_versions.json')[0];
-    await testStream(9, config, {
-      v2: {
-        issueSearch: {
-          searchForIssuesUsingJql: paginate(
-            readTestResourceFile('project_version_issues.json'),
-            'issues'
-          ),
-        },
-        projectVersions: {
-          getProjectVersionsPaginated: paginate([version]),
+    await testStream(
+      9,
+      {...config, startDate: new Date()},
+      {
+        v2: {
+          issueSearch: {
+            searchForIssuesUsingJql: paginate(
+              readTestResourceFile('project_version_issues.json'),
+              'issues'
+            ),
+          },
+          projectVersions: {
+            getProjectVersionsPaginated: paginate([version]),
+          },
         },
       },
-    });
+      {project: 'TEST'}
+    );
   });
 
   test('streams - teams', async () => {
