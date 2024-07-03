@@ -2,5 +2,6 @@
   "authentication": {
     "type": "token",
     "personal_access_token": "ghp_1234567890"
-  }
+  },
+  "fetch_teams": true
 }

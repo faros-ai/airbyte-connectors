@@ -155,15 +155,15 @@ describe('index', () => {
     });
   });
 
-  test('streams - teams', async () => {
+  test('streams - repositories', async () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
-      catalogOrPath: 'teams/catalog.json',
+      catalogOrPath: 'repositories/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getTeamsMockedImplementation(
-            readTestResourceAsJSON('teams/teams.json')
+          getRepositoriesMockedImplementation(
+            readTestResourceAsJSON('repositories/repositories.json')
           )
         );
       },
@@ -180,8 +180,26 @@ describe('index', () => {
       catalogOrPath: 'users/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getOrganizationUsersMockedImplementation(
+          getOrganizationMembersMockedImplementation(
             readTestResourceAsJSON('users/users.json')
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'teams/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getTeamsMockedImplementation(
+            readTestResourceAsJSON('teams/teams.json')
           )
         );
       },
@@ -254,7 +272,13 @@ const getOrganizationsMockedImplementation = (res: any) => ({
   },
 });
 
-const getOrganizationUsersMockedImplementation = (res: any) => ({
+const getRepositoriesMockedImplementation = (res: any) => ({
+  repos: {
+    listForOrg: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getOrganizationMembersMockedImplementation = (res: any) => ({
   graphql: {
     paginate: {
       iterator: jest.fn().mockImplementation((query: string) => {

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "private": {
+      "type": "boolean"
+    },
+    "description": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "size": {
+      "type": "integer"
+    },
+    "default_branch": {
+      "type": "string"
+    },
+    "html_url": {
+      "type": "string"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

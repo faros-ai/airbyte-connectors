@@ -39,13 +39,14 @@ export class FarosCopilotUsage extends GitHubConverter {
       ['total_active_chat_users', 'DailyActiveChatUserTrend'],
     ]);
 
-    const orgTagUid = `copilotOrg__${usage.org}`;
+    const org = toLower(usage.org);
+    const orgTagUid = `copilotOrg__${org}`;
     res.push({
       model: 'faros_Tag',
       record: {
         uid: orgTagUid,
         key: 'copilotOrg',
-        value: usage.org,
+        value: org,
       },
     });
 

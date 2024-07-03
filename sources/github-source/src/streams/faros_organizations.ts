@@ -16,7 +16,7 @@ export class FarosOrganizations extends StreamBase {
 
   async *readRecords(): AsyncGenerator<Organization> {
     const github = await GitHub.instance(this.config, this.logger);
-    const orgs = await this.orgRepoFilter.getOrgs();
+    const orgs = await this.orgRepoFilter.getOrganizations();
     for (const org of orgs) {
       yield github.getOrganization(org);
     }
