@@ -340,7 +340,6 @@ export class Jira {
         }
         count++;
       }
-      this.logger?.debug(`Fetched ${count} items out of ${res.total}`);
       // Pagination is inconsistent across the API, so we need to check various
       // conditions. Preference is given to the 'isLast' property.
       const isLast = res.isLast ?? (count === res.total || items.length === 0);
