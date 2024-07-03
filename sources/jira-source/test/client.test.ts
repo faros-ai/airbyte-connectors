@@ -124,7 +124,7 @@ describe('client', () => {
   test('retries on ETIMEDOUT', async () => {
     const error: any = new Error('connect ETIMEDOUT url');
     error.code = 'ETIMEDOUT';
-    error.response = undefined;
+    error.cause = undefined;
     jest.mocked(axios.create).mockImplementation(
       () =>
         ({
@@ -141,7 +141,7 @@ describe('client', () => {
   test('fails on repeated ETIMEDOUT)', async () => {
     const error: any = new Error('connect ETIMEDOUT url');
     error.code = 'ETIMEDOUT';
-    error.response = undefined;
+    error.cause = undefined;
     jest.mocked(axios.create).mockImplementation(
       () =>
         ({
@@ -232,7 +232,7 @@ describe('client', () => {
   });
 
   test('gets delay from Retry-After header', () => {
-    const response = {headers: {'Retry-After': 60}};
+    const response = {headers: {'retry-after': '60'}};
     const delay = ClientWithRetry.getDelay(1, response);
     expect(delay).toBeGreaterThanOrEqual(60_000);
     expect(delay).toBeLessThanOrEqual(60_500);
@@ -261,7 +261,7 @@ describe('client', () => {
   });
 
   test('uses attempt delay if larger than response delay', () => {
-    const response = {headers: {'Retry-After': 2}};
+    const response = {headers: {'retry-after': '2'}};
     const delay = ClientWithRetry.getDelay(1, response);
     expect(delay).toBeGreaterThanOrEqual(5000);
     expect(delay).toBeLessThanOrEqual(5500);

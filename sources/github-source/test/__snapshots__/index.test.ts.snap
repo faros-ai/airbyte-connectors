@@ -177,3 +177,45 @@ exports[`index streams - organizations 1`] = `
   },
 ]
 `;
+
+exports[`index streams - team memberships 1`] = `
+[
+  {
+    "team": "justice-league",
+    "user": "octocat",
+  },
+]
+`;
+
+exports[`index streams - teams 1`] = `
+[
+  {
+    "description": "A great team.",
+    "name": "Justice League",
+    "org": "github",
+    "parentSlug": null,
+    "slug": "justice-league",
+  },
+]
+`;
+
+exports[`index streams - users 1`] = `
+[
+  {
+    "email": "",
+    "html_url": "https://github.com/octocat",
+    "login": "octocat",
+    "name": "Octocat",
+    "org": "github",
+    "type": "User",
+  },
+  {
+    "email": "",
+    "html_url": "https://github.com/octokitten",
+    "login": "octokitten",
+    "name": "Octokitten",
+    "org": "github",
+    "type": "User",
+  },
+]
+`;

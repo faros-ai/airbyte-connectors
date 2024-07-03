@@ -88,6 +88,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .option('--state <path to json>', 'state json')
       .action(
         async (opts: {config: string; catalog: string; state?: string}) => {
+          this.logNodeOptions('Source');
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
           const spec = await this.source.spec();

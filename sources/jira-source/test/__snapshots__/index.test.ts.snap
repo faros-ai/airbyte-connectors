@@ -10,6 +10,66 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index check connection - invalid bucketing config - out of range 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "bucket_id must be between 1 and 2",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - missing credentials  1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Either Jira personal token or Jira username and password must be provided",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - missing url 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please provide a Jira URL",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - missing url 2`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please provide a Jira URL",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - missing url 3`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please provide a Jira URL",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - missing url 4`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please provide a Jira URL",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
 exports[`index check connection 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
@@ -258,10 +318,12 @@ exports[`index streams - project version issues 1`] = `
 [
   {
     "key": "TEST-1",
+    "projectKey": "TEST",
     "projectVersionId": "10000",
   },
   {
     "key": "TEST-2",
+    "projectKey": "TEST",
     "projectVersionId": "10000",
   },
 ]
