@@ -9,13 +9,13 @@ export type OrgStreamSlice = {
 };
 
 export enum RunMode {
-  MarketplaceApp = 'MarketplaceApp',
+  CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
   Standard = 'Standard',
 }
 
-export const MarketplaceAppStreamNames = [
+export const CopilotEvaluationAppStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_organizations',
@@ -44,7 +44,7 @@ export const StandardStreamNames = [
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
 
 export const RunModeStreams = {
-  [RunMode.MarketplaceApp]: MarketplaceAppStreamNames,
+  [RunMode.CopilotEvaluationApp]: CopilotEvaluationAppStreamNames,
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
   [RunMode.Standard]: StandardStreamNames,

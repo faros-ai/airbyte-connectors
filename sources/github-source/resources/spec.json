@@ -125,7 +125,7 @@
         "type": "string",
         "default": "Standard",
         "enum": [
-          "MarketplaceApp",
+          "CopilotEvaluationApp",
           "CopilotEvaluation",
           "Minimum",
           "Standard"
