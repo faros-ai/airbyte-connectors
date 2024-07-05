@@ -1,0 +1,9 @@
+{
+  "faros_issues": {
+    "TEST": {
+      "additionalFields": ["Custom Number Field"],
+      "earliestIssueUpdateTimestamp": "2019-01-01T00:00:00Z",
+      "cutoff": 1719836313000
+    }
+  }
+}

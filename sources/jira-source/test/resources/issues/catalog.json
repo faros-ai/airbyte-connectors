@@ -1,0 +1,11 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_issues",
+        "json_schema": {}
+      },
+      "sync_mode": "incremental"
+    }
+  ]
+}

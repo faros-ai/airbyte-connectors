@@ -15,7 +15,7 @@ export function setupJiraInstance(
       {} as any,
       new Map([
         ['field_001', 'Development'],
-        ['customfield_10000', 'Custom Number Filed'],
+        ['customfield_10000', 'Custom Number Field'],
         ['customfield_10001', 'Custom String Field'],
       ]),
       50,

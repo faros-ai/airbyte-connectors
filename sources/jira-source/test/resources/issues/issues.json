@@ -1,0 +1,448 @@
+[
+  {
+    "id": "12345",
+    "key": "TEST-1",
+    "changelog": {
+      "startAt": 0,
+      "maxResults": 2,
+      "total": 2,
+      "histories": [
+        {
+          "id": "123350",
+          "created": "2024-07-04T05:41:00.089-0700",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "fieldId": "status",
+              "from": "10000",
+              "fromString": "Backlog",
+              "to": "10001",
+              "toString": "Selected for Development"
+            }
+          ]
+        },
+        {
+          "id": "123347",
+          "created": "2024-07-04T05:40:59.361-0700",
+          "items": [
+            {
+              "field": "IssueParentAssociation",
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": null,
+              "to": "11999",
+              "toString": "FAI-1233"
+            }
+          ]
+        }
+      ]
+    },
+    "fields": {
+      "summary": "Jira test issue",
+      "issuetype": {
+        "id": "10001",
+        "description": "Functionality or a feature expressed as a user goal.",
+        "name": "Story",
+        "subtask": false
+      },
+      "parent": {
+        "id": "11999",
+        "key": "TEST-4",
+        "fields": {
+          "summary": "Epic Epic",
+          "status": {
+            "description": "This issue is being actively worked on at the moment by the assignee.",
+            "name": "In Progress",
+            "id": "3",
+            "statusCategory": {
+              "id": 4,
+              "key": "indeterminate",
+              "colorName": "yellow",
+              "name": "In Progress"
+            }
+          },
+          "priority": {
+            "name": "Medium",
+            "id": "3"
+          },
+          "issuetype": {
+            "id": "10000",
+            "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+            "name": "Epic",
+            "subtask": false,
+            "hierarchyLevel": 1
+          }
+        }
+      },
+      "creator": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "subtasks": [],
+      "created": "2024-07-04T05:40:59.251-0700",
+      "project": {
+        "id": "12345",
+        "key": "TEST",
+        "name": "Test Project",
+        "projectTypeKey": "software",
+        "simplified": false
+      },
+      "description": "This is a test issue",
+      "customfield_10000": 1,
+      "customfield_10001": "test",
+      "customfield_10020": "{}",
+      "priority": {
+        "name": "Medium",
+        "id": "3"
+      },
+      "resolution": null,
+      "labels": [],
+      "customfield_10016": null,
+      "customfield_10028": null,
+      "resolutiondate": null,
+      "issuelinks": [],
+      "assignee": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "updated": "2024-07-04T05:41:00.075-0700",
+      "status": {
+        "description": "",
+        "name": "Selected for Development",
+        "id": "10001",
+        "statusCategory": {
+          "id": 2,
+          "key": "new",
+          "colorName": "blue-gray",
+          "name": "To Do"
+        }
+      }
+    }
+  },
+  {
+    "id": "12346",
+    "key": "TEST-2",
+    "changelog": {
+      "startAt": 0,
+      "maxResults": 2,
+      "total": 2,
+      "histories": []
+    },
+    "fields": {
+      "summary": "Jira test issue",
+      "issuetype": {
+        "id": "10001",
+        "description": "Functionality or a feature expressed as a user goal.",
+        "name": "Story",
+        "subtask": false
+      },
+      "parent": null,
+      "creator": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "subtasks": [],
+      "created": "2024-07-04T05:40:59.251-0700",
+      "project": {
+        "id": "12345",
+        "key": "TEST",
+        "name": "Test Project",
+        "projectTypeKey": "software",
+        "simplified": false
+      },
+      "description": "This is a test issue",
+      "customfield_10020": null,
+      "customfield_10000": "{}",
+      "priority": null,
+      "resolution": null,
+      "labels": [],
+      "customfield_10016": null,
+      "customfield_10028": null,
+      "resolutiondate": null,
+      "issuelinks": [],
+      "assignee": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "updated": "2024-07-04T05:41:00.075-0700",
+      "status": {
+        "description": "",
+        "name": "Backlog",
+        "id": "10001",
+        "statusCategory": {
+          "id": 1,
+          "key": "new",
+          "colorName": "blue-gray",
+          "name": "To Do"
+        }
+      }
+    }
+  },
+  {
+    "id": "12333",
+    "key": "TEST-3",
+    "changelog": {
+      "startAt": 0,
+      "maxResults": 4,
+      "total": 4,
+      "histories": [
+        {
+          "id": "107005",
+          "created": "2024-03-08T09:59:28.180-0800",
+          "items": [
+            {
+              "field": "Sprint",
+              "fieldtype": "custom",
+              "fieldId": "customfield_10020",
+              "from": "15, 16, 18, 19, 20, 23, 66",
+              "fromString": "TEST Sprint 1, TEST Sprint 2, TEST Sprint 5, TEST Sprint 6, TEST Sprint 4, TEST Sprint 9, Test Sprint",
+              "to": "15, 16, 18, 19, 20, 23, 55, 66",
+              "toString": "TEST Sprint 1, TEST Sprint 2, TEST Sprint 5, TEST Sprint 6, TEST Sprint 4, TEST Sprint 9, TEST Sprint 20, Test Sprint"
+            }
+          ]
+        },
+        {
+          "id": "107003",
+          "created": "2024-03-08T09:52:41.851-0800",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "fieldId": "status",
+              "from": "10023",
+              "fromString": "QA",
+              "to": "10009",
+              "toString": "To Do"
+            }
+          ]
+        },
+        {
+          "id": "106993",
+          "created": "2024-03-08T09:31:19.491-0800",
+          "items": [
+            {
+              "field": "Story Points",
+              "fieldtype": "custom",
+              "fieldId": "customfield_10028",
+              "from": null,
+              "fromString": null,
+              "to": null,
+              "toString": "1"
+            }
+          ]
+        },
+        {
+          "id": "14168",
+          "created": "2021-09-17T00:10:10.696-0700",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldtype": "custom",
+              "fieldId": "customfield_10019",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked lower"
+            }
+          ]
+        }
+      ]
+    },
+    "fields": {
+      "summary": "Test issue 3",
+      "issuetype": {
+        "id": "10001",
+        "description": "Functionality or a feature expressed as a user goal.",
+        "name": "Story",
+        "subtask": false,
+        "avatarId": 10315,
+        "hierarchyLevel": 0
+      },
+      "creator": {
+        "accountId": "88a7f7f45b7d3b111232",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "America/Los_Angeles",
+        "accountType": "atlassian"
+      },
+      "subtasks": [],
+      "created": "2021-09-16T15:42:13.869-0700",
+      "description": null,
+      "project": {
+        "id": "12345",
+        "key": "TEST",
+        "name": "Test Project",
+        "projectTypeKey": "software",
+        "simplified": false
+      },
+      "customfield_10020": [
+        {
+          "id": 16,
+          "name": "TEST Sprint 2",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "",
+          "startDate": "2021-09-16T22:47:19.066Z",
+          "endDate": "2021-09-16T22:54:00.000Z",
+          "completeDate": "2021-09-16T22:47:23.484Z"
+        },
+        {
+          "id": 18,
+          "name": "TEST Sprint 5",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "",
+          "startDate": "2021-09-22T16:55:31.356Z",
+          "endDate": "2021-09-23T05:45:00.000Z",
+          "completeDate": "2021-09-22T16:57:43.738Z"
+        },
+        {
+          "id": 66,
+          "name": "Test Sprint",
+          "state": "closed",
+          "boardId": 46,
+          "goal": "Nice goal",
+          "startDate": "2024-03-08T17:42:01.000Z",
+          "endDate": "2024-03-18T04:30:57.000Z",
+          "completeDate": "2024-03-08T17:59:27.959Z"
+        },
+        {
+          "id": 19,
+          "name": "PLAYG Sprint 6",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "",
+          "startDate": "2021-09-22T20:27:08.033Z",
+          "endDate": "2021-09-22T20:32:00.000Z",
+          "completeDate": "2021-09-22T20:38:02.976Z"
+        },
+        {
+          "id": 20,
+          "name": "TEST Sprint 4",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "",
+          "startDate": "2021-09-17T07:09:49.428Z",
+          "endDate": "2021-09-17T19:59:00.000Z",
+          "completeDate": "2021-09-17T07:12:32.611Z"
+        },
+        {
+          "id": 23,
+          "name": "TEST Sprint 9",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "",
+          "startDate": "2021-10-06T00:35:50.403Z",
+          "endDate": "2021-10-21T21:30:00.000Z",
+          "completeDate": "2022-06-13T22:49:43.789Z"
+        },
+        {
+          "id": 55,
+          "name": "TEST Sprint 20",
+          "state": "future",
+          "boardId": 24,
+          "goal": ""
+        },
+        {
+          "id": 15,
+          "name": "TEST Sprint 1",
+          "state": "closed",
+          "boardId": 21,
+          "goal": "foo",
+          "startDate": "2021-09-16T22:42:19.062Z",
+          "endDate": "2021-09-16T22:52:00.000Z",
+          "completeDate": "2021-09-16T22:45:30.761Z"
+        }
+      ],
+      "customfield_10000": "{}",
+      "priority": {
+        "name": "Medium",
+        "id": "3"
+      },
+      "resolution": null,
+      "customfield_10014": null,
+      "labels": [],
+      "customfield_10016": null,
+      "customfield_10028": 1,
+      "resolutiondate": null,
+      "issuelinks": [
+        {
+          "id": "10610",
+          "type": {
+            "id": "10000",
+            "name": "Blocks",
+            "inward": "is blocked by",
+            "outward": "blocks"
+          },
+          "outwardIssue": {
+            "id": "10463",
+            "key": "TEST-5",
+            "fields": {
+              "summary": "Test task 4",
+              "status": {
+                "description": "",
+                "name": "To Do",
+                "id": "10009",
+                "statusCategory": {
+                  "id": 2,
+                  "key": "new",
+                  "colorName": "blue-gray",
+                  "name": "To Do"
+                }
+              },
+              "priority": {
+                "name": "Medium",
+                "id": "3"
+              },
+              "issuetype": {
+                "id": "10001",
+                "description": "Functionality or a feature expressed as a user goal.",
+                "name": "Story",
+                "subtask": false
+              }
+            }
+          }
+        }
+      ],
+      "assignee": {
+        "accountId": "88a7f7f45b7d3b7basddda",
+        "emailAddress": "jane@mail.com",
+        "displayName": "Jane Doe",
+        "active": true,
+        "timeZone": "America/Los_Angeles",
+        "accountType": "atlassian"
+      },
+      "updated": "2024-03-08T09:59:28.167-0800",
+      "status": {
+        "description": "",
+        "name": "To Do",
+        "id": "10009",
+        "statusCategory": {
+          "id": 2,
+          "key": "new",
+          "colorName": "blue-gray",
+          "name": "To Do"
+        }
+      },
+      "points": 1
+    }
+  }
+]
