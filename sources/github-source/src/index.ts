@@ -11,7 +11,7 @@ import {
 import VError from 'verror';
 
 import {GitHub} from './github';
-import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -69,12 +69,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let streamNames = catalog.streams.map((s) => s.stream.name);
-    if (config.run_mode) {
-      streamNames = [...RunModeStreams[config.run_mode]];
-      if (config.fetch_teams) {
-        streamNames.push(...TeamStreamNames);
-      }
+    const streamNames = [...RunModeStreams[config.run_mode ?? RunMode.Full]];
+    if (config.fetch_teams) {
+      streamNames.push(...TeamStreamNames);
     }
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)
