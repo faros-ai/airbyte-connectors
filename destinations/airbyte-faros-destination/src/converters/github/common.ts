@@ -216,8 +216,11 @@ export abstract class GitHubConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected convertUser(user: User): DestinationRecord[] {
+  protected convertUser(
+    user: Partial<Omit<User, 'type'> & {type: string}>
+  ): DestinationRecord[] {
     const res: DestinationRecord[] = [];
+    if (!user?.login) return res;
     if (
       !isEmpty(user.email) &&
       !user.email.includes('@users.noreply.github.com')
@@ -248,8 +251,12 @@ export abstract class GitHubConverter extends Converter {
     return res;
   }
 
-  protected convertMembership(user: User, org: string): DestinationRecord[] {
+  protected convertMembership(
+    user: Partial<Omit<User, 'type'> & {type: string}>,
+    org: string
+  ): DestinationRecord[] {
     const res: DestinationRecord[] = [];
+    if (!user?.login) return res;
     res.push({
       model: 'vcs_Membership',
       record: {

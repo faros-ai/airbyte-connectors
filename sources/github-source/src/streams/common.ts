@@ -8,6 +8,11 @@ export type OrgStreamSlice = {
   org: string;
 };
 
+export type RepoStreamSlice = {
+  org: string;
+  repo: string;
+};
+
 export enum RunMode {
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
@@ -66,6 +71,16 @@ export abstract class StreamWithOrgSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       yield {org};
+    }
+  }
+}
+
+export abstract class StreamWithRepoSlices extends StreamBase {
+  async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
+    for (const org of await this.orgRepoFilter.getOrganizations()) {
+      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
+        yield {org, repo};
+      }
     }
   }
 }

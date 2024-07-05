@@ -4,18 +4,26 @@ import {
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
+  PullRequest,
   Repository,
   Team,
   TeamMembership,
   User,
 } from 'faros-airbyte-common/github';
+import {
+  ListMembersQuery,
+  PullRequestsQuery,
+} from 'faros-airbyte-common/github/generated';
+import {
+  ORG_MEMBERS_QUERY,
+  PULL_REQUESTS_QUERY,
+} from 'faros-airbyte-common/github/queries';
 import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {ORG_MEMBERS_QUERY} from './queries';
-import {GitHubConfig, GraphQLErrorResponse, OrgMembers} from './types';
+import {GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
@@ -105,8 +113,34 @@ export abstract class GitHub {
     return repos;
   }
 
+  @Memoize()
+  async getPullRequests(
+    org: string,
+    repo: string
+  ): Promise<ReadonlyArray<PullRequest>> {
+    const pullRequests: PullRequest[] = [];
+    const iter = this.octokit(org).graphql.paginate.iterator<PullRequestsQuery>(
+      PULL_REQUESTS_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: PAGE_SIZE,
+      }
+    );
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const pr of res.repository.pullRequests.nodes) {
+        pullRequests.push({
+          org,
+          repo,
+          ...pr,
+        });
+      }
+    }
+    return pullRequests;
+  }
+
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {
-    const iter = this.octokit(org).graphql.paginate.iterator<OrgMembers>(
+    const iter = this.octokit(org).graphql.paginate.iterator<ListMembersQuery>(
       ORG_MEMBERS_QUERY,
       {
         login: org,
@@ -165,6 +199,7 @@ export abstract class GitHub {
         for (const member of res.data) {
           if (member.login) {
             yield {
+              org,
               team: team.slug,
               user: member.login,
             };
