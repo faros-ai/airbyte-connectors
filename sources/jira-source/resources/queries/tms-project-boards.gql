@@ -13,7 +13,15 @@ query ProjectBoards(
     offset: $offset
   ) {
     uid
-    boards {
+    boards(
+      where: {
+        board: {
+          uid: {
+            _regex: "^[0-9]+$"  # Get only boards that came from Jira (numeric) and filter virtual for board-less tasks
+          }
+        }
+      }
+    ) {
       board {
         uid
       }
