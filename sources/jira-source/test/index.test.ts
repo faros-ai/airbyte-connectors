@@ -735,41 +735,30 @@ describe('index', () => {
     });
   });
 
+  const issuesTestOptions = {
+    source,
+    configOrPath: 'common/config.json',
+    catalogOrPath: 'issues/catalog.json',
+    onBeforeReadResultConsumer: (res) => {
+      setupJiraInstance(
+        getIssuesMockedImplementation(),
+        true,
+        res.config as JiraConfig,
+        logger
+      );
+    },
+    checkRecordsData: (records) => {
+      expect(records).toMatchSnapshot();
+    },
+  };
+
   test('stream - issues', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: 'common/config.json',
-      catalogOrPath: 'issues/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          getIssuesMockedImplementation(),
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
+    await sourceReadTest(issuesTestOptions);
   });
 
   test('stream - issues to sync additional fields', async () => {
     await sourceReadTest({
-      source,
-      configOrPath: 'issues/config.json',
-      catalogOrPath: 'issues/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          getIssuesMockedImplementation(),
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
+      ...issuesTestOptions,
       stateOrPath: 'issues/state.json',
     });
   });
