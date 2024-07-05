@@ -309,8 +309,13 @@ export class AirbyteStateMessage implements AirbyteMessage {
 // Airbyte Server only passes records and state messages to the destination
 export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
   constructor(
-    state: {data: AirbyteState},
-    readonly sourceStatus: AirbyteSourceStatus
+    readonly state: {data: AirbyteState},
+    readonly sourceStatus: AirbyteSourceStatus,
+    readonly streamStatus?: {
+      name: string;
+      status: 'SUCCESS' | 'ERROR';
+      recordsEmitted?: number;
+    }
   ) {
     super(state);
   }
@@ -319,7 +324,7 @@ export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
 export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
-    state: {data: AirbyteState},
+    readonly state: {data: AirbyteState},
     readonly redactedConfig: AirbyteConfig,
     readonly sourceType?: string,
     readonly sourceMode?: string
@@ -340,7 +345,7 @@ export interface AirbyteSourceLog {
 export class AirbyteSourceLogsMessage extends AirbyteStateMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
-    state: {data: AirbyteState},
+    readonly state: {data: AirbyteState},
     readonly logs: AirbyteSourceLog[]
   ) {
     super(state);

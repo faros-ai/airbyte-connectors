@@ -76,7 +76,7 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
-  resetModels: Set<string>;
+  readonly resetModels: Set<string> = new Set();
 
   constructor(
     readonly logger: AirbyteLogger,
@@ -136,7 +136,10 @@ export const StreamNameSeparator = '__';
  * }
  */
 export class StreamName {
-  constructor(readonly source: string, readonly name: string) {}
+  constructor(
+    readonly source: string,
+    readonly name: string
+  ) {}
 
   private str: string;
 
