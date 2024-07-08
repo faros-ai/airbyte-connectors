@@ -34,6 +34,7 @@ export const CopilotEvaluationStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -41,6 +42,7 @@ export const CopilotEvaluationStreamNames = [
 export const MinimumStreamNames = [
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -50,6 +52,7 @@ export const StandardStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -59,6 +62,7 @@ export const FullStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
