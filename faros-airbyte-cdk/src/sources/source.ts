@@ -41,6 +41,12 @@ export abstract class AirbyteSource<
     return {config, catalog, state};
   }
 
+  /**
+   * Override this method to perform any action with the config after
+   * running the connector.
+   * For example - you might want to add some logging or stats. Take a
+   * look at the JiraSource for an example.
+   */
   async onAfterRead(config: Config): Promise<void> {
     return;
   }
