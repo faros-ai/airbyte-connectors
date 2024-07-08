@@ -2,7 +2,6 @@ import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueProjectVersion} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
-import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';

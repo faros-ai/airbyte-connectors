@@ -1,6 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueCompact} from 'faros-airbyte-common/jira';
-import {Utils, wrapApiError} from 'faros-js-client';
+import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
@@ -75,10 +75,10 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
 
   private wrapJql(jql: string): string {
     const orderByPattern = /\sORDER BY\s/i;
-    const match = jql.match(orderByPattern);
+    const match = orderByPattern.exec(jql);
 
     if (match) {
-      const orderByIndex = match.index!;
+      const orderByIndex = match.index;
       const queryBeforeOrderBy = jql.slice(0, orderByIndex);
       const orderByClause = jql.slice(orderByIndex);
 
