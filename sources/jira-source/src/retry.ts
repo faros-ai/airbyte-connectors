@@ -35,10 +35,16 @@ export function WithRetry<T extends Retryable>(
       const headers = response?.headers ?? {};
       const attemptDelay = 5000 * attempt;
       let responseDelay = 0;
-      if (_.isNumber(headers['Retry-After'])) {
-        responseDelay = 1000 * headers['Retry-After'];
-      } else if (_.isString(headers['X-RateLimit-Reset'])) {
-        const reset = new Date(headers['X-RateLimit-Reset']);
+
+      const retryAfter = _.toNumber(
+        headers['retry-after'] ?? headers['Retry-After']
+      );
+      const rateLimitReset =
+        headers['x-ratelimit-reset'] ?? headers['X-RateLimit-Reset'];
+      if (_.isFinite(retryAfter)) {
+        responseDelay = 1000 * retryAfter;
+      } else if (_.isString(rateLimitReset)) {
+        const reset = new Date(rateLimitReset);
         if (!isNaN(reset.getTime())) {
           const delayUntilReset = reset.getTime() - Date.now();
           if (delayUntilReset > 0) {
@@ -75,7 +81,7 @@ export function WithRetry<T extends Retryable>(
           if (!Retry._isRetryable(err)) {
             break;
           }
-          const delay = Retry.getDelay(attempt, err?.cause?.response);
+          const delay = Retry.getDelay(attempt, err.cause?.response);
           logger?.warn(
             `Retry attempt ${attempt} of ${this._maxAttempts}. Retrying in ${delay} milliseconds`
           );

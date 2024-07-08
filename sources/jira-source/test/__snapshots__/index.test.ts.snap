@@ -828,10 +828,12 @@ exports[`index streams - project version issues 1`] = `
 [
   {
     "key": "TEST-1",
+    "projectKey": "TEST",
     "projectVersionId": "10000",
   },
   {
     "key": "TEST-2",
+    "projectKey": "TEST",
     "projectVersionId": "10000",
   },
 ]
