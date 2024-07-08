@@ -196,6 +196,26 @@ exports[`index stream - issues 1`] = `
         "Custom String Field",
         "test",
       ],
+      [
+        "Custom Array Field_0",
+        "This",
+      ],
+      [
+        "Custom Array Field_1",
+        "Is",
+      ],
+      [
+        "Custom Array Field_2",
+        "A",
+      ],
+      [
+        "Custom Array Field_3",
+        "Test",
+      ],
+      [
+        "Custom Array Field",
+        "["This","Is","A","Test"]",
+      ],
     ],
     "assignees": [
       {
@@ -207,24 +227,18 @@ exports[`index stream - issues 1`] = `
     "creator": "1234:aaaaa-1234-1234-bbbb-123456785",
     "dependencies": [],
     "description": "This is a test issue",
-    "epic": undefined,
+    "epic": "[object Object]",
     "id": "12345",
     "key": "TEST-1",
     "keyChangelog": [],
     "labels": [],
-    "parent": {
-      "key": "TEST-4",
-      "type": "Epic",
-    },
-    "points": undefined,
+    "parent": undefined,
+    "points": 10,
     "priority": "Medium",
     "project": "TEST",
     "resolution": undefined,
     "resolutionDate": undefined,
-    "sprintInfo": {
-      "currentSprintId": undefined,
-      "history": [],
-    },
+    "sprintInfo": undefined,
     "status": {
       "category": "To Do",
       "detail": "Selected for Development",
@@ -233,7 +247,7 @@ exports[`index stream - issues 1`] = `
     "statusChangelog": [],
     "subtasks": [],
     "summary": "Jira test issue",
-    "type": "Story",
+    "type": "Sub-task",
     "updated": 2024-07-04T12:41:00.075Z,
     "url": "https://jira.com/browse/TEST-1",
   },
@@ -319,7 +333,7 @@ exports[`index stream - issues 1`] = `
         {
           "addedAt": 2024-03-08T17:59:28.180Z,
           "removedAt": 2024-03-08T17:59:28.180Z,
-          "uid": "",
+          "uid": "66",
         },
       ],
     },
@@ -334,6 +348,57 @@ exports[`index stream - issues 1`] = `
     "type": "Story",
     "updated": 2024-03-08T17:59:28.167Z,
     "url": "https://jira.com/browse/TEST-3",
+  },
+  {
+    "additionalFields": [
+      [
+        "Custom Number Field",
+        "1",
+      ],
+      [
+        "Custom String Field",
+        "test",
+      ],
+    ],
+    "assignees": [
+      {
+        "assignedAt": 2024-07-04T12:40:59.251Z,
+        "uid": "1234:aaaaa-1234-1234-bbbb-123456785",
+      },
+    ],
+    "created": 2024-07-04T12:40:59.251Z,
+    "creator": "1234:aaaaa-1234-1234-bbbb-123456785",
+    "dependencies": [],
+    "description": "This is a test issue",
+    "epic": undefined,
+    "id": "12333",
+    "key": "TEST-4",
+    "keyChangelog": [],
+    "labels": [],
+    "parent": {
+      "key": "TEST-4",
+      "type": "Epic",
+    },
+    "points": undefined,
+    "priority": "Medium",
+    "project": "TEST",
+    "resolution": undefined,
+    "resolutionDate": undefined,
+    "sprintInfo": {
+      "currentSprintId": undefined,
+      "history": [],
+    },
+    "status": {
+      "category": "To Do",
+      "detail": "Selected for Development",
+    },
+    "statusChanged": undefined,
+    "statusChangelog": [],
+    "subtasks": [],
+    "summary": "Jira test issue",
+    "type": "Story",
+    "updated": 2024-07-04T12:41:00.075Z,
+    "url": "https://jira.com/browse/TEST-4",
   },
 ]
 `;
@@ -350,6 +415,26 @@ exports[`index stream - issues to sync additional fields 1`] = `
         "Custom String Field",
         "test",
       ],
+      [
+        "Custom Array Field_0",
+        "This",
+      ],
+      [
+        "Custom Array Field_1",
+        "Is",
+      ],
+      [
+        "Custom Array Field_2",
+        "A",
+      ],
+      [
+        "Custom Array Field_3",
+        "Test",
+      ],
+      [
+        "Custom Array Field",
+        "["This","Is","A","Test"]",
+      ],
     ],
     "key": "TEST-1",
     "updateAdditionalFields": true,
@@ -388,6 +473,41 @@ exports[`index stream - issues to sync additional fields 1`] = `
         "test",
       ],
     ],
+    "key": "TEST-4",
+    "updateAdditionalFields": true,
+    "updated": 2024-07-04T12:41:00.075Z,
+  },
+  {
+    "additionalFields": [
+      [
+        "Custom Number Field",
+        "1",
+      ],
+      [
+        "Custom String Field",
+        "test",
+      ],
+      [
+        "Custom Array Field_0",
+        "This",
+      ],
+      [
+        "Custom Array Field_1",
+        "Is",
+      ],
+      [
+        "Custom Array Field_2",
+        "A",
+      ],
+      [
+        "Custom Array Field_3",
+        "Test",
+      ],
+      [
+        "Custom Array Field",
+        "["This","Is","A","Test"]",
+      ],
+    ],
     "assignees": [
       {
         "assignedAt": 2024-07-04T12:40:59.251Z,
@@ -398,24 +518,18 @@ exports[`index stream - issues to sync additional fields 1`] = `
     "creator": "1234:aaaaa-1234-1234-bbbb-123456785",
     "dependencies": [],
     "description": "This is a test issue",
-    "epic": undefined,
+    "epic": "[object Object]",
     "id": "12345",
     "key": "TEST-1",
     "keyChangelog": [],
     "labels": [],
-    "parent": {
-      "key": "TEST-4",
-      "type": "Epic",
-    },
-    "points": undefined,
+    "parent": undefined,
+    "points": 10,
     "priority": "Medium",
     "project": "TEST",
     "resolution": undefined,
     "resolutionDate": undefined,
-    "sprintInfo": {
-      "currentSprintId": undefined,
-      "history": [],
-    },
+    "sprintInfo": undefined,
     "status": {
       "category": "To Do",
       "detail": "Selected for Development",
@@ -424,7 +538,7 @@ exports[`index stream - issues to sync additional fields 1`] = `
     "statusChangelog": [],
     "subtasks": [],
     "summary": "Jira test issue",
-    "type": "Story",
+    "type": "Sub-task",
     "updated": 2024-07-04T12:41:00.075Z,
     "url": "https://jira.com/browse/TEST-1",
   },
@@ -510,7 +624,7 @@ exports[`index stream - issues to sync additional fields 1`] = `
         {
           "addedAt": 2024-03-08T17:59:28.180Z,
           "removedAt": 2024-03-08T17:59:28.180Z,
-          "uid": "",
+          "uid": "66",
         },
       ],
     },
@@ -525,6 +639,57 @@ exports[`index stream - issues to sync additional fields 1`] = `
     "type": "Story",
     "updated": 2024-03-08T17:59:28.167Z,
     "url": "https://jira.com/browse/TEST-3",
+  },
+  {
+    "additionalFields": [
+      [
+        "Custom Number Field",
+        "1",
+      ],
+      [
+        "Custom String Field",
+        "test",
+      ],
+    ],
+    "assignees": [
+      {
+        "assignedAt": 2024-07-04T12:40:59.251Z,
+        "uid": "1234:aaaaa-1234-1234-bbbb-123456785",
+      },
+    ],
+    "created": 2024-07-04T12:40:59.251Z,
+    "creator": "1234:aaaaa-1234-1234-bbbb-123456785",
+    "dependencies": [],
+    "description": "This is a test issue",
+    "epic": undefined,
+    "id": "12333",
+    "key": "TEST-4",
+    "keyChangelog": [],
+    "labels": [],
+    "parent": {
+      "key": "TEST-4",
+      "type": "Epic",
+    },
+    "points": undefined,
+    "priority": "Medium",
+    "project": "TEST",
+    "resolution": undefined,
+    "resolutionDate": undefined,
+    "sprintInfo": {
+      "currentSprintId": undefined,
+      "history": [],
+    },
+    "status": {
+      "category": "To Do",
+      "detail": "Selected for Development",
+    },
+    "statusChanged": undefined,
+    "statusChangelog": [],
+    "subtasks": [],
+    "summary": "Jira test issue",
+    "type": "Story",
+    "updated": 2024-07-04T12:41:00.075Z,
+    "url": "https://jira.com/browse/TEST-4",
   },
 ]
 `;

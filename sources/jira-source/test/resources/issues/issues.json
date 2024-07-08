@@ -4,8 +4,8 @@
     "key": "TEST-1",
     "changelog": {
       "startAt": 0,
-      "maxResults": 2,
-      "total": 2,
+      "maxResults": 3,
+      "total": 3,
       "histories": [
         {
           "id": "123350",
@@ -35,18 +35,53 @@
               "toString": "FAI-1233"
             }
           ]
+        },
+        {
+          "id": "123348",
+          "created": "2024-07-04T05:40:59.361-0700",
+          "items": [
+            {
+              "field": "issuetype",
+              "fieldtype": "jira",
+              "from": "10001",
+              "fromString": "Story",
+              "to": "10002",
+              "toString": "Sub-task"
+            }
+          ]
         }
       ]
     },
     "fields": {
       "summary": "Jira test issue",
       "issuetype": {
-        "id": "10001",
+        "id": "10002",
         "description": "Functionality or a feature expressed as a user goal.",
-        "name": "Story",
+        "name": "Sub-task",
         "subtask": false
       },
-      "parent": {
+      "parent": null,
+      "creator": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "subtasks": [],
+      "created": "2024-07-04T05:40:59.251-0700",
+      "project": {
+        "id": "12345",
+        "key": "TEST",
+        "name": "Test Project",
+        "projectTypeKey": "software",
+        "simplified": false
+      },
+      "description": "This is a test issue",
+      "customfield_10000": 1,
+      "customfield_10001": "test",
+      "customfield_10002": {
         "id": "11999",
         "key": "TEST-4",
         "fields": {
@@ -75,26 +110,8 @@
           }
         }
       },
-      "creator": {
-        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
-        "emailAddress": "user@mail.com",
-        "displayName": "John Doe",
-        "active": true,
-        "timeZone": "CET",
-        "accountType": "atlassian"
-      },
-      "subtasks": [],
-      "created": "2024-07-04T05:40:59.251-0700",
-      "project": {
-        "id": "12345",
-        "key": "TEST",
-        "name": "Test Project",
-        "projectTypeKey": "software",
-        "simplified": false
-      },
-      "description": "This is a test issue",
-      "customfield_10000": 1,
-      "customfield_10001": "test",
+      "customfield_10003": 10,
+      "customfield_10005": ["This", "Is", "A", "Test"],
       "customfield_10020": "{}",
       "priority": {
         "name": "Medium",
@@ -443,6 +460,121 @@
         }
       },
       "points": 1
+    }
+  },
+  {
+    "id": "12333",
+    "key": "TEST-4",
+    "changelog": {
+      "startAt": 0,
+      "maxResults": 2,
+      "total": 2,
+      "histories": [
+        {
+          "id": "123350",
+          "created": "2024-07-04T05:41:00.089-0700",
+          "items": [
+            {
+              "field": "status",
+              "fieldtype": "jira",
+              "fieldId": "status",
+              "from": "10000",
+              "fromString": "Backlog",
+              "to": "10001",
+              "toString": "Selected for Development"
+            }
+          ]
+        }
+      ]
+    },
+    "fields": {
+      "summary": "Jira test issue",
+      "issuetype": {
+        "id": "10001",
+        "description": "Functionality or a feature expressed as a user goal.",
+        "name": "Story",
+        "subtask": false
+      },
+      "parent": {
+        "id": "11999",
+        "key": "TEST-4",
+        "fields": {
+          "summary": "Epic Epic",
+          "status": {
+            "description": "This issue is being actively worked on at the moment by the assignee.",
+            "name": "In Progress",
+            "id": "3",
+            "statusCategory": {
+              "id": 4,
+              "key": "indeterminate",
+              "colorName": "yellow",
+              "name": "In Progress"
+            }
+          },
+          "priority": {
+            "name": "Medium",
+            "id": "3"
+          },
+          "issuetype": {
+            "id": "10000",
+            "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+            "name": "Epic",
+            "subtask": false,
+            "hierarchyLevel": 1
+          }
+        }
+      },
+      "creator": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "subtasks": [],
+      "created": "2024-07-04T05:40:59.251-0700",
+      "project": {
+        "id": "12345",
+        "key": "TEST",
+        "name": "Test Project",
+        "projectTypeKey": "software",
+        "simplified": false
+      },
+      "description": "This is a test issue",
+      "customfield_10000": 1,
+      "customfield_10001": "test",
+      "customfield_10020": "{}",
+      "priority": {
+        "name": "Medium",
+        "id": "3"
+      },
+      "resolution": null,
+      "labels": [],
+      "customfield_10016": null,
+      "customfield_10028": null,
+      "resolutiondate": null,
+      "issuelinks": [],
+      "assignee": {
+        "accountId": "1234:aaaaa-1234-1234-bbbb-123456785",
+        "emailAddress": "user@mail.com",
+        "displayName": "John Doe",
+        "active": true,
+        "timeZone": "CET",
+        "accountType": "atlassian"
+      },
+      "updated": "2024-07-04T05:41:00.075-0700",
+      "status": {
+        "description": "",
+        "name": "Selected for Development",
+        "id": "10001",
+        "statusCategory": {
+          "id": 2,
+          "key": "new",
+          "colorName": "blue-gray",
+          "name": "To Do"
+        }
+      }
     }
   }
 ]
