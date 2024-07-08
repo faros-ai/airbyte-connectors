@@ -117,6 +117,19 @@ describe('index', () => {
       ),
   });
 
+  const getIssuesMockedImplementation = () => ({
+    v2: {
+      issueSearch: {
+        searchForIssuesUsingJql: paginate(
+          readTestResourceAsJSON('issues/issues.json'),
+          'issues',
+          1,
+          true
+        ),
+      },
+    },
+  });
+
   test('streams - json schema fields', async () => {
     const source = new sut.JiraSource(logger);
     const streams = source.streams(config);
@@ -719,6 +732,34 @@ describe('index', () => {
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },
+    });
+  });
+
+  const issuesTestOptions = {
+    source,
+    configOrPath: 'common/config.json',
+    catalogOrPath: 'issues/catalog.json',
+    onBeforeReadResultConsumer: (res) => {
+      setupJiraInstance(
+        getIssuesMockedImplementation(),
+        true,
+        res.config as JiraConfig,
+        logger
+      );
+    },
+    checkRecordsData: (records) => {
+      expect(records).toMatchSnapshot();
+    },
+  };
+
+  test('stream - issues', async () => {
+    await sourceReadTest(issuesTestOptions);
+  });
+
+  test('stream - issues to sync additional fields', async () => {
+    await sourceReadTest({
+      ...issuesTestOptions,
+      stateOrPath: 'issues/state.json',
     });
   });
 
