@@ -13,6 +13,11 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
     return ['faros_project_versions'];
   }
 
+  // Not really an incremental stream, but want to read state to get the start date
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosProjectVersionIssues.json');
   }
