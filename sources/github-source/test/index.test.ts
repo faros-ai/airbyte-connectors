@@ -8,10 +8,10 @@ import {
   sourceReadTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
+import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
-import {GitHubConfig} from '../src/types';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -92,8 +92,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -111,8 +110,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -130,8 +128,7 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotUsageMockedImplementation(
             readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-          ),
-          res.config as GitHubConfig
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -149,8 +146,84 @@ describe('index', () => {
         setupGitHubInstance(
           getOrganizationsMockedImplementation(
             readTestResourceAsJSON('organizations/organization.json')
-          ),
-          res.config as GitHubConfig
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - repositories', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getRepositoriesMockedImplementation(
+            readTestResourceAsJSON('repositories/repositories.json')
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - users', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getOrganizationMembersMockedImplementation(
+            readTestResourceAsJSON('users/users.json')
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'teams/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getTeamsMockedImplementation(
+            readTestResourceAsJSON('teams/teams.json')
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - team memberships', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'team_memberships/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getTeamMembershipsMockedImplementation(
+              readTestResourceAsJSON('team_memberships/team_memberships.json')
+            )
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -160,7 +233,7 @@ describe('index', () => {
   });
 });
 
-function setupGitHubInstance(octokitMock: any, sourceConfig: GitHubConfig) {
+function setupGitHubInstance(octokitMock: any) {
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHubToken(
       readTestResourceAsJSON('config.json'),
@@ -196,6 +269,37 @@ const getCopilotUsageMockedImplementation = (res: any) => ({
 const getOrganizationsMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getRepositoriesMockedImplementation = (res: any) => ({
+  repos: {
+    listForOrg: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getOrganizationMembersMockedImplementation = (res: any) => ({
+  graphql: {
+    paginate: {
+      iterator: jest.fn().mockImplementation((query: string) => {
+        if (!query.includes('listMembers')) {
+          throw new Error('Not mocked');
+        }
+        return iterate([res]);
+      }),
+    },
+  },
+});
+
+const getTeamsMockedImplementation = (res: any) => ({
+  teams: {
+    list: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getTeamMembershipsMockedImplementation = (res: any) => ({
+  teams: {
+    listMembersInOrg: jest.fn().mockReturnValue(res),
   },
 });
 

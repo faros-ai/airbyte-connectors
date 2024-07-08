@@ -29,11 +29,12 @@ export class FarosCopilotSeats extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const {empty, org} = record.record.data as CopilotSeatsStreamRecord;
+    const data = record.record.data as CopilotSeatsStreamRecord;
+    const org = toLower(data.org);
     if (!this.currentAssigneesByOrg.has(org)) {
       this.currentAssigneesByOrg.set(org, new Set());
     }
-    if (empty) {
+    if (data.empty) {
       return [];
     }
     const seat = record.record.data as CopilotSeat;
@@ -130,7 +131,7 @@ function userToolKey(
   source: string
 ): UserToolKey {
   return {
-    user: {uid: toLower(userLogin), source},
+    user: {uid: userLogin, source},
     organization: {uid: toLower(orgLogin), source},
     tool: {category: GitHubTool.Copilot},
   };

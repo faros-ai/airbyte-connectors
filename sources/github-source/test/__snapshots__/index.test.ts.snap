@@ -177,3 +177,69 @@ exports[`index streams - organizations 1`] = `
   },
 ]
 `;
+
+exports[`index streams - repositories 1`] = `
+[
+  {
+    "created_at": "2011-01-26T19:01:12Z",
+    "default_branch": "master",
+    "description": "This your first repo!",
+    "full_name": "octocat/Hello-World",
+    "html_url": "https://github.com/octocat/Hello-World",
+    "language": null,
+    "name": "Hello-World",
+    "org": "github",
+    "private": false,
+    "size": 108,
+    "topics": [
+      "octocat",
+      "atom",
+      "electron",
+      "api",
+    ],
+    "updated_at": "2011-01-26T19:14:43Z",
+  },
+]
+`;
+
+exports[`index streams - team memberships 1`] = `
+[
+  {
+    "team": "justice-league",
+    "user": "octocat",
+  },
+]
+`;
+
+exports[`index streams - teams 1`] = `
+[
+  {
+    "description": "A great team.",
+    "name": "Justice League",
+    "org": "github",
+    "parentSlug": null,
+    "slug": "justice-league",
+  },
+]
+`;
+
+exports[`index streams - users 1`] = `
+[
+  {
+    "email": "",
+    "html_url": "https://github.com/octocat",
+    "login": "octocat",
+    "name": "Octocat",
+    "org": "github",
+    "type": "User",
+  },
+  {
+    "email": "",
+    "html_url": "https://github.com/octokitten",
+    "login": "octokitten",
+    "name": "Octokitten",
+    "org": "github",
+    "type": "User",
+  },
+]
+`;

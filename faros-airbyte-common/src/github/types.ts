@@ -12,6 +12,45 @@ export type Organization = Pick<
   'login' | 'name' | 'type' | 'html_url' | 'created_at' | 'updated_at'
 >;
 
+export type Repository = {
+  org: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
+  | 'name'
+  | 'full_name'
+  | 'private'
+  | 'description'
+  | 'language'
+  | 'size'
+  | 'default_branch'
+  | 'html_url'
+  | 'topics'
+  | 'created_at'
+  | 'updated_at'
+>;
+
+export type User = {
+  org: string;
+  login: string;
+  name?: string;
+  email?: string;
+  type: string;
+  html_url: string;
+};
+
+export type Team = {
+  org: string;
+  parentSlug: string | null;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.teams.list>[0],
+  'name' | 'slug' | 'description'
+>;
+
+export type TeamMembership = {
+  team: string;
+  user: string;
+};
+
 export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeat = {
