@@ -1,14 +1,30 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {camelCase, last, toLower, upperFirst} from 'lodash';
+import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
+type RepoKey = {
+  name: string;
+  organization: {
+    uid: string;
+    source: string;
+  };
+};
+
+type BranchKey = {
+  name: string;
+  repository: RepoKey;
+};
+
 export class FarosPullRequests extends GitHubConverter {
+  private collectedBranches = new Map<string, BranchKey>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
+    'vcs_Branch',
   ];
 
   async convert(
@@ -35,17 +51,17 @@ export class FarosPullRequests extends GitHubConverter {
       readyForReviewAt = Utils.toDate(lastReviewEvent?.createdAt);
     }
 
+    const sourceBranch = this.collectBranch(pr.headRefName, pr.headRepository);
+    const targetBranch = this.collectBranch(pr.baseRefName, pr.baseRepository);
+    // Ensure if we fail to get branch info we do not overwrite the previous branch info
+    // since we should always have branches for a PR
+    const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
+
     return [
       {
         model: 'vcs_PullRequest',
         record: {
-          repository: {
-            name: toLower(pr.repo),
-            organization: {
-              uid: toLower(pr.org),
-              source: this.streamName.source,
-            },
-          },
+          repository: repoKey(pr.org, pr.repo, this.streamName.source),
           number: pr.number,
           title: pr.title,
           description: Utils.cleanAndTruncate(pr.body),
@@ -56,7 +72,7 @@ export class FarosPullRequests extends GitHubConverter {
           mergedAt: Utils.toDate(pr.mergedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
-          commentCount: pr.comments.totalCount, // + reviewCommentCount ??? https://github.com/faros-ai/feeds/blob/2359a0c6191f8293ad7fc3f032212a38e3f1e3b6/feeds/vcs/github-feed/src/feed.ts#L1169
+          commentCount: pr.comments.totalCount,
           diffStats: {
             linesAdded: pr.additions,
             linesDeleted: pr.deletions,
@@ -68,7 +84,7 @@ export class FarosPullRequests extends GitHubConverter {
           mergeCommit: pr.mergeCommit
             ? {repository: pr.repo, sha: pr.mergeCommit.oid}
             : null,
-          // ...branchInfo, https://github.com/faros-ai/feeds/commit/865536ae5bae6f9c1edb6a4ea826d91caf9a6136#diff-62dd1a5f8c5bafec2c89e9f598c58ee32673e3d2b8a6ef60a75fc612be45bc72
+          ...branchInfo,
         },
       },
     ];
@@ -77,6 +93,56 @@ export class FarosPullRequests extends GitHubConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.convertUsers();
+    return [...this.convertBranches(), ...this.convertUsers()];
   }
+
+  private collectBranch(
+    branchName: string,
+    branchRepo: PullRequest['baseRepository'] | PullRequest['headRepository']
+  ): BranchKey | null {
+    if (!branchName || !branchRepo?.name || !branchRepo?.owner?.login) {
+      return null;
+    }
+
+    const key = branchKey(branchName, branchRepo, this.streamName.source);
+    const keyStr = branchKeyToString(key);
+
+    if (!this.collectedBranches.has(keyStr)) {
+      this.collectedBranches.set(keyStr, key);
+    }
+
+    return key;
+  }
+
+  private convertBranches(): DestinationRecord[] {
+    return Array.from(this.collectedBranches.values()).map((branchKey) => ({
+      model: 'vcs_Branch',
+      record: branchKey,
+    }));
+  }
+}
+
+function repoKey(org: string, repo: string, source: string): RepoKey {
+  return {
+    name: toLower(repo),
+    organization: {
+      uid: toLower(org),
+      source,
+    },
+  };
+}
+
+function branchKey(
+  branchName: string,
+  branchRepo: PullRequest['baseRepository'] | PullRequest['headRepository'],
+  source: string
+): BranchKey {
+  return {
+    name: branchName,
+    repository: repoKey(branchRepo.owner.login, branchRepo.name, source),
+  };
+}
+
+function branchKeyToString(branchKey: BranchKey): string {
+  return `${branchKey.repository.organization.uid}/${branchKey.repository.name}/${branchKey.name}`;
 }

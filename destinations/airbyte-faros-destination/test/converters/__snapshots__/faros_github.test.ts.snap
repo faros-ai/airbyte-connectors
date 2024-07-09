@@ -4,8 +4,8 @@ exports[`faros_github process records from all streams 1`] = `
 Array [
   "Processed 14 records",
   "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 241 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":4,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 245 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":4,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3093,9 +3093,29 @@ Add any other context about the changes here.
         },
       },
       "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "dora-employee-param",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
       "state": Object {
         "category": "Merged",
         "detail": "MERGED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
       },
       "title": "DORA apps take optional employee uid param",
       "updatedAt": "2021-02-16T17:15:29.000Z",
@@ -3138,9 +3158,29 @@ N/A
         },
       },
       "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "nehanda/cleanup-apps",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
       "state": Object {
         "category": "Closed",
         "detail": "CLOSED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
       },
       "title": "Move apps with no feed support temporarily to internal",
       "updatedAt": "2021-02-11T18:10:08.000Z",
@@ -3179,9 +3219,29 @@ N/A
         },
       },
       "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "fix-edge-cases",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "dora",
+          },
+        },
+      },
       "state": Object {
         "category": "Merged",
         "detail": "MERGED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
       },
       "title": "Fix edge cases for deploy cycle breakdown",
       "updatedAt": "2021-02-04T21:53:09.000Z",
@@ -3295,6 +3355,58 @@ N/A
         "detail": "user",
       },
       "uid": "octokitten",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "dora-employee-param",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "nehanda/cleanup-apps",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "fix-edge-cases",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "dora",
+        },
+      },
+      "source": "GitHub",
     },
   },
   Object {
