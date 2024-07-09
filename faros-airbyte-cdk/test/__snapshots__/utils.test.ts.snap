@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils add source common properties 1`] = `
+AirbyteSpec {
+  "spec": Object {
+    "connectionSpecification": Object {
+      "properties": Object {
+        "max_slice_failures": Object {
+          "default": 0,
+          "description": "The maximum number of slice failures before a stream sync fails. Use -1 for unlimited",
+          "order": 1001,
+          "title": "Max Slice Failures",
+          "type": "integer",
+        },
+        "max_stream_failures": Object {
+          "default": 0,
+          "description": "The maximum number of stream failures before the sync fails. Use -1 for unlimited",
+          "order": 1000,
+          "title": "Max Stream Failures",
+          "type": "integer",
+        },
+        "prop1": Object {
+          "type": "string",
+        },
+      },
+    },
+  },
+  "type": "SPEC",
+}
+`;

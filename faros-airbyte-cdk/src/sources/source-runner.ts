@@ -9,7 +9,11 @@ import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
 import {AirbyteConfig, AirbyteState} from '../protocol';
 import {ConnectorVersion, Runner} from '../runner';
-import {PACKAGE_VERSION, redactConfig} from '../utils';
+import {
+  addSourceCommonProperties,
+  PACKAGE_VERSION,
+  redactConfig,
+} from '../utils';
 import {AirbyteSource} from './source';
 import {maybeCompressState} from './source-base';
 import {AirbyteSourceLogger} from './source-logger';
@@ -41,7 +45,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .description('spec command')
       .alias('s')
       .action(async () => {
-        const spec = await this.source.spec();
+        const spec = addSourceCommonProperties(await this.source.spec());
 
         // Expected output
         this.logger.write(spec);
@@ -91,7 +95,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           this.logNodeOptions('Source');
           const config = require(path.resolve(opts.config));
           const catalog = require(path.resolve(opts.catalog));
-          const spec = await this.source.spec();
+          const spec = addSourceCommonProperties(await this.source.spec());
           const redactedConfig = redactConfig(config, spec);
           this.logger.info(`Source version: ${ConnectorVersion}`);
           this.logger.info(`Config: ${JSON.stringify(redactedConfig)}`);
@@ -139,7 +143,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .command('spec-pretty')
       .description('pretty spec command')
       .action(async () => {
-        const spec = await this.source.spec(false);
+        const spec = addSourceCommonProperties(await this.source.spec(false));
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           [
@@ -190,7 +194,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .action(async (opts) => {
         const spec = opts.specFile
           ? JSON.parse(fs.readFileSync(opts.specFile, 'utf8'))
-          : await this.source.spec(false);
+          : addSourceCommonProperties(await this.source.spec(false));
         const rows = traverseObject(
           spec.spec.connectionSpecification,
           opts.json
