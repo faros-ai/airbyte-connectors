@@ -3,5 +3,6 @@
     "type": "token",
     "personal_access_token": "ghp_1234567890"
   },
+  "cutoff_days": 9999,
   "fetch_teams": true
 }

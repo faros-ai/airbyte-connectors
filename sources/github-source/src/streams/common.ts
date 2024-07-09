@@ -1,5 +1,6 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {OrgRepoFilter} from '../org-repo-filter';
 import {GitHubConfig} from '../types';
@@ -11,6 +12,12 @@ export type OrgStreamSlice = {
 export type RepoStreamSlice = {
   org: string;
   repo: string;
+};
+
+export type StreamState = {
+  readonly [orgRepoKey: string]: {
+    cutoff: number;
+  };
 };
 
 export enum RunMode {
@@ -80,11 +87,55 @@ export abstract class StreamBase extends AirbyteStreamBase {
   readonly orgRepoFilter: OrgRepoFilter;
   constructor(
     protected readonly config: GitHubConfig,
-    protected readonly logger: AirbyteLogger,
-    protected readonly farosClient?: FarosClient
+    protected readonly logger: AirbyteLogger
   ) {
     super(logger);
-    this.orgRepoFilter = new OrgRepoFilter(config, logger, farosClient);
+    this.orgRepoFilter = new OrgRepoFilter(config, logger);
+  }
+
+  protected getUpdatedStreamState(
+    latestRecordCutoff: Date,
+    currentStreamState: StreamState,
+    orgRepoKey: string
+  ): StreamState {
+    return StreamBase.calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      orgRepoKey
+    );
+  }
+
+  protected getUpdateStartDate(cutoff?: number): Date | undefined {
+    return cutoff ? Utils.toDate(cutoff) : this.config.startDate;
+  }
+
+  static calculateUpdatedStreamState(
+    latestRecordCutoff: Date,
+    currentStreamState: StreamState,
+    orgRepoKey: string
+  ): StreamState {
+    if (isNil(latestRecordCutoff)) {
+      return currentStreamState;
+    }
+
+    const currentCutoff = Utils.toDate(
+      currentStreamState?.[orgRepoKey]?.cutoff ?? 0
+    );
+
+    if (latestRecordCutoff > currentCutoff) {
+      const newState = {
+        cutoff: latestRecordCutoff.getTime(),
+      };
+      return {
+        ...currentStreamState,
+        [orgRepoKey]: newState,
+      };
+    }
+    return currentStreamState;
+  }
+
+  static orgRepoKey(org: string, repo: string): string {
+    return `${org}/${repo}`;
   }
 }
 

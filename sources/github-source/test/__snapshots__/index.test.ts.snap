@@ -230,7 +230,7 @@ Add any other context about the changes here.
     "mergedAt": "2021-02-16T17:15:27Z",
     "number": 48,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },
@@ -285,7 +285,7 @@ N/A
     "mergedAt": null,
     "number": 47,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },
@@ -335,7 +335,7 @@ N/A
     "mergedAt": "2021-02-04T21:53:00Z",
     "number": 46,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },
