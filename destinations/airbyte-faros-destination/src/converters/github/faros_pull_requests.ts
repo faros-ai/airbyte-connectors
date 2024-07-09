@@ -7,8 +7,6 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
 export class FarosPullRequests extends GitHubConverter {
-  private readonly collectedAuthors = new Map<string, PullRequest['author']>();
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
   ];
@@ -19,9 +17,7 @@ export class FarosPullRequests extends GitHubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const pr = record.record.data as PullRequest;
 
-    if (pr.author?.login && !this.collectedAuthors.has(pr.author.login)) {
-      this.collectedAuthors.set(pr.author.login, pr.author);
-    }
+    this.collectUser(pr.author);
 
     // Github PR states
     const prStates = ['closed', 'merged', 'open'];
@@ -81,10 +77,6 @@ export class FarosPullRequests extends GitHubConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const res: DestinationRecord[] = [];
-    for (const author of this.collectedAuthors.values()) {
-      res.push(...this.convertUser(author));
-    }
-    return res;
+    return this.convertUsers();
   }
 }

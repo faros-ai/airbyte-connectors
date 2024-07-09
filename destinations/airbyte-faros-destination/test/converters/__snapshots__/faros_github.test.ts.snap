@@ -3003,56 +3003,6 @@ Array [
     },
   },
   Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/octocat",
-      "name": "Octocat",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "octocat",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octocat",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/octokitten",
-      "name": "Octokitten",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "octokitten",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octokitten",
-      },
-    },
-  },
-  Object {
     "vcs_Team": Object {
       "description": "A great team.",
       "lead": null,
@@ -3295,6 +3245,56 @@ N/A
         "source": "GitHub",
         "uid": "oldkit",
       },
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octocat",
+      "name": "Octocat",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octocat",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octokitten",
+      "name": "Octokitten",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octokitten",
     },
   },
   Object {
