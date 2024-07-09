@@ -154,6 +154,7 @@ function minimizeSpecObject(config: SpecObject): void {
 
 const SOURCE_COMMON_PROPERTIES = {
   max_stream_failures: {
+    // Use a high order to make sure these properties are displayed at the end
     order: 1000,
     type: 'integer',
     title: 'Max Stream Failures',
