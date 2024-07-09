@@ -1,7 +1,5 @@
 connector_image: buildkite-source
 tests:
-  spec:
-    bypass_reason: "Covered by unit test"
   connection:
     - config_path: 'secrets/config.json'
       status: 'succeed'
