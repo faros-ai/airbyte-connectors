@@ -11,7 +11,7 @@ export class FarosUsers extends StreamWithOrgSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['login'];
+    return ['org', 'login'];
   }
 
   get supportsIncremental(): boolean {

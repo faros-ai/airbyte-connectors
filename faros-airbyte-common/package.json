@@ -29,6 +29,8 @@
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
     "./github": "./lib/github/index.js",
+    "./github/generated": "./lib/github/generated/index.js",
+    "./github/queries": "./lib/github/queries.js",
     "./jira": "./lib/jira/index.js",
     "./xray": "./lib/xray/index.js"
   },
@@ -46,6 +48,12 @@
       "github": [
         "./lib/github/index.d.ts"
       ],
+      "github/generated": [
+        "./lib/github/generated/index.d.ts"
+      ],
+      "github/queries": [
+        "./lib/github/queries.d.ts"
+      ],
       "jira": [
         "./lib/jira/index.d.ts"
       ],
@@ -62,12 +70,18 @@
     "prepare": "npm run build",
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
-    "watch": "tsc -b -w src test"
+    "watch": "tsc -b -w src test",
+    "codegen:github": "graphql-codegen --config src/github/codegen.ts"
   },
   "dependencies": {
     "@octokit/rest": "^20.1.1",
     "jira.js": "^4.0.0",
     "luxon": "^3.4.4"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.9",
+    "@graphql-codegen/typescript-operations": "^4.2.3"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

@@ -8,6 +8,11 @@ export type OrgStreamSlice = {
   org: string;
 };
 
+export type RepoStreamSlice = {
+  org: string;
+  repo: string;
+};
+
 export enum RunMode {
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
@@ -29,6 +34,7 @@ export const CopilotEvaluationStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -36,6 +42,7 @@ export const CopilotEvaluationStreamNames = [
 export const MinimumStreamNames = [
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -45,6 +52,7 @@ export const StandardStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -54,6 +62,7 @@ export const FullStreamNames = [
   'faros_copilot_usage',
   'faros_organizations',
   'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -83,6 +92,16 @@ export abstract class StreamWithOrgSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       yield {org};
+    }
+  }
+}
+
+export abstract class StreamWithRepoSlices extends StreamBase {
+  async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
+    for (const org of await this.orgRepoFilter.getOrganizations()) {
+      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
+        yield {org, repo};
+      }
     }
   }
 }

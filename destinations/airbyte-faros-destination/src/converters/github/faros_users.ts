@@ -16,9 +16,13 @@ export class FarosUsers extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data as User;
-    return [
-      ...this.convertUser(user),
-      ...this.convertMembership(user, user.org),
-    ];
+    this.collectUser(user);
+    return [];
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.convertUsers();
   }
 }

@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import {buildASTSchema, GraphQLSchema, parse, validate} from 'graphql';
 
-import * as sut from '../src/queries';
+import * as sut from '../../src/github/queries';
 
 describe('queries', () => {
   function loadGraphQLSchema(fileName: string): GraphQLSchema {
@@ -12,7 +12,7 @@ describe('queries', () => {
   // Get the latest schemas here:
   // https://docs.github.com/en/graphql/overview/public-schema
   // and save them into schemas directory:
-  const schemasDir = 'test/resources/graphql_schemas/';
+  const schemasDir = 'resources/github/schemas/';
 
   // Load all GitHub GraphQL schemas
   fs.readdirSync(schemasDir).forEach((file) => {

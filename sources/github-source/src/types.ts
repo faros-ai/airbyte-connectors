@@ -28,23 +28,3 @@ type GitHubApp = {
 export type GitHubAuth = GitHubToken | GitHubApp;
 
 export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
-
-export type OrgMembers = {
-  organization: {
-    membersWithRole: {
-      nodes: {
-        login: string;
-        name?: string;
-        email?: string;
-        type: string;
-        html_url: string;
-      }[];
-      pageInfo: PageInfo;
-    };
-  };
-};
-
-type PageInfo = {
-  endCursor: string;
-  hasNextPage: boolean;
-};

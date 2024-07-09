@@ -7,6 +7,8 @@ import {Dictionary} from 'ts-essentials';
 import {RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
+type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
+
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
@@ -211,52 +213,78 @@ export class GitHubCommon {
 export abstract class GitHubConverter extends Converter {
   source = 'GitHub';
 
+  protected collectedUsers = new Map<string, Array<PartialUser>>();
+
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
 
-  protected convertUser(user: User): DestinationRecord[] {
-    const res: DestinationRecord[] = [];
-    if (
-      !isEmpty(user.email) &&
-      !user.email.includes('@users.noreply.github.com')
-    ) {
-      res.push({
-        model: 'vcs_UserEmail',
-        record: {
-          user: {uid: user.login, source: this.streamName.source},
-          email: user.email,
-        },
-      });
+  protected collectUser(user: PartialUser) {
+    if (!user?.login) return;
+    if (!this.collectedUsers.has(user.login)) {
+      this.collectedUsers.set(user.login, []);
     }
-    const type = GitHubCommon.vcs_UserType(user);
-    res.push({
-      model: 'vcs_User',
-      record: omitBy(
-        {
-          uid: user.login,
-          source: this.streamName.source,
-          name: user.name,
-          email: user.email,
-          htmlUrl: user.html_url,
-          type,
-        },
-        (value) => isNil(value) || isEmpty(value)
-      ),
-    });
-    return res;
+    this.collectedUsers.get(user.login).push(user);
   }
 
-  protected convertMembership(user: User, org: string): DestinationRecord[] {
+  protected convertUsers(): DestinationRecord[] {
     const res: DestinationRecord[] = [];
-    res.push({
-      model: 'vcs_Membership',
-      record: {
-        user: {uid: user.login, source: this.streamName.source},
-        organization: {uid: toLower(org), source: this.streamName.source},
-      },
-    });
+    for (const [login, users] of this.collectedUsers.entries()) {
+      const emails = new Set(
+        users
+          .map((user) => user.email)
+          .filter(
+            (email) =>
+              !isEmpty(email) && !email.includes('@users.noreply.github.com')
+          )
+      );
+      for (const email of emails) {
+        res.push({
+          model: 'vcs_UserEmail',
+          record: {
+            user: {uid: login, source: this.streamName.source},
+            email,
+          },
+        });
+      }
+      const orgs = new Set(
+        users.map((user) => user.org).filter((org) => !isEmpty(org))
+      );
+      for (const org of orgs) {
+        res.push({
+          model: 'vcs_Membership',
+          record: {
+            user: {uid: login, source: this.streamName.source},
+            organization: {uid: toLower(org), source: this.streamName.source},
+          },
+        });
+      }
+      const finalUser = users[0];
+      // replace non-null user attributes to our copy of the user
+      // e.g. login, name, email, type, html_url.
+      for (const user of users.slice(1)) {
+        for (const key in user) {
+          if (!finalUser[key]) {
+            finalUser[key] = user[key];
+          }
+        }
+      }
+      res.push({
+        model: 'vcs_User',
+        record: omitBy(
+          {
+            uid: login,
+            source: this.streamName.source,
+            name: finalUser.name,
+            email: finalUser.email,
+            htmlUrl: finalUser.html_url,
+            type: GitHubCommon.vcs_UserType(finalUser),
+          },
+          (value) => isNil(value) || isEmpty(value)
+        ),
+      });
+    }
     return res;
   }
 }

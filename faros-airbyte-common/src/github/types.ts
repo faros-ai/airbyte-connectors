@@ -1,6 +1,8 @@
 import {Octokit} from '@octokit/rest';
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
+import {ListMembersQuery, PullRequestsQuery} from './generated';
+
 const octokit: Octokit = new Octokit();
 
 export type AppInstallation = GetResponseDataTypeFromEndpointMethod<
@@ -29,14 +31,14 @@ export type Repository = {
   | 'updated_at'
 >;
 
+export type PullRequest = {
+  org: string;
+  repo: string;
+} & PullRequestsQuery['repository']['pullRequests']['nodes'][0];
+
 export type User = {
   org: string;
-  login: string;
-  name?: string;
-  email?: string;
-  type: string;
-  html_url: string;
-};
+} & ListMembersQuery['organization']['membersWithRole']['nodes'][0];
 
 export type Team = {
   org: string;
@@ -47,6 +49,7 @@ export type Team = {
 >;
 
 export type TeamMembership = {
+  org: string;
   team: string;
   user: string;
 };
