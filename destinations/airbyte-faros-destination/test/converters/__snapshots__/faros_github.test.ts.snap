@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 14 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 245 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":4,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 17 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 251 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":4,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3122,6 +3122,42 @@ Add any other context about the changes here.
     },
   },
   Object {
+    "vcs_PullRequestLabel": Object {
+      "label": Object {
+        "name": "dependencies",
+      },
+      "pullRequest": Object {
+        "number": 48,
+        "repository": Object {
+          "name": "hello-world",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "github",
+          },
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_PullRequestLabel": Object {
+      "label": Object {
+        "name": "typescript",
+      },
+      "pullRequest": Object {
+        "number": 48,
+        "repository": Object {
+          "name": "hello-world",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "github",
+          },
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "GitHub",
@@ -3245,6 +3281,42 @@ N/A
       },
       "title": "Fix edge cases for deploy cycle breakdown",
       "updatedAt": "2021-02-04T21:53:09.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestLabel": Object {
+      "label": Object {
+        "name": "dependencies",
+      },
+      "pullRequest": Object {
+        "number": 46,
+        "repository": Object {
+          "name": "hello-world",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "github",
+          },
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Label": Object {
+      "name": "dependencies",
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Label": Object {
+      "name": "typescript",
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Label": Object {
+      "name": "python",
+      "source": "GitHub",
     },
   },
   Object {

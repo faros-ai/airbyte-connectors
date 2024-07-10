@@ -1,4 +1,4 @@
-query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
+query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100, $nested_page_size: Int = 100) {
     repository(owner: $owner, name: $repo) {
         pullRequests(
             first: $page_size
@@ -44,6 +44,15 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
                 }
                 deletions
                 isDraft
+                labels(first: $nested_page_size) {
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                    nodes {
+                        name
+                    }
+                }
                 number
                 mergedAt
                 mergeCommit {

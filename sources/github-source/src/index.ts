@@ -14,6 +14,7 @@ import {GitHub} from './github';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
+import {FarosLabels} from './streams/faros_labels';
 import {FarosOrganizations} from './streams/faros_organizations';
 import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosRepositories} from './streams/faros_repositories';
@@ -54,6 +55,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosOrganizations(config, this.logger),
       new FarosRepositories(config, this.logger),
       new FarosPullRequests(config, this.logger),
+      new FarosLabels(config, this.logger),
       new FarosUsers(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),

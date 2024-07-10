@@ -43,6 +43,7 @@ export const MinimumStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
 ];
 
@@ -53,6 +54,7 @@ export const StandardStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
 ];
 
@@ -63,6 +65,7 @@ export const FullStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
 ];
 

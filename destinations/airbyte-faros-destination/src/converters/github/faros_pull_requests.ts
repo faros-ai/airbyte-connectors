@@ -23,8 +23,9 @@ export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_PullRequest',
     'vcs_Branch',
+    'vcs_PullRequest',
+    'vcs_PullRequestLabel',
   ];
 
   async convert(
@@ -57,12 +58,16 @@ export class FarosPullRequests extends GitHubConverter {
     // since we should always have branches for a PR
     const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
 
+    const prKey = {
+      repository: repoKey(pr.org, pr.repo, this.streamName.source),
+      number: pr.number,
+    };
+
     return [
       {
         model: 'vcs_PullRequest',
         record: {
-          repository: repoKey(pr.org, pr.repo, this.streamName.source),
-          number: pr.number,
+          ...prKey,
           title: pr.title,
           description: Utils.cleanAndTruncate(pr.body),
           state,
@@ -87,6 +92,13 @@ export class FarosPullRequests extends GitHubConverter {
           ...branchInfo,
         },
       },
+      ...pr.labels.nodes.map((label) => ({
+        model: 'vcs_PullRequestLabel',
+        record: {
+          pullRequest: prKey,
+          label: {name: label.name},
+        },
+      })),
     ];
   }
 

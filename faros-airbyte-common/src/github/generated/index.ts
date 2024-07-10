@@ -7805,6 +7805,22 @@ export type WorkflowsParametersInput = {
   workflows: Array<WorkflowFileReferenceInput>;
 };
 
+export type LabelsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type LabelsQuery = {
+  repository?: {
+    labels?: {
+      nodes?: Array<{name: string} | null> | null;
+      pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+    } | null;
+  } | null;
+};
+
 export type ListMembersQueryVariables = Exact<{
   login: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
@@ -7831,6 +7847,7 @@ export type PullRequestsQueryVariables = Exact<{
   repo: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
+  nested_page_size?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 export type PullRequestsQuery = {
@@ -7876,6 +7893,10 @@ export type PullRequestsQuery = {
           | null;
         commits: {totalCount: number};
         comments: {totalCount: number};
+        labels?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{name: string} | null> | null;
+        } | null;
         mergeCommit?: {oid: string} | null;
         reviewEvents: {
           nodes?: Array<
