@@ -151,3 +151,35 @@ function minimizeSpecObject(config: SpecObject): void {
     minimizeSpecProperty(prop);
   }
 }
+
+const SOURCE_COMMON_PROPERTIES = {
+  max_stream_failures: {
+    // Use a high order to make sure these properties are displayed at the end
+    order: 1000,
+    type: 'integer',
+    title: 'Max Stream Failures',
+    description:
+      'The maximum number of stream failures before the sync fails. Use -1 for unlimited',
+    default: 0,
+  },
+  max_slice_failures: {
+    order: 1001,
+    type: 'integer',
+    title: 'Max Slice Failures',
+    description:
+      'The maximum number of slice failures before a stream sync fails. Use -1 for unlimited',
+    default: 0,
+  },
+};
+
+export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {
+  const updatedSpec = _.cloneDeep(spec);
+  const connectionSpec = updatedSpec.spec.connectionSpecification;
+
+  connectionSpec.properties = {
+    ...(connectionSpec.properties ?? {}),
+    ...SOURCE_COMMON_PROPERTIES,
+  };
+
+  return updatedSpec;
+}

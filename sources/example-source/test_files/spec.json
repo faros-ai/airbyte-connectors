@@ -1,0 +1,46 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Jenkins Spec",
+    "type": "object",
+    "required": [
+      "server_url",
+      "user",
+      "token"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "server_url": {
+        "type": "string",
+        "title": "Jenkins Server URL",
+        "examples": [
+          "https://my-jenkins-server.example.com"
+        ]
+      },
+      "user": {
+        "type": "string",
+        "title": "Jenkins User"
+      },
+      "token": {
+        "type": "string",
+        "title": "Jenkins Token",
+        "airbyte_secret": true
+      },
+      "max_stream_failures": {
+        "order": 1000,
+        "type": "integer",
+        "title": "Max Stream Failures",
+        "description": "The maximum number of stream failures before the sync fails. Use -1 for unlimited",
+        "default": 0
+      },
+      "max_slice_failures": {
+        "order": 1001,
+        "type": "integer",
+        "title": "Max Slice Failures",
+        "description": "The maximum number of slice failures before a stream sync fails. Use -1 for unlimited",
+        "default": 0
+      }
+    }
+  }
+}

@@ -8,11 +8,17 @@ export type OrgStreamSlice = {
   org: string;
 };
 
+export type RepoStreamSlice = {
+  org: string;
+  repo: string;
+};
+
 export enum RunMode {
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
   Standard = 'Standard',
+  Full = 'Full',
 }
 
 export const CopilotEvaluationAppStreamNames = [
@@ -27,17 +33,36 @@ export const CopilotEvaluationStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_organizations',
+  'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
 // todo: fill as streams are developed
-export const MinimumStreamNames = ['faros_organizations', 'faros_users'];
+export const MinimumStreamNames = [
+  'faros_organizations',
+  'faros_repositories',
+  'faros_pull_requests',
+  'faros_users',
+];
 
 // todo: fill as streams are developed
 export const StandardStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_organizations',
+  'faros_repositories',
+  'faros_pull_requests',
+  'faros_users',
+];
+
+// todo: fill as streams are developed
+export const FullStreamNames = [
+  'faros_copilot_seats',
+  'faros_copilot_usage',
+  'faros_organizations',
+  'faros_repositories',
+  'faros_pull_requests',
   'faros_users',
 ];
 
@@ -48,6 +73,7 @@ export const RunModeStreams = {
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
   [RunMode.Standard]: StandardStreamNames,
+  [RunMode.Full]: FullStreamNames,
 };
 
 export abstract class StreamBase extends AirbyteStreamBase {
@@ -66,6 +92,16 @@ export abstract class StreamWithOrgSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       yield {org};
+    }
+  }
+}
+
+export abstract class StreamWithRepoSlices extends StreamBase {
+  async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
+    for (const org of await this.orgRepoFilter.getOrganizations()) {
+      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
+        yield {org, repo};
+      }
     }
   }
 }

@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 11 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 236 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 14 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 245 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":4,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3003,56 +3003,6 @@ Array [
     },
   },
   Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/octocat",
-      "name": "Octocat",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "octocat",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octocat",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/octokitten",
-      "name": "Octokitten",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "octokitten",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octokitten",
-      },
-    },
-  },
-  Object {
     "vcs_Team": Object {
       "description": "A great team.",
       "lead": null,
@@ -3102,6 +3052,202 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "dolos",
+      },
+      "commentCount": 3,
+      "commitCount": 13,
+      "createdAt": "2021-02-12T05:35:19.000Z",
+      "description": "**Related issues**
+https://github.com/faros-ai/tickets/issues/120
+
+**Describe the proposed solution**
+Optional \`employee\` param changes DORA app behavior to return metrics rolled-up by owner.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context about the changes here.
+",
+      "diffStats": Object {
+        "filesChanged": 21,
+        "linesAdded": 1077,
+        "linesDeleted": 763,
+      },
+      "htmlUrl": "https://github.com/faros-ai/faros-apps/pull/48",
+      "mergeCommit": Object {
+        "repository": "Hello-World",
+        "sha": "b4c35c299ad22fe858569482a7696597ca038651",
+      },
+      "mergedAt": "2021-02-16T17:15:27.000Z",
+      "number": 48,
+      "readyForReviewAt": "2021-02-12T05:35:19.000Z",
+      "repository": Object {
+        "name": "hello-world",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+      },
+      "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "dora-employee-param",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
+      "state": Object {
+        "category": "Merged",
+        "detail": "MERGED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
+      "title": "DORA apps take optional employee uid param",
+      "updatedAt": "2021-02-16T17:15:29.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "nehanda",
+      },
+      "commentCount": 1,
+      "commitCount": 2,
+      "createdAt": "2021-02-04T23:54:56.000Z",
+      "description": "**Related issues**
+Ensures we only expose the apps that can run on the latest Faros API 
+
+**Describe the proposed solution**
+Moving all apps that are not compatible with our new schema and/or do not have feed and model support yet. As we add more feeds re-add them after full testing.
+
+**Describe alternatives you've considered**
+N/A
+
+",
+      "diffStats": Object {
+        "filesChanged": 140,
+        "linesAdded": 0,
+        "linesDeleted": 4787,
+      },
+      "htmlUrl": "https://github.com/faros-ai/faros-apps/pull/47",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 47,
+      "readyForReviewAt": "2021-02-04T23:54:56.000Z",
+      "repository": Object {
+        "name": "hello-world",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+      },
+      "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "nehanda/cleanup-apps",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
+      "state": Object {
+        "category": "Closed",
+        "detail": "CLOSED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
+      "title": "Move apps with no feed support temporarily to internal",
+      "updatedAt": "2021-02-11T18:10:08.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "nehanda",
+      },
+      "commentCount": 0,
+      "commitCount": 9,
+      "createdAt": "2021-02-04T15:49:42.000Z",
+      "description": "Handle cases and add tests for when:
+1. Deployments have no associated builds
+2. Builds have no associated commits",
+      "diffStats": Object {
+        "filesChanged": 2,
+        "linesAdded": 109,
+        "linesDeleted": 23,
+      },
+      "htmlUrl": "https://github.com/faros-ai/faros-apps/pull/46",
+      "mergeCommit": Object {
+        "repository": "Hello-World",
+        "sha": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
+      },
+      "mergedAt": "2021-02-04T21:53:00.000Z",
+      "number": 46,
+      "readyForReviewAt": "2021-02-04T15:49:42.000Z",
+      "repository": Object {
+        "name": "hello-world",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+      },
+      "source": "GitHub",
+      "sourceBranch": Object {
+        "name": "fix-edge-cases",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "dora",
+          },
+        },
+      },
+      "state": Object {
+        "category": "Merged",
+        "detail": "MERGED",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "faros-apps",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "faros-ai",
+          },
+        },
+      },
+      "title": "Fix edge cases for deploy cycle breakdown",
+      "updatedAt": "2021-02-04T21:53:09.000Z",
+    },
+  },
+  Object {
     "vcs_OrganizationTool": Object {
       "inactive": false,
       "organization": Object {
@@ -3159,6 +3305,132 @@ Array [
         "source": "GitHub",
         "uid": "oldkit",
       },
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octocat",
+      "name": "Octocat",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octocat",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octokitten",
+      "name": "Octokitten",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octokitten",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "dora-employee-param",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "nehanda/cleanup-apps",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "fix-edge-cases",
+      "repository": Object {
+        "name": "faros-apps",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "dora",
+        },
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/dolos",
+      "name": "Dolos",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "dolos",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/nehanda",
+      "name": "nehanda",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "nehanda",
     },
   },
 ]

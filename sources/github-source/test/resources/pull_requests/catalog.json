@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_pull_requests"
+      }
+    }
+  ]
+}

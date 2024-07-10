@@ -30,6 +30,11 @@ export type IssueStreamState = {
   };
 };
 
+// Global state for the board issues stream to match earliest issue update timestamp
+export type BoardIssuesState = {
+  earliestIssueUpdateTimestamp: number;
+};
+
 export enum RunMode {
   Full = 'Full',
   Minimum = 'Minimum',

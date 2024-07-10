@@ -173,6 +173,29 @@ describe('index', () => {
     });
   });
 
+  test('streams - pull requests', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              'repositories/repositories.json'
+            ),
+            getPullRequestsMockedImplementation(
+              readTestResourceAsJSON('pull_requests/pull_requests.json')
+            )
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - users', async () => {
     await sourceReadTest({
       source,
@@ -278,11 +301,24 @@ const getRepositoriesMockedImplementation = (res: any) => ({
   },
 });
 
+const getPullRequestsMockedImplementation = (res: any) => ({
+  graphql: {
+    paginate: {
+      iterator: jest.fn().mockImplementation((query: string) => {
+        if (!query.includes('query pullRequests')) {
+          throw new Error('Not mocked');
+        }
+        return iterate([res]);
+      }),
+    },
+  },
+});
+
 const getOrganizationMembersMockedImplementation = (res: any) => ({
   graphql: {
     paginate: {
       iterator: jest.fn().mockImplementation((query: string) => {
-        if (!query.includes('listMembers')) {
+        if (!query.includes('query listMembers')) {
           throw new Error('Not mocked');
         }
         return iterate([res]);

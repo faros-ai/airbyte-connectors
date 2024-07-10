@@ -11,10 +11,11 @@ import {
 import VError from 'verror';
 
 import {GitHub} from './github';
-import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosOrganizations} from './streams/faros_organizations';
+import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosRepositories} from './streams/faros_repositories';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
@@ -52,6 +53,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosCopilotUsage(config, this.logger),
       new FarosOrganizations(config, this.logger),
       new FarosRepositories(config, this.logger),
+      new FarosPullRequests(config, this.logger),
       new FarosUsers(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
@@ -67,12 +69,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let streamNames = catalog.streams.map((s) => s.stream.name);
-    if (config.run_mode) {
-      streamNames = [...RunModeStreams[config.run_mode]];
-      if (config.fetch_teams) {
-        streamNames.push(...TeamStreamNames);
-      }
+    const streamNames = [...RunModeStreams[config.run_mode ?? RunMode.Full]];
+    if (config.fetch_teams) {
+      streamNames.push(...TeamStreamNames);
     }
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)

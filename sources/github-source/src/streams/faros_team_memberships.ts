@@ -11,7 +11,7 @@ export class FarosTeamMemberships extends StreamWithOrgSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['team', 'user'];
+    return ['org', 'team', 'user'];
   }
 
   async *readRecords(

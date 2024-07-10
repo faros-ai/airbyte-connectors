@@ -2,7 +2,7 @@ connector_image: example-source
 tests:
   spec:
     - config_path: 'test_files/config.json'
-      spec_path: 'resources/spec.json'
+      spec_path: 'test_files/spec.json'
   connection:
     - config_path: 'test_files/config.json'
       status: 'succeed'

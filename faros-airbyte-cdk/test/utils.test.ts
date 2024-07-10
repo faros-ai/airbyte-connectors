@@ -1,6 +1,12 @@
 import path from 'path';
 
-import {redactConfig, redactConfigAsString, SpecLoader} from '../src';
+import {
+  addSourceCommonProperties,
+  AirbyteSpec,
+  redactConfig,
+  redactConfigAsString,
+  SpecLoader,
+} from '../src';
 
 const BASE_RESOURCES_DIR = path.join(__dirname, 'resources');
 
@@ -61,5 +67,20 @@ describe('utils', () => {
     };
     expect(redactConfig(cfg, spec)).toEqual(expected);
     expect(redactConfigAsString(cfg, spec)).toEqual(JSON.stringify(expected));
+  });
+
+  test('add source common properties', () => {
+    const spec = new AirbyteSpec({
+      connectionSpecification: {
+        properties: {
+          prop1: {
+            type: 'string',
+          },
+        },
+      },
+    });
+
+    const updatedSpec = addSourceCommonProperties(spec);
+    expect(updatedSpec).toMatchSnapshot();
   });
 });

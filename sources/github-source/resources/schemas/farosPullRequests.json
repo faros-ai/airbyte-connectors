@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "additions": {
+      "type": "integer"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
+        }
+      }
+    },
+    "body": {
+      "type": "string"
+    },
+    "changedFiles": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "commits": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "comments": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "deletions": {
+      "type": "integer"
+    },
+    "isDraft": {
+      "type": "boolean"
+    },
+    "number": {
+      "type": "integer"
+    },
+    "mergedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mergeCommit": {
+      "type": "object",
+      "properties": {
+        "oid": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewEvents": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "url": {
+      "type": "string"
+    },
+    "baseRefName": {
+      "type": "string"
+    },
+    "baseRepository": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "headRefName": {
+      "type": "string"
+    },
+    "headRepository": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
