@@ -83,23 +83,6 @@ To run unit tests locally, from the Buildkite connector directory run:
 npm test
 ```
 
-### Acceptance Tests
-
-Customize `acceptance-test-config.yml` file to configure tests. See [Source
-Acceptance
-Tests](https://docs.airbyte.io/connector-development/testing-connectors/source-acceptance-tests-reference)
-for more information.
-Pull the latest Airbyte Source Acceptance Test docker image by running:
-
-```
-docker pull airbyte/source-acceptance-test
-```
-
-To run the acceptance tests, from the root repository directory, run
-
-```
-./scripts/source-acceptance-test.sh buildkite-source
-```
 
 ## Dependency Management
 
