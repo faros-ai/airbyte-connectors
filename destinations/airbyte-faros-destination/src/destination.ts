@@ -28,7 +28,15 @@ import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, isEmpty, keyBy, pickBy, sortBy, uniq} from 'lodash';
+import {
+  difference,
+  isEmpty,
+  keyBy,
+  mapValues,
+  pickBy,
+  sortBy,
+  uniq,
+} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -74,9 +82,8 @@ export interface HttpAgents {
 }
 
 interface SyncErrors {
-  fatal: SyncMessage[];
-  nonFatal: SyncMessage[];
-  warnings: SyncMessage[];
+  src: {fatal: SyncMessage[]; nonFatal: SyncMessage[]; warnings: SyncMessage[]};
+  dst: SyncMessage[];
 }
 
 /** Faros destination implementation. */
@@ -500,8 +507,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
     }
 
-    const {streams, deleteModelEntries, converterDependencies} =
-      this.initStreamsCheckConverters(catalog);
+    const {
+      streams,
+      deleteModelEntries,
+      resetModelsByStream,
+      converterDependencies,
+    } = this.initStreamsCheckConverters(catalog);
 
     const streamsSyncMode: Dictionary<DestinationSyncMode> = {};
     for (const stream of Object.keys(streams)) {
@@ -510,7 +521,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     let latestStateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
-    const syncErrors: SyncErrors = {fatal: [], nonFatal: [], warnings: []};
+    const syncErrors: SyncErrors = {
+      src: {fatal: [], nonFatal: [], warnings: []},
+      dst: [],
+    };
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
@@ -553,8 +567,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         const graphQLClient = this.getGraphQLClient();
         await graphQLClient.loadSchema();
 
-        for (const model of deleteModelEntries) {
-          streamContext.resetModels.add(model);
+        for (const [stream, models] of Object.entries(resetModelsByStream)) {
+          streamContext.registerStreamResetModels(stream, models);
         }
 
         let originRemapper = undefined;
@@ -631,7 +645,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             action: 'Contact Faros Support', // placeholder
             type: 'ERROR',
           };
-          syncErrors.fatal.push(destinationError);
+          syncErrors.dst.push(destinationError);
           throw error;
         } finally {
           if (sync?.syncId) {
@@ -640,10 +654,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               sync.syncId,
               {
                 endedAt: new Date(),
-                status: syncErrors.fatal.length ? 'error' : 'success',
+                status:
+                  syncErrors.src.fatal.length || syncErrors.dst.length
+                    ? 'error'
+                    : 'success',
                 metrics: stats.asObject(),
-                errors: syncErrors.fatal.concat(syncErrors.nonFatal),
-                warnings: syncErrors.warnings,
+                errors: syncErrors.src.fatal.concat(
+                  syncErrors.src.nonFatal,
+                  syncErrors.dst
+                ),
+                warnings: syncErrors.src.warnings,
               }
             );
           }
@@ -724,7 +744,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
 
       if (config.fail_on_source_error) {
-        const sourceErrors = syncErrors.fatal.concat(syncErrors.nonFatal);
+        const sourceErrors = syncErrors.src.fatal.concat(
+          syncErrors.src.nonFatal
+        );
         if (sourceErrors.length) {
           throw new VError(
             `Failing sync due to ${sourceErrors.length} source error(s): ` +
@@ -774,6 +796,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       let sourceConfigReceived = false;
       let sourceSucceeded = false;
       let stateReset = false;
+      let streamStatusReceived = false;
       const processedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
@@ -791,14 +814,33 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               const syncMessage = getSyncMessage(msg.sourceStatus);
               if (syncMessage) {
                 if (status === 'ERRORED') {
-                  syncErrors.fatal.push(syncMessage);
+                  syncErrors.src.fatal.push(syncMessage);
                 } else if (syncMessage.type === 'ERROR') {
-                  syncErrors.nonFatal.push(syncMessage);
+                  syncErrors.src.nonFatal.push(syncMessage);
                 } else {
-                  syncErrors.warnings.push(syncMessage);
+                  syncErrors.src.warnings.push(syncMessage);
                 }
               }
               stateMessage = new AirbyteStateMessage(msg.state);
+              if (msg.streamStatus?.name) {
+                this.logger.info(
+                  `Received ${msg.streamStatus.status} status for ${msg.streamStatus.name} stream`
+                );
+                if (msg.streamStatus.status === 'SUCCESS') {
+                  if (msg.streamStatus.recordsEmitted) {
+                    this.logger.info(
+                      `Marking ${msg.streamStatus.name} stream models for reset`
+                    );
+                    ctx.markStreamForReset(msg.streamStatus.name);
+                  } else {
+                    this.logger.warn(
+                      `No records emitted for ${msg.streamStatus.name} stream.` +
+                        ' Will not reset non-incremental models.'
+                    );
+                  }
+                }
+                streamStatusReceived = true;
+              }
             } else if (isSourceConfigMessage(msg)) {
               if (msg.redactedConfig?.backfill) {
                 isBackfillSync = true;
@@ -927,10 +969,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (
         sourceConfigReceived &&
         !sourceSucceeded &&
-        !syncErrors.fatal.length &&
-        !syncErrors.nonFatal.length
+        !syncErrors.src.fatal.length &&
+        !syncErrors.src.nonFatal.length
       ) {
-        syncErrors.fatal.push({
+        syncErrors.src.fatal.push({
           summary:
             'No success status received from Faros Source. It may have crashed before it could report an error.',
           code: 0, // placeholder
@@ -941,7 +983,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       if (
         this.shouldResetData({
-          sourceErrors: syncErrors.fatal.concat(syncErrors.nonFatal),
+          syncErrors,
+          streamStatusReceived,
           skipSourceSuccessCheck: config.skip_source_success_check,
           isResetSync,
           isBackfillSync,
@@ -949,6 +992,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           sourceSucceeded,
         })
       ) {
+        if (!streamStatusReceived) {
+          ctx.markAllStreamsForReset();
+        }
         await resetData?.();
       }
 
@@ -960,7 +1006,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private shouldResetData(syncInfo: {
-    sourceErrors: SyncMessage[];
+    syncErrors: SyncErrors;
+    streamStatusReceived: boolean;
     skipSourceSuccessCheck: boolean;
     isResetSync: boolean;
     isBackfillSync: boolean;
@@ -968,18 +1015,36 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     sourceSucceeded: boolean;
   }): boolean {
     const {
-      sourceErrors,
+      syncErrors,
+      streamStatusReceived,
       skipSourceSuccessCheck,
       isResetSync,
       isBackfillSync,
       isFarosSource,
       sourceSucceeded,
     } = syncInfo;
-    if (sourceErrors.length) {
-      const errorSummary = sourceErrors.map((e) => e.summary).join('; ');
+    if (streamStatusReceived) {
+      if (syncErrors.dst.length) {
+        this.logger.warn(
+          'Skipping reset of non-incremental models for successful streams due to destination errors:' +
+            ` ${syncErrors.dst.map((e) => e.summary).join('; ')}`
+        );
+        return false;
+      } else {
+        this.logger.info(
+          'Received at least one stream status message. Resetting non-incremental models for successful streams.'
+        );
+        return true;
+      }
+    }
+    const allSyncErrors = syncErrors.src.fatal.concat(
+      syncErrors.src.nonFatal,
+      syncErrors.dst
+    );
+    if (allSyncErrors.length) {
+      const errorSummary = allSyncErrors.map((e) => e.summary).join('; ');
       this.logger.error(
-        'Skipping reset of non-incremental models due to' +
-          ` Airbyte Source errors: ${errorSummary}`
+        `Skipping reset of non-incremental models due to sync errors: ${errorSummary}`
       );
       return false;
     }
@@ -1000,11 +1065,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (skipSourceSuccessCheck) {
       if (isFarosSource) {
         this.logger.warn(
-          'Skip source success check is not supported for Faros Airbyte Source.'
+          'Skip source success check is not supported for Faros Airbyte Sources.'
         );
       } else {
         this.logger.warn(
-          'Skip source success check is enabled for non-Faros Airbyte Source. Resetting non-incremental models.'
+          'Skip source success check is enabled for non-Faros Airbyte Sources. Resetting non-incremental models.'
         );
         return true;
       }
@@ -1040,13 +1105,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   private initStreamsCheckConverters(catalog: AirbyteConfiguredCatalog): {
     streams: Dictionary<AirbyteConfiguredStream>;
     deleteModelEntries: ReadonlyArray<string>;
+    resetModelsByStream: Dictionary<Set<string>>;
     converterDependencies: Set<string>;
   } {
     const streams = keyBy(catalog.streams, (s) => s.stream.name);
     const streamKeys = Object.keys(streams);
-    const deleteModelEntries: string[] = [];
     const dependenciesByStream: Dictionary<Set<string>> = {};
+    const deleteModelEntries: string[] = [];
     const incrementalModels: string[] = [];
+    const resetModelsByStream: Dictionary<Set<string>> = {};
 
     // Check input streams & initialize record converters
     for (const stream of streamKeys) {
@@ -1081,11 +1148,27 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         // Prepare destination models to delete if any
         if (destinationSyncMode === DestinationSyncMode.OVERWRITE) {
           deleteModelEntries.push(...converter.destinationModels);
+          const streamName = StreamName.fromString(stream).name;
+
+          if (resetModelsByStream[streamName]) {
+            this.logger.warn(
+              `Found multiple streams in the catalog with name ${streamName} but different source types.` +
+                ' This may result in unexpected model resets if some streams fail and others succeed.'
+            );
+            for (const model of converter.destinationModels) {
+              resetModelsByStream[streamName].add(model);
+            }
+          } else {
+            resetModelsByStream[streamName] = new Set(
+              converter.destinationModels
+            );
+          }
         } else if (streams[stream].sync_mode === SyncMode.INCREMENTAL) {
           incrementalModels.push(...converter.destinationModels);
         }
       }
     }
+
     // Check for circular dependencies and error early if any
     this.checkForCircularDependencies(dependenciesByStream);
     // Collect all converter dependencies
@@ -1094,12 +1177,20 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       dependenciesByStream[k].forEach((v) => converterDependencies.add(v))
     );
 
+    // Remove incremental models from resetModels map
+    for (const model of incrementalModels) {
+      for (const resetModels of Object.values(resetModelsByStream)) {
+        resetModels.delete(model);
+      }
+    }
+
     return {
       streams,
       deleteModelEntries: difference(
         uniq(deleteModelEntries),
         uniq(incrementalModels)
       ),
+      resetModelsByStream,
       converterDependencies,
     };
   }
