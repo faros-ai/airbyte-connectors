@@ -1,7 +1,9 @@
-import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  calculateUpdatedStreamState,
+} from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
-import moment from 'moment';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
 import {ProjectBoardFilter} from '../project-board-filter';
@@ -108,42 +110,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
     currentStreamState: StreamState,
     projectOrBoardKey: string
   ): StreamState {
-    return StreamBase.calculateUpdatedStreamState(
+    return calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
       projectOrBoardKey,
       this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS
     );
-  }
-
-  static calculateUpdatedStreamState(
-    latestRecordCutoff: Date,
-    currentStreamState: StreamState,
-    projectOrBoardKey: string,
-    cutoffLagDays: number
-  ): StreamState {
-    if (isNil(latestRecordCutoff)) {
-      return currentStreamState;
-    }
-
-    const currentCutoff = Utils.toDate(
-      currentStreamState?.[projectOrBoardKey]?.cutoff ?? 0
-    );
-
-    const adjustedLatestRecordCutoff = moment(latestRecordCutoff)
-      .subtract(cutoffLagDays, 'days')
-      .toDate();
-
-    if (adjustedLatestRecordCutoff > currentCutoff) {
-      const newState = {
-        cutoff: adjustedLatestRecordCutoff.getTime(),
-      };
-      return {
-        ...currentStreamState,
-        [projectOrBoardKey]: newState,
-      };
-    }
-    return currentStreamState;
   }
 
   protected supportsFarosClient(): boolean {

@@ -1,5 +1,4 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 
@@ -12,8 +11,7 @@ export class OrgRepoFilter {
 
   constructor(
     private readonly config: GitHubConfig,
-    private readonly logger: AirbyteLogger,
-    private readonly farosClient?: FarosClient
+    private readonly logger: AirbyteLogger
   ) {}
 
   @Memoize()
