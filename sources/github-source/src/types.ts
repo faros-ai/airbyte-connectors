@@ -7,13 +7,18 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly authentication: GitHubAuth;
   readonly url?: string;
   readonly organizations?: ReadonlyArray<string>;
-  readonly cutoff_days?: number;
+  readonly excluded_organizations?: ReadonlyArray<string>;
+  readonly repositories?: ReadonlyArray<string>;
+  readonly excluded_repositories?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly fetch_teams?: boolean;
+  readonly cutoff_days?: number;
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
   startDate?: Date;
+  reposByOrg?: Map<string, Set<string>>;
+  excludedReposByOrg?: Map<string, Set<string>>;
 }
 
 type GitHubToken = {

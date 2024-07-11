@@ -83,13 +83,54 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    let {excluded_organizations} = config;
+    if (config.organizations?.length && excluded_organizations?.length) {
+      this.logger.warn(
+        'Both organizations and excluded_organizations are specified, excluded_organizations will be ignored.'
+      );
+      excluded_organizations = undefined;
+    }
+
+    const reposByOrg = new Map<string, Set<string>>();
+    if (config.repositories?.length) {
+      collectReposByOrg(reposByOrg, config.repositories);
+    }
+    const excludedReposByOrg = new Map<string, Set<string>>();
+    if (config.excluded_repositories?.length) {
+      collectReposByOrg(excludedReposByOrg, config.excluded_repositories);
+    }
+    for (const org of reposByOrg.keys()) {
+      if (excludedReposByOrg.has(org)) {
+        this.logger.warn(
+          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+        );
+        excludedReposByOrg.delete(org);
+      }
+    }
+
     return {
       config: {
         ...config,
         startDate,
+        excluded_organizations,
+        reposByOrg,
+        excludedReposByOrg,
       },
       catalog: {streams},
       state,
     };
+  }
+}
+
+function collectReposByOrg(
+  reposByOrg: Map<string, Set<string>>,
+  repos: ReadonlyArray<string>
+): void {
+  for (const repo of repos) {
+    const [org, name] = repo.split('/');
+    if (!reposByOrg.has(org)) {
+      reposByOrg.set(org, new Set());
+    }
+    reposByOrg.get(org).add(name);
   }
 }

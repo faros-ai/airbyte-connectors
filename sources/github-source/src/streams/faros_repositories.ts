@@ -21,9 +21,12 @@ export class FarosRepositories extends StreamWithOrgSlices {
   ): AsyncGenerator<Repository> {
     const github = await GitHub.instance(this.config, this.logger);
     const org = streamSlice?.org;
+    const repoKeys = await this.orgRepoFilter.getRepositories(org);
     const repositories = await github.getRepositories(org);
     for (const repository of repositories) {
-      yield repository;
+      if (repoKeys.includes(repository.name)) {
+        yield repository;
+      }
     }
   }
 }
