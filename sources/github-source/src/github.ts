@@ -166,10 +166,9 @@ export abstract class GitHub {
       COMMITS_QUERY,
       {
         owner: org,
-        repo: repo,
+        repo,
         branch,
         page_size: PAGE_SIZE,
-        since: '2024-07-10T00:00:00Z',
       }
     );
     for await (const res of iter) {

@@ -182,7 +182,7 @@ describe('index', () => {
         setupGitHubInstance(
           merge(
             getRepositoriesMockedImplementation(
-              'repositories/repositories.json'
+              readTestResourceAsJSON('repositories/repositories.json')
             ),
             getPullRequestsMockedImplementation(
               readTestResourceAsJSON('pull_requests/pull_requests.json')
@@ -264,7 +264,7 @@ describe('index', () => {
         setupGitHubInstance(
           merge(
             getRepositoriesMockedImplementation(
-              'repositories/repositories.json'
+              readTestResourceAsJSON('repositories/repositories.json')
             ),
             getCommitsMockedImplementation(
               readTestResourceAsJSON('commits/commits.json')
@@ -362,18 +362,24 @@ const getTeamMembershipsMockedImplementation = (res: any) => ({
   },
 });
 
-const getCommitsMockedImplementation = (res: any) => ({
-  graphql: {
-    paginate: {
-      iterator: jest.fn().mockImplementation((query: string) => {
-        if (!query.includes('query commits')) {
-          throw new Error('Not mocked');
-        }
-        return iterate([res]);
-      }),
-    },
-  },
-});
+const getCommitsMockedImplementation = (res: any) => {
+  const graphqlMock: any = jest.fn().mockImplementation((query: string) => {
+    if (!query.includes('query commits')) {
+      throw new Error('Not mocked');
+    }
+    return res;
+  });
+
+  graphqlMock.paginate = {
+    iterator: jest.fn().mockImplementation((query: string) => {
+      if (!query.includes('query commits')) {
+        throw new Error('Not mocked');
+      }
+      return iterate([res]);
+    }),
+  };
+  return {graphql: graphqlMock};
+};
 
 async function* iterate<T>(arr: ReadonlyArray<T>): AsyncIterableIterator<T> {
   for (const x of arr) {
