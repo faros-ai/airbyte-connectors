@@ -21,6 +21,7 @@ import {
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
+import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omit, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -31,6 +32,7 @@ import {GitHubConfig, GraphQLErrorResponse} from './types';
 export const PAGE_SIZE = 100;
 export const PR_NESTED_PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
+export const DEFAULT_CUTOFF_DAYS = 90;
 
 export abstract class GitHub {
   private static github: GitHub;
@@ -117,12 +119,11 @@ export abstract class GitHub {
     return repos;
   }
 
-  @Memoize()
-  async getPullRequests(
+  async *getPullRequests(
     org: string,
-    repo: string
-  ): Promise<ReadonlyArray<PullRequest>> {
-    const pullRequests: PullRequest[] = [];
+    repo: string,
+    cutoffDate?: Date
+  ): AsyncGenerator<PullRequest> {
     const iter = this.octokit(org).graphql.paginate.iterator<PullRequestsQuery>(
       PULL_REQUESTS_QUERY,
       {
@@ -134,15 +135,17 @@ export abstract class GitHub {
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
       for (const pr of res.repository.pullRequests.nodes) {
-        pullRequests.push({
+        if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
+          break;
+        }
+        yield {
           org,
           repo,
           ...pr,
           labels: omit(pr.labels, ['pageInfo']),
-        });
+        };
       }
     }
-    return pullRequests;
   }
 
   async *getLabels(org: string, repo: string): AsyncGenerator<Label> {

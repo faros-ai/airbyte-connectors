@@ -144,7 +144,7 @@ describe('index', () => {
       catalogOrPath: 'organizations/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getOrganizationsMockedImplementation(
+          getOrganizationMockedImplementation(
             readTestResourceAsJSON('organizations/organization.json')
           )
         );
@@ -182,7 +182,7 @@ describe('index', () => {
         setupGitHubInstance(
           merge(
             getRepositoriesMockedImplementation(
-              'repositories/repositories.json'
+              readTestResourceAsJSON('repositories/repositories.json')
             ),
             getPullRequestsMockedImplementation(
               readTestResourceAsJSON('pull_requests/pull_requests.json')
@@ -312,7 +312,7 @@ const getCopilotUsageMockedImplementation = (res: any) => ({
   },
 });
 
-const getOrganizationsMockedImplementation = (res: any) => ({
+const getOrganizationMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
   },

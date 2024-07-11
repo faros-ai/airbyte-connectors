@@ -88,22 +88,50 @@
           "airbytehq"
         ]
       },
-      "concurrency_limit": {
+      "cutoff_days": {
         "order": 3,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "run_mode": {
+        "order": 4,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "CopilotEvaluationApp",
+          "CopilotEvaluation",
+          "Minimum",
+          "Standard",
+          "Full"
+        ]
+      },
+      "fetch_teams": {
+        "order": 5,
+        "type": "boolean",
+        "title": "Fetch teams",
+        "description": "Fetch teams from organization to populate teams and team memberships.",
+        "default": true
+      },
+      "concurrency_limit": {
+        "order": 6,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "reject_unauthorized": {
-        "order": 4,
+        "order": 7,
         "type": "boolean",
         "title": "Enable certificate validation",
         "description": "Enable certificate validation for the GitHub server",
         "default": true
       },
       "previews": {
-        "order": 5,
+        "order": 8,
         "type": "array",
         "examples": [
           "dorian",
@@ -117,19 +145,6 @@
         "items": {
           "type": "string"
         }
-      },
-      "run_mode": {
-        "order": 6,
-        "title": "Run Mode",
-        "description": "Run mode for selecting the usage of the connector",
-        "type": "string",
-        "default": "Standard",
-        "enum": [
-          "CopilotEvaluationApp",
-          "CopilotEvaluation",
-          "Minimum",
-          "Standard"
-        ]
       }
     }
   }
