@@ -144,7 +144,7 @@ describe('index', () => {
       catalogOrPath: 'organizations/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getOrganizationsMockedImplementation(
+          getOrganizationMockedImplementation(
             readTestResourceAsJSON('organizations/organization.json')
           )
         );
@@ -312,7 +312,7 @@ const getCopilotUsageMockedImplementation = (res: any) => ({
   },
 });
 
-const getOrganizationsMockedImplementation = (res: any) => ({
+const getOrganizationMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
   },

@@ -7,11 +7,13 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly authentication: GitHubAuth;
   readonly url?: string;
   readonly organizations?: ReadonlyArray<string>;
+  readonly cutoff_days?: number;
+  readonly run_mode?: RunMode;
   readonly fetch_teams?: boolean;
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
-  readonly run_mode?: RunMode;
+  startDate?: Date;
 }
 
 type GitHubToken = {

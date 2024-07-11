@@ -8,9 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
-import {GitHub} from './github';
+import {DEFAULT_CUTOFF_DAYS, GitHub} from './github';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCommits} from './streams/faros_commits';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
@@ -79,8 +80,16 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       streamNames.includes(stream.stream.name)
     );
 
+    const {startDate} = calculateDateRange({
+      cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+      logger: this.logger.info.bind(this.logger),
+    });
+
     return {
-      config,
+      config: {
+        ...config,
+        startDate,
+      },
       catalog: {streams},
       state,
     };
