@@ -1,6 +1,7 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   AppInstallation,
+  Commit,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   Organization,
@@ -11,10 +12,12 @@ import {
   User,
 } from 'faros-airbyte-common/github';
 import {
+  CommitsQuery,
   ListMembersQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
+  COMMITS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
@@ -137,6 +140,44 @@ export abstract class GitHub {
       }
     }
     return pullRequests;
+  }
+
+  async getCommits(
+    org: string,
+    repo: string,
+    branch: string
+  ): Promise<ReadonlyArray<Commit>> {
+    // Do a first query to check if the repository has commits history
+    const historyCheckResult = await this.octokit(org).graphql<CommitsQuery>(
+      COMMITS_QUERY,
+      {
+        owner: org,
+        repo,
+        branch,
+        page_size: 1,
+      }
+    );
+    if (!historyCheckResult.repository?.ref?.target?.['history']) {
+      this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
+      return [];
+    }
+    const commits: any[] = [];
+    const iter = this.octokit(org).graphql.paginate.iterator<CommitsQuery>(
+      COMMITS_QUERY,
+      {
+        owner: org,
+        repo: repo,
+        branch,
+        page_size: PAGE_SIZE,
+        since: '2024-07-10T00:00:00Z',
+      }
+    );
+    for await (const res of iter) {
+      for (const commit of res.repository.ref.target['history'].nodes) {
+        commits.push(commit);
+      }
+    }
+    return commits;
   }
 
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {

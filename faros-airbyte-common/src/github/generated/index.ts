@@ -7805,6 +7805,46 @@ export type WorkflowsParametersInput = {
   workflows: Array<WorkflowFileReferenceInput>;
 };
 
+export type CommitsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  branch: Scalars['String']['input'];
+  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type CommitsQuery = {
+  repository?: {
+    ref?: {
+      target?: {
+        history: {
+          pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+          nodes?: Array<{
+            oid: string;
+            message: string;
+            url: string;
+            authoredDate: string;
+            additions: number;
+            deletions: number;
+            changedFilesIfAvailable?: number | null;
+            author?: {
+              name?: string | null;
+              email?: string | null;
+              user?: {
+                __typename: 'User';
+                login: string;
+                url: string;
+              } | null;
+            } | null;
+            committer?: {date?: string | null} | null;
+          } | null> | null;
+        };
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type ListMembersQueryVariables = Exact<{
   login: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;

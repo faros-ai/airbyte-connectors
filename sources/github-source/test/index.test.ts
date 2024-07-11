@@ -254,6 +254,29 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - commits', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              'repositories/repositories.json'
+            ),
+            getCommitsMockedImplementation(
+              readTestResourceAsJSON('commits/commits.json')
+            )
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function setupGitHubInstance(octokitMock: any) {
@@ -336,6 +359,19 @@ const getTeamsMockedImplementation = (res: any) => ({
 const getTeamMembershipsMockedImplementation = (res: any) => ({
   teams: {
     listMembersInOrg: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getCommitsMockedImplementation = (res: any) => ({
+  graphql: {
+    paginate: {
+      iterator: jest.fn().mockImplementation((query: string) => {
+        if (!query.includes('query commits')) {
+          throw new Error('Not mocked');
+        }
+        return iterate([res]);
+      }),
+    },
   },
 });
 

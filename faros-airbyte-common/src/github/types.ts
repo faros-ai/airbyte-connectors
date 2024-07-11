@@ -1,7 +1,7 @@
 import {Octokit} from '@octokit/rest';
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
-import {ListMembersQuery, PullRequestsQuery} from './generated';
+import {CommitsQuery, ListMembersQuery, PullRequestsQuery} from './generated';
 
 const octokit: Octokit = new Octokit();
 
@@ -35,6 +35,17 @@ export type PullRequest = {
   org: string;
   repo: string;
 } & PullRequestsQuery['repository']['pullRequests']['nodes'][0];
+
+// Extract the type for the target with history avoiding the null case;
+type CommitWithHistory = Exclude<
+  CommitsQuery['repository']['ref']['target'],
+  Record<string, never> | null
+>;
+
+export type Commit = {
+  org: string;
+  repo: string;
+} & CommitWithHistory['history']['nodes'][0];
 
 export type User = {
   org: string;

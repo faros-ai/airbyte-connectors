@@ -7,6 +7,9 @@ export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 // GraphQL query used to get organization members
 export const ORG_MEMBERS_QUERY = loadQuery('list-members-query.gql');
 
+// GraphQL query used to get commits from repository
+export const COMMITS_QUERY = loadQuery('commits-query.gql');
+
 /**
  * Load query file from resources
  * @param query query file name

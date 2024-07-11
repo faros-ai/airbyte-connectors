@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "oid": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "authoredDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "additions": {
+      "type": "number"
+    },
+    "deletions": {
+      "type": "number"
+    },
+    "changedFilesIfAvailable": {
+      "type": "number"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "__typename": {
+              "type": "string",
+              "enum": ["User"]
+            },
+            "login": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "committer": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

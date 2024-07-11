@@ -6,9 +6,14 @@ import {Memoize} from 'typescript-memoize';
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
 
+type Repository = {
+  name: string;
+  defaultBranch: string;
+};
+
 export class OrgRepoFilter {
   organizations: Set<string> | undefined;
-  repositoriesByOrg: Map<string, Set<string>> | undefined = new Map();
+  repositoriesByOrg: Map<string, Set<Repository>> | undefined = new Map();
 
   constructor(
     private readonly config: GitHubConfig,
@@ -36,14 +41,14 @@ export class OrgRepoFilter {
   }
 
   @Memoize()
-  async getRepositories(org: string): Promise<ReadonlyArray<string>> {
+  async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
     if (!this.repositoriesByOrg.has(org)) {
-      const repositories = new Set<string>();
+      const repositories = new Set<Repository>();
       const github = await GitHub.instance(this.config, this.logger);
       // todo add repo filter based on config
       const repos = await github.getRepositories(org);
       for (const repo of repos) {
-        repositories.add(repo.name);
+        repositories.add({name: repo.name, defaultBranch: repo.default_branch});
       }
       this.repositoriesByOrg.set(org, repositories);
     }
