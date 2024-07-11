@@ -33,7 +33,6 @@ export abstract class BitbucketServerConverter extends Converter {
 
   protected vcsRepoKey(projectKey: string, repoSlug: string): RepoKey {
     return {
-      uid: repoSlug.toLowerCase(),
       name: repoSlug.toLowerCase(),
       organization: this.vcsOrgKey(projectKey),
     };

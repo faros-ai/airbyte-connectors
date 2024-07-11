@@ -36,7 +36,7 @@ export class Commits extends PhabricatorConverter {
     } catch (e: any) {
       ctx.logger.warn(
         `Failed to parse revision id from commit sha: ${sha}, repository: ${
-          repository.uid
+          repository.name
         }. Error: ${(e as Error).message || JSON.stringify(e)}`
       );
     }

@@ -6,10 +6,9 @@ import {DestinationRecord} from '../converter';
 const NULL = '/dev/null';
 
 export type OrgKey = {uid: string; source: string};
-export type RepoKey = {uid: string; name: string; organization: OrgKey};
+export type RepoKey = {name: string; organization: OrgKey};
 export type PullRequestKey = {
   number: number;
-  uid: string;
   repository: RepoKey;
 };
 export type UserKey = {uid: string; source: string};
