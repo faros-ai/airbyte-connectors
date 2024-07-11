@@ -1,0 +1,20 @@
+fragment CommitFields on Commit {
+    oid
+    message
+    url
+    authoredDate
+    author {
+        name
+        email
+        user {
+            __typename
+            login
+            url
+        }
+    }
+    committer {
+        date
+    }
+    additions
+    deletions
+}

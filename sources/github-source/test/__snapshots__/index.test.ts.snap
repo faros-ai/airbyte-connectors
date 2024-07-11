@@ -69,6 +69,8 @@ exports[`index streams - commits 1`] = `
     "deletions": 5,
     "message": "Added commit for testing",
     "oid": "0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+    "org": "github",
+    "repo": "Hello-World",
     "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a94b462",
   },
   {
@@ -90,6 +92,8 @@ exports[`index streams - commits 1`] = `
     "deletions": 3,
     "message": "Another Commit",
     "oid": "0ac47c4d800fc4581b632157a02a9c9b1a941234",
+    "org": "github",
+    "repo": "Hello-World",
     "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a941234",
   },
 ]

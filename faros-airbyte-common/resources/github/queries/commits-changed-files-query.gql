@@ -1,4 +1,4 @@
-query commits($owner: String!, $repo: String!, $branch: String!, $since: GitTimestamp, $page_size: Int = 25, $cursor: String) {
+query commitsChangedFiles($owner: String!, $repo: String!, $branch: String!, $since: GitTimestamp, $page_size: Int = 25, $cursor: String) {
   repository(owner: $owner, name: $repo) {
     ref(qualifiedName: $branch) {
       target {
@@ -11,6 +11,7 @@ query commits($owner: String!, $repo: String!, $branch: String!, $since: GitTime
             }
             nodes {
               ...CommitFields
+              changedFiles
             }
           }
         }

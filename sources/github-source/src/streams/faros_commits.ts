@@ -27,8 +27,8 @@ export class FarosCommits extends StreamWithRepoSlices {
     const repo = streamSlice?.repo;
     const defaultBranch = streamSlice?.defaultBranch;
     const github = await GitHub.instance(this.config, this.logger);
-    const commits = await github.getCommits(org, repo, defaultBranch);
-    for (const commit of commits) {
+    const commits = github.getCommits(org, repo, defaultBranch);
+    for await (const commit of commits) {
       yield commit;
     }
   }

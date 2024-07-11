@@ -36,16 +36,16 @@ export type PullRequest = {
   repo: string;
 } & PullRequestsQuery['repository']['pullRequests']['nodes'][0];
 
-// Extract the type for the target with history avoiding the null case;
-type CommitWithHistory = Exclude<
-  CommitsQuery['repository']['ref']['target'],
-  Record<string, never> | null
->;
+type CommitsQueryCommitNode = NonNullable<
+  CommitsQuery['repository']['ref']['target'] & {__typename: 'Commit'}
+>['history']['nodes'][0];
 
 export type Commit = {
   org: string;
   repo: string;
-} & CommitWithHistory['history']['nodes'][0];
+  changedFiles?: number;
+  changedFilesIfAvailable?: number;
+} & CommitsQueryCommitNode;
 
 export type User = {
   org: string;
