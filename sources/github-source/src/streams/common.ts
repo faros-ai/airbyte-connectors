@@ -1,6 +1,10 @@
-import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  calculateUpdatedStreamState,
+} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
+import {toLower} from 'lodash';
 
 import {OrgRepoFilter} from '../org-repo-filter';
 import {GitHubConfig} from '../types';
@@ -98,7 +102,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     currentStreamState: StreamState,
     orgRepoKey: string
   ): StreamState {
-    return StreamBase.calculateUpdatedStreamState(
+    return calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
       orgRepoKey
@@ -109,33 +113,8 @@ export abstract class StreamBase extends AirbyteStreamBase {
     return cutoff ? Utils.toDate(cutoff) : this.config.startDate;
   }
 
-  static calculateUpdatedStreamState(
-    latestRecordCutoff: Date,
-    currentStreamState: StreamState,
-    orgRepoKey: string
-  ): StreamState {
-    if (isNil(latestRecordCutoff)) {
-      return currentStreamState;
-    }
-
-    const currentCutoff = Utils.toDate(
-      currentStreamState?.[orgRepoKey]?.cutoff ?? 0
-    );
-
-    if (latestRecordCutoff > currentCutoff) {
-      const newState = {
-        cutoff: latestRecordCutoff.getTime(),
-      };
-      return {
-        ...currentStreamState,
-        [orgRepoKey]: newState,
-      };
-    }
-    return currentStreamState;
-  }
-
   static orgRepoKey(org: string, repo: string): string {
-    return `${org}/${repo}`;
+    return toLower(`${org}/${repo}`);
   }
 }
 
