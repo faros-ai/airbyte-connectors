@@ -4,6 +4,9 @@ import path from 'path';
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 
+// GraphQL query used to get labels
+export const LABELS_QUERY = loadQuery('labels-query.gql');
+
 // GraphQL query used to get organization members
 export const ORG_MEMBERS_QUERY = loadQuery('list-members-query.gql');
 

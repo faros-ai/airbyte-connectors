@@ -4,6 +4,7 @@ import {
   Commit,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  Label,
   Organization,
   PullRequest,
   Repository,
@@ -13,6 +14,7 @@ import {
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
+  LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
@@ -20,11 +22,12 @@ import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
+  LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick} from 'lodash';
+import {isEmpty, isNil, omit, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -32,6 +35,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const PAGE_SIZE = 100;
+export const PR_NESTED_PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 
@@ -131,6 +135,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         page_size: PAGE_SIZE,
+        nested_page_size: PR_NESTED_PAGE_SIZE,
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
@@ -142,6 +147,27 @@ export abstract class GitHub {
           org,
           repo,
           ...pr,
+          labels: omit(pr.labels, ['pageInfo']),
+        };
+      }
+    }
+  }
+
+  async *getLabels(org: string, repo: string): AsyncGenerator<Label> {
+    const iter = this.octokit(org).graphql.paginate.iterator<LabelsQuery>(
+      LABELS_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: PAGE_SIZE,
+      }
+    );
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const label of res.repository.labels.nodes) {
+        yield {
+          org,
+          repo,
+          name: label.name,
         };
       }
     }
