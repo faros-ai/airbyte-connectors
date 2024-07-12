@@ -1,5 +1,4 @@
-import {randomUUID} from 'node:crypto';
-
+import {randomUUID} from 'crypto';
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {paginatedQueryV2, Schema, SchemaLoader} from 'faros-js-client';
