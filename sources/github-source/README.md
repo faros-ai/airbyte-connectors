@@ -79,9 +79,9 @@ connectors, such as linting/formatting tools, should go in the root
 
 ### GitHub Required Permissions per Stream
 
-| Stream  | Classic               | Fine-grained*                                                     |
-|---------|-----------------------|-------------------------------------------------------------------|
-| Commits | repo:status, read:org | Repository Contents, Repository Metadata, Organization Members    |
-|         |                       |                                                                   |
+| Stream  | Classic               | Fine-grained*                             |
+|---------|-----------------------|-------------------------------------------|
+| Commits | repo:status, read:org | Repository Contents, Repository Metadata  |
+|         |                       |                                           |
 
 *Fine-grained permissions marked as required are always read-only.
