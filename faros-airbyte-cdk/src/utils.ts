@@ -170,6 +170,13 @@ const SOURCE_COMMON_PROPERTIES = {
       'The maximum number of slice failures before a stream sync fails. Use -1 for unlimited',
     default: 0,
   },
+  debug: {
+    order: 1002,
+    type: 'boolean',
+    title: 'Debug',
+    description: 'Enable debug mode',
+    default: false,
+  },
 };
 
 export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {

@@ -11,6 +11,7 @@ import {
   AirbyteConfiguredStream,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
+  AirbyteLogLevel,
   AirbyteMessage,
   AirbyteMessageType,
   AirbyteRecord,
@@ -93,6 +94,7 @@ export abstract class AirbyteSourceBase<
    * https://docs.airbyte.io/architecture/airbyte-specification.
    */
   async discover(config: Config): Promise<AirbyteCatalogMessage> {
+    this.adjustLoggerLevel(config);
     const streams = this.streams(config).map((stream) =>
       stream.asAirbyteStream()
     );
@@ -104,6 +106,7 @@ export abstract class AirbyteSourceBase<
    * See https://docs.airbyte.io/architecture/airbyte-specification.
    */
   async check(config: Config): Promise<AirbyteConnectionStatusMessage> {
+    this.adjustLoggerLevel(config);
     try {
       const [succeeded, error] = await this.checkConnection(config);
       if (!succeeded) {
@@ -134,6 +137,8 @@ export abstract class AirbyteSourceBase<
     catalog: AirbyteConfiguredCatalog,
     state: AirbyteState
   ): AsyncGenerator<AirbyteMessage> {
+    this.adjustLoggerLevel(config);
+
     this.logger.info(`Syncing ${this.name}`);
     yield new AirbyteSourceConfigMessage(
       {data: maybeCompressState(config, state)},
@@ -456,6 +461,12 @@ export abstract class AirbyteSourceBase<
         },
       }
     );
+  }
+
+  private adjustLoggerLevel(config: Config) {
+    if (config.debug) {
+      this.logger.level = AirbyteLogLevel.DEBUG;
+    }
   }
 }
 
