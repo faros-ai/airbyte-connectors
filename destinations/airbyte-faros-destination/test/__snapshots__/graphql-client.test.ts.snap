@@ -116,7 +116,8 @@ Object {
 
 exports[`graphql-client write batch upsert resetData 3`] = `
 "mutation {
-      delete_vcs_Organization(where:{id: {_in:[
+      
+      del: delete_vcs_Organization(where:{id: {_in:[
         \\"00042ddb78c1a5956320e7fbc7ca488517a9caa8\\",\\"0008d73ec6b79910fcbadb7410c4d191e92ce44d\\",\\"0011f5f8600d14dae163a37286aa1cd5e6bf6a71\\"
       ]}}) {
         affected_rows
@@ -148,7 +149,8 @@ Object {
 
 exports[`graphql-client write batch upsert resetData 7`] = `
 "mutation {
-      delete_vcs_Organization(where:{id: {_in:[
+      
+      del: delete_vcs_Organization(where:{id: {_in:[
         \\"0017bcda1dfcf5b5c2db430849a4bf90f8c51be4\\",\\"001d319806cb4e608aec2f47f3a2028c41b64321\\"
       ]}}) {
         affected_rows
