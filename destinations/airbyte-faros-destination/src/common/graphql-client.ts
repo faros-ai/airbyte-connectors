@@ -1,3 +1,5 @@
+import {randomUUID} from 'node:crypto';
+
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {paginatedQueryV2, Schema, SchemaLoader} from 'faros-js-client';
@@ -363,8 +365,9 @@ export class GraphQLClient {
     await this.flush();
 
     const minRefreshedAt = new Date(this.resetLimitMillis).toISOString();
+    const deleteSessionId = randomUUID().toString();
     this.logger.info(
-      `Resetting data before ${minRefreshedAt} for origin ${origin}`
+      `Resetting data before ${minRefreshedAt} for origin ${origin} with session id ${deleteSessionId}`
     );
 
     for (const model of intersection(
@@ -406,20 +409,27 @@ export class GraphQLClient {
         ids.push(record.id);
         // delete in batches
         if (ids.length >= this.resetPageSize) {
-          await this.deleteById(model, ids);
+          await this.deleteById(model, ids, deleteSessionId);
           ids = [];
         }
       }
       // clean up any remaining records
       if (ids.length > 0) {
-        await this.deleteById(model, ids);
+        await this.deleteById(model, ids, deleteSessionId);
       }
     }
   }
 
-  async deleteById(model: string, ids: string[]): Promise<void> {
+  async deleteById(
+    model: string,
+    ids: string[],
+    session: string
+  ): Promise<void> {
     const query = `mutation {
-      delete_${model}(where:{id: {_in:[
+      ctx: setCtx(args: {session: "${session}"}) {
+        success
+      }
+      del: delete_${model}(where:{id: {_in:[
         ${ids.map((id) => `"${id}"`).join(',')}
       ]}}) {
         affected_rows
