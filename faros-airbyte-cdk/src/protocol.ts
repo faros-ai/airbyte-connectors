@@ -52,6 +52,7 @@ export enum AirbyteTraceFailureType {
 export interface AirbyteConfig {
   backfill?: boolean;
   compress_state?: boolean;
+  debug?: boolean;
   max_stream_failures?: number; // -1 means unlimited
   max_slice_failures?: number; // -1 means unlimited
   [k: string]: any;

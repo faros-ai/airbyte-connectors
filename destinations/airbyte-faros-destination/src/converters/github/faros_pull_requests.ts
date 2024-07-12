@@ -1,18 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
+import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
 
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
-
-type RepoKey = {
-  name: string;
-  organization: {
-    uid: string;
-    source: string;
-  };
-};
+import {GitHubCommon, GitHubConverter} from './common';
 
 type BranchKey = {
   name: string;
@@ -23,8 +16,9 @@ export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_PullRequest',
     'vcs_Branch',
+    'vcs_PullRequest',
+    'vcs_PullRequestLabel',
   ];
 
   async convert(
@@ -57,12 +51,16 @@ export class FarosPullRequests extends GitHubConverter {
     // since we should always have branches for a PR
     const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
 
+    const prKey = {
+      repository: GitHubCommon.repoKey(pr.org, pr.repo, this.streamName.source),
+      number: pr.number,
+    };
+
     return [
       {
         model: 'vcs_PullRequest',
         record: {
-          repository: repoKey(pr.org, pr.repo, this.streamName.source),
-          number: pr.number,
+          ...prKey,
           title: pr.title,
           description: Utils.cleanAndTruncate(pr.body),
           state,
@@ -87,6 +85,13 @@ export class FarosPullRequests extends GitHubConverter {
           ...branchInfo,
         },
       },
+      ...pr.labels.nodes.map((label) => ({
+        model: 'vcs_PullRequestLabel',
+        record: {
+          pullRequest: prKey,
+          label: {name: label.name},
+        },
+      })),
     ];
   }
 
@@ -122,16 +127,6 @@ export class FarosPullRequests extends GitHubConverter {
   }
 }
 
-function repoKey(org: string, repo: string, source: string): RepoKey {
-  return {
-    name: toLower(repo),
-    organization: {
-      uid: toLower(org),
-      source,
-    },
-  };
-}
-
 function branchKey(
   branchName: string,
   branchRepo: PullRequest['baseRepository'] | PullRequest['headRepository'],
@@ -139,7 +134,11 @@ function branchKey(
 ): BranchKey {
   return {
     name: branchName,
-    repository: repoKey(branchRepo.owner.login, branchRepo.name, source),
+    repository: GitHubCommon.repoKey(
+      branchRepo.owner.login,
+      branchRepo.name,
+      source
+    ),
   };
 }
 

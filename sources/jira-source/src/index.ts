@@ -138,4 +138,10 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       state,
     };
   }
+
+  async onAfterRead(config: JiraConfig): Promise<void> {
+    const instance = await Jira.instance(config, this.logger);
+    const stats = instance.getClientStats();
+    this.logger.debug(`Jira client call stats ${JSON.stringify(stats)}`);
+  }
 }

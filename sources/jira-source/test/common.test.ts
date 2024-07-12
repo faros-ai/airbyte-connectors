@@ -1,9 +1,9 @@
-import {StreamBase} from '../src/streams/common';
+import {calculateUpdatedStreamState} from 'faros-airbyte-cdk';
 
 describe('calculateUpdatedStreamState', () => {
   test('should return currentStreamState if latestRecordCutoff is null', () => {
     const currentStreamState = {project1: {cutoff: 1627641720000}};
-    const result = StreamBase.calculateUpdatedStreamState(
+    const result = calculateUpdatedStreamState(
       null,
       currentStreamState,
       'project1',
@@ -17,7 +17,7 @@ describe('calculateUpdatedStreamState', () => {
       project1: {cutoff: new Date('2021-07-30T00:00:00Z').getTime()},
     };
     const latestRecordCutoff = new Date('2021-08-01T00:00:00Z');
-    const result = StreamBase.calculateUpdatedStreamState(
+    const result = calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
       'project1',
@@ -31,7 +31,7 @@ describe('calculateUpdatedStreamState', () => {
       project1: {cutoff: new Date('2021-07-30T00:00:00Z').getTime()},
     };
     const latestRecordCutoff = new Date('2021-08-30T00:00:00Z');
-    const result = StreamBase.calculateUpdatedStreamState(
+    const result = calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
       'project1',

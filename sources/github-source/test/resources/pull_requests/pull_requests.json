@@ -25,6 +25,20 @@
           },
           "deletions": 763,
           "isDraft": false,
+          "labels": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "name": "dependencies"
+              },
+              {
+                "name": "typescript"
+              }
+            ]
+          },
           "number": 48,
           "mergedAt": "2021-02-16T17:15:27Z",
           "mergeCommit": {
@@ -71,6 +85,13 @@
           },
           "deletions": 4787,
           "isDraft": false,
+          "labels": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": null
+            },
+            "nodes": []
+          },
           "number": 47,
           "mergedAt": null,
           "mergeCommit": null,
@@ -115,6 +136,17 @@
           },
           "deletions": 23,
           "isDraft": false,
+          "labels": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "name": "dependencies"
+              }
+            ]
+          },
           "number": 46,
           "mergedAt": "2021-02-04T21:53:00Z",
           "mergeCommit": {

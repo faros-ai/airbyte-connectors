@@ -1,0 +1,13 @@
+query labels($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
+  repository(owner: $owner, name: $repo) {
+    labels(first: $page_size, after: $cursor) {
+      nodes {
+        name
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

@@ -5,6 +5,13 @@ AirbyteSpec {
   "spec": Object {
     "connectionSpecification": Object {
       "properties": Object {
+        "debug": Object {
+          "default": false,
+          "description": "Enable debug mode",
+          "order": 1002,
+          "title": "Debug",
+          "type": "boolean",
+        },
         "max_slice_failures": Object {
           "default": 0,
           "description": "The maximum number of slice failures before a stream sync fails. Use -1 for unlimited",

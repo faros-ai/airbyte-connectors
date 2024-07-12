@@ -48,6 +48,57 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - commits 1`] = `
+[
+  {
+    "additions": 23,
+    "author": {
+      "email": "jane@doe.noreply.github.com",
+      "name": "Jane Doe",
+      "user": {
+        "__typename": "User",
+        "login": "janedoe",
+        "url": "https://github.com/janedoe",
+      },
+    },
+    "authoredDate": "2024-07-10T05:00:56Z",
+    "changedFilesIfAvailable": 7,
+    "committer": {
+      "date": "2024-07-09T22:00:56-07:00",
+    },
+    "deletions": 5,
+    "message": "Added commit for testing",
+    "oid": "0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+    "org": "github",
+    "repo": "Hello-World",
+    "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+  },
+  {
+    "additions": 11,
+    "author": {
+      "email": "jane@doe.noreply.github.com",
+      "name": "Jane Doe",
+      "user": {
+        "__typename": "User",
+        "login": "janedoe",
+        "url": "https://github.com/janedoe",
+      },
+    },
+    "authoredDate": "2024-07-10T07:10:56Z",
+    "changedFilesIfAvailable": 2,
+    "committer": {
+      "date": "2024-07-10T22:00:56-07:00",
+    },
+    "deletions": 3,
+    "message": "Another Commit",
+    "oid": "0ac47c4d800fc4581b632157a02a9c9b1a941234",
+    "org": "github",
+    "repo": "Hello-World",
+    "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a941234",
+  },
+]
+`;
+
 exports[`index streams - copilot seats (empty) 1`] = `
 [
   {
@@ -165,6 +216,26 @@ exports[`index streams - copilot usage 1`] = `
 ]
 `;
 
+exports[`index streams - labels 1`] = `
+[
+  {
+    "name": "dependencies",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+  {
+    "name": "typescript",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+  {
+    "name": "python",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+]
+`;
+
 exports[`index streams - organizations 1`] = `
 [
   {
@@ -224,13 +295,23 @@ Add any other context about the changes here.
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [
+        {
+          "name": "dependencies",
+        },
+        {
+          "name": "typescript",
+        },
+      ],
+    },
     "mergeCommit": {
       "oid": "b4c35c299ad22fe858569482a7696597ca038651",
     },
     "mergedAt": "2021-02-16T17:15:27Z",
     "number": 48,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },
@@ -281,11 +362,14 @@ N/A
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [],
+    },
     "mergeCommit": null,
     "mergedAt": null,
     "number": 47,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },
@@ -329,13 +413,20 @@ N/A
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [
+        {
+          "name": "dependencies",
+        },
+      ],
+    },
     "mergeCommit": {
       "oid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
     },
     "mergedAt": "2021-02-04T21:53:00Z",
     "number": 46,
     "org": "github",
-    "repo": undefined,
+    "repo": "Hello-World",
     "reviewEvents": {
       "nodes": [],
     },

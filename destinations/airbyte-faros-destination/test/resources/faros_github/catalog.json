@@ -32,6 +32,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__github__faros_labels"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__github__faros_users"
       },
       "destination_sync_mode": "append"

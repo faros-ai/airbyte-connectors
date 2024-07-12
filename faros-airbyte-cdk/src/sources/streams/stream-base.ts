@@ -1,4 +1,6 @@
-import {snakeCase} from 'lodash';
+import {Utils} from 'faros-js-client';
+import {isNil, snakeCase} from 'lodash';
+import moment from 'moment';
 import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
@@ -209,4 +211,32 @@ export abstract class AirbyteStreamBase {
       }
     }
   }
+}
+
+export function calculateUpdatedStreamState(
+  latestRecordCutoff: Date,
+  currentStreamState: Dictionary<any>,
+  key: string,
+  cutoffLagDays: number = 0
+): Dictionary<any> {
+  if (isNil(latestRecordCutoff)) {
+    return currentStreamState;
+  }
+
+  const currentCutoff = Utils.toDate(currentStreamState?.[key]?.cutoff ?? 0);
+
+  const adjustedLatestRecordCutoff = moment(latestRecordCutoff)
+    .subtract(cutoffLagDays, 'days')
+    .toDate();
+
+  if (adjustedLatestRecordCutoff > currentCutoff) {
+    const newState = {
+      cutoff: adjustedLatestRecordCutoff.getTime(),
+    };
+    return {
+      ...currentStreamState,
+      [key]: newState,
+    };
+  }
+  return currentStreamState;
 }
