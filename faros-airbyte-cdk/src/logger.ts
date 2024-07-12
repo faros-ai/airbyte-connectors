@@ -95,14 +95,38 @@ function writeMessage(msg: AirbyteMessage, level: AirbyteLogLevel): void {
     return;
   }
 
-  console.log(
-    JSON.stringify(
-      msg.type === AirbyteMessageType.RECORD
-        ? prepareAirbyteRecord(msg as AirbyteRecord)
-        : msg
-    )
-  );
+  let message: AirbyteMessage;
+
+  switch (msg.type) {
+    case AirbyteMessageType.RECORD:
+      message = prepareAirbyteRecord(msg as AirbyteRecord);
+      break;
+    case AirbyteMessageType.LOG:
+      message = adjustLogLevel(msg as AirbyteLog);
+      break;
+    default:
+      message = msg;
+      break;
+  }
+
+  console.log(JSON.stringify(message));
 }
+
+// When running on Airbyte, we log the message as info regardless of the log level
+// Airbyte doesn't show debug logs so we need to log them as info to make them visible
+function adjustLogLevel(log: AirbyteLog): AirbyteLog {
+  // WORKER_JOB_ID is populated by Airbyte
+  if (process.env.WORKER_JOB_ID) {
+    return AirbyteLog.make(
+      AirbyteLogLevel.INFO,
+      log.log.message,
+      log.log.stack_trace
+    );
+  }
+
+  return log;
+}
+
 function prepareAirbyteRecord(record: AirbyteRecord): AirbyteRecord {
   return new AirbyteRecord({
     stream: record.record.stream,
