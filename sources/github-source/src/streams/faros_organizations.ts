@@ -1,5 +1,5 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {Organization} from 'faros-airbyte-common/lib/github';
+import {Organization} from 'faros-airbyte-common/github';
 import {Dictionary} from 'ts-essentials';
 
 import {GitHub} from '../github';

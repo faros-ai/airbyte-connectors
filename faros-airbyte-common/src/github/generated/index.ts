@@ -7805,6 +7805,174 @@ export type WorkflowsParametersInput = {
   workflows: Array<WorkflowFileReferenceInput>;
 };
 
+export type CommitFieldsFragment = {
+  oid: string;
+  message: string;
+  url: string;
+  authoredDate: string;
+  additions: number;
+  deletions: number;
+  author?: {
+    name?: string | null;
+    email?: string | null;
+    user?: {__typename: 'User'; login: string; url: string} | null;
+  } | null;
+  committer?: {date?: string | null} | null;
+};
+
+export type CommitsChangedFilesIfAvailableQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  branch: Scalars['String']['input'];
+  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type CommitsChangedFilesIfAvailableQuery = {
+  repository?: {
+    ref?: {
+      target?:
+        | {__typename: 'Blob'}
+        | {
+            __typename: 'Commit';
+            history: {
+              pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+              nodes?: Array<{
+                changedFilesIfAvailable?: number | null;
+                oid: string;
+                message: string;
+                url: string;
+                authoredDate: string;
+                additions: number;
+                deletions: number;
+                author?: {
+                  name?: string | null;
+                  email?: string | null;
+                  user?: {
+                    __typename: 'User';
+                    login: string;
+                    url: string;
+                  } | null;
+                } | null;
+                committer?: {date?: string | null} | null;
+              } | null> | null;
+            };
+          }
+        | {__typename: 'Tag'}
+        | {__typename: 'Tree'}
+        | null;
+    } | null;
+  } | null;
+};
+
+export type CommitsChangedFilesQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  branch: Scalars['String']['input'];
+  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type CommitsChangedFilesQuery = {
+  repository?: {
+    ref?: {
+      target?:
+        | {__typename: 'Blob'}
+        | {
+            __typename: 'Commit';
+            history: {
+              pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+              nodes?: Array<{
+                changedFiles: number;
+                oid: string;
+                message: string;
+                url: string;
+                authoredDate: string;
+                additions: number;
+                deletions: number;
+                author?: {
+                  name?: string | null;
+                  email?: string | null;
+                  user?: {
+                    __typename: 'User';
+                    login: string;
+                    url: string;
+                  } | null;
+                } | null;
+                committer?: {date?: string | null} | null;
+              } | null> | null;
+            };
+          }
+        | {__typename: 'Tag'}
+        | {__typename: 'Tree'}
+        | null;
+    } | null;
+  } | null;
+};
+
+export type CommitsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  branch: Scalars['String']['input'];
+  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type CommitsQuery = {
+  repository?: {
+    ref?: {
+      target?:
+        | {__typename: 'Blob'}
+        | {
+            __typename: 'Commit';
+            history: {
+              pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+              nodes?: Array<{
+                oid: string;
+                message: string;
+                url: string;
+                authoredDate: string;
+                additions: number;
+                deletions: number;
+                author?: {
+                  name?: string | null;
+                  email?: string | null;
+                  user?: {
+                    __typename: 'User';
+                    login: string;
+                    url: string;
+                  } | null;
+                } | null;
+                committer?: {date?: string | null} | null;
+              } | null> | null;
+            };
+          }
+        | {__typename: 'Tag'}
+        | {__typename: 'Tree'}
+        | null;
+    } | null;
+  } | null;
+};
+
+export type LabelsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type LabelsQuery = {
+  repository?: {
+    labels?: {
+      nodes?: Array<{name: string} | null> | null;
+      pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+    } | null;
+  } | null;
+};
+
 export type ListMembersQueryVariables = Exact<{
   login: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
@@ -7831,6 +7999,7 @@ export type PullRequestsQueryVariables = Exact<{
   repo: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
+  nested_page_size?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 export type PullRequestsQuery = {
@@ -7876,6 +8045,10 @@ export type PullRequestsQuery = {
           | null;
         commits: {totalCount: number};
         comments: {totalCount: number};
+        labels?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{name: string} | null> | null;
+        } | null;
         mergeCommit?: {oid: string} | null;
         reviewEvents: {
           nodes?: Array<

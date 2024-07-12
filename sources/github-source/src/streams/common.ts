@@ -16,6 +16,7 @@ export type OrgStreamSlice = {
 export type RepoStreamSlice = {
   org: string;
   repo: string;
+  defaultBranch: string;
 };
 
 export type StreamState = {
@@ -54,7 +55,9 @@ export const MinimumStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
+  'faros_commits',
 ];
 
 // todo: fill as streams are developed
@@ -64,7 +67,9 @@ export const StandardStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
+  'faros_commits',
 ];
 
 // todo: fill as streams are developed
@@ -74,7 +79,9 @@ export const FullStreamNames = [
   'faros_organizations',
   'faros_repositories',
   'faros_pull_requests',
+  'faros_labels',
   'faros_users',
+  'faros_commits',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
@@ -130,7 +137,7 @@ export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       for (const repo of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo};
+        yield {org, repo: repo.name, defaultBranch: repo.default_branch};
       }
     }
   }

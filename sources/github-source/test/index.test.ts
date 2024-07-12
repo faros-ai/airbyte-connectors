@@ -196,6 +196,29 @@ describe('index', () => {
     });
   });
 
+  test('streams - labels', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'labels/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getLabelsMockedImplementation(
+              readTestResourceAsJSON('labels/labels.json')
+            )
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - users', async () => {
     await sourceReadTest({
       source,
@@ -254,6 +277,29 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - commits', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getCommitsMockedImplementation(
+              readTestResourceAsJSON('commits/commits.json')
+            )
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function setupGitHubInstance(octokitMock: any) {
@@ -301,31 +347,14 @@ const getRepositoriesMockedImplementation = (res: any) => ({
   },
 });
 
-const getPullRequestsMockedImplementation = (res: any) => ({
-  graphql: {
-    paginate: {
-      iterator: jest.fn().mockImplementation((query: string) => {
-        if (!query.includes('query pullRequests')) {
-          throw new Error('Not mocked');
-        }
-        return iterate([res]);
-      }),
-    },
-  },
-});
+const getPullRequestsMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('pullRequests', res);
 
-const getOrganizationMembersMockedImplementation = (res: any) => ({
-  graphql: {
-    paginate: {
-      iterator: jest.fn().mockImplementation((query: string) => {
-        if (!query.includes('query listMembers')) {
-          throw new Error('Not mocked');
-        }
-        return iterate([res]);
-      }),
-    },
-  },
-});
+const getLabelsMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('labels', res);
+
+const getOrganizationMembersMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('listMembers', res);
 
 const getTeamsMockedImplementation = (res: any) => ({
   teams: {
@@ -336,6 +365,38 @@ const getTeamsMockedImplementation = (res: any) => ({
 const getTeamMembershipsMockedImplementation = (res: any) => ({
   teams: {
     listMembersInOrg: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getCommitsMockedImplementation = (res: any) => {
+  const graphqlMock: any = jest.fn().mockImplementation((query: string) => {
+    if (!query.includes('query commits')) {
+      throw new Error('Not mocked');
+    }
+    return res;
+  });
+
+  graphqlMock.paginate = {
+    iterator: jest.fn().mockImplementation((query: string) => {
+      if (!query.includes('query commits')) {
+        throw new Error('Not mocked');
+      }
+      return iterate([res]);
+    }),
+  };
+  return {graphql: graphqlMock};
+};
+
+const graphqlMockedImplementation = (queryName: string, res: any) => ({
+  graphql: {
+    paginate: {
+      iterator: jest.fn().mockImplementation((query: string) => {
+        if (!query.includes(`query ${queryName}`)) {
+          throw new Error('Not mocked');
+        }
+        return iterate([res]);
+      }),
+    },
   },
 });
 

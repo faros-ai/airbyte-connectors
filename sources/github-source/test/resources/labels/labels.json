@@ -1,0 +1,21 @@
+{
+  "repository": {
+    "labels": {
+      "pageInfo": {
+        "endCursor": "Y3Vyc29yOnYyOpK5MjAyMC0wNS0yMFQxMjoyMTowMy0wNzowMM4ZF3Ky",
+        "hasNextPage": false
+      },
+      "nodes": [
+        {
+          "name": "dependencies"
+        },
+        {
+          "name": "typescript"
+        },
+        {
+          "name": "python"
+        }
+      ]
+    }
+  }
+}

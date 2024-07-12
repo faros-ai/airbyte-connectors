@@ -1,8 +1,10 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   AppInstallation,
+  Commit,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  Label,
   Organization,
   PullRequest,
   Repository,
@@ -11,15 +13,21 @@ import {
   User,
 } from 'faros-airbyte-common/github';
 import {
+  CommitsQuery,
+  LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
+  COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
+  COMMITS_CHANGED_FILES_QUERY,
+  COMMITS_QUERY,
+  LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick} from 'lodash';
+import {isEmpty, isNil, omit, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -27,6 +35,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const PAGE_SIZE = 100;
+export const PR_NESTED_PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 
@@ -126,6 +135,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         page_size: PAGE_SIZE,
+        nested_page_size: PR_NESTED_PAGE_SIZE,
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
@@ -137,9 +147,126 @@ export abstract class GitHub {
           org,
           repo,
           ...pr,
+          labels: omit(pr.labels, ['pageInfo']),
         };
       }
     }
+  }
+
+  async *getLabels(org: string, repo: string): AsyncGenerator<Label> {
+    const iter = this.octokit(org).graphql.paginate.iterator<LabelsQuery>(
+      LABELS_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: PAGE_SIZE,
+      }
+    );
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const label of res.repository.labels.nodes) {
+        yield {
+          org,
+          repo,
+          name: label.name,
+        };
+      }
+    }
+  }
+
+  async *getCommits(
+    org: string,
+    repo: string,
+    branch: string
+  ): AsyncIterableIterator<Commit> {
+    const queryParameters = {
+      owner: org,
+      repo,
+      branch,
+      page_size: PAGE_SIZE,
+    };
+    // Check if the client has changedFilesIfAvailable field available
+    const hasChangedFilesIfAvailable =
+      await this.hasChangedFilesIfAvailable(queryParameters);
+    const query = hasChangedFilesIfAvailable
+      ? COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY
+      : COMMITS_CHANGED_FILES_QUERY;
+    // Do a first query to check if the repository has commits history
+    const historyCheckResult = await this.octokit(org).graphql<CommitsQuery>(
+      query,
+      {
+        ...queryParameters,
+        page_size: 1,
+      }
+    );
+    if (!historyCheckResult.repository?.ref?.target?.['history']) {
+      this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
+      return [];
+    }
+
+    // The `changedFiles` field used in COMMITS_CHANGED_FILES_QUERY,
+    // has the following warning on the latest cloud schema:
+    // "We recommend using the `changedFilesIfAvailable` field instead of
+    // `changedFiles`, as `changedFiles` will cause your request to return an error
+    // if GitHub is unable to calculate the number of changed files"
+    // https://docs.github.com/en/graphql/reference/objects#commit:~:text=information%20you%20want.-,changedFiles,-(Int)
+    try {
+      yield* this.queryCommits(org, repo, query, queryParameters);
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to fetch commits with changed files.
+         Retrying fetching commits for repo ${repo} without changed files.`
+      );
+      yield* this.queryCommits(org, repo, COMMITS_QUERY, queryParameters);
+    }
+  }
+
+  private async *queryCommits(
+    org: string,
+    repo: string,
+    query: string,
+    queryParameters: any
+  ): AsyncGenerator<Commit> {
+    const iter = this.octokit(org).graphql.paginate.iterator<CommitsQuery>(
+      query,
+      queryParameters
+    );
+    for await (const res of iter) {
+      for (const commit of res.repository.ref.target['history'].nodes) {
+        yield {
+          org,
+          repo,
+          ...commit,
+        };
+      }
+    }
+  }
+
+  private async hasChangedFilesIfAvailable(
+    queryParameters: any
+  ): Promise<boolean> {
+    try {
+      await this.timeout<Commit>(
+        this.octokit(queryParameters.owner).graphql(
+          COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
+          {
+            ...queryParameters,
+            page_size: 1,
+          }
+        )
+      );
+    } catch (err: any) {
+      const errorCode = err?.errors?.[0]?.extensions?.code;
+      // Check if the error was caused by querying undefined changedFilesIfAvailable field to continue execution with
+      // a query that uses changedFiles (legacy field)
+      if (errorCode === 'undefinedField') {
+        this.logger.warn(
+          `Failed to fetch commits using query with changedFilesIfAvailable.
+          Retrying fetching commits for repo ${queryParameters.repo} using changedFiles.`
+        );
+        return false;
+      }
+    }
+    return true;
   }
 
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {
