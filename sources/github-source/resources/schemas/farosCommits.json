@@ -8,6 +8,9 @@
     "repo": {
       "type": "string"
     },
+    "branch": {
+      "type": "string"
+    },
     "oid": {
       "type": "string"
     },
