@@ -279,6 +279,7 @@ export class GraphQLClient {
   private schema: Schema;
   private tableNames: Set<string>;
   private tableDependencies: string[];
+  private supportsSetCtx = false;
   private readonly mutationBatchSize: number;
   private readonly upsertBatchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
@@ -334,6 +335,8 @@ export class GraphQLClient {
     this.schema = await this.schemaLoader.loadSchema();
     // various derivative values of schema
     this.tableNames = new Set(this.schema.tableNames);
+    // check if we have setCtx mutation available based on presence of its result table
+    this.supportsSetCtx = this.tableNames.has('set_ctx_result');
     this.tableDependencies = [...this.schema.sortedModelDependencies];
     reverse(this.tableDependencies);
     // self-referent models
@@ -426,9 +429,7 @@ export class GraphQLClient {
     session: string
   ): Promise<void> {
     const query = `mutation {
-      ctx: setCtx(args: {session: "${session}"}) {
-        success
-      }
+      ${this.supportsSetCtx ? `ctx: setCtx(args: {session: "${session}"}) { success }` : ''}
       del: delete_${model}(where:{id: {_in:[
         ${ids.map((id) => `"${id}"`).join(',')}
       ]}}) {
