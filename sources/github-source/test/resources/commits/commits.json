@@ -1,0 +1,58 @@
+{
+  "repository": {
+    "ref": {
+      "target": {
+        "history": {
+          "pageInfo": {
+            "endCursor": "0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+            "hasNextPage": false
+          },
+          "nodes": [
+            {
+              "oid": "0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+              "message": "Added commit for testing",
+              "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a94b462",
+              "authoredDate": "2024-07-10T05:00:56Z",
+              "author": {
+                "name": "Jane Doe",
+                "email": "jane@doe.noreply.github.com",
+                "user": {
+                  "__typename": "User",
+                  "login": "janedoe",
+                  "url": "https://github.com/janedoe"
+                }
+              },
+              "committer": {
+                "date": "2024-07-09T22:00:56-07:00"
+              },
+              "additions": 23,
+              "deletions": 5,
+              "changedFilesIfAvailable": 7
+            },
+            {
+              "oid": "0ac47c4d800fc4581b632157a02a9c9b1a941234",
+              "message": "Another Commit",
+              "url": "https://github.com/test/dolos/commit/0ac47c4d800fc4581b632157a02a9c9b1a941234",
+              "authoredDate": "2024-07-10T07:10:56Z",
+              "author": {
+                "name": "Jane Doe",
+                "email": "jane@doe.noreply.github.com",
+                "user": {
+                  "__typename": "User",
+                  "login": "janedoe",
+                  "url": "https://github.com/janedoe"
+                }
+              },
+              "committer": {
+                "date": "2024-07-10T22:00:56-07:00"
+              },
+              "additions": 11,
+              "deletions": 3,
+              "changedFilesIfAvailable": 2
+            }
+          ]
+        }
+      }
+    }
+  }
+}
