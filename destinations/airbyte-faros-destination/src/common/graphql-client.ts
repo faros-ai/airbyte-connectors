@@ -369,8 +369,11 @@ export class GraphQLClient {
 
     const minRefreshedAt = new Date(this.resetLimitMillis).toISOString();
     const deleteSessionId = randomUUID().toString();
+    const sessionInfo = this.supportsSetCtx
+      ? ` with session id ${deleteSessionId}`
+      : '';
     this.logger.info(
-      `Resetting data before ${minRefreshedAt} for origin ${origin} with session id ${deleteSessionId}`
+      `Resetting data before ${minRefreshedAt} for origin ${origin}${sessionInfo}`
     );
 
     for (const model of intersection(
