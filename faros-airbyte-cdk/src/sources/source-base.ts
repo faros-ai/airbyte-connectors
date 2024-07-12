@@ -308,8 +308,7 @@ export abstract class AirbyteSourceBase<
     config: PartialAirbyteConfig
   ): AsyncGenerator<AirbyteMessage> {
     const streamName = configuredStream.stream.name;
-    let streamState =
-      syncMode === SyncMode.INCREMENTAL ? connectorState[streamName] ?? {} : {};
+    let streamState = connectorState[streamName] ?? {};
     if (config.backfill) {
       this.logger.info(
         `Running a backfill for ${streamName} stream. Stream state will be ignored and left unmodified.`

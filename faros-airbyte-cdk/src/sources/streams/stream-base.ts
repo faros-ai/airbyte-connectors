@@ -186,7 +186,7 @@ export abstract class AirbyteStreamBase {
     latestRecord: Dictionary<any>,
     streamSlice?: Dictionary<any>
   ): Dictionary<any> {
-    return {};
+    return currentStreamState ?? {};
   }
 
   /* eslint-enable @typescript-eslint/no-unused-vars */
