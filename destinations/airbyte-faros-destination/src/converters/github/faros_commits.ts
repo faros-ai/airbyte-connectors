@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {some, toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 type DiffStats = {
   linesAdded: number;
@@ -31,19 +31,12 @@ export class FarosCommits extends GitHubConverter {
     const source = this.streamName.source;
     const diffStats = this.getDiffStats(commit);
     const author = this.getAndCollectAuthor(commit, source);
-    // TODO: Replace this with common repoKey function.
-    const repoKey = {
-      uid: toLower(commit.repo),
-      organization: {
-        uid: toLower(commit.org),
-        source,
-      },
-    };
-
+    const repoKey = GitHubCommon.repoKey(commit.org, commit.repo, source);
     return [
       {
         model: 'vcs_Commit',
         record: {
+          uid: commit.oid,
           sha: commit.oid,
           message: Utils.cleanAndTruncate(commit.message),
           author,
@@ -56,8 +49,12 @@ export class FarosCommits extends GitHubConverter {
       {
         model: 'vcs_BranchCommitAssociation',
         record: {
-          commit: {sha: commit.oid, repository: repoKey},
-          branch: {name: commit.branch, repository: repoKey},
+          commit: {sha: commit.oid, uid: commit.oid, repository: repoKey},
+          branch: {
+            name: commit.branch,
+            uid: commit.branch,
+            repository: repoKey,
+          },
         },
       },
     ];
