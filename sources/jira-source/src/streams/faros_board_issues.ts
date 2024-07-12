@@ -15,11 +15,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     return ['faros_boards'];
   }
 
-  // Not really an incremental stream, but want to read state to get the start date
-  get supportsIncremental(): boolean {
-    return true;
-  }
-
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosBoardIssues.json');
   }
