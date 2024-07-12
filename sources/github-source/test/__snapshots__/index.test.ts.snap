@@ -218,6 +218,26 @@ exports[`index streams - copilot usage 1`] = `
 ]
 `;
 
+exports[`index streams - labels 1`] = `
+[
+  {
+    "name": "dependencies",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+  {
+    "name": "typescript",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+  {
+    "name": "python",
+    "org": "github",
+    "repo": "Hello-World",
+  },
+]
+`;
+
 exports[`index streams - organizations 1`] = `
 [
   {
@@ -277,6 +297,16 @@ Add any other context about the changes here.
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [
+        {
+          "name": "dependencies",
+        },
+        {
+          "name": "typescript",
+        },
+      ],
+    },
     "mergeCommit": {
       "oid": "b4c35c299ad22fe858569482a7696597ca038651",
     },
@@ -334,6 +364,9 @@ N/A
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [],
+    },
     "mergeCommit": null,
     "mergedAt": null,
     "number": 47,
@@ -382,6 +415,13 @@ N/A
       },
     },
     "isDraft": false,
+    "labels": {
+      "nodes": [
+        {
+          "name": "dependencies",
+        },
+      ],
+    },
     "mergeCommit": {
       "oid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
     },

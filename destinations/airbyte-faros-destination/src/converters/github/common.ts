@@ -190,6 +190,17 @@ export class GitHubCommon {
     }
   }
 
+  static repoKey(org: string, repo: string, source: string): RepoKey {
+    return {
+      uid: toLower(repo),
+      name: toLower(repo),
+      organization: {
+        uid: toLower(org),
+        source,
+      },
+    };
+  }
+
   private static buildStatus(conclusion: string): {
     category: string;
     detail: string;

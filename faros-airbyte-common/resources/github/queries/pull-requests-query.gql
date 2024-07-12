@@ -1,87 +1,96 @@
-query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
-    repository(owner: $owner, name: $repo) {
-        pullRequests(
-            first: $page_size
-            orderBy: {field: UPDATED_AT, direction: DESC}
-            after: $cursor
-        ) {
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-            nodes {
-                additions
-                author {
-                    type: __typename
-                    login
-                    ... on Bot {
-                        html_url: url
-                    }
-                    ... on EnterpriseUserAccount {
-                        name
-                        html_url: url
-                    }
-                    ... on Mannequin {
-                        html_url: url
-                    }
-                    ... on Organization {
-                        name
-                        html_url: url
-                    }
-                    ... on User {
-                        name
-                        html_url: url
-                    }
-                }
-                body
-                changedFiles
-                createdAt
-                commits {
-                    totalCount
-                }
-                comments {
-                    totalCount
-                }
-                deletions
-                isDraft
-                number
-                mergedAt
-                mergeCommit {
-                    oid
-                }
-                reviewEvents: timelineItems(
-                    itemTypes: [CONVERT_TO_DRAFT_EVENT, READY_FOR_REVIEW_EVENT]
-                    last: 2
-                ) {
-                    nodes {
-                        type: __typename
-                        ... on ConvertToDraftEvent {
-                            createdAt
-                        }
-                        ... on ReadyForReviewEvent {
-                            createdAt
-                        }
-                    }
-                }
-                state
-                title
-                updatedAt
-                url
-                baseRefName
-                baseRepository {
-                    name
-                    owner {
-                        login
-                    }
-                }
-                headRefName
-                headRepository {
-                    name
-                    owner {
-                        login
-                    }
-                }
-            }
+query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100, $nested_page_size: Int = 100) {
+  repository(owner: $owner, name: $repo) {
+    pullRequests(
+      first: $page_size
+      orderBy: {field: UPDATED_AT, direction: DESC}
+      after: $cursor
+    ) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        additions
+        author {
+          type: __typename
+          login
+          ... on Bot {
+            html_url: url
+          }
+          ... on EnterpriseUserAccount {
+            name
+            html_url: url
+          }
+          ... on Mannequin {
+            html_url: url
+          }
+          ... on Organization {
+            name
+            html_url: url
+          }
+          ... on User {
+            name
+            html_url: url
+          }
         }
+        body
+        changedFiles
+        createdAt
+        commits {
+          totalCount
+        }
+        comments {
+          totalCount
+        }
+        deletions
+        isDraft
+        labels(first: $nested_page_size) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          nodes {
+            name
+          }
+        }
+        number
+        mergedAt
+        mergeCommit {
+          oid
+        }
+        reviewEvents: timelineItems(
+          itemTypes: [CONVERT_TO_DRAFT_EVENT, READY_FOR_REVIEW_EVENT]
+          last: 2
+        ) {
+          nodes {
+            type: __typename
+            ... on ConvertToDraftEvent {
+              createdAt
+            }
+            ... on ReadyForReviewEvent {
+              createdAt
+            }
+          }
+        }
+        state
+        title
+        updatedAt
+        url
+        baseRefName
+        baseRepository {
+          name
+          owner {
+            login
+          }
+        }
+        headRefName
+        headRepository {
+          name
+          owner {
+            login
+          }
+        }
+      }
     }
+  }
 }
