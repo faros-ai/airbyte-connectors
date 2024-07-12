@@ -132,6 +132,7 @@ export class PhabricatorCommon {
 
     return {
       name: toLower(repoName),
+      uid: toLower(repoName),
       organization: PhabricatorCommon.orgKey(source),
     };
   }

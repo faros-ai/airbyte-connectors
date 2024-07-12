@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubCommon, GitHubConverter} from './common';
+import {GitHubConverter} from './common';
 
 type RepoKey = {
   name: string;
@@ -59,7 +59,7 @@ export class FarosPullRequests extends GitHubConverter {
     const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
 
     const prKey = {
-      repository: GitHubCommon.repoKey(pr.org, pr.repo, this.streamName.source),
+      repository: repoKey(pr.org, pr.repo, this.streamName.source),
       number: pr.number,
     };
 
@@ -134,6 +134,16 @@ export class FarosPullRequests extends GitHubConverter {
   }
 }
 
+function repoKey(org: string, repo: string, source: string): RepoKey {
+  return {
+    name: toLower(repo),
+    organization: {
+      uid: toLower(org),
+      source,
+    },
+  };
+}
+
 function branchKey(
   branchName: string,
   branchRepo: PullRequest['baseRepository'] | PullRequest['headRepository'],
@@ -141,11 +151,7 @@ function branchKey(
 ): BranchKey {
   return {
     name: branchName,
-    repository: GitHubCommon.repoKey(
-      branchRepo.owner.login,
-      branchRepo.name,
-      source
-    ),
+    repository: repoKey(branchRepo.owner.login, branchRepo.name, source),
   };
 }
 

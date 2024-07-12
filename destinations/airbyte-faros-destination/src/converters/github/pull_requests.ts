@@ -23,11 +23,11 @@ export class PullRequests extends GitHubConverter {
     const pr = record.record.data;
     const res: DestinationRecord[] = [];
 
-    const repository = GitHubCommon.repoKey(
-      pr.base.repo.owner.login,
-      pr.base.repo.name,
-      source
-    );
+    const repository: RepoKey = {
+      name: toLower(pr.base.repo.name),
+      uid: toLower(pr.base.repo.name),
+      organization: {uid: toLower(pr.base.repo.owner.login), source},
+    };
 
     const mergeCommit = pr.merge_commit_sha
       ? {repository, sha: pr.merge_commit_sha, uid: pr.merge_commit_sha}

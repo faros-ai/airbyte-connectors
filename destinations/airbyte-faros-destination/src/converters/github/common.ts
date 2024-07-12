@@ -158,6 +158,7 @@ export class GitHubCommon {
     const [organization, repositoryName] = orgRepo;
     return {
       name: toLower(repositoryName),
+      uid: toLower(repositoryName),
       organization: {uid: toLower(organization), source},
     };
   }
@@ -187,16 +188,6 @@ export class GitHubCommon {
       default:
         return {category: 'Custom', detail: statusLower};
     }
-  }
-
-  static repoKey(org: string, repo: string, source: string): RepoKey {
-    return {
-      name: toLower(repo),
-      organization: {
-        uid: toLower(org),
-        source,
-      },
-    };
   }
 
   private static buildStatus(conclusion: string): {
