@@ -14,10 +14,6 @@ export class FarosLabels extends StreamWithRepoSlices {
     return ['org', 'repo', 'name'];
   }
 
-  get supportsIncremental(): boolean {
-    return true;
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
