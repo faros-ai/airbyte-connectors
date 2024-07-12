@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
+import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
 
 import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
