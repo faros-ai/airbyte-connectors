@@ -1,0 +1,21 @@
+query commitsChangedFilesIfAvailable($owner: String!, $repo: String!, $branch: String!, $since: GitTimestamp, $page_size: Int = 25, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
+    ref(qualifiedName: $branch) {
+      target {
+        __typename
+        ... on Commit {
+          history(first: $page_size, after: $cursor, since: $since) {
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
+            nodes {
+              ...CommitFields
+              changedFilesIfAvailable
+            }
+          }
+        }
+      }
+    }
+  }
+}

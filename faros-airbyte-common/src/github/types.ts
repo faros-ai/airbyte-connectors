@@ -1,7 +1,7 @@
 import {Octokit} from '@octokit/rest';
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
-import {ListMembersQuery, PullRequestsQuery} from './generated';
+import {CommitsQuery, ListMembersQuery, PullRequestsQuery} from './generated';
 
 const octokit: Octokit = new Octokit();
 
@@ -35,6 +35,17 @@ export type PullRequest = {
   org: string;
   repo: string;
 } & PullRequestsQuery['repository']['pullRequests']['nodes'][0];
+
+type CommitsQueryCommitNode = NonNullable<
+  CommitsQuery['repository']['ref']['target'] & {__typename: 'Commit'}
+>['history']['nodes'][0];
+
+export type Commit = {
+  org: string;
+  repo: string;
+  changedFiles?: number;
+  changedFilesIfAvailable?: number;
+} & CommitsQueryCommitNode;
 
 export type User = {
   org: string;

@@ -13,6 +13,7 @@ import VError from 'verror';
 
 import {DEFAULT_CUTOFF_DAYS, GitHub} from './github';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+import {FarosCommits} from './streams/faros_commits';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -58,6 +59,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosUsers(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
+      new FarosCommits(config, this.logger),
     ];
   }
 

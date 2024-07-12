@@ -19,7 +19,10 @@ const SCALARS = {
 const config: CodegenConfig = {
   overwrite: true,
   schema: 'resources/github/schemas/schema.docs.graphql',
-  documents: ['resources/github/queries/*.gql'],
+  documents: [
+    'resources/github/queries/*.gql',
+    'resources/github/fragments/*.gql',
+  ],
   generates: {
     [path.join(__dirname, 'generated', 'index.ts')]: {
       plugins: ['typescript', 'typescript-operations'],
