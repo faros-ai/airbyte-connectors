@@ -1,3 +1,4 @@
+import {randomUUID} from 'crypto';
 import dateformat from 'date-format';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {paginatedQueryV2, Schema, SchemaLoader} from 'faros-js-client';
@@ -277,6 +278,7 @@ export class GraphQLClient {
   private schema: Schema;
   private tableNames: Set<string>;
   private tableDependencies: string[];
+  private supportsSetCtx = false;
   private readonly mutationBatchSize: number;
   private readonly upsertBatchSize: number;
   private readonly writeBuffer: WriteOp[] = [];
@@ -332,6 +334,8 @@ export class GraphQLClient {
     this.schema = await this.schemaLoader.loadSchema();
     // various derivative values of schema
     this.tableNames = new Set(this.schema.tableNames);
+    // check if we have setCtx mutation available based on presence of its result table
+    this.supportsSetCtx = this.tableNames.has('set_ctx_result');
     this.tableDependencies = [...this.schema.sortedModelDependencies];
     reverse(this.tableDependencies);
     // self-referent models
@@ -363,8 +367,12 @@ export class GraphQLClient {
     await this.flush();
 
     const minRefreshedAt = new Date(this.resetLimitMillis).toISOString();
+    const deleteSessionId = randomUUID().toString();
+    const sessionInfo = this.supportsSetCtx
+      ? ` with session id ${deleteSessionId}`
+      : '';
     this.logger.info(
-      `Resetting data before ${minRefreshedAt} for origin ${origin}`
+      `Resetting data before ${minRefreshedAt} for origin ${origin}${sessionInfo}`
     );
 
     for (const model of intersection(
@@ -406,20 +414,25 @@ export class GraphQLClient {
         ids.push(record.id);
         // delete in batches
         if (ids.length >= this.resetPageSize) {
-          await this.deleteById(model, ids);
+          await this.deleteById(model, ids, deleteSessionId);
           ids = [];
         }
       }
       // clean up any remaining records
       if (ids.length > 0) {
-        await this.deleteById(model, ids);
+        await this.deleteById(model, ids, deleteSessionId);
       }
     }
   }
 
-  async deleteById(model: string, ids: string[]): Promise<void> {
+  async deleteById(
+    model: string,
+    ids: string[],
+    session: string
+  ): Promise<void> {
     const query = `mutation {
-      delete_${model}(where:{id: {_in:[
+      ${this.supportsSetCtx ? `ctx: setCtx(args: {session: "${session}"}) { success }` : ''}
+      del: delete_${model}(where:{id: {_in:[
         ${ids.map((id) => `"${id}"`).join(',')}
       ]}}) {
         affected_rows
