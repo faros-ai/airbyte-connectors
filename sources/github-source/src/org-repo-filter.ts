@@ -5,14 +5,58 @@ import {Memoize} from 'typescript-memoize';
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
 
-export class OrgRepoFilter {
+type FilterConfig = {
   organizations?: Set<string>;
-  reposByOrg?: Map<string, Set<Repository>> = new Map();
+  excludedOrganizations?: Set<string>;
+  reposByOrg: Map<string, Set<string>>;
+  excludedReposByOrg: Map<string, Set<string>>;
+};
+
+export class OrgRepoFilter {
+  private readonly filterConfig: FilterConfig;
+  private organizations?: Set<string>;
+  private reposByOrg: Map<string, Set<Repository>> = new Map();
 
   constructor(
     private readonly config: GitHubConfig,
     private readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    const {organizations, repositories, excluded_repositories} = this.config;
+    let {excluded_organizations} = this.config;
+
+    if (organizations?.length && excluded_organizations?.length) {
+      this.logger.warn(
+        'Both organizations and excluded_organizations are specified, excluded_organizations will be ignored.'
+      );
+      excluded_organizations = undefined;
+    }
+
+    const reposByOrg = new Map<string, Set<string>>();
+    if (repositories?.length) {
+      collectReposByOrg(reposByOrg, repositories);
+    }
+    const excludedReposByOrg = new Map<string, Set<string>>();
+    if (excluded_repositories?.length) {
+      collectReposByOrg(excludedReposByOrg, excluded_repositories);
+    }
+    for (const org of reposByOrg.keys()) {
+      if (excludedReposByOrg.has(org)) {
+        this.logger.warn(
+          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+        );
+        excludedReposByOrg.delete(org);
+      }
+    }
+
+    this.filterConfig = {
+      organizations: organizations ? new Set(organizations) : undefined,
+      excludedOrganizations: excluded_organizations
+        ? new Set(excluded_organizations)
+        : undefined,
+      reposByOrg,
+      excludedReposByOrg,
+    };
+  }
 
   @Memoize()
   async getOrganizations(): Promise<ReadonlyArray<string>> {
@@ -20,20 +64,20 @@ export class OrgRepoFilter {
       const organizations = new Set<string>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleOrgs = await github.getOrganizations();
-      if (!this.config.organizations) {
-        for (const org of visibleOrgs) {
-          if (!this.config.excluded_organizations?.includes(org)) {
+      if (!this.filterConfig.organizations) {
+        visibleOrgs.forEach((org) => {
+          if (!this.filterConfig.excludedOrganizations?.has(org)) {
             organizations.add(org);
           }
-        }
+        });
       } else {
-        for (const org of this.config.organizations) {
+        this.filterConfig.organizations.forEach((org) => {
           if (!visibleOrgs.some((o) => o === org)) {
             this.logger.warn(`Skipping not found organization ${org}`);
-            continue;
+            return;
           }
           organizations.add(org);
-        }
+        });
       }
       this.organizations = organizations;
     }
@@ -46,26 +90,39 @@ export class OrgRepoFilter {
       const repos = new Set<Repository>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleRepos = await github.getRepositories(org);
-      if (!this.config.reposByOrg.has(org)) {
-        for (const repo of visibleRepos) {
-          if (!this.config.excludedReposByOrg.get(org)?.has(repo.name)) {
+      if (!this.filterConfig.reposByOrg.has(org)) {
+        visibleRepos.forEach((repo) => {
+          if (!this.filterConfig.excludedReposByOrg.get(org)?.has(repo.name)) {
             repos.add(repo);
           }
-        }
+        });
       } else {
-        for (const repoName of this.config.reposByOrg.get(org)) {
+        this.filterConfig.reposByOrg.get(org).forEach((repoName) => {
           const repo = visibleRepos.find((r) => r.name === repoName);
           if (!repo) {
             this.logger.warn(
               `Skipping not found repository ${org}/${repoName}`
             );
-            continue;
+            return;
           }
           repos.add(repo);
-        }
+        });
       }
       this.reposByOrg.set(org, repos);
     }
     return Array.from(this.reposByOrg.get(org));
+  }
+}
+
+function collectReposByOrg(
+  reposByOrg: Map<string, Set<string>>,
+  repos: ReadonlyArray<string>
+): void {
+  for (const repo of repos) {
+    const [org, name] = repo.split('/');
+    if (!reposByOrg.has(org)) {
+      reposByOrg.set(org, new Set());
+    }
+    reposByOrg.get(org).add(name);
   }
 }
