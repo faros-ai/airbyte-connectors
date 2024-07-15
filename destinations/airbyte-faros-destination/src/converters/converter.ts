@@ -76,7 +76,16 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 
 /** Stream context to store records by stream and other helpers */
 export class StreamContext {
-  resetModels: Set<string>;
+  // Track models to reset by stream. Only models for successful streams should
+  // be reset.
+  private readonly resetModelsByStream: Dictionary<Set<string>> = {};
+
+  // Maintain an reversed map as well. If multiple streams write the same model,
+  // the model should be reset only if all those streams are successful.
+  private readonly streamsByResetModel: Dictionary<Set<string>> = {};
+
+  // Converters can manually add models to be reset.
+  readonly resetModels: Set<string> = new Set();
 
   constructor(
     readonly logger: AirbyteLogger,
@@ -124,6 +133,44 @@ export class StreamContext {
     }
     return JSON.stringify(res);
   }
+
+  registerStreamResetModels(streamName: string, models: Set<string>): void {
+    if (!this.resetModelsByStream[streamName]) {
+      this.resetModelsByStream[streamName] = new Set(models);
+    } else {
+      models.forEach((model) =>
+        this.resetModelsByStream[streamName].add(model)
+      );
+    }
+
+    models.forEach((model) => {
+      if (!this.streamsByResetModel[model]) {
+        this.streamsByResetModel[model] = new Set([streamName]);
+      } else {
+        this.streamsByResetModel[model].add(streamName);
+      }
+    });
+  }
+
+  markStreamForReset(streamName: string): void {
+    const models = this.resetModelsByStream[streamName];
+    models?.forEach((model) => {
+      const streams = this.streamsByResetModel[model];
+      if (streams) {
+        streams.delete(streamName);
+        if (streams.size === 0) {
+          this.resetModels.add(model);
+        }
+      }
+    });
+  }
+
+  // For Sources that do not send stream-level statuses
+  markAllStreamsForReset(): void {
+    Object.keys(this.resetModelsByStream).forEach((streamName) => {
+      this.markStreamForReset(streamName);
+    });
+  }
 }
 
 export const StreamNameSeparator = '__';
@@ -136,7 +183,10 @@ export const StreamNameSeparator = '__';
  * }
  */
 export class StreamName {
-  constructor(readonly source: string, readonly name: string) {}
+  constructor(
+    readonly source: string,
+    readonly name: string
+  ) {}
 
   private str: string;
 
