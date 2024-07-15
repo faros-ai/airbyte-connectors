@@ -613,7 +613,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             async () =>
               await graphQLClient.resetData(
                 origin,
-                Array.from(streamContext.resetModels),
+                Array.from(streamContext.getModelsForReset()),
                 this.edition === Edition.COMMUNITY
               ),
             async (msg: AirbyteSourceConfigMessage) => {

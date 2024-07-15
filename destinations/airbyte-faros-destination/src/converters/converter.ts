@@ -84,8 +84,7 @@ export class StreamContext {
   // the model should be reset only if all those streams are successful.
   private readonly streamsByResetModel: Dictionary<Set<string>> = {};
 
-  // Converters can manually add models to be reset.
-  readonly resetModels: Set<string> = new Set();
+  private readonly resetModels: Set<string> = new Set();
 
   constructor(
     readonly logger: AirbyteLogger,
@@ -170,6 +169,10 @@ export class StreamContext {
     Object.keys(this.resetModelsByStream).forEach((streamName) => {
       this.markStreamForReset(streamName);
     });
+  }
+
+  getModelsForReset(): ReadonlySet<string> {
+    return new Set(this.resetModels);
   }
 }
 
