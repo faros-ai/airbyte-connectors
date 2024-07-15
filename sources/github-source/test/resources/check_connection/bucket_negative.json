@@ -1,0 +1,8 @@
+{
+  "authentication": {
+    "type": "token",
+    "personal_access_token": "test-token"
+  },
+  "bucket_id": 1,
+  "bucket_total": -1
+}

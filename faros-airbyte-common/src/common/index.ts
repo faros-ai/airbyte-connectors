@@ -1,5 +1,6 @@
 import {createHmac} from 'crypto';
 import {DateTime} from 'luxon';
+import {VError} from 'verror';
 
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
@@ -16,6 +17,18 @@ export function bucket(key: string, data: string, bucketTotal: number): number {
   md5.update(data);
   const hex = md5.digest('hex').substring(0, 8);
   return (parseInt(hex, 16) % bucketTotal) + 1; // 1-index for readability
+}
+
+export function validateBucketingConfig(
+  bucketId: number = 1,
+  bucketTotal: number = 1
+): void {
+  if (bucketTotal < 1) {
+    throw new VError('bucket_total must be a positive integer');
+  }
+  if (bucketId < 1 || bucketId > bucketTotal) {
+    throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
+  }
 }
 
 export function calculateDateRange(options: {

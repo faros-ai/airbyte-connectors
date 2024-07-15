@@ -1,7 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket} from 'faros-airbyte-common/common';
+import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -203,7 +203,7 @@ export class Jira {
 
     const authentication = Jira.auth(cfg);
 
-    this.validateBucketingConfig(cfg);
+    validateBucketingConfig(cfg.bucket_id, cfg.bucket_total);
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized:
@@ -304,17 +304,6 @@ export class Jira {
       throw new VError(
         'Either Jira personal token or Jira username and password must be provided'
       );
-    }
-  }
-
-  private static validateBucketingConfig(config: JiraConfig): void {
-    const bucketTotal = config.bucket_total ?? 1;
-    if (bucketTotal < 1) {
-      throw new VError('bucket_total must be a positive integer');
-    }
-    const bucketId = config.bucket_id ?? 1;
-    if (bucketId < 1 || bucketId > bucketTotal) {
-      throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
     }
   }
 

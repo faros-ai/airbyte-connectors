@@ -83,6 +83,20 @@ describe('index', () => {
     });
   });
 
+  test('check connection - invalid bucketing config - out of range', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/bucket_out_of_range.json',
+    });
+  });
+
+  test('check connection - invalid bucketing config - non positive integer', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/bucket_negative.json',
+    });
+  });
+
   test('streams - copilot seats', async () => {
     await sourceReadTest({
       source,
@@ -165,6 +179,26 @@ describe('index', () => {
           getRepositoriesMockedImplementation(
             readTestResourceAsJSON('repositories/repositories.json')
           )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - repositories with bucketing', async () => {
+    const config = readTestResourceAsJSON('repositories/config-bucketing.json');
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getRepositoriesMockedImplementation(
+            readTestResourceAsJSON('repositories/repositories-multiple.json')
+          ),
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -302,10 +336,11 @@ describe('index', () => {
   });
 });
 
-function setupGitHubInstance(octokitMock: any) {
+function setupGitHubInstance(octokitMock: any, githubConfig?: any) {
   GitHub.instance = jest.fn().mockImplementation(() => {
+    const config = githubConfig ?? readTestResourceAsJSON('config.json');
     return new GitHubToken(
-      readTestResourceAsJSON('config.json'),
+      config,
       {
         ...octokitMock,
         paginate: {
@@ -318,6 +353,8 @@ function setupGitHubInstance(octokitMock: any) {
             .mockReturnValue([{login: 'github'}]),
         },
       },
+      config.bucket_id,
+      config.bucket_total,
       new AirbyteLogger()
     );
   });

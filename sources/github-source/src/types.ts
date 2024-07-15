@@ -13,6 +13,8 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
+  readonly bucket_id?: number;
+  readonly bucket_total?: number;
   startDate?: Date;
 }
 
