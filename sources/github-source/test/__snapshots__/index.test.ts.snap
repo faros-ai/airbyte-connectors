@@ -62,6 +62,7 @@ exports[`index streams - commits 1`] = `
       },
     },
     "authoredDate": "2024-07-10T05:00:56Z",
+    "branch": "master",
     "changedFilesIfAvailable": 7,
     "committer": {
       "date": "2024-07-09T22:00:56-07:00",
@@ -85,6 +86,7 @@ exports[`index streams - commits 1`] = `
       },
     },
     "authoredDate": "2024-07-10T07:10:56Z",
+    "branch": "master",
     "changedFilesIfAvailable": 2,
     "committer": {
       "date": "2024-07-10T22:00:56-07:00",

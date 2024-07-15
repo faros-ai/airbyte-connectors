@@ -58,6 +58,7 @@ type CommitsQueryCommitNode = NonNullable<
 export type Commit = {
   org: string;
   repo: string;
+  branch: string;
   changedFiles?: number;
   changedFilesIfAvailable?: number;
 } & CommitsQueryCommitNode;

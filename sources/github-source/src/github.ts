@@ -176,13 +176,15 @@ export abstract class GitHub {
   async *getCommits(
     org: string,
     repo: string,
-    branch: string
+    branch: string,
+    cutoffDate?: Date
   ): AsyncIterableIterator<Commit> {
     const queryParameters = {
       owner: org,
       repo,
       branch,
       page_size: PAGE_SIZE,
+      since: cutoffDate?.toISOString(),
     };
     // Check if the client has changedFilesIfAvailable field available
     const hasChangedFilesIfAvailable =
@@ -210,19 +212,26 @@ export abstract class GitHub {
     // if GitHub is unable to calculate the number of changed files"
     // https://docs.github.com/en/graphql/reference/objects#commit:~:text=information%20you%20want.-,changedFiles,-(Int)
     try {
-      yield* this.queryCommits(org, repo, query, queryParameters);
+      yield* this.queryCommits(org, repo, branch, query, queryParameters);
     } catch (err: any) {
       this.logger.warn(
         `Failed to fetch commits with changed files.
          Retrying fetching commits for repo ${repo} without changed files.`
       );
-      yield* this.queryCommits(org, repo, COMMITS_QUERY, queryParameters);
+      yield* this.queryCommits(
+        org,
+        repo,
+        branch,
+        COMMITS_QUERY,
+        queryParameters
+      );
     }
   }
 
   private async *queryCommits(
     org: string,
     repo: string,
+    branch: string,
     query: string,
     queryParameters: any
   ): AsyncGenerator<Commit> {
@@ -235,6 +244,7 @@ export abstract class GitHub {
         yield {
           org,
           repo,
+          branch,
           ...commit,
         };
       }
