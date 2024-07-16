@@ -185,6 +185,20 @@
           "type": "string"
         }
       }
+    },
+    "bucket_id": {
+      "order": 12,
+      "type": "integer",
+      "title": "Bucket Number",
+      "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
+      "default": 1
+    },
+    "bucket_total": {
+      "order": 13,
+      "type": "integer",
+      "title": "Total Number of Buckets",
+      "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
+      "default": 1
     }
   }
 }
