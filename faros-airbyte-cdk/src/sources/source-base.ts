@@ -188,6 +188,7 @@ export abstract class AirbyteSourceBase<
     const failedStreams = [];
     for (const streamName of sortedStreams) {
       const configuredStream = configuredStreams[streamName];
+      let streamRecordCounter = 0;
       try {
         const streamInstance = streamInstances[streamName];
         const generator = this.readStream(
@@ -209,9 +210,21 @@ export abstract class AirbyteSourceBase<
               yield new AirbyteStateMessage({data: msgState});
             }
           } else {
+            if (message.type === AirbyteMessageType.RECORD) {
+              streamRecordCounter++;
+            }
             yield message;
           }
         }
+        yield new AirbyteSourceStatusMessage(
+          {data: maybeCompressState(config, state)},
+          {status: 'RUNNING'},
+          {
+            name: streamName,
+            status: 'SUCCESS',
+            recordsEmitted: streamRecordCounter,
+          }
+        );
       } catch (e: any) {
         this.logger.error(
           `Encountered an error while reading stream ${streamName}: ${
@@ -230,6 +243,11 @@ export abstract class AirbyteSourceBase<
               action: 'Contact Faros Support', // placeholder
               type: 'ERROR',
             },
+          },
+          {
+            name: streamName,
+            status: 'ERROR',
+            recordsEmitted: streamRecordCounter,
           }
         );
 
@@ -334,6 +352,7 @@ export abstract class AirbyteSourceBase<
       streamState
     );
     const failedSlices = [];
+    let streamRecordCounter = 0;
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -342,7 +361,7 @@ export abstract class AirbyteSourceBase<
           )}`
         );
       }
-      let recordCounter = 0;
+      let sliceRecordCounter = 0;
       const records = streamInstance.readRecords(
         syncMode,
         configuredStream.cursor_field,
@@ -351,7 +370,8 @@ export abstract class AirbyteSourceBase<
       );
       try {
         for await (const recordData of records) {
-          recordCounter++;
+          sliceRecordCounter++;
+          streamRecordCounter++;
           yield AirbyteRecord.make(streamName, recordData);
           if (!config.backfill) {
             streamState = streamInstance.getUpdatedState(
@@ -361,7 +381,7 @@ export abstract class AirbyteSourceBase<
             );
             if (
               checkpointInterval &&
-              recordCounter % checkpointInterval === 0
+              sliceRecordCounter % checkpointInterval === 0
             ) {
               yield this.checkpointState(
                 streamName,
@@ -378,7 +398,7 @@ export abstract class AirbyteSourceBase<
           this.logger.info(
             `Finished processing ${streamName} stream slice ${JSON.stringify(
               slice
-            )}. Read ${recordCounter} records`
+            )}. Read ${sliceRecordCounter} records`
           );
         }
       } catch (e: any) {
@@ -389,7 +409,13 @@ export abstract class AirbyteSourceBase<
             )}: ${e.message ?? JSON.stringify(e)}`,
             e.stack
           );
-          yield this.errorState(streamName, streamState, connectorState, e);
+          yield this.errorState(
+            streamName,
+            streamState,
+            connectorState,
+            streamRecordCounter,
+            e
+          );
           continue;
         }
 
@@ -403,7 +429,13 @@ export abstract class AirbyteSourceBase<
           )}: ${e.message ?? JSON.stringify(e)}`,
           e.stack
         );
-        yield this.errorState(streamName, streamState, connectorState, e);
+        yield this.errorState(
+          streamName,
+          streamState,
+          connectorState,
+          streamRecordCounter,
+          e
+        );
         // -1 means unlimited allowed slice failures
         if (
           config.max_slice_failures !== -1 &&
@@ -445,6 +477,7 @@ export abstract class AirbyteSourceBase<
     streamName: string,
     streamState: any,
     connectorState: AirbyteState,
+    streamRecordCount: number,
     error: Error
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
@@ -459,6 +492,11 @@ export abstract class AirbyteSourceBase<
           action: 'Contact Faros Support', // placeholder
           type: 'ERROR',
         },
+      },
+      {
+        name: streamName,
+        status: 'ERROR',
+        recordsEmitted: streamRecordCount,
       }
     );
   }

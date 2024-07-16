@@ -88,15 +88,47 @@
           "airbytehq"
         ]
       },
-      "cutoff_days": {
+      "excluded_organizations": {
         "order": 3,
-        "type": "integer",
-        "title": "Cutoff Days",
-        "default": 90,
-        "description": "Only fetch data updated after cutoff"
+        "title": "Excluded Organizations list",
+        "description": "List of GitHub organization from which data won't be fetched. By default, no organizations are excluded. If organizations list is specified, this list will be ignored.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
+      },
+      "repositories": {
+        "order": 4,
+        "title": "Repositories list",
+        "description": "List of GitHub repositories from which to fetch data. If none passed for an organization, all visible organization repositories for the authenticated user/app will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "apache/repo1",
+          "airbytehq/repo2"
+        ]
+      },
+      "excluded_repositories": {
+        "order": 5,
+        "title": "Excluded Repositories list",
+        "description": "List of GitHub repositories from which data won't be fetched. By default, no repositories are excluded for an organization. If repositories list contains at least one repository for an organization, repositories for the same organization on this list will be ignored.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
       },
       "run_mode": {
-        "order": 4,
+        "order": 6,
         "title": "Run Mode",
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
@@ -110,28 +142,35 @@
         ]
       },
       "fetch_teams": {
-        "order": 5,
+        "order": 7,
         "type": "boolean",
         "title": "Fetch teams",
         "description": "Fetch teams from organization to populate teams and team memberships.",
         "default": true
       },
+      "cutoff_days": {
+        "order": 8,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
       "concurrency_limit": {
-        "order": 6,
+        "order": 9,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "reject_unauthorized": {
-        "order": 7,
+        "order": 10,
         "type": "boolean",
         "title": "Enable certificate validation",
         "description": "Enable certificate validation for the GitHub server",
         "default": true
       },
       "previews": {
-        "order": 8,
+        "order": 11,
         "type": "array",
         "examples": [
           "dorian",

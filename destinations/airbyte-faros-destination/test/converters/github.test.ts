@@ -258,7 +258,7 @@ describe('github', () => {
     expect(stdout).toMatch('Would write 0 records');
     expect(stdout).toMatch(
       'Skipping reset of non-incremental models due to' +
-        ' Airbyte Source errors: Error from sync message; Source error message'
+        ' sync errors: Error from sync message; Source error message'
     );
     expect(stdout).toMatch('Errored 0 records');
     expect(stdout).toMatch('Skipped 0 records');
