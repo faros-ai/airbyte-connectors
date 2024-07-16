@@ -203,6 +203,7 @@ describe('index', () => {
           getRepositoriesMockedImplementation(
             readTestResourceAsJSON('repositories/repositories-multiple.json')
           ),
+          logger,
           config
         );
       },
