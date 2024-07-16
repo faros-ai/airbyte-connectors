@@ -1,5 +1,4 @@
 import {
-  AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
@@ -12,6 +11,7 @@ import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
+import {graphqlMockedImplementation, setupGitHubInstance} from './utils';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -92,7 +92,8 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -110,7 +111,8 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -128,7 +130,8 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotUsageMockedImplementation(
             readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -146,7 +149,8 @@ describe('index', () => {
         setupGitHubInstance(
           getOrganizationMockedImplementation(
             readTestResourceAsJSON('organizations/organization.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -164,7 +168,8 @@ describe('index', () => {
         setupGitHubInstance(
           getRepositoriesMockedImplementation(
             readTestResourceAsJSON('repositories/repositories.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -187,7 +192,8 @@ describe('index', () => {
             getPullRequestsMockedImplementation(
               readTestResourceAsJSON('pull_requests/pull_requests.json')
             )
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -210,7 +216,8 @@ describe('index', () => {
             getLabelsMockedImplementation(
               readTestResourceAsJSON('labels/labels.json')
             )
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -228,7 +235,8 @@ describe('index', () => {
         setupGitHubInstance(
           getOrganizationMembersMockedImplementation(
             readTestResourceAsJSON('users/users.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -246,7 +254,8 @@ describe('index', () => {
         setupGitHubInstance(
           getTeamsMockedImplementation(
             readTestResourceAsJSON('teams/teams.json')
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -269,7 +278,8 @@ describe('index', () => {
             getTeamMembershipsMockedImplementation(
               readTestResourceAsJSON('team_memberships/team_memberships.json')
             )
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -292,7 +302,8 @@ describe('index', () => {
             getCommitsMockedImplementation(
               readTestResourceAsJSON('commits/commits.json')
             )
-          )
+          ),
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -301,27 +312,6 @@ describe('index', () => {
     });
   });
 });
-
-function setupGitHubInstance(octokitMock: any) {
-  GitHub.instance = jest.fn().mockImplementation(() => {
-    return new GitHubToken(
-      readTestResourceAsJSON('config.json'),
-      {
-        ...octokitMock,
-        paginate: {
-          iterator: (fn: () => any) => iterate([{data: fn()}]),
-        },
-        orgs: {
-          ...octokitMock.orgs,
-          listForAuthenticatedUser: jest
-            .fn()
-            .mockReturnValue([{login: 'github'}]),
-        },
-      },
-      new AirbyteLogger()
-    );
-  });
-}
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
   copilot: {
@@ -368,40 +358,5 @@ const getTeamMembershipsMockedImplementation = (res: any) => ({
   },
 });
 
-const getCommitsMockedImplementation = (res: any) => {
-  const graphqlMock: any = jest.fn().mockImplementation((query: string) => {
-    if (!query.includes('query commits')) {
-      throw new Error('Not mocked');
-    }
-    return res;
-  });
-
-  graphqlMock.paginate = {
-    iterator: jest.fn().mockImplementation((query: string) => {
-      if (!query.includes('query commits')) {
-        throw new Error('Not mocked');
-      }
-      return iterate([res]);
-    }),
-  };
-  return {graphql: graphqlMock};
-};
-
-const graphqlMockedImplementation = (queryName: string, res: any) => ({
-  graphql: {
-    paginate: {
-      iterator: jest.fn().mockImplementation((query: string) => {
-        if (!query.includes(`query ${queryName}`)) {
-          throw new Error('Not mocked');
-        }
-        return iterate([res]);
-      }),
-    },
-  },
-});
-
-async function* iterate<T>(arr: ReadonlyArray<T>): AsyncIterableIterator<T> {
-  for (const x of arr) {
-    yield x;
-  }
-}
+const getCommitsMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('commits', res);

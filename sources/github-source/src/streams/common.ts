@@ -136,11 +136,8 @@ export abstract class StreamWithOrgSlices extends StreamBase {
 export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
-      for (const {
-        name,
-        defaultBranch,
-      } of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo: name, defaultBranch};
+      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
+        yield {org, repo: repo.name, defaultBranch: repo.default_branch};
       }
     }
   }
