@@ -2,10 +2,15 @@ import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
 
 import {GitHub, GitHubToken} from '../src/github';
 
-export function setupGitHubInstance(octokitMock: any, logger: AirbyteLogger) {
+export function setupGitHubInstance(
+  octokitMock: any,
+  logger: AirbyteLogger,
+  config?: any
+) {
+  const githubConfig = config ?? readTestResourceAsJSON('config.json');
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHubToken(
-      readTestResourceAsJSON('config.json'),
+      githubConfig,
       {
         ...octokitMock,
         paginate: {
@@ -18,6 +23,8 @@ export function setupGitHubInstance(octokitMock: any, logger: AirbyteLogger) {
             jest.fn().mockReturnValue([{login: 'github'}]),
         },
       },
+      githubConfig.bucket_id,
+      githubConfig.bucket_total,
       logger
     );
   });

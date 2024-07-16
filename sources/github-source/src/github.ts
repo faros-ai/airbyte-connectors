@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
   Commit,
@@ -39,12 +40,18 @@ export const PR_NESTED_PAGE_SIZE = 100;
 const PROMISE_TIMEOUT_MS = 120_000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 
+const DEFAULT_BUCKET_ID = 1;
+
+const DEFAULT_BUCKET_TOTAL = 1;
+
 export abstract class GitHub {
   private static github: GitHub;
 
   constructor(
     protected readonly config: GitHubConfig,
     protected readonly baseOctokit: ExtendedOctokit,
+    private readonly bucketId: number,
+    private readonly bucketTotal: number,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -55,6 +62,8 @@ export abstract class GitHub {
     if (GitHub.github) {
       return GitHub.github;
     }
+    validateBucketingConfig(cfg.bucket_id, cfg.bucket_total);
+
     const github =
       cfg.authentication.type === 'token'
         ? await GitHubToken.instance(cfg, logger)
@@ -68,6 +77,14 @@ export abstract class GitHub {
   abstract octokit(org: string): ExtendedOctokit;
 
   abstract getOrganizationsIterator(): AsyncGenerator<string>;
+
+  isRepoInBucket(org: string, repo: string): boolean {
+    const data = `${org}/${repo}`;
+    return (
+      bucket('farosai/airbyte-github-source', data, this.bucketTotal) ===
+      this.bucketId
+    );
+  }
 
   @Memoize()
   async getOrganizations(): Promise<ReadonlyArray<string>> {
@@ -103,6 +120,9 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const repo of res.data) {
+        if (!this.isRepoInBucket(org, repo.name)) {
+          continue;
+        }
         repos.push({
           org,
           ...pick(repo, [
@@ -499,7 +519,13 @@ export class GitHubToken extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubToken(cfg, baseOctokit, logger);
+    const github = new GitHubToken(
+      cfg,
+      baseOctokit,
+      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
+      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      logger
+    );
     await github.checkConnection();
     return github;
   }
@@ -536,7 +562,13 @@ export class GitHubApp extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubApp(cfg, baseOctokit, logger);
+    const github = new GitHubApp(
+      cfg,
+      baseOctokit,
+      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
+      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      logger
+    );
     await github.checkConnection();
     const installations = await github.getAppInstallations();
     for (const installation of installations) {

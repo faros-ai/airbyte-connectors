@@ -83,6 +83,20 @@ describe('index', () => {
     });
   });
 
+  test('check connection - invalid bucketing config - out of range', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/bucket_out_of_range.json',
+    });
+  });
+
+  test('check connection - invalid bucketing config - non positive integer', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/bucket_negative.json',
+    });
+  });
+
   test('streams - copilot seats', async () => {
     await sourceReadTest({
       source,
@@ -170,6 +184,27 @@ describe('index', () => {
             readTestResourceAsJSON('repositories/repositories.json')
           ),
           logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - repositories with bucketing', async () => {
+    const config = readTestResourceAsJSON('repositories/config-bucketing.json');
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getRepositoriesMockedImplementation(
+            readTestResourceAsJSON('repositories/repositories-multiple.json')
+          ),
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
