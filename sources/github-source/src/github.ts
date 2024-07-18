@@ -15,6 +15,7 @@ import {
   TeamMembership,
   User,
 } from 'faros-airbyte-common/github';
+import {FILES_FRAGMENT} from 'faros-airbyte-common/github/fragments';
 import {
   CommitsQuery,
   LabelsQuery,
@@ -26,7 +27,6 @@ import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
-  FILES_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUEST_FILES_QUERY,
@@ -184,9 +184,11 @@ export abstract class GitHub {
 
   private buildPRQuery(): string {
     let query = PULL_REQUESTS_QUERY;
-    this.fetchFiles
-      ? (query = query + FILES_FRAGMENT)
-      : (query = query.replace('...Files', ''));
+    if (this.fetchFiles) {
+      query += FILES_FRAGMENT;
+    } else {
+      query = query.replace('...Files', '');
+    }
     return query;
   }
 
