@@ -11,7 +11,7 @@
     "team": {
       "type": "string"
     },
-    "createdAt": {
+    "startedAt": {
       "type": "string",
       "format": "date-time"
     },

@@ -88,7 +88,7 @@ export type CopilotSeat = {
   org: string;
   user: string;
   team?: string;
-  createdAt?: string;
+  startedAt?: string;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.copilot.listCopilotSeats

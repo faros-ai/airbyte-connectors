@@ -408,22 +408,22 @@ export abstract class GitHub {
           }
           const userAssignee = seat.assignee.login as string;
           const teamAssignee = seat.assigning_team?.slug ?? null;
-          let createdAt = Utils.toDate(seat.created_at);
+          let startedAt = Utils.toDate(seat.created_at);
           if (teamAssignee) {
             const teamJoinedAt =
               teamAddMemberTimestamps?.[teamAssignee]?.[userAssignee];
             if (teamJoinedAt) {
-              if (teamJoinedAt > createdAt) {
-                createdAt = teamJoinedAt;
+              if (teamJoinedAt > startedAt) {
+                startedAt = teamJoinedAt;
               }
             }
           }
-          const isCreatedAtUpdated = createdAt > cutoffDate;
+          const isStartedAtUpdated = startedAt > cutoffDate;
           yield {
             org,
             user: userAssignee,
             team: teamAssignee,
-            ...(isCreatedAtUpdated && {createdAt: createdAt.toISOString()}),
+            ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
             ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
           };
         }
