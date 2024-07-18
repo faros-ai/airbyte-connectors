@@ -10,6 +10,9 @@ export class Iterations extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const Iteration = record.record.data as Iteration;
+    const source = this.streamName.source;
+    const organizationName = this.getOrganizationFromUrl(Iteration?.url);
+    const organization = {uid: organizationName, source};
     return [
       {
         model: 'tms_Sprint',
@@ -19,6 +22,7 @@ export class Iterations extends AzureWorkitemsConverter {
           state: Iteration.attributes.timeFrame,
           startedAt: Iteration.attributes.startDate,
           endedAt: Iteration.attributes.finishDate,
+          organization,
         },
       },
     ];

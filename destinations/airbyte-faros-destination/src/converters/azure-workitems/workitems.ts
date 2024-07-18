@@ -1,5 +1,5 @@
 import {AirbyteRecord} from '../../../../../faros-airbyte-cdk/lib';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {CustomWorkItem, StatusValue} from './models';
 
@@ -49,12 +49,19 @@ export class Workitems extends AzureWorkitemsConverter {
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const WorkItem = record.record.data as CustomWorkItem;
     const organizationName = this.getOrganizationFromUrl(WorkItem?.url);
     const organization = {uid: organizationName, source};
+    ctx.logger.info(
+      'Workitem ID:' +
+        WorkItem?.id +
+        ' =====> Organization extracted:' +
+        JSON.stringify(organization)
+    );
     const statusChangelog = this.statusChangelog(WorkItem);
 
     return [
@@ -95,6 +102,7 @@ export class Workitems extends AzureWorkitemsConverter {
           sprint: {
             uid: String(WorkItem?.fields['System.IterationId']),
             source,
+            organization,
           },
           source,
           organization,
@@ -107,7 +115,7 @@ export class Workitems extends AzureWorkitemsConverter {
           assignee: {
             uid:
               WorkItem?.fields['System.AssignedTo']?.uniqueName || 'Unassigned',
-            source,
+            organization,
           },
           source,
         },
