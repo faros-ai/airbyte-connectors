@@ -41,21 +41,13 @@ export class FarosCopilotSeats extends GitHubConverter {
     this.currentAssigneesByOrg.get(org).add(seat.user);
 
     const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
-    let startedAt = Utils.toDate(seat.created_at);
-    if (seat.teamJoinedAt) {
-      const teamJoinedAt = Utils.toDate(seat.teamJoinedAt);
-      if (teamJoinedAt > startedAt) {
-        startedAt = teamJoinedAt;
-      }
-    }
-    const overwriteStartedAt = startedAt > Utils.toDate(seat.cutoffAt);
     const res: DestinationRecord[] = [];
     res.push({
       model: 'vcs_UserTool',
       record: {
         ...userTool,
         inactive: false,
-        ...(overwriteStartedAt && {startedAt: startedAt.toISOString()}),
+        ...(seat.createdAt && {startedAt: seat.createdAt}),
         ...(seat.pending_cancellation_date !== undefined && {
           endedAt: seat.pending_cancellation_date
             ? Utils.toDate(seat.pending_cancellation_date)

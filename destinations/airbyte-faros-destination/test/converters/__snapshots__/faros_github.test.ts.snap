@@ -58,7 +58,6 @@ Array [
         "uid": "github",
       },
       "source": "GitHub",
-      "startedAt": "2021-09-24T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },

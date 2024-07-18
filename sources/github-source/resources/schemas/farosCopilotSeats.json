@@ -11,23 +11,8 @@
     "team": {
       "type": "string"
     },
-    "teamJoinedAt": {
+    "createdAt": {
       "type": "string",
-      "format": "date-time"
-    },
-    "cutoffAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "inactive": {
-      "type": "boolean"
-    },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updated_at": {
-      "type": "boolean",
       "format": "date-time"
     },
     "pending_cancellation_date": {
