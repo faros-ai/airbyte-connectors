@@ -145,7 +145,7 @@ exports[`index streams - copilot seats with audit logs API 1`] = `
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
     "startedAt": "2021-09-24T00:00:00.000Z",
-    "team": null,
+    "team": undefined,
     "user": "octokitten",
   },
 ]
@@ -166,7 +166,7 @@ exports[`index streams - copilot seats without audit logs API 1`] = `
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
     "startedAt": "2021-09-24T00:00:00.000Z",
-    "team": null,
+    "team": undefined,
     "user": "octokitten",
   },
 ]

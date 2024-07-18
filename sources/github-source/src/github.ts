@@ -395,9 +395,7 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const seat of res.data.seats) {
-          if (!seatsFound) {
-            seatsFound = true;
-          }
+          seatsFound = true;
           if (seat.assigning_team && !teamAddMemberTimestamps) {
             // try to fetch team add member timestamps only if there are seats with team assignments
             teamAddMemberTimestamps = await this.getTeamAddMemberTimestamps(
@@ -407,15 +405,13 @@ export abstract class GitHub {
             );
           }
           const userAssignee = seat.assignee.login as string;
-          const teamAssignee = seat.assigning_team?.slug ?? null;
+          const teamAssignee = seat.assigning_team?.slug;
           let startedAt = Utils.toDate(seat.created_at);
           if (teamAssignee) {
             const teamJoinedAt =
               teamAddMemberTimestamps?.[teamAssignee]?.[userAssignee];
-            if (teamJoinedAt) {
-              if (teamJoinedAt > startedAt) {
-                startedAt = teamJoinedAt;
-              }
+            if (teamJoinedAt > startedAt) {
+              startedAt = teamJoinedAt;
             }
           }
           const isStartedAtUpdated = startedAt > cutoffDate;

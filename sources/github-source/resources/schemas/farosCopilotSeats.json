@@ -5,6 +5,9 @@
     "org": {
       "type": "string"
     },
+    "empty": {
+      "type": "boolean"
+    },
     "user": {
       "type": "string"
     },
