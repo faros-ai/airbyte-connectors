@@ -211,18 +211,18 @@ export abstract class GitHub {
   }
 
   private async getFilesForPullRequest(
-    owner: string,
+    org: string,
     repo: string,
     number: number,
     endCursor: string
   ): Promise<PullRequestFile[]> {
     const files: PullRequestFile[] = [];
     const iter = this.octokit(
-      'farosai'
+      org
     ).graphql.paginate.iterator<PullRequestFilesQuery>(
       PULL_REQUEST_FILES_QUERY,
       {
-        owner,
+        owner: org,
         repo,
         page_size: PAGE_SIZE,
         number,

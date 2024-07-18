@@ -65,6 +65,11 @@ export class FarosPullRequests extends GitHubConverter {
       pr.repo,
       this.streamName.source
     );
+
+    pr.files.forEach((file) => {
+      this.collectFile(file.path, repoKey);
+    });
+
     const prKey = {
       repository: repoKey,
       number: pr.number,
@@ -107,7 +112,6 @@ export class FarosPullRequests extends GitHubConverter {
         },
       })),
       ...pr.files.map((file) => {
-        this.collectFile(file.path, repoKey);
         return {
           model: 'vcs_PullRequestFile',
           record: {
