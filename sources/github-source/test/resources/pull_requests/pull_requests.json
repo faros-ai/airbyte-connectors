@@ -39,6 +39,19 @@
               }
             ]
           },
+          "files":{
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12Oxyz"
+            },
+            "nodes": [
+              {
+                "path": "dolos/test/file.ts",
+                "additions": 15,
+                "deletions": 0
+              }
+            ]
+          },
           "number": 48,
           "mergedAt": "2021-02-16T17:15:27Z",
           "mergeCommit": {
@@ -92,6 +105,29 @@
             },
             "nodes": []
           },
+          "files":{
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12Oxyz"
+            },
+            "nodes": [
+              {
+                "path": "dolos/test/file.ts",
+                "additions": 14,
+                "deletions": 0
+              },
+              {
+                "path": "nehanda/test/file2.ts",
+                "additions": 33,
+                "deletions": 2
+              },
+              {
+                "path": "nehanda/test/file3.ts",
+                "additions": 1,
+                "deletions": 10
+              }
+            ]
+          },
           "number": 47,
           "mergedAt": null,
           "mergeCommit": null,
@@ -144,6 +180,24 @@
             "nodes": [
               {
                 "name": "dependencies"
+              }
+            ]
+          },
+          "files":{
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12Oxyz"
+            },
+            "nodes": [
+              {
+                "path": "dolos/test/file.ts",
+                "additions": 14,
+                "deletions": 0
+              },
+              {
+                "path": "nehanda/test/file2.ts",
+                "additions": 10,
+                "deletions": 2
               }
             ]
           },

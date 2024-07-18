@@ -4,6 +4,13 @@ import path from 'path';
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 
+export const FILES_FRAGMENT = loadFragment('files.gql');
+
+// GraphQL query used to get pull request files
+export const PULL_REQUEST_FILES_QUERY = loadQuery(
+  'pull-request-files-query.gql'
+);
+
 // GraphQL query used to get labels
 export const LABELS_QUERY = loadQuery('labels-query.gql');
 

@@ -7820,6 +7820,17 @@ export type CommitFieldsFragment = {
   committer?: {date?: string | null} | null;
 };
 
+export type FilesFragment = {
+  files?: {
+    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    nodes?: Array<{
+      path: string;
+      additions: number;
+      deletions: number;
+    } | null> | null;
+  } | null;
+};
+
 export type CommitsChangedFilesIfAvailableQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -7994,6 +8005,29 @@ export type ListMembersQuery = {
   } | null;
 };
 
+export type PullRequestFilesQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  number: Scalars['Int']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type PullRequestFilesQuery = {
+  repository?: {
+    pullRequest?: {
+      files?: {
+        nodes?: Array<{
+          path: string;
+          additions: number;
+          deletions: number;
+        } | null> | null;
+        pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type PullRequestsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -8120,6 +8154,14 @@ export type PullRequestsQuery = {
         headRepository?: {
           name: string;
           owner: {login: string} | {login: string};
+        } | null;
+        files?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{
+            path: string;
+            additions: number;
+            deletions: number;
+          } | null> | null;
         } | null;
       } | null> | null;
     };

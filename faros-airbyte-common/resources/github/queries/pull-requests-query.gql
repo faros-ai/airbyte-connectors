@@ -53,6 +53,7 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
             name
           }
         }
+        ...Files
         number
         mergedAt
         mergeCommit {

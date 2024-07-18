@@ -309,6 +309,13 @@ Add any other context about the changes here.
     },
     "createdAt": "2021-02-12T05:35:19Z",
     "deletions": 763,
+    "files": [
+      {
+        "additions": 15,
+        "deletions": 0,
+        "path": "dolos/test/file.ts",
+      },
+    ],
     "headRefName": "dora-employee-param",
     "headRepository": {
       "name": "faros-apps",
@@ -317,16 +324,14 @@ Add any other context about the changes here.
       },
     },
     "isDraft": false,
-    "labels": {
-      "nodes": [
-        {
-          "name": "dependencies",
-        },
-        {
-          "name": "typescript",
-        },
-      ],
-    },
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+      {
+        "name": "typescript",
+      },
+    ],
     "mergeCommit": {
       "oid": "b4c35c299ad22fe858569482a7696597ca038651",
     },
@@ -376,6 +381,23 @@ N/A
     },
     "createdAt": "2021-02-04T23:54:56Z",
     "deletions": 4787,
+    "files": [
+      {
+        "additions": 14,
+        "deletions": 0,
+        "path": "dolos/test/file.ts",
+      },
+      {
+        "additions": 33,
+        "deletions": 2,
+        "path": "nehanda/test/file2.ts",
+      },
+      {
+        "additions": 1,
+        "deletions": 10,
+        "path": "nehanda/test/file3.ts",
+      },
+    ],
     "headRefName": "nehanda/cleanup-apps",
     "headRepository": {
       "name": "faros-apps",
@@ -384,9 +406,7 @@ N/A
       },
     },
     "isDraft": false,
-    "labels": {
-      "nodes": [],
-    },
+    "labels": [],
     "mergeCommit": null,
     "mergedAt": null,
     "number": 47,
@@ -427,6 +447,18 @@ N/A
     },
     "createdAt": "2021-02-04T15:49:42Z",
     "deletions": 23,
+    "files": [
+      {
+        "additions": 14,
+        "deletions": 0,
+        "path": "dolos/test/file.ts",
+      },
+      {
+        "additions": 10,
+        "deletions": 2,
+        "path": "nehanda/test/file2.ts",
+      },
+    ],
     "headRefName": "fix-edge-cases",
     "headRepository": {
       "name": "faros-apps",
@@ -435,13 +467,11 @@ N/A
       },
     },
     "isDraft": false,
-    "labels": {
-      "nodes": [
-        {
-          "name": "dependencies",
-        },
-      ],
-    },
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+    ],
     "mergeCommit": {
       "oid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
     },
