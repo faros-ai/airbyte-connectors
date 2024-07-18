@@ -14,7 +14,15 @@ export function setupGitHubInstance(
       {
         ...octokitMock,
         paginate: {
-          iterator: (fn: () => any) => iterate([{data: fn()}]),
+          iterator: (fnOrErr?: (() => any) | Error) => {
+            if (!fnOrErr) {
+              throw new Error('Not mocked');
+            }
+            if (fnOrErr instanceof Error) {
+              return iterate(fnOrErr);
+            }
+            return iterate([{data: fnOrErr()}]);
+          },
         },
         orgs: {
           ...octokitMock.orgs,
@@ -22,6 +30,7 @@ export function setupGitHubInstance(
             octokitMock.orgs?.listForAuthenticatedUser ??
             jest.fn().mockReturnValue([{login: 'github'}]),
         },
+        auditLogs: octokitMock.auditLogs ?? new Error('API not available'),
       },
       githubConfig.bucket_id,
       githubConfig.bucket_total,
@@ -53,9 +62,12 @@ export const graphqlMockedImplementation = (queryName: string, res: any) => {
 };
 
 export async function* iterate<T>(
-  arr: ReadonlyArray<T>
+  arrOrErr: ReadonlyArray<T> | Error
 ): AsyncIterableIterator<T> {
-  for (const x of arr) {
+  if (arrOrErr instanceof Error) {
+    throw arrOrErr;
+  }
+  for (const x of arrOrErr) {
     yield x;
   }
 }

@@ -8,6 +8,17 @@
     "user": {
       "type": "string"
     },
+    "team": {
+      "type": "string"
+    },
+    "teamJoinedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cutoffAt": {
+      "type": "string",
+      "format": "date-time"
+    },
     "inactive": {
       "type": "boolean"
     },

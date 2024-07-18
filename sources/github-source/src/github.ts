@@ -33,7 +33,11 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {GitHubConfig, GraphQLErrorResponse} from './types';
+import {
+  AuditLogTeamAddMember,
+  GitHubConfig,
+  GraphQLErrorResponse,
+} from './types';
 
 export const PAGE_SIZE = 100;
 export const PR_NESTED_PAGE_SIZE = 100;
@@ -43,6 +47,12 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_BUCKET_ID = 1;
 
 const DEFAULT_BUCKET_TOTAL = 1;
+
+type TeamAddMemberTimestamps = {
+  [team: string]: {
+    [user: string]: Date;
+  };
+};
 
 export abstract class GitHub {
   private static github: GitHub;
@@ -370,9 +380,11 @@ export abstract class GitHub {
   }
 
   async *getCopilotSeats(
-    org: string
+    org: string,
+    cutoffDate: Date
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
+    let teamAddMemberTimestamps: TeamAddMemberTimestamps;
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).copilot.listCopilotSeats,
       {
@@ -383,10 +395,29 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const seat of res.data.seats) {
-          if (!seatsFound) seatsFound = true;
+          if (!seatsFound) {
+            seatsFound = true;
+          }
+          if (seat.assigning_team && !teamAddMemberTimestamps) {
+            // try to fetch team add member timestamps only if there are seats with team assignments
+            teamAddMemberTimestamps = await this.getTeamAddMemberTimestamps(
+              org,
+              'copilot team assignments',
+              cutoffDate
+            );
+          }
+          const userAssignee = seat.assignee.login as string;
+          const teamAssignee = seat.assigning_team?.slug ?? null;
           yield {
             org,
-            user: seat.assignee.login as string,
+            user: userAssignee,
+            team: teamAssignee,
+            teamJoinedAt: teamAssignee
+              ? teamAddMemberTimestamps?.[teamAssignee]?.[
+                  userAssignee
+                ]?.toISOString() ?? null
+              : null,
+            cutoffAt: cutoffDate.toISOString(),
             ...pick(seat, [
               'created_at',
               'updated_at',
@@ -441,6 +472,67 @@ export abstract class GitHub {
       }
       throw err;
     }
+  }
+
+  /**
+   * API only available to enterprise organizations
+   * Audit logs older than 180 days are not available
+   */
+  async *getAuditLogs<T>(
+    org: string,
+    phrase: string,
+    context: string
+  ): AsyncGenerator<T> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).auditLogs,
+      {
+        org,
+        phrase,
+        order: 'asc',
+        per_page: PAGE_SIZE,
+      }
+    );
+    try {
+      for await (const res of iter) {
+        for (const log of res.data) {
+          yield log as T;
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `Couldn't fetch audit logs for org ${org}. API only available to Enterprise organizations. Status: ${err.status}. Context: ${context}`
+      );
+    }
+  }
+
+  /**
+   * Returns a map of team slugs to a map of user logins
+   * to the timestamp when the user was added to the team.
+   */
+  async getTeamAddMemberTimestamps(
+    org: string,
+    context: string,
+    cutoffDate: Date
+  ): Promise<TeamAddMemberTimestamps> {
+    const cutoff = cutoffDate;
+    const teams: TeamAddMemberTimestamps = {};
+    const iter = this.getAuditLogs<AuditLogTeamAddMember>(
+      org,
+      `action:team.add_member created:>${cutoff.toISOString()}`,
+      context
+    );
+    for await (const log of iter) {
+      const team = log.team.split('/')[1];
+      if (!teams[team]) {
+        teams[team] = {};
+      }
+      if (teams[team][log.user]) {
+        // don't overwrite latest record
+        continue;
+      }
+      teams[team][log.user] = Utils.toDate(log.created_at);
+    }
+    return teams;
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when

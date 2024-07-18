@@ -120,6 +120,10 @@ export abstract class StreamBase extends AirbyteStreamBase {
     return cutoff ? Utils.toDate(cutoff) : this.config.startDate;
   }
 
+  static orgKey(org: string): string {
+    return toLower(`${org}`);
+  }
+
   static orgRepoKey(org: string, repo: string): string {
     return toLower(`${org}/${repo}`);
   }
