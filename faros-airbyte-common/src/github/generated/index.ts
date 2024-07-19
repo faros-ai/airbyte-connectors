@@ -7957,6 +7957,17 @@ export type CommitsQuery = {
   } | null;
 };
 
+export type FilesFragment = {
+  files?: {
+    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    nodes?: Array<{
+      path: string;
+      additions: number;
+      deletions: number;
+    } | null> | null;
+  } | null;
+};
+
 export type LabelsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -8120,6 +8131,14 @@ export type PullRequestsQuery = {
         headRepository?: {
           name: string;
           owner: {login: string} | {login: string};
+        } | null;
+        files?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{
+            path: string;
+            additions: number;
+            deletions: number;
+          } | null> | null;
         } | null;
       } | null> | null;
     };

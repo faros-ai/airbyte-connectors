@@ -1,0 +1,13 @@
+fragment Files on PullRequest {
+  files(first: $nested_page_size) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      path
+      additions
+      deletions
+    }
+  }
+}

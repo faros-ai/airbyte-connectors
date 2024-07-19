@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import {buildASTSchema, GraphQLSchema, parse, validate} from 'graphql';
 
 import * as sut from '../../src/github/queries';
+import {FILES_FRAGMENT} from '../../src/github/queries';
 
 describe('queries', () => {
   function loadGraphQLSchema(fileName: string): GraphQLSchema {
@@ -20,8 +21,14 @@ describe('queries', () => {
 
     // Test all queries against all schemas
     Object.keys(sut).forEach((query) => {
+      let queryStr = sut[query];
+      if (queryStr.includes('fragment')) return;
+
       test(`${query} matches '${file}'`, async () => {
-        const errors = validate(schema, parse(sut[query]));
+        if (query === 'PULL_REQUESTS_QUERY') {
+          queryStr += FILES_FRAGMENT;
+        }
+        const errors = validate(schema, parse(queryStr));
         expect(errors).toHaveLength(0);
       });
     });

@@ -8,6 +8,8 @@ import {
   Label,
   Organization,
   PullRequest,
+  PullRequestFile,
+  PullRequestNode,
   Repository,
   Team,
   TeamMembership,
@@ -23,12 +25,13 @@ import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
+  FILES_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, omit, pick} from 'lodash';
+import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -52,6 +55,7 @@ export abstract class GitHub {
     protected readonly baseOctokit: ExtendedOctokit,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
+    private readonly fetchFiles: boolean,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -149,8 +153,9 @@ export abstract class GitHub {
     repo: string,
     cutoffDate?: Date
   ): AsyncGenerator<PullRequest> {
+    const query = this.buildPRQuery();
     const iter = this.octokit(org).graphql.paginate.iterator<PullRequestsQuery>(
-      PULL_REQUESTS_QUERY,
+      query,
       {
         owner: org,
         repo,
@@ -159,18 +164,80 @@ export abstract class GitHub {
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
+      this.logger.info(
+        `Rate limit info si ${JSON.stringify(res['rateLimit'])}`
+      );
       for (const pr of res.repository.pullRequests.nodes) {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
         }
+        const files = this.fetchFiles ? await this.getFiles(pr, org, repo) : [];
         yield {
           org,
           repo,
           ...pr,
-          labels: omit(pr.labels, ['pageInfo']),
+          labels: pr.labels.nodes,
+          files,
         };
       }
     }
+  }
+
+  private buildPRQuery(): string {
+    let query = PULL_REQUESTS_QUERY;
+    if (this.fetchFiles) {
+      query += FILES_FRAGMENT;
+    } else {
+      query = query.replace('...Files', '');
+    }
+    return query;
+  }
+
+  private async getFiles(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestFile[]> {
+    let files = pr.files.nodes;
+    if (pr.files.pageInfo.hasNextPage) {
+      const remainingFiles = await this.getPullRequestFiles(
+        org,
+        repo,
+        pr.number,
+        2 // Start from the second page to avoid re-fetching the first one
+      );
+      files = files.concat(remainingFiles);
+    }
+    return files;
+  }
+
+  private async getPullRequestFiles(
+    org: string,
+    repo: string,
+    number: number,
+    startingPage: number = 1
+  ): Promise<PullRequestFile[]> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).rest.pulls.listFiles,
+      {
+        owner: org,
+        repo,
+        pull_number: number,
+        per_page: PAGE_SIZE,
+        page: startingPage,
+      }
+    );
+    const files: PullRequestFile[] = [];
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const file of res.data) {
+        files.push({
+          additions: file.additions,
+          deletions: file.deletions,
+          path: file.filename,
+        });
+      }
+    }
+    return files;
   }
 
   async *getLabels(org: string, repo: string): AsyncGenerator<Label> {
@@ -524,6 +591,7 @@ export class GitHubToken extends GitHub {
       baseOctokit,
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      cfg.fetch_pull_request_files ?? true,
       logger
     );
     await github.checkConnection();
@@ -567,6 +635,7 @@ export class GitHubApp extends GitHub {
       baseOctokit,
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      cfg.fetch_files ?? true,
       logger
     );
     await github.checkConnection();

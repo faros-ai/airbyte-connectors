@@ -36,15 +36,18 @@ export type Repository = {
   | 'updated_at'
 >;
 
-type PullRequestNode =
+export type PullRequestNode =
   PullRequestsQuery['repository']['pullRequests']['nodes'][0];
 
 export type PullRequest = {
   org: string;
   repo: string;
-} & Omit<PullRequestNode, 'labels'> & {
-    labels: Omit<PullRequestNode['labels'], 'pageInfo'>;
+} & Omit<PullRequestNode, 'labels' | 'files'> & {
+    labels: PullRequestNode['labels']['nodes'];
+    files: PullRequestNode['files']['nodes'];
   };
+
+export type PullRequestFile = PullRequestNode['files']['nodes'][0];
 
 export type Label = {
   org: string;

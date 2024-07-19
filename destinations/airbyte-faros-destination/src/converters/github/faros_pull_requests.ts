@@ -12,13 +12,22 @@ type BranchKey = {
   repository: RepoKey;
 };
 
+type FileKey = {
+  uid: string;
+  path: string;
+  repository: RepoKey;
+};
+
 export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
+  private collectedFiles = new Map<string, FileKey>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
     'vcs_PullRequest',
     'vcs_PullRequestLabel',
+    'vcs_PullRequestFile',
+    'vcs_File',
   ];
 
   async convert(
@@ -51,8 +60,18 @@ export class FarosPullRequests extends GitHubConverter {
     // since we should always have branches for a PR
     const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
 
+    const repoKey = GitHubCommon.repoKey(
+      pr.org,
+      pr.repo,
+      this.streamName.source
+    );
+
+    pr.files.forEach((file) => {
+      this.collectFile(file.path, repoKey);
+    });
+
     const prKey = {
-      repository: GitHubCommon.repoKey(pr.org, pr.repo, this.streamName.source),
+      repository: repoKey,
       number: pr.number,
     };
 
@@ -85,20 +104,35 @@ export class FarosPullRequests extends GitHubConverter {
           ...branchInfo,
         },
       },
-      ...pr.labels.nodes.map((label) => ({
+      ...pr.labels.map((label) => ({
         model: 'vcs_PullRequestLabel',
         record: {
           pullRequest: prKey,
           label: {name: label.name},
         },
       })),
+      ...pr.files.map((file) => {
+        return {
+          model: 'vcs_PullRequestFile',
+          record: {
+            pullRequest: prKey,
+            file: {uid: file.path, repository: repoKey},
+            additions: file.additions,
+            deletions: file.deletions,
+          },
+        };
+      }),
     ];
   }
 
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return [...this.convertBranches(), ...this.convertUsers()];
+    return [
+      ...this.convertBranches(),
+      ...this.convertUsers(),
+      ...this.convertFiles(),
+    ];
   }
 
   private collectBranch(
@@ -123,6 +157,23 @@ export class FarosPullRequests extends GitHubConverter {
     return Array.from(this.collectedBranches.values()).map((branchKey) => ({
       model: 'vcs_Branch',
       record: branchKey,
+    }));
+  }
+
+  private collectFile(filePath: string, repoKey: RepoKey): void {
+    const key = `${repoKey.organization.uid}/${repoKey.name}/${filePath}`;
+    const fileKey = {
+      uid: filePath,
+      path: filePath,
+      repository: repoKey,
+    };
+    this.collectedFiles.set(key, fileKey);
+  }
+
+  private convertFiles(): DestinationRecord[] {
+    return Array.from(this.collectedFiles.values()).map((fileKey) => ({
+      model: 'vcs_File',
+      record: fileKey,
     }));
   }
 }
