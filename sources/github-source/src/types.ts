@@ -38,3 +38,10 @@ type GitHubApp = {
 export type GitHubAuth = GitHubToken | GitHubApp;
 
 export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
+
+export type AuditLogTeamAddMember = {
+  action: string;
+  created_at: number;
+  team: string;
+  user: string;
+};

@@ -5,18 +5,21 @@
     "org": {
       "type": "string"
     },
+    "empty": {
+      "type": "boolean"
+    },
     "user": {
       "type": "string"
     },
-    "inactive": {
-      "type": "boolean"
+    "team": {
+      "type": "string"
     },
-    "created_at": {
+    "teamJoinedAt": {
       "type": "string",
       "format": "date-time"
     },
-    "updated_at": {
-      "type": "boolean",
+    "startedAt": {
+      "type": "string",
       "format": "date-time"
     },
     "pending_cancellation_date": {

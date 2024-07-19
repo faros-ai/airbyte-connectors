@@ -1,0 +1,8 @@
+[
+  {
+    "action": "team.add_member",
+    "created_at": 1721065392098,
+    "team": "github/justice-league",
+    "user": "octocat"
+  }
+]

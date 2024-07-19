@@ -97,7 +97,7 @@ describe('index', () => {
     });
   });
 
-  test('streams - copilot seats', async () => {
+  test('streams - copilot seats without audit logs API', async () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
@@ -106,6 +106,32 @@ describe('index', () => {
         setupGitHubInstance(
           getCopilotSeatsMockedImplementation(
             readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot seats with audit logs API', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotSeatsMockedImplementation(
+              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+            ),
+            getTeamAddMemberAuditLogsMockedImplementation(
+              readTestResourceAsJSON(
+                'copilot_seats/team_add_member_audit_logs.json'
+              )
+            )
           ),
           logger
         );
@@ -352,6 +378,10 @@ const getCopilotSeatsMockedImplementation = (res: any) => ({
   copilot: {
     listCopilotSeats: jest.fn().mockReturnValue(res),
   },
+});
+
+const getTeamAddMemberAuditLogsMockedImplementation = (res: any) => ({
+  auditLogs: jest.fn().mockReturnValue(res),
 });
 
 const getCopilotUsageMockedImplementation = (res: any) => ({

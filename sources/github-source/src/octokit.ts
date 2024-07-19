@@ -17,7 +17,10 @@ import {GitHubConfig} from './types';
 
 export type RateLimitHandler = (reason?: Error) => boolean;
 
-export type ExtendedOctokit = Octokit & ReturnType<typeof paginateGraphql>;
+export type ExtendedOctokit = Octokit &
+  ReturnType<typeof paginateGraphql> & {
+    auditLogs: string;
+  };
 const ExtendedOctokitConstructor = Octokit.plugin(
   paginateGraphql,
   retry,
@@ -68,7 +71,10 @@ export function makeOctokitClient(
     );
   });
 
-  return kit;
+  return {
+    ...kit,
+    auditLogs: 'GET /orgs/{org}/audit-log',
+  };
 }
 
 function getOctokitAuth(

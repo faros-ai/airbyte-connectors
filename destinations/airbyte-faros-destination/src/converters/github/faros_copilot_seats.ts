@@ -47,7 +47,7 @@ export class FarosCopilotSeats extends GitHubConverter {
       record: {
         ...userTool,
         inactive: false,
-        startedAt: Utils.toDate(seat.created_at),
+        ...(seat.startedAt && {startedAt: seat.startedAt}),
         ...(seat.pending_cancellation_date !== undefined && {
           endedAt: seat.pending_cancellation_date
             ? Utils.toDate(seat.pending_cancellation_date)
