@@ -8005,29 +8005,6 @@ export type ListMembersQuery = {
   } | null;
 };
 
-export type PullRequestFilesQueryVariables = Exact<{
-  owner: Scalars['String']['input'];
-  repo: Scalars['String']['input'];
-  number: Scalars['Int']['input'];
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  page_size?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-export type PullRequestFilesQuery = {
-  repository?: {
-    pullRequest?: {
-      files?: {
-        nodes?: Array<{
-          path: string;
-          additions: number;
-          deletions: number;
-        } | null> | null;
-        pageInfo: {hasNextPage: boolean; endCursor?: string | null};
-      } | null;
-    } | null;
-  } | null;
-};
-
 export type PullRequestsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];

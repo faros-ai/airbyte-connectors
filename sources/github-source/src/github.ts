@@ -20,7 +20,6 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
-  PullRequestFilesQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
@@ -29,7 +28,6 @@ import {
   COMMITS_QUERY,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
-  PULL_REQUEST_FILES_QUERY,
   PULL_REQUESTS_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
@@ -199,38 +197,42 @@ export abstract class GitHub {
   ): Promise<PullRequestFile[]> {
     let files = pr.files.nodes;
     if (pr.files.pageInfo.hasNextPage) {
-      const remainingFiles = await this.getFilesForPullRequest(
+      const remainingFiles = await this.getPullRequestFiles(
         org,
         repo,
         pr.number,
-        pr.files.pageInfo.endCursor
+        2 // Start from the second page to avoid re-fetching the first one
       );
       files = files.concat(remainingFiles);
     }
     return files;
   }
 
-  private async getFilesForPullRequest(
+  private async getPullRequestFiles(
     org: string,
     repo: string,
     number: number,
-    endCursor: string
+    startingPage: number = 1
   ): Promise<PullRequestFile[]> {
-    const files: PullRequestFile[] = [];
-    const iter = this.octokit(
-      org
-    ).graphql.paginate.iterator<PullRequestFilesQuery>(
-      PULL_REQUEST_FILES_QUERY,
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).rest.pulls.listFiles,
       {
         owner: org,
         repo,
-        page_size: PAGE_SIZE,
-        number,
-        cursor: endCursor,
+        pull_number: number,
+        per_page: PAGE_SIZE,
+        page: startingPage,
       }
     );
+    const files: PullRequestFile[] = [];
     for await (const res of this.wrapIterable(iter, this.timeout)) {
-      files.concat(res.repository.pullRequest.files.nodes);
+      for (const file of res.data) {
+        files.push({
+          additions: file.additions,
+          deletions: file.deletions,
+          path: file.filename,
+        });
+      }
     }
     return files;
   }

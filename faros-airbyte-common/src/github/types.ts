@@ -5,7 +5,6 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
-  PullRequestFilesQuery,
   PullRequestsQuery,
 } from './generated';
 
@@ -48,8 +47,7 @@ export type PullRequest = {
     files: PullRequestNode['files']['nodes'];
   };
 
-export type PullRequestFile =
-  PullRequestFilesQuery['repository']['pullRequest']['files']['nodes'][0];
+export type PullRequestFile = PullRequestNode['files']['nodes'][0];
 
 export type Label = {
   org: string;
