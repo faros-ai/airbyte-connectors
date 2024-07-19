@@ -25,7 +25,7 @@ export function setupGitHubInstance(
       },
       githubConfig.bucket_id,
       githubConfig.bucket_total,
-      githubConfig.fetch_files,
+      githubConfig.fetch_pull_request_files,
       logger
     );
   });

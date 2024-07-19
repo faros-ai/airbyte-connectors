@@ -7820,17 +7820,6 @@ export type CommitFieldsFragment = {
   committer?: {date?: string | null} | null;
 };
 
-export type FilesFragment = {
-  files?: {
-    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
-    nodes?: Array<{
-      path: string;
-      additions: number;
-      deletions: number;
-    } | null> | null;
-  } | null;
-};
-
 export type CommitsChangedFilesIfAvailableQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -7965,6 +7954,17 @@ export type CommitsQuery = {
         | {__typename: 'Tree'}
         | null;
     } | null;
+  } | null;
+};
+
+export type FilesFragment = {
+  files?: {
+    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    nodes?: Array<{
+      path: string;
+      additions: number;
+      deletions: number;
+    } | null> | null;
   } | null;
 };
 

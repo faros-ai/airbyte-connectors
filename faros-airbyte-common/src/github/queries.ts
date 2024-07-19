@@ -1,7 +1,9 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import {COMMIT_FIELDS_FRAGMENT} from './fragments';
+export const FILES_FRAGMENT = loadQuery('files-fragment.gql');
+
+const COMMIT_FIELDS_FRAGMENT = loadQuery('commit-fields-fragment.gql');
 
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');

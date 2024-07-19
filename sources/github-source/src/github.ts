@@ -15,13 +15,13 @@ import {
   TeamMembership,
   User,
 } from 'faros-airbyte-common/github';
-import {FILES_FRAGMENT} from 'faros-airbyte-common/github/fragments';
 import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
+import {FILES_FRAGMENT} from 'faros-airbyte-common/github/queries';
 import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
   COMMITS_CHANGED_FILES_QUERY,
@@ -164,6 +164,9 @@ export abstract class GitHub {
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
+      this.logger.info(
+        `Rate limit info si ${JSON.stringify(res['rateLimit'])}`
+      );
       for (const pr of res.repository.pullRequests.nodes) {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
@@ -588,7 +591,7 @@ export class GitHubToken extends GitHub {
       baseOctokit,
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_files ?? true,
+      cfg.fetch_pull_request_files ?? true,
       logger
     );
     await github.checkConnection();

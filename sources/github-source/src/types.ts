@@ -18,7 +18,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly previews?: ReadonlyArray<string>;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
-  readonly fetch_files?: boolean;
+  readonly fetch_pull_request_files?: boolean;
   startDate?: Date;
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;

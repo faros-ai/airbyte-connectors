@@ -31,7 +31,6 @@
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
-    "./github/fragments": "./lib/github/fragments.js",
     "./jira": "./lib/jira/index.js",
     "./xray": "./lib/xray/index.js"
   },
@@ -54,9 +53,6 @@
       ],
       "github/queries": [
         "./lib/github/queries.d.ts"
-      ],
-      "github/fragments": [
-        "./lib/github/fragments.d.ts"
       ],
       "jira": [
         "./lib/jira/index.d.ts"

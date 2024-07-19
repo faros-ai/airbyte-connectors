@@ -200,10 +200,10 @@
       "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
       "default": 1
     },
-    "fetch_files": {
+    "fetch_pull_request_files": {
       "order": 14,
       "type": "boolean",
-      "title": "Fetch Files",
+      "title": "Fetch Pull Request Files",
       "description": "Fetch Pull Requests associated files",
       "default": true
     }
