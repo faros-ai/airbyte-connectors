@@ -88,6 +88,7 @@ export type CopilotSeat = {
   org: string;
   user: string;
   team?: string;
+  teamJoinedAt?: string;
   startedAt?: string;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<

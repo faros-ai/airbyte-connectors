@@ -53,7 +53,7 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
       return currentStreamState;
     }
     const seat = latestRecord as CopilotSeat;
-    const latestRecordCutoff = Utils.toDate(seat?.startedAt ?? 0);
+    const latestRecordCutoff = Utils.toDate(seat?.teamJoinedAt ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

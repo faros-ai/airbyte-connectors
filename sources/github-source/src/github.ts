@@ -406,9 +406,10 @@ export abstract class GitHub {
           }
           const userAssignee = seat.assignee.login as string;
           const teamAssignee = seat.assigning_team?.slug;
+          let teamJoinedAt: Date;
           let startedAt = Utils.toDate(seat.created_at);
           if (teamAssignee) {
-            const teamJoinedAt =
+            teamJoinedAt =
               teamAddMemberTimestamps?.[teamAssignee]?.[userAssignee];
             if (teamJoinedAt > startedAt) {
               startedAt = teamJoinedAt;
@@ -419,6 +420,7 @@ export abstract class GitHub {
             org,
             user: userAssignee,
             team: teamAssignee,
+            teamJoinedAt: teamJoinedAt?.toISOString(),
             ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
             ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
           };
@@ -475,11 +477,12 @@ export abstract class GitHub {
    * API only available to enterprise organizations
    * Audit logs older than 180 days are not available
    */
-  async *getAuditLogs<T>(
+  async getAuditLogs<T>(
     org: string,
     phrase: string,
     context: string
-  ): AsyncGenerator<T> {
+  ): Promise<ReadonlyArray<T>> {
+    const logs = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).auditLogs,
       {
@@ -492,14 +495,16 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const log of res.data) {
-          yield log as T;
+          logs.push(log);
         }
       }
     } catch (err: any) {
       this.logger.warn(
         `Couldn't fetch audit logs for org ${org}. API only available to Enterprise organizations. Status: ${err.status}. Context: ${context}`
       );
+      return [];
     }
+    return logs;
   }
 
   /**
@@ -513,12 +518,12 @@ export abstract class GitHub {
   ): Promise<TeamAddMemberTimestamps> {
     const cutoff = cutoffDate;
     const teams: TeamAddMemberTimestamps = {};
-    const iter = this.getAuditLogs<AuditLogTeamAddMember>(
+    const logs = await this.getAuditLogs<AuditLogTeamAddMember>(
       org,
       `action:team.add_member created:>${cutoff.toISOString()}`,
       context
     );
-    for await (const log of iter) {
+    for await (const log of logs) {
       const team = log.team.split('/')[1];
       if (!teams[team]) {
         teams[team] = {};
