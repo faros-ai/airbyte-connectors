@@ -21,11 +21,11 @@ import {
   ListMembersQuery,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
-import {FILES_FRAGMENT} from 'faros-airbyte-common/github/queries';
 import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
+  FILES_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
