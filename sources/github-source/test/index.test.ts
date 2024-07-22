@@ -287,6 +287,32 @@ describe('index', () => {
     });
   });
 
+  test('streams - pull request comments', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'pull_request_comments/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getPullRequestCommentsMockedImplementation(
+              readTestResourceAsJSON(
+                'pull_request_comments/pull_request_comments.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - users', async () => {
     await sourceReadTest({
       source,
@@ -407,6 +433,12 @@ const getPullRequestsMockedImplementation = (res: any) =>
 
 const getLabelsMockedImplementation = (res: any) =>
   graphqlMockedImplementation('labels', res);
+
+const getPullRequestCommentsMockedImplementation = (res: any) => ({
+  pulls: {
+    listReviewCommentsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
 
 const getOrganizationMembersMockedImplementation = (res: any) =>
   graphqlMockedImplementation('listMembers', res);

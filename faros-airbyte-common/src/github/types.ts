@@ -49,6 +49,16 @@ export type PullRequest = {
 
 export type PullRequestFile = PullRequestNode['files']['nodes'][0];
 
+export type PullRequestComment = {
+  repository: string;
+  user: {login: string};
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.pulls.listReviewCommentsForRepo
+  >[0],
+  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
+>;
+
 export type Label = {
   org: string;
   repo: string;
