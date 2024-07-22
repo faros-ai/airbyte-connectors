@@ -436,13 +436,7 @@ const getLabelsMockedImplementation = (res: any) =>
 
 const getPullRequestCommentsMockedImplementation = (res: any) => ({
   pulls: {
-    listReviewCommentsForRepo: jest
-      .fn()
-      .mockReturnValue(
-        readTestResourceAsJSON(
-          'pull_request_comments/pull_request_comments.json'
-        )
-      ),
+    listReviewCommentsForRepo: jest.fn().mockReturnValue(res),
   },
 });
 
