@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 19 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 268 records",
-  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":6,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 22 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 271 records",
+  "Would write records by model: {\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":6,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":4,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3614,6 +3614,84 @@ N/A
         "uid": "xyz987uvw654rst321",
       },
       "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "jdoe",
+      },
+      "comment": "This is a test comment.",
+      "createdAt": "2024-07-18T17:04:03.000Z",
+      "number": 1000000001,
+      "pullRequest": Object {
+        "number": 1234,
+        "repository": Object {
+          "name": "dolos",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "test",
+          },
+          "uid": "dolos",
+        },
+        "uid": "1234",
+      },
+      "source": "GitHub",
+      "uid": "1000000001",
+      "updatedAt": "2024-07-18T17:04:04.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "fakeuser1",
+      },
+      "comment": "This is another test comment, suggesting a different change.",
+      "createdAt": "2024-07-18T17:10:03.000Z",
+      "number": 1000000002,
+      "pullRequest": Object {
+        "number": 1235,
+        "repository": Object {
+          "name": "dolos",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "test",
+          },
+          "uid": "dolos",
+        },
+        "uid": "1235",
+      },
+      "source": "GitHub",
+      "uid": "1000000002",
+      "updatedAt": "2024-07-18T17:11:04.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "GitHub",
+        "uid": "fakeuser2",
+      },
+      "comment": "Yet another test comment with additional feedback.",
+      "createdAt": "2024-07-18T17:20:03.000Z",
+      "number": 1000000003,
+      "pullRequest": Object {
+        "number": 1236,
+        "repository": Object {
+          "name": "dolos",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "test",
+          },
+          "uid": "dolos",
+        },
+        "uid": "1236",
+      },
+      "source": "GitHub",
+      "uid": "1000000003",
+      "updatedAt": "2024-07-18T17:21:04.000Z",
     },
   },
   Object {
