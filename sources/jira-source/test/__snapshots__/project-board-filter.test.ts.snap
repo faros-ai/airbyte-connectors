@@ -22,7 +22,15 @@ exports[`ProjectBoardFilter getBoardsFromFaros - specific boards included 1`] = 
 ]
 `;
 
-exports[`ProjectBoardFilter getProjectsFromFaros - all projects 1`] = `
+exports[`ProjectBoardFilter getProjectsFromFaros - all projects - empty projects list 1`] = `
+[
+  "TEST-1",
+  "TEST-2",
+  "TEST-3",
+]
+`;
+
+exports[`ProjectBoardFilter getProjectsFromFaros - all projects - no projects list 1`] = `
 [
   "TEST-1",
   "TEST-2",
