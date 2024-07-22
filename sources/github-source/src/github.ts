@@ -29,6 +29,7 @@ import {
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUESTS_QUERY,
+  REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick} from 'lodash';
@@ -66,6 +67,7 @@ export abstract class GitHub {
     private readonly bucketId: number,
     private readonly bucketTotal: number,
     private readonly fetchFiles: boolean,
+    private readonly fetchReviews: boolean,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -182,24 +184,40 @@ export abstract class GitHub {
           break;
         }
         const files = this.fetchFiles ? await this.getFiles(pr, org, repo) : [];
+        const reviews = this.fetchReviews
+          ? await this.getReviews(pr, org, repo)
+          : [];
         yield {
           org,
           repo,
           ...pr,
           labels: pr.labels.nodes,
           files,
+          reviews,
         };
       }
     }
   }
 
   private buildPRQuery(): string {
+    const appendFragment = (
+      query: string,
+      shouldAppend: boolean,
+      fragment: string,
+      placeholder: string
+    ): string => {
+      return shouldAppend ? query + fragment : query.replace(placeholder, '');
+    };
+
     let query = PULL_REQUESTS_QUERY;
-    if (this.fetchFiles) {
-      query += FILES_FRAGMENT;
-    } else {
-      query = query.replace('...Files', '');
-    }
+    query = appendFragment(query, this.fetchFiles, FILES_FRAGMENT, '...Files');
+    query = appendFragment(
+      query,
+      this.fetchReviews,
+      REVIEWS_FRAGMENT,
+      '...Reviews'
+    );
+
     return query;
   }
 
@@ -219,6 +237,24 @@ export abstract class GitHub {
       files = files.concat(remainingFiles);
     }
     return files;
+  }
+
+  private async getReviews(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestReview[]> {
+    let reviews = pr.reviews.nodes;
+    if (pr.reviews.pageInfo.hasNextPage) {
+      const remainingReviews = await this.getPullRequestReviews(
+        org,
+        repo,
+        pr.number,
+        2 // Start from the second page to avoid re-fetching the first one
+      );
+      reviews = reviews.concat(remainingReviews);
+    }
+    return reviews;
   }
 
   private async getPullRequestFiles(
@@ -686,6 +722,7 @@ export class GitHubToken extends GitHub {
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       cfg.fetch_pull_request_files ?? true,
+      cfg.fetch_pull_request_reviews ?? true,
       logger
     );
     await github.checkConnection();
@@ -729,7 +766,8 @@ export class GitHubApp extends GitHub {
       baseOctokit,
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_files ?? true,
+      cfg.fetch_pull_request_files ?? true,
+      cfg.fetch_pull_request_reviews ?? true,
       logger
     );
     await github.checkConnection();

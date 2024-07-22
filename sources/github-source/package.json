@@ -25,7 +25,7 @@
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
     "prepare": "npm run build",
-    "test": "jest --verbose --color",
+    "test": "jest --verbose --color --updateSnapshot",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
   },

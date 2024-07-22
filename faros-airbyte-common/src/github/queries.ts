@@ -3,6 +3,8 @@ import path from 'path';
 
 export const FILES_FRAGMENT = loadQuery('files-fragment.gql');
 
+export const REVIEWS_FRAGMENT = loadQuery('reviews-fragment.gql');
+
 const COMMIT_FIELDS_FRAGMENT = loadQuery('commit-fields-fragment.gql');
 
 // GraphQL query used to get pull requests
