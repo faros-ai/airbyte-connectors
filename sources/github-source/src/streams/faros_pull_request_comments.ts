@@ -40,10 +40,10 @@ export class FarosPullRequestComments extends StreamWithRepoSlices {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: any, // TODO: Specify type
+    latestRecord: PullRequestComment,
     slice: RepoStreamSlice
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.updatedAt ?? 0);
+    const latestRecordCutoff = Utils.toDate(latestRecord?.updated_at ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
