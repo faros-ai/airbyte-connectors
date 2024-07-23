@@ -111,17 +111,29 @@ export class FarosPullRequests extends GitHubConverter {
           label: {name: label.name},
         },
       })),
-      ...pr.files.map((file) => {
-        return {
-          model: 'vcs_PullRequestFile',
-          record: {
-            pullRequest: prKey,
-            file: {uid: file.path, repository: repoKey},
-            additions: file.additions,
-            deletions: file.deletions,
-          },
-        };
-      }),
+      ...pr.files.map((file) => ({
+        model: 'vcs_PullRequestFile',
+        record: {
+          pullRequest: prKey,
+          file: {uid: file.path, repository: repoKey},
+          additions: file.additions,
+          deletions: file.deletions,
+        },
+      })),
+      ...pr.reviews.map((review) => ({
+        model: 'vcs_PullRequestReview',
+        record: {
+          number: review.databaseId,
+          uid: review.databaseId.toString(),
+          htmlUrl: review.url,
+          pullRequest: prKey,
+          reviewer: review.author
+            ? {uid: review.author.login, source: this.streamName.source}
+            : null,
+          state: review.state,
+          submittedAt: Utils.toDate(review.submittedAt),
+        },
+      })),
     ];
   }
 
