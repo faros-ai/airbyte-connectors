@@ -181,9 +181,6 @@ export abstract class GitHub {
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
-      this.logger.info(
-        `Rate limit info si ${JSON.stringify(res['rateLimit'])}`
-      );
       for (const pr of res.repository.pullRequests.nodes) {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
@@ -281,6 +278,7 @@ export abstract class GitHub {
     let reviews = pr.reviews.nodes;
     const {hasNextPage, endCursor} = pr.reviews.pageInfo;
     if (hasNextPage) {
+      this.logger.info(`HAS NEXT PAGE`);
       const remainingReviews = await this.getPullRequestReviews(
         org,
         repo,
