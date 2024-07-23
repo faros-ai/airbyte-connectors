@@ -94,7 +94,10 @@ export type TeamMembership = {
   user: string;
 };
 
-export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
+export type CopilotSeatsStreamRecord =
+  | CopilotSeat
+  | CopilotSeatEnded
+  | CopilotSeatsEmpty;
 
 export type CopilotSeat = {
   empty?: never;
@@ -102,13 +105,26 @@ export type CopilotSeat = {
   user: string;
   team?: string;
   teamJoinedAt?: string;
+  teamLeftAt?: never;
   startedAt?: string;
+  endedAt?: never;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.copilot.listCopilotSeats
   >['seats'][0],
   'pending_cancellation_date' | 'last_activity_at'
 >;
+
+export type CopilotSeatEnded = {
+  empty?: never;
+  org: string;
+  user: string;
+  team?: string;
+  teamJoinedAt?: never;
+  teamLeftAt?: string;
+  startedAt?: never;
+  endedAt?: string;
+};
 
 export type CopilotSeatsEmpty = {
   empty: true;

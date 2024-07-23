@@ -1,6 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
+  CopilotSeatEnded,
   CopilotSeatsStreamRecord,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
@@ -52,8 +53,12 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     if (latestRecord.empty) {
       return currentStreamState;
     }
-    const seat = latestRecord as CopilotSeat;
-    const latestRecordCutoff = Utils.toDate(seat?.teamJoinedAt ?? 0);
+    const seat = latestRecord as CopilotSeat | CopilotSeatEnded;
+    const maxCutoff = Math.max(
+      Utils.toDate(seat?.teamJoinedAt ?? 0).getTime(),
+      Utils.toDate(seat?.teamLeftAt ?? 0).getTime()
+    );
+    const latestRecordCutoff = Utils.toDate(maxCutoff);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
