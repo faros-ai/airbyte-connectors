@@ -1,7 +1,15 @@
 query PullRequestReviews($org: String!, $repo: String!, $number: Int!, $nested_page_size: Int!, $cursor: String) {
   repository(owner: $org, name: $repo) {
     pullRequest(number: $number) {
-      ...Reviews
+      reviews(first: $nested_page_size, after: $cursor) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ...ReviewFields
+        }
+      }
     }
   }
 }

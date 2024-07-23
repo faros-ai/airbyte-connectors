@@ -7,5 +7,6 @@
   "fetch_teams": true,
   "bucket_id": 1,
   "bucket_total": 1,
-  "fetch_pull_request_files": true
+  "fetch_pull_request_files": true,
+  "fetch_pull_request_reviews": true
 }

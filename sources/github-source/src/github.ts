@@ -278,7 +278,6 @@ export abstract class GitHub {
     let reviews = pr.reviews.nodes;
     const {hasNextPage, endCursor} = pr.reviews.pageInfo;
     if (hasNextPage) {
-      this.logger.info(`HAS NEXT PAGE`);
       const remainingReviews = await this.getPullRequestReviews(
         org,
         repo,
