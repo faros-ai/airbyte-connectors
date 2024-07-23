@@ -54,11 +54,13 @@ const DEFAULT_BUCKET_TOTAL = 1;
 type TeamMemberTimestamps = {
   [user: string]: {
     [team: string]: {
-      added_at?: Date;
-      removed_at?: Date;
+      addedAt?: Date;
+      removedAt?: Date;
     };
   };
 };
+
+type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
 export abstract class GitHub {
   private static github: GitHub;
@@ -487,7 +489,7 @@ export abstract class GitHub {
     cutoffDate: Date
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
-    const assignedTeams: {[team: string]: {created_at: string}} = {};
+    const assignedTeams: CopilotAssignedTeams = {};
     const assignedUsers = new Set<string>();
     let teamMemberTimestamps: TeamMemberTimestamps;
     const iter = this.octokit(org).paginate.iterator(
@@ -519,7 +521,7 @@ export abstract class GitHub {
               );
             }
             teamJoinedAt =
-              teamMemberTimestamps?.[userAssignee]?.[teamAssignee]?.added_at;
+              teamMemberTimestamps?.[userAssignee]?.[teamAssignee]?.addedAt;
             if (teamJoinedAt > startedAt) {
               startedAt = teamJoinedAt;
             }
@@ -544,32 +546,19 @@ export abstract class GitHub {
         for (const [user, teams] of Object.entries(teamMemberTimestamps)) {
           // user doesn't currently have assigned a copilot seat
           if (!assignedUsers.has(user)) {
-            let lastTeamLeftAt: Date;
-            let lastTeamLeft: string;
-            for (const [team, timestamps] of Object.entries(teams)) {
-              if (
-                // user was removed from the team after the team was assigned copilot seats
-                Utils.toDate(timestamps.removed_at) >
-                  Utils.toDate(assignedTeams[team]?.created_at) &&
-                // user was removed from the team after the last time it was added to the same team
-                Utils.toDate(timestamps.removed_at) >
-                  Utils.toDate(timestamps.added_at ?? 0) &&
-                // user was removed from the team after having left other teams with copilot
-                Utils.toDate(timestamps.removed_at) > (lastTeamLeftAt || 0) &&
-                // user was removed from the team after the cutoff date
-                Utils.toDate(timestamps.removed_at) > cutoffDate
-              ) {
-                lastTeamLeftAt = timestamps.removed_at;
-                lastTeamLeft = team;
-              }
-            }
-            if (lastTeamLeftAt && lastTeamLeft) {
+            const lastCopilotTeam = getLastCopilotTeamForUser(
+              teams,
+              assignedTeams,
+              cutoffDate
+            );
+            if (lastCopilotTeam) {
+              const lastCopilotTeamLeftAt = teams[lastCopilotTeam].removedAt;
               yield {
                 org,
                 user,
-                team: lastTeamLeft,
-                teamLeftAt: lastTeamLeftAt.toISOString(),
-                endedAt: lastTeamLeftAt.toISOString(),
+                team: lastCopilotTeam,
+                teamLeftAt: lastCopilotTeamLeftAt.toISOString(),
+                endedAt: lastCopilotTeamLeftAt.toISOString(),
               } as CopilotSeatEnded;
             }
           }
@@ -678,9 +667,9 @@ export abstract class GitHub {
         users[log.user][team] = {};
       }
       if (log.action === 'team.add_member') {
-        users[log.user][team].added_at = Utils.toDate(log.created_at);
+        users[log.user][team].addedAt = Utils.toDate(log.created_at);
       } else if (log.action === 'team.remove_member') {
-        users[log.user][team].removed_at = Utils.toDate(log.created_at);
+        users[log.user][team].removedAt = Utils.toDate(log.created_at);
       }
     }
     return users;
@@ -863,4 +852,30 @@ export class GitHubApp extends GitHub {
     }
     return installations;
   }
+}
+
+function getLastCopilotTeamForUser(
+  userTeams: TeamMemberTimestamps[string],
+  assignedTeams: CopilotAssignedTeams,
+  cutoffDate: Date
+): string {
+  let lastCopilotTeamLeft: string;
+  let lastCopilotTeamLeftAt: Date;
+  for (const [team, timestamps] of Object.entries(userTeams)) {
+    const {addedAt, removedAt} = timestamps;
+    if (
+      // user was removed from the team after the cutoff date
+      removedAt > cutoffDate &&
+      // user was removed from the team after the team was assigned copilot seats
+      removedAt > Utils.toDate(assignedTeams[team]?.created_at) &&
+      // user was removed from the team after the last time it was added to the same team
+      removedAt > Utils.toDate(addedAt ?? 0) &&
+      // user was removed from the team after having left other teams with copilot
+      removedAt > (lastCopilotTeamLeftAt || 0)
+    ) {
+      lastCopilotTeamLeft = team;
+      lastCopilotTeamLeftAt = removedAt;
+    }
+  }
+  return lastCopilotTeamLeft;
 }
