@@ -70,6 +70,7 @@ export const StandardStreamNames = [
   'faros_labels',
   'faros_users',
   'faros_commits',
+  'faros_pull_request_comments',
 ];
 
 // todo: fill as streams are developed
@@ -82,6 +83,7 @@ export const FullStreamNames = [
   'faros_labels',
   'faros_users',
   'faros_commits',
+  'faros_pull_request_comments',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];

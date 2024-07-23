@@ -37,8 +37,17 @@ describe('ProjectBoardFilter', () => {
     setupJiraInstance(mockedImplementation, true, config, logger);
   });
 
-  test('getProjectsFromFaros - all projects', async () => {
+  test('getProjectsFromFaros - all projects - no projects list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(config, logger);
+    const projects = await projectBoardFilter.getProjects();
+    expect(projects).toMatchSnapshot();
+  });
+
+  test('getProjectsFromFaros - all projects - empty projects list', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, projects: []},
+      logger
+    );
     const projects = await projectBoardFilter.getProjects();
     expect(projects).toMatchSnapshot();
   });

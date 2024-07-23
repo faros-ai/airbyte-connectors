@@ -8,6 +8,7 @@ import {
   Label,
   Organization,
   PullRequest,
+  PullRequestComment,
   PullRequestFile,
   PullRequestNode,
   PullRequestReview,
@@ -316,6 +317,39 @@ export abstract class GitHub {
       }
     }
     return reviews;
+  }
+
+  async *getPullRequestComments(
+    org: string,
+    repo: string,
+    cutoffDate?: Date
+  ): AsyncGenerator<PullRequestComment> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).pulls.listReviewCommentsForRepo,
+      {
+        owner: org,
+        repo: repo,
+        since: cutoffDate?.toISOString(),
+        direction: 'desc',
+        sort: 'updated',
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const comment of res.data) {
+        yield {
+          repository: `${org}/${repo}`,
+          user: {login: comment.user.login},
+          ...pick(comment, [
+            'id',
+            'body',
+            'created_at',
+            'updated_at',
+            'pull_request_url',
+          ]),
+        };
+      }
+    }
   }
 
   async *getLabels(org: string, repo: string): AsyncGenerator<Label> {

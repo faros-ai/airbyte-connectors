@@ -296,6 +296,33 @@ exports[`index streams - organizations 1`] = `
 ]
 `;
 
+exports[`index streams - pull request comments 1`] = `
+[
+  {
+    "body": "This is a test comment.",
+    "created_at": "2024-07-18T17:04:03Z",
+    "id": 1683209890,
+    "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
+    "repository": "github/Hello-World",
+    "updated_at": "2024-07-18T17:04:04Z",
+    "user": {
+      "login": "jdoe",
+    },
+  },
+  {
+    "body": "Another comment to test :)",
+    "created_at": "2024-07-18T17:04:03Z",
+    "id": 1683209891,
+    "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
+    "repository": "github/Hello-World",
+    "updated_at": "2024-07-18T17:04:04Z",
+    "user": {
+      "login": "jdoe",
+    },
+  },
+]
+`;
+
 exports[`index streams - pull requests 1`] = `
 [
   {

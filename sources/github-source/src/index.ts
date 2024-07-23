@@ -18,6 +18,7 @@ import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosLabels} from './streams/faros_labels';
 import {FarosOrganizations} from './streams/faros_organizations';
+import {FarosPullRequestComments} from './streams/faros_pull_request_comments';
 import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosRepositories} from './streams/faros_repositories';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
@@ -62,6 +63,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
       new FarosCommits(config, this.logger),
+      new FarosPullRequestComments(config, this.logger),
     ];
   }
 

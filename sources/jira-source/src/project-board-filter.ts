@@ -22,7 +22,7 @@ export class ProjectBoardFilter {
       this.projects = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
-      if (!this.config.projects) {
+      if (!this.config.projects?.length) {
         const projects = this.supportsFarosClient()
           ? jira.getProjectsFromGraph(
               this.farosClient,

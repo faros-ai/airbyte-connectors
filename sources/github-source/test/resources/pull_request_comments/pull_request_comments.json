@@ -1,0 +1,114 @@
+[
+  {
+    "url": "https://api.github.com/repos/test/dolos/pulls/comments/1000000001",
+    "pull_request_review_id": 1234567899,
+    "id": 1683209890,
+    "node_id": "PRRC_kwDOF2abc851234",
+    "diff_hunk": "const test = 'A comment here';",
+    "path": "sources/github-source/src/github.ts",
+    "commit_id": "bbedd52947e8c261e1ce3db7baac0236eff29b8a",
+    "original_commit_id": "dbe712cdc1947ec1d6d2ffb46f30f42f43f81ed9",
+    "user": {
+      "login": "jdoe",
+      "id": 23142441,
+      "node_id": "MDQ6VXNlcjIzMTQyNDQx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23456?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jdoe",
+      "html_url": "https://github.com/jdoe",
+      "followers_url": "https://api.github.com/users/jdoe/followers",
+      "following_url": "https://api.github.com/users/jdoe/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jdoe/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jdoe/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jdoe/subscriptions",
+      "organizations_url": "https://api.github.com/users/jdoe/orgs",
+      "repos_url": "https://api.github.com/users/jdoe/repos",
+      "events_url": "https://api.github.com/users/jdoe/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jdoe/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "This is a test comment.",
+    "created_at": "2024-07-18T17:04:03Z",
+    "updated_at": "2024-07-18T17:04:04Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000001",
+    "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
+    "author_association": "MEMBER",
+    "_links": {
+      "self": {
+        "href": "https://api.github.com/repos/test/dolos/pulls/comments/1000000001"
+      },
+      "html": {
+        "href": "https://github.com/test/test/dolos/1234#discussion_r1000000001"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/test/dolos/pulls/1234"
+      }
+    },
+    "start_line": null,
+    "original_start_line": 185,
+    "start_side": "RIGHT",
+    "line": null,
+    "original_line": 211,
+    "side": "RIGHT",
+    "original_position": 95,
+    "position": null,
+    "subject_type": "line"
+  },
+  {
+    "url": "https://api.github.com/repos/test/dolos/pulls/comments/1000000002",
+    "pull_request_review_id": 1234567899,
+    "id": 1683209891,
+    "node_id": "PRRC_kwDOF2abc851234",
+    "diff_hunk": "'another comment' \n",
+    "path": "sources/github-source/src/github.ts",
+    "commit_id": "bbedd52947e8c261e1ce3db7baac0236eff29b8a",
+    "original_commit_id": "dbe712cdc1947ec1d6d2ffb46f30f42f43f81ed9",
+    "user": {
+      "login": "jdoe",
+      "id": 23142441,
+      "node_id": "MDQ6VXNlcjIzMTQyNDQx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23456?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jdoe",
+      "html_url": "https://github.com/jdoe",
+      "followers_url": "https://api.github.com/users/jdoe/followers",
+      "following_url": "https://api.github.com/users/jdoe/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jdoe/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jdoe/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jdoe/subscriptions",
+      "organizations_url": "https://api.github.com/users/jdoe/orgs",
+      "repos_url": "https://api.github.com/users/jdoe/repos",
+      "events_url": "https://api.github.com/users/jdoe/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jdoe/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "Another comment to test :)",
+    "created_at": "2024-07-18T17:04:03Z",
+    "updated_at": "2024-07-18T17:04:04Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000002",
+    "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
+    "author_association": "MEMBER",
+    "_links": {
+      "self": {
+        "href": "https://api.github.com/repos/test/dolos/pulls/comments/1000000002"
+      },
+      "html": {
+        "href": "https://github.com/test/test/dolos/1234#discussion_r1000000002"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/test/dolos/pulls/1234"
+      }
+    },
+    "start_line": null,
+    "original_start_line": 12,
+    "start_side": "RIGHT",
+    "line": null,
+    "original_line": 12,
+    "side": "RIGHT",
+    "original_position": 33,
+    "position": null,
+    "subject_type": "line"
+  }
+]
