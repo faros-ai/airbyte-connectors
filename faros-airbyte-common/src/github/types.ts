@@ -42,12 +42,15 @@ export type PullRequestNode =
 export type PullRequest = {
   org: string;
   repo: string;
-} & Omit<PullRequestNode, 'labels' | 'files'> & {
+} & Omit<PullRequestNode, 'labels' | 'files' | 'reviews'> & {
     labels: PullRequestNode['labels']['nodes'];
     files: PullRequestNode['files']['nodes'];
+    reviews: PullRequestNode['reviews']['nodes'];
   };
 
 export type PullRequestFile = PullRequestNode['files']['nodes'][0];
+
+export type PullRequestReview = PullRequestNode['reviews']['nodes'][0];
 
 export type Label = {
   org: string;

@@ -1,5 +1,5 @@
 fragment Reviews on PullRequest {
-  reviews(first: $nested_page_size) {
+  reviews(first: $nested_page_size, after: $cursor) {
     pageInfo {
       hasNextPage
       endCursor

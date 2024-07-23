@@ -10,6 +10,7 @@ import {
   PullRequest,
   PullRequestFile,
   PullRequestNode,
+  PullRequestReview,
   Repository,
   Team,
   TeamMembership,
@@ -19,6 +20,8 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  PullRequestReviewsQuery,
+  PullRequestReviewState,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
@@ -28,6 +31,7 @@ import {
   FILES_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
+  PULL_REQUEST_REVIEWS_QUERY,
   PULL_REQUESTS_QUERY,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
@@ -239,24 +243,6 @@ export abstract class GitHub {
     return files;
   }
 
-  private async getReviews(
-    pr: PullRequestNode,
-    org: string,
-    repo: string
-  ): Promise<PullRequestReview[]> {
-    let reviews = pr.reviews.nodes;
-    if (pr.reviews.pageInfo.hasNextPage) {
-      const remainingReviews = await this.getPullRequestReviews(
-        org,
-        repo,
-        pr.number,
-        2 // Start from the second page to avoid re-fetching the first one
-      );
-      reviews = reviews.concat(remainingReviews);
-    }
-    return reviews;
-  }
-
   private async getPullRequestFiles(
     org: string,
     repo: string,
@@ -284,6 +270,52 @@ export abstract class GitHub {
       }
     }
     return files;
+  }
+
+  private async getReviews(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestReview[]> {
+    let reviews = pr.reviews.nodes;
+    const {hasNextPage, endCursor} = pr.reviews.pageInfo;
+    if (hasNextPage) {
+      const remainingReviews = await this.getPullRequestReviews(
+        org,
+        repo,
+        pr.number,
+        endCursor
+      );
+      reviews = reviews.concat(remainingReviews);
+    }
+    return reviews;
+  }
+
+  private async getPullRequestReviews(
+    org: string,
+    repo: string,
+    number: number,
+    startCursor?: string
+  ): Promise<PullRequestReview[]> {
+    const iter = this.octokit(
+      org
+    ).graphql.paginate.iterator<PullRequestReviewsQuery>(
+      PULL_REQUEST_REVIEWS_QUERY,
+      {
+        owner: org,
+        repo,
+        number,
+        nested_page_size: PR_NESTED_PAGE_SIZE,
+        cursor: startCursor,
+      }
+    );
+    const reviews: PullRequestReview[] = [];
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const review of res.repository.pullRequest.reviews.nodes) {
+        reviews.push(review);
+      }
+    }
+    return reviews;
   }
 
   async *getLabels(org: string, repo: string): AsyncGenerator<Label> {

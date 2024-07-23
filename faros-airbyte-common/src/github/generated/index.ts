@@ -8005,6 +8005,54 @@ export type ListMembersQuery = {
   } | null;
 };
 
+export type PullRequestReviewsQueryVariables = Exact<{
+  org: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  number: Scalars['Int']['input'];
+  nested_page_size: Scalars['Int']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type PullRequestReviewsQuery = {
+  repository?: {
+    pullRequest?: {
+      reviews?: {
+        totalCount: number;
+        pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+        nodes?: Array<{
+          state: PullRequestReviewState;
+          submittedAt?: string | null;
+          databaseId?: number | null;
+          url: string;
+          author?:
+            | {login: string; html_url: string; type: 'Bot'}
+            | {
+                name?: string | null;
+                login: string;
+                html_url: string;
+                type: 'EnterpriseUserAccount';
+              }
+            | {login: string; html_url: string; type: 'Mannequin'}
+            | {
+                name?: string | null;
+                login: string;
+                html_url: string;
+                type: 'Organization';
+              }
+            | {
+                name?: string | null;
+                login: string;
+                html_url: string;
+                type: 'User';
+              }
+            | null;
+          comments: {totalCount: number};
+        } | null> | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type PullRequestsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
