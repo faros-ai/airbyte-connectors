@@ -185,15 +185,13 @@ export abstract class GitHub {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
         }
-        const files = await this.getFiles(pr, org, repo);
-        const reviews = await this.getReviews(pr, org, repo);
         yield {
           org,
           repo,
           ...pr,
           labels: pr.labels.nodes,
-          files,
-          reviews,
+          files: await this.getFiles(pr, org, repo),
+          reviews: await this.getReviews(pr, org, repo),
         };
       }
     }
