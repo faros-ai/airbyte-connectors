@@ -4,5 +4,11 @@
     "created_at": 1721065392098,
     "team": "github/justice-league",
     "user": "octocat"
+  },
+  {
+    "action": "team.remove_member",
+    "created_at": 1721742850205,
+    "team": "github/justice-league",
+    "user": "octokatty"
   }
 ]
