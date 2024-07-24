@@ -80,8 +80,20 @@ describe('OrgRepoFilter', () => {
     expect(organizations).toMatchSnapshot();
   });
 
-  test('getRepositories - all', async () => {
+  test('getRepositories - all - no list', async () => {
     const orgRepoFilter = new OrgRepoFilter(config, logger);
+    const repositories = await getAllRepositories(orgRepoFilter);
+    expect(repositories).toMatchSnapshot();
+  });
+
+  test('getRepositories - all - empty list', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        repositories: [],
+      },
+      logger
+    );
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
   });
