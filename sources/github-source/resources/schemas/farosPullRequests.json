@@ -112,6 +112,52 @@
         }
       }
     },
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "object",
+            "properties": {
+              "login": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "html_url": {
+                "type": "string"
+              }
+            }
+          },
+          "state": {
+            "type": "string"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "databaseId": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "object",
+            "properties": {
+              "totalCount": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
     "labels": {
       "type": "array",
       "items": {

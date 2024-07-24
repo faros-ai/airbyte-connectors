@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import {buildASTSchema, GraphQLSchema, parse, validate} from 'graphql';
 
+import {REVIEWS_FRAGMENT} from '../../lib/github/queries';
 import * as sut from '../../src/github/queries';
 import {FILES_FRAGMENT} from '../../src/github/queries';
 
@@ -26,7 +27,7 @@ describe('queries', () => {
 
       test(`${query} matches '${file}'`, async () => {
         if (query === 'PULL_REQUESTS_QUERY') {
-          queryStr += FILES_FRAGMENT;
+          queryStr += FILES_FRAGMENT + '\n' + REVIEWS_FRAGMENT;
         }
         const errors = validate(schema, parse(queryStr));
         expect(errors).toHaveLength(0);
