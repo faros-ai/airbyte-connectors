@@ -38,8 +38,20 @@ describe('OrgRepoFilter', () => {
     );
   });
 
-  test('getOrganizations - all', async () => {
+  test('getOrganizations - all - no list', async () => {
     const orgRepoFilter = new OrgRepoFilter(config, logger);
+    const organizations = await orgRepoFilter.getOrganizations();
+    expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - all - empty list', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        organizations: [],
+      },
+      logger
+    );
     const organizations = await orgRepoFilter.getOrganizations();
     expect(organizations).toMatchSnapshot();
   });

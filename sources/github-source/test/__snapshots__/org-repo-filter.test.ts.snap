@@ -1,6 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OrgRepoFilter getOrganizations - all 1`] = `
+exports[`OrgRepoFilter getOrganizations - all - empty list 1`] = `
+[
+  "org-1",
+  "org-2",
+  "org-3",
+]
+`;
+
+exports[`OrgRepoFilter getOrganizations - all - no list 1`] = `
 [
   "org-1",
   "org-2",
