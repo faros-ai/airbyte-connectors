@@ -71,8 +71,8 @@ export abstract class GitHub {
     protected readonly baseOctokit: ExtendedOctokit,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
-    private readonly fetchFiles: boolean,
-    private readonly fetchReviews: boolean,
+    private readonly fetchPullRequestFiles: boolean,
+    private readonly fetchPullRequestReviews: boolean,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -185,10 +185,8 @@ export abstract class GitHub {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
         }
-        const files = this.fetchFiles ? await this.getFiles(pr, org, repo) : [];
-        const reviews = this.fetchReviews
-          ? await this.getReviews(pr, org, repo)
-          : [];
+        const files = await this.getFiles(pr, org, repo);
+        const reviews = await this.getReviews(pr, org, repo);
         yield {
           org,
           repo,
@@ -212,10 +210,15 @@ export abstract class GitHub {
     };
 
     let query = PULL_REQUESTS_QUERY;
-    query = appendFragment(query, this.fetchFiles, FILES_FRAGMENT, '...Files');
     query = appendFragment(
       query,
-      this.fetchReviews,
+      this.fetchPullRequestFiles,
+      FILES_FRAGMENT,
+      '...Files'
+    );
+    query = appendFragment(
+      query,
+      this.fetchPullRequestReviews,
       REVIEWS_FRAGMENT,
       '...Reviews'
     );
@@ -228,6 +231,9 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestFile[]> {
+    if (!this.fetchPullRequestFiles) {
+      return [];
+    }
     let files = pr.files.nodes;
     if (pr.files.pageInfo.hasNextPage) {
       const remainingFiles = await this.getPullRequestFiles(
@@ -275,6 +281,9 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestReview[]> {
+    if (!this.fetchPullRequestReviews) {
+      return [];
+    }
     let reviews = pr.reviews.nodes;
     const {hasNextPage, endCursor} = pr.reviews.pageInfo;
     if (hasNextPage) {
