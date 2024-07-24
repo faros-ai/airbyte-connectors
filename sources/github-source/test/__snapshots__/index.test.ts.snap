@@ -150,6 +150,13 @@ exports[`index streams - copilot seats with audit logs API 1`] = `
     "teamJoinedAt": undefined,
     "user": "octokitten",
   },
+  {
+    "endedAt": "2024-07-23T13:54:10.205Z",
+    "org": "github",
+    "team": "justice-league",
+    "teamLeftAt": "2024-07-23T13:54:10.205Z",
+    "user": "octokatty",
+  },
 ]
 `;
 

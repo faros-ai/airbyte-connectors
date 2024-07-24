@@ -40,8 +40,8 @@ export type GitHubAuth = GitHubToken | GitHubApp;
 
 export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
 
-export type AuditLogTeamAddMember = {
-  action: string;
+export type AuditLogTeamMember = {
+  action: 'team.add_member' | 'team.remove_member';
   created_at: number;
   team: string;
   user: string;

@@ -146,7 +146,7 @@
         "type": "boolean",
         "title": "Fetch teams",
         "description": "Fetch teams from organization to populate teams and team memberships.",
-        "default": true
+        "default": false
       },
       "cutoff_days": {
         "order": 8,

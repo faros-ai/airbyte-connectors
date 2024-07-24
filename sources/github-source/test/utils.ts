@@ -30,7 +30,9 @@ export function setupGitHubInstance(
             octokitMock.orgs?.listForAuthenticatedUser ??
             jest.fn().mockReturnValue([{login: 'github'}]),
         },
-        auditLogs: octokitMock.auditLogs ?? new Error('API not available'),
+        auditLogs:
+          octokitMock.auditLogs ??
+          new ErrorWithStatus(400, 'API not available'),
       },
       githubConfig.bucket_id,
       githubConfig.bucket_total,
@@ -71,5 +73,14 @@ export async function* iterate<T>(
   }
   for (const x of arrOrErr) {
     yield x;
+  }
+}
+
+class ErrorWithStatus extends Error {
+  constructor(
+    readonly status: number,
+    readonly message: string
+  ) {
+    super(message);
   }
 }

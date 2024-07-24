@@ -2,6 +2,9 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "org": {
+      "type": "string"
+    },
     "day": {
       "type": "string",
       "format": "date"
@@ -37,34 +40,37 @@
       "type": "number"
     },
     "breakdown": {
-      "type": "object",
-      "properties": {
-        "language": {
-          "type": "string"
-        },
-        "editor": {
-          "type": "string"
-        },
-        "suggestions_count": {
-          "type": "number"
-        },
-        "acceptances_count": {
-          "type": "number"
-        },
-        "discards_count": {
-          "type": "number"
-        },
-        "lines_suggested": {
-          "type": "number"
-        },
-        "lines_accepted": {
-          "type": "number"
-        },
-        "lines_discarded": {
-          "type": "number"
-        },
-        "active_users": {
-          "type": "number"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "editor": {
+            "type": "string"
+          },
+          "suggestions_count": {
+            "type": "number"
+          },
+          "acceptances_count": {
+            "type": "number"
+          },
+          "discards_count": {
+            "type": "number"
+          },
+          "lines_suggested": {
+            "type": "number"
+          },
+          "lines_accepted": {
+            "type": "number"
+          },
+          "lines_discarded": {
+            "type": "number"
+          },
+          "active_users": {
+            "type": "number"
+          }
         }
       }
     }
