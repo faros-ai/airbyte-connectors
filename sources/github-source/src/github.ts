@@ -476,7 +476,13 @@ export abstract class GitHub {
             yield {
               org,
               team: team.slug,
-              user: member.login,
+              user: pick(member, [
+                'login',
+                'name',
+                'email',
+                'html_url',
+                'type',
+              ]),
             };
           }
         }

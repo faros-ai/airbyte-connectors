@@ -601,7 +601,11 @@ exports[`index streams - team memberships 1`] = `
   {
     "org": "github",
     "team": "justice-league",
-    "user": "octocat",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
   },
 ]
 `;
