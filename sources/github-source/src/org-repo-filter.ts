@@ -97,7 +97,10 @@ export class OrgRepoFilter {
         this.filterConfig.reposByOrg.get(org).forEach((repoName) => {
           const repo = visibleRepos.find((r) => r.name === repoName);
           if (!repo) {
-            throw new VError(`Repository not found: ${org}/${repoName}`);
+            this.logger.warn(
+              `Skipping not found repository ${org}/${repoName}`
+            );
+            return;
           }
           repos.add(repo);
         });
