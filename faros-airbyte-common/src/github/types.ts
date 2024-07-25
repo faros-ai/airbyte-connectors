@@ -59,6 +59,15 @@ export type PullRequestComment = {
   'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
 >;
 
+export type OutsideCollaborator = {
+  org: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.orgs.listOutsideCollaborators
+  >[0],
+  'name' | 'login' | 'email'
+>;
+
 export type Label = {
   org: string;
   repo: string;
