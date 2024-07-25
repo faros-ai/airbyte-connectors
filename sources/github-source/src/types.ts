@@ -12,13 +12,15 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly excluded_repositories?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly fetch_teams?: boolean;
+  readonly fetch_pull_request_files?: boolean;
+  readonly bucket_id?: number;
+  readonly bucket_total?: number;
   readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly timeout?: number;
   readonly concurrency_limit?: number;
   readonly reject_unauthorized?: boolean;
   readonly previews?: ReadonlyArray<string>;
-  readonly bucket_id?: number;
-  readonly bucket_total?: number;
-  readonly fetch_pull_request_files?: boolean;
   startDate?: Date;
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;

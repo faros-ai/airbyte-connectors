@@ -13,6 +13,11 @@ import url from 'url';
 import template from 'url-template';
 import VError from 'verror';
 
+import {
+  DEFAULT_API_URL,
+  DEFAULT_CONCURRENCY,
+  DEFAULT_TIMEOUT_MS,
+} from './github';
 import {GitHubConfig} from './types';
 
 export type RateLimitHandler = (reason?: Error) => boolean;
@@ -27,10 +32,6 @@ const ExtendedOctokitConstructor = Octokit.plugin(
   throttling
 );
 
-export const GITHUB_API_URL = 'https://api.github.com';
-
-const DEFAULT_CONCURRENCY = 4;
-
 export function makeOctokitClient(
   cfg: GitHubConfig,
   installationId?: number,
@@ -39,17 +40,17 @@ export function makeOctokitClient(
   maxRetries = 3
 ): ExtendedOctokit {
   const throttle = getThrottle(cfg, logger, onRateLimit, maxRetries);
-  const baseUrl = cfg.url ?? GITHUB_API_URL;
+  const baseUrl = cfg.url ?? DEFAULT_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
-  const request = isHttps
-    ? {
-        agent: new https.Agent({
-          rejectUnauthorized: cfg.reject_unauthorized ?? true,
-        }),
-        timeout: 90_000,
-      }
-    : {timeout: 90_000};
+  const request = {
+    ...(isHttps && {
+      agent: new https.Agent({
+        rejectUnauthorized: cfg.reject_unauthorized ?? true,
+      }),
+    }),
+    timeout: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
+  };
 
   const auth = getOctokitAuth(cfg, installationId);
 
