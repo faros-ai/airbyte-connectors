@@ -28,6 +28,7 @@ export class FarosPullRequests extends GitHubConverter {
     'vcs_PullRequestLabel',
     'vcs_PullRequestFile',
     'vcs_File',
+    'vcs_PullRequestReview',
   ];
 
   async convert(
@@ -68,6 +69,10 @@ export class FarosPullRequests extends GitHubConverter {
 
     pr.files.forEach((file) => {
       this.collectFile(file.path, repoKey);
+    });
+
+    pr.reviews.forEach((review) => {
+      this.collectUser(review.author);
     });
 
     const prKey = {
