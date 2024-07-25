@@ -64,8 +64,8 @@ export class OrgRepoFilter {
     if (!this.organizations) {
       const organizations = new Set<string>();
       const github = await GitHub.instance(this.config, this.logger);
+      const visibleOrgs = await github.getOrganizations();
       if (!this.filterConfig.organizations) {
-        const visibleOrgs = await github.getOrganizations();
         visibleOrgs.forEach((org) => {
           if (!this.filterConfig.excludedOrganizations?.has(org)) {
             organizations.add(org);
@@ -73,6 +73,14 @@ export class OrgRepoFilter {
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
+          // fine-grained tokens return an empty list for visible orgs,
+          // so we only run the check if the list is not empty
+          if (visibleOrgs.length === 0) {
+            this.logger.warn('No visible organizations found');
+          } else if (!visibleOrgs.some((o) => o === org)) {
+            this.logger.warn(`Skipping not found organization ${org}`);
+            return;
+          }
           organizations.add(org);
         });
       }
