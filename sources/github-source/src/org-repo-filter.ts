@@ -1,6 +1,7 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/github';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
@@ -63,8 +64,8 @@ export class OrgRepoFilter {
     if (!this.organizations) {
       const organizations = new Set<string>();
       const github = await GitHub.instance(this.config, this.logger);
-      const visibleOrgs = await github.getOrganizations();
       if (!this.filterConfig.organizations) {
+        const visibleOrgs = await github.getOrganizations();
         visibleOrgs.forEach((org) => {
           if (!this.filterConfig.excludedOrganizations?.has(org)) {
             organizations.add(org);
@@ -72,10 +73,6 @@ export class OrgRepoFilter {
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
-          if (!visibleOrgs.some((o) => o === org)) {
-            this.logger.warn(`Skipping not found organization ${org}`);
-            return;
-          }
           organizations.add(org);
         });
       }
@@ -100,10 +97,7 @@ export class OrgRepoFilter {
         this.filterConfig.reposByOrg.get(org).forEach((repoName) => {
           const repo = visibleRepos.find((r) => r.name === repoName);
           if (!repo) {
-            this.logger.warn(
-              `Skipping not found repository ${org}/${repoName}`
-            );
-            return;
+            throw new VError(`Repository not found: ${org}/${repoName}`);
           }
           repos.add(repo);
         });
@@ -120,6 +114,11 @@ function collectReposByOrg(
 ): void {
   for (const repo of repos) {
     const [org, name] = repo.split('/');
+    if (!org || !name) {
+      throw new VError(
+        `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
+      );
+    }
     if (!reposByOrg.has(org)) {
       reposByOrg.set(org, new Set());
     }

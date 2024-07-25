@@ -36,10 +36,7 @@ export class FarosCommits extends StreamWithRepoSlices {
     const state = streamState?.[StreamBase.orgRepoKey(org, repo)];
     const cutoffDate = this.getUpdateStartDate(state?.cutoff);
     const github = await GitHub.instance(this.config, this.logger);
-    const commits = github.getCommits(org, repo, defaultBranch, cutoffDate);
-    for await (const commit of commits) {
-      yield commit;
-    }
+    yield* github.getCommits(org, repo, defaultBranch, cutoffDate);
   }
 
   getUpdatedState(
