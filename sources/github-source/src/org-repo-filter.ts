@@ -49,8 +49,8 @@ export class OrgRepoFilter {
     }
 
     this.filterConfig = {
-      organizations: organizations ? new Set(organizations) : undefined,
-      excludedOrganizations: excluded_organizations
+      organizations: organizations?.length ? new Set(organizations) : undefined,
+      excludedOrganizations: excluded_organizations?.length
         ? new Set(excluded_organizations)
         : undefined,
       reposByOrg,

@@ -70,8 +70,17 @@ describe('ProjectBoardFilter', () => {
     expect(projects).toMatchSnapshot();
   });
 
-  test('getBoardsFromFaros - all boards', async () => {
+  test('getBoardsFromFaros - all boards - no list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(config, logger);
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
+
+  test('getBoardsFromFaros - all boards - empty list', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, boards: []},
+      logger
+    );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
   });
