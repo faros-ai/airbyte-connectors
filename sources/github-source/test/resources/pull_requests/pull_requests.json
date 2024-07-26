@@ -52,6 +52,44 @@
               }
             ]
           },
+          "reviews": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "author": {
+                  "login": "nehanda",
+                  "type": "User",
+                  "name": null,
+                  "html_url": "https://github.com/nehanda"
+                },
+                "state": "COMMENTED",
+                "submittedAt": "2021-02-04T21:53:09Z",
+                "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
+                "databaseId": 2192199611,
+                "comments": {
+                  "totalCount": 1
+                }
+              },
+              {
+                "author": {
+                  "login": "nehanda",
+                  "type": "User",
+                  "name": null,
+                  "html_url": "https://github.com/nehanda"
+                },
+                "state": "APPROVED",
+                "submittedAt": "2021-03-04T21:53:09Z",
+                "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
+                "databaseId": 2192199612,
+                "comments": {
+                  "totalCount": 0
+                }
+              }
+            ]
+          },
           "number": 48,
           "mergedAt": "2021-02-16T17:15:27Z",
           "mergeCommit": {
@@ -128,6 +166,13 @@
               }
             ]
           },
+          "reviews": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": null
+            },
+            "nodes": []
+          },
           "number": 47,
           "mergedAt": null,
           "mergeCommit": null,
@@ -183,7 +228,7 @@
               }
             ]
           },
-          "files":{
+          "files": {
             "pageInfo": {
               "hasNextPage": false,
               "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12Oxyz"
@@ -198,6 +243,29 @@
                 "path": "nehanda/test/file2.ts",
                 "additions": 10,
                 "deletions": 2
+              }
+            ]
+          },
+          "reviews": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "author": {
+                  "login": "nehanda",
+                  "type": "User",
+                  "name": null,
+                  "html_url": "https://github.com/nehanda"
+                },
+                "state": "APPROVED",
+                "submittedAt": "2021-02-04T21:53:09Z",
+                "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
+                "databaseId": 2192199689,
+                "comments": {
+                  "totalCount": 0
+                }
               }
             ]
           },

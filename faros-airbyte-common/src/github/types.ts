@@ -42,9 +42,10 @@ export type PullRequestNode =
 export type PullRequest = {
   org: string;
   repo: string;
-} & Omit<PullRequestNode, 'labels' | 'files'> & {
+} & Omit<PullRequestNode, 'labels' | 'files' | 'reviews'> & {
     labels: PullRequestNode['labels']['nodes'];
     files: PullRequestNode['files']['nodes'];
+    reviews: PullRequestNode['reviews']['nodes'];
   };
 
 export type PullRequestFile = PullRequestNode['files']['nodes'][0];
@@ -58,6 +59,8 @@ export type PullRequestComment = {
   >[0],
   'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
 >;
+
+export type PullRequestReview = PullRequestNode['reviews']['nodes'][0];
 
 export type Label = {
   org: string;
@@ -91,7 +94,12 @@ export type Team = {
 export type TeamMembership = {
   org: string;
   team: string;
-  user: string;
+  user: Pick<
+    GetResponseDataTypeFromEndpointMethod<
+      typeof octokit.teams.listMembersInOrg
+    >[0],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
 };
 
 export type CopilotSeatsStreamRecord =

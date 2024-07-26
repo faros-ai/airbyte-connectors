@@ -13,6 +13,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly run_mode?: RunMode;
   readonly fetch_teams?: boolean;
   readonly fetch_pull_request_files?: boolean;
+  readonly fetch_pull_request_reviews?: boolean;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
   readonly cutoff_days?: number;

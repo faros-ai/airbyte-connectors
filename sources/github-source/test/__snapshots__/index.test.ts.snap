@@ -401,6 +401,38 @@ Add any other context about the changes here.
     "reviewEvents": {
       "nodes": [],
     },
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 1,
+        },
+        "databaseId": 2192199611,
+        "state": "COMMENTED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
+      },
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199612,
+        "state": "APPROVED",
+        "submittedAt": "2021-03-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
+      },
+    ],
     "state": "MERGED",
     "title": "DORA apps take optional employee uid param",
     "updatedAt": "2021-02-16T17:15:29Z",
@@ -474,6 +506,7 @@ N/A
     "reviewEvents": {
       "nodes": [],
     },
+    "reviews": [],
     "state": "CLOSED",
     "title": "Move apps with no feed support temporarily to internal",
     "updatedAt": "2021-02-11T18:10:08Z",
@@ -541,6 +574,23 @@ N/A
     "reviewEvents": {
       "nodes": [],
     },
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199689,
+        "state": "APPROVED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
+      },
+    ],
     "state": "MERGED",
     "title": "Fix edge cases for deploy cycle breakdown",
     "updatedAt": "2021-02-04T21:53:09Z",
@@ -601,7 +651,11 @@ exports[`index streams - team memberships 1`] = `
   {
     "org": "github",
     "team": "justice-league",
-    "user": "octocat",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
   },
 ]
 `;

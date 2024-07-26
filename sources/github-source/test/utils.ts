@@ -4,6 +4,7 @@ import {
   DEFAULT_BUCKET_ID,
   DEFAULT_BUCKET_TOTAL,
   DEFAULT_FETCH_PR_FILES,
+  DEFAULT_FETCH_PR_REVIEWS,
   DEFAULT_PAGE_SIZE,
   DEFAULT_TIMEOUT_MS,
   GitHub,
@@ -46,6 +47,7 @@ export function setupGitHubInstance(
       githubConfig.bucket_id ?? DEFAULT_BUCKET_ID,
       githubConfig.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       githubConfig.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES,
+      githubConfig.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS,
       githubConfig.page_size ?? DEFAULT_PAGE_SIZE,
       githubConfig.timeout ?? DEFAULT_TIMEOUT_MS,
       logger

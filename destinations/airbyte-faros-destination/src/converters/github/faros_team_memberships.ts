@@ -14,14 +14,21 @@ export class FarosTeamMemberships extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const membership = record.record.data as TeamMembership;
+    this.collectUser(membership.user);
     return [
       {
         model: 'vcs_TeamMembership',
         record: {
           team: {uid: membership.team},
-          member: {uid: membership.user, source: this.streamName.source},
+          member: {uid: membership.user.login, source: this.streamName.source},
         },
       },
     ];
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return [...this.convertUsers()];
   }
 }

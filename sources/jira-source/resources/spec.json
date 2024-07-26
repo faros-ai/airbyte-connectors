@@ -104,7 +104,7 @@
       "projects": {
         "order": 14,
         "title": "Project Keys",
-        "description": "List of Jira project keys from which to fetch data. By default, all projects are included. ",
+        "description": "List of Jira project keys from which to fetch data. By default, all projects are included.",
         "type": "array",
         "items": {
           "type": "string"
