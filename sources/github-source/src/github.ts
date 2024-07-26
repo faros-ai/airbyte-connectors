@@ -690,7 +690,7 @@ export abstract class GitHub {
       for (const collaborator of res.data) {
         yield {
           org,
-          ...pick(collaborator, ['login', 'email', 'name']),
+          ...pick(collaborator, ['login', 'email', 'name', 'type', 'html_url']),
         };
       }
     }

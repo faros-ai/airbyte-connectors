@@ -65,7 +65,7 @@ export type OutsideCollaborator = {
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.orgs.listOutsideCollaborators
   >[0],
-  'name' | 'login' | 'email'
+  'name' | 'login' | 'email' | 'type' | 'html_url'
 >;
 
 export type Label = {
