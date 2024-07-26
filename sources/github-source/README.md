@@ -79,9 +79,10 @@ connectors, such as linting/formatting tools, should go in the root
 
 ### GitHub Required Permissions per Stream
 
-*Fine-grained permissions marked as required are always read-only.
+(*) Permissions marked as required are always read-only.\
+(**) Fine-grained access tokens only have access to one organization and must be explicitly passed in the configuration.
 
-| Stream                | Classic              | Fine-grained*                                    |
+| Stream                | Classic              | Fine-grained \| GitHub App (*)                   |
 |-----------------------|----------------------|--------------------------------------------------|
 | Commits               | repo                 | Repository: Metadata & Contents                  |
 | Copilot Seats         | read:org             | Organization: Administration                     |
