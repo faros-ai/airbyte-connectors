@@ -1,15 +1,6 @@
 import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
 
-import {
-  DEFAULT_BUCKET_ID,
-  DEFAULT_BUCKET_TOTAL,
-  DEFAULT_FETCH_PR_FILES,
-  DEFAULT_FETCH_PR_REVIEWS,
-  DEFAULT_PAGE_SIZE,
-  DEFAULT_TIMEOUT_MS,
-  GitHub,
-  GitHubToken,
-} from '../src/github';
+import {GitHub, GitHubToken} from '../src/github';
 import {GitHubConfig} from '../src/types';
 
 export function setupGitHubInstance(
@@ -21,6 +12,7 @@ export function setupGitHubInstance(
     config ?? readTestResourceAsJSON('config.json');
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHubToken(
+      githubConfig,
       {
         ...octokitMock,
         paginate: {
@@ -44,12 +36,6 @@ export function setupGitHubInstance(
           octokitMock.auditLogs ??
           new ErrorWithStatus(400, 'API not available'),
       },
-      githubConfig.bucket_id ?? DEFAULT_BUCKET_ID,
-      githubConfig.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      githubConfig.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES,
-      githubConfig.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS,
-      githubConfig.page_size ?? DEFAULT_PAGE_SIZE,
-      githubConfig.timeout ?? DEFAULT_TIMEOUT_MS,
       logger
     );
   });

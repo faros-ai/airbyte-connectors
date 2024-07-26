@@ -52,9 +52,9 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = true;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
+export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
-export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
@@ -72,17 +72,27 @@ type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
 export abstract class GitHub {
   private static github: GitHub;
+  protected readonly fetchPullRequestFiles: boolean;
+  protected readonly fetchPullRequestReviews: boolean;
+  protected readonly bucketId: number;
+  protected readonly bucketTotal: number;
+  protected readonly pageSize: number;
+  protected readonly timeoutMs: number;
 
   constructor(
+    config: GitHubConfig,
     protected readonly baseOctokit: ExtendedOctokit,
-    protected readonly bucketId: number,
-    protected readonly bucketTotal: number,
-    protected readonly fetchPullRequestFiles: boolean,
-    protected readonly fetchPullRequestReviews: boolean,
-    protected readonly pageSize: number,
-    protected readonly timeoutMs: number,
     protected readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.fetchPullRequestFiles =
+      config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
+    this.fetchPullRequestReviews =
+      config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
+    this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
+    this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
+    this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
+  }
 
   static async instance(
     cfg: GitHubConfig,
@@ -832,16 +842,7 @@ export class GitHubToken extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubToken(
-      baseOctokit,
-      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
-      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES,
-      cfg.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS,
-      cfg.page_size ?? DEFAULT_PAGE_SIZE,
-      cfg.timeout ?? DEFAULT_TIMEOUT_MS,
-      logger
-    );
+    const github = new GitHubToken(cfg, baseOctokit, logger);
     await github.checkConnection();
     return github;
   }
@@ -878,16 +879,7 @@ export class GitHubApp extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubApp(
-      baseOctokit,
-      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
-      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES,
-      cfg.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS,
-      cfg.page_size ?? DEFAULT_PAGE_SIZE,
-      cfg.timeout ?? DEFAULT_TIMEOUT_MS,
-      logger
-    );
+    const github = new GitHubApp(cfg, baseOctokit, logger);
     await github.checkConnection();
     const installations = await github.getAppInstallations();
     for (const installation of installations) {
