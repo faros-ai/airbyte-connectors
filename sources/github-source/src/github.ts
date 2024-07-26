@@ -14,6 +14,7 @@ import {
   PullRequest,
   PullRequestComment,
   PullRequestFile,
+  PullRequestLabel,
   PullRequestNode,
   PullRequestReview,
   Repository,
@@ -26,7 +27,6 @@ import {
   LabelsQuery,
   ListMembersQuery,
   PullRequestReviewsQuery,
-  PullRequestReviewState,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
@@ -34,6 +34,7 @@ import {
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
   FILES_FRAGMENT,
+  LABELS_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
   PULL_REQUEST_REVIEWS_QUERY,
@@ -194,9 +195,9 @@ export abstract class GitHub {
           org,
           repo,
           ...pr,
-          labels: pr.labels.nodes,
-          files: await this.getFiles(pr, org, repo),
-          reviews: await this.getReviews(pr, org, repo),
+          labels: await this.extractPullRequestLabels(pr, org, repo),
+          files: await this.extractPullRequestFiles(pr, org, repo),
+          reviews: await this.extractPullRequestReviews(pr, org, repo),
         };
       }
     }
@@ -213,6 +214,7 @@ export abstract class GitHub {
     };
 
     let query = PULL_REQUESTS_QUERY;
+    query = appendFragment(query, true, LABELS_FRAGMENT, '...Labels');
     query = appendFragment(
       query,
       this.fetchPullRequestFiles,
@@ -229,7 +231,49 @@ export abstract class GitHub {
     return query;
   }
 
-  private async getFiles(
+  private async extractPullRequestLabels(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestLabel[]> {
+    const {hasNextPage} = pr.labels.pageInfo;
+    if (!hasNextPage) {
+      return pr.labels.nodes;
+    }
+    return this.getPullRequestLabels(
+      org,
+      repo,
+      pr.number,
+      1 // start from the first page to make sure we don't miss any
+    );
+  }
+
+  private async getPullRequestLabels(
+    org: string,
+    repo: string,
+    number: number,
+    startingPage: number = 1
+  ): Promise<PullRequestLabel[]> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).rest.issues.listLabelsOnIssue,
+      {
+        owner: org,
+        repo,
+        issue_number: number,
+        per_page: PAGE_SIZE,
+        page: startingPage,
+      }
+    );
+    const labels: PullRequestLabel[] = [];
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const label of res.data) {
+        labels.push(pick(label, ['name']));
+      }
+    }
+    return labels;
+  }
+
+  private async extractPullRequestFiles(
     pr: PullRequestNode,
     org: string,
     repo: string
@@ -237,17 +281,16 @@ export abstract class GitHub {
     if (!this.fetchPullRequestFiles) {
       return [];
     }
-    let files = pr.files.nodes;
-    if (pr.files.pageInfo.hasNextPage) {
-      const remainingFiles = await this.getPullRequestFiles(
-        org,
-        repo,
-        pr.number,
-        2 // Start from the second page to avoid re-fetching the first one
-      );
-      files = files.concat(remainingFiles);
+    const {hasNextPage} = pr.files.pageInfo;
+    if (!hasNextPage) {
+      return pr.files.nodes;
     }
-    return files;
+    return this.getPullRequestFiles(
+      org,
+      repo,
+      pr.number,
+      1 // start from the first page to make sure we don't miss any
+    );
   }
 
   private async getPullRequestFiles(
@@ -279,7 +322,7 @@ export abstract class GitHub {
     return files;
   }
 
-  private async getReviews(
+  private async extractPullRequestReviews(
     pr: PullRequestNode,
     org: string,
     repo: string
@@ -287,17 +330,18 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    let reviews = pr.reviews.nodes;
     const {hasNextPage, endCursor} = pr.reviews.pageInfo;
-    if (hasNextPage) {
-      const remainingReviews = await this.getPullRequestReviews(
-        org,
-        repo,
-        pr.number,
-        endCursor
-      );
-      reviews = reviews.concat(remainingReviews);
+    if (!hasNextPage) {
+      return pr.reviews.nodes;
     }
+    let reviews: PullRequestReview[] = [...pr.reviews.nodes];
+    const remainingReviews = await this.getPullRequestReviews(
+      org,
+      repo,
+      pr.number,
+      endCursor
+    );
+    reviews = reviews.concat(remainingReviews);
     return reviews;
   }
 

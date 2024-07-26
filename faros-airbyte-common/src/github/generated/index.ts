@@ -7968,6 +7968,13 @@ export type FilesFragment = {
   } | null;
 };
 
+export type LabelsFragment = {
+  labels?: {
+    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    nodes?: Array<{name: string} | null> | null;
+  } | null;
+};
+
 export type LabelsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -8103,10 +8110,6 @@ export type PullRequestsQuery = {
           | null;
         commits: {totalCount: number};
         comments: {totalCount: number};
-        labels?: {
-          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
-          nodes?: Array<{name: string} | null> | null;
-        } | null;
         mergeCommit?: {oid: string} | null;
         reviewEvents: {
           nodes?: Array<
@@ -8178,6 +8181,10 @@ export type PullRequestsQuery = {
         headRepository?: {
           name: string;
           owner: {login: string} | {login: string};
+        } | null;
+        labels?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{name: string} | null> | null;
         } | null;
         files?: {
           pageInfo: {hasNextPage: boolean; endCursor?: string | null};
