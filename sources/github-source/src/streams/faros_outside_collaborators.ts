@@ -11,7 +11,7 @@ export class FarosOutsideCollaborators extends StreamWithOrgSlices {
   }
 
   get primaryKey(): StreamKey {
-    return 'login';
+    return ['org', 'login'];
   }
 
   async *readRecords(

@@ -5,11 +5,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
 export class FarosOutsideCollaborators extends GitHubConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Membership',
-    'vcs_User',
-    'vcs_UserEmail',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(
     record: AirbyteRecord,
