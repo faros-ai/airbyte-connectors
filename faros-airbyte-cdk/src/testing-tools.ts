@@ -77,6 +77,48 @@ export const sourceReadTest = async (
   }
 };
 
+export const sourceSchemaTest = (
+  source: AirbyteSourceBase<AirbyteConfig>,
+  config: AirbyteConfig
+): void => {
+  const streams = source.streams(config);
+
+  const validateFieldInSchema = (
+    field: string | string[],
+    schema: Dictionary<any>
+  ): void => {
+    if (Array.isArray(field)) {
+      let nestedField = schema;
+      for (const subField of field) {
+        expect(nestedField).toHaveProperty(subField);
+        nestedField = nestedField[subField].properties;
+      }
+    } else {
+      expect(schema).toHaveProperty(field);
+    }
+  };
+
+  for (const stream of streams) {
+    const jsonSchema = stream.getJsonSchema().properties;
+    const primaryKey = stream.primaryKey;
+    const cursorField = stream.cursorField;
+
+    // Validate primaryKey is in jsonSchema
+    if (primaryKey) {
+      if (Array.isArray(primaryKey)) {
+        for (const key of primaryKey) {
+          validateFieldInSchema(key, jsonSchema);
+        }
+      } else {
+        validateFieldInSchema(primaryKey, jsonSchema);
+      }
+    }
+
+    // Validate cursorField is in jsonSchema
+    validateFieldInSchema(cursorField, jsonSchema);
+  }
+};
+
 function resolveInput<T>(inputOrPath: string | T): T {
   return typeof inputOrPath === 'string'
     ? readTestResourceAsJSON(inputOrPath)

@@ -5,6 +5,7 @@ import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
+  sourceSchemaTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {merge} from 'lodash';
@@ -95,6 +96,11 @@ describe('index', () => {
       source,
       configOrPath: 'check_connection/bucket_negative.json',
     });
+  });
+
+  test('streams - json schema fields', () => {
+    const source = new sut.GitHubSource(logger);
+    sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
   test('streams - copilot seats without audit logs API', async () => {
