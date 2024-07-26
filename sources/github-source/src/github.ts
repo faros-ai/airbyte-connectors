@@ -15,6 +15,7 @@ import {
   PullRequestComment,
   PullRequestFile,
   PullRequestNode,
+  PullRequestReview,
   Repository,
   Team,
   TeamMembership,
@@ -24,6 +25,8 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  PullRequestReviewsQuery,
+  PullRequestReviewState,
   PullRequestsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
@@ -33,7 +36,9 @@ import {
   FILES_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
+  PULL_REQUEST_REVIEWS_QUERY,
   PULL_REQUESTS_QUERY,
+  REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick} from 'lodash';
@@ -71,7 +76,8 @@ export abstract class GitHub {
     protected readonly baseOctokit: ExtendedOctokit,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
-    private readonly fetchFiles: boolean,
+    private readonly fetchPullRequestFiles: boolean,
+    private readonly fetchPullRequestReviews: boolean,
     protected readonly logger: AirbyteLogger
   ) {}
 
@@ -180,32 +186,46 @@ export abstract class GitHub {
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout)) {
-      this.logger.info(
-        `Rate limit info si ${JSON.stringify(res['rateLimit'])}`
-      );
       for (const pr of res.repository.pullRequests.nodes) {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
         }
-        const files = this.fetchFiles ? await this.getFiles(pr, org, repo) : [];
         yield {
           org,
           repo,
           ...pr,
           labels: pr.labels.nodes,
-          files,
+          files: await this.getFiles(pr, org, repo),
+          reviews: await this.getReviews(pr, org, repo),
         };
       }
     }
   }
 
   private buildPRQuery(): string {
+    const appendFragment = (
+      query: string,
+      shouldAppend: boolean,
+      fragment: string,
+      placeholder: string
+    ): string => {
+      return shouldAppend ? query + fragment : query.replace(placeholder, '');
+    };
+
     let query = PULL_REQUESTS_QUERY;
-    if (this.fetchFiles) {
-      query += FILES_FRAGMENT;
-    } else {
-      query = query.replace('...Files', '');
-    }
+    query = appendFragment(
+      query,
+      this.fetchPullRequestFiles,
+      FILES_FRAGMENT,
+      '...Files'
+    );
+    query = appendFragment(
+      query,
+      this.fetchPullRequestReviews,
+      REVIEWS_FRAGMENT,
+      '...Reviews'
+    );
+
     return query;
   }
 
@@ -214,6 +234,9 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestFile[]> {
+    if (!this.fetchPullRequestFiles) {
+      return [];
+    }
     let files = pr.files.nodes;
     if (pr.files.pageInfo.hasNextPage) {
       const remainingFiles = await this.getPullRequestFiles(
@@ -254,6 +277,55 @@ export abstract class GitHub {
       }
     }
     return files;
+  }
+
+  private async getReviews(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestReview[]> {
+    if (!this.fetchPullRequestReviews) {
+      return [];
+    }
+    let reviews = pr.reviews.nodes;
+    const {hasNextPage, endCursor} = pr.reviews.pageInfo;
+    if (hasNextPage) {
+      const remainingReviews = await this.getPullRequestReviews(
+        org,
+        repo,
+        pr.number,
+        endCursor
+      );
+      reviews = reviews.concat(remainingReviews);
+    }
+    return reviews;
+  }
+
+  private async getPullRequestReviews(
+    org: string,
+    repo: string,
+    number: number,
+    startCursor?: string
+  ): Promise<PullRequestReview[]> {
+    const iter = this.octokit(
+      org
+    ).graphql.paginate.iterator<PullRequestReviewsQuery>(
+      PULL_REQUEST_REVIEWS_QUERY,
+      {
+        owner: org,
+        repo,
+        number,
+        nested_page_size: PR_NESTED_PAGE_SIZE,
+        cursor: startCursor,
+      }
+    );
+    const reviews: PullRequestReview[] = [];
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const review of res.repository.pullRequest.reviews.nodes) {
+        reviews.push(review);
+      }
+    }
+    return reviews;
   }
 
   async *getPullRequestComments(
@@ -314,7 +386,7 @@ export abstract class GitHub {
     repo: string,
     branch: string,
     cutoffDate?: Date
-  ): AsyncIterableIterator<Commit> {
+  ): AsyncGenerator<Commit> {
     const queryParameters = {
       owner: org,
       repo,
@@ -338,7 +410,7 @@ export abstract class GitHub {
     );
     if (!historyCheckResult.repository?.ref?.target?.['history']) {
       this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
-      return [];
+      return;
     }
 
     // The `changedFiles` field used in COMMITS_CHANGED_FILES_QUERY,
@@ -477,7 +549,13 @@ export abstract class GitHub {
             yield {
               org,
               team: team.slug,
-              user: member.login,
+              user: pick(member, [
+                'login',
+                'name',
+                'email',
+                'html_url',
+                'type',
+              ]),
             };
           }
         }
@@ -778,6 +856,7 @@ export class GitHubToken extends GitHub {
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       cfg.fetch_pull_request_files ?? true,
+      cfg.fetch_pull_request_reviews ?? true,
       logger
     );
     await github.checkConnection();
@@ -821,7 +900,8 @@ export class GitHubApp extends GitHub {
       baseOctokit,
       cfg.bucket_id ?? DEFAULT_BUCKET_ID,
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_files ?? true,
+      cfg.fetch_pull_request_files ?? true,
+      cfg.fetch_pull_request_reviews ?? true,
       logger
     );
     await github.checkConnection();

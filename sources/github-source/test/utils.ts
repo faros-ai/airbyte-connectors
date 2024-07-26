@@ -37,6 +37,7 @@ export function setupGitHubInstance(
       githubConfig.bucket_id,
       githubConfig.bucket_total,
       githubConfig.fetch_pull_request_files,
+      githubConfig.fetch_pull_request_reviews,
       logger
     );
   });

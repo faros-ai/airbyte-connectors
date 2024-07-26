@@ -123,8 +123,8 @@
           "type": "string"
         },
         "examples": [
-          "apache",
-          "airbytehq"
+          "apache/repo1",
+          "airbytehq/repo2"
         ]
       },
       "run_mode": {

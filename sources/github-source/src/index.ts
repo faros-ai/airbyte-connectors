@@ -54,17 +54,17 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   streams(config: GitHubConfig): AirbyteStreamBase[] {
     return [
+      new FarosCommits(config, this.logger),
       new FarosCopilotSeats(config, this.logger),
       new FarosCopilotUsage(config, this.logger),
-      new FarosOrganizations(config, this.logger),
-      new FarosRepositories(config, this.logger),
-      new FarosPullRequests(config, this.logger),
       new FarosLabels(config, this.logger),
-      new FarosUsers(config, this.logger),
+      new FarosOrganizations(config, this.logger),
+      new FarosPullRequests(config, this.logger),
+      new FarosPullRequestComments(config, this.logger),
+      new FarosRepositories(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
-      new FarosCommits(config, this.logger),
-      new FarosPullRequestComments(config, this.logger),
+      new FarosUsers(config, this.logger),
       new FarosOutsideCollaborators(config, this.logger),
     ];
   }

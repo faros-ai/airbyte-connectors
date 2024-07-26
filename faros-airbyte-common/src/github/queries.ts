@@ -3,10 +3,18 @@ import path from 'path';
 
 export const FILES_FRAGMENT = loadQuery('files-fragment.gql');
 
+const REVIEW_FIELDS_FRAGMENT = loadQuery('review-fields-fragment.gql');
+
+export const REVIEWS_FRAGMENT =
+  REVIEW_FIELDS_FRAGMENT + loadQuery('reviews-fragment.gql');
+
 const COMMIT_FIELDS_FRAGMENT = loadQuery('commit-fields-fragment.gql');
 
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
+
+export const PULL_REQUEST_REVIEWS_QUERY =
+  REVIEW_FIELDS_FRAGMENT + loadQuery('pull-request-reviews-query.gql');
 
 // GraphQL query used to get labels
 export const LABELS_QUERY = loadQuery('labels-query.gql');
