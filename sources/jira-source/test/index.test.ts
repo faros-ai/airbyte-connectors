@@ -5,10 +5,10 @@ import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
+  sourceSchemaTest,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
-import {Dictionary} from 'ts-essentials';
 
 import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
@@ -130,44 +130,9 @@ describe('index', () => {
     },
   });
 
-  test('streams - json schema fields', async () => {
+  test('streams - json schema fields', () => {
     const source = new sut.JiraSource(logger);
-    const streams = source.streams(config);
-
-    const validateFieldInSchema = (
-      field: string | string[],
-      schema: Dictionary<any>
-    ) => {
-      if (Array.isArray(field)) {
-        let nestedField = schema;
-        for (const subField of field) {
-          expect(nestedField).toHaveProperty(subField);
-          nestedField = nestedField[subField].properties;
-        }
-      } else {
-        expect(schema).toHaveProperty(field);
-      }
-    };
-
-    for (const stream of streams) {
-      const jsonSchema = stream.getJsonSchema().properties;
-      const primaryKey = stream.primaryKey;
-      const cursorField = stream.cursorField;
-
-      // Validate primaryKey is in jsonSchema
-      if (primaryKey) {
-        if (Array.isArray(primaryKey)) {
-          for (const key of primaryKey) {
-            validateFieldInSchema(key, jsonSchema);
-          }
-        } else {
-          validateFieldInSchema(primaryKey, jsonSchema);
-        }
-      }
-
-      // Validate cursorField is in jsonSchema
-      validateFieldInSchema(cursorField, jsonSchema);
-    }
+    sourceSchemaTest(source, config);
   });
 
   test('streams - issue_pull_requests', async () => {
