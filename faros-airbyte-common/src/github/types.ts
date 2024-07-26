@@ -94,7 +94,12 @@ export type Team = {
 export type TeamMembership = {
   org: string;
   team: string;
-  user: string;
+  user: Pick<
+    GetResponseDataTypeFromEndpointMethod<
+      typeof octokit.teams.listMembersInOrg
+    >[0],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
 };
 
 export type CopilotSeatsStreamRecord =

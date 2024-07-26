@@ -38,8 +38,20 @@ describe('OrgRepoFilter', () => {
     );
   });
 
-  test('getOrganizations - all', async () => {
+  test('getOrganizations - all - no list', async () => {
     const orgRepoFilter = new OrgRepoFilter(config, logger);
+    const organizations = await orgRepoFilter.getOrganizations();
+    expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - all - empty list', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        organizations: [],
+      },
+      logger
+    );
     const organizations = await orgRepoFilter.getOrganizations();
     expect(organizations).toMatchSnapshot();
   });
@@ -68,8 +80,20 @@ describe('OrgRepoFilter', () => {
     expect(organizations).toMatchSnapshot();
   });
 
-  test('getRepositories - all', async () => {
+  test('getRepositories - all - no list', async () => {
     const orgRepoFilter = new OrgRepoFilter(config, logger);
+    const repositories = await getAllRepositories(orgRepoFilter);
+    expect(repositories).toMatchSnapshot();
+  });
+
+  test('getRepositories - all - empty list', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        repositories: [],
+      },
+      logger
+    );
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
   });

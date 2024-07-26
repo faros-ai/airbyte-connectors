@@ -385,7 +385,7 @@ export abstract class GitHub {
     repo: string,
     branch: string,
     cutoffDate?: Date
-  ): AsyncIterableIterator<Commit> {
+  ): AsyncGenerator<Commit> {
     const queryParameters = {
       owner: org,
       repo,
@@ -409,7 +409,7 @@ export abstract class GitHub {
     );
     if (!historyCheckResult.repository?.ref?.target?.['history']) {
       this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
-      return [];
+      return;
     }
 
     // The `changedFiles` field used in COMMITS_CHANGED_FILES_QUERY,
@@ -548,7 +548,13 @@ export abstract class GitHub {
             yield {
               org,
               team: team.slug,
-              user: member.login,
+              user: pick(member, [
+                'login',
+                'name',
+                'email',
+                'html_url',
+                'type',
+              ]),
             };
           }
         }

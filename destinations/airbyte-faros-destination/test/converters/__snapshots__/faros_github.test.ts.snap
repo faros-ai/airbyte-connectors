@@ -3873,6 +3873,17 @@ N/A
     },
   },
   Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://github.com/octocat",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "octocat",
+    },
+  },
+  Object {
     "vcs_Branch": Object {
       "name": "dora-employee-param",
       "repository": Object {

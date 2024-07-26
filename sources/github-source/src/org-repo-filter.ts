@@ -1,6 +1,7 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/github';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {GitHub} from './github';
 import {GitHubConfig} from './types';
@@ -49,8 +50,8 @@ export class OrgRepoFilter {
     }
 
     this.filterConfig = {
-      organizations: organizations ? new Set(organizations) : undefined,
-      excludedOrganizations: excluded_organizations
+      organizations: organizations?.length ? new Set(organizations) : undefined,
+      excludedOrganizations: excluded_organizations?.length
         ? new Set(excluded_organizations)
         : undefined,
       reposByOrg,
@@ -64,6 +65,9 @@ export class OrgRepoFilter {
       const organizations = new Set<string>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleOrgs = await github.getOrganizations();
+      if (!visibleOrgs.length) {
+        this.logger.warn('No visible organizations found');
+      }
       if (!this.filterConfig.organizations) {
         visibleOrgs.forEach((org) => {
           if (!this.filterConfig.excludedOrganizations?.has(org)) {
@@ -72,7 +76,9 @@ export class OrgRepoFilter {
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
-          if (!visibleOrgs.some((o) => o === org)) {
+          // fine-grained tokens return an empty list for visible orgs,
+          // so we only run the check if the list is not empty
+          if (visibleOrgs.length && !visibleOrgs.some((o) => o === org)) {
             this.logger.warn(`Skipping not found organization ${org}`);
             return;
           }
@@ -90,6 +96,11 @@ export class OrgRepoFilter {
       const repos = new Set<Repository>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleRepos = await github.getRepositories(org);
+      if (!visibleRepos.length) {
+        this.logger.warn(
+          `No visible repositories found for organization ${org}`
+        );
+      }
       if (!this.filterConfig.reposByOrg.has(org)) {
         visibleRepos.forEach((repo) => {
           if (!this.filterConfig.excludedReposByOrg.get(org)?.has(repo.name)) {
@@ -120,6 +131,11 @@ function collectReposByOrg(
 ): void {
   for (const repo of repos) {
     const [org, name] = repo.split('/');
+    if (!org || !name) {
+      throw new VError(
+        `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
+      );
+    }
     if (!reposByOrg.has(org)) {
       reposByOrg.set(org, new Set());
     }

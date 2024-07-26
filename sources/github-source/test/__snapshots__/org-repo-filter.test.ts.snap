@@ -1,6 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OrgRepoFilter getOrganizations - all 1`] = `
+exports[`OrgRepoFilter getOrganizations - all - empty list 1`] = `
+[
+  "org-1",
+  "org-2",
+  "org-3",
+]
+`;
+
+exports[`OrgRepoFilter getOrganizations - all - no list 1`] = `
 [
   "org-1",
   "org-2",
@@ -21,7 +29,48 @@ exports[`OrgRepoFilter getOrganizations - specific organizations included 1`] = 
 ]
 `;
 
-exports[`OrgRepoFilter getRepositories - all 1`] = `
+exports[`OrgRepoFilter getRepositories - all - empty list 1`] = `
+[
+  {
+    "name": "repo-1",
+    "org": "org-1",
+  },
+  {
+    "name": "repo-2",
+    "org": "org-1",
+  },
+  {
+    "name": "repo-3",
+    "org": "org-1",
+  },
+  {
+    "name": "repo-1",
+    "org": "org-2",
+  },
+  {
+    "name": "repo-2",
+    "org": "org-2",
+  },
+  {
+    "name": "repo-3",
+    "org": "org-2",
+  },
+  {
+    "name": "repo-1",
+    "org": "org-3",
+  },
+  {
+    "name": "repo-2",
+    "org": "org-3",
+  },
+  {
+    "name": "repo-3",
+    "org": "org-3",
+  },
+]
+`;
+
+exports[`OrgRepoFilter getRepositories - all - no list 1`] = `
 [
   {
     "name": "repo-1",
