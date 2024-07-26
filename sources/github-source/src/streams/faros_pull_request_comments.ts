@@ -21,7 +21,7 @@ export class FarosPullRequestComments extends StreamWithRepoSlices {
   }
 
   get cursorField(): string | string[] {
-    return 'updatedAt';
+    return 'updated_at';
   }
 
   async *readRecords(
