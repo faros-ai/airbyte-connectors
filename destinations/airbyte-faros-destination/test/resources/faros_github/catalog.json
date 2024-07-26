@@ -65,6 +65,12 @@
         "name": "mytestsource__github__faros_team_memberships"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_outside_collaborators"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

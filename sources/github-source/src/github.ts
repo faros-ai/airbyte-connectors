@@ -10,6 +10,7 @@ import {
   CopilotUsageSummary,
   Label,
   Organization,
+  OutsideCollaborator,
   PullRequest,
   PullRequestComment,
   PullRequestFile,
@@ -751,6 +752,26 @@ export abstract class GitHub {
       }
     }
     return users;
+  }
+
+  async *getOutsideCollaborators(
+    org: string
+  ): AsyncGenerator<OutsideCollaborator> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).orgs.listOutsideCollaborators,
+      {
+        org,
+        per_page: PAGE_SIZE,
+      }
+    );
+    for await (const res of iter) {
+      for (const collaborator of res.data) {
+        yield {
+          org,
+          ...pick(collaborator, ['login', 'email', 'name', 'type', 'html_url']),
+        };
+      }
+    }
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when

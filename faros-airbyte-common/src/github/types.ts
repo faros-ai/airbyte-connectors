@@ -102,6 +102,15 @@ export type TeamMembership = {
   >;
 };
 
+export type OutsideCollaborator = {
+  org: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.orgs.listOutsideCollaborators
+  >[0],
+  'name' | 'login' | 'email' | 'type' | 'html_url'
+>;
+
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
   | CopilotSeatEnded

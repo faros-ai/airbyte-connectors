@@ -303,6 +303,25 @@ exports[`index streams - organizations 1`] = `
 ]
 `;
 
+exports[`index streams - outside collaborators 1`] = `
+[
+  {
+    "html_url": "https://github.com/nehanda",
+    "login": "nehanda",
+    "org": "github",
+    "type": "User",
+  },
+  {
+    "email": "johndoe@mail.com",
+    "html_url": "https://github.com/johndoe",
+    "login": "johndoe",
+    "name": "John Doe",
+    "org": "github",
+    "type": "User",
+  },
+]
+`;
+
 exports[`index streams - pull request comments 1`] = `
 [
   {

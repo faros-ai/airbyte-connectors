@@ -375,6 +375,29 @@ describe('index', () => {
     });
   });
 
+  test('streams - outside collaborators', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'outside_collaborators/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getOrganizationOutsideCollaboratorsMockedImplementation(
+              readTestResourceAsJSON(
+                'outside_collaborators/outside_collaborators.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - commits', async () => {
     await sourceReadTest({
       source,
@@ -452,6 +475,12 @@ const getTeamsMockedImplementation = (res: any) => ({
 const getTeamMembershipsMockedImplementation = (res: any) => ({
   teams: {
     listMembersInOrg: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getOrganizationOutsideCollaboratorsMockedImplementation = (res: any) => ({
+  orgs: {
+    listOutsideCollaborators: jest.fn().mockReturnValue(res),
   },
 });
 
