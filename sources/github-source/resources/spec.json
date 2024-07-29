@@ -148,29 +148,71 @@
         "description": "Fetch teams from organization to populate teams and team memberships.",
         "default": false
       },
-      "cutoff_days": {
+      "fetch_pull_request_files": {
         "order": 8,
+        "type": "boolean",
+        "title": "Fetch Pull Request Files",
+        "description": "Fetch Pull Requests associated files",
+        "default": true
+      },
+      "fetch_pull_request_reviews": {
+        "order": 9,
+        "type": "boolean",
+        "title": "Fetch Pull Request Reviews",
+        "description": "Fetch Pull Requests associated reviews",
+        "default": true
+      },
+      "cutoff_days": {
+        "order": 10,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
+      "bucket_id": {
+        "order": 11,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
+        "default": 1
+      },
+      "bucket_total": {
+        "order": 12,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "page_size": {
+        "order": 13,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Maximum number of items in a paginated response",
+        "default": 100
+      },
+      "timeout": {
+        "order": 14,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the GitHub API",
+        "default": 120000
+      },
       "concurrency_limit": {
-        "order": 9,
+        "order": 15,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "reject_unauthorized": {
-        "order": 10,
+        "order": 16,
         "type": "boolean",
         "title": "Enable certificate validation",
         "description": "Enable certificate validation for the GitHub server",
         "default": true
       },
       "previews": {
-        "order": 11,
+        "order": 17,
         "type": "array",
         "examples": [
           "dorian",
@@ -185,27 +227,6 @@
           "type": "string"
         }
       }
-    },
-    "bucket_id": {
-      "order": 12,
-      "type": "integer",
-      "title": "Bucket Number",
-      "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
-      "default": 1
-    },
-    "bucket_total": {
-      "order": 13,
-      "type": "integer",
-      "title": "Total Number of Buckets",
-      "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
-      "default": 1
-    },
-    "fetch_pull_request_files": {
-      "order": 14,
-      "type": "boolean",
-      "title": "Fetch Pull Request Files",
-      "description": "Fetch Pull Requests associated files",
-      "default": true
     }
   }
 }

@@ -11,8 +11,13 @@ import {
 import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
-import {DEFAULT_CUTOFF_DAYS, GitHub} from './github';
-import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+import {
+  DEFAULT_CUTOFF_DAYS,
+  DEFAULT_FETCH_TEAMS,
+  DEFAULT_RUN_MODE,
+  GitHub,
+} from './github';
+import {RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCommits} from './streams/faros_commits';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
@@ -78,8 +83,10 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    const streamNames = [...RunModeStreams[config.run_mode ?? RunMode.Full]];
-    if (config.fetch_teams) {
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
+    ];
+    if (config.fetch_teams ?? DEFAULT_FETCH_TEAMS) {
       streamNames.push(...TeamStreamNames);
     }
     const streams = catalog.streams.filter((stream) =>
