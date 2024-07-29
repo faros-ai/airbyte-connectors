@@ -492,7 +492,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         pull_number: number,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
         cursor: startCursor,
       }
     );
