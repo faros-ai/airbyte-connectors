@@ -275,7 +275,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         issue_number: number,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
         page: startingPage,
       }
     );
@@ -820,7 +820,7 @@ export abstract class GitHub {
       this.octokit(org).orgs.listOutsideCollaborators,
       {
         org,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {
