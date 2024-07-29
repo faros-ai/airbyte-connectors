@@ -48,6 +48,8 @@ export type PullRequest = {
     reviews: PullRequestNode['reviews']['nodes'];
   };
 
+export type PullRequestLabel = PullRequestNode['labels']['nodes'][0];
+
 export type PullRequestFile = PullRequestNode['files']['nodes'][0];
 
 export type PullRequestComment = {

@@ -1,6 +1,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+export const LABELS_FRAGMENT = loadQuery('labels-fragment.gql');
+
 export const FILES_FRAGMENT = loadQuery('files-fragment.gql');
 
 const REVIEW_FIELDS_FRAGMENT = loadQuery('review-fields-fragment.gql');

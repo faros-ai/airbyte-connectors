@@ -1,0 +1,11 @@
+fragment Labels on PullRequest {
+  labels(first: $nested_page_size) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      name
+    }
+  }
+}

@@ -44,15 +44,6 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
         }
         deletions
         isDraft
-        labels(first: $nested_page_size) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          nodes {
-            name
-          }
-        }
         number
         mergedAt
         mergeCommit {
@@ -90,6 +81,7 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
             login
           }
         }
+        ...Labels
         ...Files
         ...Reviews
       }
