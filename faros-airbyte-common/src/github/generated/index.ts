@@ -8027,7 +8027,7 @@ export type PullRequestReviewRequestsQuery = {
         pageInfo: {hasNextPage: boolean; endCursor?: string | null};
         nodes?: Array<{
           requestedReviewer?:
-            | {login: string; html_url: string; type: 'Bot'}
+            | {type: 'Bot'}
             | {login: string; html_url: string; type: 'Mannequin'}
             | {
                 type: 'Team';
@@ -8271,7 +8271,7 @@ export type PullRequestsQuery = {
           pageInfo: {hasNextPage: boolean; endCursor?: string | null};
           nodes?: Array<{
             requestedReviewer?:
-              | {login: string; html_url: string; type: 'Bot'}
+              | {type: 'Bot'}
               | {login: string; html_url: string; type: 'Mannequin'}
               | {
                   type: 'Team';
@@ -8325,7 +8325,7 @@ export type ReviewFieldsFragment = {
 
 export type ReviewRequestFieldsFragment = {
   requestedReviewer?:
-    | {login: string; html_url: string; type: 'Bot'}
+    | {type: 'Bot'}
     | {login: string; html_url: string; type: 'Mannequin'}
     | {
         type: 'Team';
@@ -8347,7 +8347,7 @@ export type ReviewRequestsFragment = {
     pageInfo: {hasNextPage: boolean; endCursor?: string | null};
     nodes?: Array<{
       requestedReviewer?:
-        | {login: string; html_url: string; type: 'Bot'}
+        | {type: 'Bot'}
         | {login: string; html_url: string; type: 'Mannequin'}
         | {
             type: 'Team';

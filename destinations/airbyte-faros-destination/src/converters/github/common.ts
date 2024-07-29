@@ -7,7 +7,7 @@ import {Dictionary} from 'ts-essentials';
 import {RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
-type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
+export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {

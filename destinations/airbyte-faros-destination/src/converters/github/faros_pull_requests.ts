@@ -8,7 +8,7 @@ import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
 
 import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
 type BranchKey = {
   name: string;
@@ -165,22 +165,34 @@ export class FarosPullRequests extends GitHubConverter {
     reviewRequests: PullRequestReviewRequest[]
   ): ReviewerKey[] {
     const reviewers: ReviewerKey[] = [];
+
     reviewRequests.forEach((reviewRequest) => {
-      const requestedReviewer = reviewRequest.requestedReviewer;
-      if (requestedReviewer.type === 'Team') {
-        requestedReviewer.members?.nodes?.forEach((member) => {
-          this.collectUser(member);
-          reviewers.push({uid: member.login, source: this.streamName.source});
-        });
-      } else {
-        this.collectUser(requestedReviewer);
-        reviewers.push({
-          uid: requestedReviewer.login,
-          source: this.streamName.source,
-        });
+      const {requestedReviewer} = reviewRequest;
+
+      if (
+        requestedReviewer.type === 'Team' &&
+        requestedReviewer.members?.nodes
+      ) {
+        requestedReviewer.members.nodes.forEach((member) =>
+          this.addReviewer(reviewers, member)
+        );
+      } else if (
+        requestedReviewer.type === 'User' ||
+        requestedReviewer.type === 'Mannequin'
+      ) {
+        this.addReviewer(reviewers, requestedReviewer);
       }
     });
+
     return reviewers;
+  }
+
+  private addReviewer(reviewers: ReviewerKey[], reviewer: PartialUser): void {
+    this.collectUser(reviewer);
+    reviewers.push({
+      uid: reviewer.login,
+      source: this.streamName.source,
+    });
   }
 
   async onProcessingComplete(

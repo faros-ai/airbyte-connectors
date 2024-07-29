@@ -1,10 +1,6 @@
 fragment ReviewRequestFields on ReviewRequest {
   requestedReviewer {
     type: __typename
-    ... on Bot {
-      html_url: url
-      login
-    }
     ... on Mannequin {
       html_url: url
       login
