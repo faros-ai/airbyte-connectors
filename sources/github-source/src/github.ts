@@ -51,16 +51,20 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
+import {RunMode} from './streams/common';
 import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
 
-export const PAGE_SIZE = 100;
-export const PR_NESTED_PAGE_SIZE = 100;
-const PROMISE_TIMEOUT_MS = 120_000;
+export const DEFAULT_API_URL = 'https://api.github.com';
+export const DEFAULT_RUN_MODE = RunMode.Full;
+export const DEFAULT_FETCH_TEAMS = false;
+export const DEFAULT_FETCH_PR_FILES = true;
+export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_CUTOFF_DAYS = 90;
-
-const DEFAULT_BUCKET_ID = 1;
-
-const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_BUCKET_ID = 1;
+export const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_TIMEOUT_MS = 120_000;
+export const DEFAULT_CONCURRENCY = 4;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -75,16 +79,27 @@ type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
 export abstract class GitHub {
   private static github: GitHub;
+  protected readonly fetchPullRequestFiles: boolean;
+  protected readonly fetchPullRequestReviews: boolean;
+  protected readonly bucketId: number;
+  protected readonly bucketTotal: number;
+  protected readonly pageSize: number;
+  protected readonly timeoutMs: number;
 
   constructor(
-    protected readonly config: GitHubConfig,
+    config: GitHubConfig,
     protected readonly baseOctokit: ExtendedOctokit,
-    private readonly bucketId: number,
-    private readonly bucketTotal: number,
-    private readonly fetchPullRequestFiles: boolean,
-    private readonly fetchPullRequestReviews: boolean,
     protected readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.fetchPullRequestFiles =
+      config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
+    this.fetchPullRequestReviews =
+      config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
+    this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
+    this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
+    this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
+  }
 
   static async instance(
     cfg: GitHubConfig,
@@ -146,7 +161,7 @@ export abstract class GitHub {
       {
         org,
         type: 'all',
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {
@@ -186,11 +201,11 @@ export abstract class GitHub {
       {
         owner: org,
         repo,
-        page_size: PAGE_SIZE,
-        nested_page_size: PR_NESTED_PAGE_SIZE,
+        page_size: this.pageSize,
+        nested_page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const pr of res.repository.pullRequests.nodes) {
         if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
           break;
@@ -275,7 +290,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         issue_number: number,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
         page: startingPage,
       }
     );
@@ -320,12 +335,12 @@ export abstract class GitHub {
         owner: org,
         repo,
         pull_number: number,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
         page: startingPage,
       }
     );
     const files: PullRequestFile[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const file of res.data) {
         files.push({
           additions: file.additions,
@@ -373,7 +388,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         number,
-        nested_page_size: PR_NESTED_PAGE_SIZE,
+        nested_page_size: this.pageSize,
         cursor: startCursor,
       }
     );
@@ -399,10 +414,10 @@ export abstract class GitHub {
         since: cutoffDate?.toISOString(),
         direction: 'desc',
         sort: 'updated',
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const comment of res.data) {
         yield {
           repository: `${org}/${repo}`,
@@ -425,10 +440,10 @@ export abstract class GitHub {
       {
         owner: org,
         repo,
-        page_size: PAGE_SIZE,
+        page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const label of res.repository.labels.nodes) {
         yield {
           org,
@@ -500,7 +515,7 @@ export abstract class GitHub {
       owner: org,
       repo,
       branch,
-      page_size: PAGE_SIZE,
+      page_size: this.pageSize,
       since: cutoffDate?.toISOString(),
     };
     // Check if the client has changedFilesIfAvailable field available
@@ -601,12 +616,12 @@ export abstract class GitHub {
       ORG_MEMBERS_QUERY,
       {
         login: org,
-        page_size: PAGE_SIZE,
+        page_size: this.pageSize,
       }
     );
     for await (const res of this.wrapIterable(
       iter,
-      this.timeout,
+      this.timeout.bind(this),
       this.acceptPartialResponseWrapper(`org users for ${org}`)
     )) {
       for (const member of res.organization.membersWithRole.nodes) {
@@ -627,7 +642,7 @@ export abstract class GitHub {
       this.octokit(org).teams.list,
       {
         org,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {
@@ -649,7 +664,7 @@ export abstract class GitHub {
         {
           org,
           team_slug: team.slug,
-          per_page: PAGE_SIZE,
+          per_page: this.pageSize,
         }
       );
       for await (const res of iter) {
@@ -684,7 +699,7 @@ export abstract class GitHub {
       this.octokit(org).copilot.listCopilotSeats,
       {
         org,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     try {
@@ -809,7 +824,7 @@ export abstract class GitHub {
         org,
         phrase,
         order: 'asc',
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     try {
@@ -870,7 +885,7 @@ export abstract class GitHub {
       this.octokit(org).orgs.listOutsideCollaborators,
       {
         org,
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {
@@ -917,11 +932,10 @@ export abstract class GitHub {
 
   private async timeout<T>(promise: Promise<T>): Promise<T> {
     let timeoutId: NodeJS.Timeout;
-    const timeout: Promise<T> = new Promise((resolve, reject) => {
+    const timeout: Promise<T> = new Promise((_, reject) => {
       timeoutId = setTimeout(
-        () =>
-          reject(new Error(`Promise timed out after ${PROMISE_TIMEOUT_MS} ms`)),
-        PROMISE_TIMEOUT_MS
+        () => reject(new Error(`Promise timed out after ${this.timeoutMs} ms`)),
+        this.timeoutMs
       );
     });
 
@@ -959,15 +973,7 @@ export class GitHubToken extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubToken(
-      cfg,
-      baseOctokit,
-      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
-      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_pull_request_files ?? true,
-      cfg.fetch_pull_request_reviews ?? true,
-      logger
-    );
+    const github = new GitHubToken(cfg, baseOctokit, logger);
     await github.checkConnection();
     return github;
   }
@@ -984,7 +990,7 @@ export class GitHubToken extends GitHub {
     const iter = this.baseOctokit.paginate.iterator(
       this.baseOctokit.orgs.listForAuthenticatedUser,
       {
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {
@@ -1004,15 +1010,7 @@ export class GitHubApp extends GitHub {
     logger: AirbyteLogger
   ): Promise<GitHub> {
     const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubApp(
-      cfg,
-      baseOctokit,
-      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
-      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      cfg.fetch_pull_request_files ?? true,
-      cfg.fetch_pull_request_reviews ?? true,
-      logger
-    );
+    const github = new GitHubApp(cfg, baseOctokit, logger);
     await github.checkConnection();
     const installations = await github.getAppInstallations();
     for (const installation of installations) {
@@ -1052,7 +1050,7 @@ export class GitHubApp extends GitHub {
     const iter = this.baseOctokit.paginate.iterator(
       this.baseOctokit.apps.listInstallations,
       {
-        per_page: PAGE_SIZE,
+        per_page: this.pageSize,
       }
     );
     for await (const res of iter) {

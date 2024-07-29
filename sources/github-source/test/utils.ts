@@ -1,13 +1,15 @@
 import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
 
 import {GitHub, GitHubToken} from '../src/github';
+import {GitHubConfig} from '../src/types';
 
 export function setupGitHubInstance(
   octokitMock: any,
   logger: AirbyteLogger,
-  config?: any
+  config?: GitHubConfig
 ) {
-  const githubConfig = config ?? readTestResourceAsJSON('config.json');
+  const githubConfig: GitHubConfig =
+    config ?? readTestResourceAsJSON('config.json');
   GitHub.instance = jest.fn().mockImplementation(() => {
     return new GitHubToken(
       githubConfig,
@@ -34,10 +36,6 @@ export function setupGitHubInstance(
           octokitMock.auditLogs ??
           new ErrorWithStatus(400, 'API not available'),
       },
-      githubConfig.bucket_id,
-      githubConfig.bucket_total,
-      githubConfig.fetch_pull_request_files,
-      githubConfig.fetch_pull_request_reviews,
       logger
     );
   });
