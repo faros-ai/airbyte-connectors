@@ -84,6 +84,7 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
         ...Labels
         ...Files
         ...Reviews
+        ...ReviewRequests
       }
     }
   }

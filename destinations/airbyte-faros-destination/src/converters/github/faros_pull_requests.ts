@@ -1,5 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {PullRequest} from 'faros-airbyte-common/github';
+import {
+  PullRequest,
+  PullRequestReviewRequest,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
 
@@ -16,6 +19,11 @@ type FileKey = {
   uid: string;
   path: string;
   repository: RepoKey;
+};
+
+type ReviewerKey = {
+  uid: string;
+  source: string;
 };
 
 export class FarosPullRequests extends GitHubConverter {
@@ -74,6 +82,10 @@ export class FarosPullRequests extends GitHubConverter {
     pr.reviews.forEach((review) => {
       this.collectUser(review.author);
     });
+
+    const requestedReviewers = this.collectReviewRequestReviewer(
+      pr.reviewRequests
+    );
 
     const prKey = {
       repository: repoKey,
@@ -139,7 +151,36 @@ export class FarosPullRequests extends GitHubConverter {
           submittedAt: Utils.toDate(review.submittedAt),
         },
       })),
+      ...requestedReviewers.map((reviewer) => ({
+        model: 'vcs_PullRequestReviewRequest',
+        record: {
+          pullRequest: prKey,
+          requestedReviewer: reviewer,
+        },
+      })),
     ];
+  }
+
+  private collectReviewRequestReviewer(
+    reviewRequests: PullRequestReviewRequest[]
+  ): ReviewerKey[] {
+    const reviewers: ReviewerKey[] = [];
+    reviewRequests.forEach((reviewRequest) => {
+      const requestedReviewer = reviewRequest.requestedReviewer;
+      if (requestedReviewer.type === 'Team') {
+        requestedReviewer.members?.nodes?.forEach((member) => {
+          this.collectUser(member);
+          reviewers.push({uid: member.login, source: this.streamName.source});
+        });
+      } else {
+        this.collectUser(requestedReviewer);
+        reviewers.push({
+          uid: requestedReviewer.login,
+          source: this.streamName.source,
+        });
+      }
+    });
+    return reviewers;
   }
 
   async onProcessingComplete(

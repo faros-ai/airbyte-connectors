@@ -8012,6 +8012,47 @@ export type ListMembersQuery = {
   } | null;
 };
 
+export type PullRequestReviewRequestsQueryVariables = Exact<{
+  org: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  number: Scalars['Int']['input'];
+  nested_page_size: Scalars['Int']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type PullRequestReviewRequestsQuery = {
+  repository?: {
+    pullRequest?: {
+      reviewRequests?: {
+        pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+        nodes?: Array<{
+          requestedReviewer?:
+            | {login: string; html_url: string; type: 'Bot'}
+            | {login: string; html_url: string; type: 'Mannequin'}
+            | {
+                type: 'Team';
+                members: {
+                  nodes?: Array<{
+                    login: string;
+                    name?: string | null;
+                    type: 'User';
+                    html_url: string;
+                  } | null> | null;
+                };
+              }
+            | {
+                login: string;
+                name?: string | null;
+                html_url: string;
+                type: 'User';
+              }
+            | null;
+        } | null> | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type PullRequestReviewsQueryVariables = Exact<{
   org: Scalars['String']['input'];
   repo: Scalars['String']['input'];
@@ -8226,6 +8267,32 @@ export type PullRequestsQuery = {
             comments: {totalCount: number};
           } | null> | null;
         } | null;
+        reviewRequests?: {
+          pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+          nodes?: Array<{
+            requestedReviewer?:
+              | {login: string; html_url: string; type: 'Bot'}
+              | {login: string; html_url: string; type: 'Mannequin'}
+              | {
+                  type: 'Team';
+                  members: {
+                    nodes?: Array<{
+                      login: string;
+                      name?: string | null;
+                      type: 'User';
+                      html_url: string;
+                    } | null> | null;
+                  };
+                }
+              | {
+                  login: string;
+                  name?: string | null;
+                  html_url: string;
+                  type: 'User';
+                }
+              | null;
+          } | null> | null;
+        } | null;
       } | null> | null;
     };
   } | null;
@@ -8254,6 +8321,49 @@ export type ReviewFieldsFragment = {
     | {name?: string | null; login: string; html_url: string; type: 'User'}
     | null;
   comments: {totalCount: number};
+};
+
+export type ReviewRequestFieldsFragment = {
+  requestedReviewer?:
+    | {login: string; html_url: string; type: 'Bot'}
+    | {login: string; html_url: string; type: 'Mannequin'}
+    | {
+        type: 'Team';
+        members: {
+          nodes?: Array<{
+            login: string;
+            name?: string | null;
+            type: 'User';
+            html_url: string;
+          } | null> | null;
+        };
+      }
+    | {login: string; name?: string | null; html_url: string; type: 'User'}
+    | null;
+};
+
+export type ReviewRequestsFragment = {
+  reviewRequests?: {
+    pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    nodes?: Array<{
+      requestedReviewer?:
+        | {login: string; html_url: string; type: 'Bot'}
+        | {login: string; html_url: string; type: 'Mannequin'}
+        | {
+            type: 'Team';
+            members: {
+              nodes?: Array<{
+                login: string;
+                name?: string | null;
+                type: 'User';
+                html_url: string;
+              } | null> | null;
+            };
+          }
+        | {login: string; name?: string | null; html_url: string; type: 'User'}
+        | null;
+    } | null> | null;
+  } | null;
 };
 
 export type ReviewsFragment = {
