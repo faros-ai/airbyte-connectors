@@ -83,7 +83,7 @@ export class FarosPullRequests extends GitHubConverter {
       this.collectUser(review.author);
     });
 
-    const requestedReviewers = this.collectReviewRequestReviewer(
+    const requestedReviewers = this.collectReviewRequestReviewers(
       pr.reviewRequests
     );
 
@@ -161,7 +161,7 @@ export class FarosPullRequests extends GitHubConverter {
     ];
   }
 
-  private collectReviewRequestReviewer(
+  private collectReviewRequestReviewers(
     reviewRequests: PullRequestReviewRequest[]
   ): ReviewerKey[] {
     const reviewers: ReviewerKey[] = [];
