@@ -29,6 +29,9 @@ export class ProjectRepoFilter {
   }
 
   isIncluded(repository: string): boolean {
+    if (!this.projects.size && !this.repos.size) {
+      return true;
+    }
     const [projectKey, repoName] = this.parseRepository(repository);
     return this.repos.has(projectKey)
       ? this.repos.get(projectKey).has(repoName)
