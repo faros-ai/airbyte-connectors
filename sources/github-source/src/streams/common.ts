@@ -85,6 +85,7 @@ export const FullStreamNames = [
   'faros_commits',
   'faros_pull_request_comments',
   'faros_outside_collaborators',
+  'faros_tags',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];

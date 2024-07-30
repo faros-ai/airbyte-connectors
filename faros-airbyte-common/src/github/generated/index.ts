@@ -8231,6 +8231,37 @@ export type PullRequestsQuery = {
   } | null;
 };
 
+export type RepoTagsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type RepoTagsQuery = {
+  repository?: {
+    refs?: {
+      nodes?: Array<{
+        name: string;
+        target?:
+          | {type: 'Blob'}
+          | {oid: string; committedDate: string; type: 'Commit'}
+          | {
+              type: 'Tag';
+              target:
+                | {type: 'Blob'}
+                | {oid: string; committedDate: string; type: 'Commit'}
+                | {type: 'Tag'}
+                | {type: 'Tree'};
+            }
+          | {type: 'Tree'}
+          | null;
+      } | null> | null;
+      pageInfo: {hasNextPage: boolean; endCursor?: string | null};
+    } | null;
+  } | null;
+};
+
 export type ReviewFieldsFragment = {
   state: PullRequestReviewState;
   submittedAt?: string | null;

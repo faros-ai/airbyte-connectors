@@ -37,6 +37,9 @@ export const COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY =
 export const COMMITS_CHANGED_FILES_QUERY =
   COMMIT_FIELDS_FRAGMENT + loadQuery('commits-changed-files-query.gql');
 
+// Graphql query used to get tags by repository
+export const REPOSITORY_TAGS_QUERY = loadQuery('repository-tags-query.gql');
+
 /**
  * Load query file from resources
  * @param query query file name

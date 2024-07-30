@@ -18,6 +18,8 @@ import {
   PullRequestNode,
   PullRequestReview,
   Repository,
+  Tag,
+  TagsQueryCommitNode,
   Team,
   TeamMembership,
   User,
@@ -28,6 +30,7 @@ import {
   ListMembersQuery,
   PullRequestReviewsQuery,
   PullRequestsQuery,
+  RepoTagsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
@@ -39,6 +42,7 @@ import {
   ORG_MEMBERS_QUERY,
   PULL_REQUEST_REVIEWS_QUERY,
   PULL_REQUESTS_QUERY,
+  REPOSITORY_TAGS_QUERY,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
@@ -828,6 +832,41 @@ export abstract class GitHub {
         yield {
           org,
           ...pick(collaborator, ['login', 'email', 'name', 'type', 'html_url']),
+        };
+      }
+    }
+  }
+
+  async *getTags(
+    org: string,
+    repo: string,
+    cutoffDate: Date
+  ): AsyncGenerator<Tag> {
+    const iter = this.octokit(org).graphql.paginate.iterator<RepoTagsQuery>(
+      REPOSITORY_TAGS_QUERY,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const tag of res.repository.refs.nodes) {
+        let commit: TagsQueryCommitNode;
+        if (tag.target.type === 'Commit') {
+          commit = tag.target;
+        }
+        if (tag.target.type === 'Tag' && tag.target.target.type === 'Commit') {
+          commit = tag.target.target;
+        }
+        if (cutoffDate && Utils.toDate(commit.committedDate) <= cutoffDate) {
+          break;
+        }
+        yield {
+          org,
+          repo,
+          name: tag.name,
+          ...commit,
         };
       }
     }

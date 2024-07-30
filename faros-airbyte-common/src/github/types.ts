@@ -1,11 +1,13 @@
 import {Octokit} from '@octokit/rest';
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
+import {exec} from 'child_process';
 
 import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
+  RepoTagsQuery,
 } from './generated';
 
 const octokit: Octokit = new Octokit();
@@ -111,6 +113,17 @@ export type OutsideCollaborator = {
     typeof octokit.orgs.listOutsideCollaborators
   >[0],
   'name' | 'login' | 'email' | 'type' | 'html_url'
+>;
+
+export type Tag = {
+  org: string;
+  repo: string;
+  name: string;
+} & TagsQueryCommitNode;
+
+export type TagsQueryCommitNode = Extract<
+  RepoTagsQuery['repository']['refs']['nodes'][0]['target'],
+  {type: 'Commit'}
 >;
 
 export type CopilotSeatsStreamRecord =
