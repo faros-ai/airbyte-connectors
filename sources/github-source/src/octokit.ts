@@ -7,7 +7,6 @@ import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getOperationAST, parse} from 'graphql';
 import https from 'https';
-import {uniq} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import url from 'url';
 import template from 'url-template';
