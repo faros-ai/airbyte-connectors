@@ -90,6 +90,22 @@
               }
             ]
           },
+          "reviewRequests": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "requestedReviewer": {
+                  "login": "nehanda",
+                  "type": "User",
+                  "name": null,
+                  "html_url": "https://github.com/nehanda"
+                }
+              }
+            ]
+          },
           "number": 48,
           "mergedAt": "2021-02-16T17:15:27Z",
           "mergeCommit": {
@@ -167,6 +183,13 @@
             ]
           },
           "reviews": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": null
+            },
+            "nodes": []
+          },
+          "reviewRequests": {
             "pageInfo": {
               "hasNextPage": false,
               "endCursor": null
@@ -265,6 +288,43 @@
                 "databaseId": 2192199689,
                 "comments": {
                   "totalCount": 0
+                }
+              }
+            ]
+          },
+          "reviewRequests": {
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "V5qTFIjt1iQ00gUO325n1ZhwVtqQFpc38ed0grct12OyRY"
+            },
+            "nodes": [
+              {
+                "requestedReviewer": {
+                  "login": "user1",
+                  "type": "User",
+                  "name": null,
+                  "html_url": "https://github.com/user1"
+                }
+              },
+              {
+                "requestedReviewer": {
+                  "type": "Team",
+                  "members": {
+                    "nodes": [
+                      {
+                        "login": "user2",
+                        "type": "User",
+                        "name": null,
+                        "html_url": "https://github.com/user2"
+                      },
+                      {
+                        "login": "user3",
+                        "type": "User",
+                        "name": null,
+                        "html_url": "https://github.com/user3"
+                      }
+                    ]
+                  }
                 }
               }
             ]

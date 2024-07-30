@@ -420,6 +420,16 @@ Add any other context about the changes here.
     "reviewEvents": {
       "nodes": [],
     },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+      },
+    ],
     "reviews": [
       {
         "author": {
@@ -525,6 +535,7 @@ N/A
     "reviewEvents": {
       "nodes": [],
     },
+    "reviewRequests": [],
     "reviews": [],
     "state": "CLOSED",
     "title": "Move apps with no feed support temporarily to internal",
@@ -593,6 +604,37 @@ N/A
     "reviewEvents": {
       "nodes": [],
     },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/user1",
+          "login": "user1",
+          "name": null,
+          "type": "User",
+        },
+      },
+      {
+        "requestedReviewer": {
+          "members": {
+            "nodes": [
+              {
+                "html_url": "https://github.com/user2",
+                "login": "user2",
+                "name": null,
+                "type": "User",
+              },
+              {
+                "html_url": "https://github.com/user3",
+                "login": "user3",
+                "name": null,
+                "type": "User",
+              },
+            ],
+          },
+          "type": "Team",
+        },
+      },
+    ],
     "reviews": [
       {
         "author": {

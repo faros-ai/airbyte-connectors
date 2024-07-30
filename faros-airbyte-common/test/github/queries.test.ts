@@ -5,6 +5,7 @@ import * as sut from '../../src/github/queries';
 import {
   FILES_FRAGMENT,
   LABELS_FRAGMENT,
+  REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from '../../src/github/queries';
 
@@ -31,7 +32,13 @@ describe('queries', () => {
       test(`${query} matches '${file}'`, async () => {
         if (query === 'PULL_REQUESTS_QUERY') {
           queryStr +=
-            LABELS_FRAGMENT + '\n' + FILES_FRAGMENT + '\n' + REVIEWS_FRAGMENT;
+            LABELS_FRAGMENT +
+            '\n' +
+            FILES_FRAGMENT +
+            '\n' +
+            REVIEWS_FRAGMENT +
+            '\n' +
+            REVIEW_REQUESTS_FRAGMENT;
         }
         const errors = validate(schema, parse(queryStr));
         expect(errors).toHaveLength(0);

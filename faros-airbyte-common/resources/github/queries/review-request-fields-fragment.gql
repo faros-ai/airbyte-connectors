@@ -1,0 +1,24 @@
+fragment ReviewRequestFields on ReviewRequest {
+  requestedReviewer {
+    type: __typename
+    ... on Mannequin {
+      html_url: url
+      login
+    }
+    ... on Team {
+      members {
+        nodes {
+          type: __typename
+          login
+          html_url: url
+          name
+        }
+      }
+    }
+    ... on User {
+      html_url: url
+      login
+      name
+    }
+  }
+}
