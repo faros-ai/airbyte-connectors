@@ -184,10 +184,8 @@ export class FarosPullRequests extends GitHubConverter {
   }
 
   private addReviewer(reviewers: Set<string>, reviewer: PartialUser): void {
-    if (!reviewers.has(reviewer.login)) {
-      reviewers.add(reviewer.login);
-      this.collectUser(reviewer);
-    }
+    reviewers.add(reviewer.login);
+    this.collectUser(reviewer);
   }
 
   async onProcessingComplete(
