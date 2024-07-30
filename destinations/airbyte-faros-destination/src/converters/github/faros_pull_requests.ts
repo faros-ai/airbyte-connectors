@@ -21,11 +21,6 @@ type FileKey = {
   repository: RepoKey;
 };
 
-type ReviewerKey = {
-  uid: string;
-  source: string;
-};
-
 export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
   private collectedFiles = new Map<string, FileKey>();
@@ -155,16 +150,17 @@ export class FarosPullRequests extends GitHubConverter {
         model: 'vcs_PullRequestReviewRequest',
         record: {
           pullRequest: prKey,
-          requestedReviewer: reviewer,
+          requestedReviewer: {uid: reviewer, source: this.streamName.source},
         },
       })),
     ];
   }
 
+  // Collects users and returns a list containing reviewers login
   private collectReviewRequestReviewers(
     reviewRequests: PullRequestReviewRequest[]
-  ): ReviewerKey[] {
-    const reviewers: ReviewerKey[] = [];
+  ): string[] {
+    const reviewers: Set<string> = new Set<string>();
 
     reviewRequests.forEach((reviewRequest) => {
       const {requestedReviewer} = reviewRequest;
@@ -184,15 +180,14 @@ export class FarosPullRequests extends GitHubConverter {
       }
     });
 
-    return reviewers;
+    return Array.from(reviewers.values());
   }
 
-  private addReviewer(reviewers: ReviewerKey[], reviewer: PartialUser): void {
-    this.collectUser(reviewer);
-    reviewers.push({
-      uid: reviewer.login,
-      source: this.streamName.source,
-    });
+  private addReviewer(reviewers: Set<string>, reviewer: PartialUser): void {
+    if (!reviewers.has(reviewer.login)) {
+      reviewers.add(reviewer.login);
+      this.collectUser(reviewer);
+    }
   }
 
   async onProcessingComplete(
