@@ -51,6 +51,7 @@ import {RunMode} from './streams/common';
 import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const DEFAULT_API_URL = 'https://api.github.com';
+export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = true;
@@ -705,7 +706,7 @@ export abstract class GitHub {
     } catch (err: any) {
       // returns 404 if copilot business is not enabled for the org or if auth doesn't have required permissions
       // https://docs.github.com/en/rest/copilot/copilot-business?apiVersion=2022-11-28#get-copilot-business-seat-information-and-settings-for-an-organization
-      if (err.status === 404) {
+      if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
           `Failed to sync GitHub Copilot seats for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
         );
@@ -733,7 +734,7 @@ export abstract class GitHub {
     } catch (err: any) {
       // returns 404 if the organization does not have GitHub Copilot usage metrics enabled or if auth doesn't have required permissions
       // https://docs.github.com/en/enterprise-cloud@latest/early-access/copilot/copilot-usage-api
-      if (err.status === 404) {
+      if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
           `Failed to sync GitHub Copilot usage for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
         );
