@@ -47,6 +47,7 @@ export class Customreports extends Converter {
   org_ids_to_ignore = null;
   skipped_due_to_missing_fields = 0;
   skipped_due_to_termination = 0;
+  failedRecordFields: Set<string> = new Set<string>();
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -172,6 +173,8 @@ export class Customreports extends Converter {
       !rec.Team_ID ||
       !rec.Team_Name
     ) {
+      // Convert the record names into a sorted comma-separated string
+      this.failedRecordFields.add(Object.keys(rec).sort().join(', '));
       this.skipped_due_to_missing_fields += 1;
       return false;
     }
@@ -371,6 +374,7 @@ export class Customreports extends Converter {
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       numRecordsSkippedDueToMissingFields: this.skipped_due_to_missing_fields,
+      failedRecordFields: this.failedRecordFields,
       numRecordsSkippedDueToTermination: this.skipped_due_to_termination,
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
