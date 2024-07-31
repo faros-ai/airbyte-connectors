@@ -64,13 +64,13 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosCopilotUsage(config, this.logger),
       new FarosLabels(config, this.logger),
       new FarosOrganizations(config, this.logger),
+      new FarosOutsideCollaborators(config, this.logger),
       new FarosPullRequests(config, this.logger),
       new FarosPullRequestComments(config, this.logger),
       new FarosRepositories(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
       new FarosUsers(config, this.logger),
-      new FarosOutsideCollaborators(config, this.logger),
     ];
   }
 
