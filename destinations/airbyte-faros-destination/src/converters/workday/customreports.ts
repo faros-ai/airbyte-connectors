@@ -197,10 +197,14 @@ export class Customreports extends Converter {
       if (typeof rec[key] === 'string') {
         record_keys.push(key);
       } else {
-        throw new Error(`Key ${key} is not a string, instead type: ${typeof rec[key]}`);
+        throw new Error(
+          `Key ${key} is not a string, instead type: ${typeof rec[key]}`
+        );
       }
     }
-    return record_keys.sort().join(',');
+    return record_keys
+      .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
+      .join(',');
   }
 
   private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
