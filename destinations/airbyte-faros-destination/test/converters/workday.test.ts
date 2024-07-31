@@ -173,6 +173,14 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v4.log',
     });
   });
+  test('Ignore improperly formatted records from customreports v6 stream', async () => {
+    const configPath = await getTempConfig([], []);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v6.log',
+    });
+  });
   test('check resulting org structure from "empty" input', () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
