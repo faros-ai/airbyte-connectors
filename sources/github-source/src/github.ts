@@ -906,7 +906,7 @@ export abstract class GitHub {
   async *getTags(
     org: string,
     repo: string,
-    cutoffDate: Date
+    cutoffDate?: Date
   ): AsyncGenerator<Tag> {
     const iter = this.octokit(org).graphql.paginate.iterator<RepoTagsQuery>(
       REPOSITORY_TAGS_QUERY,
@@ -926,13 +926,12 @@ export abstract class GitHub {
           commit = tag.target.target;
         }
         if (cutoffDate && Utils.toDate(commit.committedDate) <= cutoffDate) {
-          break;
+          continue;
         }
         yield {
-          org,
-          repo,
+          repository: `${org}/${repo}`,
           name: tag.name,
-          ...commit,
+          commit,
         };
       }
     }

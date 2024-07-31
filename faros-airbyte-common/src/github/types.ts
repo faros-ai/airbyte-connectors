@@ -120,10 +120,10 @@ export type OutsideCollaborator = {
 >;
 
 export type Tag = {
-  org: string;
-  repo: string;
+  repository: string;
   name: string;
-} & TagsQueryCommitNode;
+  commit: TagsQueryCommitNode;
+};
 
 export type TagsQueryCommitNode = Extract<
   RepoTagsQuery['repository']['refs']['nodes'][0]['target'],

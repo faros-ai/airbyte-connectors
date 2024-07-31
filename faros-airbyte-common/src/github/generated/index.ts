@@ -8312,12 +8312,12 @@ export type RepoTagsQuery = {
         name: string;
         target?:
           | {type: 'Blob'}
-          | {oid: string; committedDate: string; type: 'Commit'}
+          | {committedDate: string; sha: string; type: 'Commit'}
           | {
               type: 'Tag';
               target:
                 | {type: 'Blob'}
-                | {oid: string; committedDate: string; type: 'Commit'}
+                | {committedDate: string; sha: string; type: 'Commit'}
                 | {type: 'Tag'}
                 | {type: 'Tree'};
             }

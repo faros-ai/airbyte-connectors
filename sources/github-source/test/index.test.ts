@@ -427,6 +427,32 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - tags', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'tags/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getRepositoryTagsMockedImplementation(
+              readTestResourceAsJSON('tags/tags.json')
+            )
+          ),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -492,3 +518,6 @@ const getOrganizationOutsideCollaboratorsMockedImplementation = (res: any) => ({
 
 const getCommitsMockedImplementation = (res: any) =>
   graphqlMockedImplementation('commits', res);
+
+const getRepositoryTagsMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('repoTags', res);

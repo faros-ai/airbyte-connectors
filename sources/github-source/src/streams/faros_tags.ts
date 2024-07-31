@@ -17,11 +17,11 @@ export class FarosTags extends StreamWithRepoSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['oid', 'name'];
+    return [['name'], ['commit', 'sha']];
   }
 
   get cursorField(): string | string[] {
-    return 'committedDate';
+    return ['commit', 'committedDate'];
   }
 
   async *readRecords(
@@ -43,7 +43,9 @@ export class FarosTags extends StreamWithRepoSlices {
     latestRecord: Tag,
     slice: RepoStreamSlice
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.committedDate ?? 0);
+    const latestRecordCutoff = Utils.toDate(
+      latestRecord?.commit.committedDate ?? 0
+    );
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

@@ -1,0 +1,36 @@
+{
+  "repository": {
+    "refs": {
+      "nodes": [
+        {
+          "name": "v0.0.1",
+          "target": {
+            "type": "Commit",
+            "sha": "a91f0eb6e2c0dd050a72bf2e2b73878a9342403c",
+            "committedDate": "2024-03-28T19:07:25Z"
+          }
+        },
+        {
+          "name": "v0.0.2",
+          "target": {
+            "type": "Commit",
+            "sha": "97b456be6dab02610a7f7683be82a5c7191372c0",
+            "committedDate": "2024-04-03T14:30:21Z"
+          }
+        },
+        {
+          "name": "v0.0.3",
+          "target": {
+            "type": "Commit",
+            "sha": "8c73521620f8cd70a07c7a475dfe3dd09f7690cf",
+            "committedDate": "2024-04-03T18:52:19Z"
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false,
+        "endCursor": "NDcx"
+      }
+    }
+  }
+}
