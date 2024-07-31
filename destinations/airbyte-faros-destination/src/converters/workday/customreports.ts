@@ -45,6 +45,9 @@ export class Customreports extends Converter {
   // These are set in setOrgsToKeepAndIgnore
   org_ids_to_keep = null;
   org_ids_to_ignore = null;
+  skipped_due_to_missing_fields = 0;
+  skipped_due_to_termination = 0;
+  failedRecordFields: Set<string> = new Set<string>();
 
   /** Almost every SquadCast record have id property */
   id(record: AirbyteRecord): any {
@@ -170,6 +173,9 @@ export class Customreports extends Converter {
       !rec.Team_ID ||
       !rec.Team_Name
     ) {
+      // We convert the record keys into a sorted comma-separated string
+      this.failedRecordFields.add(this.getSortedRecordFields(rec));
+      this.skipped_due_to_missing_fields += 1;
       return false;
     }
     // We're only keeping active records
@@ -177,10 +183,29 @@ export class Customreports extends Converter {
       if (
         !ctx.config.source_specific_configs?.workday?.keep_terminated_employees
       ) {
+        this.skipped_due_to_termination += 1;
         return false;
       }
     }
     return true;
+  }
+
+  private getSortedRecordFields(rec: EmployeeRecord): string {
+    const record_keys: string[] = [];
+    for (const key in rec) {
+      // Check if type is string:
+      if (typeof key === 'string') {
+        record_keys.push(key);
+      } else {
+        throw new Error(
+          `Key ${key} is not a string, instead type: ${typeof key}`
+        );
+      }
+    }
+    const sorted_keys_str = record_keys
+      .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
+      .join(',');
+    return sorted_keys_str;
   }
 
   private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
@@ -366,6 +391,9 @@ export class Customreports extends Converter {
       nAcceptableTeams: acceptableTeams.size,
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
+      numRecordsSkippedDueToMissingFields: this.skipped_due_to_missing_fields,
+      failedRecordFields: Array.from(this.failedRecordFields.values()),
+      numRecordsSkippedDueToTermination: this.skipped_due_to_termination,
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
       generalLogs: this.generalLogCollection,
