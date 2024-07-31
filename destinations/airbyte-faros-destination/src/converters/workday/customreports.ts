@@ -173,8 +173,8 @@ export class Customreports extends Converter {
       !rec.Team_ID ||
       !rec.Team_Name
     ) {
-      // Convert the record names into a sorted comma-separated string
-      this.failedRecordFields.add(Object.keys(rec).sort().join(', '));
+      // We convert the record keys into a sorted comma-separated string
+      this.failedRecordFields.add(this.getSortedRecordFields(rec));
       this.skipped_due_to_missing_fields += 1;
       return false;
     }
@@ -188,6 +188,19 @@ export class Customreports extends Converter {
       }
     }
     return true;
+  }
+
+  private getSortedRecordFields(rec: EmployeeRecord): string {
+    const record_keys: string[] = [];
+    for (const key in rec) {
+      // Check if type is string:
+      if (typeof rec[key] === 'string') {
+        record_keys.push(key);
+      } else {
+        throw new Error(`Key ${key} is not a string, instead type: ${typeof rec[key]}`);
+      }
+    }
+    return record_keys.sort().join(',');
   }
 
   private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
