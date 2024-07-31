@@ -1,6 +1,5 @@
 import {Octokit} from '@octokit/rest';
 import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
-import {exec} from 'child_process';
 
 import {
   CommitsQuery,
