@@ -17,6 +17,7 @@ import {
   PullRequestLabel,
   PullRequestNode,
   PullRequestReview,
+  PullRequestReviewRequest,
   Repository,
   Tag,
   TagsQueryCommitNode,
@@ -28,6 +29,7 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  PullRequestReviewRequestsQuery,
   PullRequestReviewsQuery,
   PullRequestsQuery,
   RepoTagsQuery,
@@ -40,9 +42,11 @@ import {
   LABELS_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
+  PULL_REQUEST_REVIEW_REQUESTS_QUERY,
   PULL_REQUEST_REVIEWS_QUERY,
   PULL_REQUESTS_QUERY,
   REPOSITORY_TAGS_QUERY,
+  REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
@@ -55,6 +59,7 @@ import {RunMode} from './streams/common';
 import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const DEFAULT_API_URL = 'https://api.github.com';
+export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = true;
@@ -217,6 +222,11 @@ export abstract class GitHub {
           labels: await this.extractPullRequestLabels(pr, org, repo),
           files: await this.extractPullRequestFiles(pr, org, repo),
           reviews: await this.extractPullRequestReviews(pr, org, repo),
+          reviewRequests: await this.extractPullRequestReviewRequests(
+            pr,
+            org,
+            repo
+          ),
         };
       }
     }
@@ -245,6 +255,12 @@ export abstract class GitHub {
       this.fetchPullRequestReviews,
       REVIEWS_FRAGMENT,
       '...Reviews'
+    );
+    query = appendFragment(
+      query,
+      this.fetchPullRequestReviews,
+      REVIEW_REQUESTS_FRAGMENT,
+      '...ReviewRequests'
     );
 
     return query;
@@ -353,15 +369,14 @@ export abstract class GitHub {
     if (!hasNextPage) {
       return pr.reviews.nodes;
     }
-    let reviews: PullRequestReview[] = [...pr.reviews.nodes];
+    const reviews: PullRequestReview[] = [...pr.reviews.nodes];
     const remainingReviews = await this.getPullRequestReviews(
       org,
       repo,
       pr.number,
       endCursor
     );
-    reviews = reviews.concat(remainingReviews);
-    return reviews;
+    return reviews.concat(remainingReviews);
   }
 
   private async getPullRequestReviews(
@@ -442,6 +457,57 @@ export abstract class GitHub {
         };
       }
     }
+  }
+
+  async extractPullRequestReviewRequests(
+    pr: PullRequestNode,
+    org: string,
+    repo: string
+  ): Promise<PullRequestReviewRequest[]> {
+    if (!this.fetchPullRequestReviews) {
+      return [];
+    }
+    const {hasNextPage, endCursor} = pr.reviewRequests.pageInfo;
+    if (!hasNextPage) {
+      return pr.reviewRequests.nodes;
+    }
+    const reviewRequests: PullRequestReviewRequest[] = [
+      ...pr.reviewRequests.nodes,
+    ];
+    const remainingReviewRequests = await this.getPullRequestReviewRequests(
+      org,
+      repo,
+      pr.number,
+      endCursor
+    );
+    return reviewRequests.concat(remainingReviewRequests);
+  }
+
+  async getPullRequestReviewRequests(
+    org: string,
+    repo: string,
+    number: number,
+    startCursor?: string
+  ): Promise<PullRequestReviewRequest[]> {
+    const iter = this.octokit(
+      org
+    ).graphql.paginate.iterator<PullRequestReviewRequestsQuery>(
+      PULL_REQUEST_REVIEW_REQUESTS_QUERY,
+      {
+        owner: org,
+        repo,
+        pull_number: number,
+        per_page: this.pageSize,
+        cursor: startCursor,
+      }
+    );
+    const reviewRequests: PullRequestReviewRequest[] = [];
+    for await (const res of this.wrapIterable(iter, this.timeout)) {
+      for (const review of res.repository.pullRequest.reviewRequests.nodes) {
+        reviewRequests.push(review);
+      }
+    }
+    return reviewRequests;
   }
 
   async *getCommits(
@@ -709,7 +775,7 @@ export abstract class GitHub {
     } catch (err: any) {
       // returns 404 if copilot business is not enabled for the org or if auth doesn't have required permissions
       // https://docs.github.com/en/rest/copilot/copilot-business?apiVersion=2022-11-28#get-copilot-business-seat-information-and-settings-for-an-organization
-      if (err.status === 404) {
+      if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
           `Failed to sync GitHub Copilot seats for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
         );
@@ -737,7 +803,7 @@ export abstract class GitHub {
     } catch (err: any) {
       // returns 404 if the organization does not have GitHub Copilot usage metrics enabled or if auth doesn't have required permissions
       // https://docs.github.com/en/enterprise-cloud@latest/early-access/copilot/copilot-usage-api
-      if (err.status === 404) {
+      if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
           `Failed to sync GitHub Copilot usage for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
         );

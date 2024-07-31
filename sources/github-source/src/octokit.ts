@@ -7,7 +7,6 @@ import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getOperationAST, parse} from 'graphql';
 import https from 'https';
-import {uniq} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import url from 'url';
 import template from 'url-template';
@@ -16,6 +15,7 @@ import VError from 'verror';
 import {
   DEFAULT_API_URL,
   DEFAULT_CONCURRENCY,
+  DEFAULT_REJECT_UNAUTHORIZED,
   DEFAULT_TIMEOUT_MS,
 } from './github';
 import {GitHubConfig} from './types';
@@ -46,7 +46,8 @@ export function makeOctokitClient(
   const request = {
     ...(isHttps && {
       agent: new https.Agent({
-        rejectUnauthorized: cfg.reject_unauthorized ?? true,
+        rejectUnauthorized:
+          cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
       }),
     }),
     timeout: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
@@ -63,7 +64,7 @@ export function makeOctokitClient(
   });
 
   kit.hook.before('request', (request) => {
-    beforeRequestHook(cfg, request, logger);
+    beforeRequestHook(request, logger);
   });
 
   kit.hook.after('request', (response) => {
@@ -138,20 +139,7 @@ function getThrottle(
   };
 }
 
-function beforeRequestHook(
-  cfg: GitHubConfig,
-  request: any,
-  logger: AirbyteLogger
-): void {
-  // Allow setting media type for preview features
-  // E.g https://docs.github.com/en/enterprise-server@3.1/rest/overview/api-previews
-  if (cfg.previews?.length) {
-    const mediaType = request.mediaType;
-    request.mediaType = {
-      ...mediaType,
-      previews: uniq((mediaType?.previews ?? []).concat(cfg.previews)),
-    };
-  }
+function beforeRequestHook(request: any, logger: AirbyteLogger): void {
   if (logger.level === AirbyteLogLevel.DEBUG) {
     let url = request.url;
     if (url.includes('{')) {

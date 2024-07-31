@@ -1,11 +1,14 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {PullRequest} from 'faros-airbyte-common/github';
+import {
+  PullRequest,
+  PullRequestReviewRequest,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
 
 import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
 type BranchKey = {
   name: string;
@@ -75,6 +78,10 @@ export class FarosPullRequests extends GitHubConverter {
       this.collectUser(review.author);
     });
 
+    const requestedReviewers = this.collectReviewRequestReviewers(
+      pr.reviewRequests
+    );
+
     const prKey = {
       repository: repoKey,
       number: pr.number,
@@ -139,7 +146,46 @@ export class FarosPullRequests extends GitHubConverter {
           submittedAt: Utils.toDate(review.submittedAt),
         },
       })),
+      ...requestedReviewers.map((reviewer) => ({
+        model: 'vcs_PullRequestReviewRequest',
+        record: {
+          pullRequest: prKey,
+          requestedReviewer: {uid: reviewer, source: this.streamName.source},
+        },
+      })),
     ];
+  }
+
+  // Collects users and returns a list containing reviewers login
+  private collectReviewRequestReviewers(
+    reviewRequests: PullRequestReviewRequest[]
+  ): string[] {
+    const reviewers: Set<string> = new Set<string>();
+
+    reviewRequests.forEach((reviewRequest) => {
+      const {requestedReviewer} = reviewRequest;
+
+      if (
+        requestedReviewer.type === 'Team' &&
+        requestedReviewer.members?.nodes
+      ) {
+        requestedReviewer.members.nodes.forEach((member) =>
+          this.addReviewer(reviewers, member)
+        );
+      } else if (
+        requestedReviewer.type === 'User' ||
+        requestedReviewer.type === 'Mannequin'
+      ) {
+        this.addReviewer(reviewers, requestedReviewer);
+      }
+    });
+
+    return Array.from(reviewers.values());
+  }
+
+  private addReviewer(reviewers: Set<string>, reviewer: PartialUser): void {
+    reviewers.add(reviewer.login);
+    this.collectUser(reviewer);
   }
 
   async onProcessingComplete(
