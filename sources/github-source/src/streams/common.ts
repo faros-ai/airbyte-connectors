@@ -29,7 +29,6 @@ export enum RunMode {
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
-  Standard = 'Standard',
   Full = 'Full',
 }
 
@@ -40,52 +39,37 @@ export const CopilotEvaluationAppStreamNames = [
   'faros_users',
 ];
 
-// todo: fill as streams are developed
 export const CopilotEvaluationStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_organizations',
-  'faros_repositories',
   'faros_pull_requests',
+  'faros_repositories',
   'faros_users',
 ];
 
-// todo: fill as streams are developed
 export const MinimumStreamNames = [
-  'faros_organizations',
-  'faros_repositories',
-  'faros_pull_requests',
-  'faros_labels',
-  'faros_users',
   'faros_commits',
+  'faros_labels',
+  'faros_organizations',
+  'faros_pull_requests',
+  'faros_repositories',
+  'faros_users',
 ];
 
-// todo: fill as streams are developed
-export const StandardStreamNames = [
-  'faros_copilot_seats',
-  'faros_copilot_usage',
-  'faros_organizations',
-  'faros_repositories',
-  'faros_pull_requests',
-  'faros_labels',
-  'faros_users',
-  'faros_commits',
-  'faros_pull_request_comments',
-];
-
-// todo: fill as streams are developed
+// fill as streams are developed
 export const FullStreamNames = [
+  'faros_commits',
   'faros_copilot_seats',
   'faros_copilot_usage',
-  'faros_organizations',
-  'faros_repositories',
-  'faros_pull_requests',
   'faros_labels',
-  'faros_users',
-  'faros_commits',
-  'faros_pull_request_comments',
+  'faros_organizations',
   'faros_outside_collaborators',
+  'faros_pull_requests',
+  'faros_pull_request_comments',
+  'faros_repositories',
   'faros_tags',
+  'faros_users',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
@@ -94,7 +78,6 @@ export const RunModeStreams = {
   [RunMode.CopilotEvaluationApp]: CopilotEvaluationAppStreamNames,
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
-  [RunMode.Standard]: StandardStreamNames,
   [RunMode.Full]: FullStreamNames,
 };
 

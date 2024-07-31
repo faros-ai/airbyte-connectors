@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
-import {RepoKey} from '../common/vcs';
+import {PullRequestKey, RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
@@ -198,6 +198,19 @@ export class GitHubCommon {
         uid: toLower(org),
         source,
       },
+    };
+  }
+
+  static pullRequestKey(
+    number: number,
+    org: string,
+    repo: string,
+    source: string
+  ): PullRequestKey {
+    return {
+      uid: number.toString(),
+      number: number,
+      repository: this.repoKey(org, repo, source),
     };
   }
 
