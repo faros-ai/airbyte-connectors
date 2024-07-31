@@ -74,7 +74,9 @@ export class FarosPullRequests extends GitHubConverter {
       this.collectFile(file.path, repoKey);
     });
 
+    let reviewCommentCount = 0;
     pr.reviews.forEach((review) => {
+      reviewCommentCount += review.comments.totalCount;
       this.collectUser(review.author);
     });
 
@@ -82,10 +84,12 @@ export class FarosPullRequests extends GitHubConverter {
       pr.reviewRequests
     );
 
-    const prKey = {
-      repository: repoKey,
-      number: pr.number,
-    };
+    const prKey = GitHubCommon.pullRequestKey(
+      pr.number,
+      pr.org,
+      pr.repo,
+      this.streamName.source
+    );
 
     return [
       {
@@ -101,7 +105,7 @@ export class FarosPullRequests extends GitHubConverter {
           mergedAt: Utils.toDate(pr.mergedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
-          commentCount: pr.comments.totalCount,
+          commentCount: pr.comments.totalCount + reviewCommentCount,
           diffStats: {
             linesAdded: pr.additions,
             linesDeleted: pr.deletions,
