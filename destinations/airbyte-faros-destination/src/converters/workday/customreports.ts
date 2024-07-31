@@ -374,7 +374,7 @@ export class Customreports extends Converter {
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
       records_skipped: this.recordCount.skippedRecords,
       numRecordsSkippedDueToMissingFields: this.skipped_due_to_missing_fields,
-      failedRecordFields: this.failedRecordFields,
+      failedRecordFields: Array.from(this.failedRecordFields.values()),
       numRecordsSkippedDueToTermination: this.skipped_due_to_termination,
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
