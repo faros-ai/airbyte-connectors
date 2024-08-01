@@ -903,13 +903,10 @@ export abstract class GitHub {
     }
   }
 
-  async *getTags(
-    org: string,
-    repo: string,
-    cutoffDate?: Date
-  ): AsyncGenerator<Tag> {
+  async *getTags(org: string, repo: string): AsyncGenerator<Tag> {
     // Tags can only be sorted on the underlying commit timestamp
     // which doesn't have to correspond to tag creation timestamp
+    // so, we always pull all tags
     const iter = this.octokit(org).graphql.paginate.iterator<RepoTagsQuery>(
       REPOSITORY_TAGS_QUERY,
       {
@@ -930,9 +927,6 @@ export abstract class GitHub {
           commit = tag.target.target;
         } else {
           continue;
-        }
-        if (cutoffDate && Utils.toDate(commit.committedDate) <= cutoffDate) {
-          return;
         }
         yield {
           repository: `${org}/${repo}`,
