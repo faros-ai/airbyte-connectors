@@ -1,6 +1,6 @@
 query repoTags($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
   repository(owner: $owner, name: $repo) {
-    refs(refPrefix: "refs/tags/", first: $page_size, after: $cursor) {
+    refs(refPrefix: "refs/tags/", first: $page_size, after: $cursor, orderBy: {field: TAG_COMMIT_DATE, direction: DESC}) {
       nodes {
         name
         target {
