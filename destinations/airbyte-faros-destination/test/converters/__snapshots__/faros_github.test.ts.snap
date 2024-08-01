@@ -34,18 +34,20 @@ Array [
   },
   Object {
     "vcs_UserToolUsage": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
       "source": "GitHub",
-      "tool": Object {
-        "category": "GitHubCopilot",
-      },
       "usedAt": "2021-10-14T06:53:32.000Z",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octocat",
+      "userTool": Object {
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+        "tool": Object {
+          "category": "GitHubCopilot",
+        },
+        "user": Object {
+          "source": "GitHub",
+          "uid": "octocat",
+        },
       },
     },
   },
@@ -69,18 +71,20 @@ Array [
   },
   Object {
     "vcs_UserToolUsage": Object {
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
       "source": "GitHub",
-      "tool": Object {
-        "category": "GitHubCopilot",
-      },
       "usedAt": "2021-10-13T06:53:32.000Z",
-      "user": Object {
-        "source": "GitHub",
-        "uid": "octokitten",
+      "userTool": Object {
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+        "tool": Object {
+          "category": "GitHubCopilot",
+        },
+        "user": Object {
+          "source": "GitHub",
+          "uid": "octokitten",
+        },
       },
     },
   },
