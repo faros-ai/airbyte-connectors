@@ -6,6 +6,7 @@ import {
   LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
+  RepoTagsQuery,
 } from './generated';
 
 const octokit: Octokit = new Octokit();
@@ -115,6 +116,17 @@ export type OutsideCollaborator = {
     typeof octokit.orgs.listOutsideCollaborators
   >[0],
   'name' | 'login' | 'email' | 'type' | 'html_url'
+>;
+
+export type Tag = {
+  repository: string;
+  name: string;
+  commit: TagsQueryCommitNode;
+};
+
+export type TagsQueryCommitNode = Extract<
+  RepoTagsQuery['repository']['refs']['nodes'][0]['target'],
+  {type: 'Commit'}
 >;
 
 export type CopilotSeatsStreamRecord =

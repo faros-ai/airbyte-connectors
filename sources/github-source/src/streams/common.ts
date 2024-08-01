@@ -68,6 +68,7 @@ export const FullStreamNames = [
   'faros_pull_requests',
   'faros_pull_request_comments',
   'faros_repositories',
+  'faros_tags',
   'faros_users',
 ];
 

@@ -707,6 +707,38 @@ exports[`index streams - repositories with bucketing 1`] = `
 ]
 `;
 
+exports[`index streams - tags 1`] = `
+[
+  {
+    "commit": {
+      "committedDate": "2024-03-28T19:07:25Z",
+      "sha": "a91f0eb6e2c0dd050a72bf2e2b73878a9342403c",
+      "type": "Commit",
+    },
+    "name": "v0.0.1",
+    "repository": "github/Hello-World",
+  },
+  {
+    "commit": {
+      "committedDate": "2024-04-03T14:30:21Z",
+      "sha": "97b456be6dab02610a7f7683be82a5c7191372c0",
+      "type": "Commit",
+    },
+    "name": "v0.0.2",
+    "repository": "github/Hello-World",
+  },
+  {
+    "commit": {
+      "committedDate": "2024-04-03T18:52:19Z",
+      "sha": "8c73521620f8cd70a07c7a475dfe3dd09f7690cf",
+      "type": "Commit",
+    },
+    "name": "v0.0.3",
+    "repository": "github/Hello-World",
+  },
+]
+`;
+
 exports[`index streams - team memberships 1`] = `
 [
   {

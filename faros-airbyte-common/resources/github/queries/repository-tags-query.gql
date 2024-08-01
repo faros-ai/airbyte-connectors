@@ -1,0 +1,29 @@
+query repoTags($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
+  repository(owner: $owner, name: $repo) {
+    refs(refPrefix: "refs/tags/", first: $page_size, after: $cursor) {
+      nodes {
+        name
+        target {
+          type: __typename
+          ... on Commit {
+            sha: oid
+            committedDate
+          }
+          ... on Tag {
+            target {
+              type: __typename
+              ... on Commit {
+                sha: oid
+                committedDate
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
