@@ -78,7 +78,7 @@ export class FarosCopilotSeats extends GitHubConverter {
       res.push({
         model: 'vcs_UserToolUsage',
         record: {
-          ...userTool,
+          userTool,
           usedAt: Utils.toDate(activeSeat.last_activity_at),
         },
       });
