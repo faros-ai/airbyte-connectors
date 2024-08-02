@@ -3102,6 +3102,7 @@ Add any other context about the changes here.
       "mergeCommit": Object {
         "repository": "Hello-World",
         "sha": "b4c35c299ad22fe858569482a7696597ca038651",
+        "uid": "b4c35c299ad22fe858569482a7696597ca038651",
       },
       "mergedAt": "2021-02-16T17:15:27.000Z",
       "number": 48,
@@ -3511,6 +3512,7 @@ N/A
       "mergeCommit": Object {
         "repository": "Hello-World",
         "sha": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
+        "uid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
       },
       "mergedAt": "2021-02-04T21:53:00.000Z",
       "number": 46,
@@ -3692,7 +3694,6 @@ N/A
           },
           "uid": "hello-world",
         },
-        "uid": "main",
       },
       "commit": Object {
         "repository": Object {
@@ -3748,7 +3749,6 @@ N/A
           },
           "uid": "hello-world",
         },
-        "uid": "main",
       },
       "commit": Object {
         "repository": Object {
