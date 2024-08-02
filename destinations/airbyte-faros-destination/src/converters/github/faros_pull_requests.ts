@@ -119,7 +119,7 @@ export class FarosPullRequests extends GitHubConverter {
             : null,
           mergeCommit: pr.mergeCommit
             ? {
-                repository: pr.repo,
+                repository: repoKey,
                 sha: pr.mergeCommit.oid,
                 uid: pr.mergeCommit.oid,
               }
