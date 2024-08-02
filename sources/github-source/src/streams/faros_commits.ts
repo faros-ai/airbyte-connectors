@@ -32,7 +32,10 @@ export class FarosCommits extends StreamWithRepoSlices {
   ): AsyncGenerator<Commit> {
     const org = streamSlice?.org;
     const repo = streamSlice?.repo;
-    const defaultBranch = streamSlice?.defaultBranch;
+    const defaultBranch = this.orgRepoFilter.getRepository(
+      org,
+      repo
+    ).default_branch;
     const state = streamState?.[StreamBase.orgRepoKey(org, repo)];
     const cutoffDate = this.getUpdateStartDate(state?.cutoff);
     const github = await GitHub.instance(this.config, this.logger);
