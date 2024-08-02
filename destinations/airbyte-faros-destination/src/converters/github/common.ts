@@ -249,19 +249,20 @@ export abstract class GitHubConverter extends Converter {
     if (!this.collectedUsers.has(user.login)) {
       this.collectedUsers.set(user.login, []);
     }
-    this.collectedUsers.get(user.login).push(user);
+    this.collectedUsers.get(user.login).push({
+      ...user,
+      email:
+        isEmpty(user.email) || user.email.includes('@users.noreply.github.com')
+          ? null
+          : user.email,
+    });
   }
 
   protected convertUsers(): DestinationRecord[] {
     const res: DestinationRecord[] = [];
     for (const [login, users] of this.collectedUsers.entries()) {
       const emails = new Set(
-        users
-          .map((user) => user.email)
-          .filter(
-            (email) =>
-              !isEmpty(email) && !email.includes('@users.noreply.github.com')
-          )
+        users.map((user) => user.email).filter((email) => !!email)
       );
       for (const email of emails) {
         res.push({
@@ -284,10 +285,10 @@ export abstract class GitHubConverter extends Converter {
           },
         });
       }
-      const finalUser = users[0];
+      const finalUser: PartialUser = {};
       // replace non-null user attributes to our copy of the user
       // e.g. login, name, email, type, html_url.
-      for (const user of users.slice(1)) {
+      for (const user of users) {
         for (const key in user) {
           if (!finalUser[key]) {
             finalUser[key] = user[key];

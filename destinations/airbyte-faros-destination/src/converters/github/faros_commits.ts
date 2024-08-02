@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Commit} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {some, toLower} from 'lodash';
+import {some} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
