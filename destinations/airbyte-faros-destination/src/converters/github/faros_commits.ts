@@ -52,6 +52,7 @@ export class FarosCommits extends GitHubConverter {
           commit: {sha: commit.oid, uid: commit.oid, repository: repoKey},
           branch: {
             name: commit.branch,
+            uid: commit.branch,
             repository: repoKey,
           },
         },

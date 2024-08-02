@@ -11,6 +11,7 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
 type BranchKey = {
+  uid: string;
   name: string;
   repository: RepoKey;
 };
@@ -261,6 +262,7 @@ function branchKey(
   source: string
 ): BranchKey {
   return {
+    uid: branchName,
     name: branchName,
     repository: GitHubCommon.repoKey(
       branchRepo.owner.login,
