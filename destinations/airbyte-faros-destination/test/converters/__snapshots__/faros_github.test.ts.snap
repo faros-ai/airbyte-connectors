@@ -3100,7 +3100,14 @@ Add any other context about the changes here.
       },
       "htmlUrl": "https://github.com/faros-ai/faros-apps/pull/48",
       "mergeCommit": Object {
-        "repository": "Hello-World",
+        "repository": Object {
+          "name": "hello-world",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "github",
+          },
+          "uid": "hello-world",
+        },
         "sha": "b4c35c299ad22fe858569482a7696597ca038651",
         "uid": "b4c35c299ad22fe858569482a7696597ca038651",
       },
@@ -3510,7 +3517,14 @@ N/A
       },
       "htmlUrl": "https://github.com/faros-ai/faros-apps/pull/46",
       "mergeCommit": Object {
-        "repository": "Hello-World",
+        "repository": Object {
+          "name": "hello-world",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "github",
+          },
+          "uid": "hello-world",
+        },
         "sha": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
         "uid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
       },
