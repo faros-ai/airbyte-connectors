@@ -129,6 +129,21 @@ export type TagsQueryCommitNode = Extract<
   {type: 'Commit'}
 >;
 
+export type Release = {
+  repository: string;
+  html_url: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listReleases>[0],
+  | 'id'
+  | 'name'
+  | 'body'
+  | 'draft'
+  | 'created_at'
+  | 'published_at'
+  | 'author'
+  | 'tag_name'
+>;
+
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
   | CopilotSeatEnded
