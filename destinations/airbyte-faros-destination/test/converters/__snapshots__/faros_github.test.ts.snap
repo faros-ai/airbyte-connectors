@@ -4260,8 +4260,8 @@ N/A
       "name": "John Doe",
       "source": "GitHub",
       "type": Object {
-        "category": "Custom",
-        "detail": "unknown",
+        "category": "User",
+        "detail": "user",
       },
       "uid": "johndoe",
     },
@@ -4283,8 +4283,8 @@ N/A
       "name": "Jane Smith",
       "source": "GitHub",
       "type": Object {
-        "category": "Custom",
-        "detail": "unknown",
+        "category": "User",
+        "detail": "user",
       },
       "uid": "janesmith",
     },
