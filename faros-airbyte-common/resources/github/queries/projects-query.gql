@@ -1,0 +1,17 @@
+query projects($login: String!, $cursor: String, $page_size: Int = 100) {
+    organization(login: $login) {
+        projectsV2(first: $page_size, after: $cursor) {
+            nodes {
+                id
+                title
+                shortDescription
+                createdAt
+                updatedAt
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+    }
+}

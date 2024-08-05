@@ -11,6 +11,7 @@ import {
   Label,
   Organization,
   OutsideCollaborator,
+  Project,
   PullRequest,
   PullRequestComment,
   PullRequestFile,
@@ -29,6 +30,7 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  ProjectsQuery,
   PullRequestReviewRequestsQuery,
   PullRequestReviewsQuery,
   PullRequestsQuery,
@@ -42,6 +44,7 @@ import {
   LABELS_FRAGMENT,
   LABELS_QUERY,
   ORG_MEMBERS_QUERY,
+  PROJECTS_QUERY,
   PULL_REQUEST_REVIEW_REQUESTS_QUERY,
   PULL_REQUEST_REVIEWS_QUERY,
   PULL_REQUESTS_QUERY,
@@ -933,6 +936,24 @@ export abstract class GitHub {
           name: tag.name,
           commit,
         };
+      }
+    }
+  }
+
+  async *getProjects(org: string, cutoffDate?: Date): AsyncGenerator<any> {
+    const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
+      PROJECTS_QUERY,
+      {
+        login: org,
+        page_size: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const project of res.organization.projectsV2.nodes) {
+        if (cutoffDate && Utils.toDate(project.updatedAt) <= cutoffDate) {
+          break;
+        }
+        yield project;
       }
     }
   }

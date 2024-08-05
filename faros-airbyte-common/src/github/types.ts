@@ -129,6 +129,13 @@ export type TagsQueryCommitNode = Extract<
   {type: 'Commit'}
 >;
 
+export type Project = {
+  org: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<typeof octokit.projects.listForOrg>[0],
+  'name' | 'body' | 'created_at' | 'updated_at'
+>;
+
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
   | CopilotSeatEnded
