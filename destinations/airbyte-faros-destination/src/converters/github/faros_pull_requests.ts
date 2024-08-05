@@ -4,7 +4,7 @@ import {
   PullRequestReviewRequest,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {camelCase, isNil, last, omitBy, upperFirst} from 'lodash';
+import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
 import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -23,6 +23,11 @@ type FileKey = {
 
 type File = FileKey & {
   path: string;
+};
+
+type ReviewState = {
+  category: string;
+  detail: string;
 };
 
 export class FarosPullRequests extends GitHubConverter {
@@ -154,7 +159,7 @@ export class FarosPullRequests extends GitHubConverter {
           reviewer: review.author
             ? {uid: review.author.login, source: this.streamName.source}
             : null,
-          state: review.state,
+          state: getReviewState(review.state),
           submittedAt: Utils.toDate(review.submittedAt),
         },
       })),
@@ -285,4 +290,16 @@ function fileKey(filePath: string, repoKey: RepoKey): FileKey {
 
 function fileKeyToString(fileKey: FileKey): string {
   return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
+}
+
+function getReviewState(state: string): ReviewState {
+  const reviewStates = [
+    'approved',
+    'commented',
+    'changes_requested',
+    'dismissed',
+  ];
+  return reviewStates.includes(toLower(state))
+    ? {category: upperFirst(camelCase(state)), detail: state}
+    : {category: 'Custom', detail: state};
 }

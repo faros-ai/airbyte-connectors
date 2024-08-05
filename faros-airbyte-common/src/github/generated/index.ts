@@ -7815,7 +7815,7 @@ export type CommitFieldsFragment = {
   author?: {
     name?: string | null;
     email?: string | null;
-    user?: {__typename: 'User'; login: string; url: string} | null;
+    user?: {login: string; url: string; type: 'User'} | null;
   } | null;
   committer?: {date?: string | null} | null;
 };
@@ -7849,11 +7849,7 @@ export type CommitsChangedFilesIfAvailableQuery = {
                 author?: {
                   name?: string | null;
                   email?: string | null;
-                  user?: {
-                    __typename: 'User';
-                    login: string;
-                    url: string;
-                  } | null;
+                  user?: {login: string; url: string; type: 'User'} | null;
                 } | null;
                 committer?: {date?: string | null} | null;
               } | null> | null;
@@ -7895,11 +7891,7 @@ export type CommitsChangedFilesQuery = {
                 author?: {
                   name?: string | null;
                   email?: string | null;
-                  user?: {
-                    __typename: 'User';
-                    login: string;
-                    url: string;
-                  } | null;
+                  user?: {login: string; url: string; type: 'User'} | null;
                 } | null;
                 committer?: {date?: string | null} | null;
               } | null> | null;
@@ -7940,11 +7932,7 @@ export type CommitsQuery = {
                 author?: {
                   name?: string | null;
                   email?: string | null;
-                  user?: {
-                    __typename: 'User';
-                    login: string;
-                    url: string;
-                  } | null;
+                  user?: {login: string; url: string; type: 'User'} | null;
                 } | null;
                 committer?: {date?: string | null} | null;
               } | null> | null;
