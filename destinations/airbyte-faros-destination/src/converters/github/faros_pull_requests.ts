@@ -11,19 +11,23 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
 type BranchKey = {
+  uid: string;
   name: string;
   repository: RepoKey;
 };
 
 type FileKey = {
   uid: string;
-  path: string;
   repository: RepoKey;
+};
+
+type File = FileKey & {
+  path: string;
 };
 
 export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
-  private collectedFiles = new Map<string, FileKey>();
+  private collectedFiles = new Map<string, File>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -115,7 +119,11 @@ export class FarosPullRequests extends GitHubConverter {
             ? {uid: pr.author.login, source: this.streamName.source}
             : null,
           mergeCommit: pr.mergeCommit
-            ? {repository: pr.repo, sha: pr.mergeCommit.oid}
+            ? {
+                repository: repoKey,
+                sha: pr.mergeCommit.oid,
+                uid: pr.mergeCommit.oid,
+              }
             : null,
           ...branchInfo,
         },
@@ -221,26 +229,29 @@ export class FarosPullRequests extends GitHubConverter {
   }
 
   private convertBranches(): DestinationRecord[] {
-    return Array.from(this.collectedBranches.values()).map((branchKey) => ({
+    return Array.from(this.collectedBranches.values()).map((branch) => ({
       model: 'vcs_Branch',
-      record: branchKey,
+      record: branch,
     }));
   }
 
   private collectFile(filePath: string, repoKey: RepoKey): void {
-    const key = `${repoKey.organization.uid}/${repoKey.name}/${filePath}`;
-    const fileKey = {
-      uid: filePath,
-      path: filePath,
-      repository: repoKey,
-    };
-    this.collectedFiles.set(key, fileKey);
+    const key = fileKey(filePath, repoKey);
+    const keyStr = fileKeyToString(key);
+
+    if (!this.collectedFiles.has(keyStr)) {
+      const file: File = {
+        ...key,
+        path: filePath,
+      };
+      this.collectedFiles.set(keyStr, file);
+    }
   }
 
   private convertFiles(): DestinationRecord[] {
-    return Array.from(this.collectedFiles.values()).map((fileKey) => ({
+    return Array.from(this.collectedFiles.values()).map((file) => ({
       model: 'vcs_File',
-      record: fileKey,
+      record: file,
     }));
   }
 }
@@ -251,6 +262,7 @@ function branchKey(
   source: string
 ): BranchKey {
   return {
+    uid: branchName,
     name: branchName,
     repository: GitHubCommon.repoKey(
       branchRepo.owner.login,
@@ -262,4 +274,15 @@ function branchKey(
 
 function branchKeyToString(branchKey: BranchKey): string {
   return `${branchKey.repository.organization.uid}/${branchKey.repository.name}/${branchKey.name}`;
+}
+
+function fileKey(filePath: string, repoKey: RepoKey): FileKey {
+  return {
+    uid: filePath,
+    repository: repoKey,
+  };
+}
+
+function fileKeyToString(fileKey: FileKey): string {
+  return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
 }

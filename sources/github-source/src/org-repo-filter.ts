@@ -16,7 +16,7 @@ type FilterConfig = {
 export class OrgRepoFilter {
   private readonly filterConfig: FilterConfig;
   private organizations?: Set<string>;
-  private reposByOrg: Map<string, Set<Repository>> = new Map();
+  private reposByOrg: Map<string, Map<string, Repository>> = new Map();
 
   constructor(
     private readonly config: GitHubConfig,
@@ -93,7 +93,7 @@ export class OrgRepoFilter {
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
     if (!this.reposByOrg.has(org)) {
-      const repos = new Set<Repository>();
+      const repos = new Map<string, Repository>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleRepos = await github.getRepositories(org);
       if (!visibleRepos.length) {
@@ -104,7 +104,7 @@ export class OrgRepoFilter {
       if (!this.filterConfig.reposByOrg.has(org)) {
         visibleRepos.forEach((repo) => {
           if (!this.filterConfig.excludedReposByOrg.get(org)?.has(repo.name)) {
-            repos.add(repo);
+            repos.set(repo.name, repo);
           }
         });
       } else {
@@ -116,12 +116,21 @@ export class OrgRepoFilter {
             );
             return;
           }
-          repos.add(repo);
+          repos.set(repo.name, repo);
         });
       }
       this.reposByOrg.set(org, repos);
     }
-    return Array.from(this.reposByOrg.get(org));
+    return Array.from(this.reposByOrg.get(org).values());
+  }
+
+  @Memoize()
+  getRepository(org: string, name: string): Repository {
+    const repo = this.reposByOrg.get(org)?.get(name);
+    if (!repo) {
+      throw new VError('Repository not found: %s/%s', org, name);
+    }
+    return repo;
   }
 }
 

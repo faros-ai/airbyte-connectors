@@ -16,7 +16,6 @@ export type OrgStreamSlice = {
 export type RepoStreamSlice = {
   org: string;
   repo: string;
-  defaultBranch: string;
 };
 
 export type StreamState = {
@@ -129,7 +128,7 @@ export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       for (const repo of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo: repo.name, defaultBranch: repo.default_branch};
+        yield {org, repo: repo.name};
       }
     }
   }
