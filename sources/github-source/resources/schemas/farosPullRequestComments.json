@@ -22,6 +22,9 @@
         },
         "html_url": {
           "type": "string"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },

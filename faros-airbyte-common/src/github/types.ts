@@ -62,7 +62,7 @@ export type PullRequestComment = {
   repository: string;
   user: Pick<
     PullRequestCommentNode['user'],
-    'login' | 'name' | 'email' | 'html_url'
+    'login' | 'name' | 'email' | 'html_url' | 'type'
   >;
 } & Pick<
   PullRequestCommentNode,
@@ -141,7 +141,10 @@ type ReleaseNode = GetResponseDataTypeFromEndpointMethod<
 export type Release = {
   repository: string;
   html_url: string;
-  author: Pick<ReleaseNode['author'], 'login' | 'name' | 'email' | 'html_url'>;
+  author: Pick<
+    ReleaseNode['author'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
 } & Pick<
   ReleaseNode,
   'id' | 'name' | 'body' | 'draft' | 'created_at' | 'published_at' | 'tag_name'

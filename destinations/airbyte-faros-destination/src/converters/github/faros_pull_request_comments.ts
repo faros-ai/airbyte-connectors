@@ -17,4 +17,8 @@ export class FarosPullRequestComments extends GitHubConverter {
     this.collectUser(comment.user);
     return this.alias.convert(record);
   }
+
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.convertUsers();
+  }
 }

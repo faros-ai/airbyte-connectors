@@ -427,7 +427,13 @@ export abstract class GitHub {
       for (const comment of res.data) {
         yield {
           repository: `${org}/${repo}`,
-          user: pick(comment.user, ['login', 'name', 'email', 'html_url']),
+          user: pick(comment.user, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
           ...pick(comment, [
             'id',
             'body',
@@ -952,7 +958,13 @@ export abstract class GitHub {
         yield {
           repository: `${org}/${repo}`,
           html_url: release.url,
-          author: pick(release.author, ['login', 'name', 'email', 'html_url']),
+          author: pick(release.author, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
           ...pick(release, [
             'id',
             'name',

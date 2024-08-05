@@ -334,6 +334,7 @@ exports[`index streams - pull request comments 1`] = `
     "user": {
       "html_url": "https://github.com/jdoe",
       "login": "jdoe",
+      "type": "User",
     },
   },
   {
@@ -346,6 +347,7 @@ exports[`index streams - pull request comments 1`] = `
     "user": {
       "html_url": "https://github.com/jdoe",
       "login": "jdoe",
+      "type": "User",
     },
   },
 ]
@@ -668,6 +670,7 @@ exports[`index streams - releases 1`] = `
     "author": {
       "html_url": "https://github.com/nehanda",
       "login": "nehanda",
+      "type": "User",
     },
     "body": "## What's Changed\\r\\n* Lots of new stuff!",
     "created_at": "2024-08-02T17:48:35Z",
@@ -683,6 +686,7 @@ exports[`index streams - releases 1`] = `
     "author": {
       "html_url": "https://github.com/nehanda",
       "login": "nehanda",
+      "type": "User",
     },
     "body": "## What's Changed\\r\\n* Lots of stuff! Full Changelog**: https://github.com/test/dolos/compare/v0.0.1...v0.0.2",
     "created_at": "2024-08-01T15:31:36Z",
@@ -698,6 +702,7 @@ exports[`index streams - releases 1`] = `
     "author": {
       "html_url": "https://github.com/jdoe",
       "login": "jdoe",
+      "type": "User",
     },
     "body": "## What's Changed\\r\\n* Lots of stuff! Full Changelog**: https://github.com/test/dolos/compare/v0.0.2...v0.0.3",
     "created_at": "2024-07-31T22:07:35Z",
