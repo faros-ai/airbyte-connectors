@@ -54,13 +54,18 @@ export type PullRequestLabel = PullRequestNode['labels']['nodes'][0];
 
 export type PullRequestFile = PullRequestNode['files']['nodes'][0];
 
+type PullRequestCommentNode = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.pulls.listReviewCommentsForRepo
+>[0];
+
 export type PullRequestComment = {
   repository: string;
-  user: {login: string};
+  user: Pick<
+    PullRequestCommentNode['user'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
 } & Pick<
-  GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.pulls.listReviewCommentsForRepo
-  >[0],
+  PullRequestCommentNode,
   'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
 >;
 
@@ -127,6 +132,22 @@ export type Tag = {
 export type TagsQueryCommitNode = Extract<
   RepoTagsQuery['repository']['refs']['nodes'][0]['target'],
   {type: 'Commit'}
+>;
+
+type ReleaseNode = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.repos.listReleases
+>[0];
+
+export type Release = {
+  repository: string;
+  html_url: string;
+  author: Pick<
+    ReleaseNode['author'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
+} & Pick<
+  ReleaseNode,
+  'id' | 'name' | 'body' | 'draft' | 'created_at' | 'published_at' | 'tag_name'
 >;
 
 export type CopilotSeatsStreamRecord =

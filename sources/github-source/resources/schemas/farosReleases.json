@@ -2,22 +2,42 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "id": {
-      "type": "integer"
-    },
     "repository": {
       "type": "string"
     },
-    "user": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "draft": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "author": {
       "type": "object",
       "properties": {
         "login": {
           "type": "string"
         },
-        "email": {
+        "name": {
           "type": "string"
         },
-        "name": {
+        "email": {
           "type": "string"
         },
         "html_url": {
@@ -28,19 +48,8 @@
         }
       }
     },
-    "body": {
+    "tag_name": {
       "type": "string"
-    },
-    "pull_request_url": {
-      "type": "string"
-    },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updated_at": {
-      "type": "string",
-      "format": "date-time"
     }
   }
 }

@@ -93,7 +93,9 @@ connectors, such as linting/formatting tools, should go in the root
 | Organizations                | read:org             | Organization: Administration                     |   
 | Pull Requests                | repo                 | Repository: Metadata & Pull Requests             |
 | Pull Request Comments        | repo                 | Repository: Metadata & Pull Requests             |
+| Releases                     | repo                 | Repository: Contents                             |
 | Repositories                 | repo                 | Repository: Metadata                             |
+| Tags                         | repo                 | Repository: Metadata                             |
 | Teams                        | read:org             | Organization: Administration & Members           |
 | Team Memberships             | read:org             | Organization: Administration & Members           |
 | Users                        | read:org & read:user | Organization: Administration & Members           |

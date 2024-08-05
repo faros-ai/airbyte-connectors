@@ -49,6 +49,7 @@ import {
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
+import {Release} from 'faros-airbyte-common/lib/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -426,7 +427,13 @@ export abstract class GitHub {
       for (const comment of res.data) {
         yield {
           repository: `${org}/${repo}`,
-          user: {login: comment.user.login},
+          user: pick(comment.user, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
           ...pick(comment, [
             'id',
             'body',
@@ -932,6 +939,41 @@ export abstract class GitHub {
           repository: `${org}/${repo}`,
           name: tag.name,
           commit,
+        };
+      }
+    }
+  }
+
+  async *getReleases(org: string, repo: string): AsyncGenerator<Release> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listReleases,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const release of res.data) {
+        yield {
+          repository: `${org}/${repo}`,
+          html_url: release.url,
+          author: pick(release.author, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
+          ...pick(release, [
+            'id',
+            'name',
+            'body',
+            'draft',
+            'created_at',
+            'published_at',
+            'tag_name',
+          ]),
         };
       }
     }
