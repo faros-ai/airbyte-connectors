@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {PullRequestComment} from 'faros-airbyte-common/github';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubConverter} from './common';
@@ -12,6 +13,8 @@ export class FarosPullRequestComments extends GitHubConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const comment = record.record.data as PullRequestComment;
+    this.collectUser(comment.user);
     return this.alias.convert(record);
   }
 }

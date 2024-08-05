@@ -13,6 +13,15 @@
       "properties": {
         "login": {
           "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
         }
       }
     },
