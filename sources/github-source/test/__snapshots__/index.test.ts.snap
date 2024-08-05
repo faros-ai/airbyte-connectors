@@ -76,8 +76,8 @@ exports[`index streams - commits 1`] = `
       "email": "jane@doe.noreply.github.com",
       "name": "Jane Doe",
       "user": {
-        "__typename": "User",
         "login": "janedoe",
+        "type": "User",
         "url": "https://github.com/janedoe",
       },
     },
@@ -100,8 +100,8 @@ exports[`index streams - commits 1`] = `
       "email": "jane@doe.noreply.github.com",
       "name": "Jane Doe",
       "user": {
-        "__typename": "User",
         "login": "janedoe",
+        "type": "User",
         "url": "https://github.com/janedoe",
       },
     },

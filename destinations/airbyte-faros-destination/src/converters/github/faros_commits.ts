@@ -12,11 +12,6 @@ type DiffStats = {
   filesChanged: number;
 };
 
-type Author = {
-  uid: string;
-  source: string;
-};
-
 export class FarosCommits extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Commit',
@@ -30,7 +25,7 @@ export class FarosCommits extends GitHubConverter {
     const commit = record.record.data as Commit;
     const source = this.streamName.source;
     const diffStats = this.getDiffStats(commit);
-    const author = this.getAndCollectAuthor(commit, source);
+    const author = this.collectAuthor(commit);
     const repoKey = GitHubCommon.repoKey(commit.org, commit.repo, source);
     return [
       {
@@ -39,7 +34,7 @@ export class FarosCommits extends GitHubConverter {
           uid: commit.oid,
           sha: commit.oid,
           message: Utils.cleanAndTruncate(commit.message),
-          author,
+          author: author ? {uid: author, source: this.streamName.source} : null,
           htmlUrl: commit.url,
           createdAt: Utils.toDate(commit.authoredDate),
           repository: repoKey,
@@ -81,24 +76,22 @@ export class FarosCommits extends GitHubConverter {
       : undefined;
   }
 
-  private getAndCollectAuthor(
-    commit: Commit,
-    source: string
-  ): Author | undefined {
-    let author: Author;
-    const user = commit.author?.user;
-    if (user?.login) {
-      // Not all returned commits with an author have a login, for
-      // example: https://github.com/microsoft/vscode/commit/a34e15b15f4fd68c655fd17438461a2f1b4260cc
-      const login = user.login;
-      author = {uid: login, source};
-      this.collectUser({
-        login,
-        name: commit.author.name,
-        email: commit.author.email,
-        html_url: user.url,
-      });
+  private collectAuthor(commit: Commit): string | null {
+    const login = commit.author?.user?.login;
+    if (!login) {
+      return null;
     }
-    return author;
+
+    // Not all returned commits with an author have a login, for
+    // example: https://github.com/microsoft/vscode/commit/a34e15b15f4fd68c655fd17438461a2f1b4260cc
+    this.collectUser({
+      login,
+      name: commit.author.name,
+      email: commit.author.email,
+      html_url: commit.author.user.url,
+      type: commit.author.user.type,
+    });
+
+    return login;
   }
 }
