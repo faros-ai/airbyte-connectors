@@ -169,7 +169,8 @@
           "Full",
           "Minimum",
           "WebhookSupplement",
-          "AdditionalFields"
+          "AdditionalFields",
+          "Custom"
         ]
       },
       "bucket_id": {

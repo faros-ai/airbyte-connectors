@@ -144,7 +144,8 @@
           "CopilotEvaluationApp",
           "CopilotEvaluation",
           "Minimum",
-          "Full"
+          "Full",
+          "Custom"
         ]
       },
       "fetch_teams": {
