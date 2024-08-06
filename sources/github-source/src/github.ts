@@ -987,6 +987,8 @@ export abstract class GitHub {
     const params = {owner: org, repo};
     let res = await this.octokit(org).repos.getContributorsStats(params);
 
+    // GitHub REST API may return a 202 status code when stats are being prepared
+    // https://docs.github.com/en/rest/metrics/statistics?apiVersion=2022-11-28#best-practices-for-caching
     const delaySecs = 5;
     const maxAttempts = 3;
     let attempts = 0;
