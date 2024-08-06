@@ -17,8 +17,7 @@ export class FarosContributorsStats extends StreamWithRepoSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: RepoStreamSlice,
-    streamState?: StreamState
+    streamSlice?: RepoStreamSlice
   ): AsyncGenerator<ContributorStats> {
     const org = streamSlice?.org;
     const repo = streamSlice?.repo;

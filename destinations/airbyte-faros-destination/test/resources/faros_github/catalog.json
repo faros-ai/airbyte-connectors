@@ -14,6 +14,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__github__faros_contributors_stats"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__github__faros_organizations"
       },
       "destination_sync_mode": "overwrite"
