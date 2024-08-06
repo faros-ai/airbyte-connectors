@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "user": {
+      "type": "string"
+    },
+    "total": {
+      "type": "number"
+    },
+    "weeks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "w": {
+            "type": "number"
+          },
+          "a": {
+            "type": "number"
+          },
+          "d": {
+            "type": "number"
+          },
+          "c": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}
