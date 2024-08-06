@@ -29,6 +29,7 @@ export enum RunMode {
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
   Full = 'Full',
+  Custom = 'Custom',
 }
 
 export const CopilotEvaluationAppStreamNames = [
@@ -56,8 +57,20 @@ export const MinimumStreamNames = [
   'faros_users',
 ];
 
-// fill as streams are developed
 export const FullStreamNames = [
+  'faros_commits',
+  'faros_copilot_seats',
+  'faros_copilot_usage',
+  'faros_labels',
+  'faros_organizations',
+  'faros_pull_requests',
+  'faros_pull_request_comments',
+  'faros_repositories',
+  'faros_users',
+];
+
+// fill as streams are developed
+export const CustomStreamNames = [
   'faros_commits',
   'faros_copilot_seats',
   'faros_copilot_usage',
@@ -79,6 +92,7 @@ export const RunModeStreams = {
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
   [RunMode.Full]: FullStreamNames,
+  [RunMode.Custom]: CustomStreamNames,
 };
 
 export abstract class StreamBase extends AirbyteStreamBase {
