@@ -53,7 +53,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick} from 'lodash';
+import {isEmpty, isNil, pick, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -940,7 +940,7 @@ export abstract class GitHub {
     }
   }
 
-  async *getProjects(org: string, cutoffDate?: Date): AsyncGenerator<any> {
+  async *getProjects(org: string, cutoffDate?: Date): AsyncGenerator<Project> {
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
       {
@@ -950,10 +950,45 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const project of res.organization.projectsV2.nodes) {
-        if (cutoffDate && Utils.toDate(project.updatedAt) <= cutoffDate) {
+        if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
           break;
         }
-        yield project;
+        yield {
+          org,
+          id: project.id,
+          name: project.name,
+          body: project.body,
+          created_at: project.created_at,
+          updated_at: project.updated_at,
+        };
+      }
+    }
+  }
+
+  // REST API endpoint used to get organization classic projects
+  // Will be deprecated, but we still need to support it for older server versions
+  // see https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/
+  async *getClassicProjects(
+    org: string,
+    cutoffDate?: Date
+  ): AsyncGenerator<Project> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).projects.listForOrg,
+      {
+        org,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const project of res.data) {
+        if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
+          break;
+        }
+        yield {
+          org,
+          id: toString(project.id),
+          ...pick(project, ['name', 'body', 'created_at', 'updated_at']),
+        };
       }
     }
   }

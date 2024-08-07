@@ -12,12 +12,15 @@ import {
 
 export class FarosProjects extends StreamWithOrgSlices {
   getJsonSchema(): Dictionary<any, string> {
-    // TODO: CHANGE
-    return require('../../resources/schemas/farosTeams.json');
+    return require('../../resources/schemas/farosProjects.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['id'];
+    return 'id';
+  }
+
+  get cursorField(): string {
+    return 'updated_at';
   }
 
   async *readRecords(
@@ -30,6 +33,14 @@ export class FarosProjects extends StreamWithOrgSlices {
     const org = streamSlice?.org;
     const state = streamState?.[StreamBase.orgKey(org)];
     const cutoffDate = this.getUpdateStartDate(state?.cutoff);
-    yield* github.getProjects(org, cutoffDate);
+    for await (const project of github.getProjects(org, cutoffDate)) {
+      yield project;
+    }
+    for await (const classicProject of github.getClassicProjects(
+      org,
+      cutoffDate
+    )) {
+      yield classicProject;
+    }
   }
 }

@@ -131,6 +131,7 @@ export type TagsQueryCommitNode = Extract<
 
 export type Project = {
   org: string;
+  id: string;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.projects.listForOrg>[0],
   'name' | 'body' | 'created_at' | 'updated_at'

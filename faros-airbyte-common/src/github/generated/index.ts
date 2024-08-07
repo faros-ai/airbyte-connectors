@@ -8000,27 +8000,6 @@ export type ListMembersQuery = {
   } | null;
 };
 
-export type ProjectsClassicQueryVariables = Exact<{
-  login: Scalars['String']['input'];
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  page_size?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-export type ProjectsClassicQuery = {
-  organization?: {
-    projects: {
-      nodes?: Array<{
-        id: string;
-        name: string;
-        body?: string | null;
-        createdAt: string;
-        updatedAt: string;
-      } | null> | null;
-      pageInfo: {hasNextPage: boolean; endCursor?: string | null};
-    };
-  } | null;
-};
-
 export type ProjectsQueryVariables = Exact<{
   login: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
@@ -8032,10 +8011,10 @@ export type ProjectsQuery = {
     projectsV2: {
       nodes?: Array<{
         id: string;
-        title: string;
-        shortDescription?: string | null;
-        createdAt: string;
-        updatedAt: string;
+        name: string;
+        body?: string | null;
+        created_at: string;
+        updated_at: string;
       } | null> | null;
       pageInfo: {hasNextPage: boolean; endCursor?: string | null};
     };

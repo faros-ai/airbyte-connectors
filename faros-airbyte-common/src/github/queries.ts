@@ -54,11 +54,6 @@ export const REPOSITORY_TAGS_QUERY = loadQuery('repository-tags-query.gql');
 // Graphql query used to get organization projects
 export const PROJECTS_QUERY = loadQuery('projects-query.gql');
 
-// Graphql query used to get organization classic projects
-// Will be deprecated but still need to support for older server versions
-// see https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/
-export const PROJECTS_CLASSIC_QUERY = loadQuery('projects-classic-query.gql');
-
 /**
  * Load query file from resources
  * @param query query file name
