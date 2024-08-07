@@ -27,6 +27,7 @@ import {FarosOutsideCollaborators} from './streams/faros_outside_collaborators';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosPullRequestComments} from './streams/faros_pull_request_comments';
 import {FarosPullRequests} from './streams/faros_pull_requests';
+import {FarosReleases} from './streams/faros_releases';
 import {FarosRepositories} from './streams/faros_repositories';
 import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
@@ -70,6 +71,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosProjects(config, this.logger),
       new FarosPullRequests(config, this.logger),
       new FarosPullRequestComments(config, this.logger),
+      new FarosReleases(config, this.logger),
       new FarosRepositories(config, this.logger),
       new FarosTags(config, this.logger),
       new FarosTeams(config, this.logger),

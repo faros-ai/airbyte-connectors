@@ -453,6 +453,30 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - releases', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'releases/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getRepositoryReleasesMockedImplementation(
+              readTestResourceAsJSON('releases/releases.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -513,6 +537,12 @@ const getTeamMembershipsMockedImplementation = (res: any) => ({
 const getOrganizationOutsideCollaboratorsMockedImplementation = (res: any) => ({
   orgs: {
     listOutsideCollaborators: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getRepositoryReleasesMockedImplementation = (res: any) => ({
+  repos: {
+    listReleases: jest.fn().mockReturnValue(res),
   },
 });
 

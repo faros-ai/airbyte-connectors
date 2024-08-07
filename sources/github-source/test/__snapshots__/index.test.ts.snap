@@ -332,7 +332,9 @@ exports[`index streams - pull request comments 1`] = `
     "repository": "github/Hello-World",
     "updated_at": "2024-07-18T17:04:04Z",
     "user": {
+      "html_url": "https://github.com/jdoe",
       "login": "jdoe",
+      "type": "User",
     },
   },
   {
@@ -343,7 +345,9 @@ exports[`index streams - pull request comments 1`] = `
     "repository": "github/Hello-World",
     "updated_at": "2024-07-18T17:04:04Z",
     "user": {
+      "html_url": "https://github.com/jdoe",
       "login": "jdoe",
+      "type": "User",
     },
   },
 ]
@@ -656,6 +660,59 @@ N/A
     "title": "Fix edge cases for deploy cycle breakdown",
     "updatedAt": "2021-02-04T21:53:09Z",
     "url": "https://github.com/faros-ai/faros-apps/pull/46",
+  },
+]
+`;
+
+exports[`index streams - releases 1`] = `
+[
+  {
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "type": "User",
+    },
+    "body": "## What's Changed\\r\\n* Lots of new stuff!",
+    "created_at": "2024-08-02T17:48:35Z",
+    "draft": false,
+    "html_url": "https://api.github.com/repos/test/dolos/releases/168491573",
+    "id": 168491573,
+    "name": "v0.0.1",
+    "published_at": "2024-08-02T18:19:55Z",
+    "repository": "github/Hello-World",
+    "tag_name": "v0.0.1",
+  },
+  {
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "type": "User",
+    },
+    "body": "## What's Changed\\r\\n* Lots of stuff! Full Changelog**: https://github.com/test/dolos/compare/v0.0.1...v0.0.2",
+    "created_at": "2024-08-01T15:31:36Z",
+    "draft": false,
+    "html_url": "https://api.github.com/repos/test/dolos/releases/168274419",
+    "id": 168274419,
+    "name": "v0.0.2",
+    "published_at": "2024-08-01T15:39:35Z",
+    "repository": "github/Hello-World",
+    "tag_name": "v0.0.2",
+  },
+  {
+    "author": {
+      "html_url": "https://github.com/jdoe",
+      "login": "jdoe",
+      "type": "User",
+    },
+    "body": "## What's Changed\\r\\n* Lots of stuff! Full Changelog**: https://github.com/test/dolos/compare/v0.0.2...v0.0.3",
+    "created_at": "2024-07-31T22:07:35Z",
+    "draft": false,
+    "html_url": "https://api.github.com/repos/test/dolos/releases/168130489",
+    "id": 168130489,
+    "name": "v0.0.3",
+    "published_at": "2024-07-31T22:08:45Z",
+    "repository": "github/Hello-World",
+    "tag_name": "v0.0.3",
   },
 ]
 `;

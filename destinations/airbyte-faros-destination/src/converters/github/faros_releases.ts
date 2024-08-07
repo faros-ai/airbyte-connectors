@@ -1,11 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {PullRequestComment} from 'faros-airbyte-common/github';
+import {Release} from 'faros-airbyte-common/github';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubConverter} from './common';
-import {ReviewComments as CommunityPullRequestComments} from './review_comments';
-export class FarosPullRequestComments extends GitHubConverter {
-  private alias = new CommunityPullRequestComments();
+import {Releases as CommunityReleases} from './releases';
+
+export class FarosReleases extends GitHubConverter {
+  private alias = new CommunityReleases();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> =
     this.alias.destinationModels;
@@ -13,8 +14,8 @@ export class FarosPullRequestComments extends GitHubConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const comment = record.record.data as PullRequestComment;
-    this.collectUser(comment.user);
+    const release = record.record.data as Release;
+    this.collectUser(release.author);
     return this.alias.convert(record);
   }
 
