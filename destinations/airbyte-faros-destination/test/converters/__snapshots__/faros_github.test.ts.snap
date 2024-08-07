@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 30 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 298 records",
-  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":17,\\\\\\"vcs_UserEmail\\\\\\":3,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 33 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 304 records",
+  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":14,\\\\\\"vcs_UserEmail\\\\\\":3,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -3956,14 +3956,12 @@ N/A
         "uid": "nehanda",
       },
       "createdAt": "2024-01-11T22:39:15.000Z",
-      "description": "What's Changed Bump typescript from 4.7.4 to 5.3.3 by @dependabot in https://github.com/test/dolos/pull/1234 Full Changelog**: https://github.com/test/dolos/compare/v0.0.3...v0.0.4",
       "draft": false,
       "htmlUrl": "https://api.github.com/repos/test/dolos/releases/136750551",
       "name": "v0.0.4",
       "notes": "What's Changed Bump typescript from 4.7.4 to 5.3.3 by @dependabot in https://github.com/test/dolos/pull/1234 Full Changelog**: https://github.com/test/dolos/compare/v0.0.3...v0.0.4",
       "prerelease": null,
       "publishedAt": "2024-01-11T23:34:51.000Z",
-      "releasedAt": "2024-01-11T23:34:51.000Z",
       "source": "GitHub",
       "uid": "136750551",
     },
@@ -3995,14 +3993,12 @@ N/A
         "uid": "nehanda",
       },
       "createdAt": "2024-02-11T22:39:15.000Z",
-      "description": "What's Changed More stuff... Full Changelog**: https://github.com/test/dolos/compare/v0.0.4...v0.0.5",
       "draft": false,
       "htmlUrl": "https://api.github.com/repos/test/dolos/releases/136750222",
       "name": "v0.0.5",
       "notes": "What's Changed More stuff... Full Changelog**: https://github.com/test/dolos/compare/v0.0.4...v0.0.5",
       "prerelease": null,
       "publishedAt": "2024-02-11T23:34:51.000Z",
-      "releasedAt": "2024-02-11T23:34:51.000Z",
       "source": "GitHub",
       "uid": "136750551",
     },
@@ -4025,6 +4021,96 @@ N/A
           "uid": "dolos",
         },
       },
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "createdAt": "2024-03-01T12:00:00Z",
+      "description": "This is the first project",
+      "name": "Project Alfa",
+      "source": "GitHub",
+      "uid": "1",
+      "updatedAt": "2024-03-02T12:00:00Z",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Project Alfa",
+      "source": "GitHub",
+      "uid": "1",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "GitHub",
+        "uid": "1",
+      },
+      "project": Object {
+        "source": "GitHub",
+        "uid": "1",
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "createdAt": "2024-03-01T12:00:00Z",
+      "description": "This is the second project",
+      "name": "Project Beta",
+      "source": "GitHub",
+      "uid": "2",
+      "updatedAt": "2024-03-02T12:00:00Z",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Project Beta",
+      "source": "GitHub",
+      "uid": "2",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "GitHub",
+        "uid": "2",
+      },
+      "project": Object {
+        "source": "GitHub",
+        "uid": "2",
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "createdAt": "2024-03-01T12:00:00Z",
+      "description": "This is the third project",
+      "name": "Project Gamma",
+      "source": "GitHub",
+      "uid": "3",
+      "updatedAt": "2024-03-02T12:00:00Z",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Project Gamma",
+      "source": "GitHub",
+      "uid": "3",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "GitHub",
+        "uid": "3",
+      },
+      "project": Object {
+        "source": "GitHub",
+        "uid": "3",
+      },
+      "source": "GitHub",
     },
   },
   Object {
@@ -4365,39 +4451,6 @@ N/A
         "detail": "user",
       },
       "uid": "janesmith",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/jdoe",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "jdoe",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/jdoe",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "fakeuser1",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://github.com/jdoe",
-      "source": "GitHub",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "fakeuser2",
     },
   },
   Object {

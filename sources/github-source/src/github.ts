@@ -19,6 +19,7 @@ import {
   PullRequestNode,
   PullRequestReview,
   PullRequestReviewRequest,
+  Release,
   Repository,
   Tag,
   TagsQueryCommitNode,
@@ -52,7 +53,6 @@ import {
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
-import {Release} from 'faros-airbyte-common/lib/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -991,6 +991,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
+      this.logger.info(JSON.stringify(res));
       for (const project of res.organization.projectsV2.nodes) {
         if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
           break;

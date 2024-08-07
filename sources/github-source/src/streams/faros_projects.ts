@@ -1,10 +1,12 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Project, Team} from 'faros-airbyte-common/github';
+import {Project} from 'faros-airbyte-common/github';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {GitHub} from '../github';
 import {
   OrgStreamSlice,
+  RepoStreamSlice,
   StreamBase,
   StreamState,
   StreamWithOrgSlices,
@@ -42,5 +44,18 @@ export class FarosProjects extends StreamWithOrgSlices {
     )) {
       yield classicProject;
     }
+  }
+
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: Project,
+    slice: RepoStreamSlice
+  ): StreamState {
+    const latestRecordCutoff = Utils.toDate(latestRecord?.updated_at ?? 0);
+    return this.getUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      StreamBase.orgKey(slice.org)
+    );
   }
 }

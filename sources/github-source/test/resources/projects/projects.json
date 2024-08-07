@@ -1,0 +1,40 @@
+{
+  "organization": {
+    "projectsV2": {
+      "nodes": [
+        {
+          "id": "PVT_kwDOCoajGc4Al3Uy",
+          "name": "Some Project without body",
+          "body": null,
+          "created_at": "2024-08-07T06:55:35Z",
+          "updated_at": "2024-08-07T06:55:43Z"
+        },
+        {
+          "id": "Another Project without body",
+          "name": "@matiaslcoulougian's untitled project",
+          "body": null,
+          "created_at": "2024-08-05T15:08:19Z",
+          "updated_at": "2024-08-05T15:08:19Z"
+        },
+        {
+          "id": "PVT_kwDOCoajGc4Alx1r",
+          "name": "Test Project 2",
+          "body": "Another one",
+          "created_at": "2024-08-05T15:01:36Z",
+          "updated_at": "2024-08-05T15:01:48Z"
+        },
+        {
+          "id": "PVT_kwDOCoajGc4Alx1f",
+          "name": "Test Project 1",
+          "body": "This is a project to test this capability",
+          "created_at": "2024-08-05T15:00:51Z",
+          "updated_at": "2024-08-05T15:01:26Z"
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false,
+        "endCursor": "NA"
+      }
+    }
+  }
+}
