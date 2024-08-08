@@ -503,6 +503,33 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - projects', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'projects/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getOrganizationMockedImplementation(
+              readTestResourceAsJSON('organizations/organization.json')
+            ),
+            getProjectsMockedImplementation(
+              readTestResourceAsJSON('projects/projects.json')
+            ),
+            getProjectsClassicMockedImplementation(
+              readTestResourceAsJSON('projects/projects-classic.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -575,6 +602,15 @@ const getRepositoryReleasesMockedImplementation = (res: any) => ({
 const getContributorsStatsMockedImplementation = (res: any) => ({
   repos: {
     getContributorsStats: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getProjectsMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('projects', res);
+
+const getProjectsClassicMockedImplementation = (res: any) => ({
+  projects: {
+    listForOrg: jest.fn().mockReturnValue(res),
   },
 });
 

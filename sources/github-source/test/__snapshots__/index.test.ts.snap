@@ -341,6 +341,67 @@ exports[`index streams - outside collaborators 1`] = `
 ]
 `;
 
+exports[`index streams - projects 1`] = `
+[
+  {
+    "body": null,
+    "created_at": "2024-08-07T06:55:35Z",
+    "id": "PVT_kwDOCoajGc4Al3Uy",
+    "name": "Some Project without body",
+    "org": "github",
+    "updated_at": "2024-08-07T06:55:43Z",
+  },
+  {
+    "body": null,
+    "created_at": "2024-08-05T15:08:19Z",
+    "id": "Another Project without body",
+    "name": "@matiaslcoulougian's untitled project",
+    "org": "github",
+    "updated_at": "2024-08-05T15:08:19Z",
+  },
+  {
+    "body": "Another one",
+    "created_at": "2024-08-05T15:01:36Z",
+    "id": "PVT_kwDOCoajGc4Alx1r",
+    "name": "Test Project 2",
+    "org": "github",
+    "updated_at": "2024-08-05T15:01:48Z",
+  },
+  {
+    "body": "This is a project to test this capability",
+    "created_at": "2024-08-05T15:00:51Z",
+    "id": "PVT_kwDOCoajGc4Alx1f",
+    "name": "Test Project 1",
+    "org": "github",
+    "updated_at": "2024-08-05T15:01:26Z",
+  },
+  {
+    "body": "This is the first project",
+    "created_at": "2024-01-01T12:00:00Z",
+    "id": "1",
+    "name": "Project Alpha",
+    "org": "github",
+    "updated_at": "2024-01-02T12:00:00Z",
+  },
+  {
+    "body": "This is the second project",
+    "created_at": "2024-02-01T12:00:00Z",
+    "id": "2",
+    "name": "Project Beta",
+    "org": "github",
+    "updated_at": "2024-02-02T12:00:00Z",
+  },
+  {
+    "body": "This is the third project",
+    "created_at": "2024-03-01T12:00:00Z",
+    "id": "3",
+    "name": "Project Gamma",
+    "org": "github",
+    "updated_at": "2024-03-02T12:00:00Z",
+  },
+]
+`;
+
 exports[`index streams - pull request comments 1`] = `
 [
   {

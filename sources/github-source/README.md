@@ -90,7 +90,8 @@ connectors, such as linting/formatting tools, should go in the root
 | Copilot Seats ( ** )         | read:org             | Organization: Administration                     |
 | Copilot Usage ( ** )         | read:org             | Organization: Administration                     |
 | Labels                       | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
-| Organizations                | read:org             | Organization: Administration                     |   
+| Organizations                | read:org             | Organization: Administration                     |
+| Projects                     | read:project         | Organization: Projects                           |
 | Pull Requests                | repo                 | Repository: Metadata & Pull Requests             |
 | Pull Request Comments        | repo                 | Repository: Metadata & Pull Requests             |
 | Releases                     | repo                 | Repository: Contents                             |

@@ -78,6 +78,7 @@ export const CustomStreamNames = [
   'faros_labels',
   'faros_organizations',
   'faros_outside_collaborators',
+  'faros_projects',
   'faros_pull_requests',
   'faros_pull_request_comments',
   'faros_releases',

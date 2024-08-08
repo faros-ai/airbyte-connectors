@@ -89,6 +89,12 @@
         "name": "mytestsource__github__faros_releases"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_projects"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

@@ -51,6 +51,9 @@ export const COMMITS_CHANGED_FILES_QUERY =
 // Graphql query used to get tags by repository
 export const REPOSITORY_TAGS_QUERY = loadQuery('repository-tags-query.gql');
 
+// Graphql query used to get organization projects
+export const PROJECTS_QUERY = loadQuery('projects-query.gql');
+
 /**
  * Load query file from resources
  * @param query query file name

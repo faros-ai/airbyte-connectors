@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Project Alpha",
+    "body": "This is the first project",
+    "html_url": "https://github.com/orgs/example-org/projects/1",
+    "created_at": "2024-01-01T12:00:00Z",
+    "updated_at": "2024-01-02T12:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Project Beta",
+    "body": "This is the second project",
+    "html_url": "https://github.com/orgs/example-org/projects/2",
+    "created_at": "2024-02-01T12:00:00Z",
+    "updated_at": "2024-02-02T12:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Project Gamma",
+    "body": "This is the third project",
+    "html_url": "https://github.com/orgs/example-org/projects/3",
+    "created_at": "2024-03-01T12:00:00Z",
+    "updated_at": "2024-03-02T12:00:00Z"
+  }
+]
