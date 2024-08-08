@@ -169,63 +169,70 @@
         "description": "Fetch Pull Requests associated reviews",
         "default": true
       },
-      "cutoff_days": {
+      "fetch_projects_classic": {
         "order": 11,
+        "type": "boolean",
+        "title": "Fetch Projects (Classic)",
+        "description": "Fetch classic version of Projects",
+        "default": false
+      },
+      "cutoff_days": {
+        "order": 12,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "bucket_id": {
-        "order": 12,
+        "order": 13,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 13,
+        "order": 14,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "page_size": {
-        "order": 14,
+        "order": 15,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "timeout": {
-        "order": 15,
+        "order": 16,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 16,
+        "order": 17,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 17,
+        "order": 18,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 18,
+        "order": 19,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data. Only use for backfilling."
       },
       "end_date": {
-        "order": 19,
+        "order": 20,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data. Only use for backfilling."

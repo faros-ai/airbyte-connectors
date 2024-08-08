@@ -71,6 +71,7 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = true;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
+export const DEFAULT_FETCH_PROJECTS_CLASSIC = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
