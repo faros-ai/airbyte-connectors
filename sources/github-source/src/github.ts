@@ -1015,24 +1015,34 @@ export abstract class GitHub {
     org: string,
     cutoffDate?: Date
   ): AsyncGenerator<Project> {
-    const iter = this.octokit(org).paginate.iterator(
-      this.octokit(org).projects.listForOrg,
-      {
-        org,
-        per_page: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
-      for (const project of res.data) {
-        if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
-          break;
-        }
-        yield {
+    try {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).projects.listForOrg,
+        {
           org,
-          id: toString(project.id),
-          ...pick(project, ['name', 'body', 'created_at', 'updated_at']),
-        };
+          per_page: this.pageSize,
+        }
+      );
+      for await (const res of iter) {
+        for (const project of res.data) {
+          if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
+            break;
+          }
+          yield {
+            org,
+            id: toString(project.id),
+            ...pick(project, ['name', 'body', 'created_at', 'updated_at']),
+          };
+        }
       }
+    } catch (err: any) {
+      if (err.status === 404 || err.status === 410) {
+        this.logger.warn(
+          `Failed to fetch classic projects as the resource is not available.`
+        );
+        return;
+      }
+      throw err;
     }
   }
 
