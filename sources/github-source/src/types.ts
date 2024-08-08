@@ -15,13 +15,18 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly fetch_teams?: boolean;
   readonly fetch_pull_request_files?: boolean;
   readonly fetch_pull_request_reviews?: boolean;
+  readonly fetch_projects_classic?: boolean;
   readonly cutoff_days?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
   readonly page_size?: number;
   readonly timeout?: number;
   readonly concurrency_limit?: number;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
+  endDate?: Date;
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;
 }

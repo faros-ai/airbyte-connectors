@@ -22,6 +22,10 @@ const COMMIT_FIELDS_FRAGMENT = loadQuery('commit-fields-fragment.gql');
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 
+export const PULL_REQUESTS_CURSOR_QUERY = loadQuery(
+  'pull-requests-cursor-query.gql'
+);
+
 export const PULL_REQUEST_REVIEWS_QUERY =
   REVIEW_FIELDS_FRAGMENT + loadQuery('pull-request-reviews-query.gql');
 

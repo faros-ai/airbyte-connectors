@@ -107,6 +107,13 @@ export abstract class StreamBase extends AirbyteStreamBase {
     this.orgRepoFilter = new OrgRepoFilter(config, logger);
   }
 
+  protected getUpdateRange(cutoff?: number): [Date, Date] {
+    return [
+      cutoff ? Utils.toDate(cutoff) : this.config.startDate,
+      this.config.endDate,
+    ];
+  }
+
   protected getUpdatedStreamState(
     latestRecordCutoff: Date,
     currentStreamState: StreamState,
@@ -117,10 +124,6 @@ export abstract class StreamBase extends AirbyteStreamBase {
       currentStreamState,
       orgRepoKey
     );
-  }
-
-  protected getUpdateStartDate(cutoff?: number): Date | undefined {
-    return cutoff ? Utils.toDate(cutoff) : this.config.startDate;
   }
 
   static orgKey(org: string): string {

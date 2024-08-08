@@ -1,0 +1,18 @@
+query pullRequestsCursor($owner: String!, $repo: String!, $cursor: String, $page_size: Int = 100) {
+  repository(owner: $owner, name: $repo) {
+    pullRequests(
+      first: $page_size
+      orderBy: {field: UPDATED_AT, direction: DESC}
+      after: $cursor
+    ) {
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        updatedAt
+      }
+    }
+  }
+}

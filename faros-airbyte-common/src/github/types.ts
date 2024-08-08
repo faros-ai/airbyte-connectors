@@ -5,6 +5,7 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  ProjectsQuery,
   PullRequestsQuery,
   RepoTagsQuery,
 } from './generated';
@@ -80,7 +81,7 @@ export type Label = {
 } & LabelsQuery['repository']['labels']['nodes'][0];
 
 type CommitsQueryCommitNode = NonNullable<
-  CommitsQuery['repository']['ref']['target'] & {__typename: 'Commit'}
+  CommitsQuery['repository']['ref']['target'] & {type: 'Commit'}
 >['history']['nodes'][0];
 
 export type Commit = {
@@ -154,7 +155,7 @@ export type Project = {
   org: string;
   id: string;
 } & Pick<
-  GetResponseDataTypeFromEndpointMethod<typeof octokit.projects.listForOrg>[0],
+  ProjectsQuery['organization']['projectsV2']['nodes'][0],
   'name' | 'body' | 'created_at' | 'updated_at'
 >;
 

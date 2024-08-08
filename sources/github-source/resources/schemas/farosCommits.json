@@ -45,7 +45,7 @@
         "user": {
           "type": "object",
           "properties": {
-            "__typename": {
+            "type": {
               "type": "string",
               "enum": ["User"]
             },
