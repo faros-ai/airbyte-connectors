@@ -121,6 +121,25 @@ exports[`index streams - commits 1`] = `
 ]
 `;
 
+exports[`index streams - contributors stats 1`] = `
+[
+  {
+    "org": "github",
+    "repo": "Hello-World",
+    "total": 135,
+    "user": "octocat",
+    "weeks": [
+      {
+        "a": 6898,
+        "c": 10,
+        "d": 77,
+        "w": 1367712000,
+      },
+    ],
+  },
+]
+`;
+
 exports[`index streams - copilot seats (empty) 1`] = `
 [
   {
