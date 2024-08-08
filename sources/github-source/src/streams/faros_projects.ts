@@ -34,9 +34,12 @@ export class FarosProjects extends StreamWithOrgSlices {
     const github = await GitHub.instance(this.config, this.logger);
     const org = streamSlice?.org;
     const state = streamState?.[StreamBase.orgKey(org)];
-    const cutoffDate = this.getUpdateStartDate(state?.cutoff);
-    yield* github.getProjects(org, cutoffDate);
-    yield* github.getClassicProjects(org, cutoffDate);
+    const [startDate, endDate] =
+      syncMode === SyncMode.INCREMENTAL
+        ? this.getUpdateRange(state?.cutoff)
+        : this.getUpdateRange();
+    yield* github.getProjects(org, startDate, endDate);
+    yield* github.getClassicProjects(org, startDate, endDate);
   }
 
   getUpdatedState(

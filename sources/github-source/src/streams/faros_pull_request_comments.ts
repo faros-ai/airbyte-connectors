@@ -33,9 +33,12 @@ export class FarosPullRequestComments extends StreamWithRepoSlices {
     const org = streamSlice?.org;
     const repo = streamSlice?.repo;
     const state = streamState?.[StreamBase.orgRepoKey(org, repo)];
-    const cutoffDate = this.getUpdateStartDate(state?.cutoff);
+    const [startDate, endDate] =
+      syncMode === SyncMode.INCREMENTAL
+        ? this.getUpdateRange(state?.cutoff)
+        : this.getUpdateRange();
     const github = await GitHub.instance(this.config, this.logger);
-    yield* github.getPullRequestComments(org, repo, cutoffDate);
+    yield* github.getPullRequestComments(org, repo, startDate, endDate);
   }
 
   getUpdatedState(
