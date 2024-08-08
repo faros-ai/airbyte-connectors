@@ -72,6 +72,7 @@ export const FullStreamNames = [
 // fill as streams are developed
 export const CustomStreamNames = [
   'faros_commits',
+  'faros_contributors_stats',
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_labels',

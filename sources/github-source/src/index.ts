@@ -19,6 +19,7 @@ import {
 } from './github';
 import {RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosCommits} from './streams/faros_commits';
+import {FarosContributorsStats} from './streams/faros_contributors_stats';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosLabels} from './streams/faros_labels';
@@ -62,6 +63,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   streams(config: GitHubConfig): AirbyteStreamBase[] {
     return [
       new FarosCommits(config, this.logger),
+      new FarosContributorsStats(config, this.logger),
       new FarosCopilotSeats(config, this.logger),
       new FarosCopilotUsage(config, this.logger),
       new FarosLabels(config, this.logger),
