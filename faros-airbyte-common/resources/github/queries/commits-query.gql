@@ -10,7 +10,7 @@ query commits($owner: String!, $repo: String!, $branch: String!, $since: GitTime
               hasNextPage
             }
             nodes {
-              ...CommitFields
+              ...commitFields
             }
           }
         }

@@ -10,7 +10,7 @@ query commitsChangedFilesIfAvailable($owner: String!, $repo: String!, $branch: S
               hasNextPage
             }
             nodes {
-              ...CommitFields
+              ...commitFields
               changedFilesIfAvailable
             }
           }

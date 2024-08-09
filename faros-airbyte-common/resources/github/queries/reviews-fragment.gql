@@ -1,11 +1,11 @@
-fragment Reviews on PullRequest {
+fragment reviews on PullRequest {
   reviews(first: $nested_page_size) {
     pageInfo {
       hasNextPage
       endCursor
     }
     nodes {
-      ...ReviewFields
+      ...reviewFields
     }
   }
 }

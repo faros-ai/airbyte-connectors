@@ -285,16 +285,7 @@ export abstract class GitHubConverter extends Converter {
           },
         });
       }
-      const finalUser: PartialUser = {};
-      // replace non-null user attributes to our copy of the user
-      // e.g. login, name, email, type, html_url.
-      for (const user of users) {
-        for (const key in user) {
-          if (!finalUser[key]) {
-            finalUser[key] = user[key];
-          }
-        }
-      }
+      const finalUser = this.getFinalUser(users);
       res.push({
         model: 'vcs_User',
         record: omitBy(
@@ -311,6 +302,39 @@ export abstract class GitHubConverter extends Converter {
       });
     }
     return res;
+  }
+
+  protected convertTMSUsers(): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    for (const [login, users] of this.collectedUsers.entries()) {
+      const finalUser = this.getFinalUser(users);
+      res.push({
+        model: 'tms_User',
+        record: omitBy(
+          {
+            uid: login,
+            source: this.streamName.source,
+            name: finalUser.name,
+          },
+          (value) => isNil(value) || isEmpty(value)
+        ),
+      });
+    }
+    return res;
+  }
+
+  // Replace non-null user attributes to our copy of the user
+  // e.g. login, name, email, type, html_url.
+  private getFinalUser(users: Array<PartialUser>) {
+    const finalUser: PartialUser = {};
+    for (const user of users) {
+      for (const key in user) {
+        if (!finalUser[key]) {
+          finalUser[key] = user[key];
+        }
+      }
+    }
+    return finalUser;
   }
 }
 

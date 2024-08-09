@@ -3,6 +3,7 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 import {
   CommitsQuery,
+  IssuesQuery,
   LabelsQuery,
   ListMembersQuery,
   PullRequestsQuery,
@@ -157,6 +158,13 @@ export type Project = {
   GetResponseDataTypeFromEndpointMethod<typeof octokit.projects.listForOrg>[0],
   'name' | 'body' | 'created_at' | 'updated_at'
 >;
+
+export type Issue = {
+  org: string;
+  repo: string;
+} & IssuesQuery['repository']['issues']['nodes'][0];
+
+export type IssueAssignment = Issue['assignments']['nodes'][0];
 
 export type CopilotSeatsStreamRecord =
   | CopilotSeat

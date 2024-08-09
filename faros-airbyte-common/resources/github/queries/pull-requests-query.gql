@@ -81,10 +81,10 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
             login
           }
         }
-        ...Labels
-        ...Files
-        ...Reviews
-        ...ReviewRequests
+        ...labels
+        ...files
+        ...reviews
+        ...reviewRequests
       }
     }
   }

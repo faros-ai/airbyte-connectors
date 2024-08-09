@@ -1,0 +1,21 @@
+fragment assigneeFields on Assignee {
+    type: __typename
+    ... on Bot {
+        login
+        html_url: url
+    }
+    ... on Mannequin {
+        login
+        html_url: url
+    }
+    ... on Organization {
+        login
+        name
+        html_url: url
+    }
+    ... on User {
+        login
+        name
+        html_url: url
+    }
+}
