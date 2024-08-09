@@ -1,4 +1,4 @@
-fragment Labels on PullRequest {
+fragment labels on PullRequest {
   labels(first: $nested_page_size) {
     pageInfo {
       hasNextPage

@@ -1,4 +1,4 @@
-fragment ReviewFields on PullRequestReview {
+fragment reviewFields on PullRequestReview {
   author {
     login
     type: __typename

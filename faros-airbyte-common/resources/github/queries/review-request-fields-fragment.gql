@@ -1,4 +1,4 @@
-fragment ReviewRequestFields on ReviewRequest {
+fragment reviewRequestFields on ReviewRequest {
   requestedReviewer {
     type: __typename
     ... on Mannequin {

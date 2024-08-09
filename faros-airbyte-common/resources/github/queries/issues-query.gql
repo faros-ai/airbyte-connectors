@@ -1,0 +1,63 @@
+query issues($owner: String!, $repo: String!, $page_size: Int = 25, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
+    issues(first: $page_size, after: $cursor, orderBy: {field: UPDATED_AT, direction: DESC}) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        databaseId
+        title
+        bodyText
+        state
+        createdAt
+        updatedAt
+        closedAt
+        author {
+          type: __typename
+          login
+          ... on Bot {
+            html_url: url
+          }
+          ... on EnterpriseUserAccount {
+            name
+            html_url: url
+          }
+          ... on Mannequin {
+            html_url: url
+          }
+          ... on Organization {
+            name
+            html_url: url
+          }
+          ... on User {
+            name
+            html_url: url
+          }
+        }
+        labels(first: 100) {
+          nodes {
+            name
+          }
+        }
+        assignments: timelineItems(itemTypes: [ASSIGNED_EVENT, UNASSIGNED_EVENT], last: 250) {
+          nodes {
+            type: __typename
+            ... on AssignedEvent {
+              createdAt
+              assignee {
+                ...assigneeFields
+              }
+            }
+            ... on UnassignedEvent {
+              createdAt
+              assignee {
+                ...assigneeFields
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

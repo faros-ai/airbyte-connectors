@@ -7805,6 +7805,38 @@ export type WorkflowsParametersInput = {
   workflows: Array<WorkflowFileReferenceInput>;
 };
 
+type AssigneeFields_Bot_Fragment = {
+  login: string;
+  html_url: string;
+  type: 'Bot';
+};
+
+type AssigneeFields_Mannequin_Fragment = {
+  login: string;
+  html_url: string;
+  type: 'Mannequin';
+};
+
+type AssigneeFields_Organization_Fragment = {
+  login: string;
+  name?: string | null;
+  html_url: string;
+  type: 'Organization';
+};
+
+type AssigneeFields_User_Fragment = {
+  login: string;
+  name?: string | null;
+  html_url: string;
+  type: 'User';
+};
+
+export type AssigneeFieldsFragment =
+  | AssigneeFields_Bot_Fragment
+  | AssigneeFields_Mannequin_Fragment
+  | AssigneeFields_Organization_Fragment
+  | AssigneeFields_User_Fragment;
+
 export type CommitFieldsFragment = {
   oid: string;
   message: string;
@@ -7953,6 +7985,127 @@ export type FilesFragment = {
       additions: number;
       deletions: number;
     } | null> | null;
+  } | null;
+};
+
+export type IssuesQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type IssuesQuery = {
+  repository?: {
+    issues: {
+      pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+      nodes?: Array<{
+        databaseId?: number | null;
+        title: string;
+        bodyText: string;
+        state: IssueState;
+        createdAt: string;
+        updatedAt: string;
+        closedAt?: string | null;
+        author?:
+          | {login: string; html_url: string; type: 'Bot'}
+          | {
+              name?: string | null;
+              login: string;
+              html_url: string;
+              type: 'EnterpriseUserAccount';
+            }
+          | {login: string; html_url: string; type: 'Mannequin'}
+          | {
+              name?: string | null;
+              login: string;
+              html_url: string;
+              type: 'Organization';
+            }
+          | {
+              name?: string | null;
+              login: string;
+              html_url: string;
+              type: 'User';
+            }
+          | null;
+        labels?: {nodes?: Array<{name: string} | null> | null} | null;
+        assignments: {
+          nodes?: Array<
+            | {type: 'AddedToProjectEvent'}
+            | {
+                createdAt: string;
+                type: 'AssignedEvent';
+                assignee?:
+                  | {login: string; html_url: string; type: 'Bot'}
+                  | {login: string; html_url: string; type: 'Mannequin'}
+                  | {
+                      login: string;
+                      name?: string | null;
+                      html_url: string;
+                      type: 'Organization';
+                    }
+                  | {
+                      login: string;
+                      name?: string | null;
+                      html_url: string;
+                      type: 'User';
+                    }
+                  | null;
+              }
+            | {type: 'ClosedEvent'}
+            | {type: 'CommentDeletedEvent'}
+            | {type: 'ConnectedEvent'}
+            | {type: 'ConvertedNoteToIssueEvent'}
+            | {type: 'ConvertedToDiscussionEvent'}
+            | {type: 'CrossReferencedEvent'}
+            | {type: 'DemilestonedEvent'}
+            | {type: 'DisconnectedEvent'}
+            | {type: 'IssueComment'}
+            | {type: 'LabeledEvent'}
+            | {type: 'LockedEvent'}
+            | {type: 'MarkedAsDuplicateEvent'}
+            | {type: 'MentionedEvent'}
+            | {type: 'MilestonedEvent'}
+            | {type: 'MovedColumnsInProjectEvent'}
+            | {type: 'PinnedEvent'}
+            | {type: 'ReferencedEvent'}
+            | {type: 'RemovedFromProjectEvent'}
+            | {type: 'RenamedTitleEvent'}
+            | {type: 'ReopenedEvent'}
+            | {type: 'SubscribedEvent'}
+            | {type: 'TransferredEvent'}
+            | {
+                createdAt: string;
+                type: 'UnassignedEvent';
+                assignee?:
+                  | {login: string; html_url: string; type: 'Bot'}
+                  | {login: string; html_url: string; type: 'Mannequin'}
+                  | {
+                      login: string;
+                      name?: string | null;
+                      html_url: string;
+                      type: 'Organization';
+                    }
+                  | {
+                      login: string;
+                      name?: string | null;
+                      html_url: string;
+                      type: 'User';
+                    }
+                  | null;
+              }
+            | {type: 'UnlabeledEvent'}
+            | {type: 'UnlockedEvent'}
+            | {type: 'UnmarkedAsDuplicateEvent'}
+            | {type: 'UnpinnedEvent'}
+            | {type: 'UnsubscribedEvent'}
+            | {type: 'UserBlockedEvent'}
+            | null
+          > | null;
+        };
+      } | null> | null;
+    };
   } | null;
 };
 

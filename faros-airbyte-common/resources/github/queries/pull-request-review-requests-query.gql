@@ -1,4 +1,4 @@
-query PullRequestReviewRequests($org: String!, $repo: String!, $number: Int!, $nested_page_size: Int!, $cursor: String) {
+query pullRequestReviewRequests($org: String!, $repo: String!, $number: Int!, $nested_page_size: Int!, $cursor: String) {
   repository(owner: $org, name: $repo) {
     pullRequest(number: $number) {
       reviewRequests(first: $nested_page_size, after: $cursor) {
@@ -7,7 +7,7 @@ query PullRequestReviewRequests($org: String!, $repo: String!, $number: Int!, $n
           endCursor
         }
         nodes {
-          ...ReviewRequestFields
+          ...reviewRequestFields
         }
       }
     }

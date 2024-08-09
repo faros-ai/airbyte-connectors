@@ -1,4 +1,4 @@
-fragment Files on PullRequest {
+fragment files on PullRequest {
   files(first: $nested_page_size) {
     pageInfo {
       hasNextPage

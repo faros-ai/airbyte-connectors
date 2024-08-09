@@ -19,6 +19,8 @@ export const REVIEW_REQUESTS_FRAGMENT =
 
 const COMMIT_FIELDS_FRAGMENT = loadQuery('commit-fields-fragment.gql');
 
+const ASSIGNEE_FIELDS_FRAGMENT = loadQuery('assignee-fields-fragment.gql');
+
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 
@@ -53,6 +55,10 @@ export const REPOSITORY_TAGS_QUERY = loadQuery('repository-tags-query.gql');
 
 // Graphql query used to get organization projects
 export const PROJECTS_QUERY = loadQuery('projects-query.gql');
+
+// Graphql query used to get repo issues
+export const ISSUES_QUERY =
+  ASSIGNEE_FIELDS_FRAGMENT + loadQuery('issues-query.gql');
 
 /**
  * Load query file from resources
