@@ -212,6 +212,8 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<PullRequest> {
+    // since query doesn't support filtering by date, we fetch PRs in descending order and stop when we reach the start date
+    // for backfill, we first use a simplified query to iterate until reaching the end date to obtain a start cursor
     const startCursor = await this.getPullRequestsStartCursor(
       org,
       repo,
@@ -233,10 +235,10 @@ export abstract class GitHub {
     );
     for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const pr of res.repository.pullRequests.nodes) {
-        if (endDate && Utils.toDate(pr.updatedAt) > endDate) {
+        if (this.backfill && endDate && Utils.toDate(pr.updatedAt) > endDate) {
           continue;
         }
-        if (startDate && Utils.toDate(pr.updatedAt) <= startDate) {
+        if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
           return;
         }
         yield {
@@ -463,21 +465,27 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<PullRequestComment> {
+    // query supports filtering by start date (since) but not by end date
+    // for backfill, we iterate in ascending order and stop when we reach the end date
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).pulls.listReviewCommentsForRepo,
       {
         owner: org,
         repo: repo,
         since: startDate?.toISOString(),
-        direction: 'desc',
+        direction: this.backfill ? 'asc' : 'desc',
         sort: 'updated',
         per_page: this.pageSize,
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const comment of res.data) {
-        if (endDate && Utils.toDate(comment.updated_at) > endDate) {
-          continue;
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(comment.updated_at) > endDate
+        ) {
+          return;
         }
         yield {
           repository: `${org}/${repo}`,
@@ -578,13 +586,14 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<Commit> {
+    // query supports filtering by start date (since) and end date (until)
     const queryParameters = {
       owner: org,
       repo,
       branch,
       page_size: this.pageSize,
       since: startDate?.toISOString(),
-      until: endDate?.toISOString(),
+      ...(this.backfill && {until: endDate?.toISOString()}),
     };
     // Check if the client has changedFilesIfAvailable field available
     const hasChangedFilesIfAvailable =
@@ -1083,6 +1092,8 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<Project> {
+    // since query doesn't support filtering by date, we fetch projects in descending order and stop when we reach the start date
+    // for backfill, we skip records newer than the end date
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
       {
@@ -1092,10 +1103,14 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const project of res.organization.projectsV2.nodes) {
-        if (endDate && Utils.toDate(project.updated_at) > endDate) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(project.updated_at) > endDate
+        ) {
           continue;
         }
-        if (startDate && Utils.toDate(project.updated_at) <= startDate) {
+        if (startDate && Utils.toDate(project.updated_at) < startDate) {
           return;
         }
         yield {
@@ -1114,15 +1129,16 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<Project> {
+    // query doesn't support sorting nor filtering by date, so it's basically a full sync
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).projects.listForOrg,
+      {
+        org,
+        state: 'all',
+        per_page: this.pageSize,
+      }
+    );
     try {
-      const iter = this.octokit(org).paginate.iterator(
-        this.octokit(org).projects.listForOrg,
-        {
-          org,
-          state: 'all',
-          per_page: this.pageSize,
-        }
-      );
       for await (const res of iter) {
         for (const project of res.data) {
           yield {
