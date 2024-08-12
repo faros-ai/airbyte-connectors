@@ -466,7 +466,7 @@ export abstract class GitHub {
     endDate?: Date
   ): AsyncGenerator<PullRequestComment> {
     // query supports filtering by start date (since) but not by end date
-    // for backfill, we iterate in ascending order and stop when we reach the end date
+    // for backfill, we iterate in ascending order from the start date and stop when we reach the end date
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).pulls.listReviewCommentsForRepo,
       {
