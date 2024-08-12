@@ -1,0 +1,91 @@
+{
+  "repository": {
+    "issues": {
+      "pageInfo": {
+        "endCursor": "Y3Vyc29yOnYyOpK5MjAyNC0wOC0wOVQxNTozMzozOCswMjowMM6SeBUo",
+        "hasNextPage": false
+      },
+      "nodes": [
+        {
+          "databaseId": 2457343272,
+          "title": "This is a test Issue",
+          "bodyText": "Description test 1",
+          "state": "CLOSED",
+          "createdAt": "2024-08-09T07:56:55Z",
+          "updatedAt": "2024-08-09T13:33:38Z",
+          "closedAt": "2024-08-09T13:33:38Z",
+          "author": {
+            "type": "User",
+            "login": "nehanda",
+            "name": null,
+            "html_url": "https://github.com/nehanda"
+          },
+          "labels": {
+            "nodes": [
+              {"name": "bug"},
+              {"name": "good first issue"},
+              {"name": "help wanted"}
+            ]
+          },
+          "assignments": {
+            "nodes": [
+              {
+                "type": "AssignedEvent",
+                "createdAt": "2024-08-09T07:56:55Z",
+                "assignee": {
+                  "type": "User",
+                  "login": "janedoe",
+                  "name": "Jane Doe",
+                  "html_url": "https://github.com/janedoe"
+                }
+              },
+              {
+                "type": "UnassignedEvent",
+                "createdAt": "2024-08-09T13:08:33Z",
+                "assignee": {
+                  "type": "User",
+                  "login": "janedoe",
+                  "name": "Jane Doe",
+                  "html_url": "https://github.com/janedoe"
+                }
+              },
+              {
+                "type": "AssignedEvent",
+                "createdAt": "2024-08-09T13:08:39Z",
+                "assignee": {
+                  "type": "User",
+                  "login": "nehanda",
+                  "name": "Nehanda",
+                  "html_url": "https://github.com/nehanda"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "databaseId": 2457343272,
+          "title": "This is another test Issue",
+          "bodyText": "Description test 2",
+          "state": "OPEN",
+          "createdAt": "2024-08-10T07:56:55Z",
+          "updatedAt": "2024-08-10T13:33:38Z",
+          "closedAt": null,
+          "author": {
+            "type": "User",
+            "login": "nehanda",
+            "name": null,
+            "html_url": "https://github.com/nehanda"
+          },
+          "labels": {
+            "nodes": [
+              {"name": "bug"}
+            ]
+          },
+          "assignments": {
+            "nodes": []
+          }
+        }
+      ]
+    }
+  }
+}

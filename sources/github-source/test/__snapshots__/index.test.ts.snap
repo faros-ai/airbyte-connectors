@@ -289,6 +289,102 @@ exports[`index streams - copilot usage 1`] = `
 ]
 `;
 
+exports[`index streams - issues 1`] = `
+[
+  {
+    "assignments": {
+      "nodes": [
+        {
+          "assignee": {
+            "html_url": "https://github.com/janedoe",
+            "login": "janedoe",
+            "name": "Jane Doe",
+            "type": "User",
+          },
+          "createdAt": "2024-08-09T07:56:55Z",
+          "type": "AssignedEvent",
+        },
+        {
+          "assignee": {
+            "html_url": "https://github.com/janedoe",
+            "login": "janedoe",
+            "name": "Jane Doe",
+            "type": "User",
+          },
+          "createdAt": "2024-08-09T13:08:33Z",
+          "type": "UnassignedEvent",
+        },
+        {
+          "assignee": {
+            "html_url": "https://github.com/nehanda",
+            "login": "nehanda",
+            "name": "Nehanda",
+            "type": "User",
+          },
+          "createdAt": "2024-08-09T13:08:39Z",
+          "type": "AssignedEvent",
+        },
+      ],
+    },
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": null,
+      "type": "User",
+    },
+    "bodyText": "Description test 1",
+    "closedAt": "2024-08-09T13:33:38Z",
+    "createdAt": "2024-08-09T07:56:55Z",
+    "databaseId": 2457343272,
+    "labels": {
+      "nodes": [
+        {
+          "name": "bug",
+        },
+        {
+          "name": "good first issue",
+        },
+        {
+          "name": "help wanted",
+        },
+      ],
+    },
+    "org": "github",
+    "repo": "Hello-World",
+    "state": "CLOSED",
+    "title": "This is a test Issue",
+    "updatedAt": "2024-08-09T13:33:38Z",
+  },
+  {
+    "assignments": {
+      "nodes": [],
+    },
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": null,
+      "type": "User",
+    },
+    "bodyText": "Description test 2",
+    "closedAt": null,
+    "createdAt": "2024-08-10T07:56:55Z",
+    "databaseId": 2457343272,
+    "labels": {
+      "nodes": [
+        {
+          "name": "bug",
+        },
+      ],
+    },
+    "org": "github",
+    "repo": "Hello-World",
+    "state": "OPEN",
+    "title": "This is another test Issue",
+    "updatedAt": "2024-08-10T13:33:38Z",
+  },
+]
+`;
+
 exports[`index streams - labels 1`] = `
 [
   {

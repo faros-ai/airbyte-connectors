@@ -163,10 +163,6 @@ export class FarosIssues extends GitHubConverter {
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
-    return [
-      ...this.convertUsers(),
-      ...this.convertTMSUsers(),
-      ...this.convertLabels(),
-    ];
+    return [...this.convertTMSUsers(), ...this.convertLabels()];
   }
 }
