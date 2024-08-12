@@ -22,6 +22,7 @@ import {
   PullRequestReviewRequest,
   Release,
   Repository,
+  SamlSsoUser,
   Tag,
   TagsQueryCommitNode,
   Team,
@@ -32,6 +33,7 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  ListSamlSsoUsersQuery,
   ProjectsQuery,
   PullRequestReviewRequestsQuery,
   PullRequestReviewsQuery,
@@ -45,6 +47,7 @@ import {
   FILES_FRAGMENT,
   LABELS_FRAGMENT,
   LABELS_QUERY,
+  LIST_SAML_SSO_USERS_QUERY,
   ORG_MEMBERS_QUERY,
   PROJECTS_QUERY,
   PULL_REQUEST_REVIEW_REQUESTS_QUERY,
@@ -909,6 +912,31 @@ export abstract class GitHub {
         yield {
           org,
           ...pick(collaborator, ['login', 'email', 'name', 'type', 'html_url']),
+        };
+      }
+    }
+  }
+
+  async *getSamlSsoUsers(org: string): AsyncGenerator<SamlSsoUser> {
+    const iter = this.octokit(
+      org
+    ).graphql.paginate.iterator<ListSamlSsoUsersQuery>(
+      LIST_SAML_SSO_USERS_QUERY,
+      {
+        login: org,
+        page_size: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      const identities =
+        res.organization.samlIdentityProvider?.externalIdentities?.nodes ?? [];
+      for (const identity of identities) {
+        if (!identity?.user?.login) {
+          continue;
+        }
+        yield {
+          org,
+          ...identity,
         };
       }
     }
