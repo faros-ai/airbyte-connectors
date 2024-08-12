@@ -71,7 +71,6 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = true;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
-export const DEFAULT_FETCH_PROJECTS_CLASSIC = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -1160,9 +1159,7 @@ export abstract class GitHub {
       }
     } catch (err: any) {
       if (err.status === 404 || err.status === 410) {
-        this.logger.warn(
-          `Failed to fetch classic projects as the resource is not available.`
-        );
+        this.logger.warn(`Classic projects API is not available/deprecated.`);
         return;
       }
       throw err;

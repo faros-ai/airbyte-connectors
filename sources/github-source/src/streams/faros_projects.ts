@@ -3,7 +3,7 @@ import {Project} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_FETCH_PROJECTS_CLASSIC, GitHub} from '../github';
+import {GitHub} from '../github';
 import {
   OrgStreamSlice,
   RepoStreamSlice,
@@ -39,9 +39,7 @@ export class FarosProjects extends StreamWithOrgSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
     yield* github.getProjects(org, startDate, endDate);
-    if (this.config.fetch_projects_classic ?? DEFAULT_FETCH_PROJECTS_CLASSIC) {
-      yield* github.getClassicProjects(org, startDate, endDate);
-    }
+    yield* github.getClassicProjects(org, startDate, endDate);
   }
 
   getUpdatedState(
