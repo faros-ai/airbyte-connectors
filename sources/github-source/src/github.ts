@@ -1141,6 +1141,16 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const project of res.data) {
+          if (
+            this.backfill &&
+            endDate &&
+            Utils.toDate(project.updated_at) > endDate
+          ) {
+            continue;
+          }
+          if (startDate && Utils.toDate(project.updated_at) < startDate) {
+            continue;
+          }
           yield {
             org,
             id: toString(project.id),
