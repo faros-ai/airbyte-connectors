@@ -8003,6 +8003,26 @@ export type ListMembersQuery = {
   } | null;
 };
 
+export type ListSamlSsoUsersQueryVariables = Exact<{
+  login: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type ListSamlSsoUsersQuery = {
+  organization?: {
+    samlIdentityProvider?: {
+      externalIdentities: {
+        nodes?: Array<{
+          samlIdentity?: {nameId?: string | null} | null;
+          user?: {login: string; html_url: string; type: 'User'} | null;
+        } | null> | null;
+        pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+      };
+    } | null;
+  } | null;
+};
+
 export type ProjectsQueryVariables = Exact<{
   login: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;

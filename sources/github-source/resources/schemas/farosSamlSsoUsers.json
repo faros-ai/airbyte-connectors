@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OutsideCollaborator",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "samlIdentity": {
+      "type": "object",
+      "properties": {
+        "nameId": {
+          "type": "string"
+        }
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

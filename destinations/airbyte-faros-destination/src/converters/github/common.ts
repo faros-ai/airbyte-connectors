@@ -290,7 +290,7 @@ export abstract class GitHubConverter extends Converter {
       // e.g. login, name, email, type, html_url.
       for (const user of users) {
         for (const key in user) {
-          if (!finalUser[key]) {
+          if (!finalUser[key] && user[key]) {
             finalUser[key] = user[key];
           }
         }

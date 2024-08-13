@@ -83,6 +83,7 @@ export const CustomStreamNames = [
   'faros_pull_request_comments',
   'faros_releases',
   'faros_repositories',
+  'faros_saml_sso_users',
   'faros_tags',
   'faros_users',
 ];

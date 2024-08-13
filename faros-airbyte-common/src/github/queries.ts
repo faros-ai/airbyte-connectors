@@ -39,6 +39,11 @@ export const LABELS_QUERY = loadQuery('labels-query.gql');
 // GraphQL query used to get organization members
 export const ORG_MEMBERS_QUERY = loadQuery('list-members-query.gql');
 
+// GraphQL query used to get SAML SSO users when SAML SSO is enabled on organization level
+export const LIST_SAML_SSO_USERS_QUERY = loadQuery(
+  'list-saml-sso-users-query.gql'
+);
+
 // GraphQL query used to get commits from repository
 export const COMMITS_QUERY =
   COMMIT_FIELDS_FRAGMENT + loadQuery('commits-query.gql');
