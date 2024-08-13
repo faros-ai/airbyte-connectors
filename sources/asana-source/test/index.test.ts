@@ -202,6 +202,55 @@ describe('index', () => {
 
     expect(items).toMatchSnapshot();
   });
+
+  describe('onBeforeRead filters project_tasks', () => {
+    const catalog = {
+      streams: [
+        {
+          stream: {name: 'project_tasks', json_schema: {}},
+          sync_mode: SyncMode.FULL_REFRESH,
+        },
+        {
+          stream: {name: 'tasks', json_schema: {}},
+          sync_mode: SyncMode.INCREMENTAL,
+        },
+      ],
+    };
+    test('sync project_tasks when missing state', async () => {
+      const {catalog: newCatalog} = await source.onBeforeRead(
+        config,
+        catalog,
+        {}
+      );
+      expect(newCatalog).toMatchSnapshot();
+    });
+    test('sync project_tasks when project_tasks_max_staleness_hours is 0', async () => {
+      const {catalog: newCatalog} = await source.onBeforeRead(config, catalog, {
+        project_tasks: {lastComputedAt: 1638470400000},
+      });
+      expect(newCatalog).toMatchSnapshot();
+      const {catalog: newCatalog2} = await source.onBeforeRead(
+        {...config, project_tasks_max_staleness_hours: 0},
+        catalog,
+        {project_tasks: {lastComputedAt: 1638470400000}}
+      );
+      expect(newCatalog2).toMatchSnapshot();
+    });
+    test('sync project_tasks when stale', async () => {
+      const {catalog: newCatalog} = await source.onBeforeRead(
+        {...config, project_tasks_max_staleness_hours: 1},
+        catalog,
+        {project_tasks: {lastComputedAt: Date.now() - 1000 * 60 * 60 * 2}}
+      );
+      expect(newCatalog).toMatchSnapshot();
+      const {catalog: newCatalog2} = await source.onBeforeRead(
+        {...config, project_tasks_max_staleness_hours: 3},
+        catalog,
+        {project_tasks: {lastComputedAt: Date.now() - 1000 * 60 * 60 * 2}}
+      );
+      expect(newCatalog2).toMatchSnapshot();
+    });
+  });
 });
 
 function readResourceFile(fileName: string): any {

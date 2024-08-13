@@ -8,12 +8,15 @@ import {Dictionary} from 'ts-essentials';
 
 import {Asana, AsanaConfig} from '../asana';
 import {ProjectTaskAssociation} from '../models';
+import {ProjectTasksState} from './common';
 
 type StreamSlice = {
   project: string;
 };
 
 export class ProjectTasks extends AirbyteStreamBase {
+  private readonly lastComputedAt = Date.now();
+
   constructor(
     private readonly config: AsanaConfig,
     protected readonly logger: AirbyteLogger
@@ -50,5 +53,11 @@ export class ProjectTasks extends AirbyteStreamBase {
     const asana = Asana.instance(this.config, this.logger);
 
     yield* asana.getProjectTasks(streamSlice.project, this.logger);
+  }
+
+  getUpdatedState(): ProjectTasksState {
+    return {
+      lastComputedAt: this.lastComputedAt,
+    };
   }
 }
