@@ -547,6 +547,30 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - issues', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'issues/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getIssuesMockedImplementation(
+              readTestResourceAsJSON('issues/issues.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -639,3 +663,6 @@ const getCommitsMockedImplementation = (res: any) =>
 
 const getRepositoryTagsMockedImplementation = (res: any) =>
   graphqlMockedImplementation('repoTags', res);
+
+const getIssuesMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('issues', res);

@@ -1,4 +1,4 @@
-fragment CommitFields on Commit {
+fragment commitFields on Commit {
   oid
   message
   url

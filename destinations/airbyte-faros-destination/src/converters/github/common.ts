@@ -5,14 +5,19 @@ import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {PullRequestKey, RepoKey} from '../common/vcs';
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
+
+export type GitHubConfig = {
+  sync_repo_issues?: boolean;
+};
 
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
+  static readonly DEFAULT_SYNC_REPO_ISSUES = false;
 
   static vcs_User_with_Membership(
     user: Dictionary<any>,
@@ -244,6 +249,17 @@ export abstract class GitHubConverter extends Converter {
     return record?.record?.data?.id;
   }
 
+  protected githubConfig(ctx: StreamContext): GitHubConfig {
+    return ctx.config.source_specific_configs?.github ?? {};
+  }
+
+  protected syncRepoIssues(ctx: StreamContext): boolean {
+    return (
+      this.githubConfig(ctx).sync_repo_issues ??
+      GitHubCommon.DEFAULT_SYNC_REPO_ISSUES
+    );
+  }
+
   protected collectUser(user: PartialUser) {
     if (!user?.login) return;
     if (!this.collectedUsers.has(user.login)) {
@@ -285,16 +301,7 @@ export abstract class GitHubConverter extends Converter {
           },
         });
       }
-      const finalUser: PartialUser = {};
-      // replace non-null user attributes to our copy of the user
-      // e.g. login, name, email, type, html_url.
-      for (const user of users) {
-        for (const key in user) {
-          if (!finalUser[key] && user[key]) {
-            finalUser[key] = user[key];
-          }
-        }
-      }
+      const finalUser = this.getFinalUser(users);
       res.push({
         model: 'vcs_User',
         record: omitBy(
@@ -311,6 +318,39 @@ export abstract class GitHubConverter extends Converter {
       });
     }
     return res;
+  }
+
+  protected convertTMSUsers(): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    for (const [login, users] of this.collectedUsers.entries()) {
+      const finalUser = this.getFinalUser(users);
+      res.push({
+        model: 'tms_User',
+        record: omitBy(
+          {
+            uid: login,
+            source: this.streamName.source,
+            name: finalUser.name,
+          },
+          (value) => isNil(value) || isEmpty(value)
+        ),
+      });
+    }
+    return res;
+  }
+
+  // Replace non-null user attributes to our copy of the user
+  // e.g. login, name, email, type, html_url.
+  private getFinalUser(users: Array<PartialUser>) {
+    const finalUser: PartialUser = {};
+    for (const user of users) {
+      for (const key in user) {
+        if (!finalUser[key] && user[key]) {
+          finalUser[key] = user[key];
+        }
+      }
+    }
+    return finalUser;
   }
 }
 

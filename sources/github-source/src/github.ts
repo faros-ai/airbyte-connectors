@@ -9,6 +9,7 @@ import {
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  Issue,
   Label,
   Organization,
   OutsideCollaborator,
@@ -31,6 +32,7 @@ import {
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
+  IssuesQuery,
   LabelsQuery,
   ListMembersQuery,
   ListSamlSsoUsersQuery,
@@ -46,6 +48,7 @@ import {
   COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
   FILES_FRAGMENT,
+  ISSUES_QUERY,
   LABELS_FRAGMENT,
   LABELS_QUERY,
   LIST_SAML_SSO_USERS_QUERY,
@@ -298,24 +301,24 @@ export abstract class GitHub {
     };
 
     let query = PULL_REQUESTS_QUERY;
-    query = appendFragment(query, true, LABELS_FRAGMENT, '...Labels');
+    query = appendFragment(query, true, LABELS_FRAGMENT, '...labels');
     query = appendFragment(
       query,
       this.fetchPullRequestFiles,
       FILES_FRAGMENT,
-      '...Files'
+      '...files'
     );
     query = appendFragment(
       query,
       this.fetchPullRequestReviews,
       REVIEWS_FRAGMENT,
-      '...Reviews'
+      '...reviews'
     );
     query = appendFragment(
       query,
       this.fetchPullRequestReviews,
       REVIEW_REQUESTS_FRAGMENT,
-      '...ReviewRequests'
+      '...reviewRequests'
     );
 
     return query;
@@ -1160,6 +1163,41 @@ export abstract class GitHub {
         return;
       }
       throw err;
+    }
+  }
+
+  async *getIssues(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<Issue> {
+    const iter = this.octokit(org).graphql.paginate.iterator<IssuesQuery>(
+      ISSUES_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const issue of res.repository.issues.nodes) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(issue.updatedAt) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(issue.updatedAt) <= startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...issue,
+        };
+      }
     }
   }
 
