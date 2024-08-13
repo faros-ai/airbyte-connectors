@@ -210,6 +210,25 @@
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
+      },
+      "backfill": {
+        "order": 17,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 18,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data. Only use for backfilling."
+      },
+      "end_date": {
+        "order": 19,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data. Only use for backfilling."
       }
     }
   }

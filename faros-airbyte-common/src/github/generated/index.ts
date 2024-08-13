@@ -7825,6 +7825,7 @@ export type CommitsChangedFilesIfAvailableQueryVariables = Exact<{
   repo: Scalars['String']['input'];
   branch: Scalars['String']['input'];
   since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  until?: InputMaybe<Scalars['GitTimestamp']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   cursor?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -7833,9 +7834,9 @@ export type CommitsChangedFilesIfAvailableQuery = {
   repository?: {
     ref?: {
       target?:
-        | {__typename: 'Blob'}
+        | {type: 'Blob'}
         | {
-            __typename: 'Commit';
+            type: 'Commit';
             history: {
               pageInfo: {endCursor?: string | null; hasNextPage: boolean};
               nodes?: Array<{
@@ -7855,8 +7856,8 @@ export type CommitsChangedFilesIfAvailableQuery = {
               } | null> | null;
             };
           }
-        | {__typename: 'Tag'}
-        | {__typename: 'Tree'}
+        | {type: 'Tag'}
+        | {type: 'Tree'}
         | null;
     } | null;
   } | null;
@@ -7867,6 +7868,7 @@ export type CommitsChangedFilesQueryVariables = Exact<{
   repo: Scalars['String']['input'];
   branch: Scalars['String']['input'];
   since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  until?: InputMaybe<Scalars['GitTimestamp']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   cursor?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -7875,9 +7877,9 @@ export type CommitsChangedFilesQuery = {
   repository?: {
     ref?: {
       target?:
-        | {__typename: 'Blob'}
+        | {type: 'Blob'}
         | {
-            __typename: 'Commit';
+            type: 'Commit';
             history: {
               pageInfo: {endCursor?: string | null; hasNextPage: boolean};
               nodes?: Array<{
@@ -7897,8 +7899,8 @@ export type CommitsChangedFilesQuery = {
               } | null> | null;
             };
           }
-        | {__typename: 'Tag'}
-        | {__typename: 'Tree'}
+        | {type: 'Tag'}
+        | {type: 'Tree'}
         | null;
     } | null;
   } | null;
@@ -7909,6 +7911,7 @@ export type CommitsQueryVariables = Exact<{
   repo: Scalars['String']['input'];
   branch: Scalars['String']['input'];
   since?: InputMaybe<Scalars['GitTimestamp']['input']>;
+  until?: InputMaybe<Scalars['GitTimestamp']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   cursor?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -7917,9 +7920,9 @@ export type CommitsQuery = {
   repository?: {
     ref?: {
       target?:
-        | {__typename: 'Blob'}
+        | {type: 'Blob'}
         | {
-            __typename: 'Commit';
+            type: 'Commit';
             history: {
               pageInfo: {endCursor?: string | null; hasNextPage: boolean};
               nodes?: Array<{
@@ -7938,8 +7941,8 @@ export type CommitsQuery = {
               } | null> | null;
             };
           }
-        | {__typename: 'Tag'}
-        | {__typename: 'Tree'}
+        | {type: 'Tag'}
+        | {type: 'Tree'}
         | null;
     } | null;
   } | null;
@@ -8126,6 +8129,26 @@ export type PullRequestReviewsQuery = {
         } | null> | null;
       } | null;
     } | null;
+  } | null;
+};
+
+export type PullRequestsCursorQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type PullRequestsCursorQuery = {
+  repository?: {
+    pullRequests: {
+      pageInfo: {
+        startCursor?: string | null;
+        endCursor?: string | null;
+        hasNextPage: boolean;
+      };
+      nodes?: Array<{updatedAt: string} | null> | null;
+    };
   } | null;
 };
 

@@ -103,7 +103,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       streamNames.includes(stream.stream.name)
     );
 
-    const {startDate} = calculateDateRange({
+    const {startDate, endDate} = calculateDateRange({
+      start_date: config.start_date,
+      end_date: config.end_date,
       cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
       logger: this.logger.info.bind(this.logger),
     });
@@ -112,6 +114,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       config: {
         ...config,
         startDate,
+        endDate,
       },
       catalog: {streams},
       state,

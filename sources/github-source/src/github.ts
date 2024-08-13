@@ -37,6 +37,7 @@ import {
   ProjectsQuery,
   PullRequestReviewRequestsQuery,
   PullRequestReviewsQuery,
+  PullRequestsCursorQuery,
   PullRequestsQuery,
   RepoTagsQuery,
 } from 'faros-airbyte-common/github/generated';
@@ -52,6 +53,7 @@ import {
   PROJECTS_QUERY,
   PULL_REQUEST_REVIEW_REQUESTS_QUERY,
   PULL_REQUEST_REVIEWS_QUERY,
+  PULL_REQUESTS_CURSOR_QUERY,
   PULL_REQUESTS_QUERY,
   REPOSITORY_TAGS_QUERY,
   REVIEW_REQUESTS_FRAGMENT,
@@ -78,6 +80,7 @@ export const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
+export const DEFAULT_BACKFILL = false;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -98,6 +101,7 @@ export abstract class GitHub {
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
   protected readonly timeoutMs: number;
+  protected readonly backfill: boolean;
 
   constructor(
     config: GitHubConfig,
@@ -112,6 +116,7 @@ export abstract class GitHub {
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
+    this.backfill = config.backfill ?? DEFAULT_BACKFILL;
   }
 
   static async instance(
@@ -206,8 +211,19 @@ export abstract class GitHub {
   async *getPullRequests(
     org: string,
     repo: string,
-    cutoffDate?: Date
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<PullRequest> {
+    // since query doesn't support filtering by date, we fetch PRs in descending order and stop when we reach the start date
+    // for backfill, we first use a simplified query to iterate until reaching the end date to obtain a start cursor
+    const startCursor = await this.getPullRequestsStartCursor(
+      org,
+      repo,
+      endDate
+    );
+    if (this.backfill && !startCursor) {
+      return;
+    }
     const query = this.buildPRQuery();
     const iter = this.octokit(org).graphql.paginate.iterator<PullRequestsQuery>(
       query,
@@ -216,12 +232,16 @@ export abstract class GitHub {
         repo,
         page_size: this.pageSize,
         nested_page_size: this.pageSize,
+        startCursor,
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const pr of res.repository.pullRequests.nodes) {
-        if (cutoffDate && Utils.toDate(pr.updatedAt) <= cutoffDate) {
-          break;
+        if (this.backfill && endDate && Utils.toDate(pr.updatedAt) > endDate) {
+          continue;
+        }
+        if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+          return;
         }
         yield {
           org,
@@ -236,6 +256,33 @@ export abstract class GitHub {
             repo
           ),
         };
+      }
+    }
+  }
+
+  private async getPullRequestsStartCursor(
+    org: string,
+    repo: string,
+    endDate: Date
+  ): Promise<string | undefined> {
+    if (!this.backfill) {
+      return;
+    }
+    const iter = this.octokit(
+      org
+    ).graphql.paginate.iterator<PullRequestsCursorQuery>(
+      PULL_REQUESTS_CURSOR_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: this.pageSize,
+      }
+    );
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+      for (const pr of res.repository.pullRequests.nodes) {
+        if (Utils.toDate(pr.updatedAt) < endDate) {
+          return res.repository.pullRequests.pageInfo.startCursor;
+        }
       }
     }
   }
@@ -417,21 +464,31 @@ export abstract class GitHub {
   async *getPullRequestComments(
     org: string,
     repo: string,
-    cutoffDate?: Date
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<PullRequestComment> {
+    // query supports filtering by start date (since) but not by end date
+    // for backfill, we iterate in ascending order from the start date and stop when we reach the end date
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).pulls.listReviewCommentsForRepo,
       {
         owner: org,
         repo: repo,
-        since: cutoffDate?.toISOString(),
-        direction: 'desc',
+        since: startDate?.toISOString(),
+        direction: this.backfill ? 'asc' : 'desc',
         sort: 'updated',
         per_page: this.pageSize,
       }
     );
     for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const comment of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(comment.updated_at) > endDate
+        ) {
+          return;
+        }
         yield {
           repository: `${org}/${repo}`,
           user: pick(comment.user, [
@@ -528,14 +585,17 @@ export abstract class GitHub {
     org: string,
     repo: string,
     branch: string,
-    cutoffDate?: Date
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<Commit> {
+    // query supports filtering by start date (since) and end date (until)
     const queryParameters = {
       owner: org,
       repo,
       branch,
       page_size: this.pageSize,
-      since: cutoffDate?.toISOString(),
+      since: startDate?.toISOString(),
+      ...(this.backfill && {until: endDate?.toISOString()}),
     };
     // Check if the client has changedFilesIfAvailable field available
     const hasChangedFilesIfAvailable =
@@ -1054,7 +1114,7 @@ export abstract class GitHub {
     }
   }
 
-  async *getProjects(org: string, cutoffDate?: Date): AsyncGenerator<Project> {
+  async *getProjects(org: string): AsyncGenerator<Project> {
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
       {
@@ -1063,18 +1123,10 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      this.logger.info(JSON.stringify(res));
       for (const project of res.organization.projectsV2.nodes) {
-        if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
-          break;
-        }
         yield {
           org,
-          id: project.id,
-          name: project.name,
-          body: project.body,
-          created_at: project.created_at,
-          updated_at: project.updated_at,
+          ...pick(project, ['id', 'name', 'body', 'created_at', 'updated_at']),
         };
       }
     }
@@ -1083,23 +1135,18 @@ export abstract class GitHub {
   // REST API endpoint used to get organization classic projects
   // Will be deprecated, but we still need to support it for older server versions
   // see https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/
-  async *getClassicProjects(
-    org: string,
-    cutoffDate?: Date
-  ): AsyncGenerator<Project> {
+  async *getClassicProjects(org: string): AsyncGenerator<Project> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).projects.listForOrg,
+      {
+        org,
+        state: 'all',
+        per_page: this.pageSize,
+      }
+    );
     try {
-      const iter = this.octokit(org).paginate.iterator(
-        this.octokit(org).projects.listForOrg,
-        {
-          org,
-          per_page: this.pageSize,
-        }
-      );
       for await (const res of iter) {
         for (const project of res.data) {
-          if (cutoffDate && Utils.toDate(project.updated_at) <= cutoffDate) {
-            break;
-          }
           yield {
             org,
             id: toString(project.id),
@@ -1109,9 +1156,7 @@ export abstract class GitHub {
       }
     } catch (err: any) {
       if (err.status === 404 || err.status === 410) {
-        this.logger.warn(
-          `Failed to fetch classic projects as the resource is not available.`
-        );
+        this.logger.warn(`Classic projects API is not available/deprecated.`);
         return;
       }
       throw err;
