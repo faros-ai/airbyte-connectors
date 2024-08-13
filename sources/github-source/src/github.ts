@@ -1169,7 +1169,8 @@ export abstract class GitHub {
   async *getIssues(
     org: string,
     repo: string,
-    cutoffDate?: Date
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<Issue> {
     const iter = this.octokit(org).graphql.paginate.iterator<IssuesQuery>(
       ISSUES_QUERY,
@@ -1181,7 +1182,14 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const issue of res.repository.issues.nodes) {
-        if (cutoffDate && Utils.toDate(issue.updatedAt) <= cutoffDate) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(issue.updatedAt) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(issue.updatedAt) <= startDate) {
           break;
         }
         yield {
