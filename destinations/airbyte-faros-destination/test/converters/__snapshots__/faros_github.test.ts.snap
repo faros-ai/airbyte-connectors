@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 34 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_contributors_stats\\\\\\":1,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 308 records",
-  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":17,\\\\\\"vcs_UserEmail\\\\\\":3,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 38 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_contributors_stats\\\\\\":1,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 332 records",
+  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":46,\\\\\\"faros_MetricDefinition\\\\\\":16,\\\\\\"faros_MetricValue\\\\\\":46,\\\\\\"faros_MetricValueTag\\\\\\":106,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"tms_Label\\\\\\":3,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":19,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -4144,6 +4144,210 @@ N/A
     },
   },
   Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2024-08-09T07:56:55Z",
+      "assignee": Object {
+        "source": "GitHub",
+        "uid": "janedoe",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskAssignment__Deletion": Object {
+      "source": "GitHub",
+      "where": Object {
+        "assignee": Object {
+          "source": "GitHub",
+          "uid": "janedoe",
+        },
+        "task": Object {
+          "source": "GitHub",
+          "uid": "2457343272",
+        },
+      },
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2024-08-09T13:08:39Z",
+      "assignee": Object {
+        "source": "GitHub",
+        "uid": "nehanda",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "bug",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "good first issue",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "help wanted",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "createdAt": "2024-08-09T07:56:55.000Z",
+      "creator": Object {
+        "source": "GitHub",
+        "uid": "nehanda",
+      },
+      "description": "Description to test first issue",
+      "name": "This is a test Issue",
+      "source": "GitHub",
+      "status": Object {
+        "category": "Done",
+        "detail": "closed",
+      },
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2024-08-09T07:56:55.000Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "open",
+          },
+        },
+        Object {
+          "changedAt": "2024-08-09T13:33:38.000Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "closed",
+          },
+        },
+      ],
+      "uid": "2457343272",
+      "updatedAt": "2024-08-09T13:33:38.000Z",
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "GitHub",
+        "uid": "github/Hello-World",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "GitHub",
+        "uid": "github/Hello-World",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2457343272",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "bug",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2460042193",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "createdAt": "2024-08-12T04:58:32.000Z",
+      "creator": Object {
+        "source": "GitHub",
+        "uid": "nehanda",
+      },
+      "description": "Description of a test issue",
+      "name": "This is another test Issue",
+      "source": "GitHub",
+      "status": Object {
+        "category": "Todo",
+        "detail": "open",
+      },
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2024-08-12T04:58:32.000Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "open",
+          },
+        },
+      ],
+      "uid": "2460042193",
+      "updatedAt": "2024-08-12T04:58:32.000Z",
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "GitHub",
+        "uid": "github/Hello-World",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2460042193",
+      },
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "GitHub",
+        "uid": "github/Hello-World",
+      },
+      "source": "GitHub",
+      "task": Object {
+        "source": "GitHub",
+        "uid": "2460042193",
+      },
+    },
+  },
+  Object {
     "vcs_OrganizationTool": Object {
       "inactive": false,
       "organization": Object {
@@ -4585,6 +4789,114 @@ N/A
         "detail": "user",
       },
       "uid": "nehanda",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "mt@faros.ai",
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "tovbinm",
+      },
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "tovbinm",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "mt@faros.ai",
+      "htmlUrl": "https://github.com/tovbinm",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "tovbinm",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "jennie@faros.ai",
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "jeniii",
+      },
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "jeniii",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "jennie@faros.ai",
+      "htmlUrl": "https://github.com/jeniii",
+      "source": "GitHub",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "jeniii",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "name": "Nehanda",
+      "source": "GitHub",
+      "uid": "nehanda",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "name": "Jane Doe",
+      "source": "GitHub",
+      "uid": "janedoe",
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "source": "GitHub",
+      "tms_Label": Object {
+        "name": "bug",
+      },
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "source": "GitHub",
+      "tms_Label": Object {
+        "name": "good first issue",
+      },
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "source": "GitHub",
+      "tms_Label": Object {
+        "name": "help wanted",
+      },
     },
   },
 ]
