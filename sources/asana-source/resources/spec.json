@@ -92,7 +92,14 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
-      }      
+      },
+      "project_tasks_max_staleness_hours": {
+        "order": 8,
+        "type": "integer",
+        "title": "Project Tasks Max Staleness (hours)",
+        "description": "The maximum allowed time (in hours) that the project-task relationship can remain without being refreshed.",
+        "default": 0
+      }
     }
   }
 }
