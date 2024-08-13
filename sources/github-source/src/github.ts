@@ -1114,13 +1114,7 @@ export abstract class GitHub {
     }
   }
 
-  async *getProjects(
-    org: string,
-    startDate?: Date,
-    endDate?: Date
-  ): AsyncGenerator<Project> {
-    // since query doesn't support filtering by date, we fetch projects in descending order and stop when we reach the start date
-    // for backfill, we skip records newer than the end date
+  async *getProjects(org: string): AsyncGenerator<Project> {
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
       {
@@ -1130,16 +1124,6 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const project of res.organization.projectsV2.nodes) {
-        if (
-          this.backfill &&
-          endDate &&
-          Utils.toDate(project.updated_at) > endDate
-        ) {
-          continue;
-        }
-        if (startDate && Utils.toDate(project.updated_at) < startDate) {
-          return;
-        }
         yield {
           org,
           ...pick(project, ['id', 'name', 'body', 'created_at', 'updated_at']),
@@ -1151,12 +1135,7 @@ export abstract class GitHub {
   // REST API endpoint used to get organization classic projects
   // Will be deprecated, but we still need to support it for older server versions
   // see https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/
-  async *getClassicProjects(
-    org: string,
-    startDate?: Date,
-    endDate?: Date
-  ): AsyncGenerator<Project> {
-    // query doesn't support sorting nor filtering by date, so it's basically a full sync
+  async *getClassicProjects(org: string): AsyncGenerator<Project> {
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).projects.listForOrg,
       {
@@ -1168,16 +1147,6 @@ export abstract class GitHub {
     try {
       for await (const res of iter) {
         for (const project of res.data) {
-          if (
-            this.backfill &&
-            endDate &&
-            Utils.toDate(project.updated_at) > endDate
-          ) {
-            continue;
-          }
-          if (startDate && Utils.toDate(project.updated_at) < startDate) {
-            continue;
-          }
           yield {
             org,
             id: toString(project.id),
