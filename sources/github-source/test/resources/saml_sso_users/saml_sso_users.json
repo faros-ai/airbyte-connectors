@@ -1,0 +1,40 @@
+{
+  "organization": {
+    "samlIdentityProvider": {
+      "externalIdentities": {
+        "nodes": [
+          {
+            "samlIdentity": {
+              "nameId": "mt@faros.ai"
+            },
+            "user": {
+              "login": "tovbinm",
+              "html_url": "https://github.com/tovbinm",
+              "type": "User"
+            }
+          },
+          {
+            "samlIdentity": {
+              "nameId": "jennie@faros.ai"
+            },
+            "user": {
+              "login": "jeniii",
+              "html_url": "https://github.com/jeniii",
+              "type": "User"
+            }
+          },
+          {
+            "samlIdentity": {
+              "nameId": null
+            },
+            "user": null
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOAQmUGQ==",
+          "hasNextPage": false
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import {
   CommitsQuery,
   LabelsQuery,
   ListMembersQuery,
+  ListSamlSsoUsersQuery,
   PullRequestsQuery,
   RepoTagsQuery,
 } from './generated';
@@ -122,6 +123,10 @@ export type OutsideCollaborator = {
   >[0],
   'name' | 'login' | 'email' | 'type' | 'html_url'
 >;
+
+export type SamlSsoUser = {
+  org: string;
+} & ListSamlSsoUsersQuery['organization']['samlIdentityProvider']['externalIdentities']['nodes'][0];
 
 export type Tag = {
   repository: string;

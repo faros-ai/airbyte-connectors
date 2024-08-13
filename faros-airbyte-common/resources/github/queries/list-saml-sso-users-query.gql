@@ -1,0 +1,23 @@
+# This query is used to fetch users' username and email when SAML SSO is enabled on the organization level.
+query listSamlSsoUsers($login: String!, $cursor: String, $page_size: Int = 100) {
+  organization(login: $login) {
+    samlIdentityProvider {
+      externalIdentities(first: $page_size, after: $cursor) {
+        nodes {
+          samlIdentity {
+            nameId
+          }
+          user {
+            login
+            html_url: url
+            type: __typename
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+}

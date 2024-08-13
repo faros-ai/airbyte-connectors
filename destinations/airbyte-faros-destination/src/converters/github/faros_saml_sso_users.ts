@@ -1,18 +1,23 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {OutsideCollaborator} from 'faros-airbyte-common/github';
+import {SamlSsoUser} from 'faros-airbyte-common/github';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {GitHubConverter, PartialUser} from './common';
 
-export class FarosOutsideCollaborators extends GitHubConverter {
+export class FarosSamlSsoUsers extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [];
 
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const collaborator = record.record.data as OutsideCollaborator;
-    this.collectUser(collaborator);
+    const samlSsoUser = record.record.data as SamlSsoUser;
+    const user: PartialUser = {
+      org: samlSsoUser.org,
+      ...samlSsoUser.user,
+      email: samlSsoUser.samlIdentity?.nameId,
+    };
+    this.collectUser(user);
     return [];
   }
 
