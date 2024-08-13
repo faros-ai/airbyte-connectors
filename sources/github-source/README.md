@@ -91,14 +91,15 @@ connectors, such as linting/formatting tools, should go in the root
 | Copilot Usage ( ** )         | read:org             | Organization: Administration                     |
 | Issues                       | repo                 | Repository: Issues                               |
 | Labels                       | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
-| Organizations                | read:org             | Organization: Administration                     |
+| Organizations                | —                    | —                                                |
 | Projects                     | read:project         | Organization: Projects                           |
 | Pull Requests                | repo                 | Repository: Metadata & Pull Requests             |
 | Pull Request Comments        | repo                 | Repository: Metadata & Pull Requests             |
-| Releases                     | repo                 | Repository: Contents                             |
+| Releases                     | repo                 | Repository: Metadata & Contents                  |
 | Repositories                 | repo                 | Repository: Metadata                             |
+| SAML SSO Users ( ** )        | read:org             | Organization: Administration                     |
 | Tags                         | repo                 | Repository: Metadata                             |
-| Teams                        | read:org             | Organization: Administration & Members           |
-| Team Memberships             | read:org             | Organization: Administration & Members           |
-| Users                        | read:org & read:user | Organization: Administration & Members           |
-| Outside Collaborators ( ** ) | read:org             | Organization: Administration & Members           |
+| Teams                        | read:org             | Organization: Members                            |
+| Team Memberships             | read:org             | Organization: Members                            |
+| Users                        | read:org & read:user | Organization: Members                            |
+| Outside Collaborators ( ** ) | read:org             | Organization: Members                            |

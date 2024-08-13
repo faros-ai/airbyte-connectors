@@ -940,6 +940,33 @@ exports[`index streams - repositories with bucketing 1`] = `
 ]
 `;
 
+exports[`index streams - saml sso users 1`] = `
+[
+  {
+    "org": "github",
+    "samlIdentity": {
+      "nameId": "mt@faros.ai",
+    },
+    "user": {
+      "html_url": "https://github.com/tovbinm",
+      "login": "tovbinm",
+      "type": "User",
+    },
+  },
+  {
+    "org": "github",
+    "samlIdentity": {
+      "nameId": "jennie@faros.ai",
+    },
+    "user": {
+      "html_url": "https://github.com/jeniii",
+      "login": "jeniii",
+      "type": "User",
+    },
+  },
+]
+`;
+
 exports[`index streams - tags 1`] = `
 [
   {

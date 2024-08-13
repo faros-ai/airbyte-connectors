@@ -388,12 +388,29 @@ describe('index', () => {
       catalogOrPath: 'outside_collaborators/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          merge(
-            getOrganizationOutsideCollaboratorsMockedImplementation(
-              readTestResourceAsJSON(
-                'outside_collaborators/outside_collaborators.json'
-              )
+          getOrganizationOutsideCollaboratorsMockedImplementation(
+            readTestResourceAsJSON(
+              'outside_collaborators/outside_collaborators.json'
             )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - saml sso users', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'saml_sso_users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getOrganizationSamlSsoUsersMockedImplementation(
+            readTestResourceAsJSON('saml_sso_users/saml_sso_users.json')
           ),
           logger
         );
@@ -616,6 +633,9 @@ const getOrganizationOutsideCollaboratorsMockedImplementation = (res: any) => ({
     listOutsideCollaborators: jest.fn().mockReturnValue(res),
   },
 });
+
+const getOrganizationSamlSsoUsersMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('listSamlSsoUsers', res);
 
 const getRepositoryReleasesMockedImplementation = (res: any) => ({
   repos: {

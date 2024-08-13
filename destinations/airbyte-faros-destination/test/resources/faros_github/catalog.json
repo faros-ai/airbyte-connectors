@@ -80,6 +80,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__github__faros_saml_sso_users"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__github__faros_tags"
       },
       "destination_sync_mode": "overwrite"

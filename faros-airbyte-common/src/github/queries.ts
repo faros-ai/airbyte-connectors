@@ -24,6 +24,10 @@ const ASSIGNEE_FIELDS_FRAGMENT = loadQuery('assignee-fields-fragment.gql');
 // GraphQL query used to get pull requests
 export const PULL_REQUESTS_QUERY = loadQuery('pull-requests-query.gql');
 
+export const PULL_REQUESTS_CURSOR_QUERY = loadQuery(
+  'pull-requests-cursor-query.gql'
+);
+
 export const PULL_REQUEST_REVIEWS_QUERY =
   REVIEW_FIELDS_FRAGMENT + loadQuery('pull-request-reviews-query.gql');
 
@@ -36,6 +40,11 @@ export const LABELS_QUERY = loadQuery('labels-query.gql');
 
 // GraphQL query used to get organization members
 export const ORG_MEMBERS_QUERY = loadQuery('list-members-query.gql');
+
+// GraphQL query used to get SAML SSO users when SAML SSO is enabled on organization level
+export const LIST_SAML_SSO_USERS_QUERY = loadQuery(
+  'list-saml-sso-users-query.gql'
+);
 
 // GraphQL query used to get commits from repository
 export const COMMITS_QUERY =

@@ -31,6 +31,7 @@ import {FarosPullRequestComments} from './streams/faros_pull_request_comments';
 import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosReleases} from './streams/faros_releases';
 import {FarosRepositories} from './streams/faros_repositories';
+import {FarosSamlSsoUsers} from './streams/faros_saml_sso_users';
 import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
@@ -77,6 +78,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosPullRequestComments(config, this.logger),
       new FarosReleases(config, this.logger),
       new FarosRepositories(config, this.logger),
+      new FarosSamlSsoUsers(config, this.logger),
       new FarosTags(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),
@@ -103,7 +105,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       streamNames.includes(stream.stream.name)
     );
 
-    const {startDate} = calculateDateRange({
+    const {startDate, endDate} = calculateDateRange({
+      start_date: config.start_date,
+      end_date: config.end_date,
       cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
       logger: this.logger.info.bind(this.logger),
     });
@@ -112,6 +116,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       config: {
         ...config,
         startDate,
+        endDate,
       },
       catalog: {streams},
       state,

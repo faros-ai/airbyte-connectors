@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {OutsideCollaborator} from 'faros-airbyte-common/lib/github';
+import {OutsideCollaborator} from 'faros-airbyte-common/github';
 import {Dictionary} from 'ts-essentials';
 
 import {GitHub} from '../github';

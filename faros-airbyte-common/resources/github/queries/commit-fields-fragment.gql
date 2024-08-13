@@ -1,20 +1,20 @@
 fragment commitFields on Commit {
-    oid
-    message
-    url
-    authoredDate
-    author {
-        name
-        email
-        user {
-            type: __typename
-            login
-            url
-        }
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
     }
-    committer {
-        date
-    }
-    additions
-    deletions
+  }
+  committer {
+    date
+  }
+  additions
+  deletions
 }

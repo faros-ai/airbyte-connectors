@@ -25,6 +25,7 @@ const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
 const DEFAULT_RETRIES = 3;
+export const DEFAULT_PROJECT_TASKS_MAX_STALENESS_HOURS = 0;
 
 export interface AsanaConfig {
   credentials: {
@@ -37,6 +38,7 @@ export interface AsanaConfig {
   start_date?: string;
   end_date?: string;
   cutoff_days?: number;
+  project_tasks_max_staleness_hours?: number;
 }
 
 export class Asana {

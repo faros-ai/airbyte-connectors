@@ -21,7 +21,11 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly page_size?: number;
   readonly timeout?: number;
   readonly concurrency_limit?: number;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
+  endDate?: Date;
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;
 }

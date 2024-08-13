@@ -345,7 +345,7 @@ export abstract class GitHubConverter extends Converter {
     const finalUser: PartialUser = {};
     for (const user of users) {
       for (const key in user) {
-        if (!finalUser[key]) {
+        if (!finalUser[key] && user[key]) {
           finalUser[key] = user[key];
         }
       }
