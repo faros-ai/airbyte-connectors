@@ -12,7 +12,7 @@ export class FarosLabels extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const label = record.record.data as Label;
-    return [
+    const records = [
       {
         model: 'vcs_Label',
         record: {
@@ -20,5 +20,15 @@ export class FarosLabels extends GitHubConverter {
         },
       },
     ];
+    // If we are syncing repo issues and writing TMS models we also write all the TMS labels.
+    if (this.syncRepoIssues(ctx)) {
+      records.push({
+        model: 'tms_Label',
+        record: {
+          name: label.name,
+        },
+      });
+    }
+    return records;
   }
 }
