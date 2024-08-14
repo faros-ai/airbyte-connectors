@@ -124,7 +124,6 @@ export class OrgRepoFilter {
     return Array.from(this.reposByOrg.get(org).values());
   }
 
-  @Memoize()
   getRepository(org: string, name: string): Repository {
     const repo = this.reposByOrg.get(org)?.get(name);
     if (!repo) {
