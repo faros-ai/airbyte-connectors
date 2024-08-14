@@ -224,7 +224,13 @@ export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
 export type ContributorStats = {
   org: string;
   repo: string;
-  user: string;
+  user: {
+    login: string;
+    name?: string;
+    email?: string;
+    html_url: string;
+    type: string;
+  };
   total: number;
   weeks: {
     w?: number;

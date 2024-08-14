@@ -58,7 +58,7 @@ export class FarosCommits extends GitHubConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return [...this.convertUsers()];
+    return this.convertUsers();
   }
 
   private getDiffStats(commit: Commit): DiffStats | undefined {

@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {ContributorStats} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosContributorsStats extends GitHubConverter {
@@ -15,27 +15,31 @@ export class FarosContributorsStats extends GitHubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const {org, repo, user, total, weeks} = record.record
       .data as ContributorStats;
-    if (!user) {
-      return [];
-    }
+    this.collectUser(user);
     const weekly = weeks
       .filter((w) => (w?.a > 0 || w?.d > 0 || w?.c > 0) && w?.w > 0)
       .map((w) => ({
         additions: w.a,
         deletions: w.d,
         commits: w.c,
-        startOfWeek: Utils.toDate(w.w * 1000),
+        startOfWeek: Utils.toDate(w.w * 1000).toISOString(),
       }));
     return [
       {
         model: 'vcs_RepositoryContribution',
         record: {
           repository: GitHubCommon.repoKey(org, repo, this.streamName.source),
-          author: {uid: user, source: this.streamName.source},
+          author: {uid: user.login, source: this.streamName.source},
           totalCommits: total,
           weekly,
         },
       },
     ];
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.convertUsers();
   }
 }

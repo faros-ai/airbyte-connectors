@@ -75,7 +75,7 @@ export const DEFAULT_API_URL = 'https://api.github.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
-export const DEFAULT_FETCH_PR_FILES = true;
+export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
@@ -1106,12 +1106,12 @@ export abstract class GitHub {
 
     const data = Array.isArray(res.data) ? res.data : [];
     for (const stats of data) {
-      const user = stats?.author?.login;
-      if (!user) continue;
+      const user = stats?.author;
+      if (!user?.login) continue;
       yield {
         org,
         repo,
-        user,
+        user: pick(user, ['login', 'name', 'email', 'html_url', 'type']),
         ...pick(stats, ['total', 'weeks']),
       };
     }
