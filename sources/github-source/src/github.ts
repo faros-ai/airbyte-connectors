@@ -1189,7 +1189,7 @@ export abstract class GitHub {
         ) {
           continue;
         }
-        if (startDate && Utils.toDate(issue.updatedAt) <= startDate) {
+        if (startDate && Utils.toDate(issue.updatedAt) < startDate) {
           return;
         }
         yield {
