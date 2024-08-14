@@ -24,7 +24,7 @@ export class FarosContributorsStats extends GitHubConverter {
         additions: w.a,
         deletions: w.d,
         commits: w.c,
-        startOfWeek: Utils.toDate(w.w * 1000),
+        startOfWeek: Utils.toDate(w.w * 1000).toISOString(),
       }));
     return [
       {

@@ -160,7 +160,7 @@
         "type": "boolean",
         "title": "Fetch Pull Request Files",
         "description": "Fetch Pull Requests associated files",
-        "default": true
+        "default": false
       },
       "fetch_pull_request_reviews": {
         "order": 10,
