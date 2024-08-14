@@ -9,7 +9,24 @@
       "type": "string"
     },
     "user": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
     },
     "total": {
       "type": "number"

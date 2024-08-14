@@ -127,7 +127,11 @@ exports[`index streams - contributors stats 1`] = `
     "org": "github",
     "repo": "Hello-World",
     "total": 135,
-    "user": "octocat",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
     "weeks": [
       {
         "a": 6898,

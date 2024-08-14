@@ -11,7 +11,7 @@ export class FarosContributorsStats extends StreamWithRepoSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['org', 'repo', 'user'];
+    return [['org'], ['repo'], ['user', 'login']];
   }
 
   async *readRecords(

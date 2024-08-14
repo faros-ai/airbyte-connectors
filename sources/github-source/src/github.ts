@@ -1106,12 +1106,12 @@ export abstract class GitHub {
 
     const data = Array.isArray(res.data) ? res.data : [];
     for (const stats of data) {
-      const user = stats?.author?.login;
-      if (!user) continue;
+      const user = stats?.author;
+      if (!user?.login) continue;
       yield {
         org,
         repo,
-        user,
+        user: pick(user, ['login', 'name', 'email', 'html_url', 'type']),
         ...pick(stats, ['total', 'weeks']),
       };
     }

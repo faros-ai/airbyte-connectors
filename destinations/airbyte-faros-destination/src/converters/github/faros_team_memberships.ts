@@ -29,6 +29,6 @@ export class FarosTeamMemberships extends GitHubConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return [...this.convertUsers()];
+    return this.convertUsers();
   }
 }
