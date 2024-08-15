@@ -5,7 +5,10 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
 export class FarosLabels extends GitHubConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Label'];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Label',
+    'vcs_Label',
+  ];
 
   async convert(
     record: AirbyteRecord,
