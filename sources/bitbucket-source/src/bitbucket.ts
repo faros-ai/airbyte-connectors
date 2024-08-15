@@ -28,6 +28,8 @@ import {
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_CUTOFF_DAYS = 90;
+
 export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
 
 interface BitbucketResponse<T> {
@@ -62,11 +64,9 @@ export class Bitbucket {
     const client = new BitbucketClient({baseUrl, auth});
     const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
 
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
-    }
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    startDate.setDate(startDate.getDate() - cutoffDays);
     Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger, startDate);
     return Bitbucket.bitbucket;
   }
@@ -104,9 +104,6 @@ export class Bitbucket {
       ];
     }
 
-    if (!config.workspaces || config.workspaces.length < 1) {
-      return [false, 'No workspaces provided'];
-    }
     try {
       config.serverUrl && new URL(config.serverUrl);
     } catch (error) {
@@ -584,6 +581,14 @@ export class Bitbucket {
         workspace
       );
     }
+  }
+
+  async getWorkspaceIds(): Promise<ReadonlyArray<string>> {
+    const workspaces = [];
+    for await (const workspace of this.getWorkspaces()) {
+      workspaces.push(workspace.slug);
+    }
+    return workspaces;
   }
 
   async *getWorkspaces(): AsyncGenerator<Workspace> {

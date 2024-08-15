@@ -6,14 +6,14 @@ interface CalculatedActivity {
 }
 
 export interface BitbucketConfig extends AirbyteConfig {
-  readonly serverUrl?: string;
+  readonly api_url?: string;
   readonly username?: string;
   readonly password?: string;
   readonly token?: string;
   readonly workspaces: ReadonlyArray<string>;
   readonly repositories?: ReadonlyArray<string>;
-  readonly pageSize?: number;
-  readonly cutoffDays?: number;
+  readonly page_size?: number;
+  readonly cutoff_days?: number;
 }
 
 export interface Branch {
