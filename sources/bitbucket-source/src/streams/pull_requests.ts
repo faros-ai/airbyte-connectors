@@ -6,8 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, PullRequest} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {BitbucketConfig, PullRequest} from '../types';
 
 type StreamSlice = {
   workspace: string;

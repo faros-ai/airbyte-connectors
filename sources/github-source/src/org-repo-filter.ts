@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {collectReposByNamespace} from 'faros-airbyte-common/common';
 import {Repository} from 'faros-airbyte-common/github';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -34,11 +35,11 @@ export class OrgRepoFilter {
 
     const reposByOrg = new Map<string, Set<string>>();
     if (repositories?.length) {
-      collectReposByOrg(reposByOrg, repositories);
+      collectReposByNamespace(reposByOrg, repositories);
     }
     const excludedReposByOrg = new Map<string, Set<string>>();
     if (excluded_repositories?.length) {
-      collectReposByOrg(excludedReposByOrg, excluded_repositories);
+      collectReposByNamespace(excludedReposByOrg, excluded_repositories);
     }
     for (const org of reposByOrg.keys()) {
       if (excludedReposByOrg.has(org)) {
@@ -131,23 +132,5 @@ export class OrgRepoFilter {
       throw new VError('Repository not found: %s/%s', org, name);
     }
     return repo;
-  }
-}
-
-function collectReposByOrg(
-  reposByOrg: Map<string, Set<string>>,
-  repos: ReadonlyArray<string>
-): void {
-  for (const repo of repos) {
-    const [org, name] = repo.split('/');
-    if (!org || !name) {
-      throw new VError(
-        `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
-      );
-    }
-    if (!reposByOrg.has(org)) {
-      reposByOrg.set(org, new Set());
-    }
-    reposByOrg.get(org).add(name);
   }
 }

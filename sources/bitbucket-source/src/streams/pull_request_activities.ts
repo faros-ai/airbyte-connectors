@@ -6,8 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, PRActivity} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {BitbucketConfig, PRActivity} from '../types';
 import {PullRequests} from './pull_requests';
 
 type StreamSlice = {

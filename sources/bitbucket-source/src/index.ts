@@ -8,8 +8,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Bitbucket} from './bitbucket/bitbucket';
-import {BitbucketConfig} from './bitbucket/types';
+import {Bitbucket} from './bitbucket';
 import {
   Branches,
   Commits,
@@ -23,6 +22,7 @@ import {
   Workspaces,
   WorkspaceUsers,
 } from './streams';
+import {BitbucketConfig} from './types';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -38,7 +38,6 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
 
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
@@ -64,7 +63,7 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
       new Deployments(config, this.logger),
       new Issues(config, this.logger),
       pipelines,
-      new PipelineSteps(config, pipelines, this.logger),
+      new PipelineSteps(config, pipelines, this.logger), // TODO: Refactor to avoid passing pipelines stream
       pullRequests,
       new PullRequestActivities(config, pullRequests, this.logger),
       new Repositories(config, this.logger),

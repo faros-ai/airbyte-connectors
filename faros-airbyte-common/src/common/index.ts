@@ -74,3 +74,21 @@ export function calculateDateRange(options: {
 
   return {startDate, endDate};
 }
+
+export function collectReposByNamespace(
+  reposByNamespace: Map<string, Set<string>>,
+  repos: ReadonlyArray<string>
+): void {
+  for (const repo of repos) {
+    const [nameSpace, name] = repo.split('/');
+    if (!nameSpace || !name) {
+      throw new VError(
+        `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
+      );
+    }
+    if (!reposByNamespace.has(name)) {
+      reposByNamespace.set(nameSpace, new Set());
+    }
+    reposByNamespace.get(nameSpace).add(name);
+  }
+}

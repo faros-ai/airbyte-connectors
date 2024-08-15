@@ -4,10 +4,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Bitbucket Spec",
     "type": "object",
-    "required": ["workspaces", "cutoff_days"],
+    "required": ["workspaces"],
     "additionalProperties": true,
     "properties": {
-      "serverUrl": {
+      "api_url": {
         "type": "string",
         "title": "API URL",
         "description": "The API URL for fetching data from Bitbucket",
@@ -16,16 +16,18 @@
       },
       "username": {
         "type": "string",
+        "title": "Bitbucket Username",
         "description": "Bitbucket username. Either username/password or Access Token must be provided."
       },
       "password": {
         "type": "string",
+        "title": "Bitbucket Password",
         "description": "Bitbucket password",
         "airbyte_secret": true
       },
       "token": {
         "type": "string",
-        "title": "Access Token",
+        "title": "Bitbucket Access Token",
         "description": "Personal Access Token for Bitbucket API authentication. See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html for information on how to generate this token.",
         "airbyte_secret": true
       },
@@ -53,7 +55,7 @@
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "pagelen": {
+      "page_size": {
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket API",
