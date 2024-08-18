@@ -81,7 +81,6 @@ export async function getDataQualitySummary(
     url: cfg.api_url,
     apiKey: cfg.api_key,
     phantoms: Phantom.Include,
-    useGraphQLV2: true,
   });
   for (const modelName of modelsOfInterest) {
     dataQualityRecordCounts.push(

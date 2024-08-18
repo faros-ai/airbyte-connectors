@@ -114,7 +114,6 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     const faros = new FarosClient({
       url: config.api_url ?? DEFAULT_API_URL,
       apiKey: config.api_key,
-      useGraphQLV2: (config.graphql_api ?? 'v2') === GraphQLVersion.V2,
     });
 
     return faros;

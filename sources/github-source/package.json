@@ -39,7 +39,7 @@
     "@octokit/types": "^13.5.0",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",
-    "faros-js-client": "^0.4.1",
+    "faros-js-client": "^0.5.2",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },

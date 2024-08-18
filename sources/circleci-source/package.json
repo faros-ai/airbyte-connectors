@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "@types/glob-to-regexp": "^0.4.4",
-    "axios": "^1.6.5",
+    "axios": "^1.7.4",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "0.0.1",
-    "faros-js-client": "^0.4.1",
+    "faros-js-client": "^0.5.2",
     "glob-to-regexp": "0.4.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"

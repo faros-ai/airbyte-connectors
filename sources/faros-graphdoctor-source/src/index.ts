@@ -70,7 +70,6 @@ export class FarosGraphDoctorSource extends AirbyteSourceBase<GraphDoctorConfig>
     const faros = new FarosClient({
       url: config.api_url ?? DEFAULT_API_URL,
       apiKey: config.api_key,
-      useGraphQLV2: true,
     });
 
     return faros;

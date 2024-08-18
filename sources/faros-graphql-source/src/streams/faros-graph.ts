@@ -191,9 +191,6 @@ export class FarosGraph extends AirbyteStreamBase {
       this.logger.debug(
         `Used "${stateKey}" as key to state for query: "${query}"`
       );
-    } else if (this.config.graphql_api === GraphQLVersion.V1) {
-      const entrySchema = await this.faros.entrySchema(this.config.graph);
-      this.nodes = new Nodes(entrySchema);
     }
 
     this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
