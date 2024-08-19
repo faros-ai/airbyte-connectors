@@ -177,56 +177,6 @@ export class Incidents extends ServiceNowConverter {
     return this.cloudV2DeletionRecords(ctx.farosClient, ctx.graph, ctx.origin);
   }
 
-  private async cloudV1DeletionRecords(
-    faros: FarosClient,
-    graph: string,
-    origin: string
-  ): Promise<ReadonlyArray<DestinationRecord>> {
-    const query = `
-      {
-        ims {
-          incidentApplicationImpacts {
-            nodes {
-              metadata {
-                origin
-              }
-              incident {
-                uid
-                source
-              }
-              application {
-                name
-                platform
-              }
-            }
-          }
-        }
-      }`;
-
-    const results: DestinationRecord[] = [];
-    for await (const incAppImpact of faros.nodeIterable(graph, query)) {
-      if (
-        incAppImpact.metadata?.origin === origin &&
-        Incidents.shouldDeleteRecord(
-          incAppImpact,
-          this.streamName.source,
-          this.incAppImpacts
-        )
-      ) {
-        results.push({
-          model: 'ims_IncidentApplicationImpact__Deletion',
-          record: {
-            where: {
-              incident: incAppImpact.incident,
-              application: incAppImpact.application,
-            },
-          },
-        });
-      }
-    }
-    return results;
-  }
-
   private async cloudV2DeletionRecords(
     faros: FarosClient,
     graph: string,

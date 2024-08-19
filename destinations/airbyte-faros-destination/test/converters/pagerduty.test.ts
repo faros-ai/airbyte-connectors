@@ -18,9 +18,7 @@ describe('pagerduty', () => {
       .thenReply(
         200,
         JSON.stringify({
-          data: {
-            org: {teams: {edges: [{node: {uid: 'eng', name: 'Engineering'}}]}},
-          },
+          data: {org_Team: [{_id: '1', uid: 'eng', name: 'Engineering'}]},
         })
       );
   });

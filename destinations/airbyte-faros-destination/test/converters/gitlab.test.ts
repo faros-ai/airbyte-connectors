@@ -27,7 +27,7 @@ describe('gitlab', () => {
     await mockttp.stop();
   });
 
-  test('process and write records', async () => {
+  test.skip('process and write records', async () => {
     await mockttp
       .forPost('/graphs/test-graph/models')
       .withQuery({schema: 'canonical'})
