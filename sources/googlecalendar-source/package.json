@@ -33,7 +33,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^9.3.0",
+    "commander": "^12.1.0",
     "faros-airbyte-cdk": "0.0.1",
     "googleapis": "^108.0.0",
     "verror": "^1.10.1"
