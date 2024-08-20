@@ -81,7 +81,7 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_PAGE_SIZE = 100;
-export const DEFAULT_MAX_PR_PAGE_SIZE = 25;
+export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
@@ -104,7 +104,7 @@ export abstract class GitHub {
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
-  protected readonly maxPullRequestsPageSize: number;
+  protected readonly pullRequestsPageSize: number;
   protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
 
@@ -120,8 +120,8 @@ export abstract class GitHub {
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
-    this.maxPullRequestsPageSize =
-      config.max_pull_requests_page_size ?? DEFAULT_MAX_PR_PAGE_SIZE;
+    this.pullRequestsPageSize =
+      config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
     this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
   }
@@ -232,7 +232,7 @@ export abstract class GitHub {
       return;
     }
     const query = this.buildPRQuery();
-    let currentPageSize = this.maxPullRequestsPageSize;
+    let currentPageSize = this.pullRequestsPageSize;
     let currentCursor = startCursor;
     let hasNextPage = true;
     let querySuccess = false;
@@ -280,7 +280,7 @@ export abstract class GitHub {
           // increase page size for the next iteration in case it was decreased previously
           currentPageSize = Math.min(
             currentPageSize * 2,
-            this.maxPullRequestsPageSize
+            this.pullRequestsPageSize
           );
           currentCursor = res.repository.pullRequests.pageInfo.endCursor;
           hasNextPage = res.repository.pullRequests.pageInfo.hasNextPage;

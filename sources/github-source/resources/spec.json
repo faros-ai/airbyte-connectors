@@ -197,10 +197,10 @@
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
-      "max_pull_requests_page_size": {
+      "pull_requests_page_size": {
         "order": 15,
         "type": "integer",
-        "title": "Maximum Pull Requests Page Size",
+        "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
