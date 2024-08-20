@@ -69,9 +69,10 @@ export class FarosCommits extends GitHubConverter {
       commit.changedFiles,
     ])
       ? {
-          linesAdded: commit?.additions,
-          linesDeleted: commit?.deletions,
-          filesChanged: commit?.changedFilesIfAvailable ?? commit?.changedFiles,
+          linesAdded: commit?.additions ?? null,
+          linesDeleted: commit?.deletions ?? null,
+          filesChanged:
+            commit?.changedFilesIfAvailable ?? commit?.changedFiles ?? null,
         }
       : undefined;
   }

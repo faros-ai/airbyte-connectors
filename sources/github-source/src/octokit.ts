@@ -20,8 +20,6 @@ import {
 } from './github';
 import {GitHubConfig} from './types';
 
-export type RateLimitHandler = (reason?: Error) => boolean;
-
 export type ExtendedOctokit = Octokit &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
@@ -36,10 +34,9 @@ export function makeOctokitClient(
   cfg: GitHubConfig,
   installationId?: number,
   logger?: AirbyteLogger,
-  onRateLimit?: RateLimitHandler,
   maxRetries = 3
 ): ExtendedOctokit {
-  const throttle = getThrottle(cfg, logger, onRateLimit, maxRetries);
+  const throttle = getThrottle(cfg, logger, maxRetries);
   const baseUrl = cfg.url ?? DEFAULT_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
@@ -61,6 +58,7 @@ export function makeOctokitClient(
     baseUrl,
     request,
     throttle,
+    log: logger,
   });
 
   kit.hook.before('request', (request) => {
@@ -114,7 +112,6 @@ function getOctokitAuth(
 function getThrottle(
   cfg: GitHubConfig,
   logger: AirbyteLogger,
-  onRateLimit: (reason?: Error) => boolean,
   maxRetries: number
 ): ThrottlingOptions & {global: Bottleneck.Group} {
   return {
@@ -122,20 +119,28 @@ function getThrottle(
       minTime: 100,
       maxConcurrent: cfg.concurrency_limit ?? DEFAULT_CONCURRENCY,
     }),
-    onRateLimit: (after: number, opts: any): boolean | undefined => {
-      const msg = `Quota exhausted for ${opts.method} ${opts.url}`;
-      logger.warn(msg);
-      return onRateLimit(new Error(msg));
-    },
-    onSecondaryRateLimit: (after: number, opts: any): boolean | undefined => {
-      logger.warn(
-        `Abuse detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
-      );
-      if (opts.request.retryCount < maxRetries) {
-        logger.info(`Retrying after ${after} seconds.`);
-        return true;
-      }
-    },
+    onRateLimit: rateLimitHandler('RateLimit', logger, maxRetries),
+    onSecondaryRateLimit: rateLimitHandler(
+      'SecondaryRateLimit',
+      logger,
+      maxRetries
+    ),
+  };
+}
+
+function rateLimitHandler(
+  event: string,
+  logger: AirbyteLogger,
+  maxRetries: number
+) {
+  return (after: number, opts: any): boolean | undefined => {
+    logger.warn(
+      `${event} detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
+    );
+    if (opts.request.retryCount < maxRetries) {
+      logger.info(`Retrying after ${after} seconds.`);
+      return true;
+    }
   };
 }
 
