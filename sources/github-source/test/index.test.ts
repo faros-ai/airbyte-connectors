@@ -12,7 +12,11 @@ import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
-import {graphqlMockedImplementation, setupGitHubInstance} from './utils';
+import {
+  ErrorWithStatus,
+  graphqlMockedImplementation,
+  setupGitHubInstance,
+} from './utils';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -110,8 +114,13 @@ describe('index', () => {
       catalogOrPath: 'copilot_seats/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getCopilotSeatsMockedImplementation(
-            readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+          merge(
+            getCopilotSeatsMockedImplementation(
+              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+            ),
+            getTeamAddMemberAuditLogsMockedImplementation(
+              new ErrorWithStatus(400, 'API not available')
+            )
           ),
           logger
         );
@@ -167,15 +176,20 @@ describe('index', () => {
     });
   });
 
-  test('streams - copilot usage', async () => {
+  test('streams - copilot usage without teams', async () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getCopilotUsageForOrgMockedImplementation(
-            readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+          merge(
+            getCopilotUsageForOrgMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            ),
+            getTeamsMockedImplementation(
+              new ErrorWithStatus(400, 'API not available')
+            )
           ),
           logger
         );
@@ -607,7 +621,7 @@ const getCopilotSeatsMockedImplementation = (res: any) => ({
 });
 
 const getTeamAddMemberAuditLogsMockedImplementation = (res: any) => ({
-  auditLogs: jest.fn().mockReturnValue(res),
+  auditLogs: res instanceof Error ? res : jest.fn().mockReturnValue(res),
 });
 
 const getCopilotUsageForOrgMockedImplementation = (res: any) => ({
@@ -651,7 +665,7 @@ const getOrganizationMembersMockedImplementation = (res: any) =>
 
 const getTeamsMockedImplementation = (res: any) => ({
   teams: {
-    list: jest.fn().mockReturnValue(res),
+    list: res instanceof Error ? res : jest.fn().mockReturnValue(res),
   },
 });
 
