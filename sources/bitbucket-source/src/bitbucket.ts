@@ -62,7 +62,7 @@ export class Bitbucket {
 
     const baseUrl = config.serverUrl || DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-    const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
+    const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const startDate = new Date();
