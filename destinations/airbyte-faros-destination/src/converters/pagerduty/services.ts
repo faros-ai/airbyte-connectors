@@ -64,35 +64,19 @@ export class Services extends PagerDutyConverter {
     if (!ctx.farosClient || !ctx.graph) {
       return orgTeams;
     }
-    let iter: AsyncIterable<OrgTeam>;
-    if (ctx.farosClient.graphVersion === 'v1') {
-      const query = `
-      {
-        org {
-          teams {
-            nodes {
-              uid
-              name
-            }
-          }
-        }
-      }`;
-      iter = ctx.farosClient.nodeIterable(ctx.graph, query);
-    } else {
-      const query = `
-      {
-        org_Team {
-          uid
-          name
-        }
-      }`;
-      iter = ctx.farosClient.nodeIterable(
-        ctx.graph,
-        query,
-        100,
-        paginatedQueryV2
-      );
-    }
+    const query = `
+    {
+      org_Team {
+        uid
+        name
+      }
+    }`;
+    const iter = ctx.farosClient.nodeIterable(
+      ctx.graph,
+      query,
+      100,
+      paginatedQueryV2
+    );
     for await (const node of iter) {
       orgTeams.push({uid: node.uid, name: node.name?.toLowerCase()});
     }

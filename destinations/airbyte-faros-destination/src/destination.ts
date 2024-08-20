@@ -28,15 +28,7 @@ import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {
-  difference,
-  isEmpty,
-  keyBy,
-  mapValues,
-  pickBy,
-  sortBy,
-  uniq,
-} from 'lodash';
+import {difference, isEmpty, keyBy, pickBy, sortBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -222,12 +214,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
-    const useGraphQLV2 = (config.edition_configs.graphql_api ?? 'v2') === 'v2';
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url ?? DEFAULT_API_URL,
         apiKey: config.edition_configs.api_key,
-        useGraphQLV2,
       };
 
       const axiosConfig = {
@@ -264,9 +254,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (!this.farosRevisionExpiration) {
       this.farosRevisionExpiration = '5 seconds';
     }
-    if (useGraphQLV2) {
-      await this.initGraphQLV2(config);
-    }
+    await this.initGraphQLV2(config);
   }
 
   private async initGraphQLV2(config: DestinationConfig): Promise<void> {
