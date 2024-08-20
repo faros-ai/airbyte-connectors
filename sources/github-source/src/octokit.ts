@@ -36,10 +36,9 @@ export function makeOctokitClient(
   cfg: GitHubConfig,
   installationId?: number,
   logger?: AirbyteLogger,
-  onRateLimit?: RateLimitHandler,
   maxRetries = 3
 ): ExtendedOctokit {
-  const throttle = getThrottle(cfg, logger, onRateLimit, maxRetries);
+  const throttle = getThrottle(cfg, logger, maxRetries);
   const baseUrl = cfg.url ?? DEFAULT_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
@@ -61,6 +60,7 @@ export function makeOctokitClient(
     baseUrl,
     request,
     throttle,
+    log: logger,
   });
 
   kit.hook.before('request', (request) => {
@@ -114,9 +114,12 @@ function getOctokitAuth(
 function getThrottle(
   cfg: GitHubConfig,
   logger: AirbyteLogger,
-  onRateLimit: (reason?: Error) => boolean,
   maxRetries: number
 ): ThrottlingOptions & {global: Bottleneck.Group} {
+  const onRateLimit: RateLimitHandler = (error) => {
+    logger?.error(error.message, error.stack);
+    return false; // fail on rate limit
+  };
   return {
     global: new Bottleneck.Group({
       minTime: 100,
@@ -129,7 +132,7 @@ function getThrottle(
     },
     onSecondaryRateLimit: (after: number, opts: any): boolean | undefined => {
       logger.warn(
-        `Abuse detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
+        `SecondaryRateLimit detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
       );
       if (opts.request.retryCount < maxRetries) {
         logger.info(`Retrying after ${after} seconds.`);

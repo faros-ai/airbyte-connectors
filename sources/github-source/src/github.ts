@@ -85,6 +85,8 @@ export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 
+const MAX_PR_PAGE_SIZE = 25;
+
 type TeamMemberTimestamps = {
   [user: string]: {
     [team: string]: {
@@ -228,37 +230,71 @@ export abstract class GitHub {
       return;
     }
     const query = this.buildPRQuery();
-    const iter = this.octokit(org).graphql.paginate.iterator<PullRequestsQuery>(
-      query,
-      {
+    let currentPageSize = MAX_PR_PAGE_SIZE;
+    let currentCursor = startCursor;
+    let hasNextPage = true;
+    let querySuccess = false;
+    while (hasNextPage) {
+      const iter = this.octokit(
+        org
+      ).graphql.paginate.iterator<PullRequestsQuery>(query, {
         owner: org,
         repo,
-        page_size: this.pageSize,
+        page_size: currentPageSize,
         nested_page_size: this.pageSize,
-        startCursor,
-      }
-    );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
-      for (const pr of res.repository.pullRequests.nodes) {
-        if (this.backfill && endDate && Utils.toDate(pr.updatedAt) > endDate) {
-          continue;
+        currentCursor,
+      });
+      try {
+        for await (const res of this.wrapIterable(
+          iter,
+          this.timeout.bind(this)
+        )) {
+          querySuccess = true;
+          for (const pr of res.repository.pullRequests.nodes) {
+            if (
+              this.backfill &&
+              endDate &&
+              Utils.toDate(pr.updatedAt) > endDate
+            ) {
+              continue;
+            }
+            if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+              return;
+            }
+            yield {
+              org,
+              repo,
+              ...pr,
+              labels: await this.extractPullRequestLabels(pr, org, repo),
+              files: await this.extractPullRequestFiles(pr, org, repo),
+              reviews: await this.extractPullRequestReviews(pr, org, repo),
+              reviewRequests: await this.extractPullRequestReviewRequests(
+                pr,
+                org,
+                repo
+              ),
+            };
+          }
+          // increase page size for the next iteration in case it was decreased previously
+          currentPageSize = Math.min(currentPageSize * 2, MAX_PR_PAGE_SIZE);
+          currentCursor = res.repository.pullRequests.pageInfo.endCursor;
+          hasNextPage = res.repository.pullRequests.pageInfo.hasNextPage;
+          querySuccess = false;
         }
-        if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
-          return;
+      } catch (error: any) {
+        if (querySuccess) {
+          // if query succeeded, the error is not related to the query itself
+          throw error;
         }
-        yield {
-          org,
-          repo,
-          ...pr,
-          labels: await this.extractPullRequestLabels(pr, org, repo),
-          files: await this.extractPullRequestFiles(pr, org, repo),
-          reviews: await this.extractPullRequestReviews(pr, org, repo),
-          reviewRequests: await this.extractPullRequestReviewRequests(
-            pr,
-            org,
-            repo
-          ),
-        };
+        if (currentPageSize === 1) {
+          // if page size is already 1, there's nothing else to try
+          this.logger.warn(
+            `Failed to query PRs with page size 1 on repo ${org}/${repo}`
+          );
+          throw error;
+        }
+        // decrease page size and try again
+        currentPageSize = Math.max(Math.floor(currentPageSize / 2), 1);
       }
     }
   }
