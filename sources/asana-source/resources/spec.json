@@ -99,6 +99,15 @@
         "title": "Project Tasks Max Staleness (hours)",
         "description": "The maximum allowed time (in hours) that the project-task relationship can remain without being refreshed.",
         "default": 0
+      },
+      "required_task_custom_fields": {
+        "order": 9,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Required Task Custom Fields gid(s)",
+        "description": "Only fetch tasks that have at least one of the specified custom fields set."
       }
     }
   }
