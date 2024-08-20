@@ -874,8 +874,23 @@ export abstract class GitHub {
       for (const usage of res.data) {
         yield {
           org,
+          team: null,
           ...usage,
         };
+      }
+      const teams = await this.getTeams(org);
+      for (const team of teams) {
+        const res = await this.octokit(org).copilot.usageMetricsForTeam({
+          org,
+          team_slug: team.slug,
+        });
+        for (const usage of res.data) {
+          yield {
+            org,
+            team: team.slug,
+            ...usage,
+          };
+        }
       }
     } catch (err: any) {
       // returns 404 if the organization does not have GitHub Copilot usage metrics enabled or if auth doesn't have required permissions

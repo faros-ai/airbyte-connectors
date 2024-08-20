@@ -5,6 +5,9 @@
     "org": {
       "type": "string"
     },
+    "team": {
+      "type": "string"
+    },
     "day": {
       "type": "string",
       "format": "date"

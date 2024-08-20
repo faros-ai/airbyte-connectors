@@ -11,7 +11,7 @@ export class FarosCopilotUsage extends StreamWithOrgSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['org', 'day'];
+    return ['org', 'team', 'day'];
   }
 
   get supportsIncremental(): boolean {

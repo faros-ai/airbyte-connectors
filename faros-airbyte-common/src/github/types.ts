@@ -215,6 +215,7 @@ export enum GitHubTool {
 
 export type CopilotUsageSummary = {
   org: string;
+  team: string | null;
 } & GetResponseDataTypeFromEndpointMethod<
   typeof octokit.copilot.usageMetricsForOrg
 >[0];
