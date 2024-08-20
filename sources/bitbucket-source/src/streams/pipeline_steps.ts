@@ -38,7 +38,7 @@ export class PipelineSteps extends AirbyteStreamBase {
         const pipelines = this.pipelines.readRecords(
           SyncMode.FULL_REFRESH,
           undefined,
-          {workspace, repository: repo.slug}
+          {workspace, repo: repo.slug}
         );
         for await (const pipeline of pipelines) {
           yield {workspace, repository: repo.slug, pipeline: pipeline.uuid};
