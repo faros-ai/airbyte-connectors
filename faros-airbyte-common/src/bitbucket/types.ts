@@ -577,7 +577,7 @@ export interface PRActivity {
 
 export interface PRDiffStat {
   readonly status: string;
-  readonly old: null | any;
+  readonly old: any;
   readonly linesRemoved: number;
   readonly linesAdded: number;
   readonly type: string;
@@ -612,6 +612,7 @@ export interface Repository {
   readonly project: {
     readonly type: string;
     readonly name: string;
+    readonly slug: string;
     readonly key: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};

@@ -1284,6 +1284,7 @@ export class Bitbucket {
         name: project.name,
         key: project.key,
         uuid: project.uuid,
+        slug: project.slug,
       },
       language: data.language,
       createdOn: data.created_on,
