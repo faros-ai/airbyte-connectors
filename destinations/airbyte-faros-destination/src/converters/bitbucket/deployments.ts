@@ -78,7 +78,7 @@ export class Deployments extends BitbucketConverter {
         deployment.release?.commit?.hash
     );
 
-    const pipeline = pipelineRecord?.record?.data as undefined | Pipeline;
+    const pipeline = pipelineRecord?.record?.data as Pipeline;
     const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
     let build = null;
     if (workspace && repo) {

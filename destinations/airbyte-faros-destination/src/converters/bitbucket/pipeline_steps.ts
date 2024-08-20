@@ -44,7 +44,7 @@ export class PipelineSteps extends BitbucketConverter {
 
     const pipelinesStream = this.pipelinesStream.asString;
     const pipelinesRecord = ctx.get(pipelinesStream, step.pipeline.uuid);
-    const pipeline = pipelinesRecord?.record?.data as undefined | Pipeline;
+    const pipeline = pipelinesRecord?.record?.data as Pipeline;
 
     const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
     if (!workspace || !repo) return [];

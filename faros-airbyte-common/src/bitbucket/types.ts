@@ -217,10 +217,10 @@ export interface Issue {
   readonly votes: number;
   readonly watches: number;
   readonly id: number;
-  readonly component: any | null;
-  readonly version: any | null;
-  readonly editedOn: any | null;
-  readonly milestone: any | null;
+  readonly component: any;
+  readonly version: any;
+  readonly editedOn: any;
+  readonly milestone: any;
   readonly repository: {
     readonly type: string;
     readonly name: string;
