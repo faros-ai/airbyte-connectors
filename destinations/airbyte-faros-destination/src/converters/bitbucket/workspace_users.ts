@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {WorkspaceUser} from 'faros-airbyte-common/bitbucket';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
-import {WorkspaceUser} from './types';
 
 export class WorkspaceUsers extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

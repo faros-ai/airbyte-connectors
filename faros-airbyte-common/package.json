@@ -25,6 +25,7 @@
     "node": ">=18"
   },
   "exports": {
+    "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
@@ -36,6 +37,9 @@
   },
   "typesVersions": {
     "*": {
+      "bitbucket": [
+        "./lib/bitbucket/index.d.ts"
+      ],
       "bitbucket-server": [
         "./lib/bitbucket-server/index.d.ts"
       ],

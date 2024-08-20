@@ -1,8 +1,8 @@
 import {StreamKey} from 'faros-airbyte-cdk';
+import {Workspace} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
-import {Workspace} from '../types';
 import {StreamBase} from './common';
 
 export class Workspaces extends StreamBase {

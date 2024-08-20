@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {
@@ -8,7 +9,6 @@ import {
   StreamName,
 } from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
-import {PullRequest} from './types';
 
 enum PullRequestStateCategory {
   CLOSED = 'Closed',

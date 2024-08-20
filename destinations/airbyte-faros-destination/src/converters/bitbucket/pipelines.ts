@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Pipeline, PipelineState} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
-import {Pipeline, PipelineState} from './types';
 
 enum BuildStatusCategory {
   CANCELED = 'Canceled',

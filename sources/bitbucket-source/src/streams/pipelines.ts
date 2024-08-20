@@ -1,8 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
-import {Pipeline} from '../types';
 import {RepoStreamSlice, StreamWithRepoSlices} from './common';
 
 export class Pipelines extends StreamWithRepoSlices {

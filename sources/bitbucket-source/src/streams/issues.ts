@@ -1,10 +1,10 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Issue} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 import {toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
-import {Issue} from '../types';
 import {
   RepoStreamSlice,
   StreamBase,

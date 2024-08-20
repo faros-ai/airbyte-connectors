@@ -4,12 +4,7 @@ import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
 import dateformat from 'date-format';
 import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
-import {Dictionary} from 'ts-essentials';
-import {Memoize} from 'typescript-memoize';
-import VErrorType, {VError} from 'verror';
-
 import {
-  BitbucketConfig,
   Branch,
   Commit,
   Deployment,
@@ -24,7 +19,12 @@ import {
   Repository,
   Workspace,
   WorkspaceUser,
-} from './types';
+} from 'faros-airbyte-common/bitbucket';
+import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
+import VErrorType, {VError} from 'verror';
+
+import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;

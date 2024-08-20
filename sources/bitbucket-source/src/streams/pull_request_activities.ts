@@ -4,10 +4,11 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {PRActivity} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
-import {BitbucketConfig, PRActivity} from '../types';
+import {BitbucketConfig} from '../types';
 import {PullRequests} from './pull_requests';
 
 type StreamSlice = {

@@ -9,7 +9,7 @@ export interface Branch {
   readonly defaultMergeStrategy: string;
   readonly mergeStrategies: string[];
   readonly type: string;
-  target: {
+  readonly target: {
     readonly hash: string;
     repository: {
       readonly links: {readonly htmlUrl: string};
@@ -111,6 +111,7 @@ export interface Deployment {
     readonly name?: string;
     readonly slug?: string;
     readonly rank?: number;
+    readonly type?: string;
   };
   readonly fullEnvironment?: Environment;
   readonly step: {
@@ -236,7 +237,16 @@ export interface Issue {
     readonly htmlUrl: string;
     readonly voteUrl: string;
   };
-  readonly reporter: User;
+  readonly reporter: {
+    readonly displayName: string;
+    readonly uuid: string;
+    readonly type: string;
+    readonly nickname: string;
+    readonly accountId: string;
+    readonly links: {
+      readonly htmlUrl: string;
+    };
+  };
   readonly content: {
     readonly raw: string;
     readonly markup: string;
@@ -602,7 +612,6 @@ export interface Repository {
   readonly project: {
     readonly type: string;
     readonly name: string;
-    readonly slug: string;
     readonly key: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};

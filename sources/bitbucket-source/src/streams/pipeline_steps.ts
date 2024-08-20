@@ -4,10 +4,11 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {PipelineStep} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
-import {BitbucketConfig, PipelineStep} from '../types';
+import {BitbucketConfig} from '../types';
 import {Pipelines} from './pipelines';
 
 type StreamSlice = {workspace: string; repository: string; pipeline: string};

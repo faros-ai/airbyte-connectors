@@ -1,9 +1,10 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {Repository} from 'faros-airbyte-common/bitbucket';
 import {collectReposByNamespace} from 'faros-airbyte-common/common';
 import {Memoize} from 'typescript-memoize';
 
 import {Bitbucket} from './bitbucket';
-import {BitbucketConfig, Repository} from './types';
+import {BitbucketConfig} from './types';
 
 type FilterConfig = {
   workspaces?: Set<string>;

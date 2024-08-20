@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Branch} from 'faros-airbyte-common/bitbucket';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketConverter} from './common';
-import {Branch} from './types';
 
 export class Branches extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Branch'];
