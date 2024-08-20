@@ -20,8 +20,6 @@ import {
 } from './github';
 import {GitHubConfig} from './types';
 
-export type RateLimitHandler = (reason?: Error) => boolean;
-
 export type ExtendedOctokit = Octokit &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
@@ -116,29 +114,33 @@ function getThrottle(
   logger: AirbyteLogger,
   maxRetries: number
 ): ThrottlingOptions & {global: Bottleneck.Group} {
-  const onRateLimit: RateLimitHandler = (error) => {
-    logger?.error(error.message, error.stack);
-    return false; // fail on rate limit
-  };
   return {
     global: new Bottleneck.Group({
       minTime: 100,
       maxConcurrent: cfg.concurrency_limit ?? DEFAULT_CONCURRENCY,
     }),
-    onRateLimit: (after: number, opts: any): boolean | undefined => {
-      const msg = `Quota exhausted for ${opts.method} ${opts.url}`;
-      logger.warn(msg);
-      return onRateLimit(new Error(msg));
-    },
-    onSecondaryRateLimit: (after: number, opts: any): boolean | undefined => {
-      logger.warn(
-        `SecondaryRateLimit detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
-      );
-      if (opts.request.retryCount < maxRetries) {
-        logger.info(`Retrying after ${after} seconds.`);
-        return true;
-      }
-    },
+    onRateLimit: rateLimitHandler('RateLimit', logger, maxRetries),
+    onSecondaryRateLimit: rateLimitHandler(
+      'SecondaryRateLimit',
+      logger,
+      maxRetries
+    ),
+  };
+}
+
+function rateLimitHandler(
+  event: string,
+  logger: AirbyteLogger,
+  maxRetries: number
+) {
+  return (after: number, opts: any): boolean | undefined => {
+    logger.warn(
+      `${event} detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
+    );
+    if (opts.request.retryCount < maxRetries) {
+      logger.info(`Retrying after ${after} seconds.`);
+      return true;
+    }
   };
 }
 
