@@ -29,7 +29,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.6.5",
+    "axios": "^1.7.4",
     "axios-retry": "^4.0.0",
     "faros-airbyte-cdk": "0.0.1",
     "faros-airbyte-common": "0.0.1",

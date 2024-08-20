@@ -39,6 +39,7 @@ export interface AsanaConfig {
   end_date?: string;
   cutoff_days?: number;
   project_tasks_max_staleness_hours?: number;
+  required_task_custom_fields?: ReadonlyArray<string>;
 }
 
 export class Asana {
@@ -49,7 +50,8 @@ export class Asana {
     private readonly startDate: string,
     private readonly endDate: string,
     private readonly workspaces: ReadonlyArray<string>,
-    private readonly pageSize: number
+    private readonly pageSize: number,
+    private readonly requiredTaskCustomFields: ReadonlyArray<string>
   ) {}
 
   static instance(config: AsanaConfig, logger?: AirbyteLogger): Asana {
@@ -92,7 +94,8 @@ export class Asana {
       startDate,
       endDate,
       config.workspaces,
-      config.page_size ?? DEFAULT_PAGE_SIZE
+      config.page_size ?? DEFAULT_PAGE_SIZE,
+      config.required_task_custom_fields ?? []
     );
 
     return Asana.asana;
@@ -163,6 +166,26 @@ export class Asana {
     after?: string,
     logger?: AirbyteLogger
   ): AsyncGenerator<Task> {
+    if (_.isEmpty(this.requiredTaskCustomFields)) {
+      yield* this.getTasksWithCustomField(workspace, after, logger);
+    } else {
+      for (const customField of this.requiredTaskCustomFields) {
+        yield* this.getTasksWithCustomField(
+          workspace,
+          after,
+          logger,
+          customField
+        );
+      }
+    }
+  }
+
+  async *getTasksWithCustomField(
+    workspace: string,
+    after?: string,
+    logger?: AirbyteLogger,
+    customField?: string
+  ): AsyncGenerator<Task> {
     const opt_fields = [
       'assignee',
       'completed',
@@ -186,6 +209,9 @@ export class Asana {
       sort_by: 'modified_at',
       sort_ascending: true,
       opt_fields: opt_fields.join(','),
+      ...(customField && {
+        [`custom_fields.${customField}.is_set`]: true,
+      }),
     };
 
     let modified_at_after = after ?? this.startDate;

@@ -174,8 +174,35 @@ describe('index', () => {
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getCopilotUsageMockedImplementation(
+          getCopilotUsageForOrgMockedImplementation(
             readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage with teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            ),
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getCopilotUsageForTeamMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            )
           ),
           logger
         );
@@ -583,9 +610,15 @@ const getTeamAddMemberAuditLogsMockedImplementation = (res: any) => ({
   auditLogs: jest.fn().mockReturnValue(res),
 });
 
-const getCopilotUsageMockedImplementation = (res: any) => ({
+const getCopilotUsageForOrgMockedImplementation = (res: any) => ({
   copilot: {
     usageMetricsForOrg: jest.fn().mockReturnValue({data: res}),
+  },
+});
+
+const getCopilotUsageForTeamMockedImplementation = (res: any) => ({
+  copilot: {
+    usageMetricsForTeam: jest.fn().mockReturnValue({data: res}),
   },
 });
 
