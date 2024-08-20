@@ -197,35 +197,42 @@
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
-      "timeout": {
+      "max_pull_requests_page_size": {
         "order": 15,
+        "type": "integer",
+        "title": "Maximum Pull Requests Page Size",
+        "description": "Maximum number of items in a paginated response for pull requests",
+        "default": 25
+      },
+      "timeout": {
+        "order": 16,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 16,
+        "order": 17,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 17,
+        "order": 18,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 18,
+        "order": 19,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data. Only use for backfilling."
       },
       "end_date": {
-        "order": 19,
+        "order": 20,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data. Only use for backfilling."
