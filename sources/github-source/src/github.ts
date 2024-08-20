@@ -924,10 +924,13 @@ export abstract class GitHub {
     try {
       teams = await this.getTeams(org);
     } catch (err: any) {
-      this.logger.warn(
-        `Failed to fetch teams for org ${org}. Skipping GitHub Copilot usage by team.`
-      );
-      return;
+      if (err.status >= 400 && err.status < 500) {
+        this.logger.warn(
+          `Failed to fetch teams for org ${org}. Ensure Teams permissions are given. Skipping pulling GitHub Copilot usage by teams.`
+        );
+        return;
+      }
+      throw err;
     }
     for (const team of teams) {
       const res = await this.octokit(org).copilot.usageMetricsForTeam({
