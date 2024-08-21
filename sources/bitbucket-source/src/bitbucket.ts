@@ -113,7 +113,7 @@ export class Bitbucket {
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: string): Date {
+  private getStartDateMax(lastUpdatedAt?: number): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
   }
@@ -146,7 +146,7 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): AsyncGenerator<Commit> {
     try {
       const lastUpdatedMax = this.getStartDateMax(lastUpdated);
@@ -286,7 +286,7 @@ export class Bitbucket {
   async *getIssues(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): AsyncGenerator<Issue> {
     if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
       return;
@@ -387,7 +387,7 @@ export class Bitbucket {
   async getPullRequests(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): Promise<ReadonlyArray<PullRequest>> {
     const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     try {

@@ -41,9 +41,7 @@ export class PullRequests extends StreamWithRepoSlices {
     const repo = streamSlice.repo;
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL
-        ? toString(
-            streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
-          )
+        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
         : undefined;
     for (const pr of await bitbucket.getPullRequests(
       workspace,

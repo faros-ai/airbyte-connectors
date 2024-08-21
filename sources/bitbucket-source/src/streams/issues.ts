@@ -1,7 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Issue} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
-import {toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
@@ -34,9 +33,7 @@ export class Issues extends StreamWithRepoSlices {
     const repo = streamSlice.repo;
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL
-        ? toString(
-            streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
-          )
+        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
         : undefined;
     yield* bitbucket.getIssues(workspace, repo, lastUpdated);
   }

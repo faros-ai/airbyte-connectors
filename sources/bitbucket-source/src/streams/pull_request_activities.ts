@@ -1,14 +1,10 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {PRActivity} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
 import {BitbucketConfig} from '../types';
+import {StreamBase} from './common';
 import {PullRequests} from './pull_requests';
 
 type StreamSlice = {
@@ -23,13 +19,13 @@ interface TimestampedPRActivity extends PRActivity {
   pullRequestUpdatedOn: string;
 }
 
-export class PullRequestActivities extends AirbyteStreamBase {
+export class PullRequestActivities extends StreamBase {
   constructor(
     readonly config: BitbucketConfig,
     readonly pullRequests: PullRequests,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -49,12 +45,10 @@ export class PullRequestActivities extends AirbyteStreamBase {
     cursorField?: string[],
     streamState?: Dictionary<any>
   ): AsyncGenerator<StreamSlice> {
-    const bitbucket = Bitbucket.instance(this.config, this.logger);
-    for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(
-        workspace,
-        this.config.repositories
-      )) {
+    const workspaces = await this.workspaceRepoFilter.getWorkspaces();
+    for (const workspace of workspaces) {
+      const repos = await this.workspaceRepoFilter.getRepositories(workspace);
+      for (const repo of repos) {
         const prs = this.pullRequests.readRecords(
           SyncMode.INCREMENTAL,
           undefined,

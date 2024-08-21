@@ -1,25 +1,21 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {PipelineStep} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
 import {BitbucketConfig} from '../types';
+import {StreamBase} from './common';
 import {Pipelines} from './pipelines';
 
 type StreamSlice = {workspace: string; repository: string; pipeline: string};
 
-export class PipelineSteps extends AirbyteStreamBase {
+export class PipelineSteps extends StreamBase {
   constructor(
     readonly config: BitbucketConfig,
     readonly pipelines: Pipelines,
     readonly logger: AirbyteLogger
   ) {
-    super(logger);
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -30,12 +26,10 @@ export class PipelineSteps extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const bitbucket = Bitbucket.instance(this.config, this.logger);
-    for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(
-        workspace,
-        this.config.repositories
-      )) {
+    const workspaces = await this.workspaceRepoFilter.getWorkspaces();
+    for (const workspace of workspaces) {
+      const repos = await this.workspaceRepoFilter.getRepositories(workspace);
+      for (const repo of repos) {
         const pipelines = this.pipelines.readRecords(
           SyncMode.FULL_REFRESH,
           undefined,
