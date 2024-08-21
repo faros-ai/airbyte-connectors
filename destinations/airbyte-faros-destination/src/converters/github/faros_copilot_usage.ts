@@ -11,6 +11,7 @@ import {GitHubConverter} from './common';
 
 export class FarosCopilotUsage extends GitHubConverter {
   private readonly writtenTags = new Set<string>();
+  private writtenMetricDefinitions = false;
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_ApplicationMetric',
@@ -41,30 +42,52 @@ export class FarosCopilotUsage extends GitHubConverter {
 
     const org = toLower(usage.org);
     const orgTagUid = `copilotOrg__${org}`;
-    res.push({
-      model: 'faros_Tag',
-      record: {
-        uid: orgTagUid,
-        key: 'copilotOrg',
-        value: org,
-      },
-    });
-
-    for (const farosMetric of metrics.values()) {
+    if (!this.writtenTags.has(orgTagUid)) {
       res.push({
-        model: 'faros_MetricDefinition',
+        model: 'faros_Tag',
         record: {
-          uid: farosMetric,
-          name: farosMetric,
-          valueType: {
-            category: 'Numeric',
-            detail: null,
-          },
+          uid: orgTagUid,
+          key: 'copilotOrg',
+          value: org,
         },
       });
+      this.writtenTags.add(orgTagUid);
+    }
+    let teamTagUid: string = null;
+    if (usage.team) {
+      const team = toLower(usage.team);
+      teamTagUid = `copilotTeam__${org}/${team}`;
+      if (!this.writtenTags.has(teamTagUid)) {
+        res.push({
+          model: 'faros_Tag',
+          record: {
+            uid: teamTagUid,
+            key: 'copilotTeam',
+            value: team,
+          },
+        });
+        this.writtenTags.add(teamTagUid);
+      }
     }
 
-    this.processSummary(res, usage, metrics, orgTagUid);
+    if (!this.writtenMetricDefinitions) {
+      for (const farosMetric of metrics.values()) {
+        res.push({
+          model: 'faros_MetricDefinition',
+          record: {
+            uid: farosMetric,
+            name: farosMetric,
+            valueType: {
+              category: 'Numeric',
+              detail: null,
+            },
+          },
+        });
+      }
+      this.writtenMetricDefinitions = true;
+    }
+
+    this.processSummary(res, usage, metrics, orgTagUid, teamTagUid);
 
     return res;
   }
@@ -73,7 +96,8 @@ export class FarosCopilotUsage extends GitHubConverter {
     res: DestinationRecord[],
     summary: CopilotUsageSummary,
     metrics: Map<string, string>,
-    orgTagUid: string
+    orgTagUid: string,
+    teamTagUid: string | null
   ): void {
     this.calculateDiscards(summary);
 
@@ -82,7 +106,14 @@ export class FarosCopilotUsage extends GitHubConverter {
         continue;
       }
 
-      this.processMetricValue(res, orgTagUid, farosMetric, summary, metric);
+      this.processMetricValue(
+        res,
+        orgTagUid,
+        teamTagUid,
+        farosMetric,
+        summary,
+        metric
+      );
 
       const breakdownMetric = metric.replace('total_', '');
       for (const breakdown of summary.breakdown) {
@@ -97,6 +128,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         this.processBreakdownMetricValue(
           res,
           orgTagUid,
+          teamTagUid,
           farosMetric,
           breakdown,
           summary,
@@ -109,6 +141,7 @@ export class FarosCopilotUsage extends GitHubConverter {
   private processBreakdownMetricValue(
     res: DestinationRecord[],
     orgTagUid: string,
+    teamTagUid: string | null,
     farosMetric: string,
     breakdown: LanguageEditorBreakdown,
     summary: CopilotUsageSummary,
@@ -120,7 +153,7 @@ export class FarosCopilotUsage extends GitHubConverter {
 
     // Example breakdownMetricValueUid:
     // copilotOrg__faros-ai-DailyActiveUserTrend-angular2html-jetbrains-2024-01-15
-    const breakdownMetricValueUid = `${orgTagUid}-${farosMetric}-${normalizeDimension(
+    const breakdownMetricValueUid = `${teamTagUid ? teamTagUid : orgTagUid}-${farosMetric}-${normalizeDimension(
       breakdown.language
     )}-${normalizeDimension(breakdown.editor)}-${summary.day}`;
     res.push({
@@ -163,7 +196,15 @@ export class FarosCopilotUsage extends GitHubConverter {
       this.writtenTags.add(editorTagUid);
     }
 
-    for (const tagUid of [languageTagUid, editorTagUid, orgTagUid]) {
+    for (const tagUid of [
+      languageTagUid,
+      editorTagUid,
+      orgTagUid,
+      teamTagUid,
+    ]) {
+      if (!tagUid) {
+        continue;
+      }
       res.push({
         model: 'faros_MetricValueTag',
         record: {
@@ -191,11 +232,12 @@ export class FarosCopilotUsage extends GitHubConverter {
   private processMetricValue(
     res: DestinationRecord[],
     orgTagUid: string,
+    teamTagUid: string | null,
     farosMetric: string,
     summary: CopilotUsageSummary,
     metric: string
   ): void {
-    const metricValueUid = `${orgTagUid}-${farosMetric}-${summary.day}`;
+    const metricValueUid = `${teamTagUid ? teamTagUid : orgTagUid}-${farosMetric}-${summary.day}`;
     res.push({
       model: 'faros_MetricValue',
       record: {
@@ -216,6 +258,19 @@ export class FarosCopilotUsage extends GitHubConverter {
         },
       },
     });
+
+    if (teamTagUid) {
+      res.push({
+        model: 'faros_MetricValueTag',
+        record: {
+          tag: {uid: teamTagUid},
+          value: {
+            uid: metricValueUid,
+            definition: {uid: farosMetric},
+          },
+        },
+      });
+    }
 
     res.push({
       model: 'compute_ApplicationMetric',

@@ -891,15 +891,7 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      // returns 404 if copilot business is not enabled for the org or if auth doesn't have required permissions
-      // https://docs.github.com/en/rest/copilot/copilot-business?apiVersion=2022-11-28#get-copilot-business-seat-information-and-settings-for-an-organization
-      if (err.status >= 400 && err.status < 500) {
-        this.logger.warn(
-          `Failed to sync GitHub Copilot seats for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
-        );
-        return;
-      }
-      throw err;
+      this.handleCopilotError(err, org, 'seats');
     }
   }
 
@@ -915,20 +907,60 @@ export abstract class GitHub {
       for (const usage of res.data) {
         yield {
           org,
+          team: null,
           ...usage,
         };
       }
+      yield* this.getCopilotUsageTeams(org);
     } catch (err: any) {
-      // returns 404 if the organization does not have GitHub Copilot usage metrics enabled or if auth doesn't have required permissions
-      // https://docs.github.com/en/enterprise-cloud@latest/early-access/copilot/copilot-usage-api
+      this.handleCopilotError(err, org, 'usage');
+    }
+  }
+
+  async *getCopilotUsageTeams(
+    org: string
+  ): AsyncGenerator<CopilotUsageSummary> {
+    let teams: ReadonlyArray<Team>;
+    try {
+      teams = await this.getTeams(org);
+    } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
-          `Failed to sync GitHub Copilot usage for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
+          `Failed to fetch teams for org ${org}. Ensure Teams permissions are given. Skipping pulling GitHub Copilot usage by teams.`
         );
         return;
       }
       throw err;
     }
+    for (const team of teams) {
+      const res = await this.octokit(org).copilot.usageMetricsForTeam({
+        org,
+        team_slug: team.slug,
+      });
+      if (isNil(res.data) || isEmpty(res.data)) {
+        this.logger.warn(
+          `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
+        );
+        continue;
+      }
+      for (const usage of res.data) {
+        yield {
+          org,
+          team: team.slug,
+          ...usage,
+        };
+      }
+    }
+  }
+
+  private handleCopilotError(err: any, org: string, context: string) {
+    if (err.status >= 400 && err.status < 500) {
+      this.logger.warn(
+        `Failed to sync GitHub Copilot ${context} for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
+      );
+      return;
+    }
+    throw err;
   }
 
   /**
