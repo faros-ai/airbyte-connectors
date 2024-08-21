@@ -941,7 +941,7 @@ export abstract class GitHub {
         this.logger.warn(
           `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
         );
-        return;
+        continue;
       }
       for (const usage of res.data) {
         yield {
