@@ -7,23 +7,28 @@ import {JiraConverter} from './common';
 
 export class FarosSprintReports extends JiraConverter {
   get destinationModels(): ReadonlyArray<DestinationModel> {
-    return ['tms_SprintHistory'];
+    return ['tms_SprintReport'];
   }
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprintReport = record.record.data as SprintReport;
-    const uid = toString(sprintReport.sprintId);
+    const sprintUid = toString(sprintReport.sprintId);
+    const boardUid = toString(sprintReport.boardId);
     const results: DestinationRecord[] = [];
     const source = this.streamName.source;
     for (const issue of sprintReport.issues || []) {
       results.push({
-        model: 'tms_SprintHistory',
+        model: 'tms_SprintReport',
         record: {
-          sprint: {uid, source},
-          task: {uid: issue.key, source},
+          sprintHistory: {
+            task: {uid: issue.key, source},
+            sprint: {uid: sprintUid, source},
+          },
+          board: {uid: boardUid, source},
           points: issue.points,
+          plannedPoints: issue.plannedPoints,
           status: {category: issue.status},
           addedDuringSprint: issue.addedDuringSprint,
         },

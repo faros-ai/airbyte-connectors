@@ -14,6 +14,11 @@
           "statFieldValue": {
             "value": 5
           }
+        },
+        "estimateStatistic": {
+          "statFieldValue": {
+            "value": 5
+          }
         }
       },
       {
@@ -21,6 +26,11 @@
         "currentEstimateStatistic": {
           "statFieldValue": {
             "value": 5
+          }
+        },
+        "estimateStatistic": {
+          "statFieldValue": {
+            "value": 4
           }
         }
       }
@@ -32,11 +42,21 @@
           "statFieldValue": {
             "value": 10
           }
+        },
+        "estimateStatistic": {
+          "statFieldValue": {
+            "value": 15
+          }
         }
       },
       {
         "key": "TEST-4",
         "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 15
+          }
+        },
+        "estimateStatistic": {
           "statFieldValue": {
             "value": 15
           }
@@ -50,6 +70,11 @@
           "statFieldValue": {
             "value": 5
           }
+        },
+        "estimateStatistic": {
+          "statFieldValue": {
+            "value": 15
+          }
         }
       }
     ],
@@ -57,6 +82,11 @@
       {
         "key": "TEST-6",
         "currentEstimateStatistic": {
+          "statFieldValue": {
+            "value": 20
+          }
+        },
+        "estimateStatistic": {
           "statFieldValue": {
             "value": 20
           }

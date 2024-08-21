@@ -1167,6 +1167,9 @@ export class Jira {
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
           ),
+          plannedPoints: toFloat(
+            issue.estimateStatistic?.statFieldValue?.value
+          ),
           addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
         };
       }) || [];
