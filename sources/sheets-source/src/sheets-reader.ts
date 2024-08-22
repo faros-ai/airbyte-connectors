@@ -36,6 +36,8 @@ type SpreadsheetSource = LocalSpreadsheet | GoogleSheet | S3Spreadsheet;
 
 export interface SheetsConfig {
   readonly spreadsheet_source: SpreadsheetSource;
+  readonly sheet_names?: string[];
+  readonly row_offset?: number;
   readonly sheet_page_size?: number;
   readonly stream_name?: string;
 }
@@ -86,7 +88,9 @@ export class SheetsReader {
 
         wb = await SheetsReader.loadSheets(
           config.spreadsheet_source.google_sheet_id,
+          config.sheet_names,
           config.sheet_page_size,
+          config.row_offset,
           creds,
           logger
         );
@@ -197,7 +201,9 @@ export class SheetsReader {
 
   static async loadSheets(
     sheetId: string,
+    sheetNames: string[],
     sheetPageSize: number,
+    rowOffset: number,
     creds: GoogleCreds,
     logger?: AirbyteLogger
   ): Promise<XLSX.WorkBook> {
@@ -232,10 +238,14 @@ export class SheetsReader {
     const wb = XLSX.utils.book_new();
 
     for (const sheetName of Object.keys(doc.sheetsByTitle)) {
+      if (sheetNames && !sheetNames.includes(sheetName)) {
+        continue;
+      }
       const sheet = await SheetsReader.loadSheet(
         doc,
         sheetName,
         sheetPageSize,
+        rowOffset,
         logger
       );
       XLSX.utils.book_append_sheet(wb, sheet, sheetName);
@@ -274,11 +284,12 @@ export class SheetsReader {
     doc: GoogleSpreadsheet,
     sheetName: string,
     sheetPageSize: number,
+    rowOffset: number,
     logger?: AirbyteLogger
   ): Promise<XLSX.WorkSheet> {
     const sheet = SheetsReader.getSheetOrError(doc, sheetName);
 
-    await sheet.loadHeaderRow();
+    await sheet.loadHeaderRow(1 + (rowOffset ?? 0));
     const header = sheet.headerValues;
 
     const rows = await SheetsReader.getSheetRows(
