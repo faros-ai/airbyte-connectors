@@ -296,6 +296,7 @@ export class SheetsReader {
       sheet,
       sheetName,
       sheetPageSize,
+      rowOffset,
       logger
     );
     const aoa = [header].concat(rows.map((r) => r._rawData));
@@ -324,12 +325,13 @@ export class SheetsReader {
     sheet: GoogleSpreadsheetWorksheet,
     name: string,
     pageSize: number,
+    rowOffset: number,
     logger?: AirbyteLogger
   ): Promise<GoogleSpreadsheetRow[]> {
     const res: GoogleSpreadsheetRow[] = [];
     let total = 0;
     let fetchedRows = 0;
-    const nonHeaderRowCount = sheet.rowCount - 1; // -1 because row count includes header row, but it's excluded from getRows
+    const nonHeaderRowCount = sheet.rowCount - (rowOffset ?? 0) - 1; // -1 because row count includes header row, but it's excluded from getRows
     // Fetch rows in batches of pageSize until we reach the end of the sheet
     do {
       const rows = await sheet.getRows({limit: pageSize, offset: total});
