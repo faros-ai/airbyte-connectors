@@ -1,6 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/bitbucket';
-import {collectReposByNamespace} from 'faros-airbyte-common/common';
+import {collectReposByOrg} from 'faros-airbyte-common/common';
 import {Memoize} from 'typescript-memoize';
 
 import {Bitbucket} from './bitbucket';
@@ -34,11 +34,11 @@ export class WorkspaceRepoFilter {
 
     const reposByWorkspace = new Map<string, Set<string>>();
     if (repositories?.length) {
-      collectReposByNamespace(reposByWorkspace, repositories);
+      collectReposByOrg(reposByWorkspace, repositories);
     }
     const excludedReposByWorkspace = new Map<string, Set<string>>();
     if (excluded_repositories?.length) {
-      collectReposByNamespace(excludedReposByWorkspace, excluded_repositories);
+      collectReposByOrg(excludedReposByWorkspace, excluded_repositories);
     }
 
     for (const workspace of reposByWorkspace.keys()) {

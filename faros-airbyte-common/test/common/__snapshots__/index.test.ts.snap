@@ -15,3 +15,34 @@ Object {
   "startDate": 2022-01-01T00:00:00.000Z,
 }
 `;
+
+exports[`collectReposByOrg should add a single repo to the correct namespace 1`] = `
+Map {
+  "apache" => Set {
+    "kafka",
+  },
+}
+`;
+
+exports[`collectReposByOrg should add multiple repos to the correct namespaces 1`] = `
+Map {
+  "apache" => Set {
+    "kafka",
+    "spark",
+  },
+  "facebook" => Set {
+    "react",
+  },
+}
+`;
+
+exports[`collectReposByOrg should handle an empty array of repositories 1`] = `Map {}`;
+
+exports[`collectReposByOrg should not overwrite existing repos in the same namespace 1`] = `
+Map {
+  "apache" => Set {
+    "kafka",
+    "spark",
+  },
+}
+`;

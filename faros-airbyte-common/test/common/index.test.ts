@@ -1,4 +1,6 @@
-import {calculateDateRange} from '../../src/common';
+import {toArray} from 'lodash';
+
+import {calculateDateRange, collectReposByOrg} from '../../src/common';
 
 describe('calculateDateRange', () => {
   const logger = jest.fn();
@@ -74,5 +76,60 @@ describe('calculateDateRange', () => {
     expect(logger).toHaveBeenCalledWith(
       'Both start date and cutoff days provided, discarding cutoff days'
     );
+  });
+});
+
+describe('collectReposByOrg', () => {
+  let reposByOrg;
+
+  beforeEach(() => {
+    reposByOrg = new Map();
+  });
+
+  test('should add a single repo to the correct namespace', () => {
+    const repos = ['apache/kafka'];
+    collectReposByOrg(reposByOrg, repos);
+    expect(reposByOrg).toMatchSnapshot();
+  });
+
+  test('should add multiple repos to the correct namespaces', () => {
+    const repos = ['apache/kafka', 'apache/spark', 'facebook/react'];
+    collectReposByOrg(reposByOrg, repos);
+    expect(reposByOrg).toMatchSnapshot();
+  });
+
+  test('should throw an error if repo does not match org/repo format', () => {
+    const repos = ['apachekafka'];
+    expect(() => collectReposByOrg(reposByOrg, repos)).toThrow(
+      'Bad repository provided: apachekafka. Must match org/repo format, e.g apache/kafka'
+    );
+  });
+
+  test('should throw an error if repo is missing a namespace', () => {
+    const repos = ['/kafka'];
+    expect(() => collectReposByOrg(reposByOrg, repos)).toThrow(
+      'Bad repository provided: /kafka. Must match org/repo format, e.g apache/kafka'
+    );
+  });
+
+  test('should throw an error if repo is missing a name', () => {
+    const repos = ['apache/'];
+    expect(() => collectReposByOrg(reposByOrg, repos)).toThrow(
+      'Bad repository provided: apache/. Must match org/repo format, e.g apache/kafka'
+    );
+  });
+
+  test('should not overwrite existing repos in the same namespace', () => {
+    const repos = ['apache/kafka'];
+    collectReposByOrg(reposByOrg, repos);
+    const moreRepos = ['apache/spark'];
+    collectReposByOrg(reposByOrg, moreRepos);
+    expect(reposByOrg).toMatchSnapshot();
+  });
+
+  test('should handle an empty array of repositories', () => {
+    const repos = [];
+    collectReposByOrg(reposByOrg, repos);
+    expect(reposByOrg).toMatchSnapshot();
   });
 });

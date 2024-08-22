@@ -1,5 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {collectReposByNamespace} from 'faros-airbyte-common/common';
+import {collectReposByOrg} from 'faros-airbyte-common/common';
 import {Repository} from 'faros-airbyte-common/github';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -35,11 +35,11 @@ export class OrgRepoFilter {
 
     const reposByOrg = new Map<string, Set<string>>();
     if (repositories?.length) {
-      collectReposByNamespace(reposByOrg, repositories);
+      collectReposByOrg(reposByOrg, repositories);
     }
     const excludedReposByOrg = new Map<string, Set<string>>();
     if (excluded_repositories?.length) {
-      collectReposByNamespace(excludedReposByOrg, excluded_repositories);
+      collectReposByOrg(excludedReposByOrg, excluded_repositories);
     }
     for (const org of reposByOrg.keys()) {
       if (excludedReposByOrg.has(org)) {
