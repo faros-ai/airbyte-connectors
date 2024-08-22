@@ -113,7 +113,9 @@ export interface SprintReport {
 export interface SprintIssue {
   readonly key: string;
   readonly points: number;
+  readonly plannedPoints: number;
   readonly status: string;
+  readonly classification: string;
   readonly addedDuringSprint?: boolean;
 }
 

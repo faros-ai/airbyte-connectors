@@ -1159,13 +1159,17 @@ export class Jira {
   }
 
   toSprintReportIssues(report: any): SprintIssue[] {
-    const toSprintIssues = (issues, status): any[] =>
-      issues?.map((issue) => {
+    const toSprintIssues = (issues: any, classification: string): any[] =>
+      issues?.map((issue: any) => {
         return {
           key: issue.key,
-          status,
+          classification,
+          status: issue.status.name,
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
+          ),
+          plannedPoints: toFloat(
+            issue.estimateStatistic?.statFieldValue?.value
           ),
           addedDuringSprint: report?.issueKeysAddedDuringSprint?.[issue.key],
         };
