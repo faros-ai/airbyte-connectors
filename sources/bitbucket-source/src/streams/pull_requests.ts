@@ -1,7 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
-import {toString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
