@@ -1,5 +1,3 @@
-import {toArray} from 'lodash';
-
 import {calculateDateRange, collectReposByOrg} from '../../src/common';
 
 describe('calculateDateRange', () => {
