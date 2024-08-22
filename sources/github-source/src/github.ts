@@ -399,7 +399,7 @@ export abstract class GitHub {
       }
     );
     const labels: PullRequestLabel[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const label of res.data) {
         labels.push(pick(label, ['name']));
       }
@@ -497,7 +497,7 @@ export abstract class GitHub {
       }
     );
     const reviews: PullRequestReview[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const review of res.repository.pullRequest.reviews.nodes) {
         reviews.push(review);
       }
@@ -617,7 +617,7 @@ export abstract class GitHub {
       }
     );
     const reviewRequests: PullRequestReviewRequest[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout)) {
+    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
       for (const review of res.repository.pullRequest.reviewRequests.nodes) {
         reviewRequests.push(review);
       }
