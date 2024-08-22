@@ -335,9 +335,9 @@ export class Cards extends TrelloConverter {
       100,
       paginatedQueryV2
     )) {
-      const taskKey = {uid: task.uid, source: task.source};
+      const taskKey = {uid: cardId, source: this.source};
       const statusChangelog: TmsTaskStatusChange[] = this.getStatusChangelog(
-        task.uid,
+        cardId,
         task.statusChangelog
           .filter((item) => !isNil(item.changedAt))
           .map((item) => ({
