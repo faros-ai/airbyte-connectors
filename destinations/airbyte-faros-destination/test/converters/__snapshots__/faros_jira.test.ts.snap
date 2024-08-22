@@ -367,6 +367,10 @@ Array [
     "tms_TaskBoard": Object {
       "name": "Tasks without a board in project PLAYG",
       "source": "Jira",
+      "type": Object {
+        "category": "Custom",
+        "detail": "Custom",
+      },
       "uid": "faros-tasks-with-no-board-PLAYG",
     },
   },
@@ -387,6 +391,10 @@ Array [
     "tms_TaskBoard": Object {
       "name": "PLAYG board",
       "source": "Jira",
+      "type": Object {
+        "category": "Scrum",
+        "detail": "scrum",
+      },
       "uid": "21",
     },
   },
@@ -692,6 +700,9 @@ Array [
         "source": "Jira",
         "uid": "49",
       },
+      "classification": Object {
+        "category": "Completed",
+      },
       "plannedPoints": null,
       "points": null,
       "source": "Jira",
@@ -706,7 +717,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "Completed",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },
@@ -716,6 +728,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "Completed",
       },
       "plannedPoints": null,
       "points": null,
@@ -731,7 +746,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "Completed",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },
@@ -741,6 +757,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "CompletedOutsideSprint",
       },
       "plannedPoints": null,
       "points": null,
@@ -756,7 +775,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "CompletedOutsideSprint",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },
@@ -766,6 +786,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "CompletedOutsideSprint",
       },
       "plannedPoints": null,
       "points": null,
@@ -781,7 +804,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "CompletedOutsideSprint",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },
@@ -791,6 +815,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -806,7 +833,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -816,6 +844,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -831,7 +862,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -841,6 +873,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -856,7 +891,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": null,
+        "detail": "QA",
       },
     },
   },
@@ -866,6 +902,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -881,7 +920,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -891,6 +931,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -906,7 +949,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -916,6 +960,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": 10,
       "points": 9,
@@ -931,7 +978,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -941,6 +989,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -956,7 +1007,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },
@@ -966,6 +1018,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -981,7 +1036,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": "InProgress",
+        "detail": "In Progress",
       },
     },
   },
@@ -991,6 +1047,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
       },
       "plannedPoints": null,
       "points": null,
@@ -1006,7 +1065,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "NotCompleted",
+        "category": null,
+        "detail": "QA",
       },
     },
   },
@@ -1016,6 +1076,9 @@ Array [
       "board": Object {
         "source": "Jira",
         "uid": "49",
+      },
+      "classification": Object {
+        "category": "Removed",
       },
       "plannedPoints": null,
       "points": null,
@@ -1031,7 +1094,8 @@ Array [
         },
       },
       "status": Object {
-        "category": "Removed",
+        "category": "Done",
+        "detail": "Done",
       },
     },
   },

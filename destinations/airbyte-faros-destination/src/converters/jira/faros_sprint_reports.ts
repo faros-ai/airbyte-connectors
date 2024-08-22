@@ -3,7 +3,7 @@ import {SprintReport} from 'faros-airbyte-common/lib/jira';
 import {toString} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {JiraConverter} from './common';
+import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
 export class FarosSprintReports extends JiraConverter {
   get destinationModels(): ReadonlyArray<DestinationModel> {
@@ -29,7 +29,13 @@ export class FarosSprintReports extends JiraConverter {
           board: {uid: boardUid, source},
           points: issue.points,
           plannedPoints: issue.plannedPoints,
-          status: {category: issue.status},
+          classification: {category: issue.classification},
+          status: {
+            category: JiraStatusCategories.get(
+              JiraCommon.normalize(issue.status)
+            ),
+            detail: issue.status,
+          },
           addedDuringSprint: issue.addedDuringSprint,
         },
       });

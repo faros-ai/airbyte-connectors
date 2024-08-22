@@ -19,6 +19,17 @@
           "statFieldValue": {
             "value": 5
           }
+        },
+        "status": {
+          "id": "10002",
+          "name": "Done",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": "3",
+            "key": "done",
+            "colorName": "green"
+          }
         }
       },
       {
@@ -31,6 +42,17 @@
         "estimateStatistic": {
           "statFieldValue": {
             "value": 4
+          }
+        },
+        "status": {
+          "id": "10002",
+          "name": "Done",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": "3",
+            "key": "done",
+            "colorName": "green"
           }
         }
       }
@@ -47,6 +69,17 @@
           "statFieldValue": {
             "value": 15
           }
+        },
+        "status": {
+          "id": "10004",
+          "name": "In Progress",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": 4,
+            "key": "indeterminate",
+            "colorName": "yellow"
+          }
         }
       },
       {
@@ -59,6 +92,17 @@
         "estimateStatistic": {
           "statFieldValue": {
             "value": 15
+          }
+        },
+        "status": {
+          "id": "10004",
+          "name": "In Progress",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": 4,
+            "key": "indeterminate",
+            "colorName": "yellow"
           }
         }
       }
@@ -75,6 +119,17 @@
           "statFieldValue": {
             "value": 15
           }
+        },
+        "status": {
+          "id": "10002",
+          "name": "Done",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": "3",
+            "key": "done",
+            "colorName": "green"
+          }
         }
       }
     ],
@@ -89,6 +144,17 @@
         "estimateStatistic": {
           "statFieldValue": {
             "value": 20
+          }
+        },
+        "status": {
+          "id": "10002",
+          "name": "Done",
+          "description": "",
+          "iconUrl": "https://jira.atlassian.net/",
+          "statusCategory": {
+            "id": "3",
+            "key": "done",
+            "colorName": "green"
           }
         }
       }

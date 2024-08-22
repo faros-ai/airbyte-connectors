@@ -29,6 +29,7 @@ export class FarosBoards extends StreamWithProjectSlices {
       uid: `faros-tasks-with-no-board-${projectKey}`,
       name: `Tasks without a board in project ${projectKey}`,
       projectKey,
+      type: 'Custom',
     };
 
     for (const board of await jira.getBoards(projectKey)) {
