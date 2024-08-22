@@ -140,8 +140,30 @@
           }
         ]
       },
-      "sheet_page_size": {
+      "sheet_names": {
         "order": 2,
+        "title": "Sheet Names",
+        "description": "Names of the sheets to extract rows. By default, all sheets are used (only supports Google Sheet)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          [
+            "Sheet1",
+            "Sheet2"
+          ]
+        ]
+      },
+      "row_offset": {
+        "order": 3,
+        "title": "Row offset",
+        "description": "Number of rows to skip until headers row (only supports Google Sheet)",
+        "type": "integer",
+        "default": 0
+      },
+      "sheet_page_size": {
+        "order": 4,
         "title": "Sheet Page Size",
         "description": "Page size when fetching rows from a sheet",
         "type": "integer",
@@ -154,7 +176,7 @@
         ]
       },
       "stream_name": {
-        "order": 3,
+        "order": 5,
         "title": "Stream Name",
         "description": "Name of the data stream",
         "type": "string",
