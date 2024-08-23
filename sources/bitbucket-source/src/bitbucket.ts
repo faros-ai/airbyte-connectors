@@ -60,7 +60,7 @@ export class Bitbucket {
       ? {token: config.token}
       : {username: config.username, password: config.password};
 
-    const baseUrl = config.serverUrl || DEFAULT_BITBUCKET_URL;
+    const baseUrl = config.api_url || DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
 
@@ -105,7 +105,7 @@ export class Bitbucket {
     }
 
     try {
-      config.serverUrl && new URL(config.serverUrl);
+      config.api_url && new URL(config.api_url);
     } catch (error) {
       return [false, 'The server_url: must be a valid url'];
     }
@@ -1279,32 +1279,32 @@ export class Bitbucket {
       fullName: data.full_name,
       name: data.name,
       project: {
-        links: {htmlUrl: project.links?.html?.href},
-        type: project.type,
-        name: project.name,
-        key: project.key,
-        uuid: project.uuid,
-        slug: project.slug,
+        links: {htmlUrl: project?.links?.html?.href},
+        type: project?.type,
+        name: project?.name,
+        key: project?.key,
+        uuid: project?.uuid,
+        slug: project?.slug,
       },
       language: data.language,
       createdOn: data.created_on,
       mainBranch: {
-        type: data.mainbranch.type,
-        name: data.mainbranch.name,
+        type: data.mainbranch?.type,
+        name: data.mainbranch?.name,
       },
       workspace: {
-        type: workspace.type,
-        name: workspace.name,
-        slug: workspace.slug,
-        links: {htmlUrl: workspace.links?.html?.href},
-        uuid: workspace.uuid,
+        type: workspace?.type,
+        name: workspace?.name,
+        slug: workspace?.slug,
+        links: {htmlUrl: workspace?.links?.html?.href},
+        uuid: workspace?.uuid,
       },
       hasIssues: data.has_issues,
       owner: {
-        displayName: owner.display_name,
-        type: owner.type,
-        uuid: owner.uuid,
-        links: {htmlUrl: owner.links?.html?.href},
+        displayName: owner?.display_name,
+        type: owner?.type,
+        uuid: owner?.uuid,
+        links: {htmlUrl: owner?.links?.html?.href},
       },
       updatedOn: data.updated_on,
       size: data.size,

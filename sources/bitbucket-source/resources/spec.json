@@ -4,10 +4,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Bitbucket Spec",
     "type": "object",
-    "required": ["workspaces"],
     "additionalProperties": true,
     "properties": {
       "api_url": {
+        "order": 1,
         "type": "string",
         "title": "API URL",
         "description": "The API URL for fetching data from Bitbucket",
@@ -15,47 +15,74 @@
         "default": "https://api.bitbucket.org/2.0"
       },
       "username": {
+        "order": 2,
         "type": "string",
         "title": "Bitbucket Username",
         "description": "Bitbucket username. Either username/password or Access Token must be provided."
       },
       "password": {
+        "order": 3,
         "type": "string",
         "title": "Bitbucket Password",
         "description": "Bitbucket password",
         "airbyte_secret": true
       },
       "token": {
+        "order": 4,
         "type": "string",
         "title": "Bitbucket Access Token",
         "description": "Personal Access Token for Bitbucket API authentication. See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html for information on how to generate this token.",
         "airbyte_secret": true
       },
       "workspaces": {
+        "order": 5,
         "type": "array",
         "items": {
           "type": "string"
         },
         "title": "Workspaces",
-        "description": "Your Bitbucket workspace IDs",
+        "description": "List of Workspaces from which to fetch data. If none passed, all visible workspaces for the authenticated user will be used.",
+        "examples": ["blaze-lib"]
+      },
+      "excluded_workspaces": {
+        "order": 6,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Excluded Workspaces",
+        "description": "List of Workspaces from which data won't be fetched. By default, no workspaces are excluded. If workspaces list is specified, this list will be ignored.",
         "examples": ["blaze-lib"]
       },
       "repositories": {
+        "order": 7,
         "type": "array",
         "items": {
           "type": "string"
         },
         "title": "Repositories",
-        "description": "Names of your Bitbucket repositories in the format 'workspace/repo-slug'. If none are provided, data from all repositories for the specified workspaces will be pulled.",
+        "description": "List of Bitbucket repositories in the format 'workspace/repo-slug'. If none are provided, data from all repositories for the specified workspaces will be pulled.",
         "examples": ["blaze-lib/blaze"]
       },
+      "excluded_repositories": {
+          "order": 8,
+          "type": "array",
+          "items": {
+          "type": "string"
+          },
+          "title": "Excluded Repositories",
+          "description": "List of Repositories from which data won't be fetched. By default, no repositories are excluded. If repositories list is specified, this list will be ignored.",
+          "examples": ["blaze-lib/blaze"]
+      },
       "cutoff_days": {
+        "order": 9,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "page_size": {
+        "order": 10,
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket API",

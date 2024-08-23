@@ -47,7 +47,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
   }
 
   static workspaceKey(workspace: string): string {
-    return toLower(`${workspace}`);
+    return toLower(workspace);
   }
 
   static workspaceRepoKey(workspace: string, repository: string): string {

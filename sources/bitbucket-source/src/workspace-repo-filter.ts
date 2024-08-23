@@ -106,23 +106,23 @@ export class WorkspaceRepoFilter {
           if (
             !this.filterConfig.excludedReposByWorkspace
               .get(workspace)
-              ?.has(repo.name)
+              ?.has(repo.slug)
           ) {
-            repos.set(repo.name, repo);
+            repos.set(repo.slug, repo);
           }
         });
       } else {
         this.filterConfig.reposByWorkspace
           .get(workspace)
           .forEach((repoName) => {
-            const repo = visibleRepos.find((r) => r.name === repoName);
+            const repo = visibleRepos.find((r) => r.slug === repoName);
             if (!repo) {
               this.logger.warn(
                 `Skipping not found repository ${workspace}/${repoName}`
               );
               return;
             }
-            repos.set(repo.name, repo);
+            repos.set(repo.slug, repo);
           });
       }
       this.reposByWorkspace.set(workspace, repos);

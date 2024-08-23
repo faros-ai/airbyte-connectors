@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`workspaceRepoFilter getRepositories - all - empty list 1`] = `
+[
+  "repo-1",
+  "repo-2",
+  "repo-3",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+]
+`;
+
+exports[`workspaceRepoFilter getRepositories - all - no list 1`] = `
+[
+  "repo-1",
+  "repo-2",
+  "repo-3",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+]
+`;
+
+exports[`workspaceRepoFilter getRepositories - specific repositories excluded 1`] = `
+[
+  "repo-2",
+  "repo-3",
+  "repo-1",
+  "repo-3",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+]
+`;
+
+exports[`workspaceRepoFilter getRepositories - specific repositories included 1`] = `
+[
+  "repo-1",
+  "repo-2",
+  "repo-1",
+  "repo-2",
+  "repo-3",
+]
+`;
+
+exports[`workspaceRepoFilter getWorkspaces - all - empty list 1`] = `
+[
+  "workspace-1",
+  "workspace-2",
+  "workspace-3",
+]
+`;
+
+exports[`workspaceRepoFilter getWorkspaces - all - no list 1`] = `
+[
+  "workspace-1",
+  "workspace-2",
+  "workspace-3",
+]
+`;
+
+exports[`workspaceRepoFilter getWorkspaces - specific workspaces excluded 1`] = `
+[
+  "workspace-3",
+]
+`;
+
+exports[`workspaceRepoFilter getWorkspaces - specific workspaces included 1`] = `
+[
+  "workspace-1",
+  "workspace-2",
+]
+`;
