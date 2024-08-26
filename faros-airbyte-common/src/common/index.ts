@@ -74,3 +74,21 @@ export function calculateDateRange(options: {
 
   return {startDate, endDate};
 }
+
+export function collectReposByOrg(
+  reposByOrg: Map<string, Set<string>>,
+  repos: ReadonlyArray<string>
+): void {
+  for (const repo of repos) {
+    const [org, name] = repo.split('/');
+    if (!org || !name) {
+      throw new VError(
+        `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
+      );
+    }
+    if (!reposByOrg.has(org)) {
+      reposByOrg.set(org, new Set());
+    }
+    reposByOrg.get(org).add(name);
+  }
+}

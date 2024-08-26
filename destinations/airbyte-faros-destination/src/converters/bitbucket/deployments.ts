@@ -1,4 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  Deployment,
+  DeploymentsState,
+  Pipeline,
+} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {Common} from '../common/common';
@@ -9,7 +14,6 @@ import {
   StreamName,
 } from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
-import {Deployment, DeploymentsState, Pipeline} from './types';
 
 enum EnvironmentCategory {
   PROD = 'Prod',
@@ -74,7 +78,7 @@ export class Deployments extends BitbucketConverter {
         deployment.release?.commit?.hash
     );
 
-    const pipeline = pipelineRecord?.record?.data as undefined | Pipeline;
+    const pipeline = pipelineRecord?.record?.data as Pipeline;
     const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
     let build = null;
     if (workspace && repo) {

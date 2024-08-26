@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
-import {Commit} from './types';
 
 export class Commits extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

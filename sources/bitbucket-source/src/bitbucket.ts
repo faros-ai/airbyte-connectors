@@ -4,12 +4,7 @@ import {PaginatedResponseData} from 'bitbucket/src/request/types';
 import Bottleneck from 'bottleneck';
 import dateformat from 'date-format';
 import {AirbyteLogger, toDate, wrapApiError} from 'faros-airbyte-cdk';
-import {Dictionary} from 'ts-essentials';
-import {Memoize} from 'typescript-memoize';
-import VErrorType, {VError} from 'verror';
-
 import {
-  BitbucketConfig,
   Branch,
   Commit,
   Deployment,
@@ -24,10 +19,17 @@ import {
   Repository,
   Workspace,
   WorkspaceUser,
-} from './types';
+} from 'faros-airbyte-common/bitbucket';
+import {Dictionary} from 'ts-essentials';
+import {Memoize} from 'typescript-memoize';
+import VErrorType, {VError} from 'verror';
+
+import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
-const DEFAULT_PAGELEN = 100;
+const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_CUTOFF_DAYS = 90;
+
 export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
 
 interface BitbucketResponse<T> {
@@ -40,7 +42,7 @@ export class Bitbucket {
 
   constructor(
     private readonly client: APIClient,
-    private readonly pagelen: number,
+    private readonly pageSize: number,
     private readonly logger: AirbyteLogger,
     readonly startDate: Date
   ) {}
@@ -48,7 +50,7 @@ export class Bitbucket {
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
     if (Bitbucket.bitbucket) return Bitbucket.bitbucket;
 
-    const [passed, errorMessage] = Bitbucket.isValidateConfig(config);
+    const [passed, errorMessage] = Bitbucket.validateConfig(config);
     if (!passed) {
       logger.error(errorMessage);
       throw new VError(errorMessage);
@@ -58,16 +60,14 @@ export class Bitbucket {
       ? {token: config.token}
       : {username: config.username, password: config.password};
 
-    const baseUrl = config.serverUrl || DEFAULT_BITBUCKET_URL;
+    const baseUrl = config.api_url || DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-    const pagelen = config.pagelen || DEFAULT_PAGELEN;
+    const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
 
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
-    }
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Bitbucket.bitbucket = new Bitbucket(client, pagelen, logger, startDate);
+    startDate.setDate(startDate.getDate() - cutoffDays);
+    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger, startDate);
     return Bitbucket.bitbucket;
   }
 
@@ -92,7 +92,7 @@ export class Bitbucket {
     }
   }
 
-  private static isValidateConfig(config: BitbucketConfig): [boolean, string] {
+  private static validateConfig(config: BitbucketConfig): [boolean, string] {
     const existToken = config.token && !config.username && !config.password;
     const existAuth = !config.token && config.username && config.password;
 
@@ -104,19 +104,16 @@ export class Bitbucket {
       ];
     }
 
-    if (!config.workspaces || config.workspaces.length < 1) {
-      return [false, 'No workspaces provided'];
-    }
     try {
-      config.serverUrl && new URL(config.serverUrl);
+      config.api_url && new URL(config.api_url);
     } catch (error) {
-      return [false, 'server_url: must be a valid url'];
+      return [false, 'The server_url: must be a valid url'];
     }
 
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: string): Date {
+  private getStartDateMax(lastUpdatedAt?: number): Date {
     const startTime = new Date(lastUpdatedAt ?? 0);
     return startTime > this.startDate ? startTime : this.startDate;
   }
@@ -131,7 +128,7 @@ export class Bitbucket {
           this.client.repositories.listBranches({
             workspace,
             repo_slug: repoSlug,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         ) as any;
 
@@ -149,7 +146,7 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): AsyncGenerator<Commit> {
     try {
       const lastUpdatedMax = this.getStartDateMax(lastUpdated);
@@ -158,7 +155,7 @@ export class Bitbucket {
           this.client.repositories.listCommits({
             workspace,
             repo_slug: repoSlug,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         ) as any;
       const isNew = (data: Commit): boolean =>
@@ -189,7 +186,7 @@ export class Bitbucket {
           this.client.deployments.list({
             workspace,
             repo_slug: repoSlug,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         ) as any;
 
@@ -289,7 +286,7 @@ export class Bitbucket {
   async *getIssues(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): AsyncGenerator<Issue> {
     if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
       return;
@@ -298,7 +295,7 @@ export class Bitbucket {
     const params: any = {
       workspace,
       repo_slug: repoSlug,
-      pagelen: this.pagelen,
+      pagelen: this.pageSize,
     };
     params.q = `updated_on > ${formatDate(lastUpdatedMax)}`;
     try {
@@ -332,7 +329,7 @@ export class Bitbucket {
           this.client.pipelines.list({
             workspace,
             repo_slug: repoSlug,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
             sort: '-created_on', // sort by created_on field in desc order
           })
         ) as any;
@@ -366,7 +363,7 @@ export class Bitbucket {
             workspace,
             repo_slug: repoSlug,
             pipeline_uuid: pipelineUUID,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         ) as any;
 
@@ -390,7 +387,7 @@ export class Bitbucket {
   async getPullRequests(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: string
+    lastUpdated?: number
   ): Promise<ReadonlyArray<PullRequest>> {
     const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     try {
@@ -409,7 +406,7 @@ export class Bitbucket {
           this.client.repositories.listPullRequests({
             workspace,
             repo_slug: repoSlug,
-            paglen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
+            paglen: Math.min(this.pageSize, 50), // page size is limited to 50 for PR activities
             q: query,
           })
         ) as any;
@@ -489,7 +486,7 @@ export class Bitbucket {
             workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
-            pagelen: Math.min(this.pagelen, 50), // page size is limited to 50 for PR activities
+            pagelen: Math.min(this.pageSize, 50), // page size is limited to 50 for PR activities
           })
         ) as any;
 
@@ -520,7 +517,7 @@ export class Bitbucket {
             workspace,
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         ) as any;
 
@@ -559,7 +556,7 @@ export class Bitbucket {
     try {
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
-          this.client.repositories.list({workspace, pagelen: this.pagelen})
+          this.client.repositories.list({workspace, pagelen: this.pageSize})
         );
       const isIncluded = (data: Repository): boolean => {
         return (
@@ -586,11 +583,19 @@ export class Bitbucket {
     }
   }
 
+  async getWorkspaceIds(): Promise<ReadonlyArray<string>> {
+    const workspaces = [];
+    for await (const workspace of this.getWorkspaces()) {
+      workspaces.push(workspace.slug);
+    }
+    return workspaces;
+  }
+
   async *getWorkspaces(): AsyncGenerator<Workspace> {
     try {
       const func = (): Promise<BitbucketResponse<Workspace>> =>
         this.limiter.schedule(() =>
-          this.client.workspaces.getWorkspaces({pagelen: this.pagelen})
+          this.client.workspaces.getWorkspaces({pagelen: this.pageSize})
         );
 
       yield* this.paginate<Workspace>(func, (data) =>
@@ -607,7 +612,7 @@ export class Bitbucket {
         this.limiter.schedule(() =>
           this.client.workspaces.getMembersForWorkspace({
             workspace,
-            pagelen: this.pagelen,
+            pagelen: this.pageSize,
           })
         );
 
@@ -1274,31 +1279,32 @@ export class Bitbucket {
       fullName: data.full_name,
       name: data.name,
       project: {
-        links: {htmlUrl: project.links?.html?.href},
-        type: project.type,
-        name: project.name,
-        key: project.key,
-        uuid: project.uuid,
+        links: {htmlUrl: project?.links?.html?.href},
+        type: project?.type,
+        name: project?.name,
+        key: project?.key,
+        uuid: project?.uuid,
+        slug: project?.slug,
       },
       language: data.language,
       createdOn: data.created_on,
       mainBranch: {
-        type: data.mainbranch.type,
-        name: data.mainbranch.name,
+        type: data.mainbranch?.type,
+        name: data.mainbranch?.name,
       },
       workspace: {
-        type: workspace.type,
-        name: workspace.name,
-        slug: workspace.slug,
-        links: {htmlUrl: workspace.links?.html?.href},
-        uuid: workspace.uuid,
+        type: workspace?.type,
+        name: workspace?.name,
+        slug: workspace?.slug,
+        links: {htmlUrl: workspace?.links?.html?.href},
+        uuid: workspace?.uuid,
       },
       hasIssues: data.has_issues,
       owner: {
-        displayName: owner.display_name,
-        type: owner.type,
-        uuid: owner.uuid,
-        links: {htmlUrl: owner.links?.html?.href},
+        displayName: owner?.display_name,
+        type: owner?.type,
+        uuid: owner?.uuid,
+        links: {htmlUrl: owner?.links?.html?.href},
       },
       updatedOn: data.updated_on,
       size: data.size,

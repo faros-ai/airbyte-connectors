@@ -1,4 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  Pipeline,
+  PipelineStep,
+  PipelineStepState,
+} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {
@@ -8,7 +13,6 @@ import {
   StreamName,
 } from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
-import {Pipeline, PipelineStep, PipelineStepState} from './types';
 
 enum BuildStatusCategory {
   CANCELED = 'Canceled',
@@ -40,7 +44,7 @@ export class PipelineSteps extends BitbucketConverter {
 
     const pipelinesStream = this.pipelinesStream.asString;
     const pipelinesRecord = ctx.get(pipelinesStream, step.pipeline.uuid);
-    const pipeline = pipelinesRecord?.record?.data as undefined | Pipeline;
+    const pipeline = pipelinesRecord?.record?.data as Pipeline;
 
     const [workspace, repo] = (pipeline?.repository?.fullName || '').split('/');
     if (!workspace || !repo) return [];

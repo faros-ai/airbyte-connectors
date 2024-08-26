@@ -1,28 +1,17 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/bitbucket';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, Commit} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {
+  RepoStreamSlice,
+  StreamBase,
+  StreamState,
+  StreamWithRepoSlices,
+} from './common';
 
-type StreamSlice = {
-  workspace: string;
-  repository: {slug: string; fullName: string};
-};
-type CommitState = Dictionary<{cutoff?: string}>;
-
-export class Commits extends AirbyteStreamBase {
-  constructor(
-    readonly config: BitbucketConfig,
-    readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Commits extends StreamWithRepoSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/commits.json');
   }
@@ -33,50 +22,33 @@ export class Commits extends AirbyteStreamBase {
     return 'date';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const bitbucket = Bitbucket.instance(this.config, this.logger);
-    for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(
-        workspace,
-        this.config.repositories
-      )) {
-        yield {
-          workspace,
-          repository: {slug: repo.slug, fullName: repo.fullName},
-        };
-      }
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
-    streamState?: CommitState
+    streamSlice?: RepoStreamSlice,
+    streamState?: StreamState
   ): AsyncGenerator<Commit> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     const workspace = streamSlice.workspace;
-    const repo = streamSlice.repository;
+    const repo = streamSlice.repo;
     const lastUpdated =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[repo.fullName]?.cutoff
+        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
         : undefined;
-    yield* bitbucket.getCommits(workspace, repo.slug, lastUpdated);
+    yield* bitbucket.getCommits(workspace, repo, lastUpdated);
   }
 
   getUpdatedState(
-    currentStreamState: CommitState,
-    latestRecord: Commit
-  ): CommitState {
-    const repo = latestRecord.repository.fullName;
-    const repoState = currentStreamState[repo] ?? {};
-    const newRepoState = {
-      cutoff:
-        new Date(latestRecord.date) > new Date(repoState.cutoff ?? 0)
-          ? latestRecord.date
-          : repoState.cutoff,
-    };
-    return {...currentStreamState, [repo]: newRepoState};
+    currentStreamState: StreamState,
+    latestRecord: Commit,
+    streamSlice: RepoStreamSlice
+  ): StreamState {
+    const latestRecordCutoff = Utils.toDate(latestRecord?.date ?? 0);
+    return this.getUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      StreamBase.workspaceRepoKey(streamSlice.workspace, streamSlice.repo)
+    );
   }
 }

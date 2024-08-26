@@ -7,7 +7,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {Bitbucket} from '../src/bitbucket/bitbucket';
+import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
 
 const bitbucketInstance = Bitbucket.instance;

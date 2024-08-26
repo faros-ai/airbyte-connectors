@@ -1,24 +1,11 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Deployment} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, Deployment} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {RepoStreamSlice, StreamWithRepoSlices} from './common';
 
-type StreamSlice = {workspace: string; repository: string};
-
-export class Deployments extends AirbyteStreamBase {
-  constructor(
-    readonly config: BitbucketConfig,
-    readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Deployments extends StreamWithRepoSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/deployments.json');
   }
@@ -26,27 +13,15 @@ export class Deployments extends AirbyteStreamBase {
     return 'uuid';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const bitbucket = Bitbucket.instance(this.config, this.logger);
-    for (const workspace of this.config.workspaces) {
-      for (const repo of await bitbucket.getRepositories(
-        workspace,
-        this.config.repositories
-      )) {
-        yield {workspace, repository: repo.slug};
-      }
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice
+    streamSlice?: RepoStreamSlice
   ): AsyncGenerator<Deployment> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 
     const workspace = streamSlice.workspace;
-    const repoSlug = streamSlice.repository;
+    const repoSlug = streamSlice.repo;
     yield* bitbucket.getDeployments(workspace, repoSlug);
   }
 }

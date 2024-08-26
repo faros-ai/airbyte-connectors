@@ -1,21 +1,11 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {WorkspaceUser} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, WorkspaceUser} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {StreamWithWorkspaceSlices, WorkspaceStreamSlice} from './common';
 
-type StreamSlice = {workspace: string};
-
-export class WorkspaceUsers extends AirbyteStreamBase {
-  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
-    super(logger);
-  }
-
+export class WorkspaceUsers extends StreamWithWorkspaceSlices {
   getJsonSchema(): Dictionary<any> {
     return require('../../resources/schemas/workspace_users.json');
   }
@@ -23,16 +13,10 @@ export class WorkspaceUsers extends AirbyteStreamBase {
     return ['user', 'uuid'];
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const workspace of this.config.workspaces) {
-      yield {workspace};
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice
+    streamSlice?: WorkspaceStreamSlice
   ): AsyncGenerator<WorkspaceUser> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
 

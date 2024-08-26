@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Issue, User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamName} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
-import {Issue, User} from './types';
 
 enum TaskCategory {
   BUG = 'Bug',

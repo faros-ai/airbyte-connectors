@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {PRActivity, User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
-import {PRActivity, User} from './types';
 
 enum PullRequestReviewStateCategory {
   APPROVED = 'Approved',

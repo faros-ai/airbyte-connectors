@@ -1,14 +1,11 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
+import {Workspace} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket/bitbucket';
-import {BitbucketConfig, Workspace} from '../bitbucket/types';
+import {Bitbucket} from '../bitbucket';
+import {StreamBase} from './common';
 
-export class Workspaces extends AirbyteStreamBase {
-  constructor(readonly config: BitbucketConfig, logger: AirbyteLogger) {
-    super(logger);
-  }
-
+export class Workspaces extends StreamBase {
   getJsonSchema(): Dictionary<any> {
     return require('../../resources/schemas/workspaces.json');
   }

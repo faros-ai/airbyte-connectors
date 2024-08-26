@@ -1,19 +1,6 @@
-import {AirbyteConfig} from 'faros-airbyte-cdk';
-
 interface CalculatedActivity {
   commitCount: number;
   mergedAt: string;
-}
-
-export interface BitbucketConfig extends AirbyteConfig {
-  readonly serverUrl?: string;
-  readonly username?: string;
-  readonly password?: string;
-  readonly token?: string;
-  readonly workspaces: ReadonlyArray<string>;
-  readonly repositories?: ReadonlyArray<string>;
-  readonly pagelen?: number;
-  readonly cutoff_days: number;
 }
 
 export interface Branch {
@@ -24,11 +11,11 @@ export interface Branch {
   readonly type: string;
   readonly target: {
     readonly hash: string;
-    readonly repository: {
+    repository: {
       readonly links: {readonly htmlUrl: string};
       readonly type: string;
       readonly name: string;
-      readonly fullName: string;
+      fullName: string;
       readonly uuid: string;
     };
     readonly links: {readonly htmlUrl: string};
@@ -121,7 +108,10 @@ export interface Deployment {
   readonly lastUpdateTime?: string;
   readonly environment: {
     readonly uuid: string;
-    readonly type: string;
+    readonly name?: string;
+    readonly slug?: string;
+    readonly rank?: number;
+    readonly type?: string;
   };
   readonly fullEnvironment?: Environment;
   readonly step: {
@@ -133,14 +123,7 @@ export interface Deployment {
     readonly hash: string;
     readonly links: {readonly htmlUrl: string};
   };
-  readonly state: {
-    readonly type: string;
-    readonly name: string;
-    readonly url: string;
-    readonly startedOn: string;
-    readonly completedOn: string;
-    readonly status?: {readonly type: string; readonly name: string};
-  };
+  readonly state: DeploymentsState;
   readonly deployable: {
     readonly type: string;
     readonly uuid: string;
@@ -179,6 +162,15 @@ export interface Deployment {
       };
     };
   };
+}
+
+export interface DeploymentsState {
+  readonly type: string;
+  readonly name: string;
+  readonly url: string;
+  readonly startedOn: string;
+  readonly completedOn: string;
+  readonly status?: {readonly type: string; readonly name: string};
 }
 
 export interface DiffStat {
@@ -225,10 +217,10 @@ export interface Issue {
   readonly votes: number;
   readonly watches: number;
   readonly id: number;
-  readonly component: any | null;
-  readonly version: any | null;
-  readonly editedOn: any | null;
-  readonly milestone: any | null;
+  readonly component: any;
+  readonly version: any;
+  readonly editedOn: any;
+  readonly milestone: any;
   readonly repository: {
     readonly type: string;
     readonly name: string;
@@ -261,22 +253,25 @@ export interface Issue {
     readonly html: string;
     readonly type: string;
   };
-  assignee: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
+  assignee: User;
+}
+
+export interface User {
+  readonly displayName: string;
+  readonly emailAddress?: string;
+  readonly uuid: string;
+  readonly type: string;
+  readonly nickname: string;
+  readonly accountId: string;
+  readonly links: {
+    readonly htmlUrl: string;
   };
 }
 
 export interface Pipeline {
   readonly type: string;
   readonly uuid: string;
-  readonly buildNumber?: number;
+  readonly buildNumber: number;
   readonly createdOn: string;
   readonly completedOn?: string;
   readonly runNumber: number;
@@ -284,7 +279,7 @@ export interface Pipeline {
   readonly buildSecondsUsed: number;
   readonly firstSuccessful: boolean;
   readonly expired: boolean;
-  readonly hasVariables?: boolean;
+  readonly hasVariables: boolean;
   readonly repository: {
     readonly name: string;
     readonly type: string;
@@ -294,14 +289,7 @@ export interface Pipeline {
       readonly htmlUrl: string;
     };
   };
-  readonly state: {
-    readonly name: string;
-    readonly type: string;
-    readonly stage?: {
-      readonly name: string;
-      readonly type: string;
-    };
-  };
+  readonly state: PipelineState;
   readonly creator: {
     readonly displayName: string;
     readonly accountId: string;
@@ -331,21 +319,30 @@ export interface Pipeline {
     readonly name: string;
     readonly type: string;
   };
-  readonly links?: {
+  readonly links: {
     readonly htmlUrl: string;
+  };
+}
+
+export interface PipelineState {
+  readonly name: string;
+  readonly type: string;
+  readonly stage?: {
+    readonly name: string;
+    readonly type: string;
   };
 }
 
 export interface PipelineStep {
   readonly uuid: string;
-  readonly startedOn?: string;
+  readonly startedOn: string;
   readonly completedOn?: string;
   readonly type: string;
   readonly name: string;
   readonly runNumber: number;
   readonly maxTime: number;
   readonly buildSecondsUsed: number;
-  readonly durationInSeconds?: number;
+  readonly durationInSeconds: number;
   readonly pipeline: {
     readonly type: string;
     readonly uuid: string;
@@ -358,14 +355,7 @@ export interface PipelineStep {
     readonly command: string;
     readonly name: string;
   }[];
-  readonly state: {
-    readonly type: string;
-    readonly name: string;
-    readonly result?: {
-      readonly type: string;
-      readonly name: string;
-    };
-  };
+  readonly state: PipelineStepState;
   readonly trigger: {
     readonly type: string;
   };
@@ -380,6 +370,15 @@ export interface PipelineStep {
     readonly command: string;
     readonly name: string;
   }[];
+}
+
+export interface PipelineStepState {
+  readonly type: string;
+  readonly name: string;
+  readonly result: {
+    readonly type: string;
+    readonly name: string;
+  };
 }
 
 export interface PullRequest {
@@ -456,33 +455,15 @@ export interface PullRequest {
       readonly name: string;
     };
   };
-  readonly author: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly mergeCommit?: null | {
+  readonly author: User;
+  readonly mergeCommit: null | {
     readonly hash: string;
     readonly type: string;
     readonly links: {
       readonly htmlUrl: string;
     };
   };
-  readonly closedBy: null | {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
+  readonly closedBy: null | User;
 }
 
 export interface PRActivity {
@@ -557,16 +538,7 @@ export interface PRActivity {
         readonly name: string;
       };
     };
-    readonly author: {
-      readonly displayName: string;
-      readonly uuid: string;
-      readonly type: string;
-      readonly nickname: string;
-      readonly accountId: string;
-      readonly links: {
-        readonly htmlUrl: string;
-      };
-    };
+    readonly author: User;
     readonly changes: {
       readonly status?: {
         readonly new: string;
@@ -593,36 +565,19 @@ export interface PRActivity {
     readonly links: {
       readonly htmlUrl: string;
     };
-    readonly pullrequest: {
-      readonly type: string;
-      readonly title: string;
-      readonly id: number;
-      readonly links: {
-        readonly htmlUrl: string;
-      };
-    };
     readonly content: {
       readonly raw: string;
       readonly markup: string;
       readonly html: string;
       readonly type: string;
     };
-    readonly user: {
-      readonly displayName: string;
-      readonly uuid: string;
-      readonly type: string;
-      readonly nickname: string;
-      readonly accountId: string;
-      readonly links: {
-        readonly htmlUrl: string;
-      };
-    };
+    readonly user: User;
   };
 }
 
 export interface PRDiffStat {
   readonly status: string;
-  readonly old: null | any;
+  readonly old: any;
   readonly linesRemoved: number;
   readonly linesAdded: number;
   readonly type: string;
@@ -657,6 +612,7 @@ export interface Repository {
   readonly project: {
     readonly type: string;
     readonly name: string;
+    readonly slug: string;
     readonly key: string;
     readonly uuid: string;
     readonly links: {readonly htmlUrl: string};
@@ -682,16 +638,7 @@ export interface Repository {
 
 export interface WorkspaceUser {
   readonly type: string;
-  readonly user: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
+  readonly user: User;
   readonly workspace: {
     readonly slug: string;
     readonly type: string;

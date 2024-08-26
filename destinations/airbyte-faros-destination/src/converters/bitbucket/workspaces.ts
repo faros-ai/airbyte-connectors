@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Workspace} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketConverter, CategoryRef} from './common';
-import {Workspace} from './types';
 
 enum OrgTypeCategory {
   ORGANIZATION = 'Organization',

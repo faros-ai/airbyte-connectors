@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {
@@ -7,7 +8,6 @@ import {
   parseObjectConfig,
   StreamContext,
 } from '../converter';
-import {User} from './types';
 
 interface BitbucketConfig {
   application_mapping?: ApplicationMapping;
