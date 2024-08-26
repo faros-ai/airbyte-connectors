@@ -82,9 +82,14 @@ export class SheetsReader {
           );
         }
 
-        const creds = privateKey
-          ? (JSON.parse(privateKey) as ServiceAccountCredentials)
-          : apiKey;
+        let creds: string | ServiceAccountCredentials;
+        if (privateKey) {
+          creds = (
+            typeof privateKey === 'string' ? JSON.parse(privateKey) : privateKey
+          ) as ServiceAccountCredentials;
+        } else {
+          creds = apiKey;
+        }
 
         wb = await SheetsReader.loadSheets(
           config.spreadsheet_source.google_sheet_id,
