@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index streams - workspaces 1`] = `
+[
+  {
+    "createdOn": "2020-12-08T18:52:43.318039+00:00",
+    "isPrivate": false,
+    "links": {
+      "htmlUrl": "https://bitbucket.org/YulyKo/",
+      "ownersUrl": "https://api.bitbucket.org/2.0/workspaces/YulyKo/members?q=permission%3D%22owner%22",
+      "repositoriesUrl": "https://api.bitbucket.org/2.0/repositories/YulyKo",
+    },
+    "name": "Yulia Kotenko",
+    "slug": "YulyKo",
+    "type": "workspace",
+    "uuid": "{25336f4e-358d-4ba6-afb9-f8d25284ecaf}",
+  },
+  {
+    "createdOn": "2020-12-08T18:52:43.318039+00:00",
+    "isPrivate": false,
+    "links": {
+      "htmlUrl": "https://bitbucket.org/YulyKo/",
+      "ownersUrl": "https://api.bitbucket.org/2.0/workspaces/YulyKo/members?q=permission%3D%22owner%22",
+      "repositoriesUrl": "https://api.bitbucket.org/2.0/repositories/YulyKo",
+    },
+    "name": "Yulia Kotenko",
+    "slug": "YulyKo",
+    "type": "workspace",
+    "uuid": "{25336f4e-358d-4ba6-afb9-f8d25284ecaf}",
+  },
+  {
+    "createdOn": "2020-12-08T18:52:43.318039+00:00",
+    "isPrivate": false,
+    "links": {
+      "htmlUrl": "https://bitbucket.org/YulyKo/",
+      "ownersUrl": "https://api.bitbucket.org/2.0/workspaces/YulyKo/members?q=permission%3D%22owner%22",
+      "repositoriesUrl": "https://api.bitbucket.org/2.0/repositories/YulyKo",
+    },
+    "name": "Yulia Kotenko",
+    "slug": "YulyKo",
+    "type": "workspace",
+    "uuid": "{25336f4e-358d-4ba6-afb9-f8d25284ecaf}",
+  },
+]
+`;

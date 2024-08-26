@@ -2,6 +2,8 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readTestResourceAsJSON,
+  sourceReadTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
@@ -9,6 +11,7 @@ import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
+import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
 
@@ -290,40 +293,32 @@ describe('index', () => {
       readTestResourceFile('repositories-response.json')
     );
   });
-  test('streams - workspaces, use full_refresh sync mode', async () => {
-    const fnWorkspacesFunc = jest.fn();
 
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          workspaces: {
-            getWorkspaces: fnWorkspacesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('workspaces.json')},
-            }),
+  test('streams - workspaces', async () => {
+    await sourceReadTest({
+      source: new sut.BitbucketSource(logger),
+      configOrPath: 'config.json',
+      catalogOrPath: 'workspaces/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            workspaces: {
+              getWorkspace: jest.fn().mockResolvedValue({
+                data: readTestResourceAsJSON('workspaces/workspace.json'),
+              }),
+              getWorkspaces: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('workspaces/workspaces.json'),
+                },
+              }),
+            },
           },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const workspacesStream = streams[10];
-    const workspacesIter = workspacesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined
-    );
-    const workspaces = [];
-    for await (const workspace of workspacesIter) {
-      workspaces.push(workspace);
-    }
-
-    expect(fnWorkspacesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(workspaces))).toStrictEqual(
-      readTestResourceFile('workspaces-response.json')
-    );
   });
 });

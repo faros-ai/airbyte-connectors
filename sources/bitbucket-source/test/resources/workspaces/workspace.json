@@ -1,0 +1,19 @@
+{
+  "uuid": "{25336f4e-358d-4ba6-afb9-f8d25284ecaf}",
+  "created_on": "2020-12-08T18:52:43.318039+00:00",
+  "type": "workspace",
+  "slug": "YulyKo",
+  "is_private": false,
+  "name": "Yulia Kotenko",
+  "links": {
+    "owners": {
+      "href": "https://api.bitbucket.org/2.0/workspaces/YulyKo/members?q=permission%3D%22owner%22"
+    },
+    "repositories": {
+      "href": "https://api.bitbucket.org/2.0/repositories/YulyKo"
+    },
+    "html": {
+      "href": "https://bitbucket.org/YulyKo/"
+    }
+  }
+}
