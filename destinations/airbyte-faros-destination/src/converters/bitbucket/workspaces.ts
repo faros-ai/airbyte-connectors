@@ -14,7 +14,6 @@ enum OrgTypeCategory {
 
 export class Workspaces extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'cicd_Organization',
     'vcs_Organization',
   ];
 
@@ -25,15 +24,6 @@ export class Workspaces extends BitbucketConverter {
     const workspace = record.record.data as Workspace;
 
     return [
-      {
-        model: 'cicd_Organization',
-        record: {
-          uid: workspace.slug.toLowerCase(),
-          name: workspace.name,
-          url: workspace.links.htmlUrl,
-          source,
-        },
-      },
       {
         model: 'vcs_Organization',
         record: {

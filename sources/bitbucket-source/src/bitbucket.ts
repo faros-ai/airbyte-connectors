@@ -606,6 +606,19 @@ export class Bitbucket {
     }
   }
 
+  async getWorkspace(workspace: string): Promise<Workspace> {
+    try {
+      const response = await this.client.workspaces.getWorkspace({workspace});
+      return this.buildWorkspace(response.data);
+    } catch (err) {
+      throw new VError(
+        this.buildInnerError(err),
+        'Error fetching workspace: %s',
+        workspace
+      );
+    }
+  }
+
   async *getWorkspaceUsers(workspace: string): AsyncGenerator<WorkspaceUser> {
     try {
       const func = (): Promise<BitbucketResponse<WorkspaceUser>> =>

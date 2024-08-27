@@ -15,7 +15,9 @@ export class Workspaces extends StreamBase {
 
   async *readRecords(): AsyncGenerator<Workspace> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
-
-    yield* bitbucket.getWorkspaces();
+    const workspaces = await this.workspaceRepoFilter.getWorkspaces();
+    for (const workspace of workspaces) {
+      yield bitbucket.getWorkspace(workspace);
+    }
   }
 }
