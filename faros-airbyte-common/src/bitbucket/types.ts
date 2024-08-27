@@ -591,21 +591,16 @@ export interface PRDiffStat {
 export interface Repository {
   workspace: string;
   slug: string;
-  full_name: string;
+  fullName: string;
   description: string;
-  is_private: boolean;
+  isPrivate: boolean;
   language: string;
   size: number;
-  links: {
-    html: {
-      href: string;
-    };
-  };
-  created_on: string;
-  updated_on: string;
-  mainbranch: {
-    name: string;
-  };
+  htmlUrl: string;
+  createdOn: string;
+  updatedOn: string;
+  mainBranch: string;
+  hasIssues: boolean;
 }
 
 export interface WorkspaceUser {

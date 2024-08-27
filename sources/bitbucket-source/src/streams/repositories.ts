@@ -18,8 +18,9 @@ export class Repositories extends StreamWithWorkspaceSlices {
     cursorField?: string[],
     streamSlice?: WorkspaceStreamSlice
   ): AsyncGenerator<Repository> {
-    const bitbucket = Bitbucket.instance(this.config, this.logger);
-    for (const repo of await bitbucket.getRepositories(streamSlice.workspace)) {
+    for (const repo of await this.workspaceRepoFilter.getRepositories(
+      streamSlice.workspace
+    )) {
       yield repo;
     }
   }

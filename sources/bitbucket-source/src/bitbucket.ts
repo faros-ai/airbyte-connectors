@@ -281,7 +281,7 @@ export class Bitbucket {
       workspace,
       repo_slug: repoSlug,
     });
-    return this.buildRepository(response.data);
+    return this.buildRepository(response.data, workspace);
   }
 
   async *getIssues(
@@ -558,7 +558,7 @@ export class Bitbucket {
         );
 
       const repos = this.paginate<Repository>(func, (data) =>
-        this.buildRepository(data)
+        this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
         results.push(repo);
@@ -1267,21 +1267,23 @@ export class Bitbucket {
     };
   }
 
-  private buildRepository(data: Dictionary<any>): Repository {
+  private buildRepository(
+    data: Dictionary<any>,
+    workspace: string
+  ): Repository {
     return {
-      workspace: data.workspace.slug,
-      ...pick(data, [
-        'slug',
-        'full_name',
-        'description',
-        'is_private',
-        'language',
-        'size',
-        'links',
-        'created_on',
-        'updated_on',
-        'mainbranch',
-      ]),
+      workspace,
+      slug: data.slug,
+      fullName: data.full_name,
+      description: data.description,
+      isPrivate: data.is_private,
+      language: data.language,
+      size: data.size,
+      htmlUrl: data.links?.html?.href,
+      createdOn: data.created_on,
+      updatedOn: data.updated_on,
+      mainBranch: data.mainbranch?.name,
+      hasIssues: data.has_issues,
     };
   }
 
