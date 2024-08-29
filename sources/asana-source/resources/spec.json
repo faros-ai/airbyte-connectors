@@ -108,6 +108,12 @@
         },
         "title": "Required Task Custom Fields gid(s)",
         "description": "Only fetch tasks that have at least one of the specified custom fields set."
+      },
+      "optimize_fetching_projects_and_tasks_with_full_tasks_sync": {
+        "order": 10,
+        "type": "boolean",
+        "title": "Optimize fetching projects/tasks by forcing full tasks sync.",
+        "description": "Forces a full sync of tasks and skips projects and project-tasks relationships sync. Depending on the number of tasks, this could be faster than the default behavior."
       }
     }
   }
