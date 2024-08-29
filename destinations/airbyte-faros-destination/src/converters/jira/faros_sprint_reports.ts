@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {SprintReport} from 'faros-airbyte-common/lib/jira';
+import {SprintReport} from 'faros-airbyte-common/jira';
 import {toString} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
