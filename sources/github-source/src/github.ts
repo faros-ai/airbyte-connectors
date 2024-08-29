@@ -208,6 +208,7 @@ export abstract class GitHub {
             'topics',
             'created_at',
             'updated_at',
+            'archived',
           ]),
         });
       }

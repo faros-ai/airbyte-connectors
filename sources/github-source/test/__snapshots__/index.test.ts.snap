@@ -1075,6 +1075,7 @@ exports[`index streams - releases 1`] = `
 exports[`index streams - repositories 1`] = `
 [
   {
+    "archived": false,
     "created_at": "2011-01-26T19:01:12Z",
     "default_branch": "master",
     "description": "This your first repo!",
@@ -1099,6 +1100,7 @@ exports[`index streams - repositories 1`] = `
 exports[`index streams - repositories with bucketing 1`] = `
 [
   {
+    "archived": false,
     "created_at": "2023-06-01T12:00:00Z",
     "default_branch": "main",
     "description": "This is a new repo!",
