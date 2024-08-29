@@ -589,51 +589,18 @@ export interface PRDiffStat {
 }
 
 export interface Repository {
-  readonly scm: string;
-  readonly website: string;
-  readonly hasWiki: boolean;
-  readonly uuid: string;
-  readonly forkPolicy: string;
-  readonly fullName: string;
-  readonly name: string;
-  readonly language: string;
-  readonly createdOn: string;
-  readonly hasIssues: boolean;
-  readonly updatedOn: string;
-  readonly size: number;
-  readonly type: string;
-  readonly slug: string;
-  readonly isPrivate: boolean;
-  readonly description: string;
-  readonly links: {
-    readonly branchesUrl: string;
-    readonly htmlUrl: string;
-  };
-  readonly project: {
-    readonly type: string;
-    readonly name: string;
-    readonly slug: string;
-    readonly key: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
-  readonly mainBranch: {
-    readonly type: string;
-    readonly name: string;
-  };
-  readonly workspace: {
-    readonly type: string;
-    readonly name: string;
-    readonly slug: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
-  readonly owner: {
-    readonly displayName: string;
-    readonly type: string;
-    readonly uuid: string;
-    readonly links: {readonly htmlUrl: string};
-  };
+  workspace: string;
+  slug: string;
+  fullName: string;
+  description: string;
+  isPrivate: boolean;
+  language: string;
+  size: number;
+  htmlUrl: string;
+  createdOn: string;
+  updatedOn: string;
+  mainBranch: string;
+  hasIssues: boolean;
 }
 
 export interface WorkspaceUser {
