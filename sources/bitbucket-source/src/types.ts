@@ -11,4 +11,10 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly excluded_repositories?: ReadonlyArray<string>;
   readonly page_size?: number;
   readonly cutoff_days?: number;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  readonly backfill: boolean;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
+  startDate?: Date;
+  endDate?: Date;
 }

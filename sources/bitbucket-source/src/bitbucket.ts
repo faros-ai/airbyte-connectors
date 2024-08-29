@@ -28,7 +28,8 @@ import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_BACKFILL = false;
+export const DEFAULT_CUTOFF_DAYS = 90;
 
 export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
 
@@ -44,7 +45,8 @@ export class Bitbucket {
     private readonly client: APIClient,
     private readonly pageSize: number,
     private readonly logger: AirbyteLogger,
-    readonly startDate: Date
+    readonly startDate: Date,
+    private readonly backfill: boolean
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -63,11 +65,18 @@ export class Bitbucket {
     const baseUrl = config.api_url || DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
+    const backfill = config.backfill || DEFAULT_BACKFILL;
 
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - cutoffDays);
-    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger, startDate);
+    Bitbucket.bitbucket = new Bitbucket(
+      client,
+      pageSize,
+      logger,
+      startDate,
+      backfill
+    );
     return Bitbucket.bitbucket;
   }
 
@@ -146,10 +155,10 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<Commit> {
     try {
-      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listCommits({
@@ -158,13 +167,16 @@ export class Bitbucket {
             pagelen: this.pageSize,
           })
         ) as any;
-      const isNew = (data: Commit): boolean =>
-        new Date(data.date) > lastUpdatedMax;
+      const isInRange = (data: Commit): boolean =>
+        // commit date must be greater than or equal to start date, and
+        // if backfill is enabled, commit date must be less than or equal to end date
+        toDate(data.date) >= startDate &&
+        (!this.backfill || toDate(data.date) <= endDate);
 
       yield* this.paginate<Commit>(
         func,
         (data) => this.buildCommit(data),
-        isNew
+        isInRange
       );
     } catch (err) {
       throw new VError(
@@ -387,9 +399,9 @@ export class Bitbucket {
   async getPullRequests(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate?: Date,
+    endDate?: Date
   ): Promise<ReadonlyArray<PullRequest>> {
-    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     try {
       const results: PullRequest[] = [];
       /**
@@ -399,8 +411,10 @@ export class Bitbucket {
        *  */
       const states =
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
-      const query = states + ` AND updated_on > ${formatDate(lastUpdatedMax)}`;
-
+      let query = states + ` AND updated_on > ${formatDate(startDate)}`;
+      if (this.backfill && endDate) {
+        query += ` AND updated_on < ${formatDate(endDate)}`;
+      }
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
@@ -657,7 +671,7 @@ export class Bitbucket {
   private async *paginate<T>(
     func: () => Promise<BitbucketResponse<T>>,
     buildTo: (data: Dictionary<any>) => T,
-    isNew?: (data: T) => boolean
+    isInRange?: (data: T) => boolean
   ): AsyncGenerator<T> {
     let {data}: {data: T | {values: T[]}} = await func();
 
@@ -671,7 +685,7 @@ export class Bitbucket {
     do {
       for (const item of (data as {values: T[]}).values) {
         const buildedItem = buildTo(item);
-        const isValid = !isNew || isNew(buildedItem);
+        const isValid = !isInRange || isInRange(buildedItem);
         if (isValid) {
           yield buildedItem;
         }
