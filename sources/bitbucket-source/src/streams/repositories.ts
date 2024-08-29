@@ -2,7 +2,6 @@ import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/bitbucket';
 import {Dictionary} from 'ts-essentials';
 
-import {Bitbucket} from '../bitbucket';
 import {StreamWithWorkspaceSlices, WorkspaceStreamSlice} from './common';
 
 export class Repositories extends StreamWithWorkspaceSlices {

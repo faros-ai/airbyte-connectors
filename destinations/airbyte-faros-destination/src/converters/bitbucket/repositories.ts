@@ -3,8 +3,8 @@ import {Repository} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
-import {BitbucketCommon, BitbucketConverter} from './common';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {BitbucketConverter} from './common';
 
 export class Repositories extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -12,7 +12,8 @@ export class Repositories extends BitbucketConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const repository = record.record.data as Repository;
@@ -25,10 +26,10 @@ export class Repositories extends BitbucketConverter {
           fullName: repository.fullName,
           description: Utils.cleanAndTruncate(
             repository.description,
-            BitbucketCommon.MAX_DESCRIPTION_LENGTH
+            this.maxDescriptionLength(ctx)
           ),
           private: repository.isPrivate,
-          language: repository.language ?? null,
+          language: repository.language,
           size: repository.size,
           htmlUrl: repository.htmlUrl,
           createdAt: Utils.toDate(repository.createdOn),

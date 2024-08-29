@@ -11,6 +11,7 @@ import {
 
 interface BitbucketConfig {
   application_mapping?: ApplicationMapping;
+  max_description_length?: number;
 }
 
 type ApplicationMapping = Record<string, {name: string; platform: string}>;
@@ -115,6 +116,15 @@ export abstract class BitbucketConverter extends Converter {
         this.bitbucketConfig(ctx)?.application_mapping,
         'Application Mapping'
       ) ?? {}
+    );
+  }
+
+  protected maxDescriptionLength(ctx: StreamContext): number {
+    return (
+      parseObjectConfig(
+        this.bitbucketConfig(ctx)?.max_description_length,
+        'Max Description Length'
+      ) ?? BitbucketCommon.MAX_DESCRIPTION_LENGTH
     );
   }
 }
