@@ -280,7 +280,7 @@ export class Bitbucket {
       workspace,
       repo_slug: repoSlug,
     });
-    return this.buildRepository(response.data);
+    return this.buildRepository(response.data, workspace);
   }
 
   async *getIssues(
@@ -548,27 +548,16 @@ export class Bitbucket {
       lastUpdated?: string
     ): string => `${workspace};${reposToInclude};${lastUpdated ?? ''}`
   )
-  async getRepositories(
-    workspace: string,
-    reposToInclude: ReadonlyArray<string> = []
-  ): Promise<ReadonlyArray<Repository>> {
+  async getRepositories(workspace: string): Promise<ReadonlyArray<Repository>> {
     const results: Repository[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
           this.client.repositories.list({workspace, pagelen: this.pageSize})
         );
-      const isIncluded = (data: Repository): boolean => {
-        return (
-          reposToInclude.length < 1 ||
-          reposToInclude.includes(`${workspace}/${data.slug}`)
-        );
-      };
 
-      const repos = this.paginate<Repository>(
-        func,
-        (data) => this.buildRepository(data),
-        isIncluded
+      const repos = this.paginate<Repository>(func, (data) =>
+        this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
         results.push(repo);
@@ -1277,54 +1266,23 @@ export class Bitbucket {
     };
   }
 
-  private buildRepository(data: Dictionary<any>): Repository {
-    const {owner, project, workspace} = data;
+  private buildRepository(
+    data: Dictionary<any>,
+    workspace: string
+  ): Repository {
     return {
-      scm: data.scm,
-      website: data.website,
-      hasWiki: data.has_wiki,
-      uuid: data.uuid,
-      links: {
-        branchesUrl: data.links?.branches?.href,
-        htmlUrl: data.links?.html?.href,
-      },
-      forkPolicy: data.fork_policy,
-      fullName: data.full_name,
-      name: data.name,
-      project: {
-        links: {htmlUrl: project?.links?.html?.href},
-        type: project?.type,
-        name: project?.name,
-        key: project?.key,
-        uuid: project?.uuid,
-        slug: project?.slug,
-      },
-      language: data.language,
-      createdOn: data.created_on,
-      mainBranch: {
-        type: data.mainbranch?.type,
-        name: data.mainbranch?.name,
-      },
-      workspace: {
-        type: workspace?.type,
-        name: workspace?.name,
-        slug: workspace?.slug,
-        links: {htmlUrl: workspace?.links?.html?.href},
-        uuid: workspace?.uuid,
-      },
-      hasIssues: data.has_issues,
-      owner: {
-        displayName: owner?.display_name,
-        type: owner?.type,
-        uuid: owner?.uuid,
-        links: {htmlUrl: owner?.links?.html?.href},
-      },
-      updatedOn: data.updated_on,
-      size: data.size,
-      type: data.type,
+      workspace,
       slug: data.slug,
-      isPrivate: data.is_private,
+      fullName: data.full_name,
       description: data.description,
+      isPrivate: data.is_private,
+      language: data.language,
+      size: data.size,
+      htmlUrl: data.links?.html?.href,
+      createdOn: data.created_on,
+      updatedOn: data.updated_on,
+      mainBranch: data.mainbranch?.name,
+      hasIssues: data.has_issues,
     };
   }
 
