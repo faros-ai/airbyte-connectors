@@ -31,11 +31,12 @@ export class Issues extends StreamWithRepoSlices {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
     const workspace = streamSlice.workspace;
     const repo = streamSlice.repo;
-    const lastUpdated =
+    const state = streamState?.[StreamBase.workspaceRepoKey(workspace, repo)];
+    const [startDate, endDate] =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
-        : undefined;
-    yield* bitbucket.getIssues(workspace, repo, lastUpdated);
+        ? this.getUpdateRange(state?.cutoff)
+        : this.getUpdateRange();
+    yield* bitbucket.getIssues(workspace, repo, startDate, endDate);
   }
 
   getUpdatedState(

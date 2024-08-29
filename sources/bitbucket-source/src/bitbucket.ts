@@ -44,9 +44,8 @@ export class Bitbucket {
   constructor(
     private readonly client: APIClient,
     private readonly pageSize: number,
-    private readonly logger: AirbyteLogger,
-    readonly startDate: Date,
-    private readonly backfill: boolean
+    private readonly backfill: boolean,
+    private readonly logger: AirbyteLogger
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -67,16 +66,7 @@ export class Bitbucket {
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
     const backfill = config.backfill || DEFAULT_BACKFILL;
 
-    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - cutoffDays);
-    Bitbucket.bitbucket = new Bitbucket(
-      client,
-      pageSize,
-      logger,
-      startDate,
-      backfill
-    );
+    Bitbucket.bitbucket = new Bitbucket(client, pageSize, backfill, logger);
     return Bitbucket.bitbucket;
   }
 
@@ -120,11 +110,6 @@ export class Bitbucket {
     }
 
     return [true, undefined];
-  }
-
-  private getStartDateMax(lastUpdatedAt?: number): Date {
-    const startTime = new Date(lastUpdatedAt ?? 0);
-    return startTime > this.startDate ? startTime : this.startDate;
   }
 
   async *getBranches(
@@ -298,18 +283,23 @@ export class Bitbucket {
   async *getIssues(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<Issue> {
     if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
       return;
     }
-    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
+    let query = `updated_on > ${formatDate(startDate)}`;
+    if (this.backfill && endDate) {
+      query += ` AND updated_on < ${formatDate(endDate)}`;
+    }
     const params: any = {
       workspace,
       repo_slug: repoSlug,
       pagelen: this.pageSize,
+      q: query,
     };
-    params.q = `updated_on > ${formatDate(lastUpdatedMax)}`;
+
     try {
       const func = (): Promise<BitbucketResponse<Issue>> =>
         this.limiter.schedule(() =>
