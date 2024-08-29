@@ -20,7 +20,6 @@ import {
   Workspace,
   WorkspaceUser,
 } from 'faros-airbyte-common/bitbucket';
-import {pick} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
