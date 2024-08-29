@@ -8,6 +8,7 @@ import {
   parseObjectConfig,
   StreamContext,
 } from '../converter';
+import {PartialUser} from '../github/common';
 
 interface BitbucketConfig {
   application_mapping?: ApplicationMapping;
@@ -100,6 +101,8 @@ export class BitbucketCommon {
 export abstract class BitbucketConverter extends Converter {
   source = 'Bitbucket';
 
+  protected collectedUsers = new Map<string, User>();
+
   /** Almost all Bitbucket records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
@@ -116,5 +119,17 @@ export abstract class BitbucketConverter extends Converter {
         'Application Mapping'
       ) ?? {}
     );
+  }
+
+  protected collectUser(user: User) {
+    if (!user?.accountId) return;
+    this.collectedUsers.set(user.accountId, user);
+  }
+
+  protected convertUser(
+    user: PartialUser,
+    source: string
+  ): DestinationRecord[] {
+    return [];
   }
 }

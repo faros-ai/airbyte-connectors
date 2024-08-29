@@ -3,13 +3,10 @@ import {Commit} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {BitbucketCommon, BitbucketConverter} from './common';
+import {BitbucketConverter} from './common';
 
 export class Commits extends BitbucketConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Commit',
-    'vcs_User',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.hash;
@@ -27,11 +24,8 @@ export class Commits extends BitbucketConverter {
     let author = null;
     if (commit?.author?.user?.accountId) {
       const commitUser = commit.author.user;
-      const user = BitbucketCommon.vcsUser(commitUser, source);
-      if (user) {
-        res.push(user);
-        author = {uid: commitUser.accountId, source};
-      }
+      this.collectUser(commitUser);
+      author = {uid: commitUser.accountId, source};
     }
     if (!workspace || !repo) {
       return res;
