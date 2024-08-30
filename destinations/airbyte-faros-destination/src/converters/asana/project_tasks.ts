@@ -15,6 +15,13 @@ export class ProjectTasks extends AsanaConverter {
     const source = this.streamName.source;
     const projectTask: ProjectTaskAssociation = record.record
       .data as ProjectTaskAssociation;
+    return ProjectTasks.convertProjectTask(projectTask, source);
+  }
+
+  static convertProjectTask(
+    projectTask: ProjectTaskAssociation,
+    source: string
+  ) {
     const taskKey = {uid: projectTask.task_gid, source};
     const res: DestinationRecord[] = [];
 

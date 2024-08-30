@@ -40,6 +40,7 @@ export interface AsanaConfig {
   cutoff_days?: number;
   project_tasks_max_staleness_hours?: number;
   required_task_custom_fields?: ReadonlyArray<string>;
+  optimize_fetching_projects_and_tasks_with_full_tasks_sync?: boolean;
 }
 
 export class Asana {
@@ -191,6 +192,8 @@ export class Asana {
       'completed',
       'created_at',
       'custom_fields',
+      'memberships.project',
+      'memberships.project.name',
       'memberships.section',
       'memberships.section.name',
       'modified_at',
