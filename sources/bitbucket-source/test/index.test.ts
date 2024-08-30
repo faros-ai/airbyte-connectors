@@ -47,7 +47,6 @@ describe('index', () => {
       return new Bitbucket(
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
         100,
-        false,
         logger
       );
     });
@@ -72,7 +71,6 @@ describe('index', () => {
           },
         } as any,
         100,
-        false,
         logger
       );
     });
@@ -110,7 +108,6 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        false,
         logger
       );
     });
@@ -158,7 +155,6 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        false,
         logger
       );
     });
@@ -196,7 +192,6 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        false,
         logger
       );
     });
@@ -233,7 +228,6 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        false,
         logger
       );
     });
@@ -270,7 +264,6 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        false,
         logger
       );
     });

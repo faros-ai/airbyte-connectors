@@ -10,7 +10,6 @@ export function setupBitbucketInstance(apiMock: any, logger: AirbyteLogger) {
         hasNextPage: jest.fn(),
       },
       100,
-      false,
       logger
     );
   });
