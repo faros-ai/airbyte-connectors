@@ -18,10 +18,12 @@ import {
   GitHub,
 } from './github';
 import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
 import {FarosCommits} from './streams/faros_commits';
 import {FarosContributorsStats} from './streams/faros_contributors_stats';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
+import {FarosDependabotAlerts} from './streams/faros_dependabot_alerts';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosLabels} from './streams/faros_labels';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -32,6 +34,7 @@ import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosReleases} from './streams/faros_releases';
 import {FarosRepositories} from './streams/faros_repositories';
 import {FarosSamlSsoUsers} from './streams/faros_saml_sso_users';
+import {FarosSecretScanningAlerts} from './streams/faros_secret_scanning_alerts';
 import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
@@ -65,10 +68,12 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   streams(config: GitHubConfig): AirbyteStreamBase[] {
     return [
+      new FarosCodeScanningAlerts(config, this.logger),
       new FarosCommits(config, this.logger),
       new FarosContributorsStats(config, this.logger),
       new FarosCopilotSeats(config, this.logger),
       new FarosCopilotUsage(config, this.logger),
+      new FarosDependabotAlerts(config, this.logger),
       new FarosIssues(config, this.logger),
       new FarosLabels(config, this.logger),
       new FarosOrganizations(config, this.logger),
@@ -79,6 +84,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosReleases(config, this.logger),
       new FarosRepositories(config, this.logger),
       new FarosSamlSsoUsers(config, this.logger),
+      new FarosSecretScanningAlerts(config, this.logger),
       new FarosTags(config, this.logger),
       new FarosTeams(config, this.logger),
       new FarosTeamMemberships(config, this.logger),

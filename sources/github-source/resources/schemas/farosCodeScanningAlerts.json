@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "number": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "url": {
+      "type": "string"
+    },
+    "html_url": {
+      "type": "string"
+    },
+    "instances_url": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "fixed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dismissed_by": {
+      "type": "string"
+    },
+    "dismissed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dismissed_reason": {
+      "type": "string"
+    },
+    "dismissed_comment": {
+      "type": "string"
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "security_severity_level": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "guid": {
+          "type": "string"
+        }
+      }
+    },
+    "most_recent_instance": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "analysis_key": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "commit_sha": {
+          "type": "string"
+        },
+        "message": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "start_line": {
+              "type": "integer"
+            },
+            "end_line": {
+              "type": "integer"
+            },
+            "start_column": {
+              "type": "integer"
+            },
+            "end_column": {
+              "type": "integer"
+            }
+          }
+        },
+        "html_url": {
+          "type": "string"
+        },
+        "classifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
