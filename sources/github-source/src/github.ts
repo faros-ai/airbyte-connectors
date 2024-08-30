@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
+  CodeScanningAlert,
   Commit,
   ContributorStats,
   CopilotSeat,
@@ -9,6 +10,7 @@ import {
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  DependabotAlert,
   Issue,
   Label,
   Organization,
@@ -24,6 +26,7 @@ import {
   Release,
   Repository,
   SamlSsoUser,
+  SecretScanningAlert,
   Tag,
   TagsQueryCommitNode,
   Team,
@@ -1270,6 +1273,122 @@ export abstract class GitHub {
           org,
           repo,
           ...issue,
+        };
+      }
+    }
+  }
+
+  async *getCodeScanningAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<CodeScanningAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).codeScanning.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    for await (const res of iter) {
+      for (const alert of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(alert.updated_at) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...alert,
+          dismissed_by: alert.dismissed_by?.login ?? null,
+        };
+      }
+    }
+  }
+
+  async *getDependabotAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<DependabotAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).dependabot.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    for await (const res of iter) {
+      for (const alert of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(alert.updated_at) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...alert,
+          dismissed_by: alert.dismissed_by?.login ?? null,
+        };
+      }
+    }
+  }
+
+  async *getSecretScanningAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<SecretScanningAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).secretScanning.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    for await (const res of iter) {
+      for (const alert of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(alert.updated_at) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...alert,
+          resolved_by: alert.resolved_by?.login ?? null,
+          push_protection_bypassed_by:
+            alert.push_protection_bypassed_by?.login ?? null,
         };
       }
     }
