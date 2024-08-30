@@ -3,6 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {BitbucketConfig} from '../types';
@@ -32,6 +33,13 @@ export abstract class StreamBase extends AirbyteStreamBase {
   ) {
     super(logger);
     this.workspaceRepoFilter = new WorkspaceRepoFilter(config, logger);
+  }
+
+  protected getUpdateRange(cutoff?: number): [Date, Date] {
+    return [
+      cutoff ? Utils.toDate(cutoff) : this.config.startDate,
+      this.config.endDate,
+    ];
   }
 
   protected getUpdatedStreamState(

@@ -11,12 +11,6 @@ import {
   StreamWithRepoSlices,
 } from './common';
 
-type StreamSlice = {
-  workspace: string;
-  repository: {slug: string; fullName: string};
-};
-type PullRequestState = Dictionary<{cutoff?: string}>;
-
 export class PullRequests extends StreamWithRepoSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pull_requests.json');
@@ -35,17 +29,18 @@ export class PullRequests extends StreamWithRepoSlices {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<PullRequest> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
-
     const workspace = streamSlice.workspace;
     const repo = streamSlice.repo;
-    const lastUpdated =
+    const state = streamState?.[StreamBase.workspaceRepoKey(workspace, repo)];
+    const [startDate, endDate] =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
-        : undefined;
+        ? this.getUpdateRange(state?.cutoff)
+        : this.getUpdateRange();
     for (const pr of await bitbucket.getPullRequests(
       workspace,
       repo,
-      lastUpdated
+      startDate,
+      endDate
     )) {
       yield pr;
     }

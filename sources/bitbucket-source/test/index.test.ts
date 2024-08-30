@@ -47,8 +47,7 @@ describe('index', () => {
       return new Bitbucket(
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
 
@@ -72,8 +71,7 @@ describe('index', () => {
           },
         } as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -110,8 +108,7 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -158,8 +155,7 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -196,8 +192,7 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
     const source = new sut.BitbucketSource(logger);
@@ -233,8 +228,7 @@ describe('index', () => {
           hasNextPage: jest.fn(),
         } as any,
         100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
+        logger
       );
     });
     const source = new sut.BitbucketSource(logger);
