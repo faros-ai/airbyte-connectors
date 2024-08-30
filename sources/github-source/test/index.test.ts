@@ -612,6 +612,82 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - code scanning alerts', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'code_scanning_alerts/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getCodeScanningAlertsMockedImplementation(
+              readTestResourceAsJSON(
+                'code_scanning_alerts/code_scanning_alerts.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - dependabot alerts', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'dependabot_alerts/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getDependabotAlertsMockedImplementation(
+              readTestResourceAsJSON('dependabot_alerts/dependabot_alerts.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - secret scanning alerts', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'secret_scanning_alerts/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getSecretScanningAlertsMockedImplementation(
+              readTestResourceAsJSON(
+                'secret_scanning_alerts/secret_scanning_alerts.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -713,3 +789,21 @@ const getRepositoryTagsMockedImplementation = (res: any) =>
 
 const getIssuesMockedImplementation = (res: any) =>
   graphqlMockedImplementation('issues', res);
+
+const getCodeScanningAlertsMockedImplementation = (res: any) => ({
+  codeScanning: {
+    listAlertsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getDependabotAlertsMockedImplementation = (res: any) => ({
+  dependabot: {
+    listAlertsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getSecretScanningAlertsMockedImplementation = (res: any) => ({
+  secretScanning: {
+    listAlertsForRepo: jest.fn().mockReturnValue(res),
+  },
+});

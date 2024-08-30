@@ -86,9 +86,11 @@ connectors, such as linting/formatting tools, should go in the root
 
 | Stream                       | Token (classic)      | Token (fine-grained) \| GitHub App ( * )         |
 |------------------------------|----------------------|--------------------------------------------------|
+| Code Scanning Alerts         | repo                 | Repository: Metadata & Code Scanning Alerts      |
 | Commits                      | repo                 | Repository: Metadata & Contents                  |
 | Copilot Seats ( ** )         | read:org             | Organization: Administration                     |
 | Copilot Usage ( ** )         | read:org             | Organization: Administration & Members           |
+| Dependabot Alerts            | repo                 | Repository: Metadata & Dependabot Alerts         |
 | Issues                       | repo                 | Repository: Issues                               |
 | Labels                       | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
 | Organizations                | —                    | —                                                |
@@ -98,6 +100,7 @@ connectors, such as linting/formatting tools, should go in the root
 | Releases                     | repo                 | Repository: Metadata & Contents                  |
 | Repositories                 | repo                 | Repository: Metadata                             |
 | SAML SSO Users ( ** )        | read:org             | Organization: Administration                     |
+| Secret Scanning Alerts       | repo                 | Repository: Metadata & Secret Scanning Alerts    |
 | Tags                         | repo                 | Repository: Metadata                             |
 | Teams                        | read:org             | Organization: Members                            |
 | Team Memberships             | read:org             | Organization: Members                            |
