@@ -250,41 +250,38 @@ describe('index', () => {
       readTestResourceFile('pipelineSteps-response.json')
     );
   });
-  test('streams - repositories, use full_refresh sync mode', async () => {
-    const fnRepositoriesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          repositories: {
-            list: fnRepositoriesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('repositories.json')},
-            }),
+  test('streams - repositories', async () => {
+    await sourceReadTest({
+      source: new sut.BitbucketSource(logger),
+      configOrPath: 'config.json',
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repositories.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: {
+              getWorkspaces: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('workspaces/workspaces.json'),
+                },
+              }),
+            },
           },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger
-      );
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const repositoriesStream = streams[8];
-    const repositoriesIter = repositoriesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace'}
-    );
-    const repositories = [];
-    for await (const repository of repositoriesIter) {
-      repositories.push(repository);
-    }
-
-    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(repositories))).toStrictEqual(
-      readTestResourceFile('repositories-response.json')
-    );
   });
 
   test('streams - workspaces', async () => {

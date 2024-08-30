@@ -135,5 +135,5 @@ const getAllRepositories = async (workspaceRepoFilter: WorkspaceRepoFilter) => {
     ...(await workspaceRepoFilter.getRepositories('workspace-2')),
     ...(await workspaceRepoFilter.getRepositories('workspace-3')),
   ];
-  return repos.map((repo) => repo.slug);
+  return repos.map((repo) => ({slug: repo.slug, workspace: repo.workspace}));
 };

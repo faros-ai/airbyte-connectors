@@ -6285,6 +6285,7 @@ Array [
   },
   Object {
     "vcs_Repository": Object {
+      "archived": false,
       "createdAt": "2011-01-26T19:01:12.000Z",
       "description": "This your first repo!",
       "fullName": "octocat/Hello-World",
