@@ -229,13 +229,13 @@
         "order": 19,
         "type": "string",
         "title": "Start Date",
-        "description": "The date from which to start syncing data. Only use for backfilling."
+        "description": "The date from which to start syncing data."
       },
       "end_date": {
         "order": 20,
         "type": "string",
         "title": "End Date",
-        "description": "The date at which to stop syncing data. Only use for backfilling."
+        "description": "The date at which to stop syncing data."
       }
     }
   }

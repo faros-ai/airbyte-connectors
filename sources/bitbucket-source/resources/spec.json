@@ -87,6 +87,24 @@
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket API",
         "default": 100
+      },
+      "backfill": {
+        "order": 11,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date."
+      },
+      "start_date": {
+        "order": 12,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "order": 13,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
       }
     }
   }

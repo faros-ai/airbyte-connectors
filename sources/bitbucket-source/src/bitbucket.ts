@@ -28,8 +28,7 @@ import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;
-const DEFAULT_CUTOFF_DAYS = 90;
-
+export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
 
 interface BitbucketResponse<T> {
@@ -43,8 +42,7 @@ export class Bitbucket {
   constructor(
     private readonly client: APIClient,
     private readonly pageSize: number,
-    private readonly logger: AirbyteLogger,
-    readonly startDate: Date
+    private readonly logger: AirbyteLogger
   ) {}
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
@@ -64,10 +62,7 @@ export class Bitbucket {
     const client = new BitbucketClient({baseUrl, auth});
     const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
 
-    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - cutoffDays);
-    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger, startDate);
+    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger);
     return Bitbucket.bitbucket;
   }
 
@@ -113,11 +108,6 @@ export class Bitbucket {
     return [true, undefined];
   }
 
-  private getStartDateMax(lastUpdatedAt?: number): Date {
-    const startTime = new Date(lastUpdatedAt ?? 0);
-    return startTime > this.startDate ? startTime : this.startDate;
-  }
-
   async *getBranches(
     workspace: string,
     repoSlug: string
@@ -146,10 +136,10 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate: Date,
+    endDate: Date
   ): AsyncGenerator<Commit> {
     try {
-      const lastUpdatedMax = this.getStartDateMax(lastUpdated);
       const func = (): Promise<BitbucketResponse<Commit>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listCommits({
@@ -158,13 +148,15 @@ export class Bitbucket {
             pagelen: this.pageSize,
           })
         ) as any;
-      const isNew = (data: Commit): boolean =>
-        new Date(data.date) > lastUpdatedMax;
+      const isInRange = (data: Commit): boolean => {
+        const date = toDate(data.date);
+        return date >= startDate && date <= endDate;
+      };
 
       yield* this.paginate<Commit>(
         func,
         (data) => this.buildCommit(data),
-        isNew
+        isInRange
       );
     } catch (err) {
       throw new VError(
@@ -280,24 +272,25 @@ export class Bitbucket {
       workspace,
       repo_slug: repoSlug,
     });
-    return this.buildRepository(response.data);
+    return this.buildRepository(response.data, workspace);
   }
 
   async *getIssues(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate: Date,
+    endDate: Date
   ): AsyncGenerator<Issue> {
     if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
       return;
     }
-    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     const params: any = {
       workspace,
       repo_slug: repoSlug,
       pagelen: this.pageSize,
+      q: `updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`,
     };
-    params.q = `updated_on > ${formatDate(lastUpdatedMax)}`;
+
     try {
       const func = (): Promise<BitbucketResponse<Issue>> =>
         this.limiter.schedule(() =>
@@ -387,9 +380,9 @@ export class Bitbucket {
   async getPullRequests(
     workspace: string,
     repoSlug: string,
-    lastUpdated?: number
+    startDate: Date,
+    endDate: Date
   ): Promise<ReadonlyArray<PullRequest>> {
-    const lastUpdatedMax = this.getStartDateMax(lastUpdated);
     try {
       const results: PullRequest[] = [];
       /**
@@ -399,8 +392,9 @@ export class Bitbucket {
        *  */
       const states =
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
-      const query = states + ` AND updated_on > ${formatDate(lastUpdatedMax)}`;
-
+      const query =
+        states +
+        ` AND updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`;
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
@@ -548,27 +542,16 @@ export class Bitbucket {
       lastUpdated?: string
     ): string => `${workspace};${reposToInclude};${lastUpdated ?? ''}`
   )
-  async getRepositories(
-    workspace: string,
-    reposToInclude: ReadonlyArray<string> = []
-  ): Promise<ReadonlyArray<Repository>> {
+  async getRepositories(workspace: string): Promise<ReadonlyArray<Repository>> {
     const results: Repository[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
           this.client.repositories.list({workspace, pagelen: this.pageSize})
         );
-      const isIncluded = (data: Repository): boolean => {
-        return (
-          reposToInclude.length < 1 ||
-          reposToInclude.includes(`${workspace}/${data.slug}`)
-        );
-      };
 
-      const repos = this.paginate<Repository>(
-        func,
-        (data) => this.buildRepository(data),
-        isIncluded
+      const repos = this.paginate<Repository>(func, (data) =>
+        this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
         results.push(repo);
@@ -657,7 +640,7 @@ export class Bitbucket {
   private async *paginate<T>(
     func: () => Promise<BitbucketResponse<T>>,
     buildTo: (data: Dictionary<any>) => T,
-    isNew?: (data: T) => boolean
+    isInRange?: (data: T) => boolean
   ): AsyncGenerator<T> {
     let {data}: {data: T | {values: T[]}} = await func();
 
@@ -671,7 +654,7 @@ export class Bitbucket {
     do {
       for (const item of (data as {values: T[]}).values) {
         const buildedItem = buildTo(item);
-        const isValid = !isNew || isNew(buildedItem);
+        const isValid = !isInRange || isInRange(buildedItem);
         if (isValid) {
           yield buildedItem;
         }
@@ -1277,54 +1260,23 @@ export class Bitbucket {
     };
   }
 
-  private buildRepository(data: Dictionary<any>): Repository {
-    const {owner, project, workspace} = data;
+  private buildRepository(
+    data: Dictionary<any>,
+    workspace: string
+  ): Repository {
     return {
-      scm: data.scm,
-      website: data.website,
-      hasWiki: data.has_wiki,
-      uuid: data.uuid,
-      links: {
-        branchesUrl: data.links?.branches?.href,
-        htmlUrl: data.links?.html?.href,
-      },
-      forkPolicy: data.fork_policy,
-      fullName: data.full_name,
-      name: data.name,
-      project: {
-        links: {htmlUrl: project?.links?.html?.href},
-        type: project?.type,
-        name: project?.name,
-        key: project?.key,
-        uuid: project?.uuid,
-        slug: project?.slug,
-      },
-      language: data.language,
-      createdOn: data.created_on,
-      mainBranch: {
-        type: data.mainbranch?.type,
-        name: data.mainbranch?.name,
-      },
-      workspace: {
-        type: workspace?.type,
-        name: workspace?.name,
-        slug: workspace?.slug,
-        links: {htmlUrl: workspace?.links?.html?.href},
-        uuid: workspace?.uuid,
-      },
-      hasIssues: data.has_issues,
-      owner: {
-        displayName: owner?.display_name,
-        type: owner?.type,
-        uuid: owner?.uuid,
-        links: {htmlUrl: owner?.links?.html?.href},
-      },
-      updatedOn: data.updated_on,
-      size: data.size,
-      type: data.type,
+      workspace,
       slug: data.slug,
-      isPrivate: data.is_private,
+      fullName: data.full_name,
       description: data.description,
+      isPrivate: data.is_private,
+      language: data.language,
+      size: data.size,
+      htmlUrl: data.links?.html?.href,
+      createdOn: data.created_on,
+      updatedOn: data.updated_on,
+      mainBranch: data.mainbranch?.name,
+      hasIssues: data.has_issues,
     };
   }
 
