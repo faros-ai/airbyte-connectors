@@ -8,7 +8,6 @@ import {
   parseObjectConfig,
   StreamContext,
 } from '../converter';
-import {PartialUser} from '../github/common';
 
 interface BitbucketConfig {
   application_mapping?: ApplicationMapping;
@@ -126,10 +125,14 @@ export abstract class BitbucketConverter extends Converter {
     this.collectedUsers.set(user.accountId, user);
   }
 
-  protected convertUser(
-    user: PartialUser,
-    source: string
-  ): DestinationRecord[] {
-    return [];
+  protected convertUsers(): DestinationRecord[] {
+    const records: DestinationRecord[] = [];
+    records.push(
+      ...Array.from(this.collectedUsers.values()).map((user) =>
+        BitbucketCommon.vcsUser(user, this.source)
+      )
+    );
+    // TODO: also write to vcs_Membership and vcs_UserEmail
+    return records;
   }
 }
