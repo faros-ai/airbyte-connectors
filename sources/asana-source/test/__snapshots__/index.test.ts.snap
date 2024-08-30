@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index onBeforeRead filters project_tasks does not sync project_tasks when optimize_fetching_projects_and_tasks_with_full_tasks_sync 1`] = `
+Object {
+  "streams": Array [
+    Object {
+      "destination_sync_mode": "overwrite",
+      "stream": Object {
+        "json_schema": Object {},
+        "name": "tasks_full",
+      },
+      "sync_mode": "full_refresh",
+    },
+  ],
+}
+`;
+
 exports[`index onBeforeRead filters project_tasks sync project_tasks when missing state 1`] = `
 Object {
   "streams": Array [
@@ -7,6 +22,13 @@ Object {
       "stream": Object {
         "json_schema": Object {},
         "name": "project_tasks",
+      },
+      "sync_mode": "full_refresh",
+    },
+    Object {
+      "stream": Object {
+        "json_schema": Object {},
+        "name": "projects",
       },
       "sync_mode": "full_refresh",
     },
@@ -34,6 +56,13 @@ Object {
     Object {
       "stream": Object {
         "json_schema": Object {},
+        "name": "projects",
+      },
+      "sync_mode": "full_refresh",
+    },
+    Object {
+      "stream": Object {
+        "json_schema": Object {},
         "name": "tasks",
       },
       "sync_mode": "incremental",
@@ -49,6 +78,13 @@ Object {
       "stream": Object {
         "json_schema": Object {},
         "name": "project_tasks",
+      },
+      "sync_mode": "full_refresh",
+    },
+    Object {
+      "stream": Object {
+        "json_schema": Object {},
+        "name": "projects",
       },
       "sync_mode": "full_refresh",
     },
@@ -76,6 +112,13 @@ Object {
     Object {
       "stream": Object {
         "json_schema": Object {},
+        "name": "projects",
+      },
+      "sync_mode": "full_refresh",
+    },
+    Object {
+      "stream": Object {
+        "json_schema": Object {},
         "name": "tasks",
       },
       "sync_mode": "incremental",
@@ -87,6 +130,13 @@ Object {
 exports[`index onBeforeRead filters project_tasks sync project_tasks when stale 2`] = `
 Object {
   "streams": Array [
+    Object {
+      "stream": Object {
+        "json_schema": Object {},
+        "name": "projects",
+      },
+      "sync_mode": "full_refresh",
+    },
     Object {
       "stream": Object {
         "json_schema": Object {},

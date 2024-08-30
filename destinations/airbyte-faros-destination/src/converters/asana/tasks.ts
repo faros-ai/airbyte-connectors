@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
@@ -8,7 +8,9 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {AsanaCommon, AsanaConverter, AsanaSection} from './common';
+import {AsanaCommon, AsanaConverter} from './common';
+import {ProjectTasks} from './project_tasks';
+import {Projects} from './projects';
 
 interface CustomField {
   gid: string;
@@ -117,6 +119,18 @@ export class Tasks extends AsanaConverter {
           value: membership.section.name,
         });
       }
+      if (membership.project && this.shouldProcessProjectMembership()) {
+        res.push(...Projects.convertProject(membership.project, source));
+        res.push(
+          ...ProjectTasks.convertProjectTask(
+            {
+              project_gid: membership.project.gid,
+              task_gid: task.gid,
+            },
+            source
+          )
+        );
+      }
     }
 
     res.push({
@@ -219,5 +233,9 @@ export class Tasks extends AsanaConverter {
         customField.multi_enum_values?.name ??
         customField.display_value,
     };
+  }
+
+  protected shouldProcessProjectMembership(): boolean {
+    return false;
   }
 }

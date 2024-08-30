@@ -56,7 +56,7 @@ describe('index', () => {
 
   const config = {credentials: {personal_access_token: 'token'}};
 
-  const testStream = async (streamIndex, expectedData): Promise<void> => {
+  const testStream = async (streamName, expectedData): Promise<void> => {
     const fnList = jest.fn();
 
     Asana.instance = jest.fn().mockImplementation(() => {
@@ -74,7 +74,7 @@ describe('index', () => {
 
     const source = new sut.AsanaSource(logger);
     const streams = source.streams(config);
-    const stream = streams[streamIndex];
+    const stream = streams.find((s) => s.name === streamName);
     const iter = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       workspace: 'workspace1',
     });
@@ -90,19 +90,19 @@ describe('index', () => {
 
   test('streams - projects', async () => {
     const expectedProjects = {data: [{gid: 'p1', name: 'project1'}]};
-    await testStream(0, expectedProjects);
+    await testStream('projects', expectedProjects);
   });
 
   test('streams - tags', async () => {
     const expectedTags = {data: [{gid: 't1', name: 'tag1'}]};
-    await testStream(1, expectedTags);
+    await testStream('tags', expectedTags);
   });
 
   test('streams - users', async () => {
     const expectedUsers = {
       data: [{gid: 'u1', name: 'user1', email: 'user1@me.com'}],
     };
-    await testStream(3, expectedUsers);
+    await testStream('users', expectedUsers);
   });
 
   test('streams - tasks', async () => {
@@ -149,7 +149,7 @@ describe('index', () => {
 
     const source = new sut.AsanaSource(logger);
     const streams = source.streams(config);
-    const stream = streams[2];
+    const stream = streams.find((s) => s.name === 'tasks');
     const tasks = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       workspace: 'workspace1',
     });
@@ -164,7 +164,7 @@ describe('index', () => {
 
   test('streams - workspaces', async () => {
     const expectedWorkspaces = {data: [{gid: 'w1', name: 'workspace1'}]};
-    await testStream(4, expectedWorkspaces);
+    await testStream('workspaces', expectedWorkspaces);
   });
 
   test('streams - project tasks', async () => {
@@ -194,7 +194,7 @@ describe('index', () => {
 
     const source = new sut.AsanaSource(logger);
     const streams = source.streams(config);
-    const stream = streams[5];
+    const stream = streams.find((s) => s.name === 'project_tasks');
     const tasks = stream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       project: 'p1',
     });
@@ -212,6 +212,10 @@ describe('index', () => {
       streams: [
         {
           stream: {name: 'project_tasks', json_schema: {}},
+          sync_mode: SyncMode.FULL_REFRESH,
+        },
+        {
+          stream: {name: 'projects', json_schema: {}},
           sync_mode: SyncMode.FULL_REFRESH,
         },
         {
@@ -253,6 +257,17 @@ describe('index', () => {
         {project_tasks: {lastComputedAt: Date.now() - 1000 * 60 * 60 * 2}}
       );
       expect(newCatalog2).toMatchSnapshot();
+    });
+    test('does not sync project_tasks when optimize_fetching_projects_and_tasks_with_full_tasks_sync', async () => {
+      const {catalog: newCatalog} = await source.onBeforeRead(
+        {
+          ...config,
+          optimize_fetching_projects_and_tasks_with_full_tasks_sync: true,
+        },
+        catalog,
+        {}
+      );
+      expect(newCatalog).toMatchSnapshot();
     });
   });
 });
