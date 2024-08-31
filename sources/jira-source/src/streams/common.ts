@@ -32,9 +32,12 @@ export type IssueStreamState = {
   };
 };
 
+export type BoardIssues = Record<string, string[]>;
+
 // Global state for the board issues stream to match earliest issue update timestamp
 export type BoardIssuesState = {
   earliestIssueUpdateTimestamp: number;
+  boardIssues?: BoardIssues;
 };
 
 export enum RunMode {

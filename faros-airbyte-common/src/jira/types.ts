@@ -10,6 +10,7 @@ export interface IssueCompact {
   readonly boardId?: string;
   readonly additionalFields?: ReadonlyArray<[string, string]>;
   readonly updateAdditionalFields?: boolean;
+  readonly isDeleted?: boolean;
 }
 
 export interface Issue extends IssueCompact {
