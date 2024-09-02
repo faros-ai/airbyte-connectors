@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Commit} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketConverter} from './common';
 
 export class Commits extends BitbucketConverter {
@@ -21,14 +22,15 @@ export class Commits extends BitbucketConverter {
 
     const [workspace, repo] = commit.repository.fullName.split('/');
 
+    if (!workspace || !repo) {
+      return res;
+    }
+
     let author = null;
     if (commit?.author?.user?.accountId) {
       const commitUser = commit.author.user;
-      this.collectUser(commitUser);
+      this.collectUser(commitUser, workspace);
       author = {uid: commitUser.accountId, source};
-    }
-    if (!workspace || !repo) {
-      return res;
     }
 
     res.push({
@@ -41,13 +43,19 @@ export class Commits extends BitbucketConverter {
         createdAt: Utils.toDate(commit.date),
         author,
         repository: {
-          organization: {uid: workspace.toLowerCase(), source},
-          uid: repo.toLowerCase(),
-          name: repo.toLowerCase(),
+          organization: {uid: toLower(workspace), source},
+          uid: toLower(repo),
+          name: toLower(repo),
         },
       },
     });
 
     return res;
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.convertUsers();
   }
 }

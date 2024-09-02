@@ -46,57 +46,23 @@ export interface Commit {
   readonly date: string;
   readonly message: string;
   readonly type: string;
-  readonly rendered: {
-    readonly message: {
-      readonly raw: string;
-      readonly markup: string;
-      readonly html: string;
-      readonly type: string;
-    };
-  };
   readonly repository: {
-    readonly type: string;
-    readonly name: string;
     readonly fullName: string;
-    readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
   };
   readonly links: {
-    readonly commentsUrl: string;
     readonly htmlUrl: string;
-    readonly diffUrl: string;
-    readonly approveUrl: string;
-    readonly statusesUrl: string;
   };
   readonly author: {
-    readonly raw: string;
-    readonly type: string;
     readonly user?: {
       readonly displayName: string;
       readonly uuid: string;
       readonly type: string;
-      readonly nickname: string;
       readonly accountId: string;
       readonly links: {
         readonly htmlUrl: string;
       };
     };
   };
-  readonly summary: {
-    readonly raw: string;
-    readonly markup: string;
-    readonly html: string;
-    readonly type: string;
-  };
-  parents: {
-    readonly hash: string;
-    readonly type: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  }[];
 }
 
 export interface Deployment {
@@ -266,6 +232,7 @@ export interface User {
   readonly links: {
     readonly htmlUrl: string;
   };
+  readonly workspace?: string;
 }
 
 export interface Pipeline {

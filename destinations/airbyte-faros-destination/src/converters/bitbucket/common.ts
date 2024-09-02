@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {
   Converter,
@@ -28,6 +29,8 @@ export enum UserTypeCategory {
   CUSTOM = 'Custom',
 }
 
+export type PartialUser = Partial<User>;
+
 export interface ProjectKey {
   uid: string;
   source: string;
@@ -37,7 +40,10 @@ export class BitbucketCommon {
   // max length for free-form description text field
   static MAX_DESCRIPTION_LENGTH = 1000;
 
-  static vcsUser(user: User, source: string): DestinationRecord | undefined {
+  static vcsUser(
+    user: PartialUser,
+    source: string
+  ): DestinationRecord | undefined {
     if (!user.accountId) return undefined;
 
     const userType =
@@ -101,7 +107,7 @@ export class BitbucketCommon {
 export abstract class BitbucketConverter extends Converter {
   source = 'Bitbucket';
 
-  protected collectedUsers = new Map<string, User>();
+  protected collectedUsers = new Map<string, PartialUser>();
 
   /** Almost all Bitbucket records should have id property */
   id(record: AirbyteRecord): any {
@@ -130,19 +136,35 @@ export abstract class BitbucketConverter extends Converter {
     );
   }
 
-  protected collectUser(user: User) {
+  protected collectUser(user: PartialUser, workspace: string): void {
     if (!user?.accountId) return;
-    this.collectedUsers.set(user.accountId, user);
+    this.collectedUsers.set(user.accountId, {...user, workspace});
   }
 
   protected convertUsers(): DestinationRecord[] {
     const records: DestinationRecord[] = [];
-    records.push(
-      ...Array.from(this.collectedUsers.values()).map((user) =>
-        BitbucketCommon.vcsUser(user, this.source)
-      )
-    );
-    // TODO: also write to vcs_Membership and vcs_UserEmail
+    const source = this.streamName.source;
+    for (const [accountId, user] of this.collectedUsers.entries()) {
+      records.push(BitbucketCommon.vcsUser(user, source));
+      if (user.emailAddress) {
+        records.push({
+          model: 'vcs_UserEmail',
+          record: {
+            user: {uid: accountId, source},
+            email: user.emailAddress,
+          },
+        });
+      }
+      if (user.workspace) {
+        records.push({
+          model: 'vcs_Membership',
+          record: {
+            user: {uid: accountId, source},
+            organization: {uid: toLower(user.workspace), source},
+          },
+        });
+      }
+    }
     return records;
   }
 }

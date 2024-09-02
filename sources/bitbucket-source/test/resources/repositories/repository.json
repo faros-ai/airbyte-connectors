@@ -1,0 +1,63 @@
+[
+  {
+    "scm": "git",
+    "website": null,
+    "has_wiki": false,
+    "uuid": "{abcdef12-3456-7890-abcd-ef1234567890}",
+    "links": {
+      "branches": {
+        "href": "https://api.bitbucket.org/2.0/repositories/fantasycorp/project-xy/refs/branches"
+      },
+      "html": {
+        "href": "https://bitbucket.org/fantasycorp/project-xy"
+      }
+    },
+    "fork_policy": "no_public_forks",
+    "full_name": "fantasycorp/project-xy",
+    "name": "Project XY",
+    "project": {
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/fantasycorp/workspace/projects/PROJ"
+        }
+      },
+      "type": "project",
+      "name": "Enterprise Suite",
+      "key": "PROJ",
+      "uuid": "{107a5af7-050c-4a5f-918b-63d2d0be99b5}"
+    },
+    "language": "Python",
+    "created_on": "2024-01-01T00:00:00.000000+00:00",
+    "mainbranch": {
+      "type": "branch",
+      "name": "main"
+    },
+    "workspace": {
+      "type": "project",
+      "name": "Enterprise Suite",
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/fantasycorp/"
+        }
+      },
+      "uuid": "{107a5af7-050c-4a5f-918b-63d2d0be99b5}"
+    },
+    "has_issues": true,
+    "owner": {
+      "display_name": "John Doe",
+      "type": "user",
+      "uuid": "{12345678-abcd-efgh-ijkl-1234567890ab}",
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/%7B12345678-abcd-efgh-ijkl-1234567890ab%7D/"
+        }
+      }
+    },
+    "updated_on": "2024-09-02T08:25:02.254785+00:00",
+    "size": 1234567,
+    "type": "repository",
+    "slug": "project-xy",
+    "is_private": true,
+    "description": "This is a mock repository for the Project XY."
+  }
+]
