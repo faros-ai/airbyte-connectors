@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
+  CodeScanningAlert,
   Commit,
   ContributorStats,
   CopilotSeat,
@@ -9,6 +10,7 @@ import {
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  DependabotAlert,
   Issue,
   Label,
   Organization,
@@ -24,6 +26,7 @@ import {
   Release,
   Repository,
   SamlSsoUser,
+  SecretScanningAlert,
   Tag,
   TagsQueryCommitNode,
   Team,
@@ -894,6 +897,9 @@ export abstract class GitHub {
     } catch (err: any) {
       this.handleCopilotError(err, org, 'seats');
     }
+    this.logger.debug(
+      `Found ${Object.keys(assignedTeams).length} copilot team assignments: ${Object.keys(assignedTeams).join(',')}`
+    );
   }
 
   async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
@@ -1272,6 +1278,152 @@ export abstract class GitHub {
           ...issue,
         };
       }
+    }
+  }
+
+  async *getCodeScanningAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<CodeScanningAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).codeScanning.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    try {
+      for await (const res of iter) {
+        for (const alert of res.data) {
+          if (
+            this.backfill &&
+            endDate &&
+            Utils.toDate(alert.updated_at) > endDate
+          ) {
+            continue;
+          }
+          if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+            return;
+          }
+          yield {
+            org,
+            repo,
+            ...alert,
+            dismissed_by: alert.dismissed_by?.login ?? null,
+          };
+        }
+      }
+    } catch (err: any) {
+      if (err.message?.includes('must be enabled for this repository')) {
+        this.logger.debug(
+          `Code scanning alerts disabled for org ${org} - ${repo}`
+        );
+        return;
+      }
+      throw err;
+    }
+  }
+
+  async *getDependabotAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<DependabotAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).dependabot.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    try {
+      for await (const res of iter) {
+        for (const alert of res.data) {
+          if (
+            this.backfill &&
+            endDate &&
+            Utils.toDate(alert.updated_at) > endDate
+          ) {
+            continue;
+          }
+          if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+            return;
+          }
+          yield {
+            org,
+            repo,
+            ...alert,
+            dismissed_by: alert.dismissed_by?.login ?? null,
+          };
+        }
+      }
+    } catch (err: any) {
+      if (err.message?.includes('disabled for this repository')) {
+        this.logger.debug(
+          `Dependabot alerts disabled for org ${org} - ${repo}`
+        );
+        return;
+      }
+      throw err;
+    }
+  }
+
+  async *getSecretScanningAlerts(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<SecretScanningAlert> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).secretScanning.listAlertsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        sort: 'updated',
+        direction: 'desc',
+      }
+    );
+    try {
+      for await (const res of iter) {
+        for (const alert of res.data) {
+          if (
+            this.backfill &&
+            endDate &&
+            Utils.toDate(alert.updated_at) > endDate
+          ) {
+            continue;
+          }
+          if (startDate && Utils.toDate(alert.updated_at) < startDate) {
+            return;
+          }
+          yield {
+            org,
+            repo,
+            ...alert,
+            resolved_by: alert.resolved_by?.login ?? null,
+            push_protection_bypassed_by:
+              alert.push_protection_bypassed_by?.login ?? null,
+          };
+        }
+      }
+    } catch (err: any) {
+      if (err.message?.includes('disabled on this repository')) {
+        this.logger.debug(
+          `Dependabot alerts disabled for org ${org} - ${repo}`
+        );
+        return;
+      }
+      throw err;
     }
   }
 

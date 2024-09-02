@@ -6,6 +6,7 @@ import {ProjectTasks} from '../../src/converters/asana/project_tasks';
 import {Projects} from '../../src/converters/asana/projects';
 import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
+import {TasksFull} from '../../src/converters/asana/tasks_full';
 import {Users} from '../../src/converters/asana/users';
 import {initMockttp, tempConfig} from '../testing-tools';
 import {generateBasicTestSuite} from './utils';
@@ -117,6 +118,7 @@ describe('asana', () => {
           {
             project: {
               gid: '1205346703408259',
+              name: 'Project 1',
             },
             section: {
               gid: '1205346703408260',
@@ -126,6 +128,23 @@ describe('asana', () => {
         ],
       });
       const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
+    test('tasks_full should process project membership', async () => {
+      const tasksFullConverter = new TasksFull();
+      const record = AirbyteRecord.make('tasks_full', {
+        ...TASK,
+        memberships: [
+          {
+            project: {
+              gid: '1205346703408259',
+              name: 'Project 1',
+            },
+          },
+        ],
+      });
+      const res = await tasksFullConverter.convert(record);
       expect(res).toMatchSnapshot();
     });
 
