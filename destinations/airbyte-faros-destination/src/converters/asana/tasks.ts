@@ -49,6 +49,7 @@ interface Config {
 
 export class Tasks extends AsanaConverter {
   private config: Config = undefined;
+  private seenProjects: Set<string> = new Set();
 
   private initialize(ctx?: StreamContext): void {
     this.config =
@@ -120,7 +121,11 @@ export class Tasks extends AsanaConverter {
         });
       }
       if (membership.project && this.shouldProcessProjectMembership()) {
-        res.push(...Projects.convertProject(membership.project, source));
+        if (!this.seenProjects.has(membership.project.gid)) {
+          res.push(...Projects.convertProject(membership.project, source));
+          this.seenProjects.add(membership.project.gid);
+        }
+
         res.push(
           ...ProjectTasks.convertProjectTask(
             {
