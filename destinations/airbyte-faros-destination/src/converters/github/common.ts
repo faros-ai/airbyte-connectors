@@ -225,7 +225,7 @@ export class GitHubCommon {
     alertType: string,
     number: number
   ): string {
-    return `${org}/${repo}/${alertType}/${number}`;
+    return toLower(`${org}/${repo}/${alertType}/${number}`);
   }
 
   private static buildStatus(conclusion: string): {
