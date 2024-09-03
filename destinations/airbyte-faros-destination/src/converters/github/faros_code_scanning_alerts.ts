@@ -28,16 +28,8 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
           source: this.streamName.source,
           title: alert.rule.name ?? alert.rule.id,
           description: Utils.cleanAndTruncate(alert.rule.description, 200),
-          // vulnerabilityIds: [],
           severity: getSeverity(alert),
           url: alert.html_url,
-          // discoveredAt: Utils.toDate(''),
-          // discoveredBy: '',
-          // publishedAt: Utils.toDate(''),
-          // publishedBy: '',
-          // remediatedAt: Utils.toDate(''),
-          // remediatedInVersions: [],
-          // affectedVersions: [],
         },
       },
       {
@@ -45,11 +37,8 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
         record: {
           vulnerability: {uid: alert.html_url, source: this.streamName.source},
           repository,
-          // task: {},
           url: alert.html_url,
-          // dueAt: Utils.toDate(''),
           createdAt: Utils.toDate(alert.created_at),
-          // acknowledgedAt: Utils.toDate(''),
           resolvedAt:
             Utils.toDate(alert.fixed_at) ??
             Utils.toDate(alert.dismissed_at) ??

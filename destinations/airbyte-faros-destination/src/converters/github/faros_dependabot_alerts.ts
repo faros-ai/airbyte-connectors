@@ -36,11 +36,7 @@ export class FarosDependabotAlerts extends GitHubConverter {
           ),
           severity: getSeverity(alert),
           url: alert.html_url,
-          // discoveredAt: Utils.toDate(''),
-          // discoveredBy: '',
           publishedAt: Utils.toDate(alert.security_advisory.published_at),
-          // publishedBy: '',
-          // remediatedAt: Utils.toDate(''),
           remediatedInVersions: [
             alert.security_vulnerability.first_patched_version,
           ],
@@ -54,11 +50,8 @@ export class FarosDependabotAlerts extends GitHubConverter {
         record: {
           vulnerability: {uid: alert.html_url, source: this.streamName.source},
           repository,
-          // task: {},
           url: alert.html_url,
-          // dueAt: Utils.toDate(''),
           createdAt: Utils.toDate(alert.created_at),
-          // acknowledgedAt: Utils.toDate(''),
           resolvedAt:
             Utils.toDate(alert.fixed_at) ??
             Utils.toDate(alert.dismissed_at) ??
