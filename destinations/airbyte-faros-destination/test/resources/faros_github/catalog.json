@@ -107,6 +107,24 @@
         "name": "mytestsource__github__faros_issues"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_code_scanning_alerts"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_dependabot_alerts"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_secret_scanning_alerts"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }
