@@ -30,7 +30,7 @@ export class Customreports extends Converter {
     skippedRecords: 0,
     storedRecords: 0,
   };
-  employeeIDtoRecord: Record<string, EmployeeRecord> = {};
+  employeeIdToRecords: Record<string, EmployeeRecord[]> = {};
   teamIDToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
   teamIDToTeamName: Record<string, string> = {
     all_teams: this.FAROS_TEAM_ROOT,
@@ -79,7 +79,12 @@ export class Customreports extends Converter {
         return;
       }
     }
-    this.employeeIDtoRecord[rec.Employee_ID] = rec;
+    // We might have more than one record per employee (hopefully not many)
+    if (rec.Employee_ID in this.employeeIdToRecords) {
+      this.employeeIdToRecords[rec.Employee_ID].push(rec);
+    } else {
+      this.employeeIdToRecords[rec.Employee_ID] = [rec];
+    }
     this.updateTeamToManagerRecord(rec);
     this.updateTeamIDToTeamNameMapping(rec);
   }
@@ -217,6 +222,52 @@ export class Customreports extends Converter {
     return manager_id;
   }
 
+  private determineTeamParentId(
+    records: EmployeeRecord[],
+    teamID: string,
+    ctx: StreamContext
+  ): string {
+    // This function is intended to handle the case where a single person
+    // has multiple records in the employee records. This can occur if, for example,
+    // a person is on two teams. An accepted case where a person might be on two teams
+    // is if they manage a team, and they manage that team's parent team, and so they
+    // need to manage a chain of teams. e.g. X manages team A with member X, and
+    // team A manages team B with other members.
+
+    // Contract: The records here must form a direct chain, where one person is on
+    // the parent team manages a child team which has the same person, and so on.
+    // This always returns the parent team of this chain.
+
+    if (records.length < 2) {
+      throw new Error(
+        `Expected at least 2 records when determining team parent id for team ${teamID}`
+      );
+    }
+    // The employee ID for the employee who appears on several teams
+    const employeeID = records[0].Employee_ID;
+    const employeeName = records[0].Full_Name;
+    ctx.logger.info(
+      `Determining team parent id for employee ${employeeID} (${employeeName})`
+    );
+    // We keep a list of possible top teams in order to have a hierarchy to build off
+    const possibleTopTeamIDs: string[] = [];
+    const teamIDToManagerID: Record<string, string> = {};
+    for (const record of records) {
+      teamIDToManagerID[record.Team_ID] = record.Manager_ID;
+      if (record.Manager_ID !== employeeID) {
+        possibleTopTeamIDs.push(record.Manager_ID);
+      }
+    }
+    if (possibleTopTeamIDs.length !== 1) {
+      throw new Error(
+        `Failed to find a top team for employee ${employeeID}. Found ${possibleTopTeamIDs.length} possible top teams.`
+      );
+    }
+    const topTeamID = possibleTopTeamIDs[0];
+    // We cannot determine the hierarchy of the teams, so we return the top team
+    return topTeamID;
+  }
+
   private computeTeamToParentTeamMapping(
     ctx: StreamContext
   ): Record<string, string> {
@@ -234,9 +285,15 @@ export class Customreports extends Converter {
         continue;
       }
       let parent_team_uid: string = this.FAROS_TEAM_ROOT;
-      if (manager_id in this.employeeIDtoRecord) {
+      if (manager_id in this.employeeIdToRecords) {
         // This is the expected case
-        parent_team_uid = this.employeeIDtoRecord[manager_id].Team_ID;
+        const records: EmployeeRecord[] = this.employeeIdToRecords[manager_id];
+        if (records.length == 1) {
+          // Expected case - one record per employee
+          parent_team_uid = records[0].Team_ID;
+        } else if (records.length > 1) {
+          parent_team_uid = this.determineTeamParentId(records, teamID, ctx);
+        }
       } else {
         // This is in the rare case where manager ID isn't in one of the employee records.
         // It can occur if the currently observed team is the root team in the org
@@ -554,7 +611,7 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
     // Class fields required to be filled (reference for testing):
-    // recordCount, teamIDToManagerIDs, employeeIDtoRecord
+    // recordCount, teamIDToManagerIDs, employeeIdToRecords
     // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
     const teamIDToParentID: Record<string, string> =
@@ -581,12 +638,14 @@ export class Customreports extends Converter {
         res.push(this.createOrgTeamRecord(team, newTeamToParent));
       }
     }
-    for (const employeeID of Object.keys(this.employeeIDtoRecord)) {
-      const employeeRecord = this.employeeIDtoRecord[employeeID];
-      if (!acceptable_teams.has(employeeRecord.Team_ID)) {
-        continue;
+    for (const employeeID of Object.keys(this.employeeIdToRecords)) {
+      const employeeRecords: EmployeeRecord[] =
+        this.employeeIdToRecords[employeeID];
+      for (const employeeRecord of employeeRecords) {
+        if (acceptable_teams.has(employeeRecord.Team_ID)) {
+          res.push(...this.createEmployeeRecordList(employeeRecord));
+        }
       }
-      res.push(...this.createEmployeeRecordList(employeeRecord));
     }
     for (const terminatedEmployee of this.terminatedEmployees) {
       res.push(...this.createEmployeeRecordList(terminatedEmployee, true));
