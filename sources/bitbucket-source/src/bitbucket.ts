@@ -136,6 +136,7 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
+    mainBranch: string,
     startDate: Date,
     endDate: Date
   ): AsyncGenerator<Commit> {
@@ -146,6 +147,7 @@ export class Bitbucket {
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pageSize,
+            include: [mainBranch],
           })
         ) as any;
       const isInRange = (data: Commit): boolean => {
@@ -715,57 +717,23 @@ export class Bitbucket {
       date: data.date,
       message: data.message,
       type: data.type,
-      rendered: {
-        message: {
-          raw: data.rendered?.message?.raw,
-          markup: data.rendered?.message?.markup,
-          html: data.rendered?.message?.html,
-          type: data.rendered?.message?.type,
-        },
-      },
       repository: {
-        type: data.repository.type,
-        name: data.repository.name,
         fullName: data.repository.full_name,
-        uuid: data.repository.uuid,
-        links: {
-          htmlUrl: data.repository.links?.html?.href,
-        },
       },
       links: {
-        commentsUrl: data.links?.comments?.href,
         htmlUrl: data.links?.html?.href,
-        diffUrl: data.links?.diff?.href,
-        approveUrl: data.links?.approve?.href,
-        statusesUrl: data.links?.statuses?.href,
       },
       author: {
-        raw: data.author.raw,
-        type: data.author.type,
         user: {
           displayName: data.author.user?.display_name,
           uuid: data.author.user?.uuid,
           type: data.author.user?.type,
-          nickname: data.author.user?.nickname,
           accountId: data.author.user?.account_id,
           links: {
             htmlUrl: data.author.user?.links?.html?.href,
           },
         },
       },
-      summary: {
-        raw: data.summary.raw,
-        markup: data.summary.markup,
-        html: data.summary.html,
-        type: data.summary.type,
-      },
-      parents: data.parents.map((p: Dictionary<any>) => ({
-        hash: p.hash,
-        type: p.type,
-        links: {
-          htmlUrl: p.links?.html?.href,
-        },
-      })),
     };
   }
 
