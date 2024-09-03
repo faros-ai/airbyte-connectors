@@ -20,7 +20,7 @@
     "description": "Initial release of the project",
     "name": "Version 1.0",
     "startDate": "2023-01-01",
-    "releaseDate": "2023-03-01",
+    "releaseDate": "2023-04-01",
     "released": true,
     "overdue": false,
     "archived": false,
@@ -30,8 +30,8 @@
     "id": "10002",
     "description": "Pre-release of the project",
     "name": "Version 1.0.Alpha",
-    "startDate": "2023-07-01",
-    "releaseDate": "2023-09-01",
+    "startDate": "2022-10-01",
+    "releaseDate": "2023-01-01",
     "projectId": 1
   }
 ]

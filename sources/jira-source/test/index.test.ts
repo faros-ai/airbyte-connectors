@@ -20,6 +20,10 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
+afterEach(() => {
+  jest.useRealTimers();
+});
+
 describe('index', () => {
   const logger = new AirbyteLogger(
     // Shush messages in tests, unless in debug
@@ -555,6 +559,7 @@ describe('index', () => {
   });
 
   test('streams - project versions', async () => {
+    jest.useFakeTimers({now: new Date('2023-06-01')});
     await sourceReadTest({
       source,
       configOrPath: config,
@@ -584,9 +589,10 @@ describe('index', () => {
   });
 
   test('streams - project version issues', async () => {
+    jest.useFakeTimers({now: new Date('2023-06-01')});
     const version = readTestResourceAsJSON(
       'project_versions/project_versions.json'
-    )[0];
+    )[2];
     await sourceReadTest({
       source,
       configOrPath: config,
