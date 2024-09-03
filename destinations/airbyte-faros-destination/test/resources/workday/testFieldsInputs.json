@@ -1,7 +1,7 @@
 {
     "empty": {
         "teamIDToManagerIDs": {},
-        "employeeIDtoRecord": {},
+        "employeeIDToRecords": {},
         "cycleChains": [],
         "generalLogCollection": []
     },
@@ -26,8 +26,8 @@
                 }
             ]
         },
-        "employeeIDtoRecord": {
-            "002": {
+        "employeeIDToRecords": {
+            "002": [{
                 "Start_Date": "2021-08-14T09:24:16.027Z",
                 "Full_Name": "C Smith",
                 "Employee_ID": "002",
@@ -39,8 +39,8 @@
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co" 
 
-            },
-            "003": {
+            }],
+            "003": [{
                 "Start_Date": "2018-11-21T22:18:43.511Z",
                 "Full_Name": "B Smith",
                 "Employee_ID": "003",
@@ -51,8 +51,8 @@
                 "Termination_Date": null,
                 "Location": "Alabama",
                 "Email": "dsmith@co.co"  
-            },
-            "004": {
+            }],
+            "004": [{
                 "Start_Date": "2019-03-29T12:07:39.730Z",
                 "Full_Name": "A Smith",
                 "Employee_ID": "004",
@@ -63,7 +63,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co"
-            }
+            }]
         },
         "cycleChains": [],
         "generalLogCollection": []
@@ -89,8 +89,8 @@
                 }
             ]
         },
-        "employeeIDtoRecord": {
-            "002": {
+        "employeeIDToRecords": {
+            "002": [{
                 "Start_Date": "2021-08-14T09:24:16.027Z",
                 "Full_Name": "C Smith",
                 "Employee_ID": "002",
@@ -102,8 +102,8 @@
                 "Location": "Connecticut",
                 "Email": "bsmith@co.co" 
 
-            },
-            "003": {
+            }],
+            "003": [{
                 "Start_Date": "2018-11-21T22:18:43.511Z",
                 "Full_Name": "B Smith",
                 "Employee_ID": "003",
@@ -114,8 +114,8 @@
                 "Termination_Date": null,
                 "Location": "Alabama",
                 "Email": "dsmith@co.co"  
-            },
-            "004": {
+            }],
+            "004": [{
                 "Start_Date": "2019-03-29T12:07:39.730Z",
                 "Full_Name": "A Smith",
                 "Employee_ID": "004",
@@ -126,7 +126,7 @@
                 "Termination_Date": null,
                 "Location": "Connecticut",
                 "Email": "asmith@co.co"
-            }
+            }]
         },
         "cycleChains": [],
         "generalLogCollection": []
