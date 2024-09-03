@@ -227,7 +227,6 @@ export interface User {
   readonly emailAddress?: string;
   readonly uuid: string;
   readonly type: string;
-  readonly nickname: string;
   readonly accountId: string;
   readonly links: {
     readonly htmlUrl: string;
@@ -571,19 +570,10 @@ export interface Repository {
 }
 
 export interface WorkspaceUser {
-  readonly type: string;
   readonly user: User;
   readonly workspace: {
     readonly slug: string;
-    readonly type: string;
-    readonly name: string;
     readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly links: {
-    readonly htmlUrl: string;
   };
 }
 

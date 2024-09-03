@@ -878,7 +878,6 @@ export class Bitbucket {
         displayName: data.assignee.display_name,
         uuid: data.assignee.uuid,
         type: data.assignee.type,
-        nickname: data.assignee.nickname,
         accountId: data.assignee.account_id,
         links: {
           htmlUrl: data.assignee.links?.html?.href,
@@ -1051,7 +1050,6 @@ export class Bitbucket {
         displayName: data.author.display_name,
         uuid: data.author.uuid,
         type: data.author.type,
-        nickname: data.author.nickname,
         accountId: data.author.account_id,
         links: {
           htmlUrl: data.author.links?.html?.href,
@@ -1071,7 +1069,6 @@ export class Bitbucket {
             displayName: data.closed_by.display_name,
             uuid: data.closed_by.uuid,
             type: data.closed_by.type,
-            nickname: data.closed_by.nickname,
             accountId: data.closed_by.account_id,
             links: {
               htmlUrl: data.closed_by.links?.html?.href,
@@ -1171,7 +1168,6 @@ export class Bitbucket {
               displayName: data.update?.author.display_name,
               uuid: data.update?.author.uuid,
               type: data.update?.author.type,
-              nickname: data.update?.author.nickname,
               accountId: data.update?.author.account_id,
               links: {
                 htmlUrl: data.update?.author.links?.html?.href,
@@ -1250,12 +1246,10 @@ export class Bitbucket {
 
   private buildWorkspaceUser(data: Dictionary<any>): WorkspaceUser {
     return {
-      type: data.type,
       user: {
         displayName: data.user.display_name,
         uuid: data.user.uuid,
         type: data.user.type,
-        nickname: data.user.nickname,
         accountId: data.user.account_id,
         links: {
           htmlUrl: data.user.links?.html?.href,
@@ -1263,15 +1257,7 @@ export class Bitbucket {
       },
       workspace: {
         slug: data.workspace.slug,
-        type: data.workspace.type,
-        name: data.workspace.name,
         uuid: data.workspace.uuid,
-        links: {
-          htmlUrl: data.workspace.links?.html?.href,
-        },
-      },
-      links: {
-        htmlUrl: data.user.links?.html?.href,
       },
     };
   }
