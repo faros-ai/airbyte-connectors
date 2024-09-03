@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
+import {isEmpty, toLower} from 'lodash';
 
 import {
   Converter,
@@ -107,7 +107,7 @@ export class BitbucketCommon {
 export abstract class BitbucketConverter extends Converter {
   source = 'Bitbucket';
 
-  protected collectedUsers = new Map<string, PartialUser>();
+  protected collectedUsers = new Map<string, Array<PartialUser>>();
 
   /** Almost all Bitbucket records should have id property */
   id(record: AirbyteRecord): any {
@@ -138,33 +138,60 @@ export abstract class BitbucketConverter extends Converter {
 
   protected collectUser(user: PartialUser, workspace: string): void {
     if (!user?.accountId) return;
-    this.collectedUsers.set(user.accountId, {...user, workspace});
+    if (!this.collectedUsers.has(user.accountId)) {
+      this.collectedUsers.set(user.accountId, []);
+    }
+    this.collectedUsers.get(user.accountId)?.push({
+      ...user,
+      workspace,
+    });
   }
 
   protected convertUsers(): DestinationRecord[] {
     const records: DestinationRecord[] = [];
     const source = this.streamName.source;
-    for (const [accountId, user] of this.collectedUsers.entries()) {
-      records.push(BitbucketCommon.vcsUser(user, source));
-      if (user.emailAddress) {
+    for (const [accountId, users] of this.collectedUsers.entries()) {
+      const emails = new Set(
+        users.map((user) => user.emailAddress).filter((email) => !!email)
+      );
+      for (const email of emails) {
         records.push({
           model: 'vcs_UserEmail',
           record: {
             user: {uid: accountId, source},
-            email: user.emailAddress,
+            email,
           },
         });
       }
-      if (user.workspace) {
+      const workspaces = new Set(
+        users.map((user) => user.workspace).filter((org) => !isEmpty(org))
+      );
+      for (const workspace of workspaces) {
         records.push({
           model: 'vcs_Membership',
           record: {
             user: {uid: accountId, source},
-            organization: {uid: toLower(user.workspace), source},
+            organization: {uid: toLower(workspace), source},
           },
         });
       }
+      const finalUser = this.getFinalUser(users);
+      records.push(BitbucketCommon.vcsUser(finalUser, source));
     }
     return records;
+  }
+
+  // Replace non-null user attributes to our copy of the user
+  // e.g. accountId, displayName, emailAddress, type, links.
+  private getFinalUser(users: Array<PartialUser>) {
+    const finalUser: PartialUser = {};
+    for (const user of users) {
+      for (const key in user) {
+        if (!finalUser[key] && user[key]) {
+          finalUser[key] = user[key];
+        }
+      }
+    }
+    return finalUser;
   }
 }
