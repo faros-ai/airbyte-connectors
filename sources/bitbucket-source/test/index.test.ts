@@ -4,6 +4,7 @@ import {
   AirbyteSpec,
   readTestResourceAsJSON,
   sourceReadTest,
+  sourceSchemaTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
@@ -92,6 +93,11 @@ describe('index', () => {
           'Bitbucket access token or Bitbucket username and password'
       ),
     ]);
+  });
+
+  test('streams - json schema fields', () => {
+    const source = new sut.BitbucketSource(logger);
+    sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
   test('streams - branches, use full_refresh sync mode', async () => {
@@ -335,6 +341,38 @@ describe('index', () => {
               }),
             },
             workspaces: {
+              getWorkspaces: jest.fn().mockResolvedValue({
+                data: {
+                  values: [readTestResourceAsJSON('workspaces/workspace.json')],
+                },
+              }),
+            },
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - workspace_users', async () => {
+    await sourceReadTest({
+      source: new sut.BitbucketSource(logger),
+      configOrPath: 'config.json',
+      catalogOrPath: 'workspace_users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            workspaces: {
+              getMembersForWorkspace: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'workspace_users/workspace_users.json'
+                  ),
+                },
+              }),
               getWorkspaces: jest.fn().mockResolvedValue({
                 data: {
                   values: [readTestResourceAsJSON('workspaces/workspace.json')],
