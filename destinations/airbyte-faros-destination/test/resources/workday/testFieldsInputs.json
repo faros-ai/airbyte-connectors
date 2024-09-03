@@ -1,7 +1,7 @@
 {
     "empty": {
         "teamIDToManagerIDs": {},
-        "employeeIdToRecords": {},
+        "employeeIDToRecords": {},
         "cycleChains": [],
         "generalLogCollection": []
     },
@@ -26,7 +26,7 @@
                 }
             ]
         },
-        "employeeIdToRecords": {
+        "employeeIDToRecords": {
             "002": [{
                 "Start_Date": "2021-08-14T09:24:16.027Z",
                 "Full_Name": "C Smith",
@@ -89,7 +89,7 @@
                 }
             ]
         },
-        "employeeIdToRecords": {
+        "employeeIDToRecords": {
             "002": [{
                 "Start_Date": "2021-08-14T09:24:16.027Z",
                 "Full_Name": "C Smith",

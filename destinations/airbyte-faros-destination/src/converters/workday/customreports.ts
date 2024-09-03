@@ -30,7 +30,7 @@ export class Customreports extends Converter {
     skippedRecords: 0,
     storedRecords: 0,
   };
-  employeeIdToRecords: Record<string, EmployeeRecord[]> = {};
+  employeeIDToRecords: Record<string, EmployeeRecord[]> = {};
   teamIDToManagerIDs: Record<string, ManagerTimeRecord[]> = {};
   teamIDToTeamName: Record<string, string> = {
     all_teams: this.FAROS_TEAM_ROOT,
@@ -80,10 +80,10 @@ export class Customreports extends Converter {
       }
     }
     // We might have more than one record per employee (hopefully not many)
-    if (rec.Employee_ID in this.employeeIdToRecords) {
-      this.employeeIdToRecords[rec.Employee_ID].push(rec);
+    if (rec.Employee_ID in this.employeeIDToRecords) {
+      this.employeeIDToRecords[rec.Employee_ID].push(rec);
     } else {
-      this.employeeIdToRecords[rec.Employee_ID] = [rec];
+      this.employeeIDToRecords[rec.Employee_ID] = [rec];
     }
     this.updateTeamToManagerRecord(rec);
     this.updateTeamIDToTeamNameMapping(rec);
@@ -285,9 +285,9 @@ export class Customreports extends Converter {
         continue;
       }
       let parent_team_uid: string = this.FAROS_TEAM_ROOT;
-      if (manager_id in this.employeeIdToRecords) {
+      if (manager_id in this.employeeIDToRecords) {
         // This is the expected case
-        const records: EmployeeRecord[] = this.employeeIdToRecords[manager_id];
+        const records: EmployeeRecord[] = this.employeeIDToRecords[manager_id];
         if (records.length == 1) {
           // Expected case - one record per employee
           parent_team_uid = records[0].Team_ID;
@@ -614,7 +614,7 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
     // Class fields required to be filled (reference for testing):
-    // recordCount, teamIDToManagerIDs, employeeIdToRecords
+    // recordCount, teamIDToManagerIDs, employeeIDToRecords
     // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
     const teamIDToParentID: Record<string, string> =
@@ -641,9 +641,9 @@ export class Customreports extends Converter {
         res.push(this.createOrgTeamRecord(team, newTeamToParent));
       }
     }
-    for (const employeeID of Object.keys(this.employeeIdToRecords)) {
+    for (const employeeID of Object.keys(this.employeeIDToRecords)) {
       const employeeRecords: EmployeeRecord[] =
-        this.employeeIdToRecords[employeeID];
+        this.employeeIDToRecords[employeeID];
       for (const employeeRecord of employeeRecords) {
         if (acceptable_teams.has(employeeRecord.Team_ID)) {
           res.push(...this.createEmployeeRecordList(employeeRecord));

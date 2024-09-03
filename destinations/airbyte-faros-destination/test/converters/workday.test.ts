@@ -29,7 +29,7 @@ function updateCustomReportWithFields(
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
   const fieldNames = [
     'teamIDToManagerIDs',
-    'employeeIdToRecords',
+    'employeeIDToRecords',
     'cycleChains',
     'generalLogCollection',
   ];
