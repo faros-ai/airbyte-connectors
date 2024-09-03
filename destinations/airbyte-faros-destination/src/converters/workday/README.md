@@ -25,3 +25,6 @@ orgs_to_ignore: string[]
 fail_on_cycles: bool (default is false)
 
 ```
+
+Note: 
+Employees might appear on more-than-one records if they belong to more-than-one teams.
