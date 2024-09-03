@@ -29,7 +29,7 @@ function updateCustomReportWithFields(
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
   const fieldNames = [
     'teamIDToManagerIDs',
-    'employeeIDtoRecord',
+    'employeeIdToRecords',
     'cycleChains',
     'generalLogCollection',
   ];
@@ -75,7 +75,6 @@ function runCustomReportDestination(
   customReportDestination,
   ctx
 ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
-  // HERE
   customReportDestination.setOrgsToKeepAndIgnore(ctx);
   return customReportDestination.generateFinalRecords(ctx);
 }
@@ -206,6 +205,7 @@ describe('workday', () => {
 
     expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
+    console.log(finalTeamToParent);
     expect(finalTeamToParent['B']).toMatch('A');
     expect(res.length).toEqual(14);
   });

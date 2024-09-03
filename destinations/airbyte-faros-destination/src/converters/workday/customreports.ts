@@ -295,6 +295,9 @@ export class Customreports extends Converter {
           parent_team_uid = this.determineTeamParentId(records, teamID, ctx);
         }
       } else {
+        ctx.logger.warn(
+          `Manager ID ${manager_id} not found in employee records`
+        );
         // This is in the rare case where manager ID isn't in one of the employee records.
         // It can occur if the currently observed team is the root team in the org
         potential_root_teams.push(teamID);
