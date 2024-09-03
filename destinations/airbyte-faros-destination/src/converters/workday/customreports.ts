@@ -243,27 +243,55 @@ export class Customreports extends Converter {
         `Expected at least 2 records when determining team parent id for team ${teamID}`
       );
     }
-    // The employee ID for the employee who appears on several teams
+    // The employee ID for the employee who appears on several teams.
+    // This should be the same throughout, so we can just take the first one.
     const employeeID = records[0].Employee_ID;
     const employeeName = records[0].Full_Name;
     ctx.logger.info(
       `Determining team parent id for employee ${employeeID} (${employeeName})`
     );
     // We keep a list of possible top teams in order to have a hierarchy to build off
-    const possibleTopTeamIDs: string[] = [];
+    const possibleTopTeamManagerIDs: string[] = [];
     const teamIDToManagerID: Record<string, string> = {};
     for (const record of records) {
       teamIDToManagerID[record.Team_ID] = record.Manager_ID;
       if (record.Manager_ID !== employeeID) {
-        possibleTopTeamIDs.push(record.Manager_ID);
+        // this manager ID belongs to the team which is the parent team:
+        possibleTopTeamManagerIDs.push(record.Manager_ID);
       }
     }
-    if (possibleTopTeamIDs.length !== 1) {
+    if (possibleTopTeamManagerIDs.length !== 1) {
       throw new Error(
-        `Failed to find a top team for employee ${employeeID}. Found ${possibleTopTeamIDs.length} possible top teams.`
+        `Failed to find a top team for employee ${employeeID}. Found ${possibleTopTeamManagerIDs.length} possible top teams.`
       );
     }
-    const topTeamID = possibleTopTeamIDs[0];
+    const top_manager_id = possibleTopTeamManagerIDs[0];
+
+    let topTeamID: string | null = null;
+    if (top_manager_id in this.employeeIDToRecords) {
+      // This is the expected case
+      const manager_records: EmployeeRecord[] =
+        this.employeeIDToRecords[top_manager_id];
+      if (manager_records.length == 1) {
+        // Expected case - one record per employee
+        topTeamID = manager_records[0].Team_ID;
+      } else if (manager_records.length > 1) {
+        throw new Error(
+          `More than one layer of multiple team manager options in the team hierarchy starting at team ID ${teamID}.`
+        );
+      }
+    }
+
+    if (records.length == 2 && !(teamID in teamIDToManagerID)) {
+      ctx.logger.info('Getting non-top team ID from the two records');
+      // We know that the parent team is NOT the top team, since this is pointing
+      // to a lower team in the hierarchy. We can return the only team which is not the top team.
+      for (const record of records) {
+        if (record.Team_ID !== topTeamID) {
+          return record.Team_ID;
+        }
+      }
+    }
     // We cannot determine the hierarchy of the teams, so we return the top team
     return topTeamID;
   }
