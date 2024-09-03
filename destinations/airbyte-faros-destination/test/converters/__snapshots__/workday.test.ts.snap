@@ -67,8 +67,8 @@ Array [
   "Processed records by stream: {\\\\\\"mytestsource__workday__customreports\\\\\\":104}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 318 records",
   "Would write records by model: {\\\\\\"geo_Location\\\\\\":4,\\\\\\"identity_Identity\\\\\\":103,\\\\\\"org_Employee\\\\\\":103,\\\\\\"org_Team\\\\\\":5,\\\\\\"org_TeamMembership\\\\\\":103}\\"},\\"type\\":\\"LOG\\"}",
-  "Skipped 1 records",
-  "Errored 1 records",
+  "Skipped 0 records",
+  "Errored 0 records",
 ]
 `;
 

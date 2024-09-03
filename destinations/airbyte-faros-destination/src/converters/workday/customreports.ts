@@ -49,9 +49,9 @@ export class Customreports extends Converter {
   skipped_due_to_termination = 0;
   failedRecordFields: Set<string> = new Set<string>();
 
-  /** Almost every SquadCast record have id property */
+  /** Every workday record should have this property */
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.Employee_Id;
+    return record?.record?.data?.Employee_Id + record?.record?.data?.Team_ID;
   }
 
   async convert(
