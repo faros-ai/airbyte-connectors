@@ -47,6 +47,7 @@ export class Customreports extends Converter {
   org_ids_to_ignore = null;
   skipped_due_to_missing_fields = 0;
   skipped_due_to_termination = 0;
+  employees_with_more_than_one_record = 0;
   failedRecordFields: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
@@ -82,6 +83,7 @@ export class Customreports extends Converter {
     // We might have more than one record per employee (hopefully not many)
     if (rec.Employee_ID in this.employeeIDToRecords) {
       this.employeeIDToRecords[rec.Employee_ID].push(rec);
+      this.employees_with_more_than_one_record += 1;
     } else {
       this.employeeIDToRecords[rec.Employee_ID] = [rec];
     }
