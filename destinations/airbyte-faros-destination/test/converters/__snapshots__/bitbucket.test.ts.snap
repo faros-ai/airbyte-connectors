@@ -1978,19 +1978,6 @@ README-PR.md created online with Bitbucket",
     },
   },
   Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
     "vcs_Membership": Object {
       "organization": Object {
         "source": "Bitbucket",
@@ -2001,6 +1988,19 @@ README-PR.md created online with Bitbucket",
         "source": "Bitbucket",
         "uid": "5d95c51f65db480d8e5c891e",
       },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
+      "name": "Рома Кирнос",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "5d95c51f65db480d8e5c891e",
     },
   },
 ]
