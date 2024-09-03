@@ -182,6 +182,41 @@ exports[`index streams - repositories 1`] = `
 ]
 `;
 
+exports[`index streams - workspace_users 1`] = `
+[
+  {
+    "user": {
+      "accountId": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      "displayName": "John Doe",
+      "links": {
+        "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
+      },
+      "type": "user",
+      "uuid": "{0ee8b2b4-0bec-41be-a698-e584ab10c586}",
+    },
+    "workspace": {
+      "slug": "test",
+      "uuid": "{33db76fb-7682-4f94-8b58-6b64de16e35f}",
+    },
+  },
+  {
+    "user": {
+      "accountId": "12345:b4f37d53-bb31-4770-aaa3-a7022892124",
+      "displayName": "Jane Doe",
+      "links": {
+        "htmlUrl": "https://bitbucket.org/%FAD0ee8b2b4-112-abc-a698-e584ab101246%AB/",
+      },
+      "type": "user",
+      "uuid": "{0ee8b2b4-1234-41be-abcd-e584ab10c586}",
+    },
+    "workspace": {
+      "slug": "test",
+      "uuid": "{33db76fb-7682-4f94-8b58-6b64de16e35f}",
+    },
+  },
+]
+`;
+
 exports[`index streams - workspaces 1`] = `
 [
   {

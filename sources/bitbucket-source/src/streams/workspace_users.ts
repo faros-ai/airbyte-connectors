@@ -10,7 +10,10 @@ export class WorkspaceUsers extends StreamWithWorkspaceSlices {
     return require('../../resources/schemas/workspace_users.json');
   }
   get primaryKey(): StreamKey {
-    return ['user', 'uuid'];
+    return [
+      ['user', 'uuid'],
+      ['workspace', 'uuid'],
+    ];
   }
 
   async *readRecords(
