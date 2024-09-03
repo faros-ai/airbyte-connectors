@@ -20,11 +20,17 @@ export class FarosDependabotAlerts extends GitHubConverter {
       alert.repo,
       this.streamName.source
     );
+    const uid = GitHubCommon.vulnerabilityUid(
+      alert.org,
+      alert.repo,
+      'dependabot',
+      alert.number
+    );
     return [
       {
         model: 'sec_Vulnerability',
         record: {
-          uid: alert.html_url,
+          uid,
           source: this.streamName.source,
           title: alert.security_advisory.summary,
           description: Utils.cleanAndTruncate(
@@ -48,7 +54,7 @@ export class FarosDependabotAlerts extends GitHubConverter {
       {
         model: 'vcs_RepositoryVulnerability',
         record: {
-          vulnerability: {uid: alert.html_url, source: this.streamName.source},
+          vulnerability: {uid, source: this.streamName.source},
           repository,
           url: alert.html_url,
           createdAt: Utils.toDate(alert.created_at),

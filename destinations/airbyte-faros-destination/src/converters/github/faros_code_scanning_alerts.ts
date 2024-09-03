@@ -20,11 +20,17 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
       alert.repo,
       this.streamName.source
     );
+    const uid = GitHubCommon.vulnerabilityUid(
+      alert.org,
+      alert.repo,
+      'code-scanning',
+      alert.number
+    );
     return [
       {
         model: 'sec_Vulnerability',
         record: {
-          uid: alert.html_url,
+          uid,
           source: this.streamName.source,
           title: alert.rule.name ?? alert.rule.id,
           description: Utils.cleanAndTruncate(alert.rule.description, 200),
@@ -35,7 +41,7 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
       {
         model: 'vcs_RepositoryVulnerability',
         record: {
-          vulnerability: {uid: alert.html_url, source: this.streamName.source},
+          vulnerability: {uid, source: this.streamName.source},
           repository,
           url: alert.html_url,
           createdAt: Utils.toDate(alert.created_at),

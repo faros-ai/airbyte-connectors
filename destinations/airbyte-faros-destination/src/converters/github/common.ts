@@ -219,6 +219,15 @@ export class GitHubCommon {
     };
   }
 
+  static vulnerabilityUid(
+    org: string,
+    repo: string,
+    alertType: string,
+    number: number
+  ): string {
+    return `${org}/${repo}/${alertType}/${number}`;
+  }
+
   private static buildStatus(conclusion: string): {
     category: string;
     detail: string;
