@@ -131,6 +131,15 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v3.log',
     });
   });
+
+  test('process randomly generated records from many records stream', async () => {
+    const configPath = await getTempConfig([], []);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_many_records_per_employee.log',
+    });
+  });
   test('Randomly generated records from customreports v4 stream with Terminated', async () => {
     const configPath = await getTempConfig([], [], true);
     await destinationWriteTest({
@@ -205,7 +214,6 @@ describe('workday', () => {
 
     expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
-    console.log(finalTeamToParent);
     expect(finalTeamToParent['B']).toMatch('A');
     expect(res.length).toEqual(14);
   });
