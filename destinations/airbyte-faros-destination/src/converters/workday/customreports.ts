@@ -47,7 +47,7 @@ export class Customreports extends Converter {
   org_ids_to_ignore = null;
   skipped_due_to_missing_fields = 0;
   skipped_due_to_termination = 0;
-  employees_with_more_than_one_record = 0;
+  employees_with_more_than_one_record: Record<string, number> = {};
   failedRecordFields: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
@@ -83,7 +83,11 @@ export class Customreports extends Converter {
     // We might have more than one record per employee (hopefully not many)
     if (rec.Employee_ID in this.employeeIDToRecords) {
       this.employeeIDToRecords[rec.Employee_ID].push(rec);
-      this.employees_with_more_than_one_record += 1;
+      if (rec.Full_Name in this.employees_with_more_than_one_record) {
+        this.employees_with_more_than_one_record[rec.Full_Name] += 1;
+      } else {
+        this.employees_with_more_than_one_record[rec.Full_Name] = 2;
+      }
     } else {
       this.employeeIDToRecords[rec.Employee_ID] = [rec];
     }
@@ -487,6 +491,8 @@ export class Customreports extends Converter {
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
       generalLogs: this.generalLogCollection,
+      employees_with_more_than_one_record:
+        this.employees_with_more_than_one_record,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
