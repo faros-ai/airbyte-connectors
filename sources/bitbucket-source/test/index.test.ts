@@ -311,4 +311,43 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - commits', async () => {
+    await sourceReadTest({
+      source: new sut.BitbucketSource(logger),
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('commits/commits.json'),
+                },
+              }),
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: {
+              getWorkspaces: jest.fn().mockResolvedValue({
+                data: {
+                  values: [readTestResourceAsJSON('workspaces/workspace.json')],
+                },
+              }),
+            },
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

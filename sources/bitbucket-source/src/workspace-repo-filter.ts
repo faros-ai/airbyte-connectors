@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/bitbucket';
 import {collectReposByOrg} from 'faros-airbyte-common/common';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {Bitbucket} from './bitbucket';
 import {BitbucketConfig} from './types';
@@ -128,5 +129,13 @@ export class WorkspaceRepoFilter {
       this.reposByWorkspace.set(workspace, repos);
     }
     return Array.from(this.reposByWorkspace.get(workspace).values());
+  }
+
+  getRepository(org: string, name: string): Repository {
+    const repo = this.reposByWorkspace.get(org)?.get(name);
+    if (!repo) {
+      throw new VError('Repository not found: %s/%s', org, name);
+    }
+    return repo;
   }
 }
