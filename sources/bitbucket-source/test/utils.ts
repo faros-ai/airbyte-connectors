@@ -17,6 +17,7 @@ export function setupBitbucketInstance(
       100,
       config.bucket_id,
       config.bucket_total,
+      5,
       logger
     );
   });

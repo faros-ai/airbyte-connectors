@@ -12,6 +12,7 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly page_size?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
+  readonly concurrency_limit?: number;
   readonly cutoff_days?: number;
   readonly start_date?: string;
   readonly end_date?: string;

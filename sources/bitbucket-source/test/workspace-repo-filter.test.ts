@@ -34,6 +34,7 @@ const bitbucketInstance = jest.fn().mockImplementation(() => {
     100,
     1,
     1,
+    5,
     new AirbyteLogger()
   );
 });

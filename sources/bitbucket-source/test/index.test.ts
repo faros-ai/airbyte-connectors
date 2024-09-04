@@ -51,6 +51,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
@@ -76,6 +77,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
@@ -117,6 +119,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
@@ -165,6 +168,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
@@ -203,6 +207,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
@@ -240,6 +245,7 @@ describe('index', () => {
         100,
         1,
         1,
+        5,
         logger
       );
     });
