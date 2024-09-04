@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {ProjectVersion} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 
 import {
@@ -25,7 +26,7 @@ export class ProjectVersions extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const projectVersion = record.record.data;
+    const projectVersion = record.record.data as ProjectVersion;
     const source = this.streamName.source;
     const results: DestinationRecord[] = [
       {
@@ -33,9 +34,15 @@ export class ProjectVersions extends JiraConverter {
         record: {
           uid: projectVersion.id,
           name: projectVersion.name,
-          description: this.truncate(projectVersion.description),
+          description: Utils.cleanAndTruncate(
+            projectVersion.description,
+            this.truncateLimit(ctx)
+          ),
           startedAt: Utils.toDate(projectVersion.startDate),
           releasedAt: Utils.toDate(projectVersion.releaseDate),
+          archived: projectVersion.archived,
+          released: projectVersion.released,
+          overdue: projectVersion.overdue,
           source,
         },
       },

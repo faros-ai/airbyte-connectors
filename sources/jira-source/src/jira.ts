@@ -1225,13 +1225,15 @@ export class Jira {
 
   @Memoize()
   async getProjectVersions(
-    projectKey: string
+    projectKey: string,
+    from: Date
   ): Promise<ReadonlyArray<Version2Models.Version>> {
     const versionsIterator = this.iterate(
       (startAt) =>
         this.api.v2.projectVersions.getProjectVersionsPaginated({
           startAt,
           projectIdOrKey: projectKey,
+          orderBy: '-releaseDate',
           maxResults: this.maxPageSize,
         }),
       (item: Version2Models.Version) => item
@@ -1239,6 +1241,9 @@ export class Jira {
 
     const versions = [];
     for await (const version of versionsIterator) {
+      if (version.releaseDate && new Date(version.releaseDate) < from) {
+        break;
+      }
       versions.push(version);
     }
     return versions;

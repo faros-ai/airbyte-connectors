@@ -1,14 +1,12 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueProjectVersion} from 'faros-airbyte-common/jira';
-import {Utils} from 'faros-js-client';
-import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {DEFAULT_CUTOFF_LAG_DAYS, Jira} from '../jira';
+import {Jira} from '../jira';
 import {JqlBuilder} from '../jql-builder';
-import {StreamState, StreamWithProjectSlices} from './common';
+import {ProjectStreamSliceWithStaticCutoff, StreamState} from './common';
 
-export class FarosProjectVersionIssues extends StreamWithProjectSlices {
+export class FarosProjectVersionIssues extends ProjectStreamSliceWithStaticCutoff {
   get dependencies(): ReadonlyArray<string> {
     return ['faros_project_versions'];
   }
@@ -31,8 +29,8 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
     const projectKey = streamSlice?.project;
 
     const projectState = streamState?.[projectKey];
-    const from = this.getUpdateRange(projectState?.cutoff)[0];
-    for (const version of await jira.getProjectVersions(projectKey)) {
+    const from = this.getFullSyncStartDate(projectState?.cutoff);
+    for (const version of await jira.getProjectVersions(projectKey, from)) {
       const releaseJQL = new JqlBuilder(
         `updated >= ${from.getTime()} and fixVersion = ${version.id}`
       ).build();
@@ -44,38 +42,5 @@ export class FarosProjectVersionIssues extends StreamWithProjectSlices {
         };
       }
     }
-  }
-
-  getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: IssueProjectVersion
-  ): StreamState {
-    const currentCutoff = Utils.toDate(
-      currentStreamState?.[latestRecord.projectKey]?.cutoff
-    );
-    if (!currentCutoff) {
-      return {
-        ...currentStreamState,
-        [latestRecord.projectKey]: {
-          cutoff: this.config.startDate.getTime(),
-        },
-      };
-    }
-
-    const adjustedLatestRecordCutoff = DateTime.fromJSDate(currentCutoff)
-      .minus({days: this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS})
-      .toJSDate();
-
-    if (adjustedLatestRecordCutoff < currentCutoff) {
-      const newState = {
-        cutoff: adjustedLatestRecordCutoff.getTime(),
-      };
-      return {
-        ...currentStreamState,
-        [latestRecord.projectKey]: newState,
-      };
-    }
-
-    return currentStreamState;
   }
 }
