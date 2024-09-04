@@ -1,6 +1,6 @@
 import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
 
-import {Bitbucket} from '../src/bitbucket';
+import {Bitbucket, getLimiter} from '../src/bitbucket';
 import {BitbucketConfig} from '../src/types';
 
 export function setupBitbucketInstance(
@@ -17,6 +17,7 @@ export function setupBitbucketInstance(
       100,
       config.bucket_id,
       config.bucket_total,
+      getLimiter(),
       logger
     );
   });

@@ -33,14 +33,13 @@ const DEFAULT_BUCKET_ID = 1;
 const DEFAULT_BUCKET_TOTAL = 1;
 
 export const DEFAULT_CUTOFF_DAYS = 90;
-export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
+export const DEFAULT_CONCURRENCY_LIMIT = 5;
 
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
 export class Bitbucket {
-  private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
 
   constructor(
@@ -48,6 +47,7 @@ export class Bitbucket {
     private readonly pageSize: number,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
+    private readonly limiter: Bottleneck,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -74,6 +74,7 @@ export class Bitbucket {
       config.page_size ?? DEFAULT_PAGE_SIZE,
       config.bucket_id ?? DEFAULT_BUCKET_ID,
       config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      getLimiter(config),
       logger
     );
     return Bitbucket.bitbucket;
@@ -1305,4 +1306,10 @@ export class Bitbucket {
 
 function formatDate(date: Date): string {
   return dateformat.asString(dateformat.ISO8601_WITH_TZ_OFFSET_FORMAT, date);
+}
+
+export function getLimiter(config?: BitbucketConfig): Bottleneck {
+  const concurrencyLimit =
+    config?.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT;
+  return new Bottleneck({maxConcurrent: concurrencyLimit, minTime: 100});
 }
