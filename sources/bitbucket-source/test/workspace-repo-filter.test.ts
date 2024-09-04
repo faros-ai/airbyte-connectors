@@ -32,6 +32,8 @@ const bitbucketInstance = jest.fn().mockImplementation(() => {
       hasNextPage: jest.fn(),
     } as any,
     100,
+    1,
+    1,
     new AirbyteLogger()
   );
 });

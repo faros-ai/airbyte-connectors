@@ -1,4 +1,6 @@
 {
   "username": "test",
-  "password": "secret"
+  "password": "secret",
+  "bucket_id": 1,
+  "bucket_total": 1
 }
