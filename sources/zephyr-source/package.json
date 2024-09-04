@@ -1,0 +1,56 @@
+{
+    "name": "zephyr-scale-source",
+    "version": "0.0.1",
+    "description": "Zephyr Scale Airbyte source",
+    "homepage": "https://www.faros.ai",
+    "keywords": [
+      "airbyte",
+      "source",
+      "faros",
+      "zephyr"
+    ],
+    "author": "Faros AI, Inc.",
+    "license": "Apache-2.0",
+    "files": [
+      "lib/",
+      "resources/"
+    ],
+    "engines": {
+      "node": ">=18"
+    },
+    "main": "./lib",
+    "scripts": {
+      "build": "tsc -p src",
+      "clean": "rm -rf lib node_modules out",
+      "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+      "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+      "prepare": "npm run build",
+      "test": "jest --verbose --color",
+      "test-cov": "jest --coverage --verbose --color",
+      "watch": "tsc -b -w src test"
+    },
+    "dependencies": {
+      "axios-auth-refresh": "^3.3.6",
+      "faros-airbyte-cdk": "0.0.1",
+      "faros-airbyte-common": "0.0.1",
+      "faros-js-client": "0.5.1",
+      "luxon": "^3.4.4"
+    },
+    "jest": {
+      "coverageDirectory": "out/coverage",
+      "preset": "ts-jest",
+      "setupFilesAfterEnv": [
+        "jest-extended/all"
+      ],
+      "testEnvironment": "node",
+      "testTimeout": 10000,
+      "transform": {
+        "\\.[jt]sx?$": [
+          "ts-jest",
+          {
+            "tsconfig": "test/tsconfig.json"
+          }
+        ]
+      }
+    }
+  }

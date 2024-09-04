@@ -1,0 +1,55 @@
+{
+    "documentationUrl": "https://docs.faros.ai",
+    "connectionSpecification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Zephyr Scale Configuration Spec",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "access_token": {
+          "order": 1,
+          "type": "string",
+          "title": "Zephyr Scale Access Token",
+          "description": "Zephyr Scale Access Token: See the docs for instructions on how to generate Access Token: https://support.smartbear.com/zephyr-scale-cloud/docs/en/rest-api/generating-api-access-tokens.html",
+          "airbyte_secret": true
+        },
+        "projects": {
+          "order": 2,
+          "type": "array",
+          "title": "Project Keys",
+          "description": "List of Jira project keys to sync.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cutoff_days": {
+          "order": 3,
+          "type": "integer",
+          "title": "Cutoff Days",
+          "description": "Only fetch data updated after cutoff.",
+          "default": 90
+        },
+        "api_timeout": {
+          "order": 4,
+          "type": "integer",
+          "title": "API Request Timeout",
+          "description": "Timeout in milliseconds for each request to the Zephyr API. 0 means no timeout.",
+          "default": 60000
+        },
+        "api_page_limit": {
+          "order": 5,
+          "type": "integer",
+          "title": "API Page Size",
+          "description": "The number of records to request from the API per call.",
+          "default": 100
+        },
+        "api_max_retries": {
+          "order": 6,
+          "type": "integer",
+          "title": "Max Number of Retries",
+          "description": "The max number of retries before giving up on retrying requests to the Zephyr API.",
+          "default": 3
+        }
+      }
+    }
+  }
