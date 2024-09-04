@@ -168,6 +168,16 @@ export abstract class StreamWithBoardSlices extends StreamBase {
 }
 
 export abstract class ProjectStreamSliceWithStaticCutoff extends StreamWithProjectSlices {
+  /**
+   * This method updates the cutoff date for full-sync project streams.
+   * These streams use one cutoff across all slices.
+   * In those cases, we should use the lesser date between the current state
+   * and the config start date. This ensures changes to the start date
+   * unless when doing a full reset does not result in the stream pulling less
+   * data. Additionally, if we back-fill data from a date earlier than the
+   * initial sync date and the start date is updated we should now pull data
+   * from the new start date.
+   */
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: Dictionary<any>
