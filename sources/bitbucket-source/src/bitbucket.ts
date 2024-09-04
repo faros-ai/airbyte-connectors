@@ -20,6 +20,7 @@ import {
   Workspace,
   WorkspaceUser,
 } from 'faros-airbyte-common/bitbucket';
+import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
@@ -28,22 +29,33 @@ import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_BUCKET_ID = 1;
+const DEFAULT_BUCKET_TOTAL = 1;
+
 export const DEFAULT_CUTOFF_DAYS = 90;
-export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
+export const DEFAULT_CONCURRENCY_LIMIT = 5;
 
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
 export class Bitbucket {
-  private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
+  private readonly limiter: Bottleneck;
 
   constructor(
     private readonly client: APIClient,
     private readonly pageSize: number,
+    private readonly bucketId: number,
+    private readonly bucketTotal: number,
+    private readonly concurrencyLimit: number,
     private readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.limiter = new Bottleneck({
+      maxConcurrent: concurrencyLimit,
+      minTime: 100,
+    });
+  }
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
     if (Bitbucket.bitbucket) return Bitbucket.bitbucket;
@@ -54,15 +66,23 @@ export class Bitbucket {
       throw new VError(errorMessage);
     }
 
+    validateBucketingConfig(config.bucket_id, config.bucket_total);
+
     const auth = config.token
       ? {token: config.token}
       : {username: config.username, password: config.password};
 
-    const baseUrl = config.api_url || DEFAULT_BITBUCKET_URL;
+    const baseUrl = config.api_url ?? DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-    const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
 
-    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger);
+    Bitbucket.bitbucket = new Bitbucket(
+      client,
+      config.page_size ?? DEFAULT_PAGE_SIZE,
+      config.bucket_id ?? DEFAULT_BUCKET_ID,
+      config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      config.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
+      logger
+    );
     return Bitbucket.bitbucket;
   }
 
@@ -106,6 +126,14 @@ export class Bitbucket {
     }
 
     return [true, undefined];
+  }
+
+  isRepoInBucket(workspace: string, repo: string): boolean {
+    const data = `${workspace}/${repo}`;
+    return (
+      bucket('farosai/airbyte-bitbucket-source', data, this.bucketTotal) ===
+      this.bucketId
+    );
   }
 
   async *getBranches(
@@ -556,6 +584,9 @@ export class Bitbucket {
         this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
+        if (!this.isRepoInBucket(workspace, repo.slug)) {
+          continue;
+        }
         results.push(repo);
       }
       return results;
