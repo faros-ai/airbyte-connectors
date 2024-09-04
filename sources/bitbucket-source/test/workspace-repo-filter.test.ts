@@ -4,7 +4,7 @@ import {
   readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 
-import {Bitbucket, getLimiter} from '../src/bitbucket';
+import {Bitbucket} from '../src/bitbucket';
 import {BitbucketConfig} from '../src/types';
 import {WorkspaceRepoFilter} from '../src/workspace-repo-filter';
 
@@ -34,7 +34,7 @@ const bitbucketInstance = jest.fn().mockImplementation(() => {
     100,
     1,
     1,
-    getLimiter(),
+    5,
     new AirbyteLogger()
   );
 });

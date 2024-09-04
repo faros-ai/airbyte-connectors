@@ -10,7 +10,7 @@ import {
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
-import {Bitbucket, getLimiter} from '../src/bitbucket';
+import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
 import {setupBitbucketInstance} from './utils';
 
@@ -51,7 +51,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });
@@ -77,7 +77,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });
@@ -119,7 +119,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });
@@ -168,7 +168,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });
@@ -207,7 +207,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });
@@ -245,7 +245,7 @@ describe('index', () => {
         100,
         1,
         1,
-        getLimiter(),
+        5,
         logger
       );
     });

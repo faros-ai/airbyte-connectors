@@ -41,15 +41,21 @@ interface BitbucketResponse<T> {
 
 export class Bitbucket {
   private static bitbucket: Bitbucket = null;
+  private readonly limiter: Bottleneck;
 
   constructor(
     private readonly client: APIClient,
     private readonly pageSize: number,
     private readonly bucketId: number,
     private readonly bucketTotal: number,
-    private readonly limiter: Bottleneck,
+    private readonly concurrencyLimit: number,
     private readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.limiter = new Bottleneck({
+      maxConcurrent: concurrencyLimit,
+      minTime: 100,
+    });
+  }
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
     if (Bitbucket.bitbucket) return Bitbucket.bitbucket;
@@ -74,7 +80,7 @@ export class Bitbucket {
       config.page_size ?? DEFAULT_PAGE_SIZE,
       config.bucket_id ?? DEFAULT_BUCKET_ID,
       config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
-      getLimiter(config),
+      config.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
       logger
     );
     return Bitbucket.bitbucket;
@@ -1306,10 +1312,4 @@ export class Bitbucket {
 
 function formatDate(date: Date): string {
   return dateformat.asString(dateformat.ISO8601_WITH_TZ_OFFSET_FORMAT, date);
-}
-
-export function getLimiter(config?: BitbucketConfig): Bottleneck {
-  const concurrencyLimit =
-    config?.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT;
-  return new Bottleneck({maxConcurrent: concurrencyLimit, minTime: 100});
 }
