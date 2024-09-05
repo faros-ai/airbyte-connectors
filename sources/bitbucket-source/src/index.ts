@@ -58,7 +58,6 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
     const pullRequests = new PullRequests(config, this.logger);
     return [
-      new Branches(config, this.logger),
       new Commits(config, this.logger),
       new Issues(config, this.logger),
       pullRequests,

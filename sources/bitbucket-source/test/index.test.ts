@@ -103,44 +103,44 @@ describe('index', () => {
     sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
-  test('streams - branches, use full_refresh sync mode', async () => {
-    const fnBranchesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          repositories: {
-            listBranches: fnBranchesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('branches.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        1,
-        1,
-        5,
-        logger
-      );
-    });
-    const streams = source.streams({} as any);
-
-    const branchesStream = streams[0];
-    const branchesIter = branchesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const branches = [];
-    for await (const branch of branchesIter) {
-      branches.push(branch);
-    }
-
-    expect(fnBranchesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(branches))).toStrictEqual(
-      readTestResourceFile('branches-response.json')
-    );
-  });
+  // test('streams - branches, use full_refresh sync mode', async () => {
+  //   const fnBranchesFunc = jest.fn();
+  //
+  //   Bitbucket.instance = jest.fn().mockImplementation(() => {
+  //     return new Bitbucket(
+  //       {
+  //         repositories: {
+  //           listBranches: fnBranchesFunc.mockResolvedValue({
+  //             data: {values: readTestResourceFile('branches.json')},
+  //           }),
+  //         },
+  //         hasNextPage: jest.fn(),
+  //       } as any,
+  //       100,
+  //       1,
+  //       1,
+  //       5,
+  //       logger
+  //     );
+  //   });
+  //   const streams = source.streams({} as any);
+  //
+  //   const branchesStream = streams[0];
+  //   const branchesIter = branchesStream.readRecords(
+  //     SyncMode.FULL_REFRESH,
+  //     undefined,
+  //     {workspace: 'workspace', repository: 'repository'}
+  //   );
+  //   const branches = [];
+  //   for await (const branch of branchesIter) {
+  //     branches.push(branch);
+  //   }
+  //
+  //   expect(fnBranchesFunc).toHaveBeenCalledTimes(1);
+  //   expect(JSON.parse(JSON.stringify(branches))).toStrictEqual(
+  //     readTestResourceFile('branches-response.json')
+  //   );
+  // });
 
   //
   // test('streams - deployments, use full_refresh sync mode', async () => {
