@@ -13,7 +13,6 @@ import VError from 'verror';
 
 import {Bitbucket, DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE} from './bitbucket';
 import {
-  Branches,
   Commits,
   Issues,
   PullRequestActivities,

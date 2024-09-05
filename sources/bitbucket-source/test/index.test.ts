@@ -5,7 +5,6 @@ import {
   readTestResourceAsJSON,
   sourceReadTest,
   sourceSchemaTest,
-  SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
