@@ -843,13 +843,13 @@ exports[`index streams - project version issues 1`] = `
 exports[`index streams - project versions 1`] = `
 [
   {
-    "description": "Initial release of the project",
-    "id": "10000",
-    "name": "Version 1.0",
+    "archived": false,
+    "description": "Third release of the project",
+    "id": "10003",
+    "name": "Version 3.0",
     "projectId": 1,
     "projectKey": "TEST",
-    "releaseDate": "2023-03-01",
-    "startDate": "2023-01-01",
+    "released": false,
   },
   {
     "description": "Second release of the project",
@@ -859,6 +859,18 @@ exports[`index streams - project versions 1`] = `
     "projectKey": "TEST",
     "releaseDate": "2023-06-01",
     "startDate": "2023-04-01",
+  },
+  {
+    "archived": false,
+    "description": "Initial release of the project",
+    "id": "10000",
+    "name": "Version 1.0",
+    "overdue": false,
+    "projectId": 1,
+    "projectKey": "TEST",
+    "releaseDate": "2023-04-01",
+    "released": true,
+    "startDate": "2023-01-01",
   },
 ]
 `;

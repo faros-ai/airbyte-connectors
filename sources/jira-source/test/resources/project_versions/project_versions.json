@@ -1,10 +1,10 @@
 [
   {
-    "id": "10000",
-    "description": "Initial release of the project",
-    "name": "Version 1.0",
-    "startDate": "2023-01-01",
-    "releaseDate": "2023-03-01",
+    "id": "10003",
+    "description": "Third release of the project",
+    "name": "Version 3.0",
+    "archived": false,
+    "released": false,
     "projectId": 1
   },
   {
@@ -13,6 +13,25 @@
     "name": "Version 2.0",
     "startDate": "2023-04-01",
     "releaseDate": "2023-06-01",
+    "projectId": 1
+  },
+  {
+    "id": "10000",
+    "description": "Initial release of the project",
+    "name": "Version 1.0",
+    "startDate": "2023-01-01",
+    "releaseDate": "2023-04-01",
+    "released": true,
+    "overdue": false,
+    "archived": false,
+    "projectId": 1
+  },
+  {
+    "id": "10002",
+    "description": "Pre-release of the project",
+    "name": "Version 1.0.Alpha",
+    "startDate": "2022-10-01",
+    "releaseDate": "2023-01-01",
     "projectId": 1
   }
 ]

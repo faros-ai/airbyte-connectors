@@ -182,6 +182,25 @@ exports[`index streams - repositories 1`] = `
 ]
 `;
 
+exports[`index streams - repositories with bucketing 1`] = `
+[
+  {
+    "createdOn": "2020-12-08T09:02:34.226492+00:00",
+    "description": "",
+    "fullName": "RomanKyrnis/kievcameras",
+    "hasIssues": false,
+    "htmlUrl": "https://bitbucket.org/RomanKyrnis/kievcameras",
+    "isPrivate": true,
+    "language": "",
+    "mainBranch": "master",
+    "size": 2189925,
+    "slug": "kievcameras",
+    "updatedOn": "2021-08-03T09:17:51.311690+00:00",
+    "workspace": "objectivemax",
+  },
+]
+`;
+
 exports[`index streams - workspace_users 1`] = `
 [
   {

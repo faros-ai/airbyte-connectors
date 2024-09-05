@@ -1,0 +1,7 @@
+{
+  "username": "test",
+  "password": "secret",
+  "bucket_id": 2,
+  "bucket_total": 5,
+  "workspaces": ["objectivemax"]
+}
