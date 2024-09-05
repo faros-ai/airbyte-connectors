@@ -25,6 +25,7 @@ import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
 
+import {RunMode} from './streams/common';
 import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
@@ -34,6 +35,7 @@ const DEFAULT_BUCKET_TOTAL = 1;
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CONCURRENCY_LIMIT = 5;
+export const DEFAULT_RUN_MODE = RunMode.Full;
 
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
@@ -424,7 +426,7 @@ export class Bitbucket {
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
       const query =
         states +
-        ` AND updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`;
+        ` AND updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`;
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
