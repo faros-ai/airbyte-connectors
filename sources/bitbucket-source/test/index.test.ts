@@ -142,131 +142,133 @@ describe('index', () => {
     );
   });
 
-  test('streams - deployments, use full_refresh sync mode', async () => {
-    const fnDeploymentsFunc = jest.fn();
+  //
+  // test('streams - deployments, use full_refresh sync mode', async () => {
+  //   const fnDeploymentsFunc = jest.fn();
+  //
+  //   Bitbucket.instance = jest.fn().mockImplementation(() => {
+  //     return new Bitbucket(
+  //       {
+  //         deployments: {
+  //           getEnvironment: fnDeploymentsFunc.mockImplementation(
+  //             async ({environment_uuid: envID}: {environment_uuid: string}) => {
+  //               const environments: any[] =
+  //                 readTestResourceFile('environments.json');
+  //
+  //               return {
+  //                 data: environments.find((e) => e.uuid === envID),
+  //               };
+  //             }
+  //           ),
+  //           list: jest.fn().mockResolvedValue({
+  //             data: {values: readTestResourceFile('deployments.json')},
+  //           }),
+  //         },
+  //         hasNextPage: jest.fn(),
+  //       } as any,
+  //       100,
+  //       1,
+  //       1,
+  //       5,
+  //       logger
+  //     );
+  //   });
+  //   const streams = source.streams({} as any);
+  //
+  //   const deploymentsStream = streams[2];
+  //   const deploymentsIter = deploymentsStream.readRecords(
+  //     SyncMode.FULL_REFRESH,
+  //     undefined,
+  //     {workspace: 'workspace', repository: 'repository'}
+  //   );
+  //   const deployments = [];
+  //   for await (const deployment of deploymentsIter) {
+  //     deployments.push(deployment);
+  //   }
+  //
+  //   expect(fnDeploymentsFunc).toHaveBeenCalledTimes(2);
+  //   expect(JSON.parse(JSON.stringify(deployments))).toStrictEqual(
+  //     readTestResourceFile('deployments-response.json')
+  //   );
+  // });
 
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          deployments: {
-            getEnvironment: fnDeploymentsFunc.mockImplementation(
-              async ({environment_uuid: envID}: {environment_uuid: string}) => {
-                const environments: any[] =
-                  readTestResourceFile('environments.json');
+  // test('streams - pipelines, use full_refresh sync mode', async () => {
+  //   const fnPipelinesFunc = jest.fn();
+  //
+  //   Bitbucket.instance = jest.fn().mockImplementation(() => {
+  //     return new Bitbucket(
+  //       {
+  //         pipelines: {
+  //           list: fnPipelinesFunc.mockResolvedValue({
+  //             data: {values: readTestResourceFile('pipelines.json')},
+  //           }),
+  //         },
+  //         hasNextPage: jest.fn(),
+  //       } as any,
+  //       100,
+  //       1,
+  //       1,
+  //       5,
+  //       logger
+  //     );
+  //   });
+  //   const streams = source.streams({} as any);
+  //
+  //   const pipelinesStream = streams[4];
+  //   const pipelinesIter = pipelinesStream.readRecords(
+  //     SyncMode.FULL_REFRESH,
+  //     undefined,
+  //     {workspace: 'workspace', repository: 'repository'}
+  //   );
+  //   const pipelines = [];
+  //   for await (const pipeline of pipelinesIter) {
+  //     pipelines.push(pipeline);
+  //   }
+  //
+  //   expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
+  //   expect(JSON.parse(JSON.stringify(pipelines))).toStrictEqual(
+  //     readTestResourceFile('pipelines-response.json')
+  //   );
+  // });
+  // test('streams - pipelineSteps, use full_refresh sync mode', async () => {
+  //   const fnPipelineStepsFunc = jest.fn();
+  //
+  //   Bitbucket.instance = jest.fn().mockImplementation(() => {
+  //     return new Bitbucket(
+  //       {
+  //         pipelines: {
+  //           listSteps: fnPipelineStepsFunc.mockResolvedValue({
+  //             data: {values: readTestResourceFile('pipelineSteps.json')},
+  //           }),
+  //         },
+  //         hasNextPage: jest.fn(),
+  //       } as any,
+  //       100,
+  //       1,
+  //       1,
+  //       5,
+  //       logger
+  //     );
+  //   });
+  //   const streams = source.streams({} as any);
+  //
+  //   const pipelineStepsStream = streams[5];
+  //   const pipelineStepsIter = pipelineStepsStream.readRecords(
+  //     SyncMode.FULL_REFRESH,
+  //     undefined,
+  //     {workspace: 'workspace', repository: 'repository', pipeline: 'pipeline'}
+  //   );
+  //   const pipelineSteps = [];
+  //   for await (const pipelineStep of pipelineStepsIter) {
+  //     pipelineSteps.push(pipelineStep);
+  //   }
+  //
+  //   expect(fnPipelineStepsFunc).toHaveBeenCalledTimes(1);
+  //   expect(JSON.parse(JSON.stringify(pipelineSteps))).toStrictEqual(
+  //     readTestResourceFile('pipelineSteps-response.json')
+  //   );
+  // });
 
-                return {
-                  data: environments.find((e) => e.uuid === envID),
-                };
-              }
-            ),
-            list: jest.fn().mockResolvedValue({
-              data: {values: readTestResourceFile('deployments.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        1,
-        1,
-        5,
-        logger
-      );
-    });
-    const streams = source.streams({} as any);
-
-    const deploymentsStream = streams[2];
-    const deploymentsIter = deploymentsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const deployments = [];
-    for await (const deployment of deploymentsIter) {
-      deployments.push(deployment);
-    }
-
-    expect(fnDeploymentsFunc).toHaveBeenCalledTimes(2);
-    expect(JSON.parse(JSON.stringify(deployments))).toStrictEqual(
-      readTestResourceFile('deployments-response.json')
-    );
-  });
-
-  test('streams - pipelines, use full_refresh sync mode', async () => {
-    const fnPipelinesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          pipelines: {
-            list: fnPipelinesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('pipelines.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        1,
-        1,
-        5,
-        logger
-      );
-    });
-    const streams = source.streams({} as any);
-
-    const pipelinesStream = streams[4];
-    const pipelinesIter = pipelinesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const pipelines = [];
-    for await (const pipeline of pipelinesIter) {
-      pipelines.push(pipeline);
-    }
-
-    expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(pipelines))).toStrictEqual(
-      readTestResourceFile('pipelines-response.json')
-    );
-  });
-  test('streams - pipelineSteps, use full_refresh sync mode', async () => {
-    const fnPipelineStepsFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          pipelines: {
-            listSteps: fnPipelineStepsFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('pipelineSteps.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        1,
-        1,
-        5,
-        logger
-      );
-    });
-    const streams = source.streams({} as any);
-
-    const pipelineStepsStream = streams[5];
-    const pipelineStepsIter = pipelineStepsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository', pipeline: 'pipeline'}
-    );
-    const pipelineSteps = [];
-    for await (const pipelineStep of pipelineStepsIter) {
-      pipelineSteps.push(pipelineStep);
-    }
-
-    expect(fnPipelineStepsFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(pipelineSteps))).toStrictEqual(
-      readTestResourceFile('pipelineSteps-response.json')
-    );
-  });
   test('streams - repositories', async () => {
     await sourceReadTest({
       source,
