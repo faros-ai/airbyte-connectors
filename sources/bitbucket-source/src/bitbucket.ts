@@ -154,7 +154,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching branch(es) for repository "%s/%s"',
+        'Error fetching branch(es) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -191,7 +191,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching commit(s) for repository "%s/%s"',
+        'Error fetching commit(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -236,7 +236,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching deployments for repository "%s/%s"',
+        'Error fetching deployments for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -267,7 +267,7 @@ export class Bitbucket {
       } catch (err2) {
         throw new VError(
           this.buildInnerError(err2),
-          'Error fetching %s environment for repository "%s/%s"',
+          'Error fetching %s environment for repository %s/%s',
           envID,
           workspace,
           repoSlug
@@ -318,7 +318,7 @@ export class Bitbucket {
       workspace,
       repo_slug: repoSlug,
       pagelen: this.pageSize,
-      q: `updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`,
+      q: `updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`,
     };
 
     try {
@@ -331,7 +331,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching issue(s) for repository "%s/%s"',
+        'Error fetching issue(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -367,7 +367,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching pipeline(s) for repository "%s/%s"',
+        'Error fetching pipeline(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -396,7 +396,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching PipelineSteps(s) for repository "%s/%s"',
+        'Error fetching PipelineSteps(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -424,7 +424,7 @@ export class Bitbucket {
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
       const query =
         states +
-        ` AND updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`;
+        ` AND updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`;
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
@@ -491,7 +491,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching pull requests for repository "%s/%s"',
+        'Error fetching pull requests for repository %s/%s',
         workspace,
         repoSlug
       );
