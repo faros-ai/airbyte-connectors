@@ -1,8 +1,18 @@
+export interface AccessToken {
+  readonly token: string;
+}
+
+export interface UserPassword {
+  readonly username: string;
+  readonly password: string;
+}
+
+export type Authentication = AccessToken | UserPassword;
 export interface ZephyrConfig {
-  access_token: string;
-  projects: ReadonlyArray<string>;
-  cutoff_days?: number;
-  api_timeout?: number;
-  api_page_limit?: number;
-  api_max_retries?: number;
+  readonly url: string;
+  readonly authentication: Authentication;
+  readonly projects: ReadonlyArray<string>;
+  readonly api_timeout?: number;
+  readonly api_page_limit?: number;
+  readonly api_max_retries?: number;
 }

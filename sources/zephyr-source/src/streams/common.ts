@@ -32,8 +32,6 @@ export abstract class ZephyrStreamBase extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    this.logger.info('streamSlices');
-    this.logger.info(`projects ${this.projects}`);
     for (const project of this.projects ?? []) {
       yield {project};
     }

@@ -16,11 +16,11 @@ import {Zephyr} from './zephyr';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
-  const source = new ZephyrSource(logger);
+  const source = new ZephyrScaleSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class ZephyrSource extends AirbyteSourceBase<ZephyrConfig> {
+export class ZephyrScaleSource extends AirbyteSourceBase<ZephyrConfig> {
   get type(): string {
     return 'zephyr';
   }
