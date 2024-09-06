@@ -1,0 +1,91 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Zephyr Scale Configuration Spec",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "url": {
+        "order": 1,
+        "type": "string",
+        "title": "Zephyr Scale Instance URL",
+        "description": "URL of the Zephyr Scale instance. Defaults to Zephyr Cloud URL. This is required when using Zephyr Scale Server, https://my-jira-server.com/your-jira-context/rest/atm/1.0/ (Server/DC)",
+        "default": "https://api.zephyrscale.smartbear.com/v2",
+        "examples": [
+          "https://api.zephyrscale.smartbear.com/v2",
+          "https://my-jira-server.com/rest/atm/1.0"
+        ]
+      },
+      "authentication": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "The user email for your Jira account. Do NOT use in combination with Server/DC personal access token"
+              },
+              "password": {
+                "type": "string",
+                "title": "Password (Server/DC)",
+                "description": "The JIRA Server password. Do NOT use in combination with Server/DC personal access token",
+                "airbyte_secret": true
+              }
+            },
+            "required": [
+              "username",
+              "password"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "title": "Zephyr Scale Access Token",
+                "description": "Zephyr Scale Access Token Cloud) or : See the docs for instructions on how to generate Cloud Access Token: https://support.smartbear.com/zephyr-scale-cloud/docs/en/rest-api/generating-api-access-tokens.html or for Server https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html",
+                "airbyte_secret": true
+              }
+            },
+            "required": ["token"],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "projects": {
+        "order": 2,
+        "type": "array",
+        "title": "Project Keys",
+        "description": "List of Jira project keys to sync.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "api_timeout": {
+        "order": 4,
+        "type": "integer",
+        "title": "API Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Zephyr API. 0 means no timeout.",
+        "default": 60000
+      },
+      "api_page_limit": {
+        "order": 5,
+        "type": "integer",
+        "title": "API Page Size",
+        "description": "The number of records to request from the API per call.",
+        "default": 100
+      },
+      "api_max_retries": {
+        "order": 6,
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Zephyr API.",
+        "default": 3
+      }
+    },
+    "required": ["authentication", "projects"]
+  }
+}
