@@ -1,11 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {SemaphoreCICommon, SemaphoreCIConverter} from './common';
 import {Pipeline, Repository} from './models';
 
@@ -106,9 +102,10 @@ export class Pipelines extends SemaphoreCIConverter {
         record: {
           uid: job.metadata.id,
           name: job.metadata.name,
-          command: job.spec.commands
-            .join('\n')
-            .substring(0, SemaphoreCICommon.MAX_DESCRIPTION_LENGTH),
+          command: Utils.cleanAndTruncate(
+            job.spec.commands.join('\n'),
+            SemaphoreCICommon.MAX_DESCRIPTION_LENGTH
+          ),
           createdAt: SemaphoreCICommon.nullifyDate(job.metadata.create_time),
           startedAt: SemaphoreCICommon.nullifyDate(job.metadata.start_time),
           endedAt: SemaphoreCICommon.nullifyDate(job.metadata.finish_time),

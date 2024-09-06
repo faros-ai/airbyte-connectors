@@ -73,8 +73,8 @@ export class Incidents extends SquadcastConverter {
       record: {
         ...incidentRef,
         title: incident.title,
-        description: incident.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          incident.description,
           SquadcastCommon.MAX_DESCRIPTION_LENGTH
         ),
         createdAt,

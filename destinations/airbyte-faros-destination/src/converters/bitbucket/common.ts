@@ -77,8 +77,8 @@ export class BitbucketCommon {
         record: {
           ...projectKey,
           name: name,
-          description: description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            description,
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(createdAt),

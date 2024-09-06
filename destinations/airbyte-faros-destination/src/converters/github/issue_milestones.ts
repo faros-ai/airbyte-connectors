@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
@@ -24,8 +25,8 @@ export class IssueMilestones extends GitHubConverter {
         record: {
           uid: `${milestone.id}`,
           name: milestone.title,
-          description: milestone.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            milestone.description,
             GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           project: {uid: repository.name, source},

@@ -43,8 +43,8 @@ export class PullRequestActivities extends BitbucketServerConverter {
           number: id,
           uid: id.toString(),
           pullRequest,
-          comment: activity?.comment?.text?.substring(
-            0,
+          comment: Utils.cleanAndTruncate(
+            activity?.comment?.text,
             MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(activity.comment.createdDate),

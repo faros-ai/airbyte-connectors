@@ -14,7 +14,7 @@
         "max_description_length": {
           "type": "integer",
           "title": "Max Description Length",
-          "description": "Value to cut description to specific length",
+          "description": "Defines the maximum length for descriptions before truncation",
           "default": 1000
         },
         "work_additional_fields": {

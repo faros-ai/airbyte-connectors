@@ -34,8 +34,8 @@ export class ReviewComments extends GitHubConverter {
         record: {
           number: comment.id,
           uid: comment.id.toString(),
-          comment: comment?.body?.substring(
-            0,
+          comment: Utils.cleanAndTruncate(
+            comment?.body,
             GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(comment.created_at),
