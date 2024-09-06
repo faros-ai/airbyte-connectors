@@ -78,8 +78,8 @@ export class Issues extends BitbucketConverter {
       record: {
         ...taskRef,
         name: issue.title,
-        description: issue.content?.raw?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          issue.content?.raw,
           BitbucketCommon.MAX_DESCRIPTION_LENGTH
         ),
         type: this.toTaskType(issue.kind),

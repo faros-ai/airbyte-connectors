@@ -25,8 +25,8 @@ export class Groups extends GitlabConverter {
         model: 'cicd_Organization',
         record: {
           uid: group.full_path,
-          description: group.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            group.description,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
           name: group.name,
@@ -41,7 +41,7 @@ export class Groups extends GitlabConverter {
           uid: group.full_path,
           name: group.name,
           htmlUrl: group.web_url,
-          type: { category: 'Group', detail: '' },
+          type: {category: 'Group', detail: ''},
           createdAt: Utils.toDate(group.created_at),
           source,
         },
@@ -49,8 +49,11 @@ export class Groups extends GitlabConverter {
     } else {
       res.push(
         GitlabCommon.tms_TaskBoard(
-          { uid: group.full_path.slice(group.full_path.indexOf('/') + 1), source },
-          group.name,
+          {
+            uid: group.full_path.slice(group.full_path.indexOf('/') + 1),
+            source,
+          },
+          group.name
         )
       );
     }

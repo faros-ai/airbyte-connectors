@@ -117,7 +117,10 @@ export class Incidents extends FireHydrantConverter {
       record: {
         ...incidentRef,
         title: incident.name,
-        description: incident.description?.substring(0, maxDescriptionLength),
+        description: Utils.cleanAndTruncate(
+          incident.description,
+          maxDescriptionLength
+        ),
         url: incident.incident_url,
         createdAt,
         updatedAt,
@@ -193,7 +196,10 @@ export class Incidents extends FireHydrantConverter {
       record: {
         uid: ticket.id,
         name: ticket.summary,
-        description: ticket.description?.substring(0, maxDescriptionLength),
+        description: Utils.cleanAndTruncate(
+          ticket.description,
+          maxDescriptionLength
+        ),
         source,
         url: undefined,
         type: {

@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabCommon, GitlabConverter} from '../gitlab/common';
@@ -26,8 +27,8 @@ export class Projects extends GitlabConverter {
         record: {
           uid: project.path?.toLowerCase(),
           name: project.name,
-          description: project.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            project.description,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
           url: project.webUrl,

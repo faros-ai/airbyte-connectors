@@ -54,8 +54,8 @@ export class Projects extends BacklogConverter {
         record: {
           uid: String(versionMilestone.id),
           name: versionMilestone.name,
-          description: versionMilestone.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            versionMilestone.description,
             maxDescriptionLength
           ),
           startedAt: Utils.toDate(versionMilestone.startDate),
@@ -70,8 +70,8 @@ export class Projects extends BacklogConverter {
           record: {
             uid: String(versionMilestone.id),
             name: versionMilestone.name,
-            description: versionMilestone.description?.substring(
-              0,
+            description: Utils.cleanAndTruncate(
+              versionMilestone.description,
               maxDescriptionLength
             ),
             startedAt: Utils.toDate(versionMilestone.startDate),

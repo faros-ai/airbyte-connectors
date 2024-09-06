@@ -91,8 +91,8 @@ export class PullRequestActivities extends BitbucketConverter {
         record: {
           number: id,
           uid: id.toString(),
-          comment: change?.content?.raw?.substring(
-            0,
+          comment: Utils.cleanAndTruncate(
+            change?.content?.raw,
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(change?.created_on),

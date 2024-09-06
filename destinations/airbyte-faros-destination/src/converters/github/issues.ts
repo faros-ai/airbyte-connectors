@@ -76,8 +76,8 @@ export class Issues extends GitHubConverter {
       record: {
         uid,
         name: issue.title,
-        description: issue.body?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          issue.body,
           GitHubCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},

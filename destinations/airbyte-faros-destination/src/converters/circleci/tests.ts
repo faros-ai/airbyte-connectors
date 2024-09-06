@@ -95,7 +95,7 @@ export class Tests extends CircleCIConverter {
         model: 'qa_TestCaseResult',
         record: {
           uid: testCaseResultUid,
-          description: test.message?.substring(0, 256),
+          description: Utils.cleanAndTruncate(test.message, 256),
           status: testCaseResultStatus,
           testCase: {uid: testCaseUid, source},
           testExecution: {uid: testExecutionUid, source},

@@ -78,7 +78,10 @@ export class Incidents extends OpsGenieConverter {
       record: {
         ...incidentRef,
         title: incident.message,
-        description: incident.description?.substring(0, maxDescriptionLength),
+        description: Utils.cleanAndTruncate(
+          incident.description,
+          maxDescriptionLength
+        ),
         url: incident.links?.web,
         createdAt,
         updatedAt,

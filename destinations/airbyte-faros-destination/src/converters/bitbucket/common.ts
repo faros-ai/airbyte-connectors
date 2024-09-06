@@ -77,8 +77,8 @@ export class BitbucketCommon {
         record: {
           ...projectKey,
           name: name,
-          description: description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            description,
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(createdAt),
@@ -129,10 +129,8 @@ export abstract class BitbucketConverter extends Converter {
 
   protected maxDescriptionLength(ctx: StreamContext): number {
     return (
-      parseObjectConfig(
-        this.bitbucketConfig(ctx)?.max_description_length,
-        'Max Description Length'
-      ) ?? BitbucketCommon.MAX_DESCRIPTION_LENGTH
+      this.bitbucketConfig(ctx)?.max_description_length ??
+      BitbucketCommon.MAX_DESCRIPTION_LENGTH
     );
   }
 
