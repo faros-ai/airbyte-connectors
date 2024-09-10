@@ -20,6 +20,7 @@ export class Services extends PagerDutyConverter {
   ];
 
   private orgTeams: OrgTeam[];
+  private seenComputeApps: Set<string> = new Set();
 
   async convert(
     record: AirbyteRecord,
@@ -49,7 +50,12 @@ export class Services extends PagerDutyConverter {
     if (!orgTeam) {
       return [];
     }
+
     const application = this.computeApplication(ctx, service.summary);
+    if (this.seenComputeApps.has(application.uid)) {
+      return [];
+    }
+    this.seenComputeApps.add(application.uid);
 
     const results: DestinationRecord[] = [];
 
