@@ -56,3 +56,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Reformat package-lock.json [dependabot skip]"
+          commit_options: '--gpg-sign'
+
