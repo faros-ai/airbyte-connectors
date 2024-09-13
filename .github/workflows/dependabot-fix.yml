@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.FAROS_AI_BOT_RW_CONTENTS }}
 
       - name: Cache Node modules
         uses: actions/cache@v4
