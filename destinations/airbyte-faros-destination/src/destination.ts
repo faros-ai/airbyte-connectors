@@ -24,7 +24,6 @@ import {
   SyncMode,
   wrapApiError,
 } from 'faros-airbyte-cdk';
-import {EntryUploaderConfig, withEntryUploader} from 'faros-feeds-sdk';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
@@ -64,10 +63,6 @@ const BASE_RESOURCES_DIR = path.join(PACKAGE_ROOT, 'resources');
 const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const SEGMENT_KEY = 'YEu7VC65n9dIR85pQ1tgV2RHQHjo2bwn';
 
-interface FarosDestinationState {
-  readonly lastSynced: string;
-}
-
 export interface HttpAgents {
   httpAgent?: http.Agent;
   httpsAgent?: https.Agent;
@@ -87,7 +82,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private farosClientConfig: FarosClientConfig = undefined,
     private farosClient: FarosSyncClient = undefined,
     private farosGraph: string = undefined,
-    private farosRevisionExpiration: string = undefined,
     private jsonataConverter: Converter | undefined = undefined,
     private jsonataMode: JSONataApplyMode = JSONataApplyMode.FALLBACK,
     private invalidRecordStrategy: InvalidRecordStrategy = InvalidRecordStrategy.SKIP,
@@ -249,10 +243,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
     } catch (e) {
       throw new VError(`Invalid Faros graph ${this.farosGraph}. Error: ${e}`);
-    }
-    this.farosRevisionExpiration = config.edition_configs.expiration;
-    if (!this.farosRevisionExpiration) {
-      this.farosRevisionExpiration = '5 seconds';
     }
     await this.initGraphQLV2(config);
   }
@@ -656,61 +646,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             );
           }
         }
-      } else {
-        this.logger.info(
-          `Opening a new revision on graph ${this.farosGraph} ` +
-            `with expiration of ${this.farosRevisionExpiration}`
-        );
-
-        // Log all models to be deleted (if any)
-        if (deleteModelEntries.length > 0) {
-          const modelsToDelete = sortBy(deleteModelEntries).join(',');
-          this.logger.info(
-            `Deleting records in destination graph ${this.farosGraph} for models: ${modelsToDelete}`
-          );
-        }
-        // Create an entry uploader for the destination graph
-        const entryUploaderConfig: EntryUploaderConfig = {
-          name: origin,
-          url: this.farosClientConfig.url,
-          authHeader: this.farosClientConfig.apiKey,
-          expiration: this.farosRevisionExpiration,
-          graphName: this.farosGraph,
-          deleteModelEntries,
-          logger: this.logger.asPino('debug'),
-        };
-        await withEntryUploader<FarosDestinationState>(
-          entryUploaderConfig,
-          async (writer, state) => {
-            try {
-              // Log last synced time
-              const lastSynced = state?.lastSynced
-                ? `last synced at ${state.lastSynced}`
-                : 'not synced yet';
-              this.logger.info(
-                `Destination graph ${this.farosGraph} was ${lastSynced}`
-              );
-              // Process input and write entries
-              for await (const stateMessage of this.writeEntries(
-                config,
-                streamContext,
-                stdin,
-                streams,
-                converterDependencies,
-                stats,
-                syncErrors,
-                writer
-              )) {
-                latestStateMessage = stateMessage;
-              }
-              // Return the current time
-              return {lastSynced: new Date().toISOString()};
-            } finally {
-              // Don't forget to close the writer
-              if (!writer.writableEnded) writer.end();
-            }
-          }
-        );
       }
 
       if (this.analytics) {
@@ -1192,8 +1127,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       onLoadError
     );
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
-      ? this.jsonataConverter ?? converter
-      : converter ?? this.jsonataConverter;
+      ? (this.jsonataConverter ?? converter)
+      : (converter ?? this.jsonataConverter);
   }
 
   private async writeRecord(

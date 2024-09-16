@@ -39,7 +39,6 @@
     "date-format": "^4.0.6",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "faros-feeds-sdk": "^1.4.0",
     "faros-js-client": "^0.5.2",
     "fs-extra": "^11.1.0",
     "git-url-parse": "^13.0.0",
