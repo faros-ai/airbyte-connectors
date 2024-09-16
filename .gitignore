@@ -5,12 +5,11 @@ node_modules/
 acceptance_tests_logs/
 .vscode/
 .idea/
-.nx/
+.turbo/
 
 .DS_Store
 acceptance-test-*.log
 *.code-workspace
-lerna-debug.log
 
 faros-airbyte-cdk/package-lock.json
 destinations/**/package-lock.json

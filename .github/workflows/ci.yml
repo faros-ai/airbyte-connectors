@@ -84,12 +84,12 @@ jobs:
           node-version: 18.x
 
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm install turbo --global
 
       - name: Test
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: lerna run test-cov
+        run: turbo test-cov
 
   test-packaging:
     if: ${{ github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch' }} # Only on PRs
@@ -112,7 +112,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm install turbo --global && turbo build
 
       - name: Test Airbyte CDK package
         run: |

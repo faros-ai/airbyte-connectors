@@ -33,7 +33,7 @@
     "@pagerduty/pdjs": "^2.2.4",
     "axios": "^1.7.4",
     "commander": "^9.3.0",
-    "faros-airbyte-cdk": "0.0.1",
+    "faros-airbyte-cdk": "*",
     "luxon": "^3.4.4",
     "verror": "^1.10.1"
   },

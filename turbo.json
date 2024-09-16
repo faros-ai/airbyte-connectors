@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**","resources/**"],
+      "outputs": ["lib/**"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "fix": {
+      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "lint": {
+      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "inputs": ["test/**", "resources/**", "test_files/**"]
+    },
+    "test-cov": {
+      "dependsOn": ["build"],
+      "inputs": ["test/**", "resources/**", "test_files/**"]
+    }
+  }
+}
