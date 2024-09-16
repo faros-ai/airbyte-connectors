@@ -116,7 +116,7 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
 
-       - name: Install Turborepo
+      - name: Install Turborepo
         run: npm install turbo --global
 
       # TODO: Start Turborepo cache server
