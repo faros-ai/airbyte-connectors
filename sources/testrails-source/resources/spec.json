@@ -22,7 +22,7 @@
         "examples": ["https://example.testrail.com"]
       },
       "project_names": {
-        "type": "string",
+        "type": "array",
         "title": "TestRails Projects to Sync",
         "description": "If no Projects provided, all Projects will be synced.",
         "items": {
