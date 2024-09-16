@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.FAROS_AI_BOT_RW_CONTENTS }}
 
       - name: Cache Node modules
         uses: actions/cache@v4
@@ -54,26 +52,7 @@ jobs:
       - name: Print package-lock.json
         run: head package-lock.json
 
-      # Use SSH key for faros-ai-bot for commit signing
-      - name: Set up SSH key for signing commits
-        run: |-
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          touch ~/.ssh/id_ed25519.github_signing
-          chmod 600 ~/.ssh/id_ed25519.github_signing
-          echo "${{ secrets.FAROS_AI_BOT_SSH_PRIVATE_SIGNING_KEY }}" > ~/.ssh/id_ed25519.github_signing
-          ssh-keygen -f ~/.ssh/id_ed25519.github_signing -y > ~/.ssh/id_ed25519.github_signing.pub
-      - name: Setup git for signing commits
-        run: |-
-          git config --global commit.gpgsign true
-          git config --global gpg.format ssh
-          git config --global user.signingkey ~/.ssh/id_ed25519.github_signing.pub
-          git config --global user.name 'Faros AI Bot'
-          git config --global user.email '61435568+faros-ai-bot@users.noreply.github.com'
-      - name: Push sign commit
-        run: |
-          git commit -S -am "Reformat package-lock.json [dependabot skip]"
-          git push
-      - name: Clean up
-        if: always()
-        run: rm -f ~/.ssh/id_ed25519.github_signing
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Reformat package-lock.json [dependabot skip]"
