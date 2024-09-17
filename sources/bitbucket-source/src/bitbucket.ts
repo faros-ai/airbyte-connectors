@@ -16,6 +16,7 @@ import {
   PRActivity,
   PRDiffStat,
   PullRequest,
+  PullRequestOrActivity,
   Repository,
   Workspace,
   WorkspaceUser,
@@ -405,18 +406,13 @@ export class Bitbucket {
     }
   }
 
-  @Memoize(
-    (workspace: string, repoSlug: string, lastUpdated?: string): string =>
-      `${workspace};${repoSlug};${lastUpdated ?? ''}`
-  )
-  async getPullRequests(
+  async *getPullRequestsWithActivities(
     workspace: string,
     repoSlug: string,
     startDate: Date,
     endDate: Date
-  ): Promise<ReadonlyArray<PullRequest>> {
+  ): AsyncGenerator<PullRequestOrActivity> {
     try {
-      const results: PullRequest[] = [];
       /**
        * By default only open pull requests are returned by API. We use query
        * parameters to ensure we retrieve all states. Using query as substitute
@@ -442,9 +438,9 @@ export class Bitbucket {
       );
 
       for await (const pr of iter) {
-        const res = {...pr, repositorySlug: repoSlug};
+        const pullRequest = {...pr, repositorySlug: repoSlug};
         try {
-          res.diffStat = await this.getPRDiffStats(
+          pullRequest.diffStat = await this.getPRDiffStats(
             workspace,
             repoSlug,
             String(pr.id)
@@ -461,7 +457,9 @@ export class Bitbucket {
           const iterActivities = this.getPRActivities(
             workspace,
             repoSlug,
-            String(pr.id)
+            String(pr.id),
+            startDate,
+            endDate
           );
 
           for await (const activity of iterActivities) {
@@ -479,6 +477,7 @@ export class Bitbucket {
             }
             const commit = activity?.update?.source?.commit?.hash;
             if (commit) commits.add(commit);
+            yield {type: 'PullRequestActivity', activity};
           }
         } catch (err) {
           const stringifiedError = JSON.stringify(this.buildInnerError(err));
@@ -486,10 +485,9 @@ export class Bitbucket {
             `Failed fetching activities for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
-        res.calculatedActivity = {commitCount: commits.size, mergedAt};
-        results.push(res);
+        pullRequest.calculatedActivity = {commitCount: commits.size, mergedAt};
+        yield {type: 'PullRequest', pullRequest};
       }
-      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
@@ -503,7 +501,9 @@ export class Bitbucket {
   async *getPRActivities(
     workspace: string,
     repoSlug: string,
-    pullRequestId: string
+    pullRequestId: string,
+    startDate: Date,
+    endDate: Date
   ): AsyncGenerator<PRActivity> {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
@@ -513,6 +513,7 @@ export class Bitbucket {
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: Math.min(this.pageSize, 50), // page size is limited to 50 for PR activities
+            q: `updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`,
           })
         ) as any;
 

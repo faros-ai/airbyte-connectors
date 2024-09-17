@@ -15,8 +15,7 @@ import {Bitbucket, DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE} from './bitbucket';
 import {
   Commits,
   Issues,
-  PullRequestActivities,
-  PullRequests,
+  PullRequestsWithActivities,
   Repositories,
   Workspaces,
   WorkspaceUsers,
@@ -55,12 +54,10 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
-    const pullRequests = new PullRequests(config, this.logger);
     return [
       new Commits(config, this.logger),
       new Issues(config, this.logger),
-      pullRequests,
-      new PullRequestActivities(config, pullRequests, this.logger),
+      new PullRequestsWithActivities(config, this.logger),
       new Repositories(config, this.logger),
       new WorkspaceUsers(config, this.logger),
       new Workspaces(config, this.logger),

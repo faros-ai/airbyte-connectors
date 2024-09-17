@@ -32,7 +32,7 @@ export enum RunMode {
 
 export const MinimumStreamNames = [
   'commits',
-  'pull_requests',
+  'pull_requests_with_activities',
   'workspaces',
   'workspace_users',
   'repositories',
@@ -40,8 +40,7 @@ export const MinimumStreamNames = [
 
 export const FullStreamNames = [
   'commits',
-  'pull_requests',
-  'pull_request_activities',
+  'pull_requests_with_activities',
   'workspaces',
   'workspace_users',
   'repositories',
