@@ -347,6 +347,12 @@ export interface PipelineStepState {
   };
 }
 
+export interface PullRequestOrActivity {
+  readonly type: 'PullRequest' | 'PullRequestActivity';
+  readonly pullRequest?: PullRequest;
+  readonly activity?: PRActivity;
+}
+
 export interface PullRequest {
   readonly description: string;
   readonly title: string;

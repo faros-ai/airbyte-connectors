@@ -4,7 +4,7 @@
   "properties": {
     "type": {
       "type": "string",
-      "description": "The type of object. Possible values are 'PullRequest', 'PullRequestActivity'."
+      "description": "Possible values are 'PullRequest' or 'PullRequestActivity'."
     },
     "pullRequest": {
       "type": "object",
@@ -342,7 +342,7 @@
         }
       }
     },
-    "pullRequestActivity": {
+    "activity": {
       "type": "object",
       "description": "The Pull Request Activity schema.",
       "properties": {
