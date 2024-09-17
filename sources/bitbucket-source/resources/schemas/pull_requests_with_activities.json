@@ -1,0 +1,762 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "The type of object. Possible values are 'PullRequest', 'PullRequestActivity'."
+    },
+    "pullRequest": {
+      "type": "object",
+      "description": "The Pull Request schema.",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "createdOn": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "updatedOn": {
+          "type": "string"
+        },
+        "closeSourceBranch": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "number"
+        },
+        "commentCount": {
+          "type": "number"
+        },
+        "taskCount": {
+          "type": [
+            "number"
+          ]
+        },
+        "calculatedActivity": {
+          "type": "object",
+          "properties": {
+            "commitCount": {
+              "type": "number"
+            },
+            "mergedAt": {
+              "type": "string"
+            }
+          }
+        },
+        "diffStat": {
+          "type": "object",
+          "properties": {
+            "linesAdded": {
+              "type": "number"
+            },
+            "linesDeleted": {
+              "type": "number"
+            },
+            "filesChanged": {
+              "type": "number"
+            }
+          }
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "declineUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "diffstatUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "commitsUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "commentsUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "mergeUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "htmlUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "activityUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "diffUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "approveUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "statusesUrl": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "destination": {
+          "type": "object",
+          "properties": {
+            "commit": {
+              "type": "object",
+              "properties": {
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string"
+                }
+              }
+            },
+            "repository": {
+              "type": "object",
+              "properties": {
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "fullName": {
+                  "type": "string"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "branch": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "raw": {
+              "type": "string"
+            },
+            "markup": {
+              "type": "string"
+            },
+            "html": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "commit": {
+              "type": "object",
+              "properties": {
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string"
+                }
+              }
+            },
+            "repository": {
+              "type": "object",
+              "properties": {
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "fullName": {
+                  "type": "string"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "branch": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "uuid": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "type": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            },
+            "accountId": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "mergeCommit": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "type": {
+              "type": "string"
+            },
+            "hash": {
+              "type": "string"
+            }
+          }
+        },
+        "closedBy": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "displayName": {
+              "type": "string"
+            },
+            "uuid": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "type": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            },
+            "accountId": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      }
+    },
+    "pullRequestActivity": {
+      "type": "object",
+      "description": "The Pull Request Activity schema.",
+      "properties": {
+        "approval": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string"
+            },
+            "pullRequest": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "number"
+                },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "accountId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        },
+        "update": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string"
+            },
+            "reviewers": {
+              "type": "array"
+            },
+            "destination": {
+              "type": "object",
+              "properties": {
+                "commit": {
+                  "type": "object",
+                  "properties": {
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "htmlUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "hash": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "repository": {
+                  "type": "object",
+                  "properties": {
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "htmlUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "fullName": {
+                      "type": "string"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                },
+                "branch": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "commit": {
+                  "type": "object",
+                  "properties": {
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "htmlUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "hash": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "repository": {
+                  "type": "object",
+                  "properties": {
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "htmlUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "fullName": {
+                      "type": "string"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                },
+                "branch": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "author": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "accountId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "mergeCommit": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "links": {
+                    "type": "object",
+                    "properties": {
+                      "htmlUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "hash": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "changes": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "object",
+                  "properties": {
+                    "new": {
+                      "type": "string"
+                    },
+                    "old": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pullRequest": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "repositorySlug": {
+              "type": "string"
+            },
+            "workspace": {
+              "type": "string"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          }
+        },
+        "comment": {
+          "type": "object",
+          "properties": {
+            "deleted": {
+              "type": "boolean"
+            },
+            "createdOn": {
+              "type": "string"
+            },
+            "updatedOn": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "htmlUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "pullrequest": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "number"
+                },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "raw": {
+                  "type": "string"
+                },
+                "markup": {
+                  "type": "string"
+                },
+                "html": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "htmlUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "accountId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        },
+        "pullRequestUpdatedOn": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
