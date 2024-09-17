@@ -73,6 +73,10 @@ interface SyncErrors {
   dst: SyncMessage[];
 }
 
+interface SourceVersion {
+  version?: string;
+}
+
 /** Faros destination implementation. */
 export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   constructor(
@@ -503,6 +507,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       src: {fatal: [], nonFatal: [], warnings: []},
       dst: [],
     };
+    const sourceVersion: SourceVersion = {};
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
@@ -604,7 +609,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   msg.sourceMode
                 );
               }
-            }
+            },
+            sourceVersion
           )) {
             await graphQLClient.flush();
             yield stateMessage;
@@ -642,6 +648,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.dst
                 ),
                 warnings: syncErrors.src.warnings,
+                sourceVersion: sourceVersion.version,
+                destinationVersion: config.connector_version,
               }
             );
           }
@@ -700,7 +708,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
     resetData?: () => Promise<void>,
-    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>
+    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>,
+    sourceVersion?: SourceVersion
   ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -770,6 +779,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               }
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
+              sourceVersion.version = msg.sourceVersion;
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
               logFiles?.writeSourceLogs(...msg.logs);
