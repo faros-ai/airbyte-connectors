@@ -1,12 +1,10 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {
-  PullRequest,
-  PullRequestOrActivity,
-} from 'faros-airbyte-common/bitbucket';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequestOrActivity} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Bitbucket} from '../bitbucket';
+import {BitbucketConfig} from '../types';
 import {
   RepoStreamSlice,
   StreamBase,
@@ -15,6 +13,14 @@ import {
 } from './common';
 
 export class PullRequestsWithActivities extends StreamWithRepoSlices {
+  constructor(
+    readonly config: BitbucketConfig,
+    readonly logger: AirbyteLogger,
+    readonly emitActivities: boolean = false
+  ) {
+    super(config, logger);
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pull_requests_with_activities.json');
   }
@@ -45,7 +51,8 @@ export class PullRequestsWithActivities extends StreamWithRepoSlices {
       workspace,
       repo,
       startDate,
-      endDate
+      endDate,
+      this.emitActivities
     );
   }
 

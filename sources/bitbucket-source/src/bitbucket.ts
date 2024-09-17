@@ -410,7 +410,8 @@ export class Bitbucket {
     workspace: string,
     repoSlug: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    emitActivities: boolean = false
   ): AsyncGenerator<PullRequestOrActivity> {
     try {
       /**
@@ -477,7 +478,10 @@ export class Bitbucket {
             }
             const commit = activity?.update?.source?.commit?.hash;
             if (commit) commits.add(commit);
-            yield {type: 'PullRequestActivity', activity};
+
+            if (emitActivities) {
+              yield {type: 'PullRequestActivity', activity};
+            }
           }
         } catch (err) {
           const stringifiedError = JSON.stringify(this.buildInnerError(err));

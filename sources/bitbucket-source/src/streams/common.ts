@@ -49,8 +49,7 @@ export const FullStreamNames = [
 // Add more streams here as they get developed
 export const CustomStreamNames = [
   'commits',
-  'pull_requests',
-  'pull_request_activities',
+  'pull_requests_with_activities',
   'workspaces',
   'workspace_users',
   'repositories',

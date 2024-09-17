@@ -20,7 +20,7 @@ import {
   Workspaces,
   WorkspaceUsers,
 } from './streams';
-import {RunModeStreams} from './streams/common';
+import {RunMode, RunModeStreams} from './streams/common';
 import {BitbucketConfig} from './types';
 
 /** The main entry point. */
@@ -54,10 +54,12 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
   }
 
   streams(config: BitbucketConfig): AirbyteStreamBase[] {
+    const emitActivities = config.run_mode !== RunMode.Minimum;
+
     return [
       new Commits(config, this.logger),
       new Issues(config, this.logger),
-      new PullRequestsWithActivities(config, this.logger),
+      new PullRequestsWithActivities(config, this.logger, emitActivities),
       new Repositories(config, this.logger),
       new WorkspaceUsers(config, this.logger),
       new Workspaces(config, this.logger),
