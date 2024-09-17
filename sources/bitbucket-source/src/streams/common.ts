@@ -47,7 +47,6 @@ export const FullStreamNames = [
   'repositories',
 ];
 
-// Add more streams here as they get developed
 export const CustomStreamNames = [
   'commits',
   'pull_requests',
@@ -56,6 +55,7 @@ export const CustomStreamNames = [
   'workspace_users',
   'repositories',
   'issues',
+  'tags',
 ];
 
 export const RunModeStreams = {

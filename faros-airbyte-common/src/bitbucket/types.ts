@@ -569,6 +569,17 @@ export interface Repository {
   hasIssues: boolean;
 }
 
+export interface Tag {
+  name: string;
+  message: string;
+  target: {
+    hash: string;
+  };
+  repository: {
+    fullName: string;
+  };
+}
+
 export interface WorkspaceUser {
   readonly user: User;
   readonly workspace: {
