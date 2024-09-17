@@ -18,8 +18,9 @@ export class PullRequestsWithActivities extends StreamWithRepoSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pull_requests_with_activities.json');
   }
+
   get primaryKey(): StreamKey {
-    return ['pullRequest', 'id'];
+    return [['pullRequest', 'id']];
   }
 
   get cursorField(): string | string[] {
