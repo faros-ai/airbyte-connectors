@@ -24,6 +24,7 @@ import {
   SyncMode,
   wrapApiError,
 } from 'faros-airbyte-cdk';
+import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
@@ -649,7 +650,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 ),
                 warnings: syncErrors.src.warnings,
                 sourceVersion: sourceVersion.version,
-                destinationVersion: config.connector_version,
+                destinationVersion: ConnectorVersion,
               }
             );
           }
