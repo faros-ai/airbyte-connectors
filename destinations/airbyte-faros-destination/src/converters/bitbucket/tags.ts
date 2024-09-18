@@ -14,6 +14,9 @@ export class Tags extends BitbucketConverter {
     const source = this.streamName.source;
     const tag = record.record.data as Tag;
     const [workspace, repo] = tag.repository.fullName.split('/');
+    if (!workspace || !repo) {
+      return [];
+    }
     const repository = BitbucketCommon.vcs_Repository(workspace, repo, source);
     const sha = tag.target.hash;
     return [

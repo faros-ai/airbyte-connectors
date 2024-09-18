@@ -19,8 +19,6 @@ export class Tags extends StreamWithRepoSlices {
     streamSlice?: RepoStreamSlice
   ): AsyncGenerator<Tag> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
-    const workspace = streamSlice.workspace;
-    const repo = streamSlice.repo;
-    yield* bitbucket.getTags(workspace, repo);
+    yield* bitbucket.getTags(streamSlice.workspace, streamSlice.repo);
   }
 }

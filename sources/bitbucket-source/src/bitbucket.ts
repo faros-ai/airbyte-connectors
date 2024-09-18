@@ -661,7 +661,6 @@ export class Bitbucket {
   }
 
   async *getTags(workspace: string, repoSlug: string): AsyncGenerator<Tag> {
-    this.logger.info('Fetching tags for repo %s', repoSlug);
     try {
       // Bitbucket does not support filtering tags by date nor sorting by date,
       // so, we always pull all tags
