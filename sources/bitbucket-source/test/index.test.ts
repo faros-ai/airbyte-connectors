@@ -234,6 +234,57 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - pull_requests_with_activities', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'pull_requests_with_activities/catalog.json',
+      onBeforeReadResultConsumer: () => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+              listPullRequests: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/pull_requests.json'
+                  ),
+                },
+              }),
+              listPullRequestActivities: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/activities.json'
+                  ),
+                },
+              }),
+            },
+            pullrequests: {
+              getDiffStat: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/diff_stat.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getWorkspacesMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function getWorkspacesMockedImplementation() {
