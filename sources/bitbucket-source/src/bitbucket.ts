@@ -1341,10 +1341,10 @@ export class Bitbucket {
       name: data.name,
       message: data.message,
       target: {
-        hash: data.target.hash,
+        hash: data.target?.hash,
       },
       repository: {
-        fullName: data.target.repository.full_name,
+        fullName: data.target?.repository?.full_name,
       },
     };
   }

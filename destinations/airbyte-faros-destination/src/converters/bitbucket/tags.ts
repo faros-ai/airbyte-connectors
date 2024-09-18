@@ -13,6 +13,12 @@ export class Tags extends BitbucketConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const tag = record.record.data as Tag;
+
+    const sha = tag.target?.hash;
+    if (!sha) {
+      return [];
+    }
+
     const [workspace, repo] = tag.repository.fullName.split('/');
 
     if (!workspace || !repo) {
@@ -20,7 +26,6 @@ export class Tags extends BitbucketConverter {
     }
 
     const repository = BitbucketCommon.vcs_Repository(workspace, repo, source);
-    const sha = tag.target.hash;
     return [
       {
         model: 'vcs_Tag',
