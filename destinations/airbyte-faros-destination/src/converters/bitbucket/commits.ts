@@ -1,10 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Commit} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {BitbucketConverter} from './common';
+import {BitbucketCommon, BitbucketConverter} from './common';
 
 export class Commits extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
@@ -42,11 +41,7 @@ export class Commits extends BitbucketConverter {
         htmlUrl: commit.links?.htmlUrl,
         createdAt: Utils.toDate(commit.date),
         author,
-        repository: {
-          organization: {uid: toLower(workspace), source},
-          uid: toLower(repo),
-          name: toLower(repo),
-        },
+        repository: BitbucketCommon.vcs_Repository(workspace, repo, source),
       },
     });
 
