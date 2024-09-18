@@ -6,6 +6,7 @@ import {PipelineSteps} from './pipeline_steps';
 import {Pipelines} from './pipelines';
 import {PullRequestsWithActivities} from './pull_requests_with_activities';
 import {Repositories} from './repositories';
+import {Tags} from './tags';
 import {WorkspaceUsers} from './workspace_users';
 import {Workspaces} from './workspaces';
 
@@ -18,6 +19,7 @@ export {
   Pipelines,
   PullRequestsWithActivities,
   Repositories,
+  Tags,
   WorkspaceUsers,
   Workspaces,
 };

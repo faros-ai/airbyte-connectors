@@ -35,6 +35,13 @@ export interface ProjectKey {
   uid: string;
   source: string;
 }
+
+export interface RepositoryRecord {
+  uid: string;
+  name: string;
+  organization: {uid: string; source: string};
+}
+
 /** Common functions shares across Bitbucket converters */
 export class BitbucketCommon {
   // max length for free-form description text field
@@ -100,6 +107,18 @@ export class BitbucketCommon {
         },
       },
     ];
+  }
+
+  static vcs_Repository(
+    workspace: string,
+    repo: string,
+    source: string
+  ): RepositoryRecord {
+    return {
+      name: toLower(repo),
+      uid: toLower(repo),
+      organization: {uid: toLower(workspace), source},
+    };
   }
 }
 

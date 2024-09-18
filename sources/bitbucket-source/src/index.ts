@@ -17,6 +17,7 @@ import {
   Issues,
   PullRequestsWithActivities,
   Repositories,
+  Tags,
   Workspaces,
   WorkspaceUsers,
 } from './streams';
@@ -61,6 +62,7 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
       new Issues(config, this.logger),
       new PullRequestsWithActivities(config, this.logger, emitActivities),
       new Repositories(config, this.logger),
+      new Tags(config, this.logger),
       new WorkspaceUsers(config, this.logger),
       new Workspaces(config, this.logger),
     ];
