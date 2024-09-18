@@ -258,7 +258,7 @@ describe('index', () => {
 
   test('streams - pull_requests_with_activities', async () => {
     const configPaths = [
-      'config.json',
+      'pull_requests_with_activities/config_run_mode_minimum.json',
       'pull_requests_with_activities/config_run_mode_full.json',
     ];
     for (const configPath of configPaths) {
