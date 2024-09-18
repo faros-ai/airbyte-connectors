@@ -2,5 +2,6 @@
   "username": "test",
   "password": "secret",
   "bucket_id": 1,
-  "bucket_total": 1
+  "bucket_total": 1,
+  "run_mode": "Custom"
 }

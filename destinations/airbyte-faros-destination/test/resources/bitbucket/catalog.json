@@ -56,6 +56,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__bitbucket__tags"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__bitbucket__workspace_users"
       },
       "destination_sync_mode": "overwrite"
