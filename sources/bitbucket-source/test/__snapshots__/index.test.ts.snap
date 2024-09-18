@@ -201,6 +201,71 @@ exports[`index streams - repositories with bucketing 1`] = `
 ]
 `;
 
+exports[`index streams - tags 1`] = `
+[
+  {
+    "message": "test desc",
+    "name": "tag-to-test-1",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "67eefad0851cfee7814fab7819ff76bd18261c7e",
+    },
+  },
+  {
+    "message": "another desc",
+    "name": "tag-to-test-2",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "de251656c976c40f2d3e35d240feda4718d72b68",
+    },
+  },
+  {
+    "message": "test desc",
+    "name": "tag-to-test-1",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "67eefad0851cfee7814fab7819ff76bd18261c7e",
+    },
+  },
+  {
+    "message": "another desc",
+    "name": "tag-to-test-2",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "de251656c976c40f2d3e35d240feda4718d72b68",
+    },
+  },
+  {
+    "message": "test desc",
+    "name": "tag-to-test-1",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "67eefad0851cfee7814fab7819ff76bd18261c7e",
+    },
+  },
+  {
+    "message": "another desc",
+    "name": "tag-to-test-2",
+    "repository": {
+      "fullName": "test-workspace/test-1",
+    },
+    "target": {
+      "hash": "de251656c976c40f2d3e35d240feda4718d72b68",
+    },
+  },
+]
+`;
+
 exports[`index streams - workspace_users 1`] = `
 [
   {

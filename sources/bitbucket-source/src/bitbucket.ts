@@ -17,6 +17,7 @@ import {
   PRDiffStat,
   PullRequest,
   Repository,
+  Tag,
   Workspace,
   WorkspaceUser,
 } from 'faros-airbyte-common/bitbucket';
@@ -655,6 +656,30 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching users for workspace: %s',
         workspace
+      );
+    }
+  }
+
+  async *getTags(workspace: string, repoSlug: string): AsyncGenerator<Tag> {
+    try {
+      // Bitbucket does not support filtering tags by date nor sorting by date,
+      // so, we always pull all tags
+      const func = (): Promise<BitbucketResponse<Tag>> =>
+        this.limiter.schedule(() =>
+          this.client.repositories.listTags({
+            workspace,
+            repo_slug: repoSlug,
+            pagelen: this.pageSize,
+          })
+        ) as any;
+
+      yield* this.paginate<Tag>(func, (data) => this.buildTag(data));
+    } catch (err) {
+      throw new VError(
+        this.buildInnerError(err),
+        'Error fetching tags for repository %s/%s',
+        workspace,
+        repoSlug
       );
     }
   }
@@ -1307,6 +1332,19 @@ export class Bitbucket {
         ownersUrl: data.links?.owners?.href,
         repositoriesUrl: data.links?.repositories?.href,
         htmlUrl: data.links?.html?.href,
+      },
+    };
+  }
+
+  private buildTag(data: Dictionary<any>): Tag {
+    return {
+      name: data.name,
+      message: data.message,
+      target: {
+        hash: data.target?.hash,
+      },
+      repository: {
+        fullName: data.target?.repository?.full_name,
       },
     };
   }

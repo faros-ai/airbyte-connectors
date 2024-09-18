@@ -186,13 +186,7 @@ describe('index', () => {
                 },
               }),
             },
-            workspaces: {
-              getWorkspaces: jest.fn().mockResolvedValue({
-                data: {
-                  values: [readTestResourceAsJSON('workspaces/workspace.json')],
-                },
-              }),
-            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
           },
           logger
         );
@@ -234,6 +228,33 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - tags', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'tags/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              ...getRepositoriesMockedImplementation(),
+              listTags: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('tags/tags.json'),
+                },
+              }),
+            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function getWorkspacesMockedImplementation() {
@@ -241,6 +262,16 @@ function getWorkspacesMockedImplementation() {
     getWorkspaces: jest.fn().mockResolvedValue({
       data: {
         values: readTestResourceAsJSON('workspaces/workspaces.json'),
+      },
+    }),
+  };
+}
+
+function getSingleWorkspaceMockedImplementation() {
+  return {
+    getWorkspaces: jest.fn().mockResolvedValue({
+      data: {
+        values: [readTestResourceAsJSON('workspaces/workspace.json')],
       },
     }),
   };
