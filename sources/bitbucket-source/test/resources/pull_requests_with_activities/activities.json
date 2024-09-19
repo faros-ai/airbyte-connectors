@@ -1,0 +1,112 @@
+[
+  {
+    "pull_request": {
+      "type": "pullrequest",
+      "id": 2,
+      "title": "Another test to open PR",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2"
+        },
+        "html": {
+          "href": "https://bitbucket.org/anonymized-workspace/anonymized-repo/pull-requests/2"
+        }
+      }
+    },
+    "update": {
+      "state": "OPEN",
+      "title": "Another test to open PR",
+      "description": "",
+      "reviewers": [],
+      "changes": {},
+      "reason": "",
+      "author": {
+        "display_name": "Anonymous User",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/%7Banonymized-uuid%7D"
+          },
+          "avatar": {
+            "href": "https://secure.gravatar.com/avatar/anonymized?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAU-0.png"
+          },
+          "html": {
+            "href": "https://bitbucket.org/%7Banonymized-uuid%7D/"
+          }
+        },
+        "type": "user",
+        "uuid": "{anonymized-uuid}",
+        "account_id": "anonymized-account-id",
+        "nickname": "Anonymous User"
+      },
+      "date": "2024-09-06T12:46:04.904351+00:00",
+      "destination": {
+        "branch": {
+          "name": "another-feature"
+        },
+        "commit": {
+          "hash": "7e4cfff85a85",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/commit/7e4cfff85a85"
+            },
+            "html": {
+              "href": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/7e4cfff85a85"
+            }
+          },
+          "type": "commit"
+        },
+        "repository": {
+          "type": "repository",
+          "full_name": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo"
+            },
+            "html": {
+              "href": "https://bitbucket.org/anonymized-workspace/anonymized-repo"
+            },
+            "avatar": {
+              "href": "https://bytebucket.org/ravatar/%7Banonymized-uuid%7D?ts=js"
+            }
+          },
+          "name": "Anonymized Repo",
+          "uuid": "{anonymized-uuid}"
+        }
+      },
+      "source": {
+        "branch": {
+          "name": "one-more"
+        },
+        "commit": {
+          "hash": "57573467babb",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/commit/57573467babb"
+            },
+            "html": {
+              "href": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/57573467babb"
+            }
+          },
+          "type": "commit"
+        },
+        "repository": {
+          "type": "repository",
+          "full_name": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo"
+            },
+            "html": {
+              "href": "https://bitbucket.org/anonymized-workspace/anonymized-repo"
+            },
+            "avatar": {
+              "href": "https://bytebucket.org/ravatar/%7Banonymized-uuid%7D?ts=js"
+            }
+          },
+          "name": "Anonymized Repo",
+          "uuid": "{anonymized-uuid}"
+        }
+      }
+    }
+  }
+]
