@@ -76,7 +76,7 @@ export class Zephyr {
   }
 
   async checkConnection(): Promise<void> {
-    await this.api.get('/healthcheck');
+    await this.api.get('/rest/auth/1/session');
   }
 
   private async *iterate<V>(
@@ -97,7 +97,9 @@ export class Zephyr {
     } while (!isLast);
   }
 
-  async getTestCases(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getTestCases(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const plans: any[] = [];
     // TODO - Add real api call and return the response
     // Example
@@ -119,23 +121,100 @@ export class Zephyr {
     return plans;
   }
 
-  async getTestCycles(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getProjectId(projectKey?: string): Promise<string> {
+    const response = await this.api.get(
+      `rest/api/latest/project/${projectKey}`
+    );
+    const projectId = response.data?.id;
+    return projectId;
+  }
+
+  async getProjectVersions(projectKey?: string): Promise<ReadonlyArray<any>> {
+    const response = await this.api.get(
+      `rest/api/latest/project/${projectKey}/versions`
+    );
+    const versions: any[] = [];
+    const values = response.data;
+    for (const value of values) {
+      versions.push({
+        id: value.id,
+        name: value.name,
+      });
+    }
+    return versions;
+  }
+
+  async getTestCycles(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const cycles: any[] = [];
-    cycles.push({
-      id: 1,
-      key: 'key',
-      name: 'name',
-    });
+    const projectVersions = await this.getProjectVersions(project.key);
+    const configuredVersions = project.versions;
+    const versionsToGetExecutionsFrom = [];
+    // filter fetch versions to match the configured versions
+    if (configuredVersions.length === 0) {
+      versionsToGetExecutionsFrom.push(...projectVersions);
+    } else {
+      versionsToGetExecutionsFrom.push(
+        ...projectVersions.filter(({name: versionName}) =>
+          configuredVersions.includes(versionName)
+        )
+      );
+    }
+    if (versionsToGetExecutionsFrom.length === 0) {
+      return [];
+    }
+    const projectId = await this.getProjectId(project.key);
+
+    const cyclePromisses = versionsToGetExecutionsFrom.map((version) =>
+      this.api.get('/rest/zapi/latest/cycle', {
+        params: {projectId, versionId: version.id},
+      })
+    );
+    const responses = await Promise.all(cyclePromisses);
+    for (const response of responses) {
+      const values = response.data;
+      const keys = Object.keys(values);
+      for (const key of keys) {
+        // check if id is a positive number
+        if (Number.isInteger(parseInt(key, 10)) && parseInt(key, 10) > 0)
+          cycles.push({
+            id: key,
+            name: values[key].name,
+          });
+      }
+    }
     return cycles;
   }
 
-  async getTestExecutions(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getTestExecutions(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const testExecutions: any[] = [];
-    testExecutions.push({
-      id: 1,
-      key: 'key',
-      name: 'name',
-    });
+    const testCycles = await this.getTestCycles(project);
+    // filter fetch cycles to match the configured cycles
+    const configuredCycles = project.cycles;
+    const cyclesToGetExecutionsFrom = [];
+    if (configuredCycles.length === 0) {
+      cyclesToGetExecutionsFrom.push(...testCycles);
+    } else {
+      cyclesToGetExecutionsFrom.push(
+        ...testCycles.filter((cycle) => configuredCycles.includes(cycle.name))
+      );
+    }
+    const executionPromisses = cyclesToGetExecutionsFrom.map((cycle) =>
+      this.api.get('/rest/zapi/latest/execution', {params: {cycleId: cycle.id}})
+    );
+    const responses = await Promise.all(executionPromisses);
+    for (const response of responses) {
+      const data = response.data;
+      const keys = Object.keys(response.data);
+      for (const key of keys) {
+        testExecutions.push({
+          [key]: data[key],
+        });
+      }
+    }
     return testExecutions;
   }
 }
