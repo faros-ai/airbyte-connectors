@@ -27,6 +27,7 @@ import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
 
+import {CommitHashMatcher} from './commit-hash-matcher';
 import {RunMode} from './streams/common';
 import {BitbucketConfig} from './types';
 
@@ -46,6 +47,7 @@ interface BitbucketResponse<T> {
 export class Bitbucket {
   private static bitbucket: Bitbucket = null;
   private readonly limiter: Bottleneck;
+  private readonly commitHashes: Set<string> = new Set();
 
   constructor(
     private readonly client: APIClient,
@@ -187,11 +189,14 @@ export class Bitbucket {
         return date >= startDate && date <= endDate;
       };
 
-      yield* this.paginate<Commit>(
+      for await (const commit of this.paginate<Commit>(
         func,
         (data) => this.buildCommit(data),
         isInRange
-      );
+      )) {
+        this.commitHashes.add(commit.hash);
+        yield commit;
+      }
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
@@ -439,8 +444,14 @@ export class Bitbucket {
         this.buildPullRequest(data)
       );
 
+      const commitHashMatcher = new CommitHashMatcher(this.commitHashes);
+
       for await (const pr of iter) {
-        const pullRequest = {...pr, repositorySlug: repoSlug};
+        const mergeCommitHash = pr.mergeCommit?.hash
+          ? commitHashMatcher.match(pr.mergeCommit.hash)
+          : null;
+        const mergeCommit = mergeCommitHash ? {hash: mergeCommitHash} : null;
+        const pullRequest = {...pr, repositorySlug: repoSlug, mergeCommit};
         try {
           pullRequest.diffStat = await this.getPRDiffStats(
             workspace,
@@ -1121,10 +1132,6 @@ export class Bitbucket {
       mergeCommit: data.merge_commit
         ? {
             hash: data.merge_commit.hash,
-            type: data.merge_commit.type,
-            links: {
-              htmlUrl: data.merge_commit.links?.html?.href,
-            },
           }
         : null,
       closedBy: data.closed_by
