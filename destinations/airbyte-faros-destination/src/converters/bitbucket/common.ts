@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
-import {isEmpty, toLower} from 'lodash';
+import {toLower} from 'lodash';
 
 import {
   Converter,

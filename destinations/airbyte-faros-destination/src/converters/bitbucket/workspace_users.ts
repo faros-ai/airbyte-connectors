@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {WorkspaceUser} from 'faros-airbyte-common/bitbucket';
 import {toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketConverter, UserTypeCategory} from './common';
 
 export class WorkspaceUsers extends BitbucketConverter {
