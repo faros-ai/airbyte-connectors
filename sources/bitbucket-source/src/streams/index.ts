@@ -1,7 +1,6 @@
 import {Branches} from './branches';
 import {Commits} from './commits';
 import {Deployments} from './deployments';
-import {Issues} from './issues';
 import {PipelineSteps} from './pipeline_steps';
 import {Pipelines} from './pipelines';
 import {PullRequestsWithActivities} from './pull_requests_with_activities';
@@ -14,7 +13,6 @@ export {
   Branches,
   Commits,
   Deployments,
-  Issues,
   PipelineSteps,
   Pipelines,
   PullRequestsWithActivities,
