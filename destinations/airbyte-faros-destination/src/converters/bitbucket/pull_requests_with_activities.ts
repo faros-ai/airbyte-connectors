@@ -101,7 +101,10 @@ export class PullRequestsWithActivities extends BitbucketConverter {
         number: pullRequest.id,
         uid: pullRequest.id.toString(),
         title: pullRequest.title,
-        description: pullRequest.description,
+        description: Utils.cleanAndTruncate(
+          pullRequest.description,
+          this.maxDescriptionLength(ctx)
+        ),
         state: this.toPrState(pullRequest.state),
         htmlUrl: pullRequest?.links?.htmlUrl,
         createdAt: Utils.toDate(pullRequest.createdOn),
