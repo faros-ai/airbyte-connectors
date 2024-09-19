@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "pull_requests_with_activities"
+      }
+    }
+  ]
+}

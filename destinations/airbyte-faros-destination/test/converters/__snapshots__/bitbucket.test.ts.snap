@@ -2,10 +2,10 @@
 
 exports[`bitbucket process records from all streams 1`] = `
 Array [
-  "Processed 86 records",
-  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__branches\\\\\\":2,\\\\\\"mytestsource__bitbucket__commits\\\\\\":25,\\\\\\"mytestsource__bitbucket__deployments\\\\\\":14,\\\\\\"mytestsource__bitbucket__issues\\\\\\":1,\\\\\\"mytestsource__bitbucket__pipeline_steps\\\\\\":5,\\\\\\"mytestsource__bitbucket__pipelines\\\\\\":7,\\\\\\"mytestsource__bitbucket__pull_request_activities\\\\\\":12,\\\\\\"mytestsource__bitbucket__pull_requests\\\\\\":2,\\\\\\"mytestsource__bitbucket__repositories\\\\\\":6,\\\\\\"mytestsource__bitbucket__tags\\\\\\":3,\\\\\\"mytestsource__bitbucket__workspace_users\\\\\\":6,\\\\\\"mytestsource__bitbucket__workspaces\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 107 records",
-  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":7,\\\\\\"cicd_BuildCommitAssociation\\\\\\":7,\\\\\\"cicd_Deployment\\\\\\":14,\\\\\\"compute_Application\\\\\\":7,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":25,\\\\\\"vcs_Membership\\\\\\":7,\\\\\\"vcs_Organization\\\\\\":3,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_User\\\\\\":13}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 72 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__branches\\\\\\":2,\\\\\\"mytestsource__bitbucket__commits\\\\\\":25,\\\\\\"mytestsource__bitbucket__deployments\\\\\\":14,\\\\\\"mytestsource__bitbucket__issues\\\\\\":1,\\\\\\"mytestsource__bitbucket__pipeline_steps\\\\\\":5,\\\\\\"mytestsource__bitbucket__pipelines\\\\\\":7,\\\\\\"mytestsource__bitbucket__repositories\\\\\\":6,\\\\\\"mytestsource__bitbucket__tags\\\\\\":3,\\\\\\"mytestsource__bitbucket__workspace_users\\\\\\":6,\\\\\\"mytestsource__bitbucket__workspaces\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 93 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":7,\\\\\\"cicd_BuildCommitAssociation\\\\\\":7,\\\\\\"cicd_Deployment\\\\\\":14,\\\\\\"compute_Application\\\\\\":7,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":25,\\\\\\"vcs_Membership\\\\\\":7,\\\\\\"vcs_Organization\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_User\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -940,325 +940,6 @@ README-PR.md created online with Bitbucket",
     },
   },
   Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequestReview": Object {
-      "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/pull-requests/2",
-      "number": 625,
-      "pullRequest": Object {
-        "number": 2,
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "uid": "2",
-      },
-      "reviewer": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "source": "Bitbucket",
-      "state": Object {
-        "category": "Approved",
-        "detail": null,
-      },
-      "submittedAt": "2021-12-11T21:12:33.625Z",
-      "uid": "625",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequestReview": Object {
-      "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/pull-requests/2",
-      "number": 266795323,
-      "pullRequest": Object {
-        "number": 2,
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "uid": "2",
-      },
-      "reviewer": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "source": "Bitbucket",
-      "state": Object {
-        "category": "Commented",
-        "detail": null,
-      },
-      "submittedAt": "2021-12-11T21:00:34.854Z",
-      "uid": "266795323",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequestComment": Object {
-      "author": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "comment": "Update this line
-
-‌",
-      "createdAt": "2021-12-11T20:56:57.137Z",
-      "number": 266795090,
-      "pullRequest": Object {
-        "number": 2,
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "uid": "2",
-      },
-      "source": "Bitbucket",
-      "uid": "266795090",
-      "updatedAt": "2021-12-11T20:56:57.137Z",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequestComment": Object {
-      "author": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "comment": "Update last line
-
-‌",
-      "createdAt": "2021-12-11T20:56:15.908Z",
-      "number": 266795081,
-      "pullRequest": Object {
-        "number": 2,
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "uid": "2",
-      },
-      "source": "Bitbucket",
-      "uid": "266795081",
-      "updatedAt": "2021-12-11T20:56:15.908Z",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequestReview": Object {
-      "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/pull-requests/1",
-      "number": 265977155,
-      "pullRequest": Object {
-        "number": 1,
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "uid": "1",
-      },
-      "reviewer": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "source": "Bitbucket",
-      "state": Object {
-        "category": "Commented",
-        "detail": null,
-      },
-      "submittedAt": "2021-12-08T06:20:40.903Z",
-      "uid": "265977155",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequest": Object {
-      "author": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "commentCount": 3,
-      "commitCount": 2,
-      "createdAt": "2021-12-11T20:55:13.603Z",
-      "description": "",
-      "diffStats": Object {
-        "filesChanged": 1,
-        "linesAdded": 4,
-        "linesDeleted": 1,
-      },
-      "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/pull-requests/2",
-      "mergeCommit": null,
-      "mergedAt": null,
-      "number": 2,
-      "repository": Object {
-        "name": "geekhub2019",
-        "organization": Object {
-          "source": "Bitbucket",
-          "uid": "romankyrnis",
-        },
-        "uid": "geekhub2019",
-      },
-      "source": "Bitbucket",
-      "state": Object {
-        "category": "Open",
-        "detail": "open",
-      },
-      "title": "README-PR.md edited online with Bitbucket",
-      "uid": "2",
-      "updatedAt": "2021-12-11T21:12:33.625Z",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_PullRequest": Object {
-      "author": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "commentCount": 1,
-      "commitCount": 1,
-      "createdAt": "2021-12-07T14:36:27.801Z",
-      "description": "",
-      "diffStats": Object {
-        "filesChanged": 1,
-        "linesAdded": 1,
-        "linesDeleted": 0,
-      },
-      "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/pull-requests/1",
-      "mergeCommit": Object {
-        "repository": Object {
-          "name": "geekhub2019",
-          "organization": Object {
-            "source": "Bitbucket",
-            "uid": "romankyrnis",
-          },
-          "uid": "geekhub2019",
-        },
-        "sha": "afa9171c8d98d5bc72abf43990fa548c9b67c74f",
-        "uid": "afa9171c8d98d5bc72abf43990fa548c9b67c74f",
-      },
-      "mergedAt": "2021-12-08T06:21:19.270Z",
-      "number": 1,
-      "repository": Object {
-        "name": "geekhub2019",
-        "organization": Object {
-          "source": "Bitbucket",
-          "uid": "romankyrnis",
-        },
-        "uid": "geekhub2019",
-      },
-      "source": "Bitbucket",
-      "state": Object {
-        "category": "Merged",
-        "detail": "merged",
-      },
-      "title": "README-PR.md created online with Bitbucket",
-      "uid": "1",
-      "updatedAt": "2021-12-08T06:21:19.246Z",
-    },
-  },
-  Object {
     "vcs_Repository": Object {
       "createdAt": "2019-10-05T19:57:58.110Z",
       "description": "test",
@@ -2095,6 +1776,301 @@ README-PR.md created online with Bitbucket",
         "detail": "user",
       },
       "uid": "567890:ef123456-7890-1234-ef56-789012345678",
+    },
+  },
+]
+`;
+
+exports[`bitbucket pull_requests_with_activities 1`] = `
+Array [
+  "Processed 16 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 11 records",
+  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`bitbucket pull_requests_with_activities 2`] = `
+Array [
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
+      "name": "Yandry Perez",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "633b43292eaaa5dcfa164e12",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
+      "number": 538893465,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "reviewer": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Commented",
+        "detail": null,
+      },
+      "submittedAt": "2024-09-06T13:29:00.799Z",
+      "uid": "538893465",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
+      "name": "Yandry Perez",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "633b43292eaaa5dcfa164e12",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
+      "number": 624,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "reviewer": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Approved",
+        "detail": null,
+      },
+      "submittedAt": "2024-09-05T20:38:36.624Z",
+      "uid": "624",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
+      "name": "Yandry Perez",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "633b43292eaaa5dcfa164e12",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
+      "number": 538661766,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "reviewer": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Commented",
+        "detail": null,
+      },
+      "submittedAt": "2024-09-05T20:34:50.654Z",
+      "uid": "538661766",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      },
+      "commentCount": 2,
+      "commitCount": 3,
+      "createdAt": "2024-08-27T18:08:52.761Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 1,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "Hello, this is a test for a bitbucket repo",
+      "uid": "1",
+      "updatedAt": "2024-09-06T13:29:00.799Z",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
+      "name": "Mati Coulou",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/3",
+      "number": 429,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "3",
+      },
+      "reviewer": Object {
+        "source": "Bitbucket",
+        "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Approved",
+        "detail": null,
+      },
+      "submittedAt": "2024-09-06T12:46:36.429Z",
+      "uid": "429",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-06T12:46:31.583Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 1,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/3",
+      "mergeCommit": null,
+      "mergedAt": "2024-09-06T12:46:42.082Z",
+      "number": 3,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Merged",
+        "detail": "merged",
+      },
+      "title": "Another test to open PR",
+      "uid": "3",
+      "updatedAt": "2024-09-06T12:46:42.048Z",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-06T12:46:04.135Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 1,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/2",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 2,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "Another test to open PR",
+      "uid": "2",
+      "updatedAt": "2024-09-06T12:46:04.866Z",
     },
   },
 ]
