@@ -1785,8 +1785,8 @@ exports[`bitbucket pull_requests_with_activities 1`] = `
 Array [
   "Processed 16 records",
   "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 14 records",
-  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4,\\\\\\"vcs_User\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 11 records",
+  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1921,19 +1921,6 @@ Array [
     },
   },
   Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
-      "name": "Mati Coulou",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
-    },
-  },
-  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -2013,19 +2000,6 @@ Array [
     },
   },
   Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
-      "name": "Mati Coulou",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
-    },
-  },
-  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -2060,19 +2034,6 @@ Array [
       "title": "Another test to open PR",
       "uid": "3",
       "updatedAt": "2024-09-06T12:46:42.048Z",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
-      "name": "Mati Coulou",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
     },
   },
   Object {

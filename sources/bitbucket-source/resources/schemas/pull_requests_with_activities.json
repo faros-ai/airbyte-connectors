@@ -41,9 +41,7 @@
           "type": "number"
         },
         "taskCount": {
-          "type": [
-            "number"
-          ]
+          "type": "number"
         },
         "calculatedActivity": {
           "type": "object",

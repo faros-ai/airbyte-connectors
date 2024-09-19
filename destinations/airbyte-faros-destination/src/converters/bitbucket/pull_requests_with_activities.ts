@@ -32,7 +32,6 @@ enum PullRequestReviewStateCategory {
 
 export class PullRequestsWithActivities extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_User',
     'vcs_PullRequest',
     'vcs_PullRequestComment',
     'vcs_PullRequestReview',
@@ -68,11 +67,8 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     ).split('/');
     if (!workspace || !repo) return res;
 
-    const repoRef = {
-      organization: {uid: workspace.toLowerCase(), source},
-      uid: repo.toLowerCase(),
-      name: repo.toLowerCase(),
-    };
+    const repoRef = BitbucketCommon.vcs_Repository(workspace, repo, source);
+
     // Get full commit hash by fetching the commit by short hash
     let mergeCommit = null;
     const shortHash = pullRequest?.mergeCommit?.hash;
@@ -88,10 +84,6 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     }
     let author = null;
     if (pullRequest?.author?.accountId) {
-      const user = BitbucketCommon.vcsUser(pullRequest.author, source);
-
-      if (!user) return res;
-      res.push(user);
       author = {uid: pullRequest.author.accountId, source};
     }
 
