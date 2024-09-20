@@ -7,12 +7,7 @@ import {
 } from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
 
 enum PullRequestStateCategory {

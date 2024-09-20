@@ -1,4 +1,4 @@
-import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
 
 import {Bitbucket} from '../src/bitbucket';
 import {BitbucketConfig} from '../src/types';
