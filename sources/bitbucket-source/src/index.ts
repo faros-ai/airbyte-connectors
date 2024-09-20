@@ -14,7 +14,6 @@ import VError from 'verror';
 import {Bitbucket, DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE} from './bitbucket';
 import {
   Commits,
-  Issues,
   PullRequestsWithActivities,
   Repositories,
   Tags,
@@ -59,7 +58,6 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
 
     return [
       new Commits(config, this.logger),
-      new Issues(config, this.logger),
       new PullRequestsWithActivities(config, this.logger, emitActivities),
       new Repositories(config, this.logger),
       new Tags(config, this.logger),
