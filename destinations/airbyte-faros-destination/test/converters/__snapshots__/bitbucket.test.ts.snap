@@ -2,10 +2,10 @@
 
 exports[`bitbucket process records from all streams 1`] = `
 Array [
-  "Processed 72 records",
-  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__branches\\\\\\":2,\\\\\\"mytestsource__bitbucket__commits\\\\\\":25,\\\\\\"mytestsource__bitbucket__deployments\\\\\\":14,\\\\\\"mytestsource__bitbucket__issues\\\\\\":1,\\\\\\"mytestsource__bitbucket__pipeline_steps\\\\\\":5,\\\\\\"mytestsource__bitbucket__pipelines\\\\\\":7,\\\\\\"mytestsource__bitbucket__repositories\\\\\\":6,\\\\\\"mytestsource__bitbucket__tags\\\\\\":3,\\\\\\"mytestsource__bitbucket__workspace_users\\\\\\":6,\\\\\\"mytestsource__bitbucket__workspaces\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 93 records",
-  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":7,\\\\\\"cicd_BuildCommitAssociation\\\\\\":7,\\\\\\"cicd_Deployment\\\\\\":14,\\\\\\"compute_Application\\\\\\":7,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":25,\\\\\\"vcs_Membership\\\\\\":7,\\\\\\"vcs_Organization\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_User\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 71 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__branches\\\\\\":2,\\\\\\"mytestsource__bitbucket__commits\\\\\\":25,\\\\\\"mytestsource__bitbucket__deployments\\\\\\":14,\\\\\\"mytestsource__bitbucket__pipeline_steps\\\\\\":5,\\\\\\"mytestsource__bitbucket__pipelines\\\\\\":7,\\\\\\"mytestsource__bitbucket__repositories\\\\\\":6,\\\\\\"mytestsource__bitbucket__tags\\\\\\":3,\\\\\\"mytestsource__bitbucket__workspace_users\\\\\\":6,\\\\\\"mytestsource__bitbucket__workspaces\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 86 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":7,\\\\\\"cicd_BuildCommitAssociation\\\\\\":7,\\\\\\"cicd_Deployment\\\\\\":14,\\\\\\"compute_Application\\\\\\":7,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":25,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_User\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1060,6 +1060,162 @@ README-PR.md created online with Bitbucket",
     },
   },
   Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Ba1b2c3d4-e5f6-7890-1234-56789abcdef0%7D/",
+      "name": "Jane Doe",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "test-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Ba1b2c3d4-e5f6-7890-1234-56789abcdef0%7D/",
+      "name": "Jane Doe",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "another-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Bb2c3d4e5-f678-9012-3456-7890abcdef12%7D/",
+      "name": "John Doe",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "234567:bcdef123-4567-8901-bcde-f23456789012",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "test-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "234567:bcdef123-4567-8901-bcde-f23456789012",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Bc3d4e5f6-7890-1234-5678-90abcdef1234%7D/",
+      "name": "Mary Smith",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "345678:cdef1234-5678-9012-cdef-345678901234",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "test-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "345678:cdef1234-5678-9012-cdef-345678901234",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Bd4e5f678-9012-3456-7890-abcdef123456%7D/",
+      "name": "James Doe",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "456789:def12345-6789-0123-def4-567890123456",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "test-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "456789:def12345-6789-0123-def4-567890123456",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://bitbucket.org/%7Be5f67890-1234-5678-90ab-cdef12345678%7D/",
+      "name": "Alice Doe",
+      "source": "Bitbucket",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "567890:ef123456-7890-1234-ef56-789012345678",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Bitbucket",
+        "uid": "test-ws",
+      },
+      "source": "Bitbucket",
+      "user": Object {
+        "source": "Bitbucket",
+        "uid": "567890:ef123456-7890-1234-ef56-789012345678",
+      },
+    },
+  },
+  Object {
     "vcs_Organization": Object {
       "createdAt": "2020-12-08T18:52:43.318Z",
       "htmlUrl": "https://bitbucket.org/YulyKo/",
@@ -1533,251 +1689,6 @@ README-PR.md created online with Bitbucket",
       "uid": "{9d2b33fc-8227-5782-b46e-7bcb4869bf33}",
     },
   },
-  Object {
-    "tms_User": Object {
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "tms_User": Object {
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "tms_TaskAssignment": Object {
-      "assignee": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "source": "Bitbucket",
-      "task": Object {
-        "source": "Bitbucket",
-        "uid": "1",
-      },
-    },
-  },
-  Object {
-    "tms_TaskProjectRelationship": Object {
-      "project": Object {
-        "source": "Bitbucket",
-        "uid": "GeekHub2019",
-      },
-      "source": "Bitbucket",
-      "task": Object {
-        "source": "Bitbucket",
-        "uid": "1",
-      },
-    },
-  },
-  Object {
-    "tms_TaskBoardRelationship": Object {
-      "board": Object {
-        "source": "Bitbucket",
-        "uid": "GeekHub2019",
-      },
-      "source": "Bitbucket",
-      "task": Object {
-        "source": "Bitbucket",
-        "uid": "1",
-      },
-    },
-  },
-  Object {
-    "tms_Task": Object {
-      "createdAt": "2021-12-08T08:16:10.360Z",
-      "creator": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-      "description": "",
-      "name": "Test-Faros-Issue",
-      "priority": "major",
-      "source": "Bitbucket",
-      "status": Object {
-        "category": "Done",
-        "detail": "resolved",
-      },
-      "type": Object {
-        "category": "Bug",
-        "detail": "bug",
-      },
-      "uid": "1",
-      "updatedAt": "2021-12-08T08:20:13.823Z",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "romankyrnis",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "5d95c51f65db480d8e5c891e",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/",
-      "name": "Рома Кирнос",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "5d95c51f65db480d8e5c891e",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "test-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
-      },
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "another-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7Ba1b2c3d4-e5f6-7890-1234-56789abcdef0%7D/",
-      "name": "Jane Doe",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "123456:abcdef12-3456-7890-abcd-ef1234567890",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "test-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "234567:bcdef123-4567-8901-bcde-f23456789012",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7Bb2c3d4e5-f678-9012-3456-7890abcdef12%7D/",
-      "name": "John Doe",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "234567:bcdef123-4567-8901-bcde-f23456789012",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "test-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "345678:cdef1234-5678-9012-cdef-345678901234",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7Bc3d4e5f6-7890-1234-5678-90abcdef1234%7D/",
-      "name": "Mary Smith",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "345678:cdef1234-5678-9012-cdef-345678901234",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "test-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "456789:def12345-6789-0123-def4-567890123456",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7Bd4e5f678-9012-3456-7890-abcdef123456%7D/",
-      "name": "James Doe",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "456789:def12345-6789-0123-def4-567890123456",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "Bitbucket",
-        "uid": "test-ws",
-      },
-      "source": "Bitbucket",
-      "user": Object {
-        "source": "Bitbucket",
-        "uid": "567890:ef123456-7890-1234-ef56-789012345678",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7Be5f67890-1234-5678-90ab-cdef12345678%7D/",
-      "name": "Alice Doe",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "567890:ef123456-7890-1234-ef56-789012345678",
-    },
-  },
 ]
 `;
 
@@ -1785,8 +1696,8 @@ exports[`bitbucket pull_requests_with_activities 1`] = `
 Array [
   "Processed 16 records",
   "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 11 records",
-  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 7 records",
+  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1794,19 +1705,6 @@ Array [
 
 exports[`bitbucket pull_requests_with_activities 2`] = `
 Array [
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
-      "name": "Yandry Perez",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "633b43292eaaa5dcfa164e12",
-    },
-  },
   Object {
     "vcs_PullRequestReview": Object {
       "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
@@ -1837,19 +1735,6 @@ Array [
     },
   },
   Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
-      "name": "Yandry Perez",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "633b43292eaaa5dcfa164e12",
-    },
-  },
-  Object {
     "vcs_PullRequestReview": Object {
       "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
       "number": 624,
@@ -1876,19 +1761,6 @@ Array [
       },
       "submittedAt": "2024-09-05T20:38:36.624Z",
       "uid": "624",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B9411a2b3-dfed-4273-bf4c-17813a8da9b8%7D/",
-      "name": "Yandry Perez",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "633b43292eaaa5dcfa164e12",
     },
   },
   Object {
@@ -1955,19 +1827,6 @@ Array [
       "title": "Hello, this is a test for a bitbucket repo",
       "uid": "1",
       "updatedAt": "2024-09-06T13:29:00.799Z",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": null,
-      "htmlUrl": "https://bitbucket.org/%7B0ee8b2b4-0bec-41be-a698-e584ab10c586%7D/",
-      "name": "Mati Coulou",
-      "source": "Bitbucket",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
     },
   },
   Object {

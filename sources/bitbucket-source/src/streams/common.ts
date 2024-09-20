@@ -52,7 +52,6 @@ export const CustomStreamNames = [
   'workspaces',
   'workspace_users',
   'repositories',
-  'issues',
   'tags',
 ];
 

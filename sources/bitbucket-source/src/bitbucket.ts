@@ -10,7 +10,6 @@ import {
   Deployment,
   DiffStat,
   Environment,
-  Issue,
   Pipeline,
   PipelineStep,
   PRActivity,
@@ -317,39 +316,6 @@ export class Bitbucket {
       repo_slug: repoSlug,
     });
     return this.buildRepository(response.data, workspace);
-  }
-
-  async *getIssues(
-    workspace: string,
-    repoSlug: string,
-    startDate: Date,
-    endDate: Date
-  ): AsyncGenerator<Issue> {
-    if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
-      return;
-    }
-    const params: any = {
-      workspace,
-      repo_slug: repoSlug,
-      pagelen: this.pageSize,
-      q: `updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`,
-    };
-
-    try {
-      const func = (): Promise<BitbucketResponse<Issue>> =>
-        this.limiter.schedule(() =>
-          this.client.repositories.listIssues(params)
-        ) as any;
-
-      yield* this.paginate<Issue>(func, (data) => this.buildIssue(data));
-    } catch (err) {
-      throw new VError(
-        this.buildInnerError(err),
-        'Error fetching issue(s) for repository %s/%s',
-        workspace,
-        repoSlug
-      );
-    }
   }
 
   @Memoize(
@@ -905,66 +871,6 @@ export class Bitbucket {
     };
   }
 
-  private buildIssue(data: Dictionary<any>): Issue {
-    return {
-      priority: data.priority,
-      kind: data.kind,
-      title: data.title,
-      state: data.state,
-      createdOn: data.created_on,
-      updatedOn: data.updated_on,
-      type: data.type,
-      votes: data.votes,
-      watches: data.watches,
-      id: data.id,
-      component: data.component,
-      version: data.version,
-      editedOn: data.edited_on,
-      milestone: data.milestone,
-      repository: {
-        type: data.repository.type,
-        name: data.repository.name,
-        fullName: data.repository.full_name,
-        uuid: data.repository.uuid,
-        links: {
-          htmlUrl: data.repository.links.links?.html?.href,
-        },
-      },
-      links: {
-        attachmentsUrl: data.links?.attachments?.href,
-        watchUrl: data.links?.watch?.href,
-        commentsUrl: data.links?.comments?.href,
-        htmlUrl: data.links?.html?.href,
-        voteUrl: data.links?.vote?.href,
-      },
-      reporter: {
-        displayName: data.reporter.display_name,
-        uuid: data.reporter.uuid,
-        type: data.reporter.type,
-        nickname: data.reporter.nickname,
-        accountId: data.reporter.account_id,
-        links: {
-          htmlUrl: data.reporter.links.links?.html?.href,
-        },
-      },
-      content: {
-        raw: data.content.raw,
-        markup: data.content.markup,
-        html: data.content.html,
-        type: data.content.type,
-      },
-      assignee: {
-        displayName: data.assignee.display_name,
-        uuid: data.assignee.uuid,
-        type: data.assignee.type,
-        accountId: data.assignee.account_id,
-        links: {
-          htmlUrl: data.assignee.links?.html?.href,
-        },
-      },
-    };
-  }
-
   private buildPipeline(data: Dictionary<any>): Pipeline {
     return {
       uuid: data.uuid,
@@ -1315,7 +1221,6 @@ export class Bitbucket {
       createdOn: data.created_on,
       updatedOn: data.updated_on,
       mainBranch: data.mainbranch?.name,
-      hasIssues: data.has_issues,
     };
   }
 

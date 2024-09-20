@@ -172,56 +172,6 @@ export interface Environment {
   };
 }
 
-export interface Issue {
-  readonly priority: string;
-  readonly kind: string;
-  readonly title: string;
-  readonly state: string;
-  readonly createdOn: string;
-  readonly updatedOn: string;
-  readonly type: string;
-  readonly votes: number;
-  readonly watches: number;
-  readonly id: number;
-  readonly component: any;
-  readonly version: any;
-  readonly editedOn: any;
-  readonly milestone: any;
-  readonly repository: {
-    readonly type: string;
-    readonly name: string;
-    readonly fullName: string;
-    readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly links: {
-    readonly attachmentsUrl: string;
-    readonly watchUrl: string;
-    readonly commentsUrl: string;
-    readonly htmlUrl: string;
-    readonly voteUrl: string;
-  };
-  readonly reporter: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly content: {
-    readonly raw: string;
-    readonly markup: string;
-    readonly html: string;
-    readonly type: string;
-  };
-  assignee: User;
-}
-
 export interface User {
   readonly displayName: string;
   readonly emailAddress?: string;
@@ -568,7 +518,6 @@ export interface Repository {
   createdOn: string;
   updatedOn: string;
   mainBranch: string;
-  hasIssues: boolean;
 }
 
 export interface Tag {

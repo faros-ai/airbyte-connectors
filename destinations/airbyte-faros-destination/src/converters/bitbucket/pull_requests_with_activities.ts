@@ -147,15 +147,8 @@ export class PullRequestsWithActivities extends BitbucketConverter {
       return res;
     }
 
-    let reviewer = null;
     const user: User = change?.author ?? change?.user;
-    if (user?.accountId) {
-      const userRecord = BitbucketCommon.vcsUser(user, source);
-      if (userRecord) {
-        res.push(userRecord);
-        reviewer = {uid: user.accountId, source};
-      }
-    }
+    const reviewer = user?.accountId ? {uid: user.accountId, source} : null;
     const orgRef = {
       uid: prActivity?.pullRequest?.workspace?.toLowerCase(),
       source,
