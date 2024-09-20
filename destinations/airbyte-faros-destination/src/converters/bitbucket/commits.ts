@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Commit} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 
 export class Commits extends BitbucketConverter {
@@ -25,12 +25,7 @@ export class Commits extends BitbucketConverter {
       return res;
     }
 
-    let author = null;
-    if (commit?.author?.user?.accountId) {
-      const commitUser = commit.author.user;
-      this.collectUser(commitUser, workspace);
-      author = {uid: commitUser.accountId, source};
-    }
+    const commitUser = commit?.author?.user;
 
     res.push({
       model: 'vcs_Commit',
@@ -40,17 +35,13 @@ export class Commits extends BitbucketConverter {
         message: commit.message,
         htmlUrl: commit.links?.htmlUrl,
         createdAt: Utils.toDate(commit.date),
-        author,
+        author: commitUser?.accountId
+          ? {uid: commitUser.accountId, source}
+          : null,
         repository: BitbucketCommon.vcs_Repository(workspace, repo, source),
       },
     });
 
     return res;
-  }
-
-  async onProcessingComplete(
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.convertUsers();
   }
 }
