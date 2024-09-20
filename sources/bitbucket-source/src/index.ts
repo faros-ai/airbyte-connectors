@@ -81,6 +81,9 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)
     );
+    const requestedStreams = new Set(
+      streams.map((stream) => stream.stream.name)
+    );
     const {startDate, endDate} = calculateDateRange({
       start_date: config.start_date,
       end_date: config.end_date,
@@ -90,6 +93,7 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
     return {
       config: {
         ...config,
+        requestedStreams,
         startDate,
         endDate,
       },

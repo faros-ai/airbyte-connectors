@@ -7,12 +7,7 @@ import {
 } from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
 
 enum PullRequestStateCategory {
@@ -36,12 +31,6 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     'vcs_PullRequestComment',
     'vcs_PullRequestReview',
   ];
-
-  private readonly commitsStream = new StreamName('bitbucket', 'commits');
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [this.commitsStream];
-  }
 
   async convert(
     record: AirbyteRecord,
@@ -69,19 +58,11 @@ export class PullRequestsWithActivities extends BitbucketConverter {
 
     const repoRef = BitbucketCommon.vcs_Repository(workspace, repo, source);
 
-    // Get full commit hash by fetching the commit by short hash
-    let mergeCommit = null;
-    const shortHash = pullRequest?.mergeCommit?.hash;
-    if (shortHash) {
-      const commitsStream = this.commitsStream.asString;
-      const commitRecords = ctx.getAll(commitsStream);
-      const commitHash = Object.keys(commitRecords).find((k: string) =>
-        k.startsWith(shortHash)
-      );
-      if (commitHash) {
-        mergeCommit = {repository: repoRef, sha: commitHash, uid: commitHash};
-      }
-    }
+    const commitHash = pullRequest?.mergeCommit?.hash;
+    const mergeCommit = commitHash
+      ? {repository: repoRef, sha: commitHash, uid: commitHash}
+      : null;
+
     let author = null;
     if (pullRequest?.author?.accountId) {
       author = {uid: pullRequest.author.accountId, source};

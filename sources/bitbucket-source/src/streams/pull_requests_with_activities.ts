@@ -25,6 +25,10 @@ export class PullRequestsWithActivities extends StreamWithRepoSlices {
     return require('../../resources/schemas/pull_requests_with_activities.json');
   }
 
+  get dependencies(): string[] {
+    return ['commits'];
+  }
+
   get primaryKey(): StreamKey {
     return [['pullRequest', 'id']];
   }

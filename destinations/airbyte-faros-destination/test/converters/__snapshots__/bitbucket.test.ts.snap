@@ -1874,7 +1874,18 @@ Array [
         "linesDeleted": 1,
       },
       "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/3",
-      "mergeCommit": null,
+      "mergeCommit": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "sha": "68feee41d65b",
+        "uid": "68feee41d65b",
+      },
       "mergedAt": "2024-09-06T12:46:42.082Z",
       "number": 3,
       "repository": Object {

@@ -287,18 +287,6 @@
             "null"
           ],
           "properties": {
-            "links": {
-              "type": "object",
-              "properties": {
-                "htmlUrl": {
-                  "type": "string",
-                  "format": "uri"
-                }
-              }
-            },
-            "type": {
-              "type": "string"
-            },
             "hash": {
               "type": "string"
             }

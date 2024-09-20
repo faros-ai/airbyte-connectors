@@ -26,6 +26,7 @@ import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
 
+import {CommitHashMatcher} from './commit-hash-matcher';
 import {RunMode} from './streams/common';
 import {BitbucketConfig} from './types';
 
@@ -45,6 +46,7 @@ interface BitbucketResponse<T> {
 export class Bitbucket {
   private static bitbucket: Bitbucket = null;
   private readonly limiter: Bottleneck;
+  private readonly commitHashes: Set<string> = new Set();
 
   constructor(
     private readonly client: APIClient,
@@ -52,7 +54,8 @@ export class Bitbucket {
     private readonly bucketId: number,
     private readonly bucketTotal: number,
     private readonly concurrencyLimit: number,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly requestedStreams: Set<string>
   ) {
     this.limiter = new Bottleneck({
       maxConcurrent: concurrencyLimit,
@@ -77,14 +80,14 @@ export class Bitbucket {
 
     const baseUrl = config.api_url ?? DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-
     Bitbucket.bitbucket = new Bitbucket(
       client,
       config.page_size ?? DEFAULT_PAGE_SIZE,
       config.bucket_id ?? DEFAULT_BUCKET_ID,
       config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       config.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
-      logger
+      logger,
+      config.requestedStreams ?? new Set()
     );
     return Bitbucket.bitbucket;
   }
@@ -186,11 +189,18 @@ export class Bitbucket {
         return date >= startDate && date <= endDate;
       };
 
-      yield* this.paginate<Commit>(
+      for await (const commit of this.paginate<Commit>(
         func,
         (data) => this.buildCommit(data),
         isInRange
-      );
+      )) {
+        // We only store these hashes for the sake of resolving the full
+        // merge commit hash for pull requests.
+        if (this.requestedStreams.has('pull_requests_with_activities')) {
+          this.commitHashes.add(commit.hash);
+        }
+        yield commit;
+      }
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
@@ -405,8 +415,14 @@ export class Bitbucket {
         this.buildPullRequest(data)
       );
 
+      const commitHashMatcher = new CommitHashMatcher(this.commitHashes);
+
       for await (const pr of iter) {
-        const pullRequest = {...pr, repositorySlug: repoSlug};
+        const mergeCommitHash = pr.mergeCommit?.hash
+          ? commitHashMatcher.match(pr.mergeCommit.hash)
+          : null;
+        const mergeCommit = mergeCommitHash ? {hash: mergeCommitHash} : null;
+        const pullRequest = {...pr, repositorySlug: repoSlug, mergeCommit};
         try {
           pullRequest.diffStat = await this.getPRDiffStats(
             workspace,
@@ -1027,10 +1043,6 @@ export class Bitbucket {
       mergeCommit: data.merge_commit
         ? {
             hash: data.merge_commit.hash,
-            type: data.merge_commit.type,
-            links: {
-              htmlUrl: data.merge_commit.links?.html?.href,
-            },
           }
         : null,
       closedBy: data.closed_by

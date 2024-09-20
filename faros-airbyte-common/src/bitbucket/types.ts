@@ -380,10 +380,6 @@ export interface PullRequest {
   readonly author: User;
   readonly mergeCommit: null | {
     readonly hash: string;
-    readonly type: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
   };
   readonly closedBy: null | User;
 }
