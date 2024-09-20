@@ -55,7 +55,8 @@ export class Bitbucket {
     private readonly bucketId: number,
     private readonly bucketTotal: number,
     private readonly concurrencyLimit: number,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly requestedStreams: Set<string>
   ) {
     this.limiter = new Bottleneck({
       maxConcurrent: concurrencyLimit,
@@ -80,14 +81,14 @@ export class Bitbucket {
 
     const baseUrl = config.api_url ?? DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-
     Bitbucket.bitbucket = new Bitbucket(
       client,
       config.page_size ?? DEFAULT_PAGE_SIZE,
       config.bucket_id ?? DEFAULT_BUCKET_ID,
       config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       config.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
-      logger
+      logger,
+      config.requestedStreams ?? new Set()
     );
     return Bitbucket.bitbucket;
   }
@@ -194,7 +195,11 @@ export class Bitbucket {
         (data) => this.buildCommit(data),
         isInRange
       )) {
-        this.commitHashes.add(commit.hash);
+        // We only store these hashes for the sake of resolving the full
+        // merge commit hash for pull requests.
+        if (this.requestedStreams.has('pull_requests_with_activities')) {
+          this.commitHashes.add(commit.hash);
+        }
         yield commit;
       }
     } catch (err) {

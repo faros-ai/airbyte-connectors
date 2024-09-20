@@ -6,7 +6,8 @@ import {BitbucketConfig} from '../src/types';
 export function setupBitbucketInstance(
   apiMock: any,
   logger: AirbyteLogger,
-  config: BitbucketConfig = readTestResourceAsJSON('config.json')
+  requestedStreams: Set<string> = new Set(),
+  config?: BitbucketConfig
 ) {
   let bitbucketInstance: Bitbucket | null = null;
   Bitbucket.instance = jest.fn().mockImplementation(() => {
@@ -17,10 +18,11 @@ export function setupBitbucketInstance(
           hasNextPage: jest.fn(),
         },
         100,
-        config.bucket_id,
-        config.bucket_total,
+        config?.bucket_id ?? 1,
+        config?.bucket_total ?? 1,
         5,
-        logger
+        logger,
+        requestedStreams
       );
     }
     return bitbucketInstance;

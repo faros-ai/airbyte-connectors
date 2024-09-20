@@ -47,7 +47,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
 
@@ -73,7 +74,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
@@ -131,6 +133,7 @@ describe('index', () => {
             workspaces: getWorkspacesMockedImplementation(),
           },
           logger,
+          new Set(),
           config
         );
       },
@@ -356,7 +359,8 @@ describe('index', () => {
             },
             workspaces: getWorkspacesMockedImplementation(),
           },
-          logger
+          logger,
+          new Set(['pull_requests_with_activities', 'commits'])
         );
       },
       checkRecordsData: (records) => {
