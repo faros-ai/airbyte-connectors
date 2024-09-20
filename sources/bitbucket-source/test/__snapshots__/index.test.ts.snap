@@ -1,5 +1,376 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index pr merge commit sha resolution 1`] = `
+[
+  {
+    "author": {
+      "user": {
+        "accountId": "987654321:abcd1234-5678-90ef-ghij-klmnopqrstuv",
+        "displayName": "John Doe",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7B12345678-abcd-efgh-ijkl-1234567890ab%7D/",
+        },
+        "type": "user",
+        "uuid": "{12345678-abcd-efgh-ijkl-1234567890ab}",
+      },
+    },
+    "date": "2024-09-02T12:46:33+00:00",
+    "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    "links": {
+      "htmlUrl": "https://bitbucket.org/fantasycorp/project-xy/commits/26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    },
+    "message": "Initial commit in main branch",
+    "repository": {
+      "fullName": "fantasycorp/project-xy",
+    },
+    "type": "commit",
+  },
+  {
+    "author": {
+      "user": {
+        "accountId": "987654321:abcd1234-5678-90ef-ghij-klmnopqrstuv",
+        "displayName": "John Doe",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7B12345678-abcd-efgh-ijkl-1234567890ab%7D/",
+        },
+        "type": "user",
+        "uuid": "{12345678-abcd-efgh-ijkl-1234567890ab}",
+      },
+    },
+    "date": "2024-09-02T12:46:33+00:00",
+    "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    "links": {
+      "htmlUrl": "https://bitbucket.org/fantasycorp/project-xy/commits/26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    },
+    "message": "Initial commit in main branch",
+    "repository": {
+      "fullName": "fantasycorp/project-xy",
+    },
+    "type": "commit",
+  },
+  {
+    "author": {
+      "user": {
+        "accountId": "987654321:abcd1234-5678-90ef-ghij-klmnopqrstuv",
+        "displayName": "John Doe",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7B12345678-abcd-efgh-ijkl-1234567890ab%7D/",
+        },
+        "type": "user",
+        "uuid": "{12345678-abcd-efgh-ijkl-1234567890ab}",
+      },
+    },
+    "date": "2024-09-02T12:46:33+00:00",
+    "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    "links": {
+      "htmlUrl": "https://bitbucket.org/fantasycorp/project-xy/commits/26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+    },
+    "message": "Initial commit in main branch",
+    "repository": {
+      "fullName": "fantasycorp/project-xy",
+    },
+    "type": "commit",
+  },
+  {
+    "pullRequest": {
+      "author": {
+        "accountId": "anonymized-account-id",
+        "displayName": "Anonymous User",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7Banonymized-uuid%7D/",
+        },
+        "type": "user",
+        "uuid": "{anonymized-uuid}",
+      },
+      "calculatedActivity": {
+        "commitCount": 0,
+        "mergedAt": undefined,
+      },
+      "closeSourceBranch": false,
+      "closedBy": null,
+      "commentCount": 0,
+      "createdOn": "2024-09-06T12:46:04.135039+00:00",
+      "description": "",
+      "destination": {
+        "branch": {
+          "name": "another-feature",
+        },
+        "commit": {
+          "hash": "7e4cfff85a85",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/7e4cfff85a85",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "diffStat": {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 0,
+      },
+      "id": 2,
+      "links": {
+        "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
+        "approveUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/approve",
+        "commentsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/comments",
+        "commitsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/commits",
+        "declineUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/decline",
+        "diffUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diff/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "diffstatUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diffstat/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/pull-requests/2",
+        "mergeUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/merge",
+        "statusesUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/statuses",
+      },
+      "mergeCommit": {
+        "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+      },
+      "reason": "",
+      "repositorySlug": "project-xy",
+      "source": {
+        "branch": {
+          "name": "one-more",
+        },
+        "commit": {
+          "hash": "57573467babb",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/57573467babb",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "state": "OPEN",
+      "summary": {
+        "html": "",
+        "markup": "markdown",
+        "raw": "",
+        "type": "rendered",
+      },
+      "taskCount": 0,
+      "title": "Another test to open PR",
+      "type": "pullrequest",
+      "updatedOn": "2024-09-06T12:46:04.866147+00:00",
+    },
+    "type": "PullRequest",
+  },
+  {
+    "pullRequest": {
+      "author": {
+        "accountId": "anonymized-account-id",
+        "displayName": "Anonymous User",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7Banonymized-uuid%7D/",
+        },
+        "type": "user",
+        "uuid": "{anonymized-uuid}",
+      },
+      "calculatedActivity": {
+        "commitCount": 0,
+        "mergedAt": undefined,
+      },
+      "closeSourceBranch": false,
+      "closedBy": null,
+      "commentCount": 0,
+      "createdOn": "2024-09-06T12:46:04.135039+00:00",
+      "description": "",
+      "destination": {
+        "branch": {
+          "name": "another-feature",
+        },
+        "commit": {
+          "hash": "7e4cfff85a85",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/7e4cfff85a85",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "diffStat": {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 0,
+      },
+      "id": 2,
+      "links": {
+        "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
+        "approveUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/approve",
+        "commentsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/comments",
+        "commitsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/commits",
+        "declineUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/decline",
+        "diffUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diff/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "diffstatUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diffstat/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/pull-requests/2",
+        "mergeUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/merge",
+        "statusesUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/statuses",
+      },
+      "mergeCommit": {
+        "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+      },
+      "reason": "",
+      "repositorySlug": "project-xy",
+      "source": {
+        "branch": {
+          "name": "one-more",
+        },
+        "commit": {
+          "hash": "57573467babb",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/57573467babb",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "state": "OPEN",
+      "summary": {
+        "html": "",
+        "markup": "markdown",
+        "raw": "",
+        "type": "rendered",
+      },
+      "taskCount": 0,
+      "title": "Another test to open PR",
+      "type": "pullrequest",
+      "updatedOn": "2024-09-06T12:46:04.866147+00:00",
+    },
+    "type": "PullRequest",
+  },
+  {
+    "pullRequest": {
+      "author": {
+        "accountId": "anonymized-account-id",
+        "displayName": "Anonymous User",
+        "links": {
+          "htmlUrl": "https://bitbucket.org/%7Banonymized-uuid%7D/",
+        },
+        "type": "user",
+        "uuid": "{anonymized-uuid}",
+      },
+      "calculatedActivity": {
+        "commitCount": 0,
+        "mergedAt": undefined,
+      },
+      "closeSourceBranch": false,
+      "closedBy": null,
+      "commentCount": 0,
+      "createdOn": "2024-09-06T12:46:04.135039+00:00",
+      "description": "",
+      "destination": {
+        "branch": {
+          "name": "another-feature",
+        },
+        "commit": {
+          "hash": "7e4cfff85a85",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/7e4cfff85a85",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "diffStat": {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 0,
+      },
+      "id": 2,
+      "links": {
+        "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
+        "approveUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/approve",
+        "commentsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/comments",
+        "commitsUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/commits",
+        "declineUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/decline",
+        "diffUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diff/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "diffstatUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/diffstat/anonymized-workspace/anonymized-repo:57573467babb%0D7e4cfff85a85?from_pullrequest_id=2&topic=true",
+        "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/pull-requests/2",
+        "mergeUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/merge",
+        "statusesUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/statuses",
+      },
+      "mergeCommit": {
+        "hash": "26d1ac958f6ca6367248297a5888d3cbeb4a0a18",
+      },
+      "reason": "",
+      "repositorySlug": "project-xy",
+      "source": {
+        "branch": {
+          "name": "one-more",
+        },
+        "commit": {
+          "hash": "57573467babb",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo/commits/57573467babb",
+          },
+          "type": "commit",
+        },
+        "repository": {
+          "fullName": "anonymized-workspace/anonymized-repo",
+          "links": {
+            "htmlUrl": "https://bitbucket.org/anonymized-workspace/anonymized-repo",
+          },
+          "name": "Anonymized Repo",
+          "type": "repository",
+          "uuid": "{anonymized-uuid}",
+        },
+      },
+      "state": "OPEN",
+      "summary": {
+        "html": "",
+        "markup": "markdown",
+        "raw": "",
+        "type": "rendered",
+      },
+      "taskCount": 0,
+      "title": "Another test to open PR",
+      "type": "pullrequest",
+      "updatedOn": "2024-09-06T12:46:04.866147+00:00",
+    },
+    "type": "PullRequest",
+  },
+]
+`;
+
 exports[`index streams - commits 1`] = `
 [
   {

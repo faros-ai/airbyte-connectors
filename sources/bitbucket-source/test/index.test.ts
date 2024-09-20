@@ -312,6 +312,58 @@ describe('index', () => {
       });
     }
   });
+
+  test('pr merge commit sha resolution', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath:
+        'pr_merge_commit_sha_resolution/config_run_mode_minimum.json',
+      catalogOrPath: 'pr_merge_commit_sha_resolution/catalog.json',
+      onBeforeReadResultConsumer: () => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+              listPullRequests: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/pull_requests.json'
+                  ),
+                },
+              }),
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/commits.json'
+                  ),
+                },
+              }),
+            },
+            pullrequests: {
+              getDiffStat: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/diff_stat.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getWorkspacesMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function getWorkspacesMockedImplementation() {

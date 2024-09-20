@@ -8,17 +8,21 @@ export function setupBitbucketInstance(
   logger: AirbyteLogger,
   config: BitbucketConfig = readTestResourceAsJSON('config.json')
 ) {
+  let bitbucketInstance: Bitbucket | null = null;
   Bitbucket.instance = jest.fn().mockImplementation(() => {
-    return new Bitbucket(
-      {
-        ...apiMock,
-        hasNextPage: jest.fn(),
-      },
-      100,
-      config.bucket_id,
-      config.bucket_total,
-      5,
-      logger
-    );
+    if (!bitbucketInstance) {
+      bitbucketInstance = new Bitbucket(
+        {
+          ...apiMock,
+          hasNextPage: jest.fn(),
+        },
+        100,
+        config.bucket_id,
+        config.bucket_total,
+        5,
+        logger
+      );
+    }
+    return bitbucketInstance;
   });
 }
