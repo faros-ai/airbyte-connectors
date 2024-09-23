@@ -1,5 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/github';
+import {
+  CodeScanningAlert,
+  DependabotAlert,
+  SecretScanningAlert,
+  User,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -226,6 +231,45 @@ export class GitHubCommon {
     number: number
   ): string {
     return toLower(`${org}/${repo}/${alertType}/${number}`);
+  }
+
+  static vulnerabilityStatus(
+    alert: CodeScanningAlert | DependabotAlert | SecretScanningAlert
+  ) {
+    const state = alert.state;
+    switch (state) {
+      case 'open':
+        return {category: 'Open', detail: state};
+      case 'dismissed':
+        return {
+          category: 'Ignored',
+          detail: alert.dismissed_reason ?? state,
+        };
+      case 'auto_dismissed':
+        return {category: 'Ignored', detail: state};
+      case 'fixed':
+        return {category: 'Resolved', detail: state};
+      case 'resolved':
+        return {category: 'Resolved', detail: alert.resolution ?? state};
+      default:
+        return {category: 'Custom', detail: state};
+    }
+  }
+
+  static vulnerabilitySeverity(alert: CodeScanningAlert | DependabotAlert) {
+    const level =
+      (alert as CodeScanningAlert).rule?.security_severity_level ??
+      (alert as DependabotAlert).security_vulnerability?.severity;
+    switch (level) {
+      case 'low':
+        return 3.0;
+      case 'medium':
+        return 6.0;
+      case 'high':
+        return 9.0;
+      case 'critical':
+        return 10.0;
+    }
   }
 
   private static buildStatus(conclusion: string): {

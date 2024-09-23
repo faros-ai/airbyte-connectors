@@ -40,7 +40,7 @@ export class FarosDependabotAlerts extends GitHubConverter {
           vulnerabilityIds: alert.security_advisory.identifiers.map(
             (i) => i.value
           ),
-          severity: getSeverity(alert),
+          severity: GitHubCommon.vulnerabilitySeverity(alert),
           url: alert.html_url,
           publishedAt: Utils.toDate(alert.security_advisory.published_at),
           remediatedInVersions: [
@@ -63,40 +63,9 @@ export class FarosDependabotAlerts extends GitHubConverter {
             Utils.toDate(alert.dismissed_at) ??
             Utils.toDate(alert.auto_dismissed_at) ??
             null,
-          status: getStatus(alert),
+          status: GitHubCommon.vulnerabilityStatus(alert),
         },
       },
     ];
-  }
-}
-
-function getSeverity(alert: DependabotAlert) {
-  switch (alert.security_vulnerability.severity) {
-    case 'low':
-      return 3.0;
-    case 'medium':
-      return 6.0;
-    case 'high':
-      return 9.0;
-    case 'critical':
-      return 10.0;
-  }
-}
-
-function getStatus(alert: DependabotAlert) {
-  switch (alert.state) {
-    case 'open':
-      return {category: 'Open', detail: alert.state};
-    case 'dismissed':
-      return {
-        category: 'Ignored',
-        detail: alert.dismissed_reason ?? alert.state,
-      };
-    case 'auto_dismissed':
-      return {category: 'Ignored', detail: alert.state};
-    case 'fixed':
-      return {category: 'Resolved', detail: alert.state};
-    default:
-      return {category: 'Custom', detail: alert.state};
   }
 }

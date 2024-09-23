@@ -45,20 +45,9 @@ export class FarosSecretScanningAlerts extends GitHubConverter {
           url: alert.html_url,
           createdAt: Utils.toDate(alert.created_at),
           resolvedAt: Utils.toDate(alert.resolved_at) ?? null,
-          status: getStatus(alert),
+          status: GitHubCommon.vulnerabilityStatus(alert),
         },
       },
     ];
-  }
-}
-
-function getStatus(alert: SecretScanningAlert) {
-  switch (alert.state) {
-    case 'open':
-      return {category: 'Open', detail: alert.state};
-    case 'resolved':
-      return {category: 'Resolved', detail: alert.resolution ?? alert.state};
-    default:
-      return {category: 'Custom', detail: alert.state};
   }
 }

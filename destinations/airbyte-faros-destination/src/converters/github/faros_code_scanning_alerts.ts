@@ -34,7 +34,7 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
           source: this.streamName.source,
           title: alert.rule.name ?? alert.rule.id,
           description: Utils.cleanAndTruncate(alert.rule.description, 200),
-          severity: getSeverity(alert),
+          severity: GitHubCommon.vulnerabilitySeverity(alert),
           url: alert.html_url,
         },
       },
@@ -49,38 +49,9 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
             Utils.toDate(alert.fixed_at) ??
             Utils.toDate(alert.dismissed_at) ??
             null,
-          status: getStatus(alert),
+          status: GitHubCommon.vulnerabilityStatus(alert),
         },
       },
     ];
-  }
-}
-
-function getSeverity(alert: CodeScanningAlert) {
-  switch (alert.rule.security_severity_level) {
-    case 'low':
-      return 3.0;
-    case 'medium':
-      return 6.0;
-    case 'high':
-      return 9.0;
-    case 'critical':
-      return 10.0;
-  }
-}
-
-function getStatus(alert: CodeScanningAlert) {
-  switch (alert.state) {
-    case 'open':
-      return {category: 'Open', detail: alert.state};
-    case 'dismissed':
-      return {
-        category: 'Ignored',
-        detail: alert.dismissed_reason ?? alert.state,
-      };
-    case 'fixed':
-      return {category: 'Resolved', detail: alert.state};
-    default:
-      return {category: 'Custom', detail: alert.state};
   }
 }
