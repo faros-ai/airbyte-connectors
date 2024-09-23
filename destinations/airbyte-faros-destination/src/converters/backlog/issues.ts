@@ -73,7 +73,10 @@ export class Issues extends BacklogConverter {
       record: {
         ...taskKey,
         name: issue.summary,
-        description: issue.description?.substring(0, maxDescriptionLength),
+        description: Utils.cleanAndTruncate(
+          issue.description,
+          maxDescriptionLength
+        ),
         priority: issue.priority?.name,
         type: BacklogCommon.getTaskType(issue.issueType),
         status,

@@ -46,57 +46,23 @@ export interface Commit {
   readonly date: string;
   readonly message: string;
   readonly type: string;
-  readonly rendered: {
-    readonly message: {
-      readonly raw: string;
-      readonly markup: string;
-      readonly html: string;
-      readonly type: string;
-    };
-  };
   readonly repository: {
-    readonly type: string;
-    readonly name: string;
     readonly fullName: string;
-    readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
   };
   readonly links: {
-    readonly commentsUrl: string;
     readonly htmlUrl: string;
-    readonly diffUrl: string;
-    readonly approveUrl: string;
-    readonly statusesUrl: string;
   };
   readonly author: {
-    readonly raw: string;
-    readonly type: string;
     readonly user?: {
       readonly displayName: string;
       readonly uuid: string;
       readonly type: string;
-      readonly nickname: string;
       readonly accountId: string;
       readonly links: {
         readonly htmlUrl: string;
       };
     };
   };
-  readonly summary: {
-    readonly raw: string;
-    readonly markup: string;
-    readonly html: string;
-    readonly type: string;
-  };
-  parents: {
-    readonly hash: string;
-    readonly type: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  }[];
 }
 
 export interface Deployment {
@@ -206,66 +172,16 @@ export interface Environment {
   };
 }
 
-export interface Issue {
-  readonly priority: string;
-  readonly kind: string;
-  readonly title: string;
-  readonly state: string;
-  readonly createdOn: string;
-  readonly updatedOn: string;
-  readonly type: string;
-  readonly votes: number;
-  readonly watches: number;
-  readonly id: number;
-  readonly component: any;
-  readonly version: any;
-  readonly editedOn: any;
-  readonly milestone: any;
-  readonly repository: {
-    readonly type: string;
-    readonly name: string;
-    readonly fullName: string;
-    readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly links: {
-    readonly attachmentsUrl: string;
-    readonly watchUrl: string;
-    readonly commentsUrl: string;
-    readonly htmlUrl: string;
-    readonly voteUrl: string;
-  };
-  readonly reporter: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly content: {
-    readonly raw: string;
-    readonly markup: string;
-    readonly html: string;
-    readonly type: string;
-  };
-  assignee: User;
-}
-
 export interface User {
   readonly displayName: string;
   readonly emailAddress?: string;
   readonly uuid: string;
   readonly type: string;
-  readonly nickname: string;
   readonly accountId: string;
   readonly links: {
     readonly htmlUrl: string;
   };
+  readonly workspace?: string;
 }
 
 export interface Pipeline {
@@ -381,6 +297,12 @@ export interface PipelineStepState {
   };
 }
 
+export interface PullRequestOrActivity {
+  readonly type: 'PullRequest' | 'PullRequestActivity';
+  readonly pullRequest?: PullRequest;
+  readonly activity?: PRActivity;
+}
+
 export interface PullRequest {
   readonly description: string;
   readonly title: string;
@@ -458,10 +380,6 @@ export interface PullRequest {
   readonly author: User;
   readonly mergeCommit: null | {
     readonly hash: string;
-    readonly type: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
   };
   readonly closedBy: null | User;
 }
@@ -600,23 +518,24 @@ export interface Repository {
   createdOn: string;
   updatedOn: string;
   mainBranch: string;
-  hasIssues: boolean;
+}
+
+export interface Tag {
+  name: string;
+  message: string;
+  target: {
+    hash: string;
+  };
+  repository: {
+    fullName: string;
+  };
 }
 
 export interface WorkspaceUser {
-  readonly type: string;
   readonly user: User;
   readonly workspace: {
     readonly slug: string;
-    readonly type: string;
-    readonly name: string;
     readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly links: {
-    readonly htmlUrl: string;
   };
 }
 

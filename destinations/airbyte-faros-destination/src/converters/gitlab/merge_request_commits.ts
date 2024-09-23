@@ -23,8 +23,8 @@ export class MergeRequestCommits extends GitlabConverter {
         record: {
           sha: commit.sha,
           uid: commit.sha,
-          message: commit.description?.substring(
-            0,
+          message: Utils.cleanAndTruncate(
+            commit.description,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
           author: commit.author ? {uid: commit.author.username, source} : null,

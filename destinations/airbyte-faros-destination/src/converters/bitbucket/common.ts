@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {
   Converter,
@@ -28,35 +29,23 @@ export enum UserTypeCategory {
   CUSTOM = 'Custom',
 }
 
+export type PartialUser = Partial<User>;
+
 export interface ProjectKey {
   uid: string;
   source: string;
 }
+
+export interface RepositoryRecord {
+  uid: string;
+  name: string;
+  organization: {uid: string; source: string};
+}
+
 /** Common functions shares across Bitbucket converters */
 export class BitbucketCommon {
   // max length for free-form description text field
   static MAX_DESCRIPTION_LENGTH = 1000;
-
-  static vcsUser(user: User, source: string): DestinationRecord | undefined {
-    if (!user.accountId) return undefined;
-
-    const userType =
-      user.type === 'user'
-        ? {category: UserTypeCategory.USER, detail: 'user'}
-        : {category: UserTypeCategory.CUSTOM, detail: user.type};
-
-    return {
-      model: 'vcs_User',
-      record: {
-        uid: user.accountId,
-        name: user.displayName,
-        email: user.emailAddress,
-        type: userType,
-        htmlUrl: user.links?.htmlUrl,
-        source,
-      },
-    };
-  }
 
   static tms_ProjectBoard_with_TaskBoard(
     projectKey: ProjectKey,
@@ -71,8 +60,8 @@ export class BitbucketCommon {
         record: {
           ...projectKey,
           name: name,
-          description: description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            description,
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(createdAt),
@@ -95,11 +84,25 @@ export class BitbucketCommon {
       },
     ];
   }
+
+  static vcs_Repository(
+    workspace: string,
+    repo: string,
+    source: string
+  ): RepositoryRecord {
+    return {
+      name: toLower(repo),
+      uid: toLower(repo),
+      organization: {uid: toLower(workspace), source},
+    };
+  }
 }
 
 /** Bitbucket converter base */
 export abstract class BitbucketConverter extends Converter {
   source = 'Bitbucket';
+
+  protected collectedUsers = new Map<string, Array<PartialUser>>();
 
   /** Almost all Bitbucket records should have id property */
   id(record: AirbyteRecord): any {
@@ -121,10 +124,8 @@ export abstract class BitbucketConverter extends Converter {
 
   protected maxDescriptionLength(ctx: StreamContext): number {
     return (
-      parseObjectConfig(
-        this.bitbucketConfig(ctx)?.max_description_length,
-        'Max Description Length'
-      ) ?? BitbucketCommon.MAX_DESCRIPTION_LENGTH
+      this.bitbucketConfig(ctx)?.max_description_length ??
+      BitbucketCommon.MAX_DESCRIPTION_LENGTH
     );
   }
 }

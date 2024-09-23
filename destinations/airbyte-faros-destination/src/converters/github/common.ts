@@ -126,8 +126,8 @@ export class GitHubCommon {
         record: {
           ...projectKey,
           name: name,
-          description: description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            description,
             GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: Utils.toDate(createdAt),

@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Test Cycle",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "key": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      }
+    }
+  }

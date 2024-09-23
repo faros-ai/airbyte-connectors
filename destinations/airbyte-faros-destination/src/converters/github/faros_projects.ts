@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Project} from 'faros-airbyte-common/github';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
@@ -23,8 +24,8 @@ export class FarosProjects extends GitHubConverter {
         record: {
           ...projectKey,
           name: project.name,
-          description: project.body?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            project.body,
             GitHubCommon.MAX_DESCRIPTION_LENGTH
           ),
           createdAt: project.created_at,

@@ -4,9 +4,9 @@ import {pick} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
-import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
+import {ProjectStreamSlice, ProjectStreamSliceWithStaticCutoff} from './common';
 
-export class FarosProjectVersions extends StreamWithProjectSlices {
+export class FarosProjectVersions extends ProjectStreamSliceWithStaticCutoff {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosProjectVersions.json');
   }
@@ -23,8 +23,10 @@ export class FarosProjectVersions extends StreamWithProjectSlices {
   ): AsyncGenerator<ProjectVersion> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
+    const since = this.getFullSyncStartDate(projectState?.cutoff);
 
-    for (const version of await jira.getProjectVersions(projectKey)) {
+    for (const version of await jira.getProjectVersions(projectKey, since)) {
       yield {
         ...pick(version, [
           'id',
@@ -32,6 +34,9 @@ export class FarosProjectVersions extends StreamWithProjectSlices {
           'name',
           'startDate',
           'releaseDate',
+          'released',
+          'archived',
+          'overdue',
           'projectId',
         ]),
         projectKey,

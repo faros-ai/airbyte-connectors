@@ -24,6 +24,43 @@ export type RepoStreamSlice = {
   repo: string;
 };
 
+export enum RunMode {
+  Minimum = 'Minimum',
+  Full = 'Full',
+  Custom = 'Custom',
+}
+
+export const MinimumStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+];
+
+export const FullStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+];
+
+export const CustomStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+  'tags',
+];
+
+export const RunModeStreams = {
+  [RunMode.Minimum]: MinimumStreamNames,
+  [RunMode.Full]: FullStreamNames,
+  [RunMode.Custom]: CustomStreamNames,
+};
+
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly workspaceRepoFilter: WorkspaceRepoFilter;
 

@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {IssueCompact} from 'faros-airbyte-common/lib/jira';
+import {IssueCompact} from 'faros-airbyte-common/jira';
+import {Utils} from 'faros-js-client';
 import {isString} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -69,7 +70,7 @@ export abstract class JiraConverter extends Converter {
 
   protected truncate(ctx: StreamContext, str?: string): string | undefined {
     if (isString(str) && str.length > this.truncateLimit(ctx)) {
-      return str.substring(0, this.truncateLimit(ctx));
+      return Utils.cleanAndTruncate(str, this.truncateLimit(ctx));
     }
     return str;
   }

@@ -4,8 +4,8 @@ exports[`pagerduty process records from all streams 1`] = `
 Array [
   "Processed 8 records",
   "Processed records by stream: {\\\\\\"mytestsource__pagerduty__incident_log_entries\\\\\\":3,\\\\\\"mytestsource__pagerduty__incidents\\\\\\":3,\\\\\\"mytestsource__pagerduty__services\\\\\\":1,\\\\\\"mytestsource__pagerduty__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 16 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"ims_Incident\\\\\\":3,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":3,\\\\\\"ims_IncidentEvent\\\\\\":3,\\\\\\"ims_User\\\\\\":1,\\\\\\"org_ApplicationOwnership\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 17 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"ims_Incident\\\\\\":3,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":3,\\\\\\"ims_IncidentEvent\\\\\\":3,\\\\\\"ims_User\\\\\\":1,\\\\\\"org_ApplicationOwnership\\\\\\":1,\\\\\\"org_ApplicationOwnership__Deletion\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]

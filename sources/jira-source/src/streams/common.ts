@@ -4,6 +4,8 @@ import {
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
+import {DateTime} from 'luxon';
+import {Dictionary} from 'ts-essentials';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
 import {ProjectBoardFilter} from '../project-board-filter';
@@ -120,6 +122,15 @@ export abstract class StreamBase extends AirbyteStreamBase {
     ];
   }
 
+  /* Use this method to for full-sync streams with a static start date
+   * that prefers the lesser date between state and config start date. Handles
+   * where we backfill data from a date earlier than the initial sync date.
+   */
+  protected getFullSyncStartDate(cutoff?: number): Date {
+    const start = this.getUpdateRange(cutoff)[0];
+    return start < this.config.startDate ? start : this.config.startDate;
+  }
+
   protected getUpdatedStreamState(
     latestRecordCutoff: Date,
     currentStreamState: StreamState,
@@ -153,5 +164,50 @@ export abstract class StreamWithBoardSlices extends StreamBase {
     for (const board of await this.projectBoardFilter.getBoards()) {
       yield {board};
     }
+  }
+}
+
+export abstract class ProjectStreamSliceWithStaticCutoff extends StreamWithProjectSlices {
+  /**
+   * This method updates the cutoff date for full-sync project streams.
+   * These streams use one cutoff across all slices.
+   * In those cases, we should use the lesser date between the current state
+   * and the config start date. This ensures changes to the start date
+   * unless when doing a full reset does not result in the stream pulling less
+   * data. Additionally, if we back-fill data from a date earlier than the
+   * initial sync date and the start date is updated we should now pull data
+   * from the new start date.
+   */
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: Dictionary<any>
+  ): StreamState {
+    const currentCutoff = Utils.toDate(
+      currentStreamState?.[latestRecord.projectKey]?.cutoff
+    );
+    if (!currentCutoff) {
+      return {
+        ...currentStreamState,
+        [latestRecord.projectKey]: {
+          cutoff: this.config.startDate.getTime(),
+        },
+      };
+    }
+
+    const adjustedLatestRecordCutoff = DateTime.fromJSDate(currentCutoff)
+      .minus({days: this.config.cutoff_lag_days ?? DEFAULT_CUTOFF_LAG_DAYS})
+      .toJSDate();
+
+    if (adjustedLatestRecordCutoff < currentCutoff) {
+      const newState = {
+        cutoff: adjustedLatestRecordCutoff.getTime(),
+      };
+      return {
+        ...currentStreamState,
+        [latestRecord.projectKey]: newState,
+      };
+    }
+
+    return currentStreamState;
   }
 }

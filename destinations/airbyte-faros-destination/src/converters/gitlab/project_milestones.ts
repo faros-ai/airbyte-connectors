@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabCommon, GitlabConverter} from './common';
@@ -12,7 +13,10 @@ export class ProjectMilestones extends GitlabConverter {
     const source = this.streamName.source;
     const milestone = record.record.data;
 
-    const repository = GitlabCommon.parseRepositoryKey(milestone.web_url, source);
+    const repository = GitlabCommon.parseRepositoryKey(
+      milestone.web_url,
+      source
+    );
 
     return [
       {
@@ -20,8 +24,8 @@ export class ProjectMilestones extends GitlabConverter {
         record: {
           uid: String(milestone.id),
           name: milestone.title,
-          description: milestone.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            milestone.description,
             GitlabCommon.MAX_DESCRIPTION_LENGTH
           ),
           project: {uid: repository.uid, source},

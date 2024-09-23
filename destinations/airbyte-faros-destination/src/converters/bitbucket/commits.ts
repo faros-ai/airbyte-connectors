@@ -6,10 +6,7 @@ import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketCommon, BitbucketConverter} from './common';
 
 export class Commits extends BitbucketConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'vcs_Commit',
-    'vcs_User',
-  ];
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.hash;
@@ -24,18 +21,11 @@ export class Commits extends BitbucketConverter {
 
     const [workspace, repo] = commit.repository.fullName.split('/');
 
-    let author = null;
-    if (commit?.author?.user?.accountId) {
-      const commitUser = commit.author.user;
-      const user = BitbucketCommon.vcsUser(commitUser, source);
-      if (user) {
-        res.push(user);
-        author = {uid: commitUser.accountId, source};
-      }
-    }
     if (!workspace || !repo) {
       return res;
     }
+
+    const commitUser = commit?.author?.user;
 
     res.push({
       model: 'vcs_Commit',
@@ -45,12 +35,10 @@ export class Commits extends BitbucketConverter {
         message: commit.message,
         htmlUrl: commit.links?.htmlUrl,
         createdAt: Utils.toDate(commit.date),
-        author,
-        repository: {
-          organization: {uid: workspace.toLowerCase(), source},
-          uid: repo.toLowerCase(),
-          name: repo.toLowerCase(),
-        },
+        author: commitUser?.accountId
+          ? {uid: commitUser.accountId, source}
+          : null,
+        repository: BitbucketCommon.vcs_Repository(workspace, repo, source),
       },
     });
 

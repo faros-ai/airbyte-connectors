@@ -10,40 +10,58 @@ import {
   Deployment,
   DiffStat,
   Environment,
-  Issue,
   Pipeline,
   PipelineStep,
   PRActivity,
   PRDiffStat,
   PullRequest,
+  PullRequestOrActivity,
   Repository,
+  Tag,
   Workspace,
   WorkspaceUser,
 } from 'faros-airbyte-common/bitbucket';
+import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VErrorType, {VError} from 'verror';
 
+import {CommitHashMatcher} from './commit-hash-matcher';
+import {RunMode} from './streams/common';
 import {BitbucketConfig} from './types';
 
 const DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/2.0';
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_BUCKET_ID = 1;
+const DEFAULT_BUCKET_TOTAL = 1;
+
 export const DEFAULT_CUTOFF_DAYS = 90;
-export const DEFAULT_LIMITER = new Bottleneck({maxConcurrent: 5, minTime: 100});
+export const DEFAULT_CONCURRENCY_LIMIT = 5;
+export const DEFAULT_RUN_MODE = RunMode.Full;
 
 interface BitbucketResponse<T> {
   data: T | {values: T[]};
 }
 
 export class Bitbucket {
-  private readonly limiter = DEFAULT_LIMITER;
   private static bitbucket: Bitbucket = null;
+  private readonly limiter: Bottleneck;
+  private readonly commitHashes: Set<string> = new Set();
 
   constructor(
     private readonly client: APIClient,
     private readonly pageSize: number,
-    private readonly logger: AirbyteLogger
-  ) {}
+    private readonly bucketId: number,
+    private readonly bucketTotal: number,
+    private readonly concurrencyLimit: number,
+    private readonly logger: AirbyteLogger,
+    private readonly requestedStreams: Set<string>
+  ) {
+    this.limiter = new Bottleneck({
+      maxConcurrent: concurrencyLimit,
+      minTime: 100,
+    });
+  }
 
   static instance(config: BitbucketConfig, logger: AirbyteLogger): Bitbucket {
     if (Bitbucket.bitbucket) return Bitbucket.bitbucket;
@@ -54,15 +72,23 @@ export class Bitbucket {
       throw new VError(errorMessage);
     }
 
+    validateBucketingConfig(config.bucket_id, config.bucket_total);
+
     const auth = config.token
       ? {token: config.token}
       : {username: config.username, password: config.password};
 
-    const baseUrl = config.api_url || DEFAULT_BITBUCKET_URL;
+    const baseUrl = config.api_url ?? DEFAULT_BITBUCKET_URL;
     const client = new BitbucketClient({baseUrl, auth});
-    const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
-
-    Bitbucket.bitbucket = new Bitbucket(client, pageSize, logger);
+    Bitbucket.bitbucket = new Bitbucket(
+      client,
+      config.page_size ?? DEFAULT_PAGE_SIZE,
+      config.bucket_id ?? DEFAULT_BUCKET_ID,
+      config.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      config.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
+      logger,
+      config.requestedStreams ?? new Set()
+    );
     return Bitbucket.bitbucket;
   }
 
@@ -108,6 +134,14 @@ export class Bitbucket {
     return [true, undefined];
   }
 
+  isRepoInBucket(workspace: string, repo: string): boolean {
+    const data = `${workspace}/${repo}`;
+    return (
+      bucket('farosai/airbyte-bitbucket-source', data, this.bucketTotal) ===
+      this.bucketId
+    );
+  }
+
   async *getBranches(
     workspace: string,
     repoSlug: string
@@ -126,7 +160,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching branch(es) for repository "%s/%s"',
+        'Error fetching branch(es) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -136,6 +170,7 @@ export class Bitbucket {
   async *getCommits(
     workspace: string,
     repoSlug: string,
+    mainBranch: string,
     startDate: Date,
     endDate: Date
   ): AsyncGenerator<Commit> {
@@ -146,6 +181,7 @@ export class Bitbucket {
             workspace,
             repo_slug: repoSlug,
             pagelen: this.pageSize,
+            include: [mainBranch],
           })
         ) as any;
       const isInRange = (data: Commit): boolean => {
@@ -153,15 +189,22 @@ export class Bitbucket {
         return date >= startDate && date <= endDate;
       };
 
-      yield* this.paginate<Commit>(
+      for await (const commit of this.paginate<Commit>(
         func,
         (data) => this.buildCommit(data),
         isInRange
-      );
+      )) {
+        // We only store these hashes for the sake of resolving the full
+        // merge commit hash for pull requests.
+        if (this.requestedStreams.has('pull_requests_with_activities')) {
+          this.commitHashes.add(commit.hash);
+        }
+        yield commit;
+      }
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching commit(s) for repository "%s/%s"',
+        'Error fetching commit(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -206,7 +249,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching deployments for repository "%s/%s"',
+        'Error fetching deployments for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -237,7 +280,7 @@ export class Bitbucket {
       } catch (err2) {
         throw new VError(
           this.buildInnerError(err2),
-          'Error fetching %s environment for repository "%s/%s"',
+          'Error fetching %s environment for repository %s/%s',
           envID,
           workspace,
           repoSlug
@@ -275,39 +318,6 @@ export class Bitbucket {
     return this.buildRepository(response.data, workspace);
   }
 
-  async *getIssues(
-    workspace: string,
-    repoSlug: string,
-    startDate: Date,
-    endDate: Date
-  ): AsyncGenerator<Issue> {
-    if (!(await this.getRepository(workspace, repoSlug)).hasIssues) {
-      return;
-    }
-    const params: any = {
-      workspace,
-      repo_slug: repoSlug,
-      pagelen: this.pageSize,
-      q: `updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`,
-    };
-
-    try {
-      const func = (): Promise<BitbucketResponse<Issue>> =>
-        this.limiter.schedule(() =>
-          this.client.repositories.listIssues(params)
-        ) as any;
-
-      yield* this.paginate<Issue>(func, (data) => this.buildIssue(data));
-    } catch (err) {
-      throw new VError(
-        this.buildInnerError(err),
-        'Error fetching issue(s) for repository "%s/%s"',
-        workspace,
-        repoSlug
-      );
-    }
-  }
-
   @Memoize(
     (workspace: string, repoSlug: string): string => `${workspace};${repoSlug}`
   )
@@ -337,7 +347,7 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching pipeline(s) for repository "%s/%s"',
+        'Error fetching pipeline(s) for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -366,25 +376,21 @@ export class Bitbucket {
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching PipelineSteps(s) for repository "%s/%s"',
+        'Error fetching PipelineSteps(s) for repository %s/%s',
         workspace,
         repoSlug
       );
     }
   }
 
-  @Memoize(
-    (workspace: string, repoSlug: string, lastUpdated?: string): string =>
-      `${workspace};${repoSlug};${lastUpdated ?? ''}`
-  )
-  async getPullRequests(
+  async *getPullRequestsWithActivities(
     workspace: string,
     repoSlug: string,
     startDate: Date,
-    endDate: Date
-  ): Promise<ReadonlyArray<PullRequest>> {
+    endDate: Date,
+    emitActivities: boolean = false
+  ): AsyncGenerator<PullRequestOrActivity> {
     try {
-      const results: PullRequest[] = [];
       /**
        * By default only open pull requests are returned by API. We use query
        * parameters to ensure we retrieve all states. Using query as substitute
@@ -394,7 +400,7 @@ export class Bitbucket {
         '(state = "DECLINED" OR state = "MERGED" OR state = "OPEN" OR state = "SUPERSEDED")';
       const query =
         states +
-        ` AND updated_on >= ${formatDate(startDate)} AND updated_on =< ${formatDate(endDate)}`;
+        ` AND updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`;
       const func = (): Promise<BitbucketResponse<PullRequest>> =>
         this.limiter.schedule(() =>
           this.client.repositories.listPullRequests({
@@ -409,10 +415,16 @@ export class Bitbucket {
         this.buildPullRequest(data)
       );
 
+      const commitHashMatcher = new CommitHashMatcher(this.commitHashes);
+
       for await (const pr of iter) {
-        const res = {...pr, repositorySlug: repoSlug};
+        const mergeCommitHash = pr.mergeCommit?.hash
+          ? commitHashMatcher.match(pr.mergeCommit.hash)
+          : null;
+        const mergeCommit = mergeCommitHash ? {hash: mergeCommitHash} : null;
+        const pullRequest = {...pr, repositorySlug: repoSlug, mergeCommit};
         try {
-          res.diffStat = await this.getPRDiffStats(
+          pullRequest.diffStat = await this.getPRDiffStats(
             workspace,
             repoSlug,
             String(pr.id)
@@ -429,7 +441,9 @@ export class Bitbucket {
           const iterActivities = this.getPRActivities(
             workspace,
             repoSlug,
-            String(pr.id)
+            String(pr.id),
+            startDate,
+            endDate
           );
 
           for await (const activity of iterActivities) {
@@ -447,6 +461,10 @@ export class Bitbucket {
             }
             const commit = activity?.update?.source?.commit?.hash;
             if (commit) commits.add(commit);
+
+            if (emitActivities) {
+              yield {type: 'PullRequestActivity', activity};
+            }
           }
         } catch (err) {
           const stringifiedError = JSON.stringify(this.buildInnerError(err));
@@ -454,14 +472,13 @@ export class Bitbucket {
             `Failed fetching activities for pull request #${pr.id} in repo ${workspace}/${repoSlug}. Error: ${stringifiedError}`
           );
         }
-        res.calculatedActivity = {commitCount: commits.size, mergedAt};
-        results.push(res);
+        pullRequest.calculatedActivity = {commitCount: commits.size, mergedAt};
+        yield {type: 'PullRequest', pullRequest};
       }
-      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
-        'Error fetching pull requests for repository "%s/%s"',
+        'Error fetching pull requests for repository %s/%s',
         workspace,
         repoSlug
       );
@@ -471,7 +488,9 @@ export class Bitbucket {
   async *getPRActivities(
     workspace: string,
     repoSlug: string,
-    pullRequestId: string
+    pullRequestId: string,
+    startDate: Date,
+    endDate: Date
   ): AsyncGenerator<PRActivity> {
     try {
       const func = (): Promise<BitbucketResponse<PRActivity>> =>
@@ -481,6 +500,7 @@ export class Bitbucket {
             repo_slug: repoSlug,
             pull_request_id: pullRequestId,
             pagelen: Math.min(this.pageSize, 50), // page size is limited to 50 for PR activities
+            q: `updated_on >= ${formatDate(startDate)} AND updated_on <= ${formatDate(endDate)}`,
           })
         ) as any;
 
@@ -554,6 +574,9 @@ export class Bitbucket {
         this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
+        if (!this.isRepoInBucket(workspace, repo.slug)) {
+          continue;
+        }
         results.push(repo);
       }
       return results;
@@ -620,6 +643,30 @@ export class Bitbucket {
         this.buildInnerError(err),
         'Error fetching users for workspace: %s',
         workspace
+      );
+    }
+  }
+
+  async *getTags(workspace: string, repoSlug: string): AsyncGenerator<Tag> {
+    try {
+      // Bitbucket does not support filtering tags by date nor sorting by date,
+      // so, we always pull all tags
+      const func = (): Promise<BitbucketResponse<Tag>> =>
+        this.limiter.schedule(() =>
+          this.client.repositories.listTags({
+            workspace,
+            repo_slug: repoSlug,
+            pagelen: this.pageSize,
+          })
+        ) as any;
+
+      yield* this.paginate<Tag>(func, (data) => this.buildTag(data));
+    } catch (err) {
+      throw new VError(
+        this.buildInnerError(err),
+        'Error fetching tags for repository %s/%s',
+        workspace,
+        repoSlug
       );
     }
   }
@@ -715,57 +762,23 @@ export class Bitbucket {
       date: data.date,
       message: data.message,
       type: data.type,
-      rendered: {
-        message: {
-          raw: data.rendered?.message?.raw,
-          markup: data.rendered?.message?.markup,
-          html: data.rendered?.message?.html,
-          type: data.rendered?.message?.type,
-        },
-      },
       repository: {
-        type: data.repository.type,
-        name: data.repository.name,
         fullName: data.repository.full_name,
-        uuid: data.repository.uuid,
-        links: {
-          htmlUrl: data.repository.links?.html?.href,
-        },
       },
       links: {
-        commentsUrl: data.links?.comments?.href,
         htmlUrl: data.links?.html?.href,
-        diffUrl: data.links?.diff?.href,
-        approveUrl: data.links?.approve?.href,
-        statusesUrl: data.links?.statuses?.href,
       },
       author: {
-        raw: data.author.raw,
-        type: data.author.type,
         user: {
           displayName: data.author.user?.display_name,
           uuid: data.author.user?.uuid,
           type: data.author.user?.type,
-          nickname: data.author.user?.nickname,
           accountId: data.author.user?.account_id,
           links: {
             htmlUrl: data.author.user?.links?.html?.href,
           },
         },
       },
-      summary: {
-        raw: data.summary.raw,
-        markup: data.summary.markup,
-        html: data.summary.html,
-        type: data.summary.type,
-      },
-      parents: data.parents.map((p: Dictionary<any>) => ({
-        hash: p.hash,
-        type: p.type,
-        links: {
-          htmlUrl: p.links?.html?.href,
-        },
-      })),
     };
   }
 
@@ -854,67 +867,6 @@ export class Bitbucket {
         name: data.environment_type?.name,
         type: data.environment_type?.type,
         rank: data.environment_type?.rank,
-      },
-    };
-  }
-
-  private buildIssue(data: Dictionary<any>): Issue {
-    return {
-      priority: data.priority,
-      kind: data.kind,
-      title: data.title,
-      state: data.state,
-      createdOn: data.created_on,
-      updatedOn: data.updated_on,
-      type: data.type,
-      votes: data.votes,
-      watches: data.watches,
-      id: data.id,
-      component: data.component,
-      version: data.version,
-      editedOn: data.edited_on,
-      milestone: data.milestone,
-      repository: {
-        type: data.repository.type,
-        name: data.repository.name,
-        fullName: data.repository.full_name,
-        uuid: data.repository.uuid,
-        links: {
-          htmlUrl: data.repository.links.links?.html?.href,
-        },
-      },
-      links: {
-        attachmentsUrl: data.links?.attachments?.href,
-        watchUrl: data.links?.watch?.href,
-        commentsUrl: data.links?.comments?.href,
-        htmlUrl: data.links?.html?.href,
-        voteUrl: data.links?.vote?.href,
-      },
-      reporter: {
-        displayName: data.reporter.display_name,
-        uuid: data.reporter.uuid,
-        type: data.reporter.type,
-        nickname: data.reporter.nickname,
-        accountId: data.reporter.account_id,
-        links: {
-          htmlUrl: data.reporter.links.links?.html?.href,
-        },
-      },
-      content: {
-        raw: data.content.raw,
-        markup: data.content.markup,
-        html: data.content.html,
-        type: data.content.type,
-      },
-      assignee: {
-        displayName: data.assignee.display_name,
-        uuid: data.assignee.uuid,
-        type: data.assignee.type,
-        nickname: data.assignee.nickname,
-        accountId: data.assignee.account_id,
-        links: {
-          htmlUrl: data.assignee.links?.html?.href,
-        },
       },
     };
   }
@@ -1083,7 +1035,6 @@ export class Bitbucket {
         displayName: data.author.display_name,
         uuid: data.author.uuid,
         type: data.author.type,
-        nickname: data.author.nickname,
         accountId: data.author.account_id,
         links: {
           htmlUrl: data.author.links?.html?.href,
@@ -1092,10 +1043,6 @@ export class Bitbucket {
       mergeCommit: data.merge_commit
         ? {
             hash: data.merge_commit.hash,
-            type: data.merge_commit.type,
-            links: {
-              htmlUrl: data.merge_commit.links?.html?.href,
-            },
           }
         : null,
       closedBy: data.closed_by
@@ -1103,7 +1050,6 @@ export class Bitbucket {
             displayName: data.closed_by.display_name,
             uuid: data.closed_by.uuid,
             type: data.closed_by.type,
-            nickname: data.closed_by.nickname,
             accountId: data.closed_by.account_id,
             links: {
               htmlUrl: data.closed_by.links?.html?.href,
@@ -1203,7 +1149,6 @@ export class Bitbucket {
               displayName: data.update?.author.display_name,
               uuid: data.update?.author.uuid,
               type: data.update?.author.type,
-              nickname: data.update?.author.nickname,
               accountId: data.update?.author.account_id,
               links: {
                 htmlUrl: data.update?.author.links?.html?.href,
@@ -1276,18 +1221,15 @@ export class Bitbucket {
       createdOn: data.created_on,
       updatedOn: data.updated_on,
       mainBranch: data.mainbranch?.name,
-      hasIssues: data.has_issues,
     };
   }
 
   private buildWorkspaceUser(data: Dictionary<any>): WorkspaceUser {
     return {
-      type: data.type,
       user: {
         displayName: data.user.display_name,
         uuid: data.user.uuid,
         type: data.user.type,
-        nickname: data.user.nickname,
         accountId: data.user.account_id,
         links: {
           htmlUrl: data.user.links?.html?.href,
@@ -1295,15 +1237,7 @@ export class Bitbucket {
       },
       workspace: {
         slug: data.workspace.slug,
-        type: data.workspace.type,
-        name: data.workspace.name,
         uuid: data.workspace.uuid,
-        links: {
-          htmlUrl: data.workspace.links?.html?.href,
-        },
-      },
-      links: {
-        htmlUrl: data.user.links?.html?.href,
       },
     };
   }
@@ -1320,6 +1254,19 @@ export class Bitbucket {
         ownersUrl: data.links?.owners?.href,
         repositoriesUrl: data.links?.repositories?.href,
         htmlUrl: data.links?.html?.href,
+      },
+    };
+  }
+
+  private buildTag(data: Dictionary<any>): Tag {
+    return {
+      name: data.name,
+      message: data.message,
+      target: {
+        hash: data.target?.hash,
+      },
+      repository: {
+        fullName: data.target?.repository?.full_name,
       },
     };
   }
