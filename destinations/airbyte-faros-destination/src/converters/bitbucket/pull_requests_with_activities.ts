@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   PRActivity,
+  PRDiffStat,
   PullRequest,
   PullRequestOrActivity,
   User,
@@ -8,7 +9,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {FileCollector} from '../common/vcs';
+import {FileCollector, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
 
@@ -68,11 +69,11 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     ).split('/');
     if (!workspace || !repo) return res;
 
-    const repoRef = BitbucketCommon.vcs_Repository(workspace, repo, source);
+    const repoKey = BitbucketCommon.vcs_Repository(workspace, repo, source);
 
     const commitHash = pullRequest?.mergeCommit?.hash;
     const mergeCommit = commitHash
-      ? {repository: repoRef, sha: commitHash, uid: commitHash}
+      ? {repository: repoKey, sha: commitHash, uid: commitHash}
       : null;
 
     let author = null;
@@ -80,14 +81,8 @@ export class PullRequestsWithActivities extends BitbucketConverter {
       author = {uid: pullRequest.author.accountId, source};
     }
 
-    // Collect files from diffStats
     pullRequest.diffStats?.forEach((diff) => {
-      if (diff.old?.path) {
-        this.fileCollector.collectFile(diff.old.path, repoRef);
-      }
-      if (diff.new?.path) {
-        this.fileCollector.collectFile(diff.new.path, repoRef);
-      }
+      res.push(...this.processDiffStat(repoKey, pullRequest, diff));
     });
 
     res.push({
@@ -110,9 +105,43 @@ export class PullRequestsWithActivities extends BitbucketConverter {
         diffStats: this.calculateDiffStats(pullRequest),
         author,
         mergeCommit,
-        repository: repoRef,
+        repository: repoKey,
       },
     });
+    return res;
+  }
+
+  private processDiffStat(
+    repoKey: RepoKey,
+    pullRequest: PullRequest,
+    diff: PRDiffStat
+  ): ReadonlyArray<DestinationRecord> {
+    const res: DestinationRecord[] = [];
+
+    const processDiffPath = (path: string): DestinationRecord => {
+      this.fileCollector.collectFile(path, repoKey);
+      return {
+        model: 'vcs_PullRequestFile',
+        record: {
+          pullRequest: {
+            number: pullRequest.id,
+            uid: pullRequest.id.toString(),
+            repository: repoKey,
+          },
+          file: {uid: path, repository: repoKey},
+          additions: diff.linesAdded,
+          deletions: diff.linesRemoved,
+        },
+      };
+    };
+
+    if (diff.old?.path) {
+      res.push(processDiffPath(diff.old.path));
+    }
+    if (diff.new?.path && diff.new.path !== diff.old?.path) {
+      res.push(processDiffPath(diff.new.path));
+    }
+
     return res;
   }
 

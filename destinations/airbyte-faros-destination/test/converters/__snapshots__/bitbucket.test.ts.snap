@@ -1696,8 +1696,8 @@ exports[`bitbucket pull_requests_with_activities 1`] = `
 Array [
   "Processed 16 records",
   "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 10 records",
-  "Would write records by model: {\\\\\\"vcs_File\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 13 records",
+  "Would write records by model: {\\\\\\"vcs_File\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestFile\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1845,6 +1845,36 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -1911,6 +1941,36 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 1,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "3",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -1956,6 +2016,36 @@ Array [
       "title": "Another test to open PR",
       "uid": "3",
       "updatedAt": "2024-09-06T12:46:42.048Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 1,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "2",
+      },
+      "source": "Bitbucket",
     },
   },
   Object {
