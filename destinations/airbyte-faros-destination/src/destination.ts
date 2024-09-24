@@ -74,6 +74,7 @@ interface SyncErrors {
   dst: SyncMessage[];
 }
 
+// This is used to wrap the version string and allow us to pass the source version back via function calls.
 interface SourceVersion {
   version?: string;
 }
