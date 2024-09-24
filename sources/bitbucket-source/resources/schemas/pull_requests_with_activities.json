@@ -54,17 +54,48 @@
             }
           }
         },
-        "diffStat": {
-          "type": "object",
-          "properties": {
-            "linesAdded": {
-              "type": "number"
-            },
-            "linesDeleted": {
-              "type": "number"
-            },
-            "filesChanged": {
-              "type": "number"
+        "diffStats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "linesRemoved": {
+                "type": "number"
+              },
+              "linesAdded": {
+                "type": "number"
+              },
+              "old": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "escapedPath": {
+                    "type": "string"
+                  }
+                }
+              },
+              "new": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "escapedPath": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
