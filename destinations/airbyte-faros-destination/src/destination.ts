@@ -24,6 +24,7 @@ import {
   SyncMode,
   wrapApiError,
 } from 'faros-airbyte-cdk';
+import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
@@ -71,6 +72,11 @@ export interface HttpAgents {
 interface SyncErrors {
   src: {fatal: SyncMessage[]; nonFatal: SyncMessage[]; warnings: SyncMessage[]};
   dst: SyncMessage[];
+}
+
+// This is used to wrap the version string and allow us to pass the source version back via function calls.
+interface SourceVersion {
+  version?: string;
 }
 
 /** Faros destination implementation. */
@@ -503,6 +509,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       src: {fatal: [], nonFatal: [], warnings: []},
       dst: [],
     };
+    const sourceVersion: SourceVersion = {};
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
@@ -604,7 +611,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   msg.sourceMode
                 );
               }
-            }
+            },
+            sourceVersion
           )) {
             await graphQLClient.flush();
             yield stateMessage;
@@ -642,6 +650,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.dst
                 ),
                 warnings: syncErrors.src.warnings,
+                sourceVersion: sourceVersion.version,
+                destinationVersion: ConnectorVersion,
               }
             );
           }
@@ -700,7 +710,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
     resetData?: () => Promise<void>,
-    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>
+    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>,
+    sourceVersion?: SourceVersion
   ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -770,6 +781,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               }
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
+              sourceVersion.version = msg.sourceVersion;
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
               logFiles?.writeSourceLogs(...msg.logs);
