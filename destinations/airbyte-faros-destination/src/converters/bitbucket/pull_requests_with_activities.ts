@@ -8,6 +8,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
+import {FileCollector} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
 
@@ -33,6 +34,8 @@ interface DiffStats {
 }
 
 export class PullRequestsWithActivities extends BitbucketConverter {
+  private fileCollector = new FileCollector();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_File',
     'vcs_PullRequest',
@@ -77,6 +80,16 @@ export class PullRequestsWithActivities extends BitbucketConverter {
       author = {uid: pullRequest.author.accountId, source};
     }
 
+    // Collect files from diffStats
+    pullRequest.diffStats?.forEach((diff) => {
+      if (diff.old?.path) {
+        this.fileCollector.collectFile(diff.old.path, repoRef);
+      }
+      if (diff.new?.path) {
+        this.fileCollector.collectFile(diff.new.path, repoRef);
+      }
+    });
+
     res.push({
       model: 'vcs_PullRequest',
       record: {
@@ -101,6 +114,12 @@ export class PullRequestsWithActivities extends BitbucketConverter {
       },
     });
     return res;
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return [...this.fileCollector.convertFiles()];
   }
 
   private toPrState(state: string): CategoryRef {
