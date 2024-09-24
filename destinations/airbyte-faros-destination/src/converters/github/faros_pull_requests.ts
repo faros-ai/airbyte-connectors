@@ -6,7 +6,8 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {File, FileKey, fileKey, fileKeyToString,RepoKey} from '../common/vcs';
+import {FileCollector} from '../common/vcs';
+import {File, FileKey, fileKey, fileKeyToString, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -23,7 +24,7 @@ type ReviewState = {
 
 export class FarosPullRequests extends GitHubConverter {
   private collectedBranches = new Map<string, BranchKey>();
-  private collectedFiles = new Map<string, File>();
+  private fileCollector = new FileCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -71,7 +72,7 @@ export class FarosPullRequests extends GitHubConverter {
     );
 
     pr.files.forEach((file) => {
-      this.collectFile(file.path, repoKey);
+      this.fileCollector.collectFile(file.path, repoKey);
     });
 
     let reviewCommentCount = 0;
@@ -202,7 +203,7 @@ export class FarosPullRequests extends GitHubConverter {
     return [
       ...this.convertBranches(),
       ...this.convertUsers(),
-      ...this.convertFiles(),
+      ...this.fileCollector.convertFiles(),
     ];
   }
 
@@ -228,26 +229,6 @@ export class FarosPullRequests extends GitHubConverter {
     return Array.from(this.collectedBranches.values()).map((branch) => ({
       model: 'vcs_Branch',
       record: branch,
-    }));
-  }
-
-  private collectFile(filePath: string, repoKey: RepoKey): void {
-    const key = fileKey(filePath, repoKey);
-    const keyStr = fileKeyToString(key);
-
-    if (!this.collectedFiles.has(keyStr)) {
-      const file: File = {
-        ...key,
-        path: filePath,
-      };
-      this.collectedFiles.set(keyStr, file);
-    }
-  }
-
-  private convertFiles(): DestinationRecord[] {
-    return Array.from(this.collectedFiles.values()).map((file) => ({
-      model: 'vcs_File',
-      record: file,
     }));
   }
 }
