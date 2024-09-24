@@ -6,6 +6,7 @@ import {
   User,
 } from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
@@ -25,10 +26,18 @@ enum PullRequestReviewStateCategory {
   CUSTOM = 'Custom',
 }
 
+interface DiffStats {
+  linesAdded: number;
+  linesDeleted: number;
+  filesChanged: number;
+}
+
 export class PullRequestsWithActivities extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_File',
     'vcs_PullRequest',
     'vcs_PullRequestComment',
+    'vcs_PullRequestFile',
     'vcs_PullRequestReview',
   ];
 
@@ -85,7 +94,7 @@ export class PullRequestsWithActivities extends BitbucketConverter {
         mergedAt: Utils.toDate(pullRequest.calculatedActivity?.mergedAt),
         commentCount: pullRequest.commentCount,
         commitCount: pullRequest.calculatedActivity?.commitCount,
-        diffStats: pullRequest.diffStat,
+        diffStats: this.calculateDiffStats(pullRequest),
         author,
         mergeCommit,
         repository: repoRef,
@@ -211,5 +220,37 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     if (prActivity?.update && prActivity?.update?.state === 'DECLINED')
       return {category: PullRequestReviewStateCategory.DISMISSED, detail: null};
     return undefined;
+  }
+
+  private calculateDiffStats(pullRequest: PullRequest): DiffStats {
+    if (!pullRequest.diffStats) {
+      return {
+        filesChanged: 0,
+        linesAdded: 0,
+        linesDeleted: 0,
+      };
+    }
+
+    const filesChanged = new Set(
+      pullRequest.diffStats
+        .flatMap((diff) => [diff.old?.path, diff.new?.path])
+        .filter((path) => !isNil(path))
+    ).size;
+
+    const linesAdded = pullRequest.diffStats.reduce(
+      (sum, diff) => sum + diff.linesAdded,
+      0
+    );
+
+    const linesDeleted = pullRequest.diffStats.reduce(
+      (sum, diff) => sum + diff.linesRemoved,
+      0
+    );
+
+    return {
+      filesChanged,
+      linesAdded,
+      linesDeleted,
+    };
   }
 }
