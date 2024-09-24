@@ -23,6 +23,17 @@ export type File = FileKey & {
   path: string;
 };
 
+export function fileKey(filePath: string, repoKey: RepoKey): FileKey {
+  return {
+    uid: filePath,
+    repository: repoKey,
+  };
+}
+
+export function fileKeyToString(fileKey: FileKey): string {
+  return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
+}
+
 export function processPullRequestFileDiffs(
   files: ReadonlyArray<FileDiff>,
   pullRequest: PullRequestKey

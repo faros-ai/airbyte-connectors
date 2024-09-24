@@ -6,7 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {File,FileKey, RepoKey} from '../common/vcs';
+import {File, FileKey, fileKey, fileKeyToString,RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -270,17 +270,6 @@ function branchKey(
 
 function branchKeyToString(branchKey: BranchKey): string {
   return `${branchKey.repository.organization.uid}/${branchKey.repository.name}/${branchKey.name}`;
-}
-
-function fileKey(filePath: string, repoKey: RepoKey): FileKey {
-  return {
-    uid: filePath,
-    repository: repoKey,
-  };
-}
-
-function fileKeyToString(fileKey: FileKey): string {
-  return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
 }
 
 function getReviewState(state: string): ReviewState {
