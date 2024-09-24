@@ -1696,8 +1696,8 @@ exports[`bitbucket pull_requests_with_activities 1`] = `
 Array [
   "Processed 16 records",
   "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 7 records",
-  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 9 records",
+  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1705,6 +1705,32 @@ Array [
 
 exports[`bitbucket pull_requests_with_activities 2`] = `
 Array [
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "comment": "Another comment",
+      "createdAt": "2024-09-06T13:29:00.798Z",
+      "number": 538893465,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "source": "Bitbucket",
+      "uid": "538893465",
+      "updatedAt": "2024-09-06T13:29:00.799Z",
+    },
+  },
   Object {
     "vcs_PullRequestReview": Object {
       "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/1",
@@ -1761,6 +1787,32 @@ Array [
       },
       "submittedAt": "2024-09-05T20:38:36.624Z",
       "uid": "624",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "comment": "Testing whether a comment counts as an update for the PR",
+      "createdAt": "2024-09-05T20:34:50.654Z",
+      "number": 538661766,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "source": "Bitbucket",
+      "uid": "538661766",
+      "updatedAt": "2024-09-05T20:34:50.654Z",
     },
   },
   Object {

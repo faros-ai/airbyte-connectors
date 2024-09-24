@@ -1,14 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/bitbucket';
-import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
-import {
-  Converter,
-  DestinationRecord,
-  parseObjectConfig,
-  StreamContext,
-} from '../converter';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 interface BitbucketConfig {
   application_mapping?: ApplicationMapping;
@@ -31,11 +25,6 @@ export enum UserTypeCategory {
 
 export type PartialUser = Partial<User>;
 
-export interface ProjectKey {
-  uid: string;
-  source: string;
-}
-
 export interface RepositoryRecord {
   uid: string;
   name: string;
@@ -46,44 +35,6 @@ export interface RepositoryRecord {
 export class BitbucketCommon {
   // max length for free-form description text field
   static MAX_DESCRIPTION_LENGTH = 1000;
-
-  static tms_ProjectBoard_with_TaskBoard(
-    projectKey: ProjectKey,
-    name: string,
-    description: string | null,
-    createdAt: string | null | undefined,
-    updatedAt: string | null | undefined
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'tms_Project',
-        record: {
-          ...projectKey,
-          name: name,
-          description: Utils.cleanAndTruncate(
-            description,
-            BitbucketCommon.MAX_DESCRIPTION_LENGTH
-          ),
-          createdAt: Utils.toDate(createdAt),
-          updatedAt: Utils.toDate(updatedAt),
-        },
-      },
-      {
-        model: 'tms_TaskBoard',
-        record: {
-          ...projectKey,
-          name,
-        },
-      },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: projectKey,
-          project: projectKey,
-        },
-      },
-    ];
-  }
 
   static vcs_Repository(
     workspace: string,

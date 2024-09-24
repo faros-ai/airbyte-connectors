@@ -144,29 +144,25 @@ export class PullRequestsWithActivities extends BitbucketConverter {
 
     const user: User = change?.author ?? change?.user;
     const reviewer = user?.accountId ? {uid: user.accountId, source} : null;
-    const orgRef = {
-      uid: prActivity?.pullRequest?.workspace?.toLowerCase(),
-      source,
-    };
-    const repoRef = {
-      uid: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
-      name: prActivity?.pullRequest?.repositorySlug?.toLowerCase(),
-      organization: orgRef,
-    };
-    if (!orgRef.uid || !repoRef.uid) {
+    const {workspace, repositorySlug} = prActivity.pullRequest;
+    if (!workspace || !repositorySlug) {
       ctx.logger.info(
-        `Pull request activity has no repo ref: ${JSON.stringify(prActivity)}`
+        `Pull request activity has no repository or workspace ref: ${JSON.stringify(prActivity)}`
       );
       return res;
     }
+    const repoRef = BitbucketCommon.vcs_Repository(
+      workspace,
+      repositorySlug,
+      source
+    );
 
     const pullRequest = {
       repository: repoRef,
       number: prActivity.pullRequest.id,
       uid: prActivity.pullRequest.id.toString(),
     };
-
-    if (prActivity?.comment && (prActivity?.comment as any)?.inline) {
+    if (prActivity?.comment) {
       res.push({
         model: 'vcs_PullRequestComment',
         record: {
@@ -182,20 +178,19 @@ export class PullRequestsWithActivities extends BitbucketConverter {
           pullRequest,
         },
       });
-    } else {
-      res.push({
-        model: 'vcs_PullRequestReview',
-        record: {
-          number: id,
-          uid: id.toString(),
-          htmlUrl: prActivity.pullRequest.links.htmlUrl,
-          pullRequest,
-          reviewer,
-          state,
-          submittedAt: date,
-        },
-      });
     }
+    res.push({
+      model: 'vcs_PullRequestReview',
+      record: {
+        number: id,
+        uid: id.toString(),
+        htmlUrl: prActivity.pullRequest.links.htmlUrl,
+        pullRequest,
+        reviewer,
+        state,
+        submittedAt: date,
+      },
+    });
 
     return res;
   }
