@@ -14,6 +14,15 @@ export type PullRequestKey = {
 };
 export type UserKey = {uid: string; source: string};
 
+export type FileKey = {
+  uid: string;
+  repository: RepoKey;
+};
+
+export type File = FileKey & {
+  path: string;
+};
+
 export function processPullRequestFileDiffs(
   files: ReadonlyArray<FileDiff>,
   pullRequest: PullRequestKey

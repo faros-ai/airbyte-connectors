@@ -6,7 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {RepoKey} from '../common/vcs';
+import {File,FileKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -14,15 +14,6 @@ type BranchKey = {
   uid: string;
   name: string;
   repository: RepoKey;
-};
-
-type FileKey = {
-  uid: string;
-  repository: RepoKey;
-};
-
-type File = FileKey & {
-  path: string;
 };
 
 type ReviewState = {
