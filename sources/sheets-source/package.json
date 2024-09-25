@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.377.0",
-    "faros-airbyte-cdk": "0.0.1",
-    "faros-airbyte-common": "0.0.1",
+    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "fs-extra": "^11.2.0",
     "google-spreadsheet": "^3.1.15",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",

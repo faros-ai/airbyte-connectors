@@ -1139,8 +1139,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       onLoadError
     );
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
-      ? this.jsonataConverter ?? converter
-      : converter ?? this.jsonataConverter;
+      ? (this.jsonataConverter ?? converter)
+      : (converter ?? this.jsonataConverter);
   }
 
   private async writeRecord(

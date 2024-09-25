@@ -36,7 +36,7 @@
     "is-retry-allowed": "^2.2.0",
     "commander": "^9.3.0",
     "luxon": "^3.4.4",
-    "faros-airbyte-cdk": "0.0.1",
+    "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },
   "jest": {

@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "avsc": "5.7.7",
-    "faros-airbyte-cdk": "0.0.1",
-    "faros-airbyte-common": "0.0.1",
+    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "faros-js-client": "^0.5.2",
     "graphql": "^16.8.1",
     "verror": "^1.10.1"

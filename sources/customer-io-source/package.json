@@ -33,7 +33,7 @@
     "axios": "^1.7.4",
     "axios-mock-adapter": "^1.20.0",
     "commander": "^9.3.0",
-    "faros-airbyte-cdk": "0.0.1",
+    "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },
   "jest": {
