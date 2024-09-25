@@ -270,13 +270,9 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     return undefined;
   }
 
-  private calculateDiffStats(pullRequest: PullRequest): DiffStats {
+  private calculateDiffStats(pullRequest: PullRequest): DiffStats | null {
     if (!pullRequest.diffStats) {
-      return {
-        filesChanged: 0,
-        linesAdded: 0,
-        linesDeleted: 0,
-      };
+      return null;
     }
 
     const filesChanged = new Set(
