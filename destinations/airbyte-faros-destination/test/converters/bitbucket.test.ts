@@ -28,12 +28,23 @@ describe('bitbucket', () => {
     });
   });
 
-  test('pull_requests_with_activities', async () => {
-    await destinationWriteTest({
-      configPath,
-      catalogPath: 'test/resources/bitbucket/catalog.json',
-      inputRecordsPath: 'bitbucket/pull_requests_with_activities.log',
-      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+  describe('pull_requests_with_activities', () => {
+    test('pull_requests_with_activities', async () => {
+      await destinationWriteTest({
+        configPath,
+        catalogPath: 'test/resources/bitbucket/catalog.json',
+        inputRecordsPath: 'bitbucket/pull_requests_with_activities.log',
+        checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      });
+    });
+
+    test('diff stats', async () => {
+      await destinationWriteTest({
+        configPath,
+        catalogPath: 'test/resources/bitbucket/catalog.json',
+        inputRecordsPath: 'bitbucket/pull_requests_diff_stats.log',
+        checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      });
     });
   });
 });
