@@ -388,7 +388,7 @@ export class BitbucketServer {
   private async parseRawDiff(
     data: Readable
   ): Promise<ReadonlyArray<PullRequestDiff['files'][0]>> {
-    const rl = createInterface({
+    const lineReader = createInterface({
       input: data,
       crlfDelay: Infinity,
     });
@@ -403,7 +403,7 @@ export class BitbucketServer {
     };
 
     // read and parse each line accumulating a complete file diff
-    for await (const line of rl) {
+    for await (const line of lineReader) {
       if (line.startsWith('diff --git')) {
         if (currentFile) {
           parseAndPushDiff();
