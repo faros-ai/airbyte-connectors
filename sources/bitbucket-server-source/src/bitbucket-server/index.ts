@@ -110,8 +110,11 @@ export class BitbucketServer {
       headers: {
         Authorization:
           auth.type === 'token'
-            ? `Bearer ${auth.token}`
-            : `Basic ${Buffer.from(`${auth.username}:${auth.password}`).toString('base64')}`,
+            ? 'Bearer ' + auth.token
+            : 'Basic ' +
+              Buffer.from(`${auth.username}:${auth.password}`).toString(
+                'base64'
+              ),
       },
     });
     const bb = new BitbucketServer(
