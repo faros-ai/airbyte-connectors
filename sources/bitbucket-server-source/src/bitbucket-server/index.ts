@@ -108,13 +108,12 @@ export class BitbucketServer {
       baseURL: baseUrl,
       maxContentLength: Infinity, //default is 2000 bytes
       headers: {
-        Authorization:
-          auth.type === 'token'
-            ? 'Bearer ' + auth.token
-            : 'Basic ' +
-              Buffer.from(`${auth.username}:${auth.password}`).toString(
-                'base64'
-              ),
+        Authorization: config.token
+          ? 'Bearer ' + config.token
+          : 'Basic ' +
+            Buffer.from(`${config.username}:${config.password}`).toString(
+              'base64'
+            ),
       },
     });
     const bb = new BitbucketServer(
@@ -396,7 +395,7 @@ export class BitbucketServer {
     const files = [];
     let currentFile: string | null = null;
 
-    const parseAndPushDiff = () => {
+    const parseAndPushDiff = (): void => {
       const fileDiff = parseDiff(currentFile)[0];
       files.push(
         pick(fileDiff, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
