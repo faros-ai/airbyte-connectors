@@ -1,4 +1,5 @@
 import Client, {ResponseError, Schema} from '@atlassian/bitbucket-server';
+import axios, {AxiosInstance} from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Commit,
@@ -14,6 +15,8 @@ import {
 import {bucket} from 'faros-airbyte-common/common';
 import {pick} from 'lodash';
 import parseDiff from 'parse-diff';
+import {createInterface} from 'readline';
+import {Readable} from 'stream';
 import {AsyncOrSync} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -62,6 +65,7 @@ export class BitbucketServer {
 
   constructor(
     private readonly client: ExtendedClient,
+    private readonly streamableClient: AxiosInstance,
     private readonly pageSize: number,
     private readonly logger: AirbyteLogger,
     private readonly startDate: Date,
@@ -99,9 +103,20 @@ export class BitbucketServer {
       startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS)
     );
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
-
+    const streamableClient = axios.create({
+      responseType: 'stream',
+      baseURL: baseUrl,
+      maxContentLength: Infinity, //default is 2000 bytes
+      headers: {
+        Authorization:
+          auth.type === 'token'
+            ? `Bearer ${auth.token}`
+            : `Basic ${Buffer.from(`${auth.username}:${auth.password}`).toString('base64')}`,
+      },
+    });
     const bb = new BitbucketServer(
       client,
+      streamableClient,
       pageSize,
       logger,
       startDate,
@@ -332,15 +347,14 @@ export class BitbucketServer {
       );
       for (const pr of await prs) {
         try {
-          const {data} = await this.client[MEP].pullRequests.getDiff({
-            projectKey,
-            repositorySlug,
-            pullRequestId: pr.id,
-          });
+          const response = await this.streamableClient.get<Readable>(
+            `projects/${projectKey}/repos/${repositorySlug}/pull-requests/${pr.id}.diff`
+          );
+
+          const files = await this.parseRawDiff(response.data);
+
           yield {
-            files: parseDiff(data).map((f) =>
-              pick(f, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
-            ),
+            files,
             computedProperties: {
               pullRequest: {
                 id: pr.id,
@@ -366,6 +380,44 @@ export class BitbucketServer {
         `Error fetching pull request activities for repository ${fullName}`
       );
     }
+  }
+
+  // Read and parse raw diff stream into a list of files with additions, deletions, from, to, deleted, and new
+  private async parseRawDiff(
+    data: Readable
+  ): Promise<ReadonlyArray<PullRequestDiff['files'][0]>> {
+    const rl = createInterface({
+      input: data,
+      crlfDelay: Infinity,
+    });
+    const files = [];
+    let currentFile: string | null = null;
+
+    const parseAndPushDiff = () => {
+      const fileDiff = parseDiff(currentFile)[0];
+      files.push(
+        pick(fileDiff, 'deletions', 'additions', 'from', 'to', 'deleted', 'new')
+      );
+    };
+
+    // read and parse each line accumulating a complete file diff
+    for await (const line of rl) {
+      if (line.startsWith('diff --git')) {
+        if (currentFile) {
+          parseAndPushDiff();
+          currentFile = null;
+        }
+        currentFile = line;
+      } else {
+        currentFile += `\n${line}`;
+      }
+    }
+
+    // process the last file diff
+    if (currentFile) {
+      parseAndPushDiff();
+    }
+    return files;
   }
 
   @Memoize(
