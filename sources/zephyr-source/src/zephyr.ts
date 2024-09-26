@@ -1,11 +1,10 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, base64Encode} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
-import {values} from 'lodash';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
-import {AccessToken, Authentication, UserPassword, ZephyrConfig} from './types';
+import {AccessToken, UserPassword, ZephyrConfig} from './types';
 
 const ZEPHYR_CLOUD_BASE_URL = 'https://api.zephyrscale.smartbear.com/v2';
 const ZEPHYR_API_DEFAULT_TIMEOUT = 0;
@@ -76,7 +75,7 @@ export class Zephyr {
   }
 
   async checkConnection(): Promise<void> {
-    await this.api.get('/healthcheck');
+    await this.api.get('/rest/auth/1/session');
   }
 
   private async *iterate<V>(
@@ -97,7 +96,9 @@ export class Zephyr {
     } while (!isLast);
   }
 
-  async getTestCases(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getTestCases(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const plans: any[] = [];
     // TODO - Add real api call and return the response
     // Example
@@ -119,23 +120,174 @@ export class Zephyr {
     return plans;
   }
 
-  async getTestCycles(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getProjectId(projectKey?: string): Promise<string> {
+    const response = await this.api.get(
+      `rest/api/latest/project/${projectKey}`
+    );
+    const projectId = response.data?.id;
+    return projectId;
+  }
+
+  async getProjectVersions(projectKey?: string): Promise<ReadonlyArray<any>> {
+    const response = await this.api.get(
+      `rest/api/latest/project/${projectKey}/versions`
+    );
+    const versions: any[] = [];
+    const versionList = response.data;
+
+    for (const versionData of versionList) {
+      const {id, name, projectId, ...data} = versionData;
+
+      versions.push({
+        id,
+        name,
+        projectId,
+        ...data,
+      });
+    }
+
+    return versions;
+  }
+
+  async getTestCycles(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const cycles: any[] = [];
-    cycles.push({
-      id: 1,
-      key: 'key',
-      name: 'name',
-    });
+    const projectVersions = await this.getProjectVersions(project.key);
+    const configuredVersions = project.versions;
+    const versionsToGetExecutionsFrom = [];
+    // filter fetch versions to match the configured versions
+    if (configuredVersions.length === 0) {
+      versionsToGetExecutionsFrom.push(...projectVersions);
+    } else {
+      versionsToGetExecutionsFrom.push(
+        ...projectVersions.filter(({name: versionName}) =>
+          configuredVersions.includes(versionName)
+        )
+      );
+    }
+    if (versionsToGetExecutionsFrom.length === 0) {
+      return [];
+    }
+
+    const cyclePromises = versionsToGetExecutionsFrom.map(
+      ({id: versionId, projectId}) =>
+        this.api.get('/rest/zapi/latest/cycle', {
+          params: {projectId, versionId},
+        })
+    );
+    const responses = await Promise.all(cyclePromises);
+    for (const response of responses) {
+      const values = response.data;
+      const keys = Object.keys(values);
+      for (const key of keys) {
+        // check if id is a positive number
+        if (Number.isInteger(parseInt(key, 10)) && parseInt(key, 10) > 0) {
+          const cycleData = values[key];
+          const {name, versionId, projectId, ...data} = cycleData;
+
+          cycles.push({
+            id: key,
+            name,
+            projectId,
+            versionId,
+            ...data,
+          });
+        }
+      }
+    }
+
     return cycles;
   }
 
-  async getTestExecutions(projectKey?: string): Promise<ReadonlyArray<any>> {
+  async getTestCycleFolders(
+    projectId: string,
+    versionId: string,
+    cycleId: string
+  ): Promise<ReadonlyArray<any>> {
+    const {data} = await this.api.get(
+      `/rest/zapi/latest/cycle/${cycleId}/folders`,
+      {
+        params: {projectId, versionId},
+      }
+    );
+
+    const formattedCycleFoldersData = data.map(({folderId, ...folderData}) => ({
+      id: folderId,
+      ...folderData,
+    }));
+
+    return formattedCycleFoldersData;
+  }
+
+  async getTestExecutions(
+    project: Record<string, any>
+  ): Promise<ReadonlyArray<any>> {
     const testExecutions: any[] = [];
-    testExecutions.push({
-      id: 1,
-      key: 'key',
-      name: 'name',
-    });
+    const testCycles = await this.getTestCycles(project);
+
+    // filter fetch cycles to match the configured cycles
+    const configuredCycles = project.cycles;
+    const cyclesToGetExecutionsFrom = [];
+    if (configuredCycles.length === 0) {
+      cyclesToGetExecutionsFrom.push(...testCycles);
+    } else {
+      cyclesToGetExecutionsFrom.push(
+        ...testCycles.filter((cycle) => configuredCycles.includes(cycle.name))
+      );
+    }
+
+    const executionPromises = await Promise.all(
+      cyclesToGetExecutionsFrom.map(
+        async ({
+          id: cycleId,
+          projectId,
+          versionId,
+          totalCycleExecutions,
+          totalFolders,
+        }) => {
+          const executionPromisesList = [];
+
+          if ((totalCycleExecutions ?? 0) > 0) {
+            executionPromisesList.push(
+              this.api.get('/rest/zapi/latest/execution', {params: {cycleId}})
+            );
+          }
+
+          if ((totalFolders ?? 0) > 0) {
+            const cycleFolders = await this.getTestCycleFolders(
+              projectId,
+              versionId,
+              cycleId
+            );
+
+            executionPromisesList.push(
+              cycleFolders.map(({id: folderId}) =>
+                this.api.get('/rest/zapi/latest/execution', {
+                  params: {cycleId, folderId},
+                })
+              )
+            );
+          }
+          return executionPromisesList;
+        }
+      )
+    );
+
+    const responses = await Promise.all(executionPromises.flat(3));
+
+    for (const response of responses) {
+      const {status, executions} = response.data;
+
+      executions.forEach((executionData) => {
+        const {executionStatus: executionStatusId} = executionData;
+        testExecutions.push({
+          ...executionData,
+          executionStatusName: status[executionStatusId]?.name,
+        });
+      });
+    }
+
     return testExecutions;
   }
 }

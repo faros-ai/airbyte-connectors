@@ -34,10 +34,7 @@
                 "airbyte_secret": true
               }
             },
-            "required": [
-              "username",
-              "password"
-            ],
+            "required": ["username", "password"],
             "additionalProperties": false
           },
           {
@@ -61,7 +58,29 @@
         "title": "Project Keys",
         "description": "List of Jira project keys to sync.",
         "items": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The project key."
+            },
+            "versions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of versions for the project."
+            },
+            "cycles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of cycles for the project."
+            }
+          },
+          "required": ["key"],
+          "additionalProperties": false
         }
       },
       "api_timeout": {
