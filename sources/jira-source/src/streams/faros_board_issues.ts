@@ -196,9 +196,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
       configStartDate.getTime()
     );
 
-    return {
-      earliestIssueUpdateTimestamp,
-    };
+    return {earliestIssueUpdateTimestamp};
   }
 
   private wrapJql(jql: string): string {
