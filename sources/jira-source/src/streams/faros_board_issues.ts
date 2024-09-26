@@ -1,43 +1,53 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {State} from 'faros-airbyte-cdk/lib/sources/state';
 import {IssueCompact} from 'faros-airbyte-common/jira';
 import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
 import {
-  BoardIssues,
   BoardIssuesState,
   BoardStreamSlice,
   StreamWithBoardSlices,
 } from './common';
 
+type BoardIssues = Record<string, string[]>;
+
+interface BoardIssueTrackerState {
+  boardIssues: BoardIssues;
+}
+
+// TODO: add unit tests of this class
 class BoardIssueTracker {
   private readonly seenIssues: Set<string> = new Set();
   private readonly existingIssues: Set<string> = new Set();
 
   constructor(
-    state: BoardIssuesState,
+    private readonly state: BoardIssueTrackerState | undefined,
     private readonly boardId: string
   ) {
-    if (boardId in (state.boardIssues ?? {})) {
-      state.boardIssues.boardId.forEach((issue) => {
-        console.log(`adding existing issue: ${issue}`);
+    if (Array.isArray(state?.boardIssues?.[boardId])) {
+      state.boardIssues[boardId].forEach((issue) => {
         this.existingIssues.add(issue);
       });
     }
   }
 
   /**
-   * Tracks issues for a board.
    * Reconciles prior state with new state by adding or deleting issues.
    * Returns true if the issue has not been seen before.
    * @param issue
    */
-  trackIssue(issue: IssueCompact): boolean {
+  isNewIssue(issue: IssueCompact): boolean {
     this.seenIssues.add(issue.key);
     return !this.existingIssues.has(issue.key);
   }
 
+  /**
+   * Returns issues from prior state that are no longer present.
+   * The returned records contain special `isDeleted: true` property.
+   * The converter will use this to create DELETE records.
+   */
   deletedIssues(): IssueCompact[] {
     return Array.from(this.existingIssues)
       .filter((key) => !this.seenIssues.has(key))
@@ -46,14 +56,23 @@ class BoardIssueTracker {
       });
   }
 
+  /**
+   * Returns the current state of the board issues.
+   */
   boardIssues(): BoardIssues {
-    return {[this.boardId]: Array.from(this.seenIssues.values())};
+    return {
+      ...this.state?.boardIssues,
+      [this.boardId]: Array.from(this.seenIssues.values()),
+    };
   }
 }
 
-export class FarosBoardIssues extends StreamWithBoardSlices {
-  private boardIssues: BoardIssues | undefined;
+// TODO: Add source_id to poseidon
+// TODO: reset state in destination writeEntries
+// TODO: Replace with actual account ID
+const ACCOUNT_ID = 'my-as';
 
+export class FarosBoardIssues extends StreamWithBoardSlices {
   get dependencies(): ReadonlyArray<string> {
     return ['faros_boards'];
   }
@@ -74,9 +93,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
   ): AsyncGenerator<IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
-    const tracker = new BoardIssueTracker(streamState, boardId);
-    // reset for each board
-    this.boardIssues = undefined;
+    const tracker = await this.createBoardIssueTracker(boardId);
     const boardConfig = await jira.getBoardConfiguration(boardId);
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
     // Only fetch board issues updated since start of date range and not all issues on the board.
@@ -97,7 +114,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
           key: issue,
           boardId,
         };
-        if (tracker.trackIssue(maybe)) {
+        if (tracker.isNewIssue(maybe)) {
           last = maybe;
         }
       }
@@ -111,13 +128,62 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
         `Failed to sync board ${boardConfig.name} with id ${boardId} due to invalid filter. Skipping.`
       );
     }
+    // TODO: transform these into DELETE records in the converter
     for (const issue of tracker.deletedIssues()) {
       yield issue;
     }
+    await this.updateBoardIssueState(tracker);
     if (last) {
-      this.boardIssues = tracker.boardIssues();
       yield last;
     }
+  }
+
+  private async updateBoardIssueState(
+    tracker: BoardIssueTracker
+  ): Promise<void> {
+    if (this.farosClient) {
+      this.logger.info('Updating board issue state in Faros');
+      try {
+        const body = {
+          state: State.compress({
+            boardIssues: tracker.boardIssues(),
+          }).data,
+        };
+        await this.farosClient.request(
+          'PUT',
+          `/accounts/${ACCOUNT_ID}/state`,
+          body
+        );
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to update board issue state in Faros: ${e?.message}`
+        );
+      }
+    }
+  }
+
+  private async createBoardIssueTracker(
+    boardId: string
+  ): Promise<BoardIssueTracker> {
+    let boardIssueState: any;
+    if (this.farosClient) {
+      this.logger.info('Loading board issue state from Faros');
+      try {
+        const res: any = await this.farosClient.request(
+          'GET',
+          `/accounts/${ACCOUNT_ID}/state`
+        );
+        boardIssueState = State.decompress({
+          data: res.state,
+          format: 'base64/gzip',
+        });
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to load board issue state from Faros: ${e?.message}`
+        );
+      }
+    }
+    return new BoardIssueTracker(boardIssueState, boardId);
   }
 
   getUpdatedState(currentStreamState: BoardIssuesState): BoardIssuesState {
@@ -132,10 +198,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
 
     return {
       earliestIssueUpdateTimestamp,
-      boardIssues: {
-        ...currentStreamState.boardIssues,
-        ...this.boardIssues,
-      },
     };
   }
 
