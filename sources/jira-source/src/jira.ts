@@ -51,6 +51,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly reject_unauthorized?: boolean;
   readonly concurrency_limit?: number;
   readonly max_retries?: number;
+  readonly retry_delay?: number;
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
@@ -135,8 +136,9 @@ const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
 const DEFAULT_REJECT_UNAUTHORIZED = true;
 const DEFAULT_CONCURRENCY_LIMIT = 5;
 const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_RETRY_DELAY = 5_000;
 const DEFAULT_PAGE_SIZE = 250;
-const DEFAULT_TIMEOUT = 120000; // 2 minutes
+const DEFAULT_TIMEOUT = 120_000; // 2 minutes
 const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
@@ -226,7 +228,9 @@ export class Jira {
         // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
         paramsSerializer: {indexes: null},
       },
+      isCloud,
       maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
+      retryDelay: cfg.retry_delay ?? DEFAULT_RETRY_DELAY,
       logger: logger,
     });
 
