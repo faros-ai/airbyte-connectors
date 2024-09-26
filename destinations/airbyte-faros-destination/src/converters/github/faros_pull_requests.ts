@@ -7,7 +7,7 @@ import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
 import {FileCollector} from '../common/vcs';
-import {File, FileKey, fileKey, fileKeyToString, RepoKey} from '../common/vcs';
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -23,8 +23,8 @@ type ReviewState = {
 };
 
 export class FarosPullRequests extends GitHubConverter {
-  private collectedBranches = new Map<string, BranchKey>();
-  private fileCollector = new FileCollector();
+  private readonly collectedBranches = new Map<string, BranchKey>();
+  private readonly fileCollector = new FileCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',

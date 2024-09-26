@@ -35,7 +35,7 @@ interface DiffStats {
 }
 
 export class PullRequestsWithActivities extends BitbucketConverter {
-  private fileCollector = new FileCollector();
+  private readonly fileCollector = new FileCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_File',

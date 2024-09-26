@@ -108,7 +108,7 @@ export function processPullRequestFileDiffs(
 }
 
 export class FileCollector {
-  private collectedFiles = new Map<string, File>();
+  private readonly collectedFiles = new Map<string, File>();
 
   collectFile(filePath: string, repoKey: RepoKey): void {
     const key = fileKey(filePath, repoKey);
