@@ -23,6 +23,7 @@ import {
   isStateMessage,
   SyncMode,
 } from '../protocol';
+import {ConnectorVersion} from '../runner';
 import {AirbyteSource} from './source';
 import {State} from './state';
 import {AirbyteStreamBase} from './streams/stream-base';
@@ -144,7 +145,8 @@ export abstract class AirbyteSourceBase<
       {data: maybeCompressState(config, state)},
       redactedConfig,
       this.type,
-      this.mode(config)
+      this.mode(config),
+      ConnectorVersion
     );
 
     // TODO: assert all streams exist in the connector

@@ -22,4 +22,5 @@ export interface BitbucketConfig extends AirbyteConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
+  readonly requestedStreams?: Set<string>;
 }

@@ -27,4 +27,13 @@ describe('bitbucket', () => {
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
+
+  test('pull_requests_with_activities', async () => {
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/bitbucket/catalog.json',
+      inputRecordsPath: 'bitbucket/pull_requests_with_activities.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
 });

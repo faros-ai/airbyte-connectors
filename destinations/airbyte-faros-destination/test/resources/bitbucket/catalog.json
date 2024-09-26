@@ -38,13 +38,7 @@
     },
     {
       "stream": {
-        "name": "mytestsource__bitbucket__pull_request_activities"
-      },
-      "destination_sync_mode": "overwrite"
-    },
-    {
-      "stream": {
-        "name": "mytestsource__bitbucket__pull_requests"
+        "name": "mytestsource__bitbucket__pull_requests_with_activities"
       },
       "destination_sync_mode": "overwrite"
     },

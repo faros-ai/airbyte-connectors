@@ -47,7 +47,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
 
@@ -73,7 +74,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
@@ -131,6 +133,7 @@ describe('index', () => {
             workspaces: getWorkspacesMockedImplementation(),
           },
           logger,
+          new Set(),
           config
         );
       },
@@ -248,6 +251,116 @@ describe('index', () => {
             workspaces: getSingleWorkspaceMockedImplementation(),
           },
           logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull_requests_with_activities', async () => {
+    const configPaths = [
+      'pull_requests_with_activities/config_run_mode_minimum.json',
+      'pull_requests_with_activities/config_run_mode_full.json',
+    ];
+    for (const configPath of configPaths) {
+      await sourceReadTest({
+        source,
+        configOrPath: configPath,
+        catalogOrPath: 'pull_requests_with_activities/catalog.json',
+        onBeforeReadResultConsumer: () => {
+          setupBitbucketInstance(
+            {
+              repositories: {
+                list: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'repositories/repository.json'
+                    ),
+                  },
+                }),
+                listPullRequests: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/pull_requests.json'
+                    ),
+                  },
+                }),
+                listPullRequestActivities: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/activities.json'
+                    ),
+                  },
+                }),
+              },
+              pullrequests: {
+                getDiffStat: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/diff_stat.json'
+                    ),
+                  },
+                }),
+              },
+              workspaces: getWorkspacesMockedImplementation(),
+            },
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    }
+  });
+
+  test('pr merge commit sha resolution', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath:
+        'pr_merge_commit_sha_resolution/config_run_mode_minimum.json',
+      catalogOrPath: 'pr_merge_commit_sha_resolution/catalog.json',
+      onBeforeReadResultConsumer: () => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+              listPullRequests: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/pull_requests.json'
+                  ),
+                },
+              }),
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/commits.json'
+                  ),
+                },
+              }),
+            },
+            pullrequests: {
+              getDiffStat: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/diff_stat.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getWorkspacesMockedImplementation(),
+          },
+          logger,
+          new Set(['pull_requests_with_activities', 'commits'])
         );
       },
       checkRecordsData: (records) => {
