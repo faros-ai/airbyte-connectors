@@ -22,7 +22,9 @@ export class JiraClient {
 
   constructor(
     cfg: jira.Config & {
+      readonly isCloud: boolean;
       readonly maxRetries: number;
+      readonly retryDelay: number;
       readonly logger?: AirbyteLogger;
     }
   ) {
@@ -31,12 +33,16 @@ export class JiraClient {
     // Compose new client classes with WithRetry functionality
     const Version2ClientWithRetries = WithRetry(
       Version2Client,
+      cfg.isCloud,
       maxAttempts,
+      cfg.retryDelay,
       cfg.logger
     );
     const AgileClientWithRetries = WithRetry(
       AgileClient,
+      cfg.isCloud,
       maxAttempts,
+      cfg.retryDelay,
       cfg.logger
     );
 

@@ -23,14 +23,16 @@ describe('client', () => {
     description: 'Description',
   };
 
-  const ClientWithRetry = WithRetry(BaseClient, 3);
+  const ClientWithRetry = WithRetry(BaseClient, true, 3, 5000);
 
-  function getProject(projectIdOrKey: string): Promise<any> {
+  function getProject(projectIdOrKey: string, isCloud = true): Promise<any> {
     const client = new sut.JiraClient({
       host: 'http://test.test',
       authentication: {
         basic: {username: 'username', password: 'password'},
       },
+      isCloud,
+      retryDelay: 5000,
       maxRetries: 1,
     });
     return client.v2.projects.getProject({projectIdOrKey});
@@ -61,6 +63,118 @@ describe('client', () => {
         }) as any
     );
     await expect(getProject(project.key)).rejects.toEqual(apiError(400));
+  });
+
+  test('cloud fails on 400', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(400, {headers: {'x-ausername': 'anonymous'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key)).rejects.toEqual(apiError(400));
+  });
+
+  test('server retries on 400 with anonymous user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(400, {headers: {'x-ausername': 'anonymous'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).resolves.toEqual(project);
+  });
+
+  test('server fails on 400 with real user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(400, {headers: {'x-ausername': 'admin'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).rejects.toEqual(apiError(400));
+  });
+
+  test('server retries on 401 with anonymous user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(401, {headers: {'x-ausername': 'anonymous'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).resolves.toEqual(project);
+  });
+
+  test('server fails on 401 with real user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(400, {headers: {'x-ausername': 'admin'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).rejects.toEqual(apiError(400));
+  });
+
+  test('server retries on 404 with anonymous user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(404, {headers: {'x-ausername': 'anonymous'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).resolves.toEqual(project);
+  });
+
+  test('server fails on 404 with real user', async () => {
+    jest.mocked(axios.create).mockImplementation(
+      () =>
+        ({
+          getUri: jest.fn().mockReturnValue('uri'),
+          request: jest
+            .fn()
+            .mockRejectedValueOnce(
+              apiError(400, {headers: {'x-ausername': 'admin'}})
+            )
+            .mockResolvedValueOnce({data: project}),
+        }) as any
+    );
+    await expect(getProject(project.key, false)).rejects.toEqual(apiError(400));
   });
 
   test('retries on 429', async () => {
@@ -174,7 +288,9 @@ describe('client', () => {
       authentication: {
         basic: {username: 'username', password: 'password'},
       },
+      isCloud: true,
       maxRetries: 1,
+      retryDelay: 5000,
     });
     await expect(client.agile.board.getBoard({boardId: 1})).resolves.toEqual(
       board
@@ -198,7 +314,9 @@ describe('client', () => {
       authentication: {
         basic: {username: 'username', password: 'password'},
       },
+      isCloud: true,
       maxRetries: 1,
+      retryDelay: 5000,
     });
     await expect(client.getAllProjects()).resolves.toEqual([project]);
   });
@@ -282,6 +400,8 @@ describe('client', () => {
         basic: {username: 'username', password: 'password'},
       },
       maxRetries: 1,
+      isCloud: true,
+      retryDelay: 5000,
     });
     await Promise.all([
       // V2Client calls
