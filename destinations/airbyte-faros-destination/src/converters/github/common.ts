@@ -18,6 +18,9 @@ export type GitHubConfig = {
   sync_repo_issues?: boolean;
 };
 
+type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
+type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
+
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
@@ -227,15 +230,45 @@ export class GitHubCommon {
   static vulnerabilityUid(
     org: string,
     repo: string,
-    alertType: string,
+    alertType: SecurityAlertType,
     number: number
   ): string {
     return toLower(`${org}/${repo}/${alertType}/${number}`);
   }
 
-  static vulnerabilityStatus(
-    alert: CodeScanningAlert | DependabotAlert | SecretScanningAlert
-  ) {
+  static vulnerabilityType(
+    alert: SecurityAlert,
+    alertType: SecurityAlertType
+  ): {category: string; detail: string} {
+    switch (alertType) {
+      case 'code-scanning':
+        if (
+          !isEmpty((alert as CodeScanningAlert).rule.security_severity_level)
+        ) {
+          return {
+            category: 'Security',
+            detail: 'security code-scanning alert',
+          };
+        } else {
+          return {
+            category: 'CodingError',
+            detail: 'non-security code-scanning alert',
+          };
+        }
+      case 'dependabot':
+        return {
+          category: 'Dependency',
+          detail: 'dependabot alert',
+        };
+      case 'secret-scanning':
+        return {
+          category: 'SecretLeak',
+          detail: 'secret-scanning alert',
+        };
+    }
+  }
+
+  static vulnerabilityStatus(alert: SecurityAlert) {
     const state = alert.state;
     switch (state) {
       case 'open':
@@ -256,7 +289,7 @@ export class GitHubCommon {
     }
   }
 
-  static vulnerabilitySeverity(alert: CodeScanningAlert | DependabotAlert) {
+  static vulnerabilitySeverity(alert: SecurityAlert) {
     const level =
       (alert as CodeScanningAlert).rule?.security_severity_level ??
       (alert as DependabotAlert).security_vulnerability?.severity;

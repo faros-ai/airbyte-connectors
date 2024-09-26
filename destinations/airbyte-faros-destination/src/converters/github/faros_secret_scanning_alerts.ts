@@ -11,6 +11,8 @@ export class FarosSecretScanningAlerts extends GitHubConverter {
     'vcs_RepositoryVulnerability',
   ];
 
+  readonly alertType = 'secret-scanning';
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
@@ -23,7 +25,7 @@ export class FarosSecretScanningAlerts extends GitHubConverter {
     const uid = GitHubCommon.vulnerabilityUid(
       alert.org,
       alert.repo,
-      'secret-scanning',
+      this.alertType,
       alert.number
     );
     return [
@@ -32,6 +34,7 @@ export class FarosSecretScanningAlerts extends GitHubConverter {
         record: {
           uid,
           source: this.streamName.source,
+          type: GitHubCommon.vulnerabilityType(alert, this.alertType),
           title: alert.secret_type_display_name ?? alert.secret_type,
           description: alert.secret,
           url: alert.html_url,

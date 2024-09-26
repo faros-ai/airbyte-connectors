@@ -4,8 +4,8 @@ exports[`faros_github process records from all streams 1`] = `
 Array [
   "Processed 46 records",
   "Processed records by stream: {\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_contributors_stats\\\\\\":1,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 578 records",
-  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":92,\\\\\\"faros_MetricDefinition\\\\\\":8,\\\\\\"faros_MetricValue\\\\\\":92,\\\\\\"faros_MetricValueTag\\\\\\":258,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 586 records",
+  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"compute_ApplicationMetric\\\\\\":92,\\\\\\"faros_MetricDefinition\\\\\\":8,\\\\\\"faros_MetricValue\\\\\\":92,\\\\\\"faros_MetricValueTag\\\\\\":258,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":3,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -7590,6 +7590,10 @@ N/A
       "severity": null,
       "source": "GitHub",
       "title": "js/zipslip",
+      "type": Object {
+        "category": "CodingError",
+        "detail": "non-security code-scanning alert",
+      },
       "uid": "github/hello-world/code-scanning/4",
       "url": "https://github.com/octocat/hello-world/code-scanning/4",
     },
@@ -7624,6 +7628,10 @@ N/A
       "severity": null,
       "source": "GitHub",
       "title": "js/zipslip",
+      "type": Object {
+        "category": "CodingError",
+        "detail": "non-security code-scanning alert",
+      },
       "uid": "github/hello-world/code-scanning/3",
       "url": "https://github.com/octocat/hello-world/code-scanning/3",
     },
@@ -7660,19 +7668,73 @@ N/A
       "description": "django.contrib.auth.forms.AuthenticationForm in Django 2.0 before 2.0.2, and 1.11.8 and 1.11.9, allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the",
       "publishedAt": "2018-10-03T21:13:54.000Z",
       "remediatedInVersions": Array [
-        Object {
-          "identifier": "2.0.2",
-        },
+        "2.0.2",
       ],
       "severity": 9,
       "source": "GitHub",
       "title": "Django allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the confirm_login_allowed() method, as demonstrated by discovering whether a user account is inactive",
+      "type": Object {
+        "category": "Dependency",
+        "detail": "dependabot alert",
+      },
       "uid": "github/hello-world/dependabot/2",
       "url": "https://github.com/octocat/hello-world/security/dependabot/2",
       "vulnerabilityIds": Array [
         "GHSA-rf4j-j272-fj86",
         "CVE-2018-6188",
       ],
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "GitHub",
+      "type": Object {
+        "category": "GHSA",
+        "detail": "GHSA",
+      },
+      "uid": "GHSA-rf4j-j272-fj86",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "GitHub",
+      "type": Object {
+        "category": "CVE",
+        "detail": "CVE",
+      },
+      "uid": "CVE-2018-6188",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "GHSA",
+          "detail": "GHSA",
+        },
+        "uid": "GHSA-rf4j-j272-fj86",
+      },
+      "source": "GitHub",
+      "vulnerability": Object {
+        "source": "GitHub",
+        "uid": "github/hello-world/dependabot/2",
+      },
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "CVE",
+          "detail": "CVE",
+        },
+        "uid": "CVE-2018-6188",
+      },
+      "source": "GitHub",
+      "vulnerability": Object {
+        "source": "GitHub",
+        "uid": "github/hello-world/dependabot/2",
+      },
     },
   },
   Object {
@@ -7707,19 +7769,73 @@ N/A
       "description": "A flaw was found in ansible. Credentials, such as secrets, are being disclosed in console log by default and not protected by no_log feature when using those modules. An attacker can take advantage of",
       "publishedAt": "2021-06-01T17:38:00.000Z",
       "remediatedInVersions": Array [
-        Object {
-          "identifier": "2.8.19",
-        },
+        "2.8.19",
       ],
       "severity": 6,
       "source": "GitHub",
       "title": "Insertion of Sensitive Information into Log File in ansible",
+      "type": Object {
+        "category": "Dependency",
+        "detail": "dependabot alert",
+      },
       "uid": "github/hello-world/dependabot/1",
       "url": "https://github.com/octocat/hello-world/security/dependabot/1",
       "vulnerabilityIds": Array [
         "GHSA-8f4m-hccc-8qph",
         "CVE-2021-20191",
       ],
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "GitHub",
+      "type": Object {
+        "category": "GHSA",
+        "detail": "GHSA",
+      },
+      "uid": "GHSA-8f4m-hccc-8qph",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "GitHub",
+      "type": Object {
+        "category": "CVE",
+        "detail": "CVE",
+      },
+      "uid": "CVE-2021-20191",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "GHSA",
+          "detail": "GHSA",
+        },
+        "uid": "GHSA-8f4m-hccc-8qph",
+      },
+      "source": "GitHub",
+      "vulnerability": Object {
+        "source": "GitHub",
+        "uid": "github/hello-world/dependabot/1",
+      },
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "CVE",
+          "detail": "CVE",
+        },
+        "uid": "CVE-2021-20191",
+      },
+      "source": "GitHub",
+      "vulnerability": Object {
+        "source": "GitHub",
+        "uid": "github/hello-world/dependabot/1",
+      },
     },
   },
   Object {
@@ -7751,6 +7867,10 @@ N/A
       "description": "aio_XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
       "source": "GitHub",
       "title": "Adafruit IO Key",
+      "type": Object {
+        "category": "SecretLeak",
+        "detail": "secret-scanning alert",
+      },
       "uid": "github/hello-world/secret-scanning/2",
       "url": "https://github.com/owner/private-repo/security/secret-scanning/2",
     },
@@ -7784,6 +7904,10 @@ N/A
       "description": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-us2",
       "source": "GitHub",
       "title": "Mailchimp API Key",
+      "type": Object {
+        "category": "SecretLeak",
+        "detail": "secret-scanning alert",
+      },
       "uid": "github/hello-world/secret-scanning/1",
       "url": "https://github.com/owner/repo/security/secret-scanning/1",
     },
