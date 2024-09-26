@@ -1694,10 +1694,10 @@ README-PR.md created online with Bitbucket",
 
 exports[`bitbucket pull_requests_with_activities diff stats 1`] = `
 Array [
-  "Processed 3 records",
-  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 11 records",
-  "Would write records by model: {\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 16 records",
+  "Would write records by model: {\\\\\\"vcs_File\\\\\\":5,\\\\\\"vcs_PullRequest\\\\\\":4,\\\\\\"vcs_PullRequestFile\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1978,6 +1978,103 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello-world.ts",
+      },
+      "pullRequest": Object {
+        "number": 7,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "7",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hi.ts",
+      },
+      "pullRequest": Object {
+        "number": 7,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "7",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-26T16:19:44.089Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 2,
+        "linesAdded": 0,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/7",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 7,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "rename",
+      "uid": "7",
+      "updatedAt": "2024-09-26T16:19:44.666Z",
+    },
+  },
+  Object {
     "vcs_File": Object {
       "path": "bye.ts",
       "repository": Object {
@@ -2020,6 +2117,36 @@ Array [
       },
       "source": "Bitbucket",
       "uid": "hola.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hello-world.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hello-world.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hi.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hi.ts",
     },
   },
 ]
