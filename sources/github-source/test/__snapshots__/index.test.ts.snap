@@ -68,6 +68,113 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - code scanning alerts 1`] = `
+[
+  {
+    "created_at": "2020-02-13T12:29:18Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_comment": null,
+    "dismissed_reason": null,
+    "fixed_at": null,
+    "html_url": "https://github.com/octocat/hello-world/code-scanning/4",
+    "instances_url": "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/4/instances",
+    "most_recent_instance": {
+      "analysis_key": ".github/workflows/codeql-analysis.yml:CodeQL-Build",
+      "category": ".github/workflows/codeql-analysis.yml:CodeQL-Build",
+      "classifications": [
+        "test",
+      ],
+      "commit_sha": "39406e42cb832f683daa691dd652a8dc36ee8930",
+      "environment": "{}",
+      "location": {
+        "end_column": 18,
+        "end_line": 917,
+        "path": "spec-main/api-session-spec.ts",
+        "start_column": 7,
+        "start_line": 917,
+      },
+      "message": {
+        "text": "This path depends on a user-provided value.",
+      },
+      "ref": "refs/heads/main",
+      "state": "open",
+    },
+    "number": 4,
+    "org": "github",
+    "repo": "Hello-World",
+    "rule": {
+      "description": "Arbitrary file write during zip extraction",
+      "id": "js/zipslip",
+      "name": "js/zipslip",
+      "severity": "error",
+      "tags": [
+        "security",
+        "external/cwe/cwe-022",
+      ],
+    },
+    "state": "open",
+    "tool": {
+      "guid": null,
+      "name": "CodeQL",
+      "version": "2.4.0",
+    },
+    "updated_at": "2020-02-13T12:29:18Z",
+    "url": "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/4",
+  },
+  {
+    "created_at": "2020-02-13T12:29:18Z",
+    "dismissed_at": "2020-02-14T12:29:18Z",
+    "dismissed_by": "octocat",
+    "dismissed_comment": "This alert is not actually correct, because there's a sanitizer included in the library.",
+    "dismissed_reason": "false positive",
+    "fixed_at": null,
+    "html_url": "https://github.com/octocat/hello-world/code-scanning/3",
+    "instances_url": "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/3/instances",
+    "most_recent_instance": {
+      "analysis_key": ".github/workflows/codeql-analysis.yml:CodeQL-Build",
+      "category": ".github/workflows/codeql-analysis.yml:CodeQL-Build",
+      "classifications": [],
+      "commit_sha": "39406e42cb832f683daa691dd652a8dc36ee8930",
+      "environment": "{}",
+      "location": {
+        "end_column": 18,
+        "end_line": 917,
+        "path": "lib/ab12-gen.js",
+        "start_column": 7,
+        "start_line": 917,
+      },
+      "message": {
+        "text": "This path depends on a user-provided value.",
+      },
+      "ref": "refs/heads/main",
+      "state": "open",
+    },
+    "number": 3,
+    "org": "github",
+    "repo": "Hello-World",
+    "rule": {
+      "description": "Arbitrary file write during zip extraction",
+      "id": "js/zipslip",
+      "name": "js/zipslip",
+      "severity": "error",
+      "tags": [
+        "security",
+        "external/cwe/cwe-022",
+      ],
+    },
+    "state": "dismissed",
+    "tool": {
+      "guid": null,
+      "name": "CodeQL",
+      "version": "2.4.0",
+    },
+    "updated_at": "2020-02-13T12:29:18Z",
+    "url": "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/3",
+  },
+]
+`;
+
 exports[`index streams - commits 1`] = `
 [
   {
@@ -464,6 +571,226 @@ exports[`index streams - copilot usage without teams 1`] = `
     "total_lines_accepted": 700,
     "total_lines_suggested": 1100,
     "total_suggestions_count": 800,
+  },
+]
+`;
+
+exports[`index streams - dependabot alerts 1`] = `
+[
+  {
+    "created_at": "2022-06-15T07:43:03Z",
+    "dependency": {
+      "manifest_path": "path/to/requirements.txt",
+      "package": {
+        "ecosystem": "pip",
+        "name": "django",
+      },
+      "scope": "runtime",
+    },
+    "dismissed_at": "2022-08-23T14:29:47Z",
+    "dismissed_by": "octocat",
+    "dismissed_comment": "This alert is accurate but we use a sanitizer.",
+    "dismissed_reason": "tolerable_risk",
+    "fixed_at": null,
+    "html_url": "https://github.com/octocat/hello-world/security/dependabot/2",
+    "number": 2,
+    "org": "github",
+    "repo": "Hello-World",
+    "security_advisory": {
+      "cve_id": "CVE-2018-6188",
+      "cvss": {
+        "score": 7.5,
+        "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-200",
+          "name": "Exposure of Sensitive Information to an Unauthorized Actor",
+        },
+      ],
+      "description": "django.contrib.auth.forms.AuthenticationForm in Django 2.0 before 2.0.2, and 1.11.8 and 1.11.9, allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the confirm_login_allowed() method, as demonstrated by discovering whether a user account is inactive.",
+      "ghsa_id": "GHSA-rf4j-j272-fj86",
+      "identifiers": [
+        {
+          "type": "GHSA",
+          "value": "GHSA-rf4j-j272-fj86",
+        },
+        {
+          "type": "CVE",
+          "value": "CVE-2018-6188",
+        },
+      ],
+      "published_at": "2018-10-03T21:13:54Z",
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-6188",
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-rf4j-j272-fj86",
+        },
+        {
+          "url": "https://usn.ubuntu.com/3559-1/",
+        },
+        {
+          "url": "https://www.djangoproject.com/weblog/2018/feb/01/security-releases/",
+        },
+        {
+          "url": "http://www.securitytracker.com/id/1040422",
+        },
+      ],
+      "severity": "high",
+      "summary": "Django allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the confirm_login_allowed() method, as demonstrated by discovering whether a user account is inactive",
+      "updated_at": "2022-04-26T18:35:37Z",
+      "vulnerabilities": [
+        {
+          "first_patched_version": {
+            "identifier": "2.0.2",
+          },
+          "package": {
+            "ecosystem": "pip",
+            "name": "django",
+          },
+          "severity": "high",
+          "vulnerable_version_range": ">= 2.0.0, < 2.0.2",
+        },
+        {
+          "first_patched_version": {
+            "identifier": "1.11.10",
+          },
+          "package": {
+            "ecosystem": "pip",
+            "name": "django",
+          },
+          "severity": "high",
+          "vulnerable_version_range": ">= 1.11.8, < 1.11.10",
+        },
+      ],
+      "withdrawn_at": null,
+    },
+    "security_vulnerability": {
+      "first_patched_version": {
+        "identifier": "2.0.2",
+      },
+      "package": {
+        "ecosystem": "pip",
+        "name": "django",
+      },
+      "severity": "high",
+      "vulnerable_version_range": ">= 2.0.0, < 2.0.2",
+    },
+    "state": "dismissed",
+    "updated_at": "2022-08-23T14:29:47Z",
+    "url": "https://api.github.com/repos/octocat/hello-world/dependabot/alerts/2",
+  },
+  {
+    "created_at": "2022-06-14T15:21:52Z",
+    "dependency": {
+      "manifest_path": "path/to/requirements.txt",
+      "package": {
+        "ecosystem": "pip",
+        "name": "ansible",
+      },
+      "scope": "runtime",
+    },
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_comment": null,
+    "dismissed_reason": null,
+    "fixed_at": null,
+    "html_url": "https://github.com/octocat/hello-world/security/dependabot/1",
+    "number": 1,
+    "org": "github",
+    "repo": "Hello-World",
+    "security_advisory": {
+      "cve_id": "CVE-2021-20191",
+      "cvss": {
+        "score": 5.5,
+        "vector_string": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-532",
+          "name": "Insertion of Sensitive Information into Log File",
+        },
+      ],
+      "description": "A flaw was found in ansible. Credentials, such as secrets, are being disclosed in console log by default and not protected by no_log feature when using those modules. An attacker can take advantage of this information to steal those credentials. The highest threat from this vulnerability is to data confidentiality.",
+      "ghsa_id": "GHSA-8f4m-hccc-8qph",
+      "identifiers": [
+        {
+          "type": "GHSA",
+          "value": "GHSA-8f4m-hccc-8qph",
+        },
+        {
+          "type": "CVE",
+          "value": "CVE-2021-20191",
+        },
+      ],
+      "published_at": "2021-06-01T17:38:00Z",
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-20191",
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/cve-2021-20191",
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1916813",
+        },
+      ],
+      "severity": "medium",
+      "summary": "Insertion of Sensitive Information into Log File in ansible",
+      "updated_at": "2021-08-12T23:06:00Z",
+      "vulnerabilities": [
+        {
+          "first_patched_version": {
+            "identifier": "2.9.18",
+          },
+          "package": {
+            "ecosystem": "pip",
+            "name": "ansible",
+          },
+          "severity": "medium",
+          "vulnerable_version_range": ">= 2.9.0, < 2.9.18",
+        },
+        {
+          "first_patched_version": {
+            "identifier": "2.8.19",
+          },
+          "package": {
+            "ecosystem": "pip",
+            "name": "ansible",
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "< 2.8.19",
+        },
+        {
+          "first_patched_version": {
+            "identifier": "2.10.7",
+          },
+          "package": {
+            "ecosystem": "pip",
+            "name": "ansible",
+          },
+          "severity": "medium",
+          "vulnerable_version_range": ">= 2.10.0, < 2.10.7",
+        },
+      ],
+      "withdrawn_at": null,
+    },
+    "security_vulnerability": {
+      "first_patched_version": {
+        "identifier": "2.8.19",
+      },
+      "package": {
+        "ecosystem": "pip",
+        "name": "ansible",
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "< 2.8.19",
+    },
+    "state": "open",
+    "updated_at": "2022-06-14T15:21:52Z",
+    "url": "https://api.github.com/repos/octocat/hello-world/dependabot/alerts/1",
   },
 ]
 `;
@@ -1075,6 +1402,7 @@ exports[`index streams - releases 1`] = `
 exports[`index streams - repositories 1`] = `
 [
   {
+    "archived": false,
     "created_at": "2011-01-26T19:01:12Z",
     "default_branch": "master",
     "description": "This your first repo!",
@@ -1099,6 +1427,7 @@ exports[`index streams - repositories 1`] = `
 exports[`index streams - repositories with bucketing 1`] = `
 [
   {
+    "archived": false,
     "created_at": "2023-06-01T12:00:00Z",
     "default_branch": "main",
     "description": "This is a new repo!",
@@ -1142,6 +1471,55 @@ exports[`index streams - saml sso users 1`] = `
       "login": "jeniii",
       "type": "User",
     },
+  },
+]
+`;
+
+exports[`index streams - secret scanning alerts 1`] = `
+[
+  {
+    "created_at": "2020-11-06T18:48:51Z",
+    "html_url": "https://github.com/owner/private-repo/security/secret-scanning/2",
+    "locations_url": "https://api.github.com/repos/owner/private-repo/secret-scanning/alerts/2/locations",
+    "number": 2,
+    "org": "github",
+    "push_protection_bypassed": true,
+    "push_protection_bypassed_at": "2020-11-06T21:48:51Z",
+    "push_protection_bypassed_by": "monalisa",
+    "repo": "Hello-World",
+    "resolution": "false_positive",
+    "resolution_comment": "Example comment",
+    "resolved_at": "2020-11-07T02:47:13Z",
+    "resolved_by": "monalisa",
+    "secret": "aio_XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "secret_type": "adafruit_io_key",
+    "secret_type_display_name": "Adafruit IO Key",
+    "state": "resolved",
+    "updated_at": "2020-11-06T18:18:30Z",
+    "url": "https://api.github.com/repos/owner/private-repo/secret-scanning/alerts/2",
+    "validity": "inactive",
+  },
+  {
+    "created_at": "2020-11-06T18:18:30Z",
+    "html_url": "https://github.com/owner/repo/security/secret-scanning/1",
+    "locations_url": "https://api.github.com/repos/owner/private-repo/secret-scanning/alerts/1/locations",
+    "number": 1,
+    "org": "github",
+    "push_protection_bypassed": false,
+    "push_protection_bypassed_at": null,
+    "push_protection_bypassed_by": null,
+    "repo": "Hello-World",
+    "resolution": null,
+    "resolution_comment": null,
+    "resolved_at": null,
+    "resolved_by": null,
+    "secret": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-us2",
+    "secret_type": "mailchimp_api_key",
+    "secret_type_display_name": "Mailchimp API Key",
+    "state": "open",
+    "updated_at": "2020-11-06T18:18:30Z",
+    "url": "https://api.github.com/repos/owner/repo/secret-scanning/alerts/1",
+    "validity": "unknown",
   },
 ]
 `;

@@ -6,6 +6,8 @@ import {
   AirbyteSpec,
   AirbyteState,
   AirbyteStreamBase,
+  DestinationSyncMode,
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import {get, isNil} from 'lodash';
@@ -24,6 +26,7 @@ import {
   Users,
   Workspaces,
 } from './streams';
+import {TasksFull} from './streams/tasks_full';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -51,14 +54,22 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
     }
     return [true, undefined];
   }
+
   streams(config: AsanaConfig): AirbyteStreamBase[] {
+    const projectTasksStreams =
+      config.optimize_fetching_projects_and_tasks_with_full_tasks_sync
+        ? [new TasksFull(config, this.logger)]
+        : [
+            new Projects(config, this.logger),
+            new Tasks(config, this.logger),
+            new ProjectTasks(config, this.logger),
+          ];
+
     return [
-      new Projects(config, this.logger),
       new Tags(config, this.logger),
-      new Tasks(config, this.logger),
       new Users(config, this.logger),
       new Workspaces(config, this.logger),
-      new ProjectTasks(config, this.logger),
+      ...projectTasksStreams,
     ];
   }
 
@@ -71,10 +82,20 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    const streams = catalog.streams.filter((stream) => {
+    let streams = catalog.streams.filter((stream) => {
+      if (config.optimize_fetching_projects_and_tasks_with_full_tasks_sync) {
+        if (
+          stream.stream.name === 'project_tasks' ||
+          stream.stream.name === 'projects'
+        ) {
+          return false;
+        }
+      }
+
       if (stream.stream.name !== 'project_tasks') {
         return true;
       }
+
       const lastComputedAt = get(state, ['project_tasks', 'lastComputedAt']);
       const maxStalenessMillis =
         (config.project_tasks_max_staleness_hours ??
@@ -88,6 +109,19 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
         Date.now() - lastComputedAt >= maxStalenessMillis
       );
     });
+
+    if (config.optimize_fetching_projects_and_tasks_with_full_tasks_sync) {
+      streams.forEach((stream) => {
+        if (stream.stream.name === 'tasks') {
+          stream.stream.name = 'tasks_full';
+          stream.sync_mode = SyncMode.FULL_REFRESH;
+          stream.destination_sync_mode = DestinationSyncMode.OVERWRITE;
+        }
+      });
+    } else {
+      streams = streams.filter((stream) => stream.stream.name !== 'tasks_full');
+    }
+
     return {config, catalog: {streams}, state};
   }
 }

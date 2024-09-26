@@ -2,51 +2,141 @@
 
 exports[`workspaceRepoFilter getRepositories - all - empty list 1`] = `
 [
-  "repo-1",
-  "repo-2",
-  "repo-3",
-  "repo-1",
-  "repo-2",
-  "repo-3",
-  "repo-1",
-  "repo-2",
-  "repo-3",
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-3",
+  },
 ]
 `;
 
 exports[`workspaceRepoFilter getRepositories - all - no list 1`] = `
 [
-  "repo-1",
-  "repo-2",
-  "repo-3",
-  "repo-1",
-  "repo-2",
-  "repo-3",
-  "repo-1",
-  "repo-2",
-  "repo-3",
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-3",
+  },
 ]
 `;
 
 exports[`workspaceRepoFilter getRepositories - specific repositories excluded 1`] = `
 [
-  "repo-2",
-  "repo-3",
-  "repo-1",
-  "repo-3",
-  "repo-1",
-  "repo-2",
-  "repo-3",
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-3",
+  },
 ]
 `;
 
 exports[`workspaceRepoFilter getRepositories - specific repositories included 1`] = `
 [
-  "repo-1",
-  "repo-2",
-  "repo-1",
-  "repo-2",
-  "repo-3",
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-1",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-2",
+  },
+  {
+    "slug": "repo-1",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-2",
+    "workspace": "workspace-3",
+  },
+  {
+    "slug": "repo-3",
+    "workspace": "workspace-3",
+  },
 ]
 `;
 

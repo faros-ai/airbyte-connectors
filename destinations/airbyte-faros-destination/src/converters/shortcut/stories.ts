@@ -42,8 +42,8 @@ export class Stories extends ShortcutConverter {
       record: {
         ...taskKey,
         name: story.name,
-        description: story.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          story.description,
           ShortcutCommon.MAX_DESCRIPTION_LENGTH
         ),
         type: ShortcutCommon.getTaskType(story.story_type),
@@ -78,8 +78,8 @@ export class Stories extends ShortcutConverter {
       },
     });
     for (const task of story.tasks ?? []) {
-      const description = task.description?.substring(
-        0,
+      const description = Utils.cleanAndTruncate(
+        task.description,
         ShortcutCommon.MAX_DESCRIPTION_LENGTH
       );
       res.push({

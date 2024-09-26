@@ -81,7 +81,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
     // Only fetch board issues updated since start of date range and not all issues on the board.
     const state = streamState?.earliestIssueUpdateTimestamp;
-    const since = this.getUpdateRange(state)[0];
+    const since = this.getFullSyncStartDate(state);
 
     // Adding parentheses to ensure the original board JQL is executed without ammendment but without any ORDER BY clause.
     // https://support.atlassian.com/jira-service-management-cloud/docs/jql-keywords/#AND

@@ -38,8 +38,8 @@ export class Projects extends GitlabConverter {
       record: {
         uid: repository.uid,
         name: repository.name,
-        description: project.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          project.description,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         url: project.web_url,
@@ -54,8 +54,8 @@ export class Projects extends GitlabConverter {
         uid: repository.uid,
         fullName: project.name_with_namespace,
         private: project.visibility === 'private',
-        description: project.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          project.description,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         size: Utils.parseInteger(project.statistics.repository_size),

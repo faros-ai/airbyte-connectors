@@ -1182,8 +1182,11 @@ Array [
   },
   Object {
     "tms_Release": Object {
+      "archived": false,
       "description": null,
       "name": "Test Release",
+      "overdue": true,
+      "released": false,
       "releasedAt": "2021-11-19T00:00:00.000Z",
       "source": "Jira",
       "startedAt": "2021-11-15T00:00:00.000Z",

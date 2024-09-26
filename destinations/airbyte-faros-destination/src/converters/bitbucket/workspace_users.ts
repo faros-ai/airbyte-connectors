@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {WorkspaceUser} from 'faros-airbyte-common/bitbucket';
+import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {BitbucketCommon, BitbucketConverter} from './common';
+import {BitbucketConverter, UserTypeCategory} from './common';
 
 export class WorkspaceUsers extends BitbucketConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -14,21 +15,37 @@ export class WorkspaceUsers extends BitbucketConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const workspaceUser = record.record.data as WorkspaceUser;
-    const res: DestinationRecord[] = [];
+    const {user, workspace} = record.record.data as WorkspaceUser;
 
-    const user = BitbucketCommon.vcsUser(workspaceUser.user, source);
-    if (!user) return res;
+    if (!user?.accountId) return [];
 
-    res.push(user);
-    res.push({
-      model: 'vcs_Membership',
-      record: {
-        user: {uid: workspaceUser.user.accountId, source},
-        organization: {uid: workspaceUser.workspace.slug.toLowerCase(), source},
+    const userType =
+      user.type === 'user'
+        ? {category: UserTypeCategory.USER, detail: 'user'}
+        : {category: UserTypeCategory.CUSTOM, detail: user.type};
+
+    return [
+      {
+        model: 'vcs_User',
+        record: {
+          uid: user.accountId,
+          name: user.displayName,
+          email: user.emailAddress,
+          type: userType,
+          htmlUrl: user.links?.htmlUrl,
+          source,
+        },
       },
-    });
-
-    return res;
+      {
+        model: 'vcs_Membership',
+        record: {
+          user: {uid: user.accountId, source},
+          organization: {
+            uid: toLower(workspace.slug),
+            source,
+          },
+        },
+      },
+    ];
   }
 }

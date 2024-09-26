@@ -328,7 +328,8 @@ export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
     readonly state: {data: AirbyteState},
     readonly redactedConfig: AirbyteConfig,
     readonly sourceType?: string,
-    readonly sourceMode?: string
+    readonly sourceMode?: string,
+    readonly sourceVersion?: string
   ) {
     super(state);
   }

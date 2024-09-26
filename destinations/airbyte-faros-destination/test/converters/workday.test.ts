@@ -29,7 +29,7 @@ function updateCustomReportWithFields(
   const fieldNameToValue: Record<string, any> = testFieldsInput[k];
   const fieldNames = [
     'teamIDToManagerIDs',
-    'employeeIDtoRecord',
+    'employeeIDToRecords',
     'cycleChains',
     'generalLogCollection',
   ];
@@ -75,7 +75,6 @@ function runCustomReportDestination(
   customReportDestination,
   ctx
 ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
-  // HERE
   customReportDestination.setOrgsToKeepAndIgnore(ctx);
   return customReportDestination.generateFinalRecords(ctx);
 }
@@ -130,6 +129,15 @@ describe('workday', () => {
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
       inputRecordsPath: 'workday/stream_v3.log',
+    });
+  });
+
+  test('process randomly generated records from many records stream', async () => {
+    const configPath = await getTempConfig([], []);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_many_records_per_employee.log',
     });
   });
   test('Randomly generated records from customreports v4 stream with Terminated', async () => {

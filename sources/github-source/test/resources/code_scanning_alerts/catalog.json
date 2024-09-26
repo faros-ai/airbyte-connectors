@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_code_scanning_alerts"
+      }
+    }
+  ]
+}

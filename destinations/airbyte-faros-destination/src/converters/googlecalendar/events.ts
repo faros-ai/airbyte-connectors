@@ -142,12 +142,12 @@ export class Events extends GoogleCalendarConverter {
       model: 'cal_Event',
       record: {
         ...eventRef,
-        title: event.summary?.substring(
-          0,
+        title: Utils.cleanAndTruncate(
+          event.summary,
           GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
         ),
-        description: event.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          event.description,
           GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
         ),
         start,

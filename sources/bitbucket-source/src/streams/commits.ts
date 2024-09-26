@@ -29,14 +29,21 @@ export class Commits extends StreamWithRepoSlices {
     streamState?: StreamState
   ): AsyncGenerator<Commit> {
     const bitbucket = Bitbucket.instance(this.config, this.logger);
-
     const workspace = streamSlice.workspace;
     const repo = streamSlice.repo;
-    const lastUpdated =
+    const repository = this.workspaceRepoFilter.getRepository(workspace, repo);
+    const state = streamState?.[StreamBase.workspaceRepoKey(workspace, repo)];
+    const [startDate, endDate] =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[StreamBase.workspaceRepoKey(workspace, repo)]?.cutoff
-        : undefined;
-    yield* bitbucket.getCommits(workspace, repo, lastUpdated);
+        ? this.getUpdateRange(state?.cutoff)
+        : this.getUpdateRange();
+    yield* bitbucket.getCommits(
+      workspace,
+      repo,
+      repository.mainBranch,
+      startDate,
+      endDate
+    );
   }
 
   getUpdatedState(

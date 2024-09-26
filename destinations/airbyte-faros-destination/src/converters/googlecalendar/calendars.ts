@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {
@@ -23,12 +24,12 @@ export class Calendars extends GoogleCalendarConverter {
         model: 'cal_Calendar',
         record: {
           uid: cle.id,
-          title: cle.summary?.substring(
-            0,
+          title: Utils.cleanAndTruncate(
+            cle.summary,
             GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
           ),
-          description: cle.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            cle.description,
             GoogleCalendarCommon.MAX_DESCRIPTION_LENGTH
           ),
           source,

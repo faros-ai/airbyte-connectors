@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository, selfHRef} from 'faros-airbyte-common/bitbucket-server';
+import {Utils} from 'faros-js-client';
 
 import {BitbucketCommon} from '../bitbucket/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {BitbucketServerConverter} from './common';
-
 export class Repositories extends BitbucketServerConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Repository',
@@ -23,8 +23,8 @@ export class Repositories extends BitbucketServerConverter {
         record: {
           ...repoRef,
           fullName: repo.computedProperties.fullName.toLowerCase(),
-          description: repo.description?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            repo.description,
             BitbucketCommon.MAX_DESCRIPTION_LENGTH
           ),
           private: !repo.public,

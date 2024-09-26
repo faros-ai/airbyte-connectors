@@ -81,8 +81,8 @@ export class Issues extends GitlabConverter {
       record: {
         uid,
         name: issue.title,
-        description: issue.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          issue.description,
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},

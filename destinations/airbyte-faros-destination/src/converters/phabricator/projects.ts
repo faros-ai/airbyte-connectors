@@ -26,8 +26,8 @@ export class Projects extends PhabricatorConverter {
       record: {
         uid: project.phid,
         name: project.fields?.name,
-        description: project.fields?.description?.substring(
-          0,
+        description: Utils.cleanAndTruncate(
+          project.fields?.description,
           maxDescriptionLength
         ),
         createdAt: Utils.toDate(project.fields?.dateCreated * 1000),

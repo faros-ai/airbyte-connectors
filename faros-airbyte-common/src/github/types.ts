@@ -38,6 +38,7 @@ export type Repository = {
   | 'topics'
   | 'created_at'
   | 'updated_at'
+  | 'archived'
 >;
 
 export type PullRequestNode =
@@ -240,3 +241,40 @@ export type ContributorStats = {
     c?: number;
   }[];
 };
+
+export type CodeScanningAlert = {
+  org: string;
+  repo: string;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.codeScanning.listAlertsForRepo
+  >[0],
+  'dismissed_by'
+> & {
+    dismissed_by: string | null;
+  };
+
+export type DependabotAlert = {
+  org: string;
+  repo: string;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.dependabot.listAlertsForRepo
+  >[0],
+  'dismissed_by'
+> & {
+    dismissed_by: string | null;
+  };
+
+export type SecretScanningAlert = {
+  org: string;
+  repo: string;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.secretScanning.listAlertsForRepo
+  >[0],
+  'resolved_by' | 'push_protection_bypassed_by'
+> & {
+    resolved_by: string | null;
+    push_protection_bypassed_by: string | null;
+  };

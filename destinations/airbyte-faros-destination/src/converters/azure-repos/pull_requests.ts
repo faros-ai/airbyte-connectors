@@ -43,7 +43,10 @@ export class PullRequests extends AzureReposConverter {
           record: {
             number: comment.id,
             uid: comment.id.toString(),
-            comment: comment.content?.substring(0, MAX_DESCRIPTION_LENGTH),
+            comment: Utils.cleanAndTruncate(
+              comment.content,
+              MAX_DESCRIPTION_LENGTH
+            ),
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
             author: {uid: comment.author.uniqueName, source},

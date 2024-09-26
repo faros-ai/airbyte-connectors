@@ -14,75 +14,18 @@
     "type": {
       "type": "string"
     },
-    "rendered": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "object",
-          "properties": {
-            "raw": {
-              "type": "string"
-            },
-            "markup": {
-              "type": "string"
-            },
-            "html": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "repository": {
       "type": "object",
       "properties": {
-        "links": {
-          "type": "object",
-          "properties": {
-            "htmlUrl": {
-              "type": "string",
-              "format": "uri"
-            }
-          }
-        },
-        "type": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
         "fullName": {
           "type": "string"
-        },
-        "uuid": {
-          "type": "string",
-          "format": "uuid"
         }
       }
     },
     "links": {
       "type": "object",
       "properties": {
-        "commentsUrl": {
-          "type": "string",
-          "format": "uri"
-        },
         "htmlUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "diffUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "approveUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "statusesUrl": {
           "type": "string",
           "format": "uri"
         }
@@ -91,12 +34,6 @@
     "author": {
       "type": "object",
       "properties": {
-        "raw": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
         "user": {
           "type": "object",
           "properties": {
@@ -119,52 +56,9 @@
             "type": {
               "type": "string"
             },
-            "nickname": {
-              "type": "string"
-            },
             "accountId": {
               "type": "string",
               "format": "uuid"
-            }
-          }
-        }
-      }
-    },
-    "summary": {
-      "type": "object",
-      "properties": {
-        "raw": {
-          "type": "string"
-        },
-        "markup": {
-          "type": "string"
-        },
-        "html": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        }
-      }
-    },
-    "parents": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "hash": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "links": {
-            "type": "object",
-            "properties": {
-              "htmlUrl": {
-                "type": "string",
-                "format": "uri"
-              }
             }
           }
         }

@@ -3,6 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {BitbucketConfig} from '../types';
@@ -23,6 +24,43 @@ export type RepoStreamSlice = {
   repo: string;
 };
 
+export enum RunMode {
+  Minimum = 'Minimum',
+  Full = 'Full',
+  Custom = 'Custom',
+}
+
+export const MinimumStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+];
+
+export const FullStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+];
+
+export const CustomStreamNames = [
+  'commits',
+  'pull_requests_with_activities',
+  'workspaces',
+  'workspace_users',
+  'repositories',
+  'tags',
+];
+
+export const RunModeStreams = {
+  [RunMode.Minimum]: MinimumStreamNames,
+  [RunMode.Full]: FullStreamNames,
+  [RunMode.Custom]: CustomStreamNames,
+};
+
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly workspaceRepoFilter: WorkspaceRepoFilter;
 
@@ -32,6 +70,13 @@ export abstract class StreamBase extends AirbyteStreamBase {
   ) {
     super(logger);
     this.workspaceRepoFilter = new WorkspaceRepoFilter(config, logger);
+  }
+
+  protected getUpdateRange(cutoff?: number): [Date, Date] {
+    return [
+      cutoff ? Utils.toDate(cutoff) : this.config.startDate,
+      this.config.endDate,
+    ];
   }
 
   protected getUpdatedStreamState(

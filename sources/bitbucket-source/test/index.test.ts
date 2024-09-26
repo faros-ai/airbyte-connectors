@@ -4,7 +4,7 @@ import {
   AirbyteSpec,
   readTestResourceAsJSON,
   sourceReadTest,
-  SyncMode,
+  sourceSchemaTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
@@ -19,10 +19,6 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
-
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -31,12 +27,13 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const source = new sut.BitbucketSource(logger);
+
   beforeEach(() => {
     Bitbucket.instance = bitbucketInstance;
   });
 
   test('spec', async () => {
-    const source = new sut.BitbucketSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
@@ -47,12 +44,14 @@ describe('index', () => {
       return new Bitbucket(
         {workspaces: {getWorkspaces: jest.fn().mockResolvedValue({})}} as any,
         100,
+        1,
+        1,
+        5,
         logger,
-        new Date('2010-03-27T14:03:51-0800')
+        new Set()
       );
     });
 
-    const source = new sut.BitbucketSource(logger);
     await expect(
       source.checkConnection({
         username: 'username',
@@ -72,11 +71,13 @@ describe('index', () => {
           },
         } as any,
         100,
+        1,
+        1,
+        5,
         logger,
-        new Date('2010-03-27T14:03:51-0800')
+        new Set()
       );
     });
-    const source = new sut.BitbucketSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
       new VError(
@@ -86,7 +87,6 @@ describe('index', () => {
   });
 
   test('check connection - invalid credentials', async () => {
-    const source = new sut.BitbucketSource(logger);
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
       false,
       new VError(
@@ -96,202 +96,51 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - branches, use full_refresh sync mode', async () => {
-    const fnBranchesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          repositories: {
-            listBranches: fnBranchesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('branches.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
-    });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const branchesStream = streams[0];
-    const branchesIter = branchesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const branches = [];
-    for await (const branch of branchesIter) {
-      branches.push(branch);
-    }
-
-    expect(fnBranchesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(branches))).toStrictEqual(
-      readTestResourceFile('branches-response.json')
-    );
+  test('streams - json schema fields', () => {
+    sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
-  test('streams - deployments, use full_refresh sync mode', async () => {
-    const fnDeploymentsFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          deployments: {
-            getEnvironment: fnDeploymentsFunc.mockImplementation(
-              async ({environment_uuid: envID}: {environment_uuid: string}) => {
-                const environments: any[] =
-                  readTestResourceFile('environments.json');
-
-                return {
-                  data: environments.find((e) => e.uuid === envID),
-                };
-              }
-            ),
-            list: jest.fn().mockResolvedValue({
-              data: {values: readTestResourceFile('deployments.json')},
-            }),
+  test('streams - repositories', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: getRepositoriesMockedImplementation(),
+            workspaces: getWorkspacesMockedImplementation(),
           },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const deploymentsStream = streams[2];
-    const deploymentsIter = deploymentsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const deployments = [];
-    for await (const deployment of deploymentsIter) {
-      deployments.push(deployment);
-    }
-
-    expect(fnDeploymentsFunc).toHaveBeenCalledTimes(2);
-    expect(JSON.parse(JSON.stringify(deployments))).toStrictEqual(
-      readTestResourceFile('deployments-response.json')
-    );
   });
 
-  test('streams - pipelines, use full_refresh sync mode', async () => {
-    const fnPipelinesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          pipelines: {
-            list: fnPipelinesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('pipelines.json')},
-            }),
+  test('streams - repositories with bucketing', async () => {
+    const config = readTestResourceAsJSON('repositories/config-bucketing.json');
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: getRepositoriesMockedImplementation(),
+            workspaces: getWorkspacesMockedImplementation(),
           },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
+          logger,
+          new Set(),
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const pipelinesStream = streams[4];
-    const pipelinesIter = pipelinesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository'}
-    );
-    const pipelines = [];
-    for await (const pipeline of pipelinesIter) {
-      pipelines.push(pipeline);
-    }
-
-    expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(pipelines))).toStrictEqual(
-      readTestResourceFile('pipelines-response.json')
-    );
-  });
-  test('streams - pipelineSteps, use full_refresh sync mode', async () => {
-    const fnPipelineStepsFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          pipelines: {
-            listSteps: fnPipelineStepsFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('pipelineSteps.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
-    });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const pipelineStepsStream = streams[5];
-    const pipelineStepsIter = pipelineStepsStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace', repository: 'repository', pipeline: 'pipeline'}
-    );
-    const pipelineSteps = [];
-    for await (const pipelineStep of pipelineStepsIter) {
-      pipelineSteps.push(pipelineStep);
-    }
-
-    expect(fnPipelineStepsFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(pipelineSteps))).toStrictEqual(
-      readTestResourceFile('pipelineSteps-response.json')
-    );
-  });
-  test('streams - repositories, use full_refresh sync mode', async () => {
-    const fnRepositoriesFunc = jest.fn();
-
-    Bitbucket.instance = jest.fn().mockImplementation(() => {
-      return new Bitbucket(
-        {
-          repositories: {
-            list: fnRepositoriesFunc.mockResolvedValue({
-              data: {values: readTestResourceFile('repositories.json')},
-            }),
-          },
-          hasNextPage: jest.fn(),
-        } as any,
-        100,
-        logger,
-        new Date('2010-03-27T14:03:51-0800')
-      );
-    });
-    const source = new sut.BitbucketSource(logger);
-    const streams = source.streams({} as any);
-
-    const repositoriesStream = streams[8];
-    const repositoriesIter = repositoriesStream.readRecords(
-      SyncMode.FULL_REFRESH,
-      undefined,
-      {workspace: 'workspace'}
-    );
-    const repositories = [];
-    for await (const repository of repositoriesIter) {
-      repositories.push(repository);
-    }
-
-    expect(fnRepositoriesFunc).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(JSON.stringify(repositories))).toStrictEqual(
-      readTestResourceFile('repositories-response.json')
-    );
   });
 
   test('streams - workspaces', async () => {
@@ -303,12 +152,73 @@ describe('index', () => {
         setupBitbucketInstance(
           {
             workspaces: {
+              ...getWorkspacesMockedImplementation(),
               getWorkspace: jest.fn().mockResolvedValue({
                 data: readTestResourceAsJSON('workspaces/workspace.json'),
               }),
+            },
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - commits', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('commits/commits.json'),
+                },
+              }),
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - workspace_users', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workspace_users/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            workspaces: {
+              getMembersForWorkspace: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'workspace_users/workspace_users.json'
+                  ),
+                },
+              }),
               getWorkspaces: jest.fn().mockResolvedValue({
                 data: {
-                  values: readTestResourceAsJSON('workspaces/workspaces.json'),
+                  values: [readTestResourceAsJSON('workspaces/workspace.json')],
                 },
               }),
             },
@@ -321,4 +231,171 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - tags', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'tags/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              ...getRepositoriesMockedImplementation(),
+              listTags: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('tags/tags.json'),
+                },
+              }),
+            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull_requests_with_activities', async () => {
+    const configPaths = [
+      'pull_requests_with_activities/config_run_mode_minimum.json',
+      'pull_requests_with_activities/config_run_mode_full.json',
+    ];
+    for (const configPath of configPaths) {
+      await sourceReadTest({
+        source,
+        configOrPath: configPath,
+        catalogOrPath: 'pull_requests_with_activities/catalog.json',
+        onBeforeReadResultConsumer: () => {
+          setupBitbucketInstance(
+            {
+              repositories: {
+                list: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'repositories/repository.json'
+                    ),
+                  },
+                }),
+                listPullRequests: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/pull_requests.json'
+                    ),
+                  },
+                }),
+                listPullRequestActivities: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/activities.json'
+                    ),
+                  },
+                }),
+              },
+              pullrequests: {
+                getDiffStat: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/diff_stat.json'
+                    ),
+                  },
+                }),
+              },
+              workspaces: getWorkspacesMockedImplementation(),
+            },
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    }
+  });
+
+  test('pr merge commit sha resolution', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath:
+        'pr_merge_commit_sha_resolution/config_run_mode_minimum.json',
+      catalogOrPath: 'pr_merge_commit_sha_resolution/catalog.json',
+      onBeforeReadResultConsumer: () => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+              listPullRequests: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/pull_requests.json'
+                  ),
+                },
+              }),
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/commits.json'
+                  ),
+                },
+              }),
+            },
+            pullrequests: {
+              getDiffStat: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/diff_stat.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getWorkspacesMockedImplementation(),
+          },
+          logger,
+          new Set(['pull_requests_with_activities', 'commits'])
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
+
+function getWorkspacesMockedImplementation() {
+  return {
+    getWorkspaces: jest.fn().mockResolvedValue({
+      data: {
+        values: readTestResourceAsJSON('workspaces/workspaces.json'),
+      },
+    }),
+  };
+}
+
+function getSingleWorkspaceMockedImplementation() {
+  return {
+    getWorkspaces: jest.fn().mockResolvedValue({
+      data: {
+        values: [readTestResourceAsJSON('workspaces/workspace.json')],
+      },
+    }),
+  };
+}
+
+function getRepositoriesMockedImplementation() {
+  return {
+    list: jest.fn().mockResolvedValue({
+      data: {
+        values: readTestResourceAsJSON('repositories/repositories.json'),
+      },
+    }),
+  };
+}

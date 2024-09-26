@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {Work} from './agileaccelerator_types';
@@ -49,11 +50,10 @@ export class Works extends AgileAcceleratorConverter {
         record: {
           ...projectRef,
           name: work.agf__Epic__r.agf__Project__r.Name,
-          description:
-            work.agf__Epic__r.agf__Project__r.agf__Project_Management_Notes__c?.substring(
-              0,
-              maxDescriptionLength
-            ),
+          description: Utils.cleanAndTruncate(
+            work.agf__Epic__r.agf__Project__r.agf__Project_Management_Notes__c,
+            maxDescriptionLength
+          ),
           createdAt: AgileAcceleratorCommon.toDateTime(
             work.agf__Epic__r.agf__Project__r.CreatedDate
           ),
@@ -67,8 +67,8 @@ export class Works extends AgileAcceleratorConverter {
         record: {
           ...epicRef,
           name: work.agf__Epic__r.Name,
-          description: work.agf__Epic__r.agf__Description__c?.substring(
-            0,
+          description: Utils.cleanAndTruncate(
+            work.agf__Epic__r.agf__Description__c,
             maxDescriptionLength
           ),
           status: AgileAcceleratorCommon.toEpicStatus(
@@ -115,7 +115,10 @@ export class Works extends AgileAcceleratorConverter {
     const task = {
       uid: work.Id,
       name: work.Name,
-      description: work.agf__Description__c?.substring(0, maxDescriptionLength),
+      description: Utils.cleanAndTruncate(
+        work.agf__Description__c,
+        maxDescriptionLength
+      ),
       url: work.baseUrl.concat(work.attributes.url),
       type: AgileAcceleratorCommon.toType(work.agf__Type__c),
       priority: work.agf__Priority__c,

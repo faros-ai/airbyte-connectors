@@ -20,6 +20,7 @@ export class Services extends PagerDutyConverter {
   ];
 
   private orgTeams: OrgTeam[];
+  private seenComputeApps: Set<string> = new Set();
 
   async convert(
     record: AirbyteRecord,
@@ -49,14 +50,33 @@ export class Services extends PagerDutyConverter {
     if (!orgTeam) {
       return [];
     }
+
     const application = this.computeApplication(ctx, service.summary);
-    return [
+    if (this.seenComputeApps.has(application.uid)) {
+      return [];
+    }
+    this.seenComputeApps.add(application.uid);
+
+    const results: DestinationRecord[] = [];
+
+    // Delete existing association
+    results.push({
+      model: 'org_ApplicationOwnership__Deletion',
+      record: {
+        where: {
+          application,
+        },
+      },
+    });
+    results.push(
       {model: 'compute_Application', record: application},
       {
         model: 'org_ApplicationOwnership',
         record: {team: {uid: orgTeam.uid}, application},
-      },
-    ];
+      }
+    );
+
+    return results;
   }
 
   private async fetchOrgTeams(ctx: StreamContext): Promise<OrgTeam[]> {

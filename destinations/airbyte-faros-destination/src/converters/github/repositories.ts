@@ -46,6 +46,7 @@ export class Repositories extends GitHubConverter {
         htmlUrl: repo.html_url,
         createdAt: Utils.toDate(repo?.created_at),
         updatedAt: Utils.toDate(repo?.updated_at),
+        archived: repo.archived,
       },
     });
 
