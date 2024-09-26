@@ -6,8 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {FileCollector} from '../common/vcs';
-import {RepoKey} from '../common/vcs';
+import {FileCollector, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
