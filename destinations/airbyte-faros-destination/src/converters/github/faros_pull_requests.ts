@@ -6,7 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {RepoKey} from '../common/vcs';
+import {FileCollector, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -16,23 +16,14 @@ type BranchKey = {
   repository: RepoKey;
 };
 
-type FileKey = {
-  uid: string;
-  repository: RepoKey;
-};
-
-type File = FileKey & {
-  path: string;
-};
-
 type ReviewState = {
   category: string;
   detail: string;
 };
 
 export class FarosPullRequests extends GitHubConverter {
-  private collectedBranches = new Map<string, BranchKey>();
-  private collectedFiles = new Map<string, File>();
+  private readonly collectedBranches = new Map<string, BranchKey>();
+  private readonly fileCollector = new FileCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -80,7 +71,7 @@ export class FarosPullRequests extends GitHubConverter {
     );
 
     pr.files.forEach((file) => {
-      this.collectFile(file.path, repoKey);
+      this.fileCollector.collectFile(file.path, repoKey);
     });
 
     let reviewCommentCount = 0;
@@ -211,7 +202,7 @@ export class FarosPullRequests extends GitHubConverter {
     return [
       ...this.convertBranches(),
       ...this.convertUsers(),
-      ...this.convertFiles(),
+      ...this.fileCollector.convertFiles(),
     ];
   }
 
@@ -239,26 +230,6 @@ export class FarosPullRequests extends GitHubConverter {
       record: branch,
     }));
   }
-
-  private collectFile(filePath: string, repoKey: RepoKey): void {
-    const key = fileKey(filePath, repoKey);
-    const keyStr = fileKeyToString(key);
-
-    if (!this.collectedFiles.has(keyStr)) {
-      const file: File = {
-        ...key,
-        path: filePath,
-      };
-      this.collectedFiles.set(keyStr, file);
-    }
-  }
-
-  private convertFiles(): DestinationRecord[] {
-    return Array.from(this.collectedFiles.values()).map((file) => ({
-      model: 'vcs_File',
-      record: file,
-    }));
-  }
 }
 
 function branchKey(
@@ -279,17 +250,6 @@ function branchKey(
 
 function branchKeyToString(branchKey: BranchKey): string {
   return `${branchKey.repository.organization.uid}/${branchKey.repository.name}/${branchKey.name}`;
-}
-
-function fileKey(filePath: string, repoKey: RepoKey): FileKey {
-  return {
-    uid: filePath,
-    repository: repoKey,
-  };
-}
-
-function fileKeyToString(fileKey: FileKey): string {
-  return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
 }
 
 function getReviewState(state: string): ReviewState {

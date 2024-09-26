@@ -8,7 +8,6 @@ import {
   Branch,
   Commit,
   Deployment,
-  DiffStat,
   Environment,
   Pipeline,
   PipelineStep,
@@ -424,7 +423,7 @@ export class Bitbucket {
         const mergeCommit = mergeCommitHash ? {hash: mergeCommitHash} : null;
         const pullRequest = {...pr, repositorySlug: repoSlug, mergeCommit};
         try {
-          pullRequest.diffStat = await this.getPRDiffStats(
+          pullRequest.diffStats = await this.getPRDiffStats(
             workspace,
             repoSlug,
             String(pr.id)
@@ -522,8 +521,8 @@ export class Bitbucket {
     workspace: string,
     repoSlug: string,
     pullRequestId: string
-  ): Promise<DiffStat> {
-    const diffStats = {linesAdded: 0, linesDeleted: 0, filesChanged: 0};
+  ): Promise<ReadonlyArray<PRDiffStat>> {
+    const results: PRDiffStat[] = [];
     try {
       const func = (): Promise<BitbucketResponse<PRDiffStat>> =>
         this.limiter.schedule(() =>
@@ -535,14 +534,13 @@ export class Bitbucket {
           })
         ) as any;
 
-      const iter = this.paginate<PRDiffStat>(func, (data) =>
+      const diffStats = this.paginate<PRDiffStat>(func, (data) =>
         this.buildPRDiffStat(data)
       );
-      for await (const prDiffStat of iter) {
-        diffStats.linesAdded += prDiffStat.linesAdded;
-        diffStats.linesDeleted += prDiffStat.linesRemoved;
-        diffStats.filesChanged += 1;
+      for await (const diffStat of diffStats) {
+        results.push(diffStat);
       }
+      return results;
     } catch (err) {
       throw new VError(
         this.buildInnerError(err),
@@ -552,7 +550,6 @@ export class Bitbucket {
         repoSlug
       );
     }
-    return diffStats;
   }
 
   @Memoize(
@@ -1193,15 +1190,20 @@ export class Bitbucket {
   private buildPRDiffStat(data: Dictionary<any>): PRDiffStat {
     return {
       status: data.status,
-      old: data.old,
-      linesRemoved: data.lines_removed,
-      linesAdded: data.lines_added,
-      type: data.type,
-      new: {
-        path: data.new?.path,
-        escapedPath: data.new?.escaped_path,
-        type: data.new?.type,
-      },
+      linesRemoved: data.lines_removed ?? 0,
+      linesAdded: data.lines_added ?? 0,
+      old: data?.old
+        ? {
+            path: data.old?.path,
+            escapedPath: data.old?.escaped_path,
+          }
+        : null,
+      new: data?.new
+        ? {
+            path: data.new?.path,
+            escapedPath: data.new?.escaped_path,
+          }
+        : null,
     };
   }
 

@@ -14,6 +14,26 @@ export type PullRequestKey = {
 };
 export type UserKey = {uid: string; source: string};
 
+export type FileKey = {
+  uid: string;
+  repository: RepoKey;
+};
+
+export type File = FileKey & {
+  path: string;
+};
+
+export function fileKey(filePath: string, repoKey: RepoKey): FileKey {
+  return {
+    uid: filePath,
+    repository: repoKey,
+  };
+}
+
+export function fileKeyToString(fileKey: FileKey): string {
+  return `${fileKey.repository.organization.uid}/${fileKey.repository.name}/${fileKey.uid}`;
+}
+
 export function processPullRequestFileDiffs(
   files: ReadonlyArray<FileDiff>,
   pullRequest: PullRequestKey
@@ -85,4 +105,28 @@ export function processPullRequestFileDiffs(
   }
 
   return res;
+}
+
+export class FileCollector {
+  private readonly collectedFiles = new Map<string, File>();
+
+  collectFile(filePath: string, repoKey: RepoKey): void {
+    const key = fileKey(filePath, repoKey);
+    const keyStr = fileKeyToString(key);
+
+    if (!this.collectedFiles.has(keyStr)) {
+      const file: File = {
+        ...key,
+        path: filePath,
+      };
+      this.collectedFiles.set(keyStr, file);
+    }
+  }
+
+  convertFiles(): DestinationRecord[] {
+    return Array.from(this.collectedFiles.values()).map((file) => ({
+      model: 'vcs_File',
+      record: file,
+    }));
+  }
 }

@@ -112,11 +112,18 @@ exports[`index pr merge commit sha resolution 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -211,11 +218,18 @@ exports[`index pr merge commit sha resolution 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -310,11 +324,18 @@ exports[`index pr merge commit sha resolution 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -465,11 +486,18 @@ exports[`index streams - pull_requests_with_activities 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -562,11 +590,18 @@ exports[`index streams - pull_requests_with_activities 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -659,11 +694,18 @@ exports[`index streams - pull_requests_with_activities 1`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -844,11 +886,18 @@ exports[`index streams - pull_requests_with_activities 2`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -1024,11 +1073,18 @@ exports[`index streams - pull_requests_with_activities 2`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",
@@ -1204,11 +1260,18 @@ exports[`index streams - pull_requests_with_activities 2`] = `
           "uuid": "{anonymized-uuid}",
         },
       },
-      "diffStat": {
-        "filesChanged": 1,
-        "linesAdded": 2,
-        "linesDeleted": 0,
-      },
+      "diffStats": [
+        {
+          "linesAdded": 2,
+          "linesRemoved": 0,
+          "new": {
+            "escapedPath": "hello.ts",
+            "path": "hello.ts",
+          },
+          "old": null,
+          "status": "added",
+        },
+      ],
       "id": 2,
       "links": {
         "activityUrl": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/pullrequests/2/activity",

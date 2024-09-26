@@ -1692,18 +1692,478 @@ README-PR.md created online with Bitbucket",
 ]
 `;
 
-exports[`bitbucket pull_requests_with_activities 1`] = `
+exports[`bitbucket pull_requests_with_activities diff stats 1`] = `
 Array [
-  "Processed 16 records",
-  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 9 records",
-  "Would write records by model: {\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 16 records",
+  "Would write records by model: {\\\\\\"vcs_File\\\\\\":5,\\\\\\"vcs_PullRequest\\\\\\":4,\\\\\\"vcs_PullRequestFile\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
 `;
 
-exports[`bitbucket pull_requests_with_activities 2`] = `
+exports[`bitbucket pull_requests_with_activities diff stats 2`] = `
+Array [
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 3,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "bye.ts",
+      },
+      "pullRequest": Object {
+        "number": 4,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "4",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 2,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 4,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "4",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 1,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hola.ts",
+      },
+      "pullRequest": Object {
+        "number": 4,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "4",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "commentCount": 0,
+      "commitCount": 3,
+      "createdAt": "2024-09-23T19:46:32.257Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 3,
+        "linesAdded": 4,
+        "linesDeleted": 2,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/4",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 4,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "renaming diffstat test",
+      "uid": "4",
+      "updatedAt": "2024-09-23T20:54:58.646Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 2,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 5,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "5",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-23T19:47:59.750Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 0,
+        "linesDeleted": 2,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/5",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 5,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "delete diffstat test",
+      "uid": "5",
+      "updatedAt": "2024-09-23T19:48:00.418Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 1,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "3",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "712020:b4f37d53-22ad-4770-ae6a-a7022897f87e",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-06T12:46:31.583Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 2,
+        "linesDeleted": 1,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/3",
+      "mergeCommit": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "sha": "68feee41d65b1e2daa02c7812800da7c99753df0",
+        "uid": "68feee41d65b1e2daa02c7812800da7c99753df0",
+      },
+      "mergedAt": "2024-09-06T12:46:42.082Z",
+      "number": 3,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Merged",
+        "detail": "merged",
+      },
+      "title": "Another test to open PR",
+      "uid": "3",
+      "updatedAt": "2024-09-06T12:46:42.048Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello-world.ts",
+      },
+      "pullRequest": Object {
+        "number": 7,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "7",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 0,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hi.ts",
+      },
+      "pullRequest": Object {
+        "number": 7,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "7",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Bitbucket",
+        "uid": "633b43292eaaa5dcfa164e12",
+      },
+      "commentCount": 0,
+      "commitCount": 1,
+      "createdAt": "2024-09-26T16:19:44.089Z",
+      "description": "",
+      "diffStats": Object {
+        "filesChanged": 2,
+        "linesAdded": 0,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://bitbucket.org/mati-1/test-1/pull-requests/7",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 7,
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "state": Object {
+        "category": "Open",
+        "detail": "open",
+      },
+      "title": "rename",
+      "uid": "7",
+      "updatedAt": "2024-09-26T16:19:44.666Z",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "bye.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "bye.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hello.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hello.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hola.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hola.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hello-world.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hello-world.ts",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hi.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hi.ts",
+    },
+  },
+]
+`;
+
+exports[`bitbucket pull_requests_with_activities pull_requests_with_activities 1`] = `
+Array [
+  "Processed 16 records",
+  "Processed records by stream: {\\\\\\"mytestsource__bitbucket__pull_requests_with_activities\\\\\\":16}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 13 records",
+  "Would write records by model: {\\\\\\"vcs_File\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestFile\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`bitbucket pull_requests_with_activities pull_requests_with_activities 2`] = `
 Array [
   Object {
     "vcs_PullRequestComment": Object {
@@ -1845,6 +2305,36 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 0,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "1",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -1911,6 +2401,36 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 1,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "3",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -1959,6 +2479,36 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequestFile": Object {
+      "additions": 2,
+      "deletions": 1,
+      "file": Object {
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "hello.ts",
+      },
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test-1",
+          "organization": Object {
+            "source": "Bitbucket",
+            "uid": "mati-1",
+          },
+          "uid": "test-1",
+        },
+        "uid": "2",
+      },
+      "source": "Bitbucket",
+    },
+  },
+  Object {
     "vcs_PullRequest": Object {
       "author": Object {
         "source": "Bitbucket",
@@ -1993,6 +2543,21 @@ Array [
       "title": "Another test to open PR",
       "uid": "2",
       "updatedAt": "2024-09-06T12:46:04.866Z",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "hello.ts",
+      "repository": Object {
+        "name": "test-1",
+        "organization": Object {
+          "source": "Bitbucket",
+          "uid": "mati-1",
+        },
+        "uid": "test-1",
+      },
+      "source": "Bitbucket",
+      "uid": "hello.ts",
     },
   },
 ]

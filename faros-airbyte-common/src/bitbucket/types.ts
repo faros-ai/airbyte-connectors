@@ -139,12 +139,6 @@ export interface DeploymentsState {
   readonly status?: {readonly type: string; readonly name: string};
 }
 
-export interface DiffStat {
-  readonly linesAdded: number;
-  readonly linesDeleted: number;
-  readonly filesChanged: number;
-}
-
 export interface Environment {
   readonly name: string;
   readonly environmentLockEnabled: boolean;
@@ -315,7 +309,7 @@ export interface PullRequest {
   readonly id: number;
   readonly commentCount: number;
   readonly taskCount: number;
-  readonly diffStat?: DiffStat;
+  readonly diffStats?: ReadonlyArray<PRDiffStat>;
   readonly calculatedActivity?: CalculatedActivity;
   readonly links: {
     readonly declineUrl: string;
@@ -495,15 +489,16 @@ export interface PRActivity {
 
 export interface PRDiffStat {
   readonly status: string;
-  readonly old: any;
   readonly linesRemoved: number;
   readonly linesAdded: number;
-  readonly type: string;
+  readonly old: {
+    readonly path: string;
+    readonly escapedPath: string;
+  } | null;
   readonly new: {
     readonly path: string;
     readonly escapedPath: string;
-    readonly type: string;
-  };
+  } | null;
 }
 
 export interface Repository {

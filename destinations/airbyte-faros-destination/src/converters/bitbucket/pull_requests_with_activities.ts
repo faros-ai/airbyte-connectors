@@ -1,12 +1,15 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   PRActivity,
+  PRDiffStat,
   PullRequest,
   PullRequestOrActivity,
   User,
 } from 'faros-airbyte-common/bitbucket';
 import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
+import {FileCollector, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BitbucketCommon, BitbucketConverter, CategoryRef} from './common';
 
@@ -25,10 +28,20 @@ enum PullRequestReviewStateCategory {
   CUSTOM = 'Custom',
 }
 
+interface DiffStats {
+  linesAdded: number;
+  linesDeleted: number;
+  filesChanged: number;
+}
+
 export class PullRequestsWithActivities extends BitbucketConverter {
+  private readonly fileCollector = new FileCollector();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_File',
     'vcs_PullRequest',
     'vcs_PullRequestComment',
+    'vcs_PullRequestFile',
     'vcs_PullRequestReview',
   ];
 
@@ -56,17 +69,21 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     ).split('/');
     if (!workspace || !repo) return res;
 
-    const repoRef = BitbucketCommon.vcs_Repository(workspace, repo, source);
+    const repoKey = BitbucketCommon.vcs_Repository(workspace, repo, source);
 
     const commitHash = pullRequest?.mergeCommit?.hash;
     const mergeCommit = commitHash
-      ? {repository: repoRef, sha: commitHash, uid: commitHash}
+      ? {repository: repoKey, sha: commitHash, uid: commitHash}
       : null;
 
     let author = null;
     if (pullRequest?.author?.accountId) {
       author = {uid: pullRequest.author.accountId, source};
     }
+
+    pullRequest.diffStats?.forEach((diff) => {
+      res.push(...this.processDiffStat(repoKey, pullRequest, diff));
+    });
 
     res.push({
       model: 'vcs_PullRequest',
@@ -85,13 +102,53 @@ export class PullRequestsWithActivities extends BitbucketConverter {
         mergedAt: Utils.toDate(pullRequest.calculatedActivity?.mergedAt),
         commentCount: pullRequest.commentCount,
         commitCount: pullRequest.calculatedActivity?.commitCount,
-        diffStats: pullRequest.diffStat,
+        diffStats: this.calculateDiffStats(pullRequest),
         author,
         mergeCommit,
-        repository: repoRef,
+        repository: repoKey,
       },
     });
     return res;
+  }
+
+  private processDiffStat(
+    repoKey: RepoKey,
+    pullRequest: PullRequest,
+    diff: PRDiffStat
+  ): ReadonlyArray<DestinationRecord> {
+    const res: DestinationRecord[] = [];
+
+    const processDiffPath = (path: string): DestinationRecord => {
+      this.fileCollector.collectFile(path, repoKey);
+      return {
+        model: 'vcs_PullRequestFile',
+        record: {
+          pullRequest: {
+            number: pullRequest.id,
+            uid: pullRequest.id.toString(),
+            repository: repoKey,
+          },
+          file: {uid: path, repository: repoKey},
+          additions: diff.linesAdded,
+          deletions: diff.linesRemoved,
+        },
+      };
+    };
+
+    if (diff.old?.path) {
+      res.push(processDiffPath(diff.old.path));
+    }
+    if (diff.new?.path && diff.new.path !== diff.old?.path) {
+      res.push(processDiffPath(diff.new.path));
+    }
+
+    return res;
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return [...this.fileCollector.convertFiles()];
   }
 
   private toPrState(state: string): CategoryRef {
@@ -211,5 +268,33 @@ export class PullRequestsWithActivities extends BitbucketConverter {
     if (prActivity?.update && prActivity?.update?.state === 'DECLINED')
       return {category: PullRequestReviewStateCategory.DISMISSED, detail: null};
     return undefined;
+  }
+
+  private calculateDiffStats(pullRequest: PullRequest): DiffStats | null {
+    if (!pullRequest.diffStats) {
+      return null;
+    }
+
+    const filesChanged = new Set(
+      pullRequest.diffStats
+        .flatMap((diff) => [diff.old?.path, diff.new?.path])
+        .filter((path) => !isNil(path))
+    ).size;
+
+    const linesAdded = pullRequest.diffStats.reduce(
+      (sum, diff) => sum + diff.linesAdded,
+      0
+    );
+
+    const linesDeleted = pullRequest.diffStats.reduce(
+      (sum, diff) => sum + diff.linesRemoved,
+      0
+    );
+
+    return {
+      filesChanged,
+      linesAdded,
+      linesDeleted,
+    };
   }
 }
