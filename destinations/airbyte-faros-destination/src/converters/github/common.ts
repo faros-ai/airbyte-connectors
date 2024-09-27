@@ -293,6 +293,7 @@ export class GitHubCommon {
     const level =
       (alert as CodeScanningAlert).rule?.security_severity_level ??
       (alert as DependabotAlert).security_vulnerability?.severity;
+    // https://nvd.nist.gov/vuln-metrics/cvss
     switch (level) {
       case 'low':
         return 3.0;
