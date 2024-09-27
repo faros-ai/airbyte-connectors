@@ -52,8 +52,7 @@ export class FarosDependabotAlerts extends GitHubConverter {
           type: GitHubCommon.vulnerabilityType(alert, this.alertType),
           title: alert.security_advisory.summary,
           description: Utils.cleanAndTruncate(
-            alert.security_advisory.description,
-            200
+            alert.security_advisory.description
           ),
           vulnerabilityIds: vulnerabilityIdentifiers.map((vi) => vi.record.uid),
           severity: GitHubCommon.vulnerabilitySeverity(alert),

@@ -36,7 +36,7 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
           source: this.streamName.source,
           type: GitHubCommon.vulnerabilityType(alert, this.alertType),
           title: alert.rule.name ?? alert.rule.id,
-          description: Utils.cleanAndTruncate(alert.rule.description, 200),
+          description: Utils.cleanAndTruncate(alert.rule.description),
           severity: GitHubCommon.vulnerabilitySeverity(alert),
           url: alert.html_url,
         },
