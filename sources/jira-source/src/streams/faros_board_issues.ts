@@ -73,15 +73,15 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
   private async updateBoardIssueState(
     tracker: BoardIssueTracker
   ): Promise<void> {
-    if (this.farosClient && this.config.source_id) {
-      this.logger.info('Updating board issue state in Faros');
+    if (this.farosClient && this.config.faros_source_id) {
+      this.logger.debug('Updating board issue state in Faros');
       try {
         const body = {
           state: State.compress(tracker.getState()).data,
         };
         await this.farosClient.request(
           'PUT',
-          `/accounts/${this.config.source_id}/state`,
+          `/accounts/${this.config.faros_source_id}/state`,
           body
         );
       } catch (e: any) {
@@ -96,12 +96,12 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     boardId: string
   ): Promise<BoardIssueTracker> {
     let boardIssueState: any;
-    if (this.farosClient && this.config.source_id) {
-      this.logger.info('Loading board issue state from Faros');
+    if (this.farosClient && this.config.faros_source_id) {
+      this.logger.debug('Loading board issue state from Faros');
       try {
         const res: any = await this.farosClient.request(
           'GET',
-          `/accounts/${this.config.source_id}/state`
+          `/accounts/${this.config.faros_source_id}/state`
         );
         boardIssueState = State.decompress({
           data: res.state,
