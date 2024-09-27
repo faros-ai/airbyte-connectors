@@ -7665,7 +7665,7 @@ N/A
       "affectedVersions": Array [
         ">= 2.0.0, < 2.0.2",
       ],
-      "description": "django.contrib.auth.forms.AuthenticationForm in Django 2.0 before 2.0.2, and 1.11.8 and 1.11.9, allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the",
+      "description": "django.contrib.auth.forms.AuthenticationForm in Django 2.0 before 2.0.2, and 1.11.8 and 1.11.9, allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the confirm_login_allowed() method, as demonstrated by discovering whether a user account is inactive.",
       "publishedAt": "2018-10-03T21:13:54.000Z",
       "remediatedInVersions": Array [
         "2.0.2",
@@ -7766,7 +7766,7 @@ N/A
       "affectedVersions": Array [
         "< 2.8.19",
       ],
-      "description": "A flaw was found in ansible. Credentials, such as secrets, are being disclosed in console log by default and not protected by no_log feature when using those modules. An attacker can take advantage of",
+      "description": "A flaw was found in ansible. Credentials, such as secrets, are being disclosed in console log by default and not protected by no_log feature when using those modules. An attacker can take advantage of this information to steal those credentials. The highest threat from this vulnerability is to data confidentiality.",
       "publishedAt": "2021-06-01T17:38:00.000Z",
       "remediatedInVersions": Array [
         "2.8.19",
