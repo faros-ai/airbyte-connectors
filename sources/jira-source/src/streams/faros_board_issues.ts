@@ -105,18 +105,14 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     // https://support.atlassian.com/jira-service-management-cloud/docs/jql-keywords/#AND
     const jql = `updated >= ${since.getTime()} AND ${this.wrapJql(boardJql)}`;
     this.logger.debug(`Fetching issues for board ${boardId} using JQL ${jql}`);
-    let last: IssueCompact | undefined;
     try {
       for await (const issue of jira.getIssuesKeys(jql)) {
-        if (last) {
-          yield last;
-        }
         const maybe = {
           key: issue,
           boardId,
         };
         if (tracker.isNewIssue(maybe)) {
-          last = maybe;
+          yield maybe;
         }
       }
     } catch (err: any) {
@@ -134,9 +130,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
       yield issue;
     }
     await this.updateBoardIssueState(tracker);
-    if (last) {
-      yield last;
-    }
   }
 
   private async updateBoardIssueState(
