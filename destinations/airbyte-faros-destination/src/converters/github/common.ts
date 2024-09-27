@@ -1,5 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/github';
+import {
+  CodeScanningAlert,
+  DependabotAlert,
+  SecretScanningAlert,
+  User,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -12,6 +17,9 @@ export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 export type GitHubConfig = {
   sync_repo_issues?: boolean;
 };
+
+type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
+type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {
@@ -217,6 +225,85 @@ export class GitHubCommon {
       number: number,
       repository: this.repoKey(org, repo, source),
     };
+  }
+
+  static vulnerabilityUid(
+    org: string,
+    repo: string,
+    alertType: SecurityAlertType,
+    number: number
+  ): string {
+    return toLower(`${org}/${repo}/${alertType}/${number}`);
+  }
+
+  static vulnerabilityType(
+    alert: SecurityAlert,
+    alertType: SecurityAlertType
+  ): {category: string; detail: string} {
+    switch (alertType) {
+      case 'code-scanning':
+        if (
+          !isEmpty((alert as CodeScanningAlert).rule.security_severity_level)
+        ) {
+          return {
+            category: 'Security',
+            detail: 'security code-scanning alert',
+          };
+        } else {
+          return {
+            category: 'CodingError',
+            detail: 'non-security code-scanning alert',
+          };
+        }
+      case 'dependabot':
+        return {
+          category: 'Dependency',
+          detail: 'dependabot alert',
+        };
+      case 'secret-scanning':
+        return {
+          category: 'SecretLeak',
+          detail: 'secret-scanning alert',
+        };
+    }
+  }
+
+  static vulnerabilityStatus(alert: SecurityAlert) {
+    const state = alert.state;
+    switch (state) {
+      case 'open':
+        return {category: 'Open', detail: state};
+      case 'dismissed':
+        return {
+          category: 'Ignored',
+          detail: alert.dismissed_reason ?? state,
+        };
+      case 'auto_dismissed':
+        return {category: 'Ignored', detail: state};
+      case 'fixed':
+        return {category: 'Resolved', detail: state};
+      case 'resolved':
+        return {category: 'Resolved', detail: alert.resolution ?? state};
+      default:
+        return {category: 'Custom', detail: state};
+    }
+  }
+
+  // https://nvd.nist.gov/vuln-metrics/cvss
+  static vulnerabilitySeverity(alert: SecurityAlert) {
+    const level =
+      (alert as CodeScanningAlert).rule?.security_severity_level ??
+      (alert as DependabotAlert).security_vulnerability?.severity;
+    switch (level) {
+      case 'low':
+        return 3.0;
+      case 'medium':
+        return 6.0;
+      case 'high':
+        return 9.0;
+      case 'critical':
+        return 10.0;
+    }
   }
 
   private static buildStatus(conclusion: string): {
