@@ -177,6 +177,13 @@ const SOURCE_COMMON_PROPERTIES = {
     description: 'Enable debug mode',
     default: false,
   },
+  source_id: {
+    order: 1003,
+    type: 'string',
+    title: 'The source ID',
+    description: 'The ID of the source (aka account)',
+    default: undefined,
+  },
 };
 
 export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {

@@ -933,6 +933,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         await resetData?.();
       }
 
+      if (isResetSync) {
+        if (config.faros_source_id && this.farosClient) {
+          this.logger.info(
+            `Resetting account state for ${config.faros_source_id}`
+          );
+          try {
+            await this.farosClient.request(
+              'DELETE',
+              `/accounts/${config.faros_source_id}/state`
+            );
+          } catch (e: any) {
+            const message = e.message ?? JSON.stringify(e);
+            this.logger.warn(
+              `Failed to reset account state for ${config.faros_source_id}: ${message}`
+            );
+          }
+        }
+      }
+
       // Don't forget to close the writer
       await writer?.end();
     } finally {

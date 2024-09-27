@@ -5,73 +5,12 @@ import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
+import {BoardIssueTracker} from './board_issue_tracker';
 import {
   BoardIssuesState,
   BoardStreamSlice,
   StreamWithBoardSlices,
 } from './common';
-
-type BoardIssues = Record<string, string[]>;
-
-interface BoardIssueTrackerState {
-  boardIssues: BoardIssues;
-}
-
-// TODO: add unit tests of this class
-class BoardIssueTracker {
-  private readonly seenIssues: Set<string> = new Set();
-  private readonly existingIssues: Set<string> = new Set();
-
-  constructor(
-    private readonly state: BoardIssueTrackerState | undefined,
-    private readonly boardId: string
-  ) {
-    if (Array.isArray(state?.boardIssues?.[boardId])) {
-      state.boardIssues[boardId].forEach((issue) => {
-        this.existingIssues.add(issue);
-      });
-    }
-  }
-
-  /**
-   * Reconciles prior state with new state by adding or deleting issues.
-   * Returns true if the issue has not been seen before.
-   * @param issue
-   */
-  isNewIssue(issue: IssueCompact): boolean {
-    this.seenIssues.add(issue.key);
-    return !this.existingIssues.has(issue.key);
-  }
-
-  /**
-   * Returns issues from prior state that are no longer present.
-   * The returned records contain special `isDeleted: true` property.
-   * The converter will use this to create DELETE records.
-   */
-  deletedIssues(): IssueCompact[] {
-    return Array.from(this.existingIssues)
-      .filter((key) => !this.seenIssues.has(key))
-      .map((key) => {
-        return {key, boardId: this.boardId, isDeleted: true};
-      });
-  }
-
-  /**
-   * Returns the current state of the board issues.
-   */
-  boardIssues(): BoardIssues {
-    return {
-      ...this.state?.boardIssues,
-      [this.boardId]: Array.from(this.seenIssues.values()),
-    };
-  }
-}
-
-// TODO: Add source_id to poseidon
-// TODO: reset state in destination writeEntries
-// TODO: add source_id to Poseidon
-// TODO: add source_id to Alastor catalog
-// TODO: add source_id to SOURCE_COMMON_PROPERTIE
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
   get dependencies(): ReadonlyArray<string> {
@@ -125,7 +64,6 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
         `Failed to sync board ${boardConfig.name} with id ${boardId} due to invalid filter. Skipping.`
       );
     }
-    // TODO: transform these into DELETE records in the converter
     for (const issue of tracker.deletedIssues()) {
       yield issue;
     }
@@ -135,13 +73,11 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
   private async updateBoardIssueState(
     tracker: BoardIssueTracker
   ): Promise<void> {
-    if (this.farosClient) {
+    if (this.farosClient && this.config.source_id) {
       this.logger.info('Updating board issue state in Faros');
       try {
         const body = {
-          state: State.compress({
-            boardIssues: tracker.boardIssues(),
-          }).data,
+          state: State.compress(tracker.getState()).data,
         };
         await this.farosClient.request(
           'PUT',
