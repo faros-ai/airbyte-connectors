@@ -29,6 +29,13 @@ AirbyteSpec {
         "prop1": Object {
           "type": "string",
         },
+        "source_id": Object {
+          "default": undefined,
+          "description": "The ID of the source (aka account)",
+          "order": 1003,
+          "title": "The source ID",
+          "type": "string",
+        },
       },
     },
   },
