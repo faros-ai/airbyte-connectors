@@ -69,8 +69,9 @@ class BoardIssueTracker {
 
 // TODO: Add source_id to poseidon
 // TODO: reset state in destination writeEntries
-// TODO: Replace with actual account ID
-const ACCOUNT_ID = 'my-as';
+// TODO: add source_id to Poseidon
+// TODO: add source_id to Alastor catalog
+// TODO: add source_id to SOURCE_COMMON_PROPERTIE
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
   get dependencies(): ReadonlyArray<string> {
@@ -151,7 +152,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
         };
         await this.farosClient.request(
           'PUT',
-          `/accounts/${ACCOUNT_ID}/state`,
+          `/accounts/${this.config.source_id}/state`,
           body
         );
       } catch (e: any) {
@@ -166,12 +167,12 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     boardId: string
   ): Promise<BoardIssueTracker> {
     let boardIssueState: any;
-    if (this.farosClient) {
+    if (this.farosClient && this.config.source_id) {
       this.logger.info('Loading board issue state from Faros');
       try {
         const res: any = await this.farosClient.request(
           'GET',
-          `/accounts/${ACCOUNT_ID}/state`
+          `/accounts/${this.config.source_id}/state`
         );
         boardIssueState = State.decompress({
           data: res.state,
