@@ -1,0 +1,16 @@
+query TmsTaskBoardOptions(
+  $source: String!
+) {
+  faros_TmsTaskBoardOptions(
+    where: {
+      board: {
+        source: { _eq: $source }
+      }
+    }
+  ) {
+    board {
+      uid
+    }
+    inclusionCategory
+  }
+}

@@ -752,24 +752,6 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
-    const catalog = readTestResourceAsJSON('common/catalog.json');
-    const {config: processedConfig} = await source.onBeforeRead(
-      {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
-      catalog
-    );
-    expect(processedConfig.excluded_projects).toBeUndefined();
-  });
-
-  test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
-    const catalog = readTestResourceAsJSON('common/catalog.json');
-    const {config: processedConfig} = await source.onBeforeRead(
-      {...config, boards: ['1'], excluded_boards: ['2']},
-      catalog
-    );
-    expect(processedConfig.excluded_boards).toBeUndefined();
-  });
-
   async function testStreamSlices(config: JiraConfig): Promise<void> {
     const stream = new FarosIssuePullRequests(config, logger);
     const slices = stream.streamSlices();

@@ -100,6 +100,11 @@ export const RunModeStreams = {
   [RunMode.Custom]: CustomStreamNames,
 };
 
+export enum QueryMode {
+  StaticLists = 'StaticLists',
+  FarosGraph = 'FarosGraph',
+}
+
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly projectBoardFilter: ProjectBoardFilter;
   constructor(
@@ -108,7 +113,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     protected readonly farosClient?: FarosClient
   ) {
     super(logger);
-    this.projectBoardFilter = new ProjectBoardFilter(
+    this.projectBoardFilter = ProjectBoardFilter.instance(
       config,
       logger,
       farosClient

@@ -39,7 +39,7 @@ import {VError} from 'verror';
 
 import {JiraClient} from './client';
 import {IssueTransformer} from './issue_transformer';
-import {RunMode} from './streams/common';
+import {QueryMode, RunMode} from './streams/common';
 
 export interface JiraConfig extends AirbyteConfig {
   readonly url: string;
@@ -71,6 +71,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly use_sprints_reverse_search?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
+  readonly query_mode?: QueryMode;
   readonly start_date?: string;
   readonly end_date?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
