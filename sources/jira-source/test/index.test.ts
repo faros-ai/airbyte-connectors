@@ -10,10 +10,11 @@ import {
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 
-import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
-import {JiraConfig} from '../src/jira';
+import {Jira, JiraConfig} from '../src/jira';
+import {ProjectBoardFilter} from '../src/project-board-filter';
 import {RunMode} from '../src/streams/common';
+import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
 function readResourceFile(fileName: string): any {
@@ -22,6 +23,9 @@ function readResourceFile(fileName: string): any {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.resetAllMocks();
+  (Jira as any).jira = undefined;
+  (ProjectBoardFilter as any)._instance = undefined;
 });
 
 describe('index', () => {
@@ -753,6 +757,12 @@ describe('index', () => {
   });
 
   async function testStreamSlices(config: JiraConfig): Promise<void> {
+    const searchProjects = paginate(
+      readTestResourceAsJSON('projects/projects.json'),
+      'values',
+      50
+    );
+    setupJiraInstance({v2: {projects: {searchProjects}}}, true, config, logger);
     const stream = new FarosIssuePullRequests(config, logger);
     const slices = stream.streamSlices();
     // collect slices in an array and match with snapshot

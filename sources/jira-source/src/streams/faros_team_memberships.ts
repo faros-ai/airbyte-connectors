@@ -1,5 +1,5 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {TeamMembership} from 'faros-airbyte-common/lib/jira';
+import {TeamMembership} from 'faros-airbyte-common/jira';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';

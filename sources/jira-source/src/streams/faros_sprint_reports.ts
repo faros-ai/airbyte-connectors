@@ -41,14 +41,15 @@ export class FarosSprintReports extends StreamWithBoardSlices {
         ? this.getUpdateRange(streamState[boardId]?.cutoff)
         : this.getUpdateRange();
 
-    const sprints = this.supportsFarosClient()
-      ? jira.getSprintsFromFarosGraph(
-          boardId,
-          this.farosClient,
-          this.config.graph ?? DEFAULT_GRAPH,
-          updateRange?.[0]
-        )
-      : jira.getSprints(boardId, updateRange);
+    const sprints =
+      this.isWebhookSupplementMode() && this.supportsFarosClient()
+        ? jira.getSprintsFromFarosGraph(
+            boardId,
+            this.farosClient,
+            this.config.graph ?? DEFAULT_GRAPH,
+            updateRange?.[0]
+          )
+        : jira.getSprints(boardId, updateRange);
     for (const sprint of await sprints) {
       const report = await jira.getSprintReport(sprint, boardId);
       if (!report) continue;

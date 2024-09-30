@@ -708,10 +708,7 @@ exports[`index stream with project slices using bucket 1 1`] = `
 exports[`index stream with project slices using bucket 2 1`] = `
 [
   {
-    "project": "TEST",
-  },
-  {
-    "project": "TEST3",
+    "project": "TEST2",
   },
 ]
 `;

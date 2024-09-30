@@ -257,7 +257,7 @@
       "query_mode": {
         "order": 33,
         "title": "Query Mode",
-        "description": "Query mode for selecting what Jira boards should be fetched",
+        "description": "Query mode for selecting which Jira boards should be fetched",
         "type": "string",
         "default": "StaticLists",
         "enum": [

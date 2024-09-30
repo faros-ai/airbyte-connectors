@@ -31,6 +31,7 @@ const TASK_BOARD_SOURCE = 'Jira';
 
 export class ProjectBoardFilter {
   private readonly filterConfig: FilterConfig;
+  private readonly queryMode: QueryMode;
   private projects?: Set<string>;
   private boards?: Set<string>;
   private loadedBoards: boolean = false;
@@ -52,7 +53,9 @@ export class ProjectBoardFilter {
     private readonly logger: AirbyteLogger,
     private readonly farosClient?: FarosClient
   ) {
-    const {projects, query_mode} = config;
+    this.queryMode = config.query_mode ?? QueryMode.StaticLists;
+
+    const {projects} = config;
     let {excluded_projects, boards, excluded_boards} = config;
 
     if (projects?.length && excluded_projects?.length) {
@@ -62,7 +65,15 @@ export class ProjectBoardFilter {
       excluded_projects = undefined;
     }
 
-    if (query_mode === QueryMode.FarosGraph) {
+    if (this.queryMode === QueryMode.StaticLists) {
+      if (boards?.length && excluded_boards?.length) {
+        logger.warn(
+          'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
+        );
+        excluded_boards = undefined;
+      }
+      this.loadedBoards = true;
+    } else if (this.queryMode === QueryMode.FarosGraph) {
       if (!this.supportsFarosClient()) {
         throw new VError('FarosClient is required for FarosGraph query mode');
       }
@@ -73,14 +84,6 @@ export class ProjectBoardFilter {
         boards = undefined;
         excluded_boards = undefined;
       }
-    } else if (query_mode === QueryMode.StaticLists) {
-      if (boards?.length && excluded_boards?.length) {
-        logger.warn(
-          'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
-        );
-        excluded_boards = undefined;
-      }
-      this.loadedBoards = true;
     }
 
     this.filterConfig = {
@@ -116,8 +119,9 @@ export class ProjectBoardFilter {
         }
       } else {
         for (const project of this.filterConfig.projects) {
-          if (jira.isProjectInBucket(project))
+          if (jira.isProjectInBucket(project)) {
             this.projects.add(toUpper(project));
+          }
         }
       }
     }
@@ -187,7 +191,7 @@ export class ProjectBoardFilter {
     if (this.loadedBoards) {
       return;
     }
-    if (this.config.query_mode === QueryMode.FarosGraph) {
+    if (this.queryMode === QueryMode.FarosGraph) {
       const boards = new Set<string>();
       let excludedBoards = new Set<string>();
       const iter = this.farosClient.nodeIterable(

@@ -149,10 +149,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
     );
   }
 
+  protected isWebhookSupplementMode(): boolean {
+    return this.config.run_mode === RunMode.WebhookSupplement;
+  }
+
   protected supportsFarosClient(): boolean {
-    return (
-      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
-    );
+    return !!this.farosClient;
   }
 }
 
