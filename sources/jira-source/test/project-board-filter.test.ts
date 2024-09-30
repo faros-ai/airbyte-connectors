@@ -6,7 +6,6 @@ import {
 
 import {JiraConfig} from '../src/jira';
 import {ProjectBoardFilter} from '../src/project-board-filter';
-import {QueryMode} from '../src/streams/common';
 import {iterate, paginate, setupJiraInstance} from './utils/test-utils';
 
 describe('ProjectBoardFilter', () => {
@@ -104,23 +103,23 @@ describe('ProjectBoardFilter', () => {
     expect(boards).toMatchSnapshot();
   });
 
-  test('getBoards (FarosGraph) - FarosClient is required', async () => {
+  test('getBoards (FarosGraph) - Faros credentials are required', async () => {
     expect(
       () =>
         new ProjectBoardFilter(
-          {...config, query_mode: QueryMode.FarosGraph},
+          {...config, use_faros_graph_boards_selection: true},
           logger
         )
     ).toThrow(
       expect.objectContaining({
-        message: expect.stringContaining('FarosClient is required'),
+        message: expect.stringContaining('Faros credentials are required'),
       })
     );
   });
 
   test('getBoards (FarosGraph) - nothing included - nothing excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
-      {...config, query_mode: QueryMode.FarosGraph},
+      {...config, use_faros_graph_boards_selection: true},
       logger,
       {nodeIterable: () => iterate([])} as any
     );
@@ -130,7 +129,7 @@ describe('ProjectBoardFilter', () => {
 
   test('getBoards (FarosGraph) - some included - nothing excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
-      {...config, query_mode: QueryMode.FarosGraph},
+      {...config, use_faros_graph_boards_selection: true},
       logger,
       {
         nodeIterable: () =>
@@ -143,7 +142,7 @@ describe('ProjectBoardFilter', () => {
 
   test('getBoards (FarosGraph) - nothing included - some excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
-      {...config, query_mode: QueryMode.FarosGraph},
+      {...config, use_faros_graph_boards_selection: true},
       logger,
       {
         nodeIterable: () =>

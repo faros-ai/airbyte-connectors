@@ -42,7 +42,7 @@ export class FarosSprintReports extends StreamWithBoardSlices {
         : this.getUpdateRange();
 
     const sprints =
-      this.isWebhookSupplementMode() && this.supportsFarosClient()
+      this.isWebhookSupplementMode() && this.hasFarosClient()
         ? jira.getSprintsFromFarosGraph(
             boardId,
             this.farosClient,

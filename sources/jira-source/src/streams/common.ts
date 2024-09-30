@@ -100,11 +100,6 @@ export const RunModeStreams = {
   [RunMode.Custom]: CustomStreamNames,
 };
 
-export enum QueryMode {
-  StaticLists = 'StaticLists',
-  FarosGraph = 'FarosGraph',
-}
-
 export abstract class StreamBase extends AirbyteStreamBase {
   readonly projectBoardFilter: ProjectBoardFilter;
   constructor(
@@ -153,8 +148,8 @@ export abstract class StreamBase extends AirbyteStreamBase {
     return this.config.run_mode === RunMode.WebhookSupplement;
   }
 
-  protected supportsFarosClient(): boolean {
-    return !!this.farosClient;
+  protected hasFarosClient(): boolean {
+    return Boolean(this.farosClient);
   }
 }
 
