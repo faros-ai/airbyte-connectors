@@ -55,6 +55,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
+  readonly use_faros_graph_boards_selection?: boolean;
   readonly projects?: ReadonlyArray<string>;
   readonly excluded_projects?: ReadonlyArray<string>;
   readonly boards?: ReadonlyArray<string>;

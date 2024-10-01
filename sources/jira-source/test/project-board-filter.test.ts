@@ -6,7 +6,7 @@ import {
 
 import {JiraConfig} from '../src/jira';
 import {ProjectBoardFilter} from '../src/project-board-filter';
-import {paginate, setupJiraInstance} from './utils/test-utils';
+import {iterate, paginate, setupJiraInstance} from './utils/test-utils';
 
 describe('ProjectBoardFilter', () => {
   let logger: AirbyteLogger;
@@ -37,13 +37,13 @@ describe('ProjectBoardFilter', () => {
     setupJiraInstance(mockedImplementation, true, config, logger);
   });
 
-  test('getProjectsFromFaros - all projects - no projects list', async () => {
+  test('getProjects - all projects - no list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(config, logger);
     const projects = await projectBoardFilter.getProjects();
     expect(projects).toMatchSnapshot();
   });
 
-  test('getProjectsFromFaros - all projects - empty projects list', async () => {
+  test('getProjects - all projects - empty list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, projects: []},
       logger
@@ -52,7 +52,7 @@ describe('ProjectBoardFilter', () => {
     expect(projects).toMatchSnapshot();
   });
 
-  test('getProjectsFromFaros - specific projects included', async () => {
+  test('getProjects - specific projects included', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, projects: ['TEST-1', 'TEST-2']},
       logger
@@ -61,7 +61,7 @@ describe('ProjectBoardFilter', () => {
     expect(projects).toMatchSnapshot();
   });
 
-  test('getProjectsFromFaros - specific projects excluded', async () => {
+  test('getProjects - specific projects excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, excluded_projects: ['TEST-1']},
       logger
@@ -70,13 +70,13 @@ describe('ProjectBoardFilter', () => {
     expect(projects).toMatchSnapshot();
   });
 
-  test('getBoardsFromFaros - all boards - no list', async () => {
+  test('getBoards - all boards - no list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(config, logger);
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
   });
 
-  test('getBoardsFromFaros - all boards - empty list', async () => {
+  test('getBoards - all boards - empty list', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, boards: []},
       logger
@@ -85,7 +85,7 @@ describe('ProjectBoardFilter', () => {
     expect(boards).toMatchSnapshot();
   });
 
-  test('getBoardsFromFaros - specific boards included', async () => {
+  test('getBoards - specific boards included', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, boards: ['2', '3']},
       logger
@@ -94,7 +94,7 @@ describe('ProjectBoardFilter', () => {
     expect(boards).toMatchSnapshot();
   });
 
-  test('getBoardsFromFaros - specific boards excluded', async () => {
+  test('getBoards - specific boards excluded', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, excluded_boards: ['2']},
       logger
@@ -102,4 +102,66 @@ describe('ProjectBoardFilter', () => {
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
   });
+
+  test('getBoards (FarosGraph) - Faros credentials are required', async () => {
+    expect(
+      () =>
+        new ProjectBoardFilter(
+          {...config, use_faros_graph_boards_selection: true},
+          logger
+        )
+    ).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining('Faros credentials are required'),
+      })
+    );
+  });
+
+  test('getBoards (FarosGraph) - nothing included - nothing excluded', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, use_faros_graph_boards_selection: true},
+      logger,
+      {nodeIterable: () => iterate([])} as any
+    );
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
+
+  test('getBoards (FarosGraph) - some included - nothing excluded', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, use_faros_graph_boards_selection: true},
+      logger,
+      {
+        nodeIterable: () =>
+          iterate(['2', '3'].map((uid) => taskBoardOptions(uid, 'Included'))),
+      } as any
+    );
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
+
+  test('getBoards (FarosGraph) - nothing included - some excluded', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, use_faros_graph_boards_selection: true},
+      logger,
+      {
+        nodeIterable: () =>
+          iterate(['2'].map((uid) => taskBoardOptions(uid, 'Excluded'))),
+      } as any
+    );
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
 });
+
+function taskBoardOptions(
+  uid: string,
+  inclusionCategory: 'Included' | 'Excluded'
+) {
+  return {
+    board: {
+      uid,
+    },
+    inclusionCategory,
+  };
+}
