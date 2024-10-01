@@ -251,7 +251,7 @@
         "order": 32,
         "type": "boolean",
         "title": "Use Board Issue Tracker",
-        "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs.",
+        "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs. Requires faros_source_id to be configured.",
         "default": false
       }
     }
