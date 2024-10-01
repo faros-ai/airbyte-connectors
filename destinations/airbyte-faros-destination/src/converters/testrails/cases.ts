@@ -1,3 +1,5 @@
+import {isNil} from 'lodash';
+
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -22,25 +24,25 @@ export class Cases extends TestRailsConverter {
       testCase.suite_id,
       testCase.id
     );
-    const milestoneTag = typeof testCase.milestone !== 'undefined'
+    const milestoneTag = !isNil(testCase.milestone)
       ? `milestone:${testCase.milestone}`
       : null;
-    const automationTypeTag = typeof testCase.custom_automation_type !== 'undefined'
+    const automationTypeTag = !isNil(testCase.custom_automation_type)
       ? `automation_type:${testCase.custom_automation_type}`
       : null;
-    const updateAutomationTag = typeof testCase.custom_update_automation !== 'undefined'
+    const updateAutomationTag = !isNil(testCase.custom_update_automation)
       ? `update_automation:${testCase.custom_update_automation}`
       : null;
     const tags = [milestoneTag, automationTypeTag, updateAutomationTag].filter(tag => tag !== null);
-    const formattedTags = tags.map(tag => `{${tag}}`).join('');
 
     res.push({
       model: 'qa_TestCase',
       record: {
         uid,
         name: testCase.title,
+        description: testCase.custom_notes,
         source,
-        tags: formattedTags,
+        tags: [tags],
         type: this.convertType(testCase.type),
       },
     });
