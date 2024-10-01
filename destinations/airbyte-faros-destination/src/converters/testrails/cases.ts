@@ -1,4 +1,5 @@
 import {isNil} from 'lodash';
+import {Utils} from 'faros-js-client';
 
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
@@ -40,7 +41,7 @@ export class Cases extends TestRailsConverter {
       record: {
         uid,
         name: testCase.title,
-        description: testCase.custom_notes,
+        description: Utils.cleanAndTruncate(testCase.custom_notes),
         source,
         tags: [tags],
         type: this.convertType(testCase.type),
