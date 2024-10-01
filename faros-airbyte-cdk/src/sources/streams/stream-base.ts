@@ -189,6 +189,16 @@ export abstract class AirbyteStreamBase {
     return currentStreamState ?? {};
   }
 
+  /**
+   * Override to perform any action before reading slices.
+   */
+  async onBeforeReadSlices(): Promise<void> {}
+
+  /**
+   * Override to perform any action after reading all slices.
+   */
+  async onAfterReadSlices(): Promise<void> {}
+
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   /**

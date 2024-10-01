@@ -65,10 +65,10 @@ export interface JiraConfig extends AirbyteConfig {
   readonly bucket_total?: number;
   readonly api_url?: string;
   readonly api_key?: string;
-  readonly faros_source_id?: string;
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
+  readonly use_faros_board_issue_tracker?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;
