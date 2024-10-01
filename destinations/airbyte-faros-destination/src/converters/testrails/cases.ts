@@ -40,7 +40,7 @@ export class Cases extends TestRailsConverter {
         uid,
         name: testCase.title,
         source,
-        tags: [formattedTags],
+        tags: formattedTags,
         type: this.convertType(testCase.type),
       },
     });
