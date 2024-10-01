@@ -246,6 +246,13 @@
         "type": "string",
         "title": "Organization ID",
         "description": "Atlassian organization ID for fetching teams. Required only when using Fetch Teams with Jira Cloud. See https://confluence.atlassian.com/jirakb/what-it-is-the-organization-id-and-where-to-find-it-1207189876.html for information on how to find it."
+      },
+      "use_faros_board_issue_tracker": {
+        "order": 32,
+        "type": "boolean",
+        "title": "Use Board Issue Tracker",
+        "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs.",
+        "default": true
       }
     }
   }

@@ -71,11 +71,11 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     this.boardIssueTrackerState = tracker.getState();
   }
 
-  override async onBeforeReadSlices(): Promise<void> {
+  override async onBeforeRead(): Promise<void> {
     this.boardIssueTrackerState = await this.loadBoardIssueTrackerState();
   }
 
-  override async onAfterReadSlices(): Promise<void> {
+  override async onAfterRead(): Promise<void> {
     await this.updateBoardIssueTrackerState(this.boardIssueTrackerState);
   }
 

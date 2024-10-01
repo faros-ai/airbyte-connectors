@@ -355,7 +355,7 @@ export abstract class AirbyteSourceBase<
     );
     const failedSlices = [];
     let streamRecordCounter = 0;
-    await streamInstance.onBeforeReadSlices();
+    await streamInstance.onBeforeRead();
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -451,7 +451,7 @@ export abstract class AirbyteSourceBase<
         }
       }
     }
-    await streamInstance.onAfterReadSlices();
+    await streamInstance.onAfterRead();
     if (failedSlices.length > 0) {
       throw new VError(
         `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
