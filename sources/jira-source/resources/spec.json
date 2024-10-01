@@ -252,7 +252,7 @@
         "type": "boolean",
         "title": "Use Board Issue Tracker",
         "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs.",
-        "default": true
+        "default": false
       }
     }
   }
