@@ -112,7 +112,7 @@
         "order": 15,
         "type": "boolean",
         "title": "Use Faros Graph for Boards selection",
-        "description": "Query mode for selecting which Jira boards should be fetched (Faros credentials are required).",
+        "description": "Use Faros Graph for selecting which boards should be fetched (Faros credentials are required).",
         "default": false
       },
       "projects": {
