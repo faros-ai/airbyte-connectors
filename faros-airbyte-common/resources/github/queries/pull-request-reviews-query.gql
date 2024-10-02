@@ -1,5 +1,5 @@
-query pullRequestReviews($org: String!, $repo: String!, $number: Int!, $nested_page_size: Int!, $cursor: String) {
-  repository(owner: $org, name: $repo) {
+query pullRequestReviews($owner: String!, $repo: String!, $number: Int!, $nested_page_size: Int!, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
       reviews(first: $nested_page_size, after: $cursor) {
         pageInfo {
