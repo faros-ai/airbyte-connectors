@@ -14,9 +14,9 @@ import VError from 'verror';
 
 import {
   DEFAULT_CONCURRENCY,
+  DEFAULT_GITHUB_API_URL,
   DEFAULT_REJECT_UNAUTHORIZED,
   DEFAULT_TIMEOUT_MS,
-  DEFAULT_URL,
 } from './github';
 import {GitHubConfig} from './types';
 
@@ -37,7 +37,7 @@ export function makeOctokitClient(
   maxRetries = 3
 ): ExtendedOctokit {
   const throttle = getThrottle(cfg, logger, maxRetries);
-  const baseUrl = cfg.url ?? DEFAULT_URL;
+  const baseUrl = cfg.url ?? DEFAULT_GITHUB_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
   const request = {

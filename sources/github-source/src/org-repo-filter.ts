@@ -5,7 +5,7 @@ import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {DEFAULT_GRAPH, GitHub} from './github';
+import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
 import {GitHubConfig} from './types';
 
 type FilterConfig = {
@@ -168,7 +168,7 @@ export class OrgRepoFilter {
         'repository',
         'GitHub',
         this.farosClient,
-        this.config.graph ?? DEFAULT_GRAPH
+        this.config.graph ?? DEFAULT_FAROS_GRAPH
       );
       const {included: repositories, excluded: excludedRepositories} =
         farosOptions;

@@ -13,8 +13,8 @@ import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {
-  DEFAULT_API_URL,
   DEFAULT_CUTOFF_DAYS,
+  DEFAULT_FAROS_API_URL,
   DEFAULT_FETCH_TEAMS,
   DEFAULT_RUN_MODE,
   GitHub,
@@ -70,7 +70,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   makeFarosClient(config: GitHubConfig): FarosClient {
     return new FarosClient({
-      url: config.api_url ?? DEFAULT_API_URL,
+      url: config.api_url ?? DEFAULT_FAROS_API_URL,
       apiKey: config.api_key,
     });
   }
