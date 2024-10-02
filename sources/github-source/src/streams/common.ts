@@ -3,7 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {OrgRepoFilter} from '../org-repo-filter';
@@ -106,10 +106,11 @@ export abstract class StreamBase extends AirbyteStreamBase {
   readonly orgRepoFilter: OrgRepoFilter;
   constructor(
     protected readonly config: GitHubConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
-    this.orgRepoFilter = new OrgRepoFilter(config, logger);
+    this.orgRepoFilter = OrgRepoFilter.instance(config, logger, farosClient);
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {

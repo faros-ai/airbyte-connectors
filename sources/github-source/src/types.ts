@@ -7,6 +7,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly authentication: GitHubAuth;
   readonly reject_unauthorized?: boolean;
   readonly url?: string;
+  readonly use_faros_graph_repos_selection?: boolean;
   readonly organizations?: ReadonlyArray<string>;
   readonly excluded_organizations?: ReadonlyArray<string>;
   readonly repositories?: ReadonlyArray<string>;
@@ -18,6 +19,9 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
+  readonly api_url?: string;
+  readonly api_key?: string;
+  readonly graph?: string;
   readonly page_size?: number;
   readonly pull_requests_page_size?: number;
   readonly timeout?: number;

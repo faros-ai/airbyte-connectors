@@ -6,7 +6,7 @@ import {
 
 import {OrgRepoFilter} from '../src/org-repo-filter';
 import {GitHubConfig} from '../src/types';
-import {setupGitHubInstance} from './utils';
+import {iterate, setupGitHubInstance} from './utils';
 
 describe('OrgRepoFilter', () => {
   const logger = new AirbyteLogger(AirbyteLogLevel.DEBUG);
@@ -121,6 +121,64 @@ describe('OrgRepoFilter', () => {
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
   });
+
+  test('getRepositories (FarosGraph) - Faros credentials are required', async () => {
+    expect(
+      () =>
+        new OrgRepoFilter(
+          {...config, use_faros_graph_repos_selection: true},
+          logger
+        )
+    ).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining('Faros credentials are required'),
+      })
+    );
+  });
+
+  test('getRepositories (FarosGraph) - nothing included - nothing excluded', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {...config, use_faros_graph_repos_selection: true},
+      logger,
+      {nodeIterable: () => iterate([])} as any
+    );
+    const repositories = await getAllRepositories(orgRepoFilter);
+    expect(repositories).toMatchSnapshot();
+  });
+
+  test('getRepositories (FarosGraph) - some included - nothing excluded', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {...config, use_faros_graph_repos_selection: true},
+      logger,
+      {
+        nodeIterable: () =>
+          iterate(
+            ['org-1/repo-1', 'org-2/repo-2'].map((key) =>
+              repositoryOptions(key, 'Included')
+            )
+          ),
+      } as any
+    );
+    const repositories = await getAllRepositories(orgRepoFilter);
+    expect(repositories).toMatchSnapshot();
+  });
+
+  test('getRepositories (FarosGraph) - nothing included - some excluded', async () => {
+    const orgRepoFilter = new OrgRepoFilter(
+      {...config, use_faros_graph_repos_selection: true},
+      logger,
+      {
+        nodeIterable: () =>
+          iterate(
+            ['org-1/repo-1', 'org-2/repo-2'].map((key) =>
+              repositoryOptions(key, 'Excluded')
+            )
+          ),
+      } as any
+    );
+    const repositories = await getAllRepositories(orgRepoFilter);
+    expect(repositories).toMatchSnapshot();
+  });
 });
 
 const getAllRepositories = async (orgRepoFilter: OrgRepoFilter) => {
@@ -130,3 +188,19 @@ const getAllRepositories = async (orgRepoFilter: OrgRepoFilter) => {
     ...(await orgRepoFilter.getRepositories('org-3')),
   ];
 };
+
+function repositoryOptions(
+  key: string,
+  inclusionCategory: 'Included' | 'Excluded'
+) {
+  const [org, repo] = key.split('/');
+  return {
+    repository: {
+      uid: repo,
+      organization: {
+        uid: org,
+      },
+    },
+    inclusionCategory,
+  };
+}

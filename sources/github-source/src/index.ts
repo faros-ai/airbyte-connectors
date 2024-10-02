@@ -9,9 +9,11 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {calculateDateRange} from 'faros-airbyte-common/common';
+import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {
+  DEFAULT_API_URL,
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_FETCH_TEAMS,
   DEFAULT_RUN_MODE,
@@ -66,29 +68,40 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return [true, undefined];
   }
 
+  makeFarosClient(config: GitHubConfig): FarosClient {
+    return new FarosClient({
+      url: config.api_url ?? DEFAULT_API_URL,
+      apiKey: config.api_key,
+    });
+  }
+
   streams(config: GitHubConfig): AirbyteStreamBase[] {
+    let farosClient;
+    if (config.api_key) {
+      farosClient = this.makeFarosClient(config);
+    }
     return [
-      new FarosCodeScanningAlerts(config, this.logger),
-      new FarosCommits(config, this.logger),
-      new FarosContributorsStats(config, this.logger),
-      new FarosCopilotSeats(config, this.logger),
-      new FarosCopilotUsage(config, this.logger),
-      new FarosDependabotAlerts(config, this.logger),
-      new FarosIssues(config, this.logger),
-      new FarosLabels(config, this.logger),
-      new FarosOrganizations(config, this.logger),
-      new FarosOutsideCollaborators(config, this.logger),
-      new FarosProjects(config, this.logger),
-      new FarosPullRequests(config, this.logger),
-      new FarosPullRequestComments(config, this.logger),
-      new FarosReleases(config, this.logger),
-      new FarosRepositories(config, this.logger),
-      new FarosSamlSsoUsers(config, this.logger),
-      new FarosSecretScanningAlerts(config, this.logger),
-      new FarosTags(config, this.logger),
-      new FarosTeams(config, this.logger),
-      new FarosTeamMemberships(config, this.logger),
-      new FarosUsers(config, this.logger),
+      new FarosCodeScanningAlerts(config, this.logger, farosClient),
+      new FarosCommits(config, this.logger, farosClient),
+      new FarosContributorsStats(config, this.logger, farosClient),
+      new FarosCopilotSeats(config, this.logger, farosClient),
+      new FarosCopilotUsage(config, this.logger, farosClient),
+      new FarosDependabotAlerts(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
+      new FarosLabels(config, this.logger, farosClient),
+      new FarosOrganizations(config, this.logger, farosClient),
+      new FarosOutsideCollaborators(config, this.logger, farosClient),
+      new FarosProjects(config, this.logger, farosClient),
+      new FarosPullRequests(config, this.logger, farosClient),
+      new FarosPullRequestComments(config, this.logger, farosClient),
+      new FarosReleases(config, this.logger, farosClient),
+      new FarosRepositories(config, this.logger, farosClient),
+      new FarosSamlSsoUsers(config, this.logger, farosClient),
+      new FarosSecretScanningAlerts(config, this.logger, farosClient),
+      new FarosTags(config, this.logger, farosClient),
+      new FarosTeams(config, this.logger, farosClient),
+      new FarosTeamMemberships(config, this.logger, farosClient),
+      new FarosUsers(config, this.logger, farosClient),
     ];
   }
 

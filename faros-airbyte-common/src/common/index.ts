@@ -1,5 +1,8 @@
 import {createHmac} from 'crypto';
+import {FarosClient, paginatedQueryV2} from 'faros-js-client';
+import fs from 'fs';
 import {DateTime} from 'luxon';
+import path from 'path';
 import {VError} from 'verror';
 
 // TODO: Try https://www.npmjs.com/package/diff
@@ -92,3 +95,93 @@ export function collectReposByOrg(
     reposByOrg.get(org).add(name);
   }
 }
+
+const readFarosOptionsQuery = (fileName: string) =>
+  fs.readFileSync(
+    path.join(
+      __dirname,
+      '..',
+      '..',
+      'resources',
+      'common',
+      'queries',
+      fileName
+    ),
+    'utf8'
+  );
+
+const TMS_TASK_BOARD_OPTIONS_QUERY = readFarosOptionsQuery(
+  'faros-tms-task-board-options.gql'
+);
+
+const VCS_REPOSITORY_OPTIONS_QUERY = readFarosOptionsQuery(
+  'faros-vcs-repository-options.gql'
+);
+
+export async function getFarosOptions(
+  optionsType: 'board' | 'repository',
+  source: string,
+  farosClient: FarosClient,
+  graph: string
+): Promise<{
+  included: Set<string>;
+  excluded: Set<string>;
+}> {
+  const included = new Set<string>();
+  const excluded = new Set<string>();
+  let query: string;
+  switch (optionsType) {
+    case 'board':
+      query = TMS_TASK_BOARD_OPTIONS_QUERY;
+      break;
+    case 'repository':
+      query = VCS_REPOSITORY_OPTIONS_QUERY;
+      break;
+    default:
+      throw new Error(`Unknown Faros options type: ${optionsType}`);
+  }
+  const iter = farosClient.nodeIterable(
+    graph,
+    query,
+    1000,
+    paginatedQueryV2,
+    new Map(
+      Object.entries({
+        source,
+      })
+    )
+  );
+  for await (const options of iter) {
+    const key = getFarosOptionsItemKey(optionsType, options);
+    if (!key) continue;
+    if (options.inclusionCategory === 'Included') {
+      included.add(key);
+    } else if (options.inclusionCategory === 'Excluded') {
+      excluded.add(key);
+    }
+  }
+  return {included, excluded};
+}
+
+const getFarosOptionsItemKey = (
+  optionsType: 'board' | 'repository',
+  options: any
+): string => {
+  switch (optionsType) {
+    case 'board': {
+      const board = options.board?.uid;
+      if (!board) {
+        return;
+      }
+      return board;
+    }
+    case 'repository': {
+      const repo = options.repository?.uid;
+      const org = options.repository?.organization?.uid;
+      if (!repo || !org) {
+        return;
+      }
+      return `${org}/${repo}`;
+    }
+  }
+};

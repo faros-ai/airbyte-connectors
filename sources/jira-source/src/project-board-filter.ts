@@ -1,8 +1,7 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {FarosClient, paginatedQueryV2} from 'faros-js-client';
-import fs from 'fs';
+import {getFarosOptions} from 'faros-airbyte-common/common';
+import {FarosClient} from 'faros-js-client';
 import {toString, toUpper} from 'lodash';
-import path from 'path';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -16,25 +15,12 @@ type FilterConfig = {
   excludedBoards?: Set<string>;
 };
 
-const TASK_BOARD_OPTIONS_QUERY = fs.readFileSync(
-  path.join(
-    __dirname,
-    '..',
-    'resources',
-    'queries',
-    'faros-tms-task-board-options.gql'
-  ),
-  'utf8'
-);
-
-const TASK_BOARD_SOURCE = 'Jira';
-
 export class ProjectBoardFilter {
   private readonly filterConfig: FilterConfig;
   private readonly useFarosGraphBoardsSelection: boolean;
   private projects?: Set<string>;
   private boards?: Set<string>;
-  private loadedBoards: boolean = false;
+  private loadedSelectedBoards: boolean = false;
 
   private static _instance: ProjectBoardFilter;
   static instance(
@@ -73,7 +59,7 @@ export class ProjectBoardFilter {
         );
         excluded_boards = undefined;
       }
-      this.loadedBoards = true;
+      this.loadedSelectedBoards = true;
     } else {
       if (!this.hasFarosClient()) {
         throw new VError(
@@ -142,7 +128,7 @@ export class ProjectBoardFilter {
       await this.getProjects();
 
       // Ensure included / excluded boards are loaded
-      await this.loadBoards();
+      await this.loadSelectedBoards();
 
       if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
         await this.getBoardsFromFaros(jira);
@@ -190,34 +176,19 @@ export class ProjectBoardFilter {
     }
   }
 
-  private async loadBoards(): Promise<void> {
-    if (this.loadedBoards) {
+  private async loadSelectedBoards(): Promise<void> {
+    if (this.loadedSelectedBoards) {
       return;
     }
     if (this.useFarosGraphBoardsSelection) {
-      const boards = new Set<string>();
-      let excludedBoards = new Set<string>();
-      const iter = this.farosClient.nodeIterable(
-        this.config.graph ?? DEFAULT_GRAPH,
-        TASK_BOARD_OPTIONS_QUERY,
-        1000,
-        paginatedQueryV2,
-        new Map(
-          Object.entries({
-            source: TASK_BOARD_SOURCE,
-          })
-        )
+      const farosOptions = await getFarosOptions(
+        'board',
+        'Jira',
+        this.farosClient,
+        this.config.graph ?? DEFAULT_GRAPH
       );
-      for await (const taskBoardOptions of iter) {
-        if (!taskBoardOptions.board?.uid) {
-          continue;
-        }
-        if (taskBoardOptions.inclusionCategory === 'Included') {
-          boards.add(taskBoardOptions.board.uid);
-        } else if (taskBoardOptions.inclusionCategory === 'Excluded') {
-          excludedBoards.add(taskBoardOptions.board.uid);
-        }
-      }
+      const {included: boards} = farosOptions;
+      let {excluded: excludedBoards} = farosOptions;
       if (boards?.size && excludedBoards?.size) {
         this.logger.warn(
           'FarosGraph detected both included and excluded boards, excluded boards will be ignored.'
@@ -229,7 +200,7 @@ export class ProjectBoardFilter {
         ? excludedBoards
         : undefined;
     }
-    this.loadedBoards = true;
+    this.loadedSelectedBoards = true;
   }
 
   private isWebhookSupplementMode(): boolean {
