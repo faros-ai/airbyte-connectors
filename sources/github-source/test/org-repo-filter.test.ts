@@ -140,7 +140,7 @@ describe('OrgRepoFilter', () => {
     const orgRepoFilter = new OrgRepoFilter(
       {...config, use_faros_graph_repos_selection: true},
       logger,
-      {nodeIterable: () => iterate([])} as any
+      mockFarosOptions([])
     );
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
@@ -150,14 +150,7 @@ describe('OrgRepoFilter', () => {
     const orgRepoFilter = new OrgRepoFilter(
       {...config, use_faros_graph_repos_selection: true},
       logger,
-      {
-        nodeIterable: () =>
-          iterate(
-            ['org-1/repo-1', 'org-2/repo-2'].map((key) =>
-              repositoryOptions(key, 'Included')
-            )
-          ),
-      } as any
+      mockFarosOptions(['org-1/repo-1', 'org-2/repo-2'], 'Included')
     );
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
@@ -167,14 +160,7 @@ describe('OrgRepoFilter', () => {
     const orgRepoFilter = new OrgRepoFilter(
       {...config, use_faros_graph_repos_selection: true},
       logger,
-      {
-        nodeIterable: () =>
-          iterate(
-            ['org-1/repo-1', 'org-2/repo-2'].map((key) =>
-              repositoryOptions(key, 'Excluded')
-            )
-          ),
-      } as any
+      mockFarosOptions(['org-1/repo-1', 'org-2/repo-2'], 'Excluded')
     );
     const repositories = await getAllRepositories(orgRepoFilter);
     expect(repositories).toMatchSnapshot();
@@ -188,6 +174,16 @@ const getAllRepositories = async (orgRepoFilter: OrgRepoFilter) => {
     ...(await orgRepoFilter.getRepositories('org-3')),
   ];
 };
+
+function mockFarosOptions(
+  keys: string[],
+  inclusionCategory?: 'Included' | 'Excluded'
+): any {
+  return {
+    nodeIterable: () =>
+      iterate(keys.map((key) => repositoryOptions(key, inclusionCategory))),
+  };
+}
 
 function repositoryOptions(
   key: string,
