@@ -616,7 +616,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         pull_number: number,
-        per_page: this.pageSize,
+        nested_page_size: this.pageSize,
         cursor: startCursor,
       }
     );
