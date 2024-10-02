@@ -31,9 +31,9 @@ export class FarosSprintReports extends JiraConverter {
           plannedPoints: issue.plannedPoints,
           classification: {category: issue.classification},
           status: {
-            category: JiraStatusCategories.get(
-              JiraCommon.normalize(issue.status)
-            ),
+            category:
+              JiraStatusCategories.get(JiraCommon.normalize(issue.status)) ??
+              'Custom',
             detail: issue.status,
           },
           addedDuringSprint: issue.addedDuringSprint,
