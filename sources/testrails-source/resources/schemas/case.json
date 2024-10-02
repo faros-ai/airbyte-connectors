@@ -20,6 +20,9 @@
     "custom_preconds": {"type": "string"},
     "custom_steps": {"type": "string"},
     "custom_expected": {"type": "string"},
+    "custom_automation_type": {"type": "number"},
+    "custom_update_automation": {"type": "boolean"},
+    "custom_notes": {"type": "string"},
     "project_id": {"type": "number"},
     "type": {"type": "string"},
     "milestone": {"type": "string"}

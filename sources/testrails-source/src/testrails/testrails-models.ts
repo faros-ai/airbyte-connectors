@@ -57,6 +57,9 @@ export interface TestRailsCase {
   readonly custom_preconds: string;
   readonly custom_steps: string;
   readonly custom_expected: string;
+  readonly custom_automation_type?: number;
+  readonly custom_update_automation?: boolean;
+  readonly custom_notes?: string;
 }
 
 export interface PagedCases extends PagedResponse {
