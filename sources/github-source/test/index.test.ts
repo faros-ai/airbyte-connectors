@@ -12,6 +12,7 @@ import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
+import {OrgRepoFilter} from '../src/org-repo-filter';
 import {
   ErrorWithStatus,
   graphqlMockedImplementation,
@@ -35,6 +36,7 @@ describe('index', () => {
   afterEach(() => {
     jest.resetAllMocks();
     (GitHub as any).github = undefined;
+    (OrgRepoFilter as any)._instance = undefined;
   });
 
   test('spec', async () => {

@@ -1,28 +1,47 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {collectReposByOrg} from 'faros-airbyte-common/common';
+import {collectReposByOrg, getFarosOptions} from 'faros-airbyte-common/common';
 import {Repository} from 'faros-airbyte-common/github';
+import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {GitHub} from './github';
+import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
 import {GitHubConfig} from './types';
 
 type FilterConfig = {
   organizations?: Set<string>;
   excludedOrganizations?: Set<string>;
-  reposByOrg: Map<string, Set<string>>;
-  excludedReposByOrg: Map<string, Set<string>>;
+  reposByOrg?: Map<string, Set<string>>;
+  excludedReposByOrg?: Map<string, Set<string>>;
 };
 
 export class OrgRepoFilter {
   private readonly filterConfig: FilterConfig;
+  private readonly useFarosGraphReposSelection: boolean;
   private organizations?: Set<string>;
   private reposByOrg: Map<string, Map<string, Repository>> = new Map();
+  private loadedSelectedRepos: boolean = false;
+
+  private static _instance: OrgRepoFilter;
+  static instance(
+    config: GitHubConfig,
+    logger: AirbyteLogger,
+    farosClient?: FarosClient
+  ): OrgRepoFilter {
+    if (!this._instance) {
+      this._instance = new OrgRepoFilter(config, logger, farosClient);
+    }
+    return this._instance;
+  }
 
   constructor(
     private readonly config: GitHubConfig,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly farosClient?: FarosClient
   ) {
+    this.useFarosGraphReposSelection =
+      config.use_faros_graph_repos_selection ?? false;
+
     const {organizations, repositories, excluded_repositories} = this.config;
     let {excluded_organizations} = this.config;
 
@@ -33,20 +52,24 @@ export class OrgRepoFilter {
       excluded_organizations = undefined;
     }
 
-    const reposByOrg = new Map<string, Set<string>>();
-    if (repositories?.length) {
-      collectReposByOrg(reposByOrg, repositories);
-    }
-    const excludedReposByOrg = new Map<string, Set<string>>();
-    if (excluded_repositories?.length) {
-      collectReposByOrg(excludedReposByOrg, excluded_repositories);
-    }
-    for (const org of reposByOrg.keys()) {
-      if (excludedReposByOrg.has(org)) {
-        this.logger.warn(
-          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+    let reposByOrg: Map<string, Set<string>>;
+    let excludedReposByOrg: Map<string, Set<string>>;
+    if (!this.useFarosGraphReposSelection) {
+      ({reposByOrg, excludedReposByOrg} = this.getSelectedReposByOrg(
+        repositories,
+        excluded_repositories
+      ));
+      this.loadedSelectedRepos = true;
+    } else {
+      if (!this.hasFarosClient()) {
+        throw new VError(
+          'Faros credentials are required when using Faros Graph for boards selection'
         );
-        excludedReposByOrg.delete(org);
+      }
+      if (repositories?.length || excluded_repositories?.length) {
+        logger.warn(
+          'Using Faros Graph for repositories selection but repositories and/or excluded_repositories are specified, both will be ignored.'
+        );
       }
     }
 
@@ -93,6 +116,9 @@ export class OrgRepoFilter {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    // Ensure included / excluded repositories are loaded
+    await this.loadSelectedRepos();
+
     if (!this.reposByOrg.has(org)) {
       const repos = new Map<string, Repository>();
       const github = await GitHub.instance(this.config, this.logger);
@@ -131,5 +157,58 @@ export class OrgRepoFilter {
       throw new VError('Repository not found: %s/%s', org, name);
     }
     return repo;
+  }
+
+  private async loadSelectedRepos(): Promise<void> {
+    if (this.loadedSelectedRepos) {
+      return;
+    }
+    if (this.useFarosGraphReposSelection) {
+      const farosOptions = await getFarosOptions(
+        'repository',
+        'GitHub',
+        this.farosClient,
+        this.config.graph ?? DEFAULT_FAROS_GRAPH
+      );
+      const {included: repositories, excluded: excludedRepositories} =
+        farosOptions;
+      const {reposByOrg, excludedReposByOrg} = this.getSelectedReposByOrg(
+        Array.from(repositories),
+        Array.from(excludedRepositories)
+      );
+      this.filterConfig.reposByOrg = reposByOrg;
+      this.filterConfig.excludedReposByOrg = excludedReposByOrg;
+    }
+    this.loadedSelectedRepos = true;
+  }
+
+  private getSelectedReposByOrg(
+    repositories: ReadonlyArray<string>,
+    excludedRepositories: ReadonlyArray<string>
+  ): {
+    reposByOrg: Map<string, Set<string>>;
+    excludedReposByOrg: Map<string, Set<string>>;
+  } {
+    const reposByOrg = new Map<string, Set<string>>();
+    const excludedReposByOrg = new Map<string, Set<string>>();
+    if (repositories?.length) {
+      collectReposByOrg(reposByOrg, repositories);
+    }
+    if (excludedRepositories?.length) {
+      collectReposByOrg(excludedReposByOrg, excludedRepositories);
+    }
+    for (const org of reposByOrg.keys()) {
+      if (excludedReposByOrg.has(org)) {
+        this.logger.warn(
+          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+        );
+        excludedReposByOrg.delete(org);
+      }
+    }
+    return {reposByOrg, excludedReposByOrg};
+  }
+
+  private hasFarosClient(): boolean {
+    return Boolean(this.farosClient);
   }
 }

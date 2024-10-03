@@ -1,0 +1,19 @@
+query VcsRepositoryOptions(
+  $source: String!
+) {
+  faros_VcsRepositoryOptions(
+    where: {
+      repository: {
+        source: { _eq: $source }
+      }
+    }
+  ) {
+    repository {
+      uid
+      organization {
+        uid
+      }
+    }
+    inclusionCategory
+  }
+}

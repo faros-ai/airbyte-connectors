@@ -121,7 +121,7 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      {nodeIterable: () => iterate([])} as any
+      mockFarosOptions([])
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
@@ -131,10 +131,7 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      {
-        nodeIterable: () =>
-          iterate(['2', '3'].map((uid) => taskBoardOptions(uid, 'Included'))),
-      } as any
+      mockFarosOptions(['2', '3'], 'Included')
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
@@ -144,15 +141,22 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      {
-        nodeIterable: () =>
-          iterate(['2'].map((uid) => taskBoardOptions(uid, 'Excluded'))),
-      } as any
+      mockFarosOptions(['2'], 'Excluded')
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
   });
 });
+
+function mockFarosOptions(
+  uids: string[],
+  inclusionCategory?: 'Included' | 'Excluded'
+): any {
+  return {
+    nodeIterable: () =>
+      iterate(uids.map((uid) => taskBoardOptions(uid, inclusionCategory))),
+  };
+}
 
 function taskBoardOptions(
   uid: string,
