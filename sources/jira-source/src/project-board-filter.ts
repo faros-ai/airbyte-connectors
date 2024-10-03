@@ -1,20 +1,91 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {getFarosOptions} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import {toString, toUpper} from 'lodash';
 import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
 import {RunMode} from './streams/common';
 
+type FilterConfig = {
+  projects?: Set<string>;
+  excludedProjects?: Set<string>;
+  boards?: Set<string>;
+  excludedBoards?: Set<string>;
+};
+
 export class ProjectBoardFilter {
-  projects: Set<string> | undefined;
-  boards: Set<string> | undefined;
+  private readonly filterConfig: FilterConfig;
+  private readonly useFarosGraphBoardsSelection: boolean;
+  private projects?: Set<string>;
+  private boards?: Set<string>;
+  private loadedSelectedBoards: boolean = false;
+
+  private static _instance: ProjectBoardFilter;
+  static instance(
+    config: JiraConfig,
+    logger: AirbyteLogger,
+    farosClient?: FarosClient
+  ): ProjectBoardFilter {
+    if (!this._instance) {
+      this._instance = new ProjectBoardFilter(config, logger, farosClient);
+    }
+    return this._instance;
+  }
 
   constructor(
     private readonly config: JiraConfig,
     private readonly logger: AirbyteLogger,
     private readonly farosClient?: FarosClient
-  ) {}
+  ) {
+    this.useFarosGraphBoardsSelection =
+      config.use_faros_graph_boards_selection ?? false;
+
+    const {projects} = config;
+    let {excluded_projects, boards, excluded_boards} = config;
+
+    if (projects?.length && excluded_projects?.length) {
+      logger.warn(
+        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
+      );
+      excluded_projects = undefined;
+    }
+
+    if (!this.useFarosGraphBoardsSelection) {
+      if (boards?.length && excluded_boards?.length) {
+        logger.warn(
+          'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
+        );
+        excluded_boards = undefined;
+      }
+      this.loadedSelectedBoards = true;
+    } else {
+      if (!this.hasFarosClient()) {
+        throw new VError(
+          'Faros credentials are required when using Faros Graph for boards selection'
+        );
+      }
+      if (boards?.length || excluded_boards?.length) {
+        logger.warn(
+          'Using Faros Graph for boards selection but boards and/or excluded_boards are specified, both will be ignored.'
+        );
+        boards = undefined;
+        excluded_boards = undefined;
+      }
+    }
+
+    this.filterConfig = {
+      projects: projects?.length ? new Set(projects) : undefined,
+      excludedProjects: excluded_projects?.length
+        ? new Set(excluded_projects)
+        : undefined,
+      boards: boards?.length ? new Set(boards) : undefined,
+      excludedBoards: excluded_boards?.length
+        ? new Set(excluded_boards)
+        : undefined,
+    };
+  }
 
   @Memoize()
   async getProjects(): Promise<ReadonlyArray<string>> {
@@ -22,22 +93,24 @@ export class ProjectBoardFilter {
       this.projects = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
-      if (!this.config.projects?.length) {
-        const projects = this.supportsFarosClient()
-          ? jira.getProjectsFromGraph(
-              this.farosClient,
-              this.config.graph ?? DEFAULT_GRAPH
-            )
-          : await jira.getProjects();
+      if (!this.filterConfig.projects?.size) {
+        const projects =
+          this.isWebhookSupplementMode() && this.hasFarosClient()
+            ? jira.getProjectsFromGraph(
+                this.farosClient,
+                this.config.graph ?? DEFAULT_GRAPH
+              )
+            : await jira.getProjects();
         for await (const project of projects) {
-          if (!this.config.excluded_projects?.includes(project.key)) {
+          if (!this.filterConfig.excludedProjects?.has(project.key)) {
             this.projects.add(project.key);
           }
         }
       } else {
-        for (const project of this.config.projects) {
-          if (jira.isProjectInBucket(project))
+        for (const project of this.filterConfig.projects) {
+          if (jira.isProjectInBucket(project)) {
             this.projects.add(toUpper(project));
+          }
         }
       }
     }
@@ -54,7 +127,10 @@ export class ProjectBoardFilter {
       // Ensure projects is populated
       await this.getProjects();
 
-      if (this.supportsFarosClient()) {
+      // Ensure included / excluded boards are loaded
+      await this.loadSelectedBoards();
+
+      if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
         await this.getBoardsFromFaros(jira);
       } else {
         await this.getBoardsFromJira(jira);
@@ -64,12 +140,12 @@ export class ProjectBoardFilter {
   }
 
   boardIsIncluded(board: string): boolean {
-    const {boards, excluded_boards} = this.config;
-    if (boards?.length) {
-      return boards.includes(board);
+    const {boards, excludedBoards} = this.filterConfig;
+    if (boards?.size) {
+      return boards.has(board);
     }
-    if (excluded_boards?.length) {
-      return !excluded_boards.includes(board);
+    if (excludedBoards?.size) {
+      return !excludedBoards.has(board);
     }
     return true;
   }
@@ -100,9 +176,38 @@ export class ProjectBoardFilter {
     }
   }
 
-  private supportsFarosClient(): boolean {
-    return (
-      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
-    );
+  private async loadSelectedBoards(): Promise<void> {
+    if (this.loadedSelectedBoards) {
+      return;
+    }
+    if (this.useFarosGraphBoardsSelection) {
+      const farosOptions = await getFarosOptions(
+        'board',
+        'Jira',
+        this.farosClient,
+        this.config.graph ?? DEFAULT_GRAPH
+      );
+      const {included: boards} = farosOptions;
+      let {excluded: excludedBoards} = farosOptions;
+      if (boards?.size && excludedBoards?.size) {
+        this.logger.warn(
+          'FarosGraph detected both included and excluded boards, excluded boards will be ignored.'
+        );
+        excludedBoards = undefined;
+      }
+      this.filterConfig.boards = boards.size ? boards : undefined;
+      this.filterConfig.excludedBoards = excludedBoards?.size
+        ? excludedBoards
+        : undefined;
+    }
+    this.loadedSelectedBoards = true;
+  }
+
+  private isWebhookSupplementMode(): boolean {
+    return this.config.run_mode === RunMode.WebhookSupplement;
+  }
+
+  private hasFarosClient(): boolean {
+    return Boolean(this.farosClient);
   }
 }

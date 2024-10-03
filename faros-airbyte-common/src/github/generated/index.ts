@@ -8198,7 +8198,7 @@ export type ProjectsQuery = {
 };
 
 export type PullRequestReviewRequestsQueryVariables = Exact<{
-  org: Scalars['String']['input'];
+  owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
   number: Scalars['Int']['input'];
   nested_page_size: Scalars['Int']['input'];
@@ -8239,7 +8239,7 @@ export type PullRequestReviewRequestsQuery = {
 };
 
 export type PullRequestReviewsQueryVariables = Exact<{
-  org: Scalars['String']['input'];
+  owner: Scalars['String']['input'];
   repo: Scalars['String']['input'];
   number: Scalars['Int']['input'];
   nested_page_size: Scalars['Int']['input'];

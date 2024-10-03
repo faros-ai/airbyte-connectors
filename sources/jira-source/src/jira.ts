@@ -55,6 +55,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
+  readonly use_faros_graph_boards_selection?: boolean;
   readonly projects?: ReadonlyArray<string>;
   readonly excluded_projects?: ReadonlyArray<string>;
   readonly boards?: ReadonlyArray<string>;
@@ -69,6 +70,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
+  readonly use_faros_board_issue_tracker?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;

@@ -63,3 +63,14 @@ export function paginate<V>(
   } while (count < items.length);
   return fn;
 }
+
+export async function* iterate<T>(
+  arrOrErr: ReadonlyArray<T> | Error
+): AsyncIterableIterator<T> {
+  if (arrOrErr instanceof Error) {
+    throw arrOrErr;
+  }
+  for (const x of arrOrErr) {
+    yield x;
+  }
+}

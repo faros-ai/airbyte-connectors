@@ -12,6 +12,12 @@ AirbyteSpec {
           "title": "Debug",
           "type": "boolean",
         },
+        "faros_source_id": Object {
+          "description": "The ID of the source (aka account)",
+          "order": 1003,
+          "title": "The source ID",
+          "type": "string",
+        },
         "max_slice_failures": Object {
           "default": 0,
           "description": "The maximum number of slice failures before a stream sync fails. Use -1 for unlimited",
