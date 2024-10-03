@@ -43,7 +43,7 @@ export class Cases extends TestRailsConverter {
         name: testCase.title,
         description: Utils.cleanAndTruncate(testCase.custom_notes),
         source,
-        tags: [tags],
+        tags,
         type: this.convertType(testCase.type),
       },
     });
