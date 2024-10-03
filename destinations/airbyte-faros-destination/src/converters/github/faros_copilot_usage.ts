@@ -6,6 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
@@ -220,7 +221,7 @@ export class FarosCopilotUsage extends GitHubConverter {
     res.push({
       model: 'compute_ApplicationMetric',
       record: {
-        application: {name: 'copilot', platform: ''},
+        application: Common.computeApplication('copilot', ''),
         value: {
           uid: breakdownMetricValueUid,
           definition: {uid: farosMetric},
@@ -275,7 +276,7 @@ export class FarosCopilotUsage extends GitHubConverter {
     res.push({
       model: 'compute_ApplicationMetric',
       record: {
-        application: {name: 'copilot', platform: ''},
+        application: Common.computeApplication('copilot', ''),
         value: {
           uid: metricValueUid,
           definition: {uid: farosMetric},

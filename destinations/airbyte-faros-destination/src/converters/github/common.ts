@@ -169,11 +169,7 @@ export class GitHubCommon {
     if (orgRepo.length != 2) return undefined;
 
     const [organization, repositoryName] = orgRepo;
-    return {
-      name: toLower(repositoryName),
-      uid: toLower(repositoryName),
-      organization: {uid: toLower(organization), source},
-    };
+    return GitHubCommon.repoKey(organization, repositoryName, source);
   }
 
   static parsePRnumber(pull_request_url: string): number {
