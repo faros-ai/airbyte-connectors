@@ -1321,13 +1321,7 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('must be enabled for this repository')) {
-        this.logger.debug(
-          `Code scanning alerts disabled for org ${org} - ${repo}`
-        );
-        return;
-      }
-      throw err;
+      this.handleSecurityAlertError(err, org, repo, 'code scanning');
     }
   }
 
@@ -1369,13 +1363,7 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('disabled for this repository')) {
-        this.logger.debug(
-          `Dependabot alerts disabled for org ${org} - ${repo}`
-        );
-        return;
-      }
-      throw err;
+      this.handleSecurityAlertError(err, org, repo, 'dependabot');
     }
   }
 
@@ -1419,14 +1407,23 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('disabled on this repository')) {
-        this.logger.debug(
-          `Dependabot alerts disabled for org ${org} - ${repo}`
-        );
-        return;
-      }
-      throw err;
+      this.handleSecurityAlertError(err, org, repo, 'secret scanning');
     }
+  }
+
+  private handleSecurityAlertError(
+    err: any,
+    org: string,
+    repo: string,
+    context: string
+  ) {
+    if (err.status >= 400 && err.status < 500) {
+      this.logger.debug(
+        `Couldn't fetch ${context} alerts for repo ${org}/${repo}. Status: ${err.status}. Message: ${err.message}`
+      );
+      return;
+    }
+    throw err;
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when
