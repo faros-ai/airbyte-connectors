@@ -1,9 +1,4 @@
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {ProjectTasks} from './project_tasks';
 import {Projects} from './projects';
 import {Tasks} from './tasks';
@@ -24,7 +19,7 @@ export class TasksFull extends Tasks {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const streams = ['projects', 'project_tasks'];
     streams.forEach((stream) => {
-      ctx.markStreamForReset(new StreamName(this.source, stream).asString);
+      ctx.markStreamForReset(stream);
     });
 
     return [];
