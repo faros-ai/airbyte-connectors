@@ -1,9 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {toString} from 'lodash';
-import {custom} from 'zod';
 
-import {DestinationRecord, StreamContext} from '../converter';
+import {DestinationRecord} from '../converter';
 import {ZephyrConverter} from './common';
 
 export class TestExecutions extends ZephyrConverter {
@@ -17,6 +16,7 @@ export class TestExecutions extends ZephyrConverter {
     const testCaseResultsStats = {
       custom: testExecution.totalDefectCount,
     };
+    const tags = testExecution.label ? [testExecution.label] : null;
 
     return [
       {
@@ -28,8 +28,10 @@ export class TestExecutions extends ZephyrConverter {
           description: Utils.cleanAndTruncate(testExecution.issueDescription),
           startedAt: Utils.toDate(testExecution.executedOnVal),
           status: TestExecutions.getStatus(testExecution.executionStatusName),
+          testCaseResultsStats,
+          tags,
           suite: {uid: toString(testExecution.cycleId), source: this.source},
-          task: {uid: toString(testExecution.issueKey), source: this.source},
+          task: {uid: testExecution.issueKey, source: this.taskSource},
         },
       },
     ];
