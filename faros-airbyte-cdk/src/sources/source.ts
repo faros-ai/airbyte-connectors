@@ -24,7 +24,7 @@ export abstract class AirbyteSource<
 
   /**
    * Override this method to update the config before running the connector.
-   * The returned config will be passed to the destination.
+   * The returned config will be passed to the source and destination.
    */
   async onBeforeRun(config: Config): Promise<Config> {
     return config;
