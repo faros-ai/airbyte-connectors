@@ -10,4 +10,8 @@ export abstract class ZephyrConverter extends Converter {
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
   }
+
+  protected labelToTag(label?: string): ReadonlyArray<string> | null {
+    return label ? [label] : null;
+  }
 }

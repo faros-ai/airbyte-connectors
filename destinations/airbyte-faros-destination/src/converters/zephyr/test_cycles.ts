@@ -23,6 +23,7 @@ export class TestCycles extends ZephyrConverter {
           source: this.source,
           name: testCycle.name,
           description: Utils.cleanAndTruncate(testCycle.description),
+          tags: this.labelToTag(testCycle.label),
         },
       },
     ];
