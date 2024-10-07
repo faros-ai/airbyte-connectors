@@ -782,6 +782,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
               sourceVersion.version = msg.sourceVersion;
+              if (Array.isArray(msg.redactedConfig?.no_reset_models)) {
+                msg.redactedConfig.no_reset_models.forEach((model) => {
+                  this.logger.info(`Disabling model reset for ${model}`);
+                  ctx.disableResetForModel(model);
+                });
+              }
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
               logFiles?.writeSourceLogs(...msg.logs);

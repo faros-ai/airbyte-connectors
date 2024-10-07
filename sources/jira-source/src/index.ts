@@ -83,6 +83,15 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     ];
   }
 
+  override async onBeforeRun(config: JiraConfig): Promise<JiraConfig> {
+    return {
+      ...config,
+      ...(config.use_faros_board_issue_tracker && {
+        no_reset_models: ['tms_TaskBoardRelationship'],
+      }),
+    };
+  }
+
   async onBeforeRead(
     config: JiraConfig,
     catalog: AirbyteConfiguredCatalog,
