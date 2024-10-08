@@ -85,7 +85,7 @@ export class StreamContext {
   private readonly streamsByResetModel: Dictionary<Set<string>> = {};
 
   private readonly resetModels: Set<string> = new Set();
-  private readonly noResetModels: Set<string> = new Set();
+  private readonly skipResetModels: Set<string> = new Set();
 
   constructor(
     readonly logger: AirbyteLogger,
@@ -166,7 +166,7 @@ export class StreamContext {
   }
 
   disableResetForModel(model: string): void {
-    this.noResetModels.add(model);
+    this.skipResetModels.add(model);
   }
 
   // For Sources that do not send stream-level statuses
@@ -177,7 +177,9 @@ export class StreamContext {
   }
 
   getModelsForReset(): ReadonlySet<string> {
-    return new Set(difference([...this.resetModels], [...this.noResetModels]));
+    return new Set(
+      difference([...this.resetModels], [...this.skipResetModels])
+    );
   }
 }
 
