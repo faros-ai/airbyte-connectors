@@ -38,6 +38,13 @@ exports[`ProjectBoardFilter getBoards - all boards - no list 1`] = `
 ]
 `;
 
+exports[`ProjectBoardFilter getBoards - all boards - project list 1`] = `
+[
+  "1",
+  "2",
+]
+`;
+
 exports[`ProjectBoardFilter getBoards - specific boards excluded 1`] = `
 [
   "1",

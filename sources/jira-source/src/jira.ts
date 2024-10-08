@@ -867,11 +867,19 @@ export class Jira {
   }
 
   @Memoize()
-  async getBoards(
-    projectKey?: string
+  async getProjectBoards(
+    projectKey: string
   ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const allBoards = await this.getAllBoards();
+    return allBoards.filter(
+      (board) => board.location?.projectKey === projectKey
+    );
+  }
+
+  @Memoize()
+  async getAllBoards(): Promise<ReadonlyArray<AgileModels.Board>> {
     const boards: AgileModels.Board[] = [];
-    for await (const board of this.getBoardsIterator(projectKey)) {
+    for await (const board of this.getBoardsIterator()) {
       boards.push(board);
     }
     return boards;
