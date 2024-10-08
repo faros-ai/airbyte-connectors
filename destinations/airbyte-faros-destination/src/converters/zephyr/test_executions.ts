@@ -53,9 +53,7 @@ export class TestExecutions extends ZephyrConverter {
         status: TestExecutions.getStatus(testExecution.executionStatusName),
         tags: this.labelToTag(testExecution.label),
         testCase,
-
-        // TODO: What is the test execution task key?
-        // testExecution: qa_TestExecution @reference(back: "testCaseResults")
+        // Zephyr does not have a test execution so will be empty
       },
     });
 
