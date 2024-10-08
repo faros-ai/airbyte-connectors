@@ -1,7 +1,6 @@
-import {isNil} from 'lodash';
-import {Utils} from 'faros-js-client';
-
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {TestRailsConverter} from './common';
@@ -34,7 +33,9 @@ export class Cases extends TestRailsConverter {
     const updateAutomationTag = !isNil(testCase.custom_update_automation)
       ? `update_automation:${testCase.custom_update_automation}`
       : null;
-    const tags = [milestoneTag, automationTypeTag, updateAutomationTag].filter(tag => tag !== null);
+    const tags = [milestoneTag, automationTypeTag, updateAutomationTag].filter(
+      (tag) => tag !== null
+    );
 
     res.push({
       model: 'qa_TestCase',
