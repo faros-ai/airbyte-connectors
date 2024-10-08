@@ -56,7 +56,7 @@ export interface AirbyteConfig {
   max_stream_failures?: number; // -1 means unlimited
   max_slice_failures?: number; // -1 means unlimited
   faros_source_id?: string;
-  no_reset_models?: string[];
+  skip_reset_models?: string[];
   [k: string]: any;
 }
 

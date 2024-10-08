@@ -782,8 +782,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
               sourceVersion.version = msg.sourceVersion;
-              if (Array.isArray(msg.redactedConfig?.no_reset_models)) {
-                msg.redactedConfig.no_reset_models.forEach((model) => {
+              if (Array.isArray(msg.redactedConfig?.skip_reset_models)) {
+                msg.redactedConfig.skip_reset_models.forEach((model) => {
                   this.logger.info(`Disabling model reset for ${model}`);
                   ctx.disableResetForModel(model);
                 });

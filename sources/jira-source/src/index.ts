@@ -87,7 +87,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     return {
       ...config,
       ...(config.use_faros_board_issue_tracker && {
-        no_reset_models: ['tms_TaskBoardRelationship'],
+        skip_reset_models: ['tms_TaskBoardRelationship'],
       }),
     };
   }
