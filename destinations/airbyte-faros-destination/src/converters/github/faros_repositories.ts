@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -16,15 +16,16 @@ export class FarosRepositories extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const repo = record.record.data as Repository;
+    const repoKey = GitHubCommon.repoKey(
+      repo.org,
+      repo.name,
+      this.streamName.source
+    );
     return [
       {
         model: 'vcs_Repository',
         record: {
-          name: toLower(repo.name),
-          organization: {
-            uid: toLower(repo.org),
-            source: this.streamName.source,
-          },
+          ...repoKey,
           fullName: repo.full_name,
           private: repo.private,
           description: Utils.cleanAndTruncate(repo.description),
