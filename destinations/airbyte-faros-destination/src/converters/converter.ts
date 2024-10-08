@@ -4,7 +4,7 @@ import {
   DestinationSyncMode,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-import {snakeCase} from 'lodash';
+import {difference, snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
@@ -85,6 +85,7 @@ export class StreamContext {
   private readonly streamsByResetModel: Dictionary<Set<string>> = {};
 
   private readonly resetModels: Set<string> = new Set();
+  private readonly skipResetModels: Set<string> = new Set();
 
   constructor(
     readonly logger: AirbyteLogger,
@@ -164,6 +165,10 @@ export class StreamContext {
     });
   }
 
+  disableResetForModel(model: string): void {
+    this.skipResetModels.add(model);
+  }
+
   // For Sources that do not send stream-level statuses
   markAllStreamsForReset(): void {
     Object.keys(this.resetModelsByStream).forEach((streamName) => {
@@ -172,7 +177,9 @@ export class StreamContext {
   }
 
   getModelsForReset(): ReadonlySet<string> {
-    return new Set(this.resetModels);
+    return new Set(
+      difference([...this.resetModels], [...this.skipResetModels])
+    );
   }
 }
 
