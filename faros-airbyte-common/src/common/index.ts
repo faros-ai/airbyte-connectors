@@ -1,6 +1,7 @@
 import {createHmac} from 'crypto';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
+import {toLower} from 'lodash';
 import {DateTime} from 'luxon';
 import path from 'path';
 import {VError} from 'verror';
@@ -89,10 +90,12 @@ export function collectReposByOrg(
         `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
       );
     }
-    if (!reposByOrg.has(org)) {
-      reposByOrg.set(org, new Set());
+    const lowerOrg = toLower(org);
+    const lowerRepoName = toLower(name);
+    if (!reposByOrg.has(lowerOrg)) {
+      reposByOrg.set(lowerOrg, new Set());
     }
-    reposByOrg.get(org).add(name);
+    reposByOrg.get(lowerOrg).add(lowerRepoName);
   }
 }
 
