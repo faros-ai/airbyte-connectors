@@ -192,7 +192,7 @@ function repositoryOptions(
   const [org, repo] = key.split('/');
   return {
     repository: {
-      uid: repo,
+      name: repo,
       organization: {
         uid: org,
       },

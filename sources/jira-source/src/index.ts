@@ -83,6 +83,37 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     ];
   }
 
+  override async onBeforeRun(config: JiraConfig): Promise<JiraConfig> {
+    // In general, we want to skip resets if using the tracker.
+    // However, for the first run with the tracker we need to reset to ensure
+    // the resulting state is in sync with the graph.  If we have a state, we
+    // assume the state and graph are in sync and skip the reset.
+    if (
+      config.use_faros_board_issue_tracker &&
+      config.faros_source_id &&
+      config.api_key
+    ) {
+      const farosClient = this.makeFarosClient(config);
+      try {
+        const res: any = await farosClient.request(
+          'GET',
+          `/accounts/${config.faros_source_id}/state`
+        );
+        return {
+          ...config,
+          ...(res.state && {
+            skip_reset_models: ['tms_TaskBoardRelationship'],
+          }),
+        };
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to check existence of board issue state in Faros: ${e?.message}`
+        );
+      }
+    }
+    return config;
+  }
+
   async onBeforeRead(
     config: JiraConfig,
     catalog: AirbyteConfiguredCatalog,

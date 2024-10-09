@@ -24,6 +24,14 @@ export abstract class AirbyteSource<
 
   /**
    * Override this method to update the config before running the connector.
+   * The returned config will be passed to the source and destination.
+   */
+  async onBeforeRun(config: Config): Promise<Config> {
+    return config;
+  }
+
+  /**
+   * Override this method to update the config before running the connector.
    * For example - you might want to run a filter on a list of strings, one
    * which would require an async call. In that case, this method should be
    * added to your base class, e.g. the "{AirbyteName}Source" class, for an
