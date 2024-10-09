@@ -1602,3 +1602,72 @@ exports[`index streams - users 1`] = `
   },
 ]
 `;
+
+exports[`index streams - workflow runs 1`] = `
+[
+  {
+    "artifacts_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642/artifacts",
+    "cancel_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642/cancel",
+    "check_suite_id": 42,
+    "check_suite_node_id": "MDEwOkNoZWNrU3VpdGU0Mg==",
+    "check_suite_url": "https://api.github.com/repos/octo-org/octo-repo/check-suites/414944374",
+    "conclusion": null,
+    "created_at": "2020-01-22T19:33:08Z",
+    "display_title": "Update README.md",
+    "event": "push",
+    "head_branch": "master",
+    "head_sha": "acb5820ced9479c074f688cc328bf03f341a511d",
+    "html_url": "https://github.com/octo-org/octo-repo/actions/runs/30433642",
+    "id": 30433642,
+    "jobs_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642/jobs",
+    "logs_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642/logs",
+    "name": "Build",
+    "node_id": "MDEyOldvcmtmbG93IFJ1bjI2OTI4OQ==",
+    "org": "github",
+    "path": ".github/workflows/build.yml@main",
+    "repo": "Hello-World",
+    "rerun_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642/rerun",
+    "run_attempt": 1,
+    "run_number": 562,
+    "run_started_at": "2020-01-22T19:33:08Z",
+    "status": "queued",
+    "updated_at": "2020-01-22T19:33:08Z",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642",
+    "workflow_id": 159038,
+    "workflow_url": "https://api.github.com/repos/octo-org/octo-repo/actions/workflows/159038",
+  },
+]
+`;
+
+exports[`index streams - workflows 1`] = `
+[
+  {
+    "badge_url": "https://github.com/octo-org/octo-repo/workflows/CI/badge.svg",
+    "created_at": "2020-01-08T23:48:37.000-08:00",
+    "html_url": "https://github.com/octo-org/octo-repo/blob/master/.github/workflows/161335",
+    "id": 161335,
+    "name": "CI",
+    "node_id": "MDg6V29ya2Zsb3cxNjEzMzU=",
+    "org": "github",
+    "path": ".github/workflows/blank.yaml",
+    "repo": "Hello-World",
+    "state": "active",
+    "updated_at": "2020-01-08T23:50:21.000-08:00",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/workflows/161335",
+  },
+  {
+    "badge_url": "https://github.com/octo-org/octo-repo/workflows/Linter/badge.svg",
+    "created_at": "2020-01-08T23:48:37.000-08:00",
+    "html_url": "https://github.com/octo-org/octo-repo/blob/master/.github/workflows/269289",
+    "id": 269289,
+    "name": "Linter",
+    "node_id": "MDE4OldvcmtmbG93IFNlY29uZGFyeTI2OTI4OQ==",
+    "org": "github",
+    "path": ".github/workflows/linter.yaml",
+    "repo": "Hello-World",
+    "state": "active",
+    "updated_at": "2020-01-08T23:50:21.000-08:00",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/workflows/269289",
+  },
+]
+`;

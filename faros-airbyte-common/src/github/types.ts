@@ -278,3 +278,26 @@ export type SecretScanningAlert = {
     resolved_by: string | null;
     push_protection_bypassed_by: string | null;
   };
+
+export type Workflow = {
+  org: string;
+  repo: string;
+} & GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.actions.listRepoWorkflows
+>['workflows'][0];
+
+export type WorkflowRun = {
+  org: string;
+  repo: string;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listWorkflowRunsForRepo
+  >['workflow_runs'][0],
+  | 'pull_requests'
+  | 'actor'
+  | 'referenced_workflows'
+  | 'triggering_actor'
+  | 'head_commit'
+  | 'repository'
+  | 'head_repository'
+>;

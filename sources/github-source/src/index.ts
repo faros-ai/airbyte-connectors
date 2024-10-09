@@ -41,6 +41,8 @@ import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
+import {FarosWorkflowRuns} from './streams/faros_workflow_runs';
+import {FarosWorkflows} from './streams/faros_workflows';
 import {GitHubConfig} from './types';
 
 export function mainCommand(): Command {
@@ -102,6 +104,8 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosTeams(config, this.logger, farosClient),
       new FarosTeamMemberships(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),
+      new FarosWorkflows(config, this.logger, farosClient),
+      new FarosWorkflowRuns(config, this.logger, farosClient),
     ];
   }
 

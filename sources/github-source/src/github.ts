@@ -32,6 +32,8 @@ import {
   Team,
   TeamMembership,
   User,
+  Workflow,
+  WorkflowRun,
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
@@ -66,7 +68,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick, toString} from 'lodash';
+import {isEmpty, isNil, omit, pick, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -1424,6 +1426,60 @@ export abstract class GitHub {
       return;
     }
     throw err;
+  }
+
+  async *getWorkflows(org: string, repo: string): AsyncGenerator<Workflow> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listRepoWorkflows,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const workflow of res.data.workflows) {
+        yield {
+          org,
+          repo,
+          ...workflow,
+        };
+      }
+    }
+  }
+
+  async *getWorkflowRuns(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<WorkflowRun> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listWorkflowRunsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        created: `${startDate?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+      }
+    );
+    for await (const res of iter) {
+      for (const workflowRun of res.data.workflow_runs) {
+        yield {
+          org,
+          repo,
+          ...omit(workflowRun, [
+            'pull_requests',
+            'actor',
+            'referenced_workflows',
+            'triggering_actor',
+            'head_commit',
+            'repository',
+            'head_repository',
+          ]),
+        };
+      }
+    }
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when

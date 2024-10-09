@@ -690,6 +690,54 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - workflows', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflows/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowsMockedImplementation(
+              readTestResourceAsJSON('workflows/workflows.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - workflow runs', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflow_runs/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -807,5 +855,17 @@ const getDependabotAlertsMockedImplementation = (res: any) => ({
 const getSecretScanningAlertsMockedImplementation = (res: any) => ({
   secretScanning: {
     listAlertsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getWorkflowsMockedImplementation = (res: any) => ({
+  actions: {
+    listRepoWorkflows: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getWorkflowRunsMockedImplementation = (res: any) => ({
+  actions: {
+    listWorkflowRunsForRepo: jest.fn().mockReturnValue(res),
   },
 });
