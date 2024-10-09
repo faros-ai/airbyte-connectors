@@ -24,8 +24,6 @@ export interface ServiceNowConfig {
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly timeout?: number;
-  readonly resolveCmdbCi?: boolean;
-  readonly resolveBusinessService?: boolean;
 }
 
 export interface ServiceNowClient {
@@ -109,11 +107,7 @@ export class ServiceNow {
         for (const incident of incidents) {
           // When no cmdb_ci for incident, cmdb_ci is empty string
           let cmdb_ci_identifier: string;
-          if (
-            incident.cmdb_ci &&
-            typeof incident.cmdb_ci !== 'string' &&
-            this.config.resolveCmdbCi
-          ) {
+          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
             if (cmdb_ci_sys_id in cmdb_ci_Map) {
@@ -132,11 +126,10 @@ export class ServiceNow {
           // When no business_service for incident, business_service is empty string
           let business_service_identifier: string;
           if (
-            incident.cmdb_ci &&
-            typeof incident.cmdb_ci !== 'string' &&
-            this.config.resolveBusinessService
+            incident.business_service &&
+            typeof incident.business_service !== 'string'
           ) {
-            const business_service_sys_id = incident.cmdb_ci.value;
+            const business_service_sys_id = incident.business_service.value;
             // If sys_id previously seen, retrieve name from map
             if (business_service_sys_id in business_service_Map) {
               business_service_identifier = business_service_Map.get(
