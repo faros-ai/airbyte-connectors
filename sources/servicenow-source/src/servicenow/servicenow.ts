@@ -24,6 +24,8 @@ export interface ServiceNowConfig {
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly timeout?: number;
+  readonly resolveCmdbCi?: boolean;
+  readonly resolveBusinessService?: boolean;
 }
 
 export interface ServiceNowClient {
@@ -107,16 +109,19 @@ export class ServiceNow {
         for (const incident of incidents) {
           // When no cmdb_ci for incident, cmdb_ci is empty string
           let cmdb_ci_identifier: string;
-          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
+          if (
+            incident.cmdb_ci &&
+            typeof incident.cmdb_ci !== 'string' &&
+            this.config.resolveCmdbCi
+          ) {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
             if (cmdb_ci_sys_id in cmdb_ci_Map) {
               cmdb_ci_identifier = cmdb_ci_Map.get(cmdb_ci_sys_id);
             } else {
               try {
-                cmdb_ci_identifier = await this.client.cmdb_ci.getIdentifier(
-                  cmdb_ci_sys_id
-                );
+                cmdb_ci_identifier =
+                  await this.client.cmdb_ci.getIdentifier(cmdb_ci_sys_id);
                 cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_identifier);
               } catch (err: any) {
                 this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
@@ -126,7 +131,11 @@ export class ServiceNow {
 
           // When no business_service for incident, business_service is empty string
           let business_service_identifier: string;
-          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
+          if (
+            incident.cmdb_ci &&
+            typeof incident.cmdb_ci !== 'string' &&
+            this.config.resolveBusinessServices
+          ) {
             const business_service_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
             if (business_service_sys_id in business_service_Map) {

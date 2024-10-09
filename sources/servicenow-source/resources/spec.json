@@ -52,6 +52,20 @@
         "title": "Timeout",
         "description": "client timeout in milliseconds, used when retrieving data from ServiceNow",
         "default": 30000
+      },
+      "resolve_business_service": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Resolve Business Service",
+        "description": "Resolve an incident's impacted Business Service from cmdb_ci_service table",
+        "default": true
+      },
+      "resolve_cmdb_ci": {
+        "order": 8,
+        "type": "boolean",
+        "title": "Resolve CMDB CI",
+        "description": "Resolve an incident's impacted CMDB CI from cmdb_ci table",
+        "default": true
       }
     }
   }
