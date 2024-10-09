@@ -114,9 +114,8 @@ export class ServiceNow {
               cmdb_ci_identifier = cmdb_ci_Map.get(cmdb_ci_sys_id);
             } else {
               try {
-                cmdb_ci_identifier = await this.client.cmdb_ci.getIdentifier(
-                  cmdb_ci_sys_id
-                );
+                cmdb_ci_identifier =
+                  await this.client.cmdb_ci.getIdentifier(cmdb_ci_sys_id);
                 cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_identifier);
               } catch (err: any) {
                 this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
@@ -126,8 +125,11 @@ export class ServiceNow {
 
           // When no business_service for incident, business_service is empty string
           let business_service_identifier: string;
-          if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
-            const business_service_sys_id = incident.cmdb_ci.value;
+          if (
+            incident.business_service &&
+            typeof incident.business_service !== 'string'
+          ) {
+            const business_service_sys_id = incident.business_service.value;
             // If sys_id previously seen, retrieve name from map
             if (business_service_sys_id in business_service_Map) {
               business_service_identifier = business_service_Map.get(
