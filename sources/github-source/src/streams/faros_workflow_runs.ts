@@ -58,7 +58,10 @@ export class FarosWorkflowRuns extends StreamWithRepoSlices {
    * to sync from that pending run.
    *
    * There are some edge cases where runs are stuck and never complete,
+   * and others where it may be waiting on approval or manual intervention (max 35 days per docs),
    * so we consider a maximum period of time for the run to complete.
+   *
+   * Reference: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
    */
   getUpdatedState(
     currentStreamState: WorkflowRunsState,
@@ -83,7 +86,7 @@ export class FarosWorkflowRuns extends StreamWithRepoSlices {
       [key]: {
         ...state[key],
         ...(latestRecord.status !== 'completed' &&
-          !isStaleRun(latestRecord?.created_at) && {isPending: true}),
+          !isStaleRun(latestRecord.created_at) && {isPending: true}),
       },
     };
   }
