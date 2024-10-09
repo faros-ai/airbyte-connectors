@@ -134,7 +134,7 @@ export class ServiceNow {
           if (
             incident.cmdb_ci &&
             typeof incident.cmdb_ci !== 'string' &&
-            this.config.resolveBusinessServices
+            this.config.resolveBusinessService
           ) {
             const business_service_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
