@@ -176,7 +176,7 @@ const getFarosOptionsItemKey = (
       return board;
     }
     case 'repository': {
-      const repo = options.repository?.uid;
+      const repo = options.repository?.name;
       const org = options.repository?.organization?.uid;
       if (!repo || !org) {
         return;

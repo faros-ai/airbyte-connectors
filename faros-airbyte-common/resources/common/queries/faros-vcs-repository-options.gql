@@ -4,12 +4,14 @@ query VcsRepositoryOptions(
   faros_VcsRepositoryOptions(
     where: {
       repository: {
-        source: { _eq: $source }
+      	organization: {
+          source: {_eq: $source}
+        }
       }
     }
   ) {
     repository {
-      uid
+      name
       organization {
         uid
       }
