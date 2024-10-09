@@ -877,7 +877,7 @@ export class Jira {
     const boardMap = new Map<number, AgileModels.Board>();
 
     // Get all boards located in the project
-    const allBoards = await this.getAllBoards();
+    const allBoards = await this.getBoards();
     allBoards.forEach((board) => {
       if (board.location?.projectKey === projectKey) {
         boardMap.set(board.id, board);
@@ -885,8 +885,8 @@ export class Jira {
     });
 
     // Get boards relevant to the project
-    const projectBoards = this.getBoardsIterator(projectKey);
-    for await (const board of projectBoards) {
+    const projectBoards = await this.getBoards(projectKey);
+    for (const board of projectBoards) {
       boardMap.set(board.id, board);
     }
 
@@ -894,9 +894,11 @@ export class Jira {
   }
 
   @Memoize()
-  async getAllBoards(): Promise<ReadonlyArray<AgileModels.Board>> {
+  async getBoards(
+    projectKey?: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
     const boards: AgileModels.Board[] = [];
-    for await (const board of this.getBoardsIterator()) {
+    for await (const board of this.getBoardsIterator(projectKey)) {
       boards.push(board);
     }
     return boards;
