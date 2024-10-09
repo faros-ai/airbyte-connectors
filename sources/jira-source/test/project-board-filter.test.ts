@@ -85,6 +85,15 @@ describe('ProjectBoardFilter', () => {
     expect(boards).toMatchSnapshot();
   });
 
+  test('getBoards - all boards - project list', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, projects: ['TEST-1']},
+      logger
+    );
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
+
   test('getBoards - specific boards included', async () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, boards: ['2', '3']},

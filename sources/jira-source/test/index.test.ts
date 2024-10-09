@@ -114,7 +114,10 @@ describe('index', () => {
           .mockResolvedValue(readTestResourceAsJSON('common/board.json')),
         getAllSprints: paginate(readTestResourceAsJSON('sprints/sprints.json')),
         getAllBoards: paginate(
-          readTestResourceAsJSON('common/boards_unique.json')
+          readTestResourceAsJSON('common/boards_unique.json'),
+          'values',
+          1,
+          true
         ),
       },
     },
@@ -233,7 +236,10 @@ describe('index', () => {
                     )
                   ),
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -283,7 +289,10 @@ describe('index', () => {
                   readTestResourceAsJSON('sprints/sprints.json')
                 ),
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -334,7 +343,10 @@ describe('index', () => {
                   ),
                 getAllSprints: getAllSprintsfn,
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -546,7 +558,10 @@ describe('index', () => {
             agile: {
               board: {
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('boards/boards.json')
+                  readTestResourceAsJSON('boards/boards.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },

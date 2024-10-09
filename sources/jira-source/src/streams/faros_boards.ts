@@ -32,7 +32,7 @@ export class FarosBoards extends StreamWithProjectSlices {
       type: 'Custom',
     };
 
-    for (const board of await jira.getBoards(projectKey)) {
+    for (const board of await jira.getProjectBoards(projectKey)) {
       const boardId = toString(board.id);
       if (this.projectBoardFilter.boardIsIncluded(boardId)) {
         yield {

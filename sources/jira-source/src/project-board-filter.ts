@@ -152,7 +152,7 @@ export class ProjectBoardFilter {
 
   private async getBoardsFromJira(jira: Jira): Promise<void> {
     for (const project of this.projects) {
-      for (const board of await jira.getBoards(project)) {
+      for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
         if (this.boardIsIncluded(boardId)) {
           this.boards.add(boardId);
