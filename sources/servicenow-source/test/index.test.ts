@@ -33,35 +33,40 @@ describe('index', () => {
   const incidents = readTestResourceFile('incidents.json');
   const incidentsRest = readTestResourceFile('incidentsRest.json');
   const users = readTestResourceFile('users.json');
-  const listIncidents = jest.fn().mockResolvedValue([incidentsRest, 2]);
-  const listUsers = jest.fn().mockResolvedValue([users, 5]);
-  const getCmdbCi = jest.fn().mockResolvedValue('Storage Area Network 001');
-  const getCmdbCiService = jest.fn().mockResolvedValue('Email');
-  const checkConnection = jest.fn().mockResolvedValue({});
-  ServiceNow.instance = jest.fn().mockReturnValue(
-    new ServiceNow(
-      {
-        incidents: {
-          list: listIncidents,
-        },
-        users: {
-          list: listUsers,
-        },
-        cmdb_ci: {
-          getIdentifier: getCmdbCi,
-        },
-        cmdb_ci_service: {
-          getIdentifier: getCmdbCiService,
-        },
-        checkConnection,
-      } as ServiceNowClient,
-      {} as ServiceNowConfig,
-      logger
-    )
-  );
+  const listIncidents = jest.fn();
+  const listUsers = jest.fn();
+  const getCmdbCi = jest.fn();
+  const getCmdbCiService = jest.fn();
+  const checkConnection = jest.fn();
 
   beforeEach(() => {
     jest.resetAllMocks();
+    listIncidents.mockResolvedValue([incidentsRest, 2]);
+    listUsers.mockResolvedValue([users, 5]);
+    getCmdbCi.mockResolvedValue('Storage Area Network 001');
+    getCmdbCiService.mockResolvedValue('Email');
+    checkConnection.mockResolvedValue({});
+    ServiceNow.instance = jest.fn().mockReturnValue(
+      new ServiceNow(
+        {
+          incidents: {
+            list: listIncidents,
+          },
+          users: {
+            list: listUsers,
+          },
+          cmdb_ci: {
+            getIdentifier: getCmdbCi,
+          },
+          cmdb_ci_service: {
+            getIdentifier: getCmdbCiService,
+          },
+          checkConnection,
+        } as ServiceNowClient,
+        {} as ServiceNowConfig,
+        logger
+      )
+    );
   });
 
   test('spec', async () => {
