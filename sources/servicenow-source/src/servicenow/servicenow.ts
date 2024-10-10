@@ -114,7 +114,7 @@ export class ServiceNow {
       if (incidents?.length) {
         for (const incident of incidents) {
           // When no cmdb_ci for incident, cmdb_ci is empty string
-          let cmdb_ci_identifier: string | undefined;
+          let cmdb_ci_identifier: string;
           if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
