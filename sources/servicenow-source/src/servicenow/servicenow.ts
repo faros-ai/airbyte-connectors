@@ -220,7 +220,6 @@ export class ServiceNow {
     }
     do {
       hasNext = false;
-
       let users: User[];
       let totalCount: number;
       try {
