@@ -93,20 +93,28 @@ export class ServiceNow {
       query = `sys_updated_on>${sys_updated_on}`;
     }
 
-    const cmdb_ci_Map: Map<string, string> = new Map();
-    const business_service_Map: Map<string, string> = new Map();
+    const cmdb_ci_Map: Map<string, string | undefined> = new Map();
+    const business_service_Map: Map<string, string | undefined> = new Map();
 
     do {
       hasNext = false;
-      const [incidents, totalCount] = await this.client.incidents.list(
-        {pageSize, offset},
-        query
-      );
+      let incidents: IncidentRest[];
+      let totalCount: number;
+      try {
+        [incidents, totalCount] = await this.client.incidents.list(
+          {pageSize, offset},
+          query
+        );
+      } catch (err: any) {
+        this.logger.error(`Error retrieving incidents: ${err.message}`);
+        this.logger.error(`Will resume processing from here next sync...`);
+        break;
+      }
 
       if (incidents?.length) {
         for (const incident of incidents) {
           // When no cmdb_ci for incident, cmdb_ci is empty string
-          let cmdb_ci_identifier: string;
+          let cmdb_ci_identifier: string | undefined;
           if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
@@ -119,6 +127,7 @@ export class ServiceNow {
                 cmdb_ci_Map.set(cmdb_ci_sys_id, cmdb_ci_identifier);
               } catch (err: any) {
                 this.logger.warn(`Error retrieving cmdb_ci: ${cmdb_ci_sys_id}`);
+                cmdb_ci_Map.set(cmdb_ci_sys_id, undefined);
               }
             }
           }
@@ -148,6 +157,10 @@ export class ServiceNow {
               } catch (err: any) {
                 this.logger.warn(
                   `Error retrieving business_service: ${business_service_sys_id}`
+                );
+                business_service_Map.set(
+                  business_service_identifier,
+                  undefined
                 );
               }
             }
@@ -207,10 +220,19 @@ export class ServiceNow {
     }
     do {
       hasNext = false;
-      const [users, totalCount] = await this.client.users.list(
-        {pageSize, offset},
-        query
-      );
+
+      let users: User[];
+      let totalCount: number;
+      try {
+        [users, totalCount] = await this.client.users.list(
+          {pageSize, offset},
+          query
+        );
+      } catch (err: any) {
+        this.logger.error(`Error retrieving users: ${err.message}`);
+        this.logger.error(`Will resume processing from here next sync...`);
+        break;
+      }
 
       if (users?.length) {
         for (const user of users) {
