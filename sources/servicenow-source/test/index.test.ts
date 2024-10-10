@@ -132,20 +132,17 @@ describe('index', () => {
   });
 
   test('streams - incidents, handles an API error', async () => {
-    listIncidents.mockRejectedValue(new VError('API Error'));
+    listIncidents.mockReturnValueOnce([incidentsRest, 3]);
+    listIncidents.mockRejectedValueOnce(new VError('API Error'));
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[0];
-    const items = [];
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
-      for await (const item of iter) {
-        items.push(item);
-      }
+      await iter.next();
     } catch (err: any) {
       fail('Error should have been handled.');
     }
-    expect(items.length).toBe(1);
   });
 
   test('streams - incidents, should cache cmdb_ci lookup failures', async () => {

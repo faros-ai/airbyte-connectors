@@ -118,7 +118,7 @@ export class ServiceNow {
           if (incident.cmdb_ci && typeof incident.cmdb_ci !== 'string') {
             const cmdb_ci_sys_id = incident.cmdb_ci.value;
             // If sys_id previously seen, retrieve name from map
-            if (cmdb_ci_sys_id in cmdb_ci_Map) {
+            if (cmdb_ci_Map.has(cmdb_ci_sys_id)) {
               cmdb_ci_identifier = cmdb_ci_Map.get(cmdb_ci_sys_id);
             } else {
               try {
@@ -140,7 +140,8 @@ export class ServiceNow {
           ) {
             const business_service_sys_id = incident.business_service.value;
             // If sys_id previously seen, retrieve name from map
-            if (business_service_sys_id in business_service_Map) {
+            console.log(business_service_Map);
+            if (business_service_Map.has(business_service_sys_id)) {
               business_service_identifier = business_service_Map.get(
                 business_service_sys_id
               );
@@ -158,10 +159,7 @@ export class ServiceNow {
                 this.logger.warn(
                   `Error retrieving business_service: ${business_service_sys_id}`
                 );
-                business_service_Map.set(
-                  business_service_identifier,
-                  undefined
-                );
+                business_service_Map.set(business_service_sys_id, undefined);
               }
             }
           }
