@@ -1,0 +1,14 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_artifacts"
+      }
+    },
+    {
+      "stream": {
+        "name": "faros_workflow_runs"
+      }
+    }
+  ]
+}

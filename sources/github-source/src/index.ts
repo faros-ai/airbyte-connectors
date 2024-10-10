@@ -20,6 +20,7 @@ import {
   GitHub,
 } from './github';
 import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
 import {FarosCommits} from './streams/faros_commits';
 import {FarosContributorsStats} from './streams/faros_contributors_stats';
@@ -41,6 +42,9 @@ import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
+import {FarosWorkflowJobs} from './streams/faros_workflow_jobs';
+import {FarosWorkflowRuns} from './streams/faros_workflow_runs';
+import {FarosWorkflows} from './streams/faros_workflows';
 import {GitHubConfig} from './types';
 
 export function mainCommand(): Command {
@@ -81,6 +85,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       farosClient = this.makeFarosClient(config);
     }
     return [
+      new FarosArtifacts(config, this.logger, farosClient),
       new FarosCodeScanningAlerts(config, this.logger, farosClient),
       new FarosCommits(config, this.logger, farosClient),
       new FarosContributorsStats(config, this.logger, farosClient),
@@ -102,6 +107,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosTeams(config, this.logger, farosClient),
       new FarosTeamMemberships(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),
+      new FarosWorkflows(config, this.logger, farosClient),
+      new FarosWorkflowJobs(config, this.logger, farosClient),
+      new FarosWorkflowRuns(config, this.logger, farosClient),
     ];
   }
 

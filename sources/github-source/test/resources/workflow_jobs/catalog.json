@@ -1,0 +1,14 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_workflow_jobs"
+      }
+    },
+    {
+      "stream": {
+        "name": "faros_workflow_runs"
+      }
+    }
+  ]
+}

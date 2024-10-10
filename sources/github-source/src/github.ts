@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
+  Artifact,
   CodeScanningAlert,
   Commit,
   ContributorStats,
@@ -32,6 +33,9 @@ import {
   Team,
   TeamMembership,
   User,
+  Workflow,
+  WorkflowJob,
+  WorkflowRun,
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
@@ -66,12 +70,12 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick, toString} from 'lodash';
+import {isEmpty, isNil, omit, pick, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {RunMode} from './streams/common';
+import {RunMode, StreamBase} from './streams/common';
 import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
@@ -102,6 +106,12 @@ type TeamMemberTimestamps = {
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
+type WorkflowRunsIds = {
+  [orgRepoKey: string]: {runId: number; workflowId: number}[];
+};
+
+const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
+
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
@@ -112,6 +122,8 @@ export abstract class GitHub {
   protected readonly pullRequestsPageSize: number;
   protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
+
+  protected readonly updatedWorkflowRunsIds: WorkflowRunsIds = {};
 
   constructor(
     config: GitHubConfig,
@@ -1424,6 +1436,150 @@ export abstract class GitHub {
       return;
     }
     throw err;
+  }
+
+  async *getWorkflows(org: string, repo: string): AsyncGenerator<Workflow> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listRepoWorkflows,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const workflow of res.data.workflows) {
+        yield {
+          org,
+          repo,
+          ...workflow,
+        };
+      }
+    }
+  }
+
+  async *getWorkflowRuns(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<WorkflowRun> {
+    const key = StreamBase.orgRepoKey(org, repo);
+    // workflow runs have a maximum duration to be updated, and we can just filter by created_at
+    const createdSince = startDate
+      ? Utils.toDate(startDate.getTime() - MAX_WORKFLOW_RUN_DURATION_MS)
+      : null;
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listWorkflowRunsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        created: `${createdSince?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+      }
+    );
+    for await (const res of iter) {
+      for (const workflowRun of res.data.workflow_runs) {
+        // skip runs that were updated before the start date / updated_at cutoff
+        if (Utils.toDate(workflowRun.updated_at) < startDate) {
+          continue;
+        }
+        this.updatedWorkflowRunsIds[key] = [
+          ...(this.updatedWorkflowRunsIds[key] || []),
+          {
+            runId: workflowRun.id,
+            workflowId: workflowRun.workflow_id,
+          },
+        ];
+        yield {
+          org,
+          repo,
+          ...omit(workflowRun, [
+            'pull_requests',
+            'actor',
+            'referenced_workflows',
+            'triggering_actor',
+            'head_commit',
+            'repository',
+            'head_repository',
+          ]),
+        };
+      }
+    }
+  }
+
+  getUpdatedWorkflowRunsIds(
+    org: string,
+    repo: string
+  ): ReadonlyArray<WorkflowRunsIds[string][0]> {
+    const key = StreamBase.orgRepoKey(org, repo);
+    const workflowRunsIds = this.updatedWorkflowRunsIds[key];
+    if (!workflowRunsIds) {
+      // should not happen if stream dependencies are respected
+      throw new VError(`Workflow runs were not pulled for repo ${key} yet`);
+    }
+    return workflowRunsIds;
+  }
+
+  async *getJobsForUpdatedWorkflowRuns(
+    org: string,
+    repo: string
+  ): AsyncGenerator<WorkflowJob> {
+    for (const {runId, workflowId} of this.getUpdatedWorkflowRunsIds(
+      org,
+      repo
+    )) {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).actions.listJobsForWorkflowRun,
+        {
+          owner: org,
+          repo,
+          run_id: runId,
+          per_page: this.pageSize,
+        }
+      );
+      for await (const res of iter) {
+        for (const job of res.data.jobs) {
+          yield {
+            org,
+            repo,
+            workflow_id: workflowId, // workflow_id is not available in job object
+            ...omit(job, 'steps'),
+          };
+        }
+      }
+    }
+  }
+
+  async *getArtifactsForUpdatedWorkflowRuns(
+    org: string,
+    repo: string
+  ): AsyncGenerator<Artifact> {
+    for (const {runId, workflowId} of this.getUpdatedWorkflowRunsIds(
+      org,
+      repo
+    )) {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).actions.listWorkflowRunArtifacts,
+        {
+          owner: org,
+          repo,
+          run_id: runId,
+          per_page: this.pageSize,
+        }
+      );
+      for await (const res of iter) {
+        for (const artifact of res.data.artifacts) {
+          yield {
+            org,
+            repo,
+            workflow_id: workflowId, // workflow_id is not available in artifact object
+            run_id: runId,
+            ...omit(artifact, 'workflow_run'),
+          };
+        }
+      }
+    }
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when
