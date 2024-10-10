@@ -123,17 +123,21 @@ describe('index', () => {
 
   test('streams - incidents, throws up API error', async () => {
     const expectedMessage = 'API Error';
+    listIncidents.mockReturnValueOnce([incidentsRest, 1]);
     listIncidents.mockRejectedValue(new VError(expectedMessage));
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[0];
+    const items = [];
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
-      await iter.next();
-      fail('Error should have been thrown.');
+      for await (const item of iter) {
+        items.push(item);
+      }
     } catch (err: any) {
-      expect(err.message).toBe(expectedMessage);
+      fail('Error should have been handled.');
     }
+    expect(items.length).toBe(1);
   });
 
   test('streams - users, use incremental sync mode', async () => {
@@ -171,16 +175,20 @@ describe('index', () => {
 
   test('streams - users, throws up API error', async () => {
     const expectedMessage = 'API Error';
-    listUsers.mockRejectedValue(new VError(expectedMessage));
+    listUsers.mockReturnValueOnce([users, 5]);
+    listUsers.mockRejectedValueOnce(new VError(expectedMessage));
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[1];
+    const items = [];
     try {
       const iter = stream.readRecords(SyncMode.FULL_REFRESH);
-      await iter.next();
-      fail('Error should have been thrown.');
+      for await (const item of iter) {
+        items.push(item);
+      }
     } catch (err: any) {
-      expect(err.message).toBe(expectedMessage);
+      fail('Error should have been handled.');
     }
+    expect(items.length).toBe(5);
   });
 });
