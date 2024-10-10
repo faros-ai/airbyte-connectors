@@ -31,9 +31,9 @@ describe('index', () => {
   );
 
   const incidents = readTestResourceFile('incidents.json');
-  const incidentRest = readTestResourceFile('incidentsRest.json');
+  const incidentsRest = readTestResourceFile('incidentsRest.json');
   const users = readTestResourceFile('users.json');
-  const listIncidents = jest.fn().mockResolvedValue([[incidentRest], 1]);
+  const listIncidents = jest.fn().mockResolvedValue([incidentsRest, 2]);
   const listUsers = jest.fn().mockResolvedValue([users, 5]);
   const getCmdbCi = jest.fn().mockResolvedValue('Storage Area Network 001');
   const getCmdbCiService = jest.fn().mockResolvedValue('Email');
@@ -101,7 +101,7 @@ describe('index', () => {
     for await (const item of itemIter) {
       items.push(item);
     }
-    expect(listIncidents.mock.calls.length).toBe(1);
+    expect(listIncidents.mock.calls.length).toBe(2);
     expect(listIncidents.mock.calls[0][1]).toBe(
       `sys_updated_on>${sys_updated_on}`
     );
@@ -122,7 +122,6 @@ describe('index', () => {
   });
 
   test('streams - incidents, handles an API error', async () => {
-    listIncidents.mockReturnValueOnce([incidentRest, 1]);
     listIncidents.mockRejectedValue(new VError('API Error'));
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
@@ -139,29 +138,8 @@ describe('index', () => {
     expect(items.length).toBe(1);
   });
 
-  test('streams - incidents, should cache cmdb_ci lookup', async () => {
-    listIncidents.mockReturnValueOnce([[incidentRest, incidentRest], 1]);
-    const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams(sourceConfig);
-    const stream = streams[0];
-    const iter = stream.readRecords(SyncMode.FULL_REFRESH);
-    await iter.next();
-    expect(getCmdbCi.mock.calls.length).toBe(1);
-  });
-
   test('streams - incidents, should cache cmdb_ci lookup failures', async () => {
-    listIncidents.mockReturnValueOnce([[incidentRest, incidentRest], 1]);
     getCmdbCi.mockRejectedValueOnce(new VError('API Error'));
-    const source = new sut.ServiceNowSource(logger);
-    const streams = source.streams(sourceConfig);
-    const stream = streams[0];
-    const iter = stream.readRecords(SyncMode.FULL_REFRESH);
-    await iter.next();
-    expect(getCmdbCi.mock.calls.length).toBe(1);
-  });
-
-  test('streams - incidents, should cache cmdb_ci_service lookup', async () => {
-    listIncidents.mockReturnValueOnce([[incidentRest, incidentRest], 1]);
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[0];
@@ -172,15 +150,14 @@ describe('index', () => {
   });
 
   test('streams - incidents, should cache cmdb_ci_service lookup failures', async () => {
-    listIncidents.mockReturnValueOnce([[incidentRest, incidentRest], 1]);
-    getCmdbCi.mockRejectedValueOnce(new VError('API Error'));
+    getCmdbCiService.mockRejectedValueOnce(new VError('API Error'));
     const source = new sut.ServiceNowSource(logger);
     const streams = source.streams(sourceConfig);
     const stream = streams[0];
     const iter = stream.readRecords(SyncMode.FULL_REFRESH);
     await iter.next();
     await iter.next();
-    expect(getCmdbCi.mock.calls.length).toBe(1);
+    expect(getCmdbCiService.mock.calls.length).toBe(1);
   });
 
   test('streams - users, use incremental sync mode', async () => {

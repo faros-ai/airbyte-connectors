@@ -1,0 +1,58 @@
+[
+  {
+    "severity": "3",
+    "short_description": "Unable to connect to email",
+    "closed_at": "2016-12-14 02:46:44",
+    "cmdb_ci": {
+      "link": "https://dev128138.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
+      "value": "109562a3c611227500a7b7ff98cc0dc7"
+    },
+    "business_service": {
+      "link": "https://dev128138.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
+      "value": "27d32778c0a8000b00db970eeaa60f16"
+    },
+    "sys_updated_on": "2016-12-14 02:46:44",
+    "priority": "3",
+    "sys_id": "1c741bd70b2322007518478d83673af3",
+    "number": "INC0000060",
+    "opened_at": "2016-12-12 15:19:57",
+    "opened_by": {
+      "link": "https://dev128138.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+      "value": "681ccaf9c0a8016400b98a06818d57c7"
+    },
+    "resolved_at": "2016-12-13 21:43:14",
+    "state": "7",
+    "assigned_to": {
+      "link": "https://dev128138.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+      "value": "5137153cc611227c000bbd1bd8cd2007"
+    }
+  },
+  {
+    "severity": "3",
+    "short_description": "Unable to connect to email",
+    "closed_at": "2016-12-14 02:46:44",
+    "cmdb_ci": {
+      "link": "https://dev128138.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
+      "value": "109562a3c611227500a7b7ff98cc0dc7"
+    },
+    "business_service": {
+      "link": "https://dev128138.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
+      "value": "27d32778c0a8000b00db970eeaa60f16"
+    },
+    "sys_updated_on": "2016-12-14 02:46:44",
+    "priority": "3",
+    "sys_id": "1c741bd70b2322007518478d83673af4",
+    "number": "INC0000060",
+    "opened_at": "2016-12-12 15:19:57",
+    "opened_by": {
+      "link": "https://dev128138.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+      "value": "681ccaf9c0a8016400b98a06818d57c7"
+    },
+    "resolved_at": "2016-12-13 21:43:14",
+    "state": "7",
+    "assigned_to": {
+      "link": "https://dev128138.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+      "value": "5137153cc611227c000bbd1bd8cd2007"
+    }
+  }
+]
