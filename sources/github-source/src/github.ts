@@ -110,6 +110,8 @@ type WorkflowRunsIds = {
   [orgRepoKey: string]: {runId: number; workflowId: number}[];
 };
 
+const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
+
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
@@ -1463,17 +1465,22 @@ export abstract class GitHub {
     endDate?: Date
   ): AsyncGenerator<WorkflowRun> {
     const key = StreamBase.orgRepoKey(org, repo);
+    // workflow runs have a maximum duration to be updated, and we can just filter by created_at
+    const createdSince = startDate
+      ? Utils.toDate(startDate.getTime() - MAX_WORKFLOW_RUN_DURATION_MS)
+      : null;
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).actions.listWorkflowRunsForRepo,
       {
         owner: org,
         repo,
         per_page: this.pageSize,
-        created: `${startDate?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+        created: `${createdSince?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
       }
     );
     for await (const res of iter) {
       for (const workflowRun of res.data.workflow_runs) {
+        // skip runs that were updated before the start date / updated_at cutoff
         if (Utils.toDate(workflowRun.updated_at) < startDate) {
           continue;
         }
