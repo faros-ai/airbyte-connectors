@@ -68,6 +68,43 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - artifacts 1`] = `
+[
+  {
+    "archive_download_url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/11/zip",
+    "created_at": "2020-01-10T14:59:22Z",
+    "expired": false,
+    "expires_at": "2020-03-21T14:59:22Z",
+    "id": 11,
+    "name": "Rails",
+    "node_id": "MDg6QXJ0aWZhY3QxMQ==",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 30433642,
+    "size_in_bytes": 556,
+    "updated_at": "2020-02-21T14:59:22Z",
+    "url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/11",
+    "workflow_id": 159038,
+  },
+  {
+    "archive_download_url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/13/zip",
+    "created_at": "2020-01-10T14:59:22Z",
+    "expired": false,
+    "expires_at": "2020-03-21T14:59:22Z",
+    "id": 13,
+    "name": "Test output",
+    "node_id": "MDg6QXJ0aWZhY3QxMw==",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 30433642,
+    "size_in_bytes": 453,
+    "updated_at": "2020-02-21T14:59:22Z",
+    "url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/13",
+    "workflow_id": 159038,
+  },
+]
+`;
+
 exports[`index streams - code scanning alerts 1`] = `
 [
   {
@@ -1599,6 +1636,40 @@ exports[`index streams - users 1`] = `
     "name": "Octokitten",
     "org": "github",
     "type": "User",
+  },
+]
+`;
+
+exports[`index streams - workflow jobs 1`] = `
+[
+  {
+    "check_run_url": "https://api.github.com/repos/octo-org/octo-repo/check-runs/399444496",
+    "completed_at": "2020-01-20T17:44:39Z",
+    "conclusion": "success",
+    "head_branch": "main",
+    "head_sha": "f83a356604ae3c5d03e1b46ef4d1ca77d64a90b0",
+    "html_url": "https://github.com/octo-org/octo-repo/runs/29679449/jobs/399444496",
+    "id": 399444496,
+    "labels": [
+      "self-hosted",
+      "foo",
+      "bar",
+    ],
+    "name": "build",
+    "node_id": "MDEyOldvcmtmbG93IEpvYjM5OTQ0NDQ5Ng==",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 29679449,
+    "run_url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/29679449",
+    "runner_group_id": 2,
+    "runner_group_name": "my runner group",
+    "runner_id": 1,
+    "runner_name": "my runner",
+    "started_at": "2020-01-20T17:42:40Z",
+    "status": "completed",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/jobs/399444496",
+    "workflow_id": 159038,
+    "workflow_name": "CI",
   },
 ]
 `;

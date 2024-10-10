@@ -301,3 +301,26 @@ export type WorkflowRun = {
   | 'repository'
   | 'head_repository'
 >;
+
+export type WorkflowJob = {
+  org: string;
+  repo: string;
+  workflow_id: number;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listJobsForWorkflowRun
+  >['jobs'][0],
+  'steps'
+>;
+
+export type Artifact = {
+  org: string;
+  repo: string;
+  workflow_id: number;
+  run_id: number;
+} & Omit<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listWorkflowRunArtifacts
+  >['artifacts'][0],
+  'workflow_run'
+>;

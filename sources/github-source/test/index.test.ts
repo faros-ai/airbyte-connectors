@@ -738,6 +738,60 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - workflow jobs', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflow_jobs/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            ),
+            getWorkflowJobsMockedImplementation(
+              readTestResourceAsJSON('workflow_jobs/workflow_jobs.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.slice(1)).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - artifacts', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'artifacts/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            ),
+            getArtifactsMockedImplementation(
+              readTestResourceAsJSON('artifacts/artifacts.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.slice(1)).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -867,5 +921,17 @@ const getWorkflowsMockedImplementation = (res: any) => ({
 const getWorkflowRunsMockedImplementation = (res: any) => ({
   actions: {
     listWorkflowRunsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getWorkflowJobsMockedImplementation = (res: any) => ({
+  actions: {
+    listJobsForWorkflowRun: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getArtifactsMockedImplementation = (res: any) => ({
+  actions: {
+    listWorkflowRunArtifacts: jest.fn().mockReturnValue(res),
   },
 });

@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
+  Artifact,
   CodeScanningAlert,
   Commit,
   ContributorStats,
@@ -33,6 +34,7 @@ import {
   TeamMembership,
   User,
   Workflow,
+  WorkflowJob,
   WorkflowRun,
 } from 'faros-airbyte-common/github';
 import {
@@ -73,7 +75,7 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {RunMode} from './streams/common';
+import {RunMode, StreamBase} from './streams/common';
 import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
 
 export const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
@@ -104,6 +106,10 @@ type TeamMemberTimestamps = {
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
+type WorkflowRunsIds = {
+  [orgRepoKey: string]: {runId: number; workflowId: number}[];
+};
+
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
@@ -114,6 +120,8 @@ export abstract class GitHub {
   protected readonly pullRequestsPageSize: number;
   protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
+
+  protected readonly updatedWorkflowRunsIds: WorkflowRunsIds = {};
 
   constructor(
     config: GitHubConfig,
@@ -1454,6 +1462,7 @@ export abstract class GitHub {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<WorkflowRun> {
+    const key = StreamBase.orgRepoKey(org, repo);
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).actions.listWorkflowRunsForRepo,
       {
@@ -1465,6 +1474,16 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const workflowRun of res.data.workflow_runs) {
+        if (Utils.toDate(workflowRun.updated_at) < startDate) {
+          continue;
+        }
+        this.updatedWorkflowRunsIds[key] = [
+          ...(this.updatedWorkflowRunsIds[key] || []),
+          {
+            runId: workflowRun.id,
+            workflowId: workflowRun.workflow_id,
+          },
+        ];
         yield {
           org,
           repo,
@@ -1478,6 +1497,80 @@ export abstract class GitHub {
             'head_repository',
           ]),
         };
+      }
+    }
+  }
+
+  getUpdatedWorkflowRunsIds(
+    org: string,
+    repo: string
+  ): ReadonlyArray<WorkflowRunsIds[string][0]> {
+    const key = StreamBase.orgRepoKey(org, repo);
+    const workflowRunsIds = this.updatedWorkflowRunsIds[key];
+    if (!workflowRunsIds) {
+      // should not happen if stream dependencies are respected
+      throw new VError(`Workflow runs were not pulled for repo ${key} yet`);
+    }
+    return workflowRunsIds;
+  }
+
+  async *getJobsForUpdatedWorkflowRuns(
+    org: string,
+    repo: string
+  ): AsyncGenerator<WorkflowJob> {
+    for (const {runId, workflowId} of this.getUpdatedWorkflowRunsIds(
+      org,
+      repo
+    )) {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).actions.listJobsForWorkflowRun,
+        {
+          owner: org,
+          repo,
+          run_id: runId,
+          per_page: this.pageSize,
+        }
+      );
+      for await (const res of iter) {
+        for (const job of res.data.jobs) {
+          yield {
+            org,
+            repo,
+            workflow_id: workflowId, // workflow_id is not available in job object
+            ...omit(job, 'steps'),
+          };
+        }
+      }
+    }
+  }
+
+  async *getArtifactsForUpdatedWorkflowRuns(
+    org: string,
+    repo: string
+  ): AsyncGenerator<Artifact> {
+    for (const {runId, workflowId} of this.getUpdatedWorkflowRunsIds(
+      org,
+      repo
+    )) {
+      const iter = this.octokit(org).paginate.iterator(
+        this.octokit(org).actions.listWorkflowRunArtifacts,
+        {
+          owner: org,
+          repo,
+          run_id: runId,
+          per_page: this.pageSize,
+        }
+      );
+      for await (const res of iter) {
+        for (const artifact of res.data.artifacts) {
+          yield {
+            org,
+            repo,
+            workflow_id: workflowId, // workflow_id is not available in artifact object
+            run_id: runId,
+            ...omit(artifact, 'workflow_run'),
+          };
+        }
       }
     }
   }
