@@ -140,7 +140,6 @@ export class ServiceNow {
           ) {
             const business_service_sys_id = incident.business_service.value;
             // If sys_id previously seen, retrieve name from map
-            console.log(business_service_Map);
             if (business_service_Map.has(business_service_sys_id)) {
               business_service_identifier = business_service_Map.get(
                 business_service_sys_id
