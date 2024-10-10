@@ -16,6 +16,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly fetch_teams?: boolean;
   readonly fetch_pull_request_files?: boolean;
   readonly fetch_pull_request_reviews?: boolean;
+  readonly copilot_licenses_dates_fix?: boolean;
   readonly cutoff_days?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;

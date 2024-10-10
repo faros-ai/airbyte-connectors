@@ -1,13 +1,14 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsStreamRecord,
 } from 'faros-airbyte-common/github';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {GitHub} from '../github';
+import {DEFAULT_COPILOT_LICENSES_DATES_FIX, GitHub} from '../github';
+import {GitHubConfig} from '../types';
 import {
   OrgStreamSlice,
   RepoStreamSlice,
@@ -17,6 +18,18 @@ import {
 } from './common';
 
 export class FarosCopilotSeats extends StreamWithOrgSlices {
+  protected readonly copilotLicensesDatesFix: boolean;
+
+  constructor(
+    protected readonly config: GitHubConfig,
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
+  ) {
+    super(config, logger, farosClient);
+    this.copilotLicensesDatesFix =
+      config.copilot_licenses_dates_fix ?? DEFAULT_COPILOT_LICENSES_DATES_FIX;
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosCopilotSeats.json');
   }
@@ -42,7 +55,11 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     const cutoffDate = state?.cutoff
       ? Utils.toDate(state.cutoff)
       : Utils.toDate(0);
-    yield* github.getCopilotSeats(org, cutoffDate);
+    yield* github.getCopilotSeats(
+      org,
+      cutoffDate,
+      this.copilotLicensesDatesFix
+    );
   }
 
   getUpdatedState(
@@ -50,6 +67,9 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     latestRecord: CopilotSeatsStreamRecord,
     slice: RepoStreamSlice
   ): StreamState {
+    if (!this.copilotLicensesDatesFix) {
+      return {};
+    }
     if (latestRecord.empty) {
       return currentStreamState;
     }

@@ -159,6 +159,33 @@ describe('index', () => {
     });
   });
 
+  test('streams - copilot seats with audit logs API but licenses dates fix disabled', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, copilot_licenses_dates_fix: false},
+      catalogOrPath: 'copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotSeatsMockedImplementation(
+              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+            ),
+            getTeamAddMemberAuditLogsMockedImplementation(
+              readTestResourceAsJSON(
+                'copilot_seats/team_add_member_audit_logs.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - copilot seats (empty)', async () => {
     await sourceReadTest({
       source,

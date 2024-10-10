@@ -80,6 +80,7 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
+export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -818,7 +819,8 @@ export abstract class GitHub {
 
   async *getCopilotSeats(
     org: string,
-    cutoffDate: Date
+    cutoffDate: Date,
+    licensesDatesFix: boolean
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
     const assignedTeams: CopilotAssignedTeams = {};
@@ -840,7 +842,7 @@ export abstract class GitHub {
           let teamJoinedAt: Date;
           let startedAt = Utils.toDate(seat.created_at);
           assignedUsers.add(userAssignee);
-          if (teamAssignee) {
+          if (teamAssignee && licensesDatesFix) {
             if (!assignedTeams[teamAssignee]) {
               assignedTeams[teamAssignee] = pick(seat, ['created_at']);
             }
