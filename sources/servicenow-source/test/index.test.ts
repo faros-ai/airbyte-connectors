@@ -60,6 +60,10 @@ describe('index', () => {
     )
   );
 
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   test('spec', async () => {
     const source = new sut.ServiceNowSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
@@ -101,7 +105,8 @@ describe('index', () => {
     for await (const item of itemIter) {
       items.push(item);
     }
-    expect(listIncidents.mock.calls.length).toBe(2);
+    expect(items).toStrictEqual(incidents);
+    expect(listIncidents.mock.calls.length).toBe(1);
     expect(listIncidents.mock.calls[0][1]).toBe(
       `sys_updated_on>${sys_updated_on}`
     );
