@@ -1,8 +1,10 @@
 export interface AccessToken {
+  readonly authentication_type: 'Access Token';
   readonly token: string;
 }
 
 export interface UserPassword {
+  readonly authentication_type: 'Username and Password';
   readonly username: string;
   readonly password: string;
 }
