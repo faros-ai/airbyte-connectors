@@ -22,6 +22,7 @@
         "oneOf": [
           {
             "type": "object",
+            "title": "Username and Password",
             "properties": {
               "authentication_type": {
                 "type": "string",
@@ -45,6 +46,7 @@
           },
           {
             "type": "object",
+            "title": "Access Token",
             "properties": {
               "authentication_type": {
                 "type": "string",
