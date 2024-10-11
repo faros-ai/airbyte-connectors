@@ -84,9 +84,9 @@ export class ServiceNow {
     sys_updated_on = this.cutOff,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<Incident, any, any> {
-    let hasNext = false;
+    let hasNext: boolean;
     let offset = 0;
-    let query;
+    let query: string;
 
     if (sys_updated_on) {
       this.logger.info(`Syncing incidents updated since: ${sys_updated_on}`);
@@ -106,9 +106,15 @@ export class ServiceNow {
           query
         );
       } catch (err: any) {
-        this.logger.error(`Error retrieving incidents: ${err.message}`);
-        this.logger.error(`Will resume processing from here next sync...`);
-        break;
+        if (offset > 0) {
+          this.logger.error(
+            `Error retrieving users after successful calls: ${err.message}`
+          );
+          this.logger.error(`Will resume processing from here next sync...`);
+          break;
+        } else {
+          throw err;
+        }
       }
 
       if (incidents?.length) {
@@ -208,13 +214,15 @@ export class ServiceNow {
     sys_updated_on?: string,
     pageSize = this.config.page_size ?? DEFAULT_PAGE_SIZE
   ): AsyncGenerator<User, any, any> {
-    let hasNext;
+    let hasNext: boolean;
     let offset = 0;
-    let query;
+
+    let query = 'ORDERBYsys_updated_on';
     if (sys_updated_on) {
       this.logger.info(`Syncing users updated since: ${sys_updated_on}`);
-      query = `sys_updated_on>=${sys_updated_on}`;
+      query += `^sys_updated_on>${sys_updated_on}`;
     }
+
     do {
       hasNext = false;
       let users: User[];
@@ -225,9 +233,15 @@ export class ServiceNow {
           query
         );
       } catch (err: any) {
-        this.logger.error(`Error retrieving users: ${err.message}`);
-        this.logger.error(`Will resume processing from here next sync...`);
-        break;
+        if (offset > 0) {
+          this.logger.error(
+            `Error retrieving users after successful calls: ${err.message}`
+          );
+          this.logger.error(`Will resume processing from here next sync...`);
+          break;
+        } else {
+          throw err;
+        }
       }
 
       if (users?.length) {

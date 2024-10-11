@@ -184,7 +184,7 @@ describe('index', () => {
     }
     expect(listUsers.mock.calls.length).toBe(1);
     expect(listUsers.mock.calls[0][1]).toBe(
-      `sys_updated_on>=${sys_updated_on}`
+      `ORDERBYsys_updated_on^sys_updated_on>${sys_updated_on}`
     );
   });
 
