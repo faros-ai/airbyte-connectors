@@ -158,7 +158,7 @@ export class Zephyr {
     const configuredVersions = project.versions;
     const versionsToGetExecutionsFrom = [];
     // filter fetch versions to match the configured versions
-    if (configuredVersions.length === 0) {
+    if (!configuredVersions?.length) {
       versionsToGetExecutionsFrom.push(...projectVersions);
     } else {
       versionsToGetExecutionsFrom.push(
