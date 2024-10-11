@@ -65,7 +65,8 @@ export class Zephyr {
 
     const userAuth = authentication as UserPassword;
     if (userAuth.username && userAuth.password) {
-      return `Basic ${base64Encode(`${userAuth.username}:${userAuth.password}`)}`;
+      const credentials = userAuth.username + ':' + userAuth.password;
+      return 'Basic ' + base64Encode(credentials);
     }
 
     throw new VError(
