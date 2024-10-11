@@ -820,7 +820,7 @@ export abstract class GitHub {
   async *getCopilotSeats(
     org: string,
     cutoffDate: Date,
-    licensesDatesFix: boolean
+    useCopilotTeamAssignmentsFix: boolean
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
     const assignedTeams: CopilotAssignedTeams = {};
@@ -842,7 +842,7 @@ export abstract class GitHub {
           let teamJoinedAt: Date;
           let startedAt = Utils.toDate(seat.created_at);
           assignedUsers.add(userAssignee);
-          if (teamAssignee && licensesDatesFix) {
+          if (teamAssignee && useCopilotTeamAssignmentsFix) {
             if (!assignedTeams[teamAssignee]) {
               assignedTeams[teamAssignee] = pick(seat, ['created_at']);
             }
