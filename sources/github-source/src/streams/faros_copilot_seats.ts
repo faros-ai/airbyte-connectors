@@ -18,7 +18,7 @@ import {
 } from './common';
 
 export class FarosCopilotSeats extends StreamWithOrgSlices {
-  protected readonly copilotLicensesDatesFix: boolean;
+  protected readonly useCopilotTeamAssignmentsFix: boolean;
 
   constructor(
     protected readonly config: GitHubConfig,
@@ -26,7 +26,7 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     protected readonly farosClient?: FarosClient
   ) {
     super(config, logger, farosClient);
-    this.copilotLicensesDatesFix =
+    this.useCopilotTeamAssignmentsFix =
       config.copilot_licenses_dates_fix ?? DEFAULT_COPILOT_LICENSES_DATES_FIX;
   }
 
@@ -53,13 +53,13 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     const state = streamState?.[StreamBase.orgKey(org)];
     // for Copilot data, cutoff default is beginning of time
     const cutoffDate =
-      this.copilotLicensesDatesFix && state?.cutoff
+      this.useCopilotTeamAssignmentsFix && state?.cutoff
         ? Utils.toDate(state.cutoff)
         : Utils.toDate(0);
     yield* github.getCopilotSeats(
       org,
       cutoffDate,
-      this.copilotLicensesDatesFix
+      this.useCopilotTeamAssignmentsFix
     );
   }
 
@@ -68,7 +68,7 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     latestRecord: CopilotSeatsStreamRecord,
     slice: RepoStreamSlice
   ): StreamState {
-    if (!this.copilotLicensesDatesFix) {
+    if (!this.useCopilotTeamAssignmentsFix) {
       return {};
     }
     if (latestRecord.empty) {
