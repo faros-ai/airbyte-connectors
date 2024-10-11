@@ -1465,6 +1465,7 @@ export abstract class GitHub {
     endDate?: Date
   ): AsyncGenerator<WorkflowRun> {
     const key = StreamBase.orgRepoKey(org, repo);
+    this.updatedWorkflowRunsIds[key] = [];
     // workflow runs have a maximum duration to be updated, and we can just filter by created_at
     const createdSince = startDate
       ? Utils.toDate(startDate.getTime() - MAX_WORKFLOW_RUN_DURATION_MS)
@@ -1485,7 +1486,7 @@ export abstract class GitHub {
           continue;
         }
         this.updatedWorkflowRunsIds[key] = [
-          ...(this.updatedWorkflowRunsIds[key] || []),
+          ...this.updatedWorkflowRunsIds[key],
           {
             runId: workflowRun.id,
             workflowId: workflowRun.workflow_id,
