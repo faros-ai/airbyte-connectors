@@ -230,7 +230,7 @@ export class Zephyr {
     // filter fetch cycles to match the configured cycles
     const configuredCycles = project.cycles;
     const cyclesToGetExecutionsFrom = [];
-    if (configuredCycles.length === 0) {
+    if (!configuredCycles?.length) {
       cyclesToGetExecutionsFrom.push(...testCycles);
     } else {
       cyclesToGetExecutionsFrom.push(
