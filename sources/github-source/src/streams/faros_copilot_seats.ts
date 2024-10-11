@@ -52,9 +52,10 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
     const org = streamSlice?.org;
     const state = streamState?.[StreamBase.orgKey(org)];
     // for Copilot data, cutoff default is beginning of time
-    const cutoffDate = state?.cutoff
-      ? Utils.toDate(state.cutoff)
-      : Utils.toDate(0);
+    const cutoffDate =
+      this.copilotLicensesDatesFix && state?.cutoff
+        ? Utils.toDate(state.cutoff)
+        : Utils.toDate(0);
     yield* github.getCopilotSeats(
       org,
       cutoffDate,
