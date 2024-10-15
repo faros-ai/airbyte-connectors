@@ -38,7 +38,14 @@ export class FarosWorkflowRuns extends StreamWithRepoSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
     const github = await GitHub.instance(this.config, this.logger);
-    yield* github.getWorkflowRuns(org, repo, startDate, endDate);
+    for (const workflowRun of await github.getWorkflowRuns(
+      org,
+      repo,
+      startDate,
+      endDate
+    )) {
+      yield workflowRun;
+    }
   }
 
   /**

@@ -18,10 +18,6 @@ export class FarosArtifacts extends StreamWithRepoSlices {
     return [['org'], ['repo'], ['id']];
   }
 
-  get supportsIncremental(): boolean {
-    return true;
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
@@ -30,6 +26,8 @@ export class FarosArtifacts extends StreamWithRepoSlices {
     const org = streamSlice?.org;
     const repo = streamSlice?.repo;
     const github = await GitHub.instance(this.config, this.logger);
-    yield* github.getArtifactsForUpdatedWorkflowRuns(org, repo);
+    for (const workflowRun of await github.getWorkflowRuns(org, repo)) {
+      yield* github.getWorkflowRunArtifacts(org, repo, workflowRun);
+    }
   }
 }
