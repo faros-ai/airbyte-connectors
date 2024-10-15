@@ -271,17 +271,18 @@ export abstract class AirbyteSourceBase<
     }
 
     if (failedStreams.length > 0) {
-      throw new VError(
+      this.logger.error(
         `Encountered an error while reading stream(s): ${JSON.stringify(
           failedStreams
         )}`
       );
+    } else {
+      yield new AirbyteSourceStatusMessage(
+        {data: maybeCompressState(config, state)},
+        {status: 'SUCCESS'}
+      );
     }
 
-    yield new AirbyteSourceStatusMessage(
-      {data: maybeCompressState(config, state)},
-      {status: 'SUCCESS'}
-    );
     this.logger.info(`Finished syncing ${this.name}`);
   }
 
