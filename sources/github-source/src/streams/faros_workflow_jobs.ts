@@ -18,6 +18,10 @@ export class FarosWorkflowJobs extends StreamWithRepoSlices {
     return [['org'], ['repo'], ['id']];
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
