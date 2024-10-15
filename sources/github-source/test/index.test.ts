@@ -726,7 +726,7 @@ describe('index', () => {
       catalog,
       {__bucket_execution_state: {last_executed_bucket_id: 1}}
     );
-    expect(newConfig).toMatchSnapshot();
+    expect(newConfig.bucket_id).toBe(2);
     expect(newState).toMatchSnapshot();
   });
 });

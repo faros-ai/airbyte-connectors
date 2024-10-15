@@ -70,25 +70,6 @@ AirbyteConnectionStatusMessage {
 
 exports[`index round robin bucket execution 1`] = `
 {
-  "authentication": {
-    "personal_access_token": "ghp_1234567890",
-    "type": "token",
-  },
-  "bucket_id": 2,
-  "bucket_total": 3,
-  "cutoff_days": 9999,
-  "endDate": 2024-10-15T21:10:36.467Z,
-  "fetch_pull_request_files": true,
-  "fetch_pull_request_reviews": true,
-  "fetch_teams": true,
-  "round_robin_bucket_execution": true,
-  "run_mode": "Custom",
-  "startDate": 1997-05-31T21:10:36.467Z,
-}
-`;
-
-exports[`index round robin bucket execution 2`] = `
-{
   "__bucket_execution_state": {
     "last_executed_bucket_id": 2,
   },
