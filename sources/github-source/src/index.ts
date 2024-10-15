@@ -8,7 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange} from 'faros-airbyte-common/common';
+import {calculateDateRange, nextBucketId} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
@@ -130,6 +130,25 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
       logger: this.logger.info.bind(this.logger),
     });
+
+    if (config.round_robin_bucket_execution) {
+      const next = nextBucketId(config, state);
+      return {
+        config: {
+          ...config,
+          startDate,
+          endDate,
+          bucket_id: next,
+        },
+        catalog: {streams},
+        state: {
+          ...state,
+          __bucket_execution_state: {
+            last_executed_bucket_id: next,
+          },
+        },
+      };
+    }
 
     return {
       config: {

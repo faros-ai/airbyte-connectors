@@ -35,6 +35,19 @@ export function validateBucketingConfig(
   }
 }
 
+export function nextBucketId(
+  config: {bucket_total?: number},
+  state:
+    | {__bucket_execution_state?: {last_executed_bucket_id?: number}}
+    | undefined
+): number {
+  const bucketTotal = config.bucket_total ?? 1;
+  const lastExecutedBucketId =
+    state?.__bucket_execution_state?.last_executed_bucket_id ?? bucketTotal;
+
+  return (lastExecutedBucketId % bucketTotal) + 1;
+}
+
 export function calculateDateRange(options: {
   start_date?: string;
   end_date?: string;

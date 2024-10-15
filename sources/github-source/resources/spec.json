@@ -204,70 +204,77 @@
         "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
-      "api_url": {
+      "round_robin_bucket_execution": {
         "order": 16,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "api_url": {
+        "order": 17,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 17,
+        "order": 18,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 18,
+        "order": 19,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "page_size": {
-        "order": 19,
+        "order": 20,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "pull_requests_page_size": {
-        "order": 20,
+        "order": 21,
         "type": "integer",
         "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
       "timeout": {
-        "order": 21,
+        "order": 22,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 22,
+        "order": 23,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 23,
+        "order": 24,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 24,
+        "order": 25,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 25,
+        "order": 26,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
