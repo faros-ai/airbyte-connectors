@@ -1482,14 +1482,24 @@ export abstract class GitHub {
         workflowRuns.push({
           org,
           repo,
-          ...omit(workflowRun, [
-            'pull_requests',
-            'actor',
-            'referenced_workflows',
-            'triggering_actor',
-            'head_commit',
-            'repository',
-            'head_repository',
+          ...pick(workflowRun, [
+            'id',
+            'name',
+            'head_branch',
+            'head_sha',
+            'path',
+            'run_number',
+            'event',
+            'display_title',
+            'status',
+            'conclusion',
+            'workflow_id',
+            'url',
+            'html_url',
+            'created_at',
+            'updated_at',
+            'run_attempt',
+            'run_started_at',
           ]),
         });
       }
@@ -1517,7 +1527,23 @@ export abstract class GitHub {
           org,
           repo,
           workflow_id: workflowRun.workflow_id, // workflow_id is not available in job object
-          ...omit(job, 'steps'),
+          ...pick(job, [
+            'run_id',
+            'id',
+            'workflow_name',
+            'head_branch',
+            'run_attempt',
+            'head_sha',
+            'url',
+            'html_url',
+            'status',
+            'conclusion',
+            'created_at',
+            'started_at',
+            'completed_at',
+            'name',
+            'labels',
+          ]),
         };
       }
     }
@@ -1544,7 +1570,17 @@ export abstract class GitHub {
           repo,
           workflow_id: workflowRun.workflow_id, // workflow_id is not available in artifact object
           run_id: workflowRun.id,
-          ...omit(artifact, 'workflow_run'),
+          ...pick(artifact, [
+            'id',
+            'name',
+            'size_in_bytes',
+            'url',
+            'archive_download_url',
+            'expired',
+            'created_at',
+            'expires_at',
+            'updated_at',
+          ]),
         };
       }
     }

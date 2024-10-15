@@ -14,15 +14,6 @@
     "name": {
       "type": "string"
     },
-    "node_id": {
-      "type": "string"
-    },
-    "check_suite_id": {
-      "type": "integer"
-    },
-    "check_suite_node_id": {
-      "type": "string"
-    },
     "head_branch": {
       "type": "string"
     },
@@ -70,27 +61,6 @@
     "run_started_at": {
       "type": "string",
       "format": "date-time"
-    },
-    "jobs_url": {
-      "type": "string"
-    },
-    "logs_url": {
-      "type": "string"
-    },
-    "check_suite_url": {
-      "type": "string"
-    },
-    "artifacts_url": {
-      "type": "string"
-    },
-    "cancel_url": {
-      "type": "string"
-    },
-    "rerun_url": {
-      "type": "string"
-    },
-    "workflow_url": {
-      "type": "string"
     }
   }
 }

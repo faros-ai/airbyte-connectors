@@ -23,13 +23,7 @@
     "head_branch": {
       "type": "string"
     },
-    "run_url": {
-      "type": "string"
-    },
     "run_attempt": {
-      "type": "integer"
-    },
-    "node_id": {
       "type": "integer"
     },
     "head_sha": {
@@ -62,26 +56,11 @@
     "name": {
       "type": "string"
     },
-    "check_run_url": {
-      "type": "string"
-    },
     "labels": {
       "type": "array",
       "items": {
         "type": "string"
       }
-    },
-    "runner_id": {
-      "type": "integer"
-    },
-    "runner_name": {
-      "type": "string"
-    },
-    "runner_group_id": {
-      "type": "integer"
-    },
-    "runner_group_name": {
-      "type": "string"
     }
   }
 }

@@ -289,28 +289,52 @@ export type Workflow = {
 export type WorkflowRun = {
   org: string;
   repo: string;
-} & Omit<
+} & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.actions.listWorkflowRunsForRepo
   >['workflow_runs'][0],
-  | 'pull_requests'
-  | 'actor'
-  | 'referenced_workflows'
-  | 'triggering_actor'
-  | 'head_commit'
-  | 'repository'
-  | 'head_repository'
+  | 'id'
+  | 'name'
+  | 'head_branch'
+  | 'head_sha'
+  | 'path'
+  | 'run_number'
+  | 'event'
+  | 'display_title'
+  | 'status'
+  | 'conclusion'
+  | 'workflow_id'
+  | 'url'
+  | 'html_url'
+  | 'created_at'
+  | 'updated_at'
+  | 'run_attempt'
+  | 'run_started_at'
 >;
 
 export type WorkflowJob = {
   org: string;
   repo: string;
   workflow_id: number;
-} & Omit<
+} & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.actions.listJobsForWorkflowRun
   >['jobs'][0],
-  'steps'
+  | 'run_id'
+  | 'id'
+  | 'workflow_name'
+  | 'head_branch'
+  | 'run_attempt'
+  | 'head_sha'
+  | 'url'
+  | 'html_url'
+  | 'status'
+  | 'conclusion'
+  | 'created_at'
+  | 'started_at'
+  | 'completed_at'
+  | 'name'
+  | 'labels'
 >;
 
 export type Artifact = {
@@ -318,9 +342,17 @@ export type Artifact = {
   repo: string;
   workflow_id: number;
   run_id: number;
-} & Omit<
+} & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.actions.listWorkflowRunArtifacts
   >['artifacts'][0],
-  'workflow_run'
+  | 'id'
+  | 'name'
+  | 'size_in_bytes'
+  | 'url'
+  | 'archive_download_url'
+  | 'expired'
+  | 'created_at'
+  | 'expires_at'
+  | 'updated_at'
 >;

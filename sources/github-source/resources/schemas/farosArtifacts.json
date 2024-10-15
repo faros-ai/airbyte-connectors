@@ -17,9 +17,6 @@
     "id": {
       "type": "integer"
     },
-    "node_id": {
-      "type": "integer"
-    },
     "name": {
       "type": "string"
     },
