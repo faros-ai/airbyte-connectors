@@ -70,7 +70,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, omit, pick, toString} from 'lodash';
+import {isEmpty, isNil, pick, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
