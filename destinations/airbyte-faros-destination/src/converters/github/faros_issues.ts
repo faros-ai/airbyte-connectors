@@ -13,7 +13,10 @@ type AssigneeEvent = {
 };
 
 export class FarosIssues extends GitHubConverter {
+  private readonly collectedLabels = new Set<string>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Label',
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskBoardRelationship',
@@ -65,6 +68,7 @@ export class FarosIssues extends GitHubConverter {
     }
 
     for (const {name} of issue.labels?.nodes ?? []) {
+      this.collectedLabels.add(name);
       records.push({
         model: 'tms_TaskTag',
         record: {
@@ -146,7 +150,16 @@ export class FarosIssues extends GitHubConverter {
     };
   }
 
+  private convertLabels(): DestinationRecord[] {
+    return Array.from(this.collectedLabels.values()).map((label) => ({
+      model: 'tms_Label',
+      record: {
+        name: label,
+      },
+    }));
+  }
+
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
-    return [...this.convertTMSUsers()];
+    return [...this.convertLabels(), ...this.convertTMSUsers()];
   }
 }

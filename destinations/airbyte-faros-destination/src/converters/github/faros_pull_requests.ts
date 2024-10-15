@@ -24,13 +24,15 @@ type ReviewState = {
 export class FarosPullRequests extends GitHubConverter {
   private readonly collectedBranches = new Map<string, BranchKey>();
   private readonly fileCollector = new FileCollector();
+  private readonly collectedLabels = new Set<string>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
-    'vcs_PullRequest',
-    'vcs_PullRequestLabel',
-    'vcs_PullRequestFile',
     'vcs_File',
+    'vcs_Label',
+    'vcs_PullRequest',
+    'vcs_PullRequestFile',
+    'vcs_PullRequestLabel',
     'vcs_PullRequestReview',
   ];
 
@@ -72,6 +74,10 @@ export class FarosPullRequests extends GitHubConverter {
 
     pr.files.forEach((file) => {
       this.fileCollector.collectFile(file.path, repoKey);
+    });
+
+    pr.labels.forEach((label) => {
+      this.collectedLabels.add(label.name);
     });
 
     let reviewCommentCount = 0;
@@ -201,6 +207,7 @@ export class FarosPullRequests extends GitHubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     return [
       ...this.convertBranches(),
+      ...this.convertLabels(),
       ...this.convertUsers(),
       ...this.fileCollector.convertFiles(),
     ];
@@ -228,6 +235,15 @@ export class FarosPullRequests extends GitHubConverter {
     return Array.from(this.collectedBranches.values()).map((branch) => ({
       model: 'vcs_Branch',
       record: branch,
+    }));
+  }
+
+  private convertLabels(): DestinationRecord[] {
+    return Array.from(this.collectedLabels.values()).map((label) => ({
+      model: 'vcs_Label',
+      record: {
+        name: label,
+      },
     }));
   }
 }
