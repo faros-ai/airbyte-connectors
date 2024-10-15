@@ -37,9 +37,7 @@ export function validateBucketingConfig(
 
 export function nextBucketId(
   config: {bucket_total?: number},
-  state:
-    | {__bucket_execution_state?: {last_executed_bucket_id?: number}}
-    | undefined
+  state?: {__bucket_execution_state?: {last_executed_bucket_id?: number}}
 ): number {
   const bucketTotal = config.bucket_total ?? 1;
   const lastExecutedBucketId =
