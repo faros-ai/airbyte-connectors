@@ -107,6 +107,7 @@ type TeamMemberTimestamps = {
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
+// https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
 export abstract class GitHub {
