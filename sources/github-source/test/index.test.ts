@@ -717,6 +717,18 @@ describe('index', () => {
       },
     });
   });
+
+  test('round robin bucket execution', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    const catalog = readTestResourceAsJSON('users/catalog.json');
+    const {config: newConfig, state: newState} = await source.onBeforeRead(
+      {...config, round_robin_bucket_execution: true, bucket_total: 3},
+      catalog,
+      {__bucket_execution_state: {last_executed_bucket_id: 1}}
+    );
+    expect(newConfig.bucket_id).toBe(2);
+    expect(newState).toMatchSnapshot();
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({

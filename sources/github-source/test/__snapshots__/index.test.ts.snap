@@ -68,6 +68,14 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index round robin bucket execution 1`] = `
+{
+  "__bucket_execution_state": {
+    "last_executed_bucket_id": 2,
+  },
+}
+`;
+
 exports[`index streams - code scanning alerts 1`] = `
 [
   {
