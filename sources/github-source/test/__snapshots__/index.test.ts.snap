@@ -76,6 +76,41 @@ exports[`index round robin bucket execution 1`] = `
 }
 `;
 
+exports[`index streams - artifacts 1`] = `
+[
+  {
+    "archive_download_url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/11/zip",
+    "created_at": "2020-01-10T14:59:22Z",
+    "expired": false,
+    "expires_at": "2020-03-21T14:59:22Z",
+    "id": 11,
+    "name": "Rails",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 30433642,
+    "size_in_bytes": 556,
+    "updated_at": "2020-02-21T14:59:22Z",
+    "url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/11",
+    "workflow_id": 159038,
+  },
+  {
+    "archive_download_url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/13/zip",
+    "created_at": "2020-01-10T14:59:22Z",
+    "expired": false,
+    "expires_at": "2020-03-21T14:59:22Z",
+    "id": 13,
+    "name": "Test output",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 30433642,
+    "size_in_bytes": 453,
+    "updated_at": "2020-02-21T14:59:22Z",
+    "url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/13",
+    "workflow_id": 159038,
+  },
+]
+`;
+
 exports[`index streams - code scanning alerts 1`] = `
 [
   {
@@ -1630,6 +1665,92 @@ exports[`index streams - users 1`] = `
     "name": "Octokitten",
     "org": "github",
     "type": "User",
+  },
+]
+`;
+
+exports[`index streams - workflow jobs 1`] = `
+[
+  {
+    "completed_at": "2020-01-20T17:44:39Z",
+    "conclusion": "success",
+    "head_branch": "main",
+    "head_sha": "f83a356604ae3c5d03e1b46ef4d1ca77d64a90b0",
+    "html_url": "https://github.com/octo-org/octo-repo/runs/29679449/jobs/399444496",
+    "id": 399444496,
+    "labels": [
+      "self-hosted",
+      "foo",
+      "bar",
+    ],
+    "name": "build",
+    "org": "github",
+    "repo": "Hello-World",
+    "run_id": 29679449,
+    "started_at": "2020-01-20T17:42:40Z",
+    "status": "completed",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/jobs/399444496",
+    "workflow_id": 159038,
+    "workflow_name": "CI",
+  },
+]
+`;
+
+exports[`index streams - workflow runs 1`] = `
+[
+  {
+    "conclusion": null,
+    "created_at": "2020-01-22T19:33:08Z",
+    "display_title": "Update README.md",
+    "event": "push",
+    "head_branch": "master",
+    "head_sha": "acb5820ced9479c074f688cc328bf03f341a511d",
+    "html_url": "https://github.com/octo-org/octo-repo/actions/runs/30433642",
+    "id": 30433642,
+    "name": "Build",
+    "org": "github",
+    "path": ".github/workflows/build.yml@main",
+    "repo": "Hello-World",
+    "run_attempt": 1,
+    "run_number": 562,
+    "run_started_at": "2020-01-22T19:33:08Z",
+    "status": "queued",
+    "updated_at": "2020-01-22T19:33:08Z",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/runs/30433642",
+    "workflow_id": 159038,
+  },
+]
+`;
+
+exports[`index streams - workflows 1`] = `
+[
+  {
+    "badge_url": "https://github.com/octo-org/octo-repo/workflows/CI/badge.svg",
+    "created_at": "2020-01-08T23:48:37.000-08:00",
+    "html_url": "https://github.com/octo-org/octo-repo/blob/master/.github/workflows/161335",
+    "id": 161335,
+    "name": "CI",
+    "node_id": "MDg6V29ya2Zsb3cxNjEzMzU=",
+    "org": "github",
+    "path": ".github/workflows/blank.yaml",
+    "repo": "Hello-World",
+    "state": "active",
+    "updated_at": "2020-01-08T23:50:21.000-08:00",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/workflows/161335",
+  },
+  {
+    "badge_url": "https://github.com/octo-org/octo-repo/workflows/Linter/badge.svg",
+    "created_at": "2020-01-08T23:48:37.000-08:00",
+    "html_url": "https://github.com/octo-org/octo-repo/blob/master/.github/workflows/269289",
+    "id": 269289,
+    "name": "Linter",
+    "node_id": "MDE4OldvcmtmbG93IFNlY29uZGFyeTI2OTI4OQ==",
+    "org": "github",
+    "path": ".github/workflows/linter.yaml",
+    "repo": "Hello-World",
+    "state": "active",
+    "updated_at": "2020-01-08T23:50:21.000-08:00",
+    "url": "https://api.github.com/repos/octo-org/octo-repo/actions/workflows/269289",
   },
 ]
 `;
