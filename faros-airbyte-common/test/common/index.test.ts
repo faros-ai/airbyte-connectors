@@ -145,8 +145,21 @@ describe('getNextBucketId', () => {
 
   test('should return next bucket id when last_executed_bucket_id is provided', () => {
     const config = {bucket_total: 3};
-    const state = {__bucket_execution_state: {last_executed_bucket_id: 2}};
-    expect(nextBucketId(config, state)).toBe(3);
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 1},
+      })
+    ).toBe(2);
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 2},
+      })
+    ).toBe(3);
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 3},
+      })
+    ).toBe(1);
   });
 
   test('should wrap around to 1 when reaching the last bucket', () => {
