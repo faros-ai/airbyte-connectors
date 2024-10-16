@@ -141,7 +141,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
     if (config.round_robin_bucket_execution) {
       const next = nextBucketId(config, state);
-      this.logger.debug(
+      this.logger.info(
         `Using round robin bucket execution. Bucket id: ${next}`
       );
       return {
