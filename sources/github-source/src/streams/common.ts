@@ -50,7 +50,6 @@ export const CopilotEvaluationStreamNames = [
 
 export const MinimumStreamNames = [
   'faros_commits',
-  'faros_labels',
   'faros_organizations',
   'faros_pull_requests',
   'faros_repositories',
@@ -61,7 +60,6 @@ export const FullStreamNames = [
   'faros_commits',
   'faros_copilot_seats',
   'faros_copilot_usage',
-  'faros_labels',
   'faros_organizations',
   'faros_pull_requests',
   'faros_pull_request_comments',

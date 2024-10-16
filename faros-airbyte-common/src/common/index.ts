@@ -1,6 +1,7 @@
 import {createHmac} from 'crypto';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
+import {toLower} from 'lodash';
 import {DateTime} from 'luxon';
 import path from 'path';
 import {VError} from 'verror';
@@ -32,6 +33,17 @@ export function validateBucketingConfig(
   if (bucketId < 1 || bucketId > bucketTotal) {
     throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
   }
+}
+
+export function nextBucketId(
+  config: {bucket_total?: number},
+  state?: {__bucket_execution_state?: {last_executed_bucket_id?: number}}
+): number {
+  const bucketTotal = config.bucket_total ?? 1;
+  const lastExecutedBucketId =
+    state?.__bucket_execution_state?.last_executed_bucket_id ?? bucketTotal;
+
+  return (lastExecutedBucketId % bucketTotal) + 1;
 }
 
 export function calculateDateRange(options: {
@@ -89,10 +101,12 @@ export function collectReposByOrg(
         `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
       );
     }
-    if (!reposByOrg.has(org)) {
-      reposByOrg.set(org, new Set());
+    const lowerOrg = toLower(org);
+    const lowerRepoName = toLower(name);
+    if (!reposByOrg.has(lowerOrg)) {
+      reposByOrg.set(lowerOrg, new Set());
     }
-    reposByOrg.get(org).add(name);
+    reposByOrg.get(lowerOrg).add(lowerRepoName);
   }
 }
 

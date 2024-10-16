@@ -19,9 +19,9 @@ describe('OrgRepoFilter', () => {
           listForAuthenticatedUser: jest
             .fn()
             .mockReturnValue([
-              {login: 'org-1'},
-              {login: 'org-2'},
-              {login: 'org-3'},
+              {login: 'Org-1'},
+              {login: 'Org-2'},
+              {login: 'Org-3'},
             ]),
         },
         repos: {

@@ -65,7 +65,8 @@ export class Zephyr {
 
     const userAuth = authentication as UserPassword;
     if (userAuth.username && userAuth.password) {
-      return `Basic ${base64Encode(`${userAuth.username}:${userAuth.password}`)}`;
+      const credentials = userAuth.username + ':' + userAuth.password;
+      return 'Basic ' + base64Encode(credentials);
     }
 
     throw new VError(
@@ -157,7 +158,7 @@ export class Zephyr {
     const configuredVersions = project.versions;
     const versionsToGetExecutionsFrom = [];
     // filter fetch versions to match the configured versions
-    if (configuredVersions.length === 0) {
+    if (!configuredVersions?.length) {
       versionsToGetExecutionsFrom.push(...projectVersions);
     } else {
       versionsToGetExecutionsFrom.push(
@@ -229,7 +230,7 @@ export class Zephyr {
     // filter fetch cycles to match the configured cycles
     const configuredCycles = project.cycles;
     const cyclesToGetExecutionsFrom = [];
-    if (configuredCycles.length === 0) {
+    if (!configuredCycles?.length) {
       cyclesToGetExecutionsFrom.push(...testCycles);
     } else {
       cyclesToGetExecutionsFrom.push(

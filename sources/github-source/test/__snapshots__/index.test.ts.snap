@@ -68,6 +68,14 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index round robin bucket execution 1`] = `
+{
+  "__bucket_execution_state": {
+    "last_executed_bucket_id": 2,
+  },
+}
+`;
+
 exports[`index streams - artifacts 1`] = `
 [
   {
@@ -321,6 +329,29 @@ exports[`index streams - copilot seats with audit logs API 1`] = `
     "team": "justice-league",
     "teamLeftAt": "2024-07-23T13:54:10.205Z",
     "user": "octokatty",
+  },
+]
+`;
+
+exports[`index streams - copilot seats with audit logs API but licenses dates fix disabled 1`] = `
+[
+  {
+    "last_activity_at": "2021-10-14T00:53:32-06:00",
+    "org": "github",
+    "pending_cancellation_date": null,
+    "startedAt": "2021-08-04T00:00:00.000Z",
+    "team": "justice-league",
+    "teamJoinedAt": undefined,
+    "user": "octocat",
+  },
+  {
+    "last_activity_at": "2021-10-13T00:53:32-06:00",
+    "org": "github",
+    "pending_cancellation_date": "2021-11-01",
+    "startedAt": "2021-09-24T00:00:00.000Z",
+    "team": undefined,
+    "teamJoinedAt": undefined,
+    "user": "octokitten",
   },
 ]
 `;

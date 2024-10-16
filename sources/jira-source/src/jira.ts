@@ -866,8 +866,37 @@ export class Jira {
     return this.requestedStreams?.has('faros_issues');
   }
 
+  // Project boards are one of the following:
+  // - located in the project (location.projectKey === projectKey)
+  // - relevant to the project (returned when using projectKeyOrId for get all board)
   @Memoize()
-  async getBoards(
+  async getProjectBoards(
+    projectKey: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const boardMap = new Map<number, AgileModels.Board>();
+
+    // Get all boards located in the project
+    const allBoards = await this.getRelevantBoards();
+    allBoards.forEach((board) => {
+      if (board.location?.projectKey === projectKey) {
+        boardMap.set(board.id, board);
+      }
+    });
+
+    // Get boards relevant to the project
+    const projectBoards = await this.getRelevantBoards(projectKey);
+    for (const board of projectBoards) {
+      boardMap.set(board.id, board);
+    }
+
+    return Array.from(boardMap.values());
+  }
+
+  // Get all if projectKey is not provided, otherwise, get boards relevant to the project.
+  // See comment for projectKeyOrId query param for get all boards API call below.
+  // https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/#api-rest-agile-1-0-board-get
+  @Memoize()
+  private async getRelevantBoards(
     projectKey?: string
   ): Promise<ReadonlyArray<AgileModels.Board>> {
     const boards: AgileModels.Board[] = [];

@@ -2,6 +2,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {collectReposByOrg, getFarosOptions} from 'faros-airbyte-common/common';
 import {Repository} from 'faros-airbyte-common/github';
 import {FarosClient} from 'faros-js-client';
+import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -94,19 +95,24 @@ export class OrgRepoFilter {
       }
       if (!this.filterConfig.organizations) {
         visibleOrgs.forEach((org) => {
-          if (!this.filterConfig.excludedOrganizations?.has(org)) {
-            organizations.add(org);
+          const lowerOrg = toLower(org);
+          if (!this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
+            organizations.add(lowerOrg);
           }
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
+          const lowerOrg = toLower(org);
           // fine-grained tokens return an empty list for visible orgs,
           // so we only run the check if the list is not empty
-          if (visibleOrgs.length && !visibleOrgs.some((o) => o === org)) {
-            this.logger.warn(`Skipping not found organization ${org}`);
+          if (
+            visibleOrgs.length &&
+            !visibleOrgs.some((o) => toLower(o) === lowerOrg)
+          ) {
+            this.logger.warn(`Skipping not found organization ${lowerOrg}`);
             return;
           }
-          organizations.add(org);
+          organizations.add(lowerOrg);
         });
       }
       this.organizations = organizations;
@@ -116,45 +122,57 @@ export class OrgRepoFilter {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    const lowerOrg = toLower(org);
+
     // Ensure included / excluded repositories are loaded
     await this.loadSelectedRepos();
 
-    if (!this.reposByOrg.has(org)) {
+    if (!this.reposByOrg.has(lowerOrg)) {
       const repos = new Map<string, Repository>();
       const github = await GitHub.instance(this.config, this.logger);
-      const visibleRepos = await github.getRepositories(org);
+      const visibleRepos = await github.getRepositories(lowerOrg);
       if (!visibleRepos.length) {
         this.logger.warn(
-          `No visible repositories found for organization ${org}`
+          `No visible repositories found for organization ${lowerOrg}`
         );
       }
-      if (!this.filterConfig.reposByOrg.has(org)) {
+      if (!this.filterConfig.reposByOrg.has(lowerOrg)) {
         visibleRepos.forEach((repo) => {
-          if (!this.filterConfig.excludedReposByOrg.get(org)?.has(repo.name)) {
-            repos.set(repo.name, repo);
+          const lowerRepoName = toLower(repo.name);
+          if (
+            !this.filterConfig.excludedReposByOrg
+              .get(lowerOrg)
+              ?.has(lowerRepoName)
+          ) {
+            repos.set(lowerRepoName, repo);
           }
         });
       } else {
-        this.filterConfig.reposByOrg.get(org).forEach((repoName) => {
-          const repo = visibleRepos.find((r) => r.name === repoName);
+        this.filterConfig.reposByOrg.get(lowerOrg).forEach((repoName) => {
+          const lowerRepoName = toLower(repoName);
+          const repo = visibleRepos.find(
+            (r) => toLower(r.name) === lowerRepoName
+          );
           if (!repo) {
             this.logger.warn(
-              `Skipping not found repository ${org}/${repoName}`
+              `Skipping not found repository ${lowerOrg}/${lowerRepoName}`
             );
             return;
           }
-          repos.set(repo.name, repo);
+          repos.set(lowerRepoName, repo);
         });
       }
-      this.reposByOrg.set(org, repos);
+      this.reposByOrg.set(lowerOrg, repos);
     }
-    return Array.from(this.reposByOrg.get(org).values());
+    return Array.from(this.reposByOrg.get(lowerOrg).values());
   }
 
   getRepository(org: string, name: string): Repository {
-    const repo = this.reposByOrg.get(org)?.get(name);
+    const lowerOrg = toLower(org);
+    const lowerRepoName = toLower(name);
+    const repo = this.reposByOrg.get(lowerOrg)?.get(lowerRepoName);
     if (!repo) {
-      throw new VError('Repository not found: %s/%s', org, name);
+      throw new VError('Repository not found: %s/%s', lowerOrg, lowerRepoName);
     }
     return repo;
   }

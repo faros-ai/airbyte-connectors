@@ -11,7 +11,7 @@ export interface IncidentRest {
   readonly opened_at: string;
   readonly closed_at: string;
   readonly sys_updated_on: string;
-  readonly business_service: string;
+  readonly business_service: any;
   readonly cmdb_ci: any;
 }
 

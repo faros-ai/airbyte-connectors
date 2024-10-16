@@ -210,8 +210,8 @@ export class FarosIssues extends JiraConverter {
       });
     }
 
-    this.updateAncestors(issue);
-    return results;
+    const ancestors = this.updateAncestors(issue);
+    return [...results, ...ancestors];
   }
 
   private toDependentType(name: string): string | undefined {

@@ -43,6 +43,8 @@ export class FarosDependabotAlerts extends GitHubConverter {
         },
       })
     );
+    const firstPatchedVersion =
+      alert.security_vulnerability.first_patched_version?.identifier;
     return [
       {
         model: 'sec_Vulnerability',
@@ -58,9 +60,9 @@ export class FarosDependabotAlerts extends GitHubConverter {
           severity: GitHubCommon.vulnerabilitySeverity(alert),
           url: alert.html_url,
           publishedAt: Utils.toDate(alert.security_advisory.published_at),
-          remediatedInVersions: [
-            alert.security_vulnerability.first_patched_version.identifier,
-          ],
+          remediatedInVersions: firstPatchedVersion
+            ? [firstPatchedVersion]
+            : [],
           affectedVersions: [
             alert.security_vulnerability.vulnerable_version_range,
           ],
