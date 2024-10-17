@@ -7842,6 +7842,8 @@ export type CommitFieldsFragment = {
   message: string;
   url: string;
   authoredDate: string;
+  changedFilesIfAvailable?: number | null;
+  changedFiles: number;
   additions: number;
   deletions: number;
   author?: {
@@ -7850,92 +7852,6 @@ export type CommitFieldsFragment = {
     user?: {login: string; url: string; type: 'User'} | null;
   } | null;
   committer?: {date?: string | null} | null;
-};
-
-export type CommitsChangedFilesIfAvailableQueryVariables = Exact<{
-  owner: Scalars['String']['input'];
-  repo: Scalars['String']['input'];
-  branch: Scalars['String']['input'];
-  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
-  until?: InputMaybe<Scalars['GitTimestamp']['input']>;
-  page_size?: InputMaybe<Scalars['Int']['input']>;
-  cursor?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-export type CommitsChangedFilesIfAvailableQuery = {
-  repository?: {
-    ref?: {
-      target?:
-        | {type: 'Blob'}
-        | {
-            type: 'Commit';
-            history: {
-              pageInfo: {endCursor?: string | null; hasNextPage: boolean};
-              nodes?: Array<{
-                changedFilesIfAvailable?: number | null;
-                oid: string;
-                message: string;
-                url: string;
-                authoredDate: string;
-                additions: number;
-                deletions: number;
-                author?: {
-                  name?: string | null;
-                  email?: string | null;
-                  user?: {login: string; url: string; type: 'User'} | null;
-                } | null;
-                committer?: {date?: string | null} | null;
-              } | null> | null;
-            };
-          }
-        | {type: 'Tag'}
-        | {type: 'Tree'}
-        | null;
-    } | null;
-  } | null;
-};
-
-export type CommitsChangedFilesQueryVariables = Exact<{
-  owner: Scalars['String']['input'];
-  repo: Scalars['String']['input'];
-  branch: Scalars['String']['input'];
-  since?: InputMaybe<Scalars['GitTimestamp']['input']>;
-  until?: InputMaybe<Scalars['GitTimestamp']['input']>;
-  page_size?: InputMaybe<Scalars['Int']['input']>;
-  cursor?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-export type CommitsChangedFilesQuery = {
-  repository?: {
-    ref?: {
-      target?:
-        | {type: 'Blob'}
-        | {
-            type: 'Commit';
-            history: {
-              pageInfo: {endCursor?: string | null; hasNextPage: boolean};
-              nodes?: Array<{
-                changedFiles: number;
-                oid: string;
-                message: string;
-                url: string;
-                authoredDate: string;
-                additions: number;
-                deletions: number;
-                author?: {
-                  name?: string | null;
-                  email?: string | null;
-                  user?: {login: string; url: string; type: 'User'} | null;
-                } | null;
-                committer?: {date?: string | null} | null;
-              } | null> | null;
-            };
-          }
-        | {type: 'Tag'}
-        | {type: 'Tree'}
-        | null;
-    } | null;
-  } | null;
 };
 
 export type CommitsQueryVariables = Exact<{
@@ -7962,6 +7878,8 @@ export type CommitsQuery = {
                 message: string;
                 url: string;
                 authoredDate: string;
+                changedFilesIfAvailable?: number | null;
+                changedFiles: number;
                 additions: number;
                 deletions: number;
                 author?: {

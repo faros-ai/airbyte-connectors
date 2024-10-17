@@ -51,8 +51,6 @@ import {
   RepoTagsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
-  COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
-  COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
   FILES_FRAGMENT,
   ISSUES_QUERY,
@@ -653,46 +651,8 @@ export abstract class GitHub {
       since: startDate?.toISOString(),
       ...(this.backfill && {until: endDate?.toISOString()}),
     };
-    // Check if the client has changedFilesIfAvailable field available
-    const hasChangedFilesIfAvailable =
-      await this.hasChangedFilesIfAvailable(queryParameters);
-    const query = hasChangedFilesIfAvailable
-      ? COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY
-      : COMMITS_CHANGED_FILES_QUERY;
-    // Do a first query to check if the repository has commits history
-    const historyCheckResult = await this.octokit(org).graphql<CommitsQuery>(
-      query,
-      {
-        ...queryParameters,
-        page_size: 1,
-      }
-    );
-    if (!historyCheckResult.repository?.ref?.target?.['history']) {
-      this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
-      return;
-    }
-
-    // The `changedFiles` field used in COMMITS_CHANGED_FILES_QUERY,
-    // has the following warning on the latest cloud schema:
-    // "We recommend using the `changedFilesIfAvailable` field instead of
-    // `changedFiles`, as `changedFiles` will cause your request to return an error
-    // if GitHub is unable to calculate the number of changed files"
-    // https://docs.github.com/en/graphql/reference/objects#commit:~:text=information%20you%20want.-,changedFiles,-(Int)
-    try {
-      yield* this.queryCommits(org, repo, branch, query, queryParameters);
-    } catch (err: any) {
-      this.logger.warn(
-        `Failed to fetch commits with changed files.
-         Retrying fetching commits for repo ${repo} without changed files.`
-      );
-      yield* this.queryCommits(
-        org,
-        repo,
-        branch,
-        COMMITS_QUERY,
-        queryParameters
-      );
-    }
+    const query = await this.getCommitsQuery(queryParameters);
+    yield* this.queryCommits(org, repo, branch, query, queryParameters);
   }
 
   private async *queryCommits(
@@ -702,12 +662,37 @@ export abstract class GitHub {
     query: string,
     queryParameters: any
   ): AsyncGenerator<Commit> {
-    const iter = this.octokit(org).graphql.paginate.iterator<CommitsQuery>(
-      query,
-      queryParameters
-    );
-    for await (const res of iter) {
-      for (const commit of res.repository.ref.target['history'].nodes) {
+    // Need to handle pagination manually because graphql paginate plugin throws error
+    // if paginated field is not found in the response
+    let res: CommitsQuery;
+    let hasNextPage: boolean;
+    let cursor: string | null = null;
+    do {
+      try {
+        res = await this.octokit(org).graphql<CommitsQuery>(query, {
+          ...queryParameters,
+          cursor,
+        });
+      } catch (err: any) {
+        res = await this.handleCommitsQueryError(
+          org,
+          repo,
+          query,
+          queryParameters,
+          cursor,
+          err
+        );
+      }
+      if (res.repository?.ref?.target?.type !== 'Commit') {
+        // check to make ts happy
+        return;
+      }
+      const history = res.repository?.ref?.target?.history;
+      if (!history) {
+        this.logger.warn(`No commit history found for ${org}/${repo}`);
+        return;
+      }
+      for (const commit of history.nodes) {
         yield {
           org,
           repo,
@@ -715,35 +700,72 @@ export abstract class GitHub {
           ...commit,
         };
       }
-    }
+      hasNextPage = history.pageInfo.hasNextPage;
+      cursor = history.pageInfo.endCursor;
+    } while (hasNextPage && cursor);
   }
 
-  private async hasChangedFilesIfAvailable(
-    queryParameters: any
-  ): Promise<boolean> {
+  // checks if the error is caused by querying an
+  // unavailable field and retry the query removing it
+  private async handleCommitsQueryError(
+    org: string,
+    repo: string,
+    query: string,
+    queryParameters: any,
+    cursor: string | null,
+    err: any
+  ) {
+    const errorMessages = err?.errors?.map((e: any) => e.message);
+    if (!errorMessages || errorMessages.length != 1) {
+      throw err;
+    }
+    let errorField: string;
+    const possibleErrorFields = ['changedFiles', 'additions', 'deletions'];
+    for (const field of possibleErrorFields) {
+      if (new RegExp(field).test(errorMessages[0])) {
+        errorField = field;
+        break;
+      }
+    }
+    if (!errorField) {
+      throw err;
+    }
+    const newQuery = query.replace(new RegExp(`${errorField}\\s+`), '');
+    this.logger.warn(
+      `Failed to fetch commits with ${errorField}. Retrying fetching commits for repo ${org}/${repo} (cursor: ${cursor}) without ${errorField}.`
+    );
+    return this.octokit(org).graphql<CommitsQuery>(newQuery, {
+      ...queryParameters,
+      cursor,
+    });
+  }
+
+  // memoize since one call is enough to check if the field is available
+  @Memoize(() => null)
+  private async getCommitsQuery(queryParameters: any): Promise<string> {
     try {
+      // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
+      // See: https://docs.github.com/en/graphql/reference/objects#commit
+      const query = COMMITS_QUERY.replace(/changedFiles\s+/, '')
+        .replace(/additions\s+/, '')
+        .replace(/deletions\s+/, '');
       await this.timeout<Commit>(
-        this.octokit(queryParameters.owner).graphql(
-          COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
-          {
-            ...queryParameters,
-            page_size: 1,
-          }
-        )
+        this.octokit(queryParameters.owner).graphql(query, {
+          ...queryParameters,
+          page_size: 1,
+        })
       );
     } catch (err: any) {
       const errorCode = err?.errors?.[0]?.extensions?.code;
-      // Check if the error was caused by querying undefined changedFilesIfAvailable field to continue execution with
-      // a query that uses changedFiles (legacy field)
+      // Check if the error was caused by querying undefined changedFilesIfAvailable field
       if (errorCode === 'undefinedField') {
         this.logger.warn(
-          `Failed to fetch commits using query with changedFilesIfAvailable.
-          Retrying fetching commits for repo ${queryParameters.repo} using changedFiles.`
+          `GQL schema Commit object doesn't contain field changedFilesIfAvailable. Will query for changedFiles instead.`
         );
-        return false;
+        return COMMITS_QUERY.replace(/changedFilesIfAvailable\s+/, '');
       }
     }
-    return true;
+    return COMMITS_QUERY.replace(/changedFiles\s+/, '');
   }
 
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {
