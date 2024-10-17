@@ -125,6 +125,30 @@
         "name": "mytestsource__github__faros_secret_scanning_alerts"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_workflows"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_workflow_runs"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_workflow_jobs"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_artifacts"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }
