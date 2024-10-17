@@ -70,7 +70,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick, toString} from 'lodash';
+import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -1704,23 +1704,23 @@ export class GitHubApp extends GitHub {
     const installations = await github.getAppInstallations();
     for (const installation of installations) {
       if (installation.target_type !== 'Organization') continue;
+      const orgLogin = toLower(installation.account.login);
       if (installation.suspended_at) {
-        logger.warn(
-          `Skipping suspended app installation for org ${installation.account.login}`
-        );
+        logger.warn(`Skipping suspended app installation for org ${orgLogin}`);
         continue;
       }
       const octokit = makeOctokitClient(cfg, installation.id, logger);
-      github.octokitByInstallationOrg.set(installation.account.login, octokit);
+      github.octokitByInstallationOrg.set(orgLogin, octokit);
     }
     return github;
   }
 
   octokit(org: string): ExtendedOctokit {
-    if (!this.octokitByInstallationOrg.has(org)) {
-      throw new VError(`No active app installation found for org ${org}`);
+    const orgLogin = toLower(org);
+    if (!this.octokitByInstallationOrg.has(orgLogin)) {
+      throw new VError(`No active app installation found for org ${orgLogin}`);
     }
-    return this.octokitByInstallationOrg.get(org);
+    return this.octokitByInstallationOrg.get(orgLogin);
   }
 
   async checkConnection(): Promise<void> {
