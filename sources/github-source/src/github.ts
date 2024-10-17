@@ -384,9 +384,9 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestLabel[]> {
-    const {hasNextPage} = pr.labels.pageInfo;
-    if (!hasNextPage) {
-      return pr.labels.nodes;
+    const {nodes, pageInfo} = pr.labels || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
     return this.getPullRequestLabels(
       org,
@@ -429,9 +429,9 @@ export abstract class GitHub {
     if (!this.fetchPullRequestFiles) {
       return [];
     }
-    const {hasNextPage} = pr.files.pageInfo;
-    if (!hasNextPage) {
-      return pr.files.nodes;
+    const {nodes, pageInfo} = pr.files || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
     return this.getPullRequestFiles(
       org,
@@ -478,16 +478,16 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {hasNextPage, endCursor} = pr.reviews.pageInfo;
-    if (!hasNextPage) {
-      return pr.reviews.nodes;
+    const {nodes, pageInfo} = pr.reviews || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
-    const reviews: PullRequestReview[] = [...pr.reviews.nodes];
+    const reviews: PullRequestReview[] = nodes ? [...nodes] : [];
     const remainingReviews = await this.getPullRequestReviews(
       org,
       repo,
       pr.number,
-      endCursor
+      pageInfo?.endCursor
     );
     return reviews.concat(remainingReviews);
   }
@@ -596,18 +596,16 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {hasNextPage, endCursor} = pr.reviewRequests.pageInfo;
-    if (!hasNextPage) {
-      return pr.reviewRequests.nodes;
+    const {nodes, pageInfo} = pr.reviewRequests || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
-    const reviewRequests: PullRequestReviewRequest[] = [
-      ...pr.reviewRequests.nodes,
-    ];
+    const reviewRequests: PullRequestReviewRequest[] = nodes ? [...nodes] : [];
     const remainingReviewRequests = await this.getPullRequestReviewRequests(
       org,
       repo,
       pr.number,
-      endCursor
+      pageInfo?.endCursor
     );
     return reviewRequests.concat(remainingReviewRequests);
   }
