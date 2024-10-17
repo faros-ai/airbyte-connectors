@@ -1716,11 +1716,10 @@ export class GitHubApp extends GitHub {
   }
 
   octokit(org: string): ExtendedOctokit {
-    const orgLogin = toLower(org);
-    if (!this.octokitByInstallationOrg.has(orgLogin)) {
-      throw new VError(`No active app installation found for org ${orgLogin}`);
+    if (!this.octokitByInstallationOrg.has(org)) {
+      throw new VError(`No active app installation found for org ${org}`);
     }
-    return this.octokitByInstallationOrg.get(orgLogin);
+    return this.octokitByInstallationOrg.get(org);
   }
 
   async checkConnection(): Promise<void> {
