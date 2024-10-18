@@ -1046,24 +1046,24 @@ const getSecretScanningAlertsMockedImplementation = (res: any) => ({
 
 const getWorkflowsMockedImplementation = (res: any) => ({
   actions: {
-    listRepoWorkflows: jest.fn().mockReturnValue(res),
+    listRepoWorkflows: jest.fn().mockReturnValue(res.workflows),
   },
 });
 
 const getWorkflowRunsMockedImplementation = (res: any) => ({
   actions: {
-    listWorkflowRunsForRepo: jest.fn().mockReturnValue(res),
+    listWorkflowRunsForRepo: jest.fn().mockReturnValue(res.workflow_runs),
   },
 });
 
 const getWorkflowJobsMockedImplementation = (res: any) => ({
   actions: {
-    listJobsForWorkflowRun: jest.fn().mockReturnValue(res),
+    listJobsForWorkflowRun: jest.fn().mockReturnValue(res.jobs),
   },
 });
 
 const getArtifactsMockedImplementation = (res: any) => ({
   actions: {
-    listWorkflowRunArtifacts: jest.fn().mockReturnValue(res),
+    listWorkflowRunArtifacts: jest.fn().mockReturnValue(res.artifacts),
   },
 });
