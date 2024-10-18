@@ -1,8 +1,11 @@
 import {createAppAuth} from '@octokit/auth-app';
+import {Octokit as OctokitCore} from '@octokit/core';
 import {paginateGraphql} from '@octokit/plugin-paginate-graphql';
 import {retry} from '@octokit/plugin-retry';
 import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
-import {Octokit} from '@octokit/rest';
+import {RequestError} from '@octokit/request-error';
+import {Octokit as OctokitRest} from '@octokit/rest';
+import {EndpointDefaults, OctokitResponse} from '@octokit/types';
 import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getOperationAST, parse} from 'graphql';
@@ -20,12 +23,13 @@ import {
 } from './github';
 import {GitHubConfig} from './types';
 
-export type ExtendedOctokit = Octokit &
+export type ExtendedOctokit = OctokitRest &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
   };
-const ExtendedOctokitConstructor = Octokit.plugin(
+const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
+  timeout,
   retry,
   throttling
 );
@@ -47,7 +51,6 @@ export function makeOctokitClient(
           cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
       }),
     }),
-    timeout: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
   };
 
   const auth = getOctokitAuth(cfg, installationId);
@@ -58,7 +61,15 @@ export function makeOctokitClient(
     baseUrl,
     request,
     throttle,
-    log: logger,
+    timeout: {
+      ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
+    },
+    log: {
+      info: logger.info.bind(logger),
+      warn: logger.warn.bind(logger),
+      error: logger.error.bind(logger),
+      debug: logger.debug.bind(logger),
+    },
   });
 
   kit.hook.before('request', (request) => {
@@ -133,7 +144,10 @@ function rateLimitHandler(
   logger: AirbyteLogger,
   maxRetries: number
 ) {
-  return (after: number, opts: any): boolean | undefined => {
+  return (
+    after: number,
+    opts: Required<EndpointDefaults>
+  ): boolean | undefined => {
     logger.warn(
       `${event} detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
     );
@@ -144,7 +158,10 @@ function rateLimitHandler(
   };
 }
 
-function beforeRequestHook(request: any, logger: AirbyteLogger): void {
+function beforeRequestHook(
+  request: Required<EndpointDefaults>,
+  logger: AirbyteLogger
+): void {
   if (logger.level === AirbyteLogLevel.DEBUG) {
     let url = request.url;
     if (url.includes('{')) {
@@ -166,4 +183,41 @@ function beforeRequestHook(request: any, logger: AirbyteLogger): void {
 
     logger.debug(`Request : ${request.method} ${url} ${query}`);
   }
+}
+
+function timeout(octokit: OctokitCore, octokitOptions: any) {
+  const timeoutMs = octokitOptions.timeout?.ms;
+  if (timeoutMs > 0) {
+    octokit.hook.wrap('request', async (request, options) => {
+      const controller = new AbortController();
+      options.request.signal = controller.signal;
+      let timeoutId: NodeJS.Timeout;
+      const timeout = new Promise(() => {
+        timeoutId = setTimeout(() => {
+          controller.abort(); // aborts request after timeout
+        }, timeoutMs);
+      });
+      try {
+        return (await Promise.race([
+          request(options),
+          timeout,
+        ])) as OctokitResponse<any, number>;
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          // simulate 500 so that retry plugin retries the request
+          throw new RequestError(
+            `GitHub request timed-out after ${timeoutMs} ms`,
+            500,
+            {
+              request: options,
+            }
+          );
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    });
+  }
+  return {};
 }

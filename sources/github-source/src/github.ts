@@ -116,7 +116,6 @@ export abstract class GitHub {
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
   protected readonly pullRequestsPageSize: number;
-  protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
 
   constructor(
@@ -133,7 +132,6 @@ export abstract class GitHub {
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
-    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
   }
 
@@ -259,10 +257,7 @@ export abstract class GitHub {
         currentCursor,
       });
       try {
-        for await (const res of this.wrapIterable(
-          iter,
-          this.timeout.bind(this)
-        )) {
+        for await (const res of iter) {
           querySuccess = true;
           for (const pr of res.repository.pullRequests.nodes) {
             if (
@@ -334,7 +329,7 @@ export abstract class GitHub {
         page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const pr of res.repository.pullRequests.nodes) {
         if (Utils.toDate(pr.updatedAt) < endDate) {
           return res.repository.pullRequests.pageInfo.startCursor;
@@ -411,7 +406,7 @@ export abstract class GitHub {
       }
     );
     const labels: PullRequestLabel[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const label of res.data) {
         labels.push(pick(label, ['name']));
       }
@@ -456,7 +451,7 @@ export abstract class GitHub {
       }
     );
     const files: PullRequestFile[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const file of res.data) {
         files.push({
           additions: file.additions,
@@ -509,7 +504,7 @@ export abstract class GitHub {
       }
     );
     const reviews: PullRequestReview[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const review of res.repository.pullRequest.reviews.nodes) {
         reviews.push(review);
       }
@@ -536,7 +531,7 @@ export abstract class GitHub {
         per_page: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const comment of res.data) {
         if (
           this.backfill &&
@@ -575,7 +570,7 @@ export abstract class GitHub {
         page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const label of res.repository.labels.nodes) {
         yield {
           org,
@@ -627,7 +622,7 @@ export abstract class GitHub {
       }
     );
     const reviewRequests: PullRequestReviewRequest[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const review of res.repository.pullRequest.reviewRequests.nodes) {
         reviewRequests.push(review);
       }
@@ -740,18 +735,16 @@ export abstract class GitHub {
   // memoize since one call is enough to check if the field is available
   @Memoize(() => null)
   private async getCommitsQuery(queryParameters: any): Promise<string> {
+    // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
+    // See: https://docs.github.com/en/graphql/reference/objects#commit
+    const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
+      .replace(/additions\s+/, '')
+      .replace(/deletions\s+/, '');
     try {
-      // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
-      // See: https://docs.github.com/en/graphql/reference/objects#commit
-      const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
-        .replace(/additions\s+/, '')
-        .replace(/deletions\s+/, '');
-      await this.timeout<Commit>(
-        this.octokit(queryParameters.owner).graphql(query, {
-          ...queryParameters,
-          page_size: 1,
-        })
-      );
+      await this.octokit(queryParameters.owner).graphql(query, {
+        ...queryParameters,
+        page_size: 1,
+      });
     } catch (err: any) {
       const errorCode = err?.errors?.[0]?.extensions?.code;
       // Check if the error was caused by querying undefined changedFilesIfAvailable field
@@ -776,7 +769,6 @@ export abstract class GitHub {
     );
     for await (const res of this.wrapIterable(
       iter,
-      this.timeout.bind(this),
       this.acceptPartialResponseWrapper(`org users for ${org}`)
     )) {
       for (const member of res.organization.membersWithRole.nodes) {
@@ -1637,22 +1629,6 @@ export abstract class GitHub {
   ): (promise: Promise<T>) => Promise<T> {
     return (promise: Promise<T>) =>
       this.acceptPartialResponse(dataType, promise);
-  }
-
-  private async timeout<T>(promise: Promise<T>): Promise<T> {
-    let timeoutId: NodeJS.Timeout;
-    const timeout: Promise<T> = new Promise((_, reject) => {
-      timeoutId = setTimeout(
-        () => reject(new Error(`Promise timed out after ${this.timeoutMs} ms`)),
-        this.timeoutMs
-      );
-    });
-
-    try {
-      return await Promise.race([promise, timeout]);
-    } finally {
-      clearTimeout(timeoutId);
-    }
   }
 
   private wrapIterable<T>(
