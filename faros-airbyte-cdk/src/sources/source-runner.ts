@@ -120,7 +120,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               maybeCompressState(config, clonedState);
             const iter = this.source.read(
               res.config,
-              redactedConfig,
+              redactConfig(res.config, spec),
               res.catalog,
               clonedState
             );

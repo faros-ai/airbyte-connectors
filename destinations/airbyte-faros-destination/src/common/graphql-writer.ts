@@ -14,7 +14,7 @@ export interface RecordProcessorHandler {
 }
 
 export interface OriginProvider {
-  getOrigin: (record: Dictionary<any>) => string;
+  getOrigin: (record?: Dictionary<any>) => string;
 }
 
 export class GraphQLWriter {

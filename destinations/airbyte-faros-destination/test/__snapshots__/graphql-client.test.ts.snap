@@ -97,7 +97,7 @@ exports[`graphql-client write batch upsert record with timestamptz primary key f
 exports[`graphql-client write batch upsert resetData 1`] = `
 "query paginatedQuery($id: String, $limit: Int) {
   vcs_Organization(
-    where: {_and: [{_and: {origin: {_eq: \\"foo\\"}, refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}}}, {id: {_gt: $id}}]}
+    where: {_and: [{_and: {refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}, origin: {_eq: \\"foo\\"}}}, {id: {_gt: $id}}]}
     order_by: {id: asc}
     limit: $limit
   ) {
@@ -130,7 +130,7 @@ exports[`graphql-client write batch upsert resetData 4`] = `undefined`;
 exports[`graphql-client write batch upsert resetData 5`] = `
 "query paginatedQuery($id: String, $limit: Int) {
   vcs_Organization(
-    where: {_and: [{_and: {origin: {_eq: \\"foo\\"}, refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}}}, {id: {_gt: $id}}]}
+    where: {_and: [{_and: {refreshedAt: {_lt: \\"2200-01-01T00:00:00.000Z\\"}, origin: {_eq: \\"foo\\"}}}, {id: {_gt: $id}}]}
     order_by: {id: asc}
     limit: $limit
   ) {
