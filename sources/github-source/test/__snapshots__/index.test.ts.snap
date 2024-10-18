@@ -68,6 +68,121 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index commits queries - additions field unavailable 1`] = `
+[
+  "fragment commitFields on Commit {
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
+    }
+  }
+  committer {
+    date
+  }
+  changedFilesIfAvailable
+  }
+",
+  "fragment commitFields on Commit {
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
+    }
+  }
+  committer {
+    date
+  }
+  changedFilesIfAvailable
+  additions
+  deletions
+}
+",
+  "fragment commitFields on Commit {
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
+    }
+  }
+  committer {
+    date
+  }
+  changedFilesIfAvailable
+  deletions
+}
+",
+]
+`;
+
+exports[`index commits queries - all fields available 1`] = `
+[
+  "fragment commitFields on Commit {
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
+    }
+  }
+  committer {
+    date
+  }
+  changedFilesIfAvailable
+  }
+",
+  "fragment commitFields on Commit {
+  oid
+  message
+  url
+  authoredDate
+  author {
+    name
+    email
+    user {
+      type: __typename
+      login
+      url
+    }
+  }
+  committer {
+    date
+  }
+  changedFilesIfAvailable
+  additions
+  deletions
+}
+",
+]
+`;
+
 exports[`index round robin bucket execution 1`] = `
 {
   "__bucket_execution_state": {

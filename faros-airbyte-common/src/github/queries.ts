@@ -50,15 +50,6 @@ export const LIST_SAML_SSO_USERS_QUERY = loadQuery(
 export const COMMITS_QUERY =
   COMMIT_FIELDS_FRAGMENT + loadQuery('commits-query.gql');
 
-// GraphQL query used to get commits from repository with changedFilesIfAvailable
-export const COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY =
-  COMMIT_FIELDS_FRAGMENT +
-  loadQuery('commits-changed-files-if-available-query.gql');
-
-// GraphQL query used to get commits from repository with changedFiles
-export const COMMITS_CHANGED_FILES_QUERY =
-  COMMIT_FIELDS_FRAGMENT + loadQuery('commits-changed-files-query.gql');
-
 // Graphql query used to get tags by repository
 export const REPOSITORY_TAGS_QUERY = loadQuery('repository-tags-query.gql');
 

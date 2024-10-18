@@ -2,6 +2,7 @@
   "repository": {
     "ref": {
       "target": {
+        "type": "Commit",
         "history": {
           "pageInfo": {
             "endCursor": "0ac47c4d800fc4581b632157a02a9c9b1a94b462",
