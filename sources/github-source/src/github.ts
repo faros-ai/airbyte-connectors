@@ -683,11 +683,11 @@ export abstract class GitHub {
           err
         );
       }
-      if (res.repository?.ref?.target?.type !== 'Commit') {
+      if (res?.repository?.ref?.target?.type !== 'Commit') {
         // check to make ts happy
         return;
       }
-      const history = res.repository?.ref?.target?.history;
+      const history = res.repository.ref.target.history;
       if (!history) {
         this.logger.warn(`No commit history found for ${org}/${repo}`);
         return;
@@ -714,30 +714,27 @@ export abstract class GitHub {
     queryParameters: any,
     cursor: string | null,
     err: any
-  ) {
+  ): Promise<CommitsQuery | null> {
     const errorMessages = err?.errors?.map((e: any) => e.message);
     if (!errorMessages || errorMessages.length != 1) {
       throw err;
     }
-    let errorField: string;
-    const possibleErrorFields = ['changedFiles', 'additions', 'deletions'];
-    for (const field of possibleErrorFields) {
-      if (new RegExp(field).test(errorMessages[0])) {
-        errorField = field;
-        break;
-      }
+    if (/changedFiles/.test(errorMessages[0])) {
+      const newQuery = query.replace(/changedFiles\s+/, '');
+      this.logger.warn(
+        `Failed to fetch commits with changedFiles for repo ${org}/${repo} (cursor: ${cursor}). Retrying without changedFiles.`
+      );
+      return this.octokit(org).graphql<CommitsQuery>(newQuery, {
+        ...queryParameters,
+        cursor,
+      });
+    } else if (/additions|deletions/.test(errorMessages[0])) {
+      this.logger.warn(
+        `Failed to fetch commits with additions/deletions for repo ${org}/${repo} (cursor: ${cursor}). Skipping.`
+      );
+      return null;
     }
-    if (!errorField) {
-      throw err;
-    }
-    const newQuery = query.replace(new RegExp(`${errorField}\\s+`), '');
-    this.logger.warn(
-      `Failed to fetch commits with ${errorField}. Retrying fetching commits for repo ${org}/${repo} (cursor: ${cursor}) without ${errorField}.`
-    );
-    return this.octokit(org).graphql<CommitsQuery>(newQuery, {
-      ...queryParameters,
-      cursor,
-    });
+    throw err;
   }
 
   // memoize since one call is enough to check if the field is available
