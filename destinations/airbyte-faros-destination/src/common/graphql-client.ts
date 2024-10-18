@@ -375,13 +375,13 @@ export class GraphQLClient {
       ? ` with session id ${deleteSessionId}`
       : '';
     const origin = originProvider.getOrigin();
-
+    const bucketedOriginPattern = `${origin}${StreamNameSeparator}bucket${StreamNameSeparator}`;
     this.logger.info(
       `Resetting data before ${minRefreshedAt} for origin ${origin}${sessionInfo}`
     );
     if (isResetSync) {
       this.logger.info(
-        `Also resetting data for bucketed origins (matching ${origin}${StreamNameSeparator}bucket${StreamNameSeparator}<number>)`
+        `Also resetting data for bucketed origins (matching ${bucketedOriginPattern}<number>)`
       );
     }
 
@@ -391,7 +391,7 @@ export class GraphQLClient {
             {origin: {_eq: origin}},
             {
               origin: {
-                _like: `${origin}${StreamNameSeparator}bucket${StreamNameSeparator}%`,
+                _like: `${bucketedOriginPattern}%`,
               },
             },
           ],
