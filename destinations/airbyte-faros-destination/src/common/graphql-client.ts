@@ -29,6 +29,7 @@ import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {StreamNameSeparator} from '../converters/converter';
 import {OriginProvider} from './graphql-writer';
 import {
   DeletionRecord,
@@ -380,7 +381,7 @@ export class GraphQLClient {
     );
     if (isResetSync) {
       this.logger.info(
-        `Also resetting data for bucketed origins (matching ${origin}__bucket__<number>)`
+        `Also resetting data for bucketed origins (matching ${origin}${StreamNameSeparator}bucket${StreamNameSeparator}<number>)`
       );
     }
 
@@ -388,7 +389,11 @@ export class GraphQLClient {
       ? {
           _or: [
             {origin: {_eq: origin}},
-            {origin: {_like: `${origin}__bucket__%`}},
+            {
+              origin: {
+                _like: `${origin}${StreamNameSeparator}bucket${StreamNameSeparator}%`,
+              },
+            },
           ],
         }
       : {origin: {_eq: origin}};
