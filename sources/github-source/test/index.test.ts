@@ -492,6 +492,10 @@ describe('index', () => {
   });
 
   test('streams - commits', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest.fn().mockResolvedValue(commits),
+    };
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
@@ -502,9 +506,7 @@ describe('index', () => {
             getRepositoriesMockedImplementation(
               readTestResourceAsJSON('repositories/repositories.json')
             ),
-            getCommitsMockedImplementation(
-              readTestResourceAsJSON('commits/commits.json')
-            )
+            commitsMock
           ),
           logger
         );
@@ -513,6 +515,97 @@ describe('index', () => {
         expect(records).toMatchSnapshot();
       },
     });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
+    const commitFields: string = commitsMock.graphql.mock.calls
+      .at(-1)[0]
+      .replace(/query commits.*/s, '');
+    expect(commitFields).toMatchSnapshot();
+  });
+
+  test('streams - commits - changedFiles unavailable', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest
+        .fn()
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              extensions: {
+                code: 'undefinedField',
+              },
+            },
+          ],
+        })
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              message: 'The changedFiles count for this commit is unavailable',
+            },
+          ],
+        })
+        .mockResolvedValueOnce(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.length).toBeGreaterThan(0);
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(3);
+    const commitFields: string = commitsMock.graphql.mock.calls
+      .at(-1)[0]
+      .replace(/query commits.*/s, '');
+    expect(commitFields).toMatchSnapshot();
+  });
+
+  test('streams - commits - additions unavailable', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest
+        .fn()
+        .mockResolvedValueOnce(commits)
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              message: 'The additions count for this commit is unavailable',
+            },
+          ],
+        })
+        .mockResolvedValueOnce(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.length).toBe(0);
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
   });
 
   test('streams - tags', async () => {
