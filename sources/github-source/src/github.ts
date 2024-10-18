@@ -1455,7 +1455,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const workflow of res.data.workflows) {
+      for (const workflow of res.data) {
         yield {
           org,
           repo,
@@ -1487,7 +1487,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const workflowRun of res.data.workflow_runs) {
+      for (const workflowRun of res.data) {
         // skip runs that were updated before the start date / updated_at cutoff
         if (Utils.toDate(workflowRun.updated_at) < startDate) {
           continue;
@@ -1535,7 +1535,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const job of res.data.jobs) {
+      for (const job of res.data) {
         yield {
           org,
           repo,
@@ -1577,7 +1577,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const artifact of res.data.artifacts) {
+      for (const artifact of res.data) {
         yield {
           org,
           repo,
