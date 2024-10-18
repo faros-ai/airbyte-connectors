@@ -746,7 +746,7 @@ export abstract class GitHub {
     try {
       // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
       // See: https://docs.github.com/en/graphql/reference/objects#commit
-      const query = COMMITS_QUERY.replace(/changedFiles\s+/, '')
+      const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
         .replace(/additions\s+/, '')
         .replace(/deletions\s+/, '');
       await this.timeout<Commit>(
@@ -764,6 +764,7 @@ export abstract class GitHub {
         );
         return COMMITS_QUERY.replace(/changedFilesIfAvailable\s+/, '');
       }
+      throw err;
     }
     return COMMITS_QUERY.replace(/changedFiles\s+/, '');
   }

@@ -831,6 +831,72 @@ describe('index', () => {
     expect(newConfig.bucket_id).toBe(2);
     expect(newState).toMatchSnapshot();
   });
+
+  test('commits queries - all fields available', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest.fn().mockResolvedValue(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
+    const queries: string[] = commitsMock.graphql.mock.calls.map((c) =>
+      c[0].replace(/query commits.*/s, '')
+    );
+    expect(queries).toMatchSnapshot();
+  });
+
+  test('commits queries - additions field unavailable', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest
+        .fn()
+        .mockResolvedValueOnce(commits)
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              message: 'The additions count for this commit is unavailable',
+            },
+          ],
+        })
+        .mockResolvedValueOnce(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(3);
+    const queries: string[] = commitsMock.graphql.mock.calls.map((c) =>
+      c[0].replace(/query commits.*/s, '')
+    );
+    expect(queries).toMatchSnapshot();
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
