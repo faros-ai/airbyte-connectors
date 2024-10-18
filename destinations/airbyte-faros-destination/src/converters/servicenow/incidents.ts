@@ -174,7 +174,11 @@ export class Incidents extends ServiceNowConverter {
       return [];
     }
 
-    return this.cloudV2DeletionRecords(ctx.farosClient, ctx.graph, ctx.origin);
+    return this.cloudV2DeletionRecords(
+      ctx.farosClient,
+      ctx.graph,
+      ctx.getOrigin()
+    );
   }
 
   private async cloudV2DeletionRecords(

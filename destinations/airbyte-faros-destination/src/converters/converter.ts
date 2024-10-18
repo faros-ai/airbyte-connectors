@@ -1,4 +1,5 @@
 import {
+  AirbyteConfig,
   AirbyteLogger,
   AirbyteRecord,
   DestinationSyncMode,
@@ -9,6 +10,7 @@ import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {OriginProvider} from '../common/graphql-writer';
 import {DestinationConfig} from '../common/types';
 
 /** Airbyte -> Faros record converter */
@@ -75,7 +77,7 @@ export function parseObjectConfig<T>(obj: any, name: string): T | undefined {
 }
 
 /** Stream context to store records by stream and other helpers */
-export class StreamContext {
+export class StreamContext implements OriginProvider {
   // Track models to reset by stream. Only models for successful streams should
   // be reset.
   private readonly resetModelsByStream: Dictionary<Set<string>> = {};
@@ -86,15 +88,37 @@ export class StreamContext {
 
   private readonly resetModels: Set<string> = new Set();
   private readonly skipResetModels: Set<string> = new Set();
+  private sourceConfig: AirbyteConfig = {};
+  private originWithBucketSuffix?: string;
 
   constructor(
     readonly logger: AirbyteLogger,
     readonly config: DestinationConfig,
     readonly streamsSyncMode: Dictionary<DestinationSyncMode>,
     readonly graph?: string,
-    readonly origin?: string,
+    private readonly _origin?: string,
     readonly farosClient?: FarosClient
   ) {}
+
+  getOrigin(): string {
+    if (this.originWithBucketSuffix) return this.originWithBucketSuffix;
+    if (
+      this.sourceConfig?.round_robin_bucket_execution &&
+      this.sourceConfig?.bucket_id
+    ) {
+      this.originWithBucketSuffix = [
+        this._origin,
+        'bucket',
+        this.sourceConfig.bucket_id,
+      ].join(StreamNameSeparator);
+      return this.originWithBucketSuffix;
+    }
+    return this._origin;
+  }
+
+  setSourceConfig(redactedConfig: AirbyteConfig) {
+    this.sourceConfig = redactedConfig;
+  }
 
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     Object.create(null);

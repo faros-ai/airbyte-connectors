@@ -571,7 +571,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             ? {
                 getOrigin: (record: Dictionary<any>): string => {
                   if (!record.origin) {
-                    return origin;
+                    return streamContext.getOrigin();
                   }
                   if (!originRemapper) {
                     return record.origin;
@@ -579,7 +579,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   return originRemapper(record.origin);
                 },
               }
-            : {getOrigin: () => origin},
+            : streamContext,
           stats,
           this
         );
@@ -595,10 +595,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             syncErrors,
             writer,
             logFiles,
-            async () =>
+            async (isResetSync: boolean) =>
               await graphQLClient.resetData(
-                origin,
+                streamContext,
                 Array.from(streamContext.getModelsForReset()),
+                isResetSync,
                 this.edition === Edition.COMMUNITY
               ),
             async (msg: AirbyteSourceConfigMessage) => {
@@ -709,7 +710,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
-    resetData?: () => Promise<void>,
+    resetData?: (isResetSync: boolean) => Promise<void>,
     updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>,
     sourceVersion?: SourceVersion
   ): AsyncGenerator<AirbyteStateMessage | undefined> {
@@ -782,6 +783,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
               sourceVersion.version = msg.sourceVersion;
+              ctx.setSourceConfig(msg.redactedConfig);
               if (Array.isArray(msg.redactedConfig?.skip_reset_models)) {
                 msg.redactedConfig.skip_reset_models.forEach((model) => {
                   this.logger.info(`Disabling model reset for ${model}`);
@@ -936,7 +938,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         if (!streamStatusReceived) {
           ctx.markAllStreamsForReset();
         }
-        await resetData?.();
+        await resetData?.(isResetSync);
       }
 
       if (isResetSync) {

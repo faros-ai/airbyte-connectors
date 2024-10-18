@@ -29,6 +29,7 @@ import traverse from 'traverse';
 import {assert, Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+import {OriginProvider} from './graphql-writer';
 import {
   DeletionRecord,
   Operation,
@@ -357,8 +358,9 @@ export class GraphQLClient {
   }
 
   async resetData(
-    origin: string,
+    originProvider: OriginProvider,
     models: ReadonlyArray<string>,
+    isResetSync: boolean,
     keepReferencedRecords: boolean
   ): Promise<void> {
     this.checkSchema();
@@ -371,18 +373,34 @@ export class GraphQLClient {
     const sessionInfo = this.supportsSetCtx
       ? ` with session id ${deleteSessionId}`
       : '';
+    const origin = originProvider.getOrigin();
+
     this.logger.info(
       `Resetting data before ${minRefreshedAt} for origin ${origin}${sessionInfo}`
     );
+    if (isResetSync) {
+      this.logger.info(
+        `Also resetting data for bucketed origins (matching ${origin}__bucket__<number>)`
+      );
+    }
+
+    const originFilter = isResetSync
+      ? {
+          _or: [
+            {origin: {_eq: origin}},
+            {origin: {_like: `${origin}__bucket__%`}},
+          ],
+        }
+      : {origin: {_eq: origin}};
 
     for (const model of intersection(
       this.schema.sortedModelDependencies,
       models
     )) {
-      this.logger.info(`Resetting ${model} data for origin ${origin}`);
+      this.logger.info(`Resetting ${model} data`);
       const deleteConditions = {
-        origin: {_eq: origin},
         refreshedAt: {_lt: minRefreshedAt},
+        ...originFilter,
       };
       if (keepReferencedRecords) {
         deleteConditions['_not'] = {
