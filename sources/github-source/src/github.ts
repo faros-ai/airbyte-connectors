@@ -705,8 +705,8 @@ export abstract class GitHub {
     } while (hasNextPage && cursor);
   }
 
-  // checks if the error is caused by querying an
-  // unavailable field and retry the query removing it
+  // checks if the error is caused by querying an unavailable
+  // field and retry the query removing it / skip without failing
   private async handleCommitsQueryError(
     org: string,
     repo: string,

@@ -236,7 +236,6 @@ exports[`index streams - commits - changedFiles unavailable 1`] = `
   committer {
     date
   }
-  changedFilesIfAvailable
   additions
   deletions
 }

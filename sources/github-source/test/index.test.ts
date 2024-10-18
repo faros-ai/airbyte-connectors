@@ -527,7 +527,15 @@ describe('index', () => {
     const commitsMock = {
       graphql: jest
         .fn()
-        .mockResolvedValueOnce(commits)
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              extensions: {
+                code: 'undefinedField',
+              },
+            },
+          ],
+        })
         .mockRejectedValueOnce({
           errors: [
             {
