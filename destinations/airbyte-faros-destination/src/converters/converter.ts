@@ -96,7 +96,7 @@ export class StreamContext implements OriginProvider {
     readonly config: DestinationConfig,
     readonly streamsSyncMode: Dictionary<DestinationSyncMode>,
     readonly graph?: string,
-    private readonly _origin?: string,
+    private readonly origin?: string,
     readonly farosClient?: FarosClient
   ) {}
 
@@ -107,13 +107,13 @@ export class StreamContext implements OriginProvider {
       this.sourceConfig?.bucket_id
     ) {
       this.originWithBucketSuffix = [
-        this._origin,
+        this.origin,
         'bucket',
         this.sourceConfig.bucket_id,
       ].join(StreamNameSeparator);
       return this.originWithBucketSuffix;
     }
-    return this._origin;
+    return this.origin;
   }
 
   setSourceConfig(redactedConfig: AirbyteConfig) {
