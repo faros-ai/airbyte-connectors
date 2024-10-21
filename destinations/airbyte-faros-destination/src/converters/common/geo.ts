@@ -34,9 +34,8 @@ export class LocationCollector {
 
     const data = await this.farosClient.geocode(location);
     const resolvedLocation = data[0]; // Resolving one location at a time
-    const uid = resolvedLocation.uid;
     this.locationsCache.set(location, resolvedLocation);
-    return {uid};
+    return {uid: resolvedLocation.uid};
   }
 
   convertLocations(): DestinationRecord[] {
