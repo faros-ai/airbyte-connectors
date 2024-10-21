@@ -96,7 +96,7 @@
       "custom_streams": {
         "order": 11,
         "title": "Custom Streams",
-        "description": "List of streams to run when selected Run Mode is Custom",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
         "type": "array",
         "items": {
           "type": "string"
