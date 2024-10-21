@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
+import {LocationCollector} from '../common/geo';
 import {
   Converter,
   DestinationModel,
@@ -16,6 +17,8 @@ import {
 } from './models';
 
 export class Customreports extends Converter {
+  private locationCollector: LocationCollector = undefined;
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'org_Team',
     'org_Employee',
@@ -38,7 +41,6 @@ export class Customreports extends Converter {
   };
   cycleChains: ReadonlyArray<string>[] = [];
   replacedParentTeams: string[] = [];
-  seenLocations: Set<string> = new Set<string>();
   generalLogCollection: string[] = [];
   terminatedEmployees: EmployeeRecord[] = [];
   currentDate: Date = new Date();
@@ -528,10 +530,10 @@ export class Customreports extends Converter {
     return {category, detail: employeeType};
   }
 
-  private createEmployeeRecordList(
+  private async createEmployeeRecordList(
     employee_record: EmployeeRecord,
     isTerminated: boolean = false
-  ): DestinationRecord[] {
+  ): Promise<DestinationRecord[]> {
     // org_Employee, identity_Identity, geo_Location, org_TeamMembership
     const records = [];
     let inactive = false;
@@ -554,9 +556,9 @@ export class Customreports extends Converter {
           inactive,
           manager: managerKey,
           identity: {uid: employee_record.Employee_ID},
-          location: employee_record.Location
-            ? {uid: employee_record.Location}
-            : null,
+          location: await this.locationCollector.collect(
+            employee_record.Location
+          ),
           title: employee_record.Job_Title,
           employmentType: this.getEmploymentType(employee_record.Employee_Type),
         },
@@ -578,18 +580,6 @@ export class Customreports extends Converter {
         },
       }
     );
-    if (
-      employee_record.Location &&
-      !this.seenLocations.has(employee_record.Location)
-    ) {
-      records.push({
-        model: 'geo_Location',
-        record: {
-          uid: employee_record.Location,
-        },
-      });
-      this.seenLocations.add(employee_record.Location);
-    }
 
     return records;
   }
@@ -646,15 +636,20 @@ export class Customreports extends Converter {
     this[fieldName] = value;
   }
 
-  generateFinalRecords(
+  async generateFinalRecords(
     ctx: StreamContext
-  ): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
+  ): Promise<[ReadonlyArray<DestinationRecord>, Record<string, string>]> {
     // Class fields required to be filled (reference for testing):
     // recordCount, teamIDToManagerIDs, employeeIDToRecords
     // FAROS_TEAM_ROOT, cycleChains, generalLogCollection
     const res: DestinationRecord[] = [];
     const teamIDToParentID: Record<string, string> =
       this.computeTeamToParentTeamMapping(ctx);
+
+    this.locationCollector = new LocationCollector(
+      ctx?.config?.source_specific_configs?.workday?.resolve_locations,
+      ctx?.farosClient
+    );
 
     // Here we get a set of teams to keep
     // This is the entry point to the densest logical aspect of the connector
@@ -682,12 +677,14 @@ export class Customreports extends Converter {
         this.employeeIDToRecords[employeeID];
       for (const employeeRecord of employeeRecords) {
         if (acceptable_teams.has(employeeRecord.Team_ID)) {
-          res.push(...this.createEmployeeRecordList(employeeRecord));
+          res.push(...(await this.createEmployeeRecordList(employeeRecord)));
         }
       }
     }
     for (const terminatedEmployee of this.terminatedEmployees) {
-      res.push(...this.createEmployeeRecordList(terminatedEmployee, true));
+      res.push(
+        ...(await this.createEmployeeRecordList(terminatedEmployee, true))
+      );
     }
     this.printReport(ctx, acceptable_teams);
     return [res, newTeamToParent];
@@ -702,10 +699,10 @@ export class Customreports extends Converter {
     );
     // Checking orgs to keep / ignore
     this.setOrgsToKeepAndIgnore(ctx);
-    const [res, finalTeamToParent] = this.generateFinalRecords(ctx);
+    const [res, finalTeamToParent] = await this.generateFinalRecords(ctx);
     ctx.logger.debug(
       `final team to parent mapping: ${JSON.stringify(finalTeamToParent)}`
     );
-    return res;
+    return [...res, ...this.locationCollector.convertLocations()];
   }
 }
