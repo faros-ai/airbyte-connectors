@@ -34,6 +34,7 @@ Array [
   },
   Object {
     "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-06-20T09:54:42.836Z",
       "source": "GitHub",
       "usedAt": "2021-10-14T06:53:32.000Z",
       "userTool": Object {
@@ -71,6 +72,7 @@ Array [
   },
   Object {
     "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-06-20T09:54:42.837Z",
       "source": "GitHub",
       "usedAt": "2021-10-13T06:53:32.000Z",
       "userTool": Object {

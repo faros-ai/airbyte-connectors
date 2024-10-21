@@ -80,6 +80,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         record: {
           userTool,
           usedAt: Utils.toDate(activeSeat.last_activity_at),
+          recordedAt: Utils.toDate(record.record.emitted_at),
         },
       });
     }
