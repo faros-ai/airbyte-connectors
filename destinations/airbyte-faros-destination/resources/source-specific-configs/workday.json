@@ -46,6 +46,12 @@
           "title": "Keep Terminated Employees",
           "description": "If true, terminated employees will be kept in the org chart under unassigned team.",
           "default": false
+        },
+        "resolve_locations": {
+          "type": "boolean",
+          "title": "Resolve Locations",
+          "description": "If true, will resolve location information with Faros Geocoding API.",
+          "default": false
         }
       }
     }

@@ -1,0 +1,46 @@
+[
+  {
+    "uid": "Connecticut",
+    "raw": "Connecticut",
+    "address": {
+      "uid": "ChIJpVER8hFT5okR5XBhBVttmq4",
+      "fullAddress": "Connecticut, USA",
+      "street": null,
+      "houseNumber": null,
+      "unit": null,
+      "postalCode": null,
+      "city": null,
+      "state": "Connecticut",
+      "stateCode": "CT",
+      "country": "United States",
+      "countryCode": "US"
+    },
+    "coordinates": {
+      "lat": 41.6032207,
+      "lon": -73.087749
+    },
+    "room": null
+  },
+  {
+    "uid": "Alabama",
+    "raw": "Alabama",
+    "address": {
+      "uid": "ChIJdf5LHzR_hogR6czIUzU0VV4",
+      "fullAddress": "Alabama, USA",
+      "street": null,
+      "houseNumber": null,
+      "unit": null,
+      "postalCode": null,
+      "city": null,
+      "state": "Alabama",
+      "stateCode": "AL",
+      "country": "United States",
+      "countryCode": "US"
+    },
+    "coordinates": {
+      "lat": 32.3182314,
+      "lon": -86.902298
+    },
+    "room": null
+  }
+]
