@@ -93,47 +93,60 @@
           "Custom"
         ]
       },
-      "page_size": {
+      "custom_streams": {
         "order": 11,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "workspaces",
+          "repositories"
+        ]
+      },
+      "page_size": {
+        "order": 12,
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when requesting records from Bitbucket API",
         "default": 100
       },
       "backfill": {
-        "order": 12,
+        "order": 13,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date."
       },
       "start_date": {
-        "order": 13,
+        "order": 14,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 14,
+        "order": 15,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
       },
       "bucket_id": {
-        "order": 15,
+        "order": 16,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of workspaces and repositories to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 16,
+        "order": 17,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute workspaces and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "concurrency_limit": {
-        "order": 17,
+        "order": 18,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",

@@ -2,6 +2,7 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
@@ -13,6 +14,7 @@ import {merge} from 'lodash';
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
 import {OrgRepoFilter} from '../src/org-repo-filter';
+import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {
   ErrorWithStatus,
   graphqlMockedImplementation,
@@ -911,6 +913,23 @@ describe('index', () => {
         expect(records.slice(1)).toMatchSnapshot();
       },
     });
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames
+    );
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
+    );
   });
 
   test('round robin bucket execution', async () => {

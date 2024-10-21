@@ -63,6 +63,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
   readonly api_url?: string;

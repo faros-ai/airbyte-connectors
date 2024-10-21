@@ -2,6 +2,7 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceReadTest,
   sourceSchemaTest,
@@ -11,6 +12,7 @@ import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
+import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
@@ -314,6 +316,23 @@ describe('index', () => {
         },
       });
     }
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames
+    );
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
+    );
   });
 
   test('pr merge commit sha resolution', async () => {

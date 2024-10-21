@@ -77,7 +77,12 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
   }> {
     const streamNames = [
       ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
-    ];
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)
     );

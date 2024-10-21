@@ -123,7 +123,14 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    const streamNames = [...RunModeStreams[config.run_mode ?? RunMode.Full]];
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? RunMode.Full],
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
     }

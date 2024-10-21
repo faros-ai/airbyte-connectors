@@ -19,7 +19,7 @@ import {
   DEFAULT_RUN_MODE,
   GitHub,
 } from './github';
-import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
 import {FarosCommits} from './streams/faros_commits';
@@ -124,7 +124,12 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   }> {
     const streamNames = [
       ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
-    ];
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     if (config.fetch_teams ?? DEFAULT_FETCH_TEAMS) {
       streamNames.push(...TeamStreamNames);
     }
