@@ -14,7 +14,7 @@ import {merge} from 'lodash';
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
 import {OrgRepoFilter} from '../src/org-repo-filter';
-import {CustomStreamNames, RunMode} from '../src/streams/common';
+import {CustomStreamNames} from '../src/streams/common';
 import {
   ErrorWithStatus,
   graphqlMockedImplementation,

@@ -12,7 +12,7 @@ import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
-import {CustomStreamNames, RunMode} from '../src/streams/common';
+import {CustomStreamNames} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
