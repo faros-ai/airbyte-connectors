@@ -124,3 +124,19 @@ function resolveInput<T>(inputOrPath: string | T): T {
     ? readTestResourceAsJSON(inputOrPath)
     : inputOrPath;
 }
+
+export const customStreamsTest = async (
+  source: AirbyteSourceBase<AirbyteConfig>,
+  config: AirbyteConfig,
+  allStreams: ReadonlyArray<string>,
+  selectedStreams?: ReadonlyArray<string>
+): Promise<void> => {
+  const {catalog} = await source.onBeforeRead(
+    {...config, run_mode: 'Custom', custom_streams: selectedStreams},
+    {streams: allStreams.map((name) => ({stream: {name}}))} as any
+  );
+  expect(catalog.streams).toHaveLength((selectedStreams ?? allStreams).length);
+  expect(catalog.streams.map((s) => s.stream.name)).toEqual(
+    expect.arrayContaining(selectedStreams ?? allStreams)
+  );
+};
