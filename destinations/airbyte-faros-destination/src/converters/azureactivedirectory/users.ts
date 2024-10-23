@@ -1,13 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {LocationCollector} from '../common/geo';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureActiveDirectoryConverter} from './common';
 import {User} from './models';
 
 export class Users extends AzureActiveDirectoryConverter {
+  private locationCollector: LocationCollector = undefined;
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
+    'geo_Coordinates',
     'geo_Location',
     'identity_Identity',
     'org_Department',
@@ -16,9 +19,22 @@ export class Users extends AzureActiveDirectoryConverter {
 
   private seenDepartments = new Set<string>();
 
+  private initialize(ctx: StreamContext) {
+    if (this.locationCollector) {
+      return;
+    }
+    this.locationCollector = new LocationCollector(
+      ctx?.config?.source_specific_configs?.azureactivedirectory?.resolve_locations,
+      ctx.farosClient
+    );
+  }
+
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
+
     const source = this.streamName.source;
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.createdDateTime);
@@ -48,28 +64,7 @@ export class Users extends AzureActiveDirectoryConverter {
       },
     });
 
-    const location = user.streetAddress
-      ? {uid: user.streetAddress, source}
-      : undefined;
-
-    if (user.streetAddress) {
-      res.push({
-        model: 'geo_Address',
-        record: {
-          uid: user.streetAddress,
-          fullAddress: user.streetAddress,
-          street: user.streetAddress,
-          postalCode: user.postalCode,
-        },
-      });
-      const geo_Location = {
-        uid: user.streetAddress,
-        name: user.streetAddress,
-        raw: user.streetAddress,
-        address: {uid: user.streetAddress},
-      };
-      res.push({model: 'geo_Location', record: geo_Location});
-    }
+    const location = await this.locationCollector.collect(user.streetAddress);
     res.push({
       model: 'org_Employee',
       record: {
@@ -85,5 +80,9 @@ export class Users extends AzureActiveDirectoryConverter {
       },
     });
     return res;
+  }
+
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.locationCollector.convertLocations();
   }
 }

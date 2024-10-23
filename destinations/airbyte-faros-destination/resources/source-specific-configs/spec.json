@@ -24,6 +24,9 @@
         "azurepipeline": {
           "$ref": "azurepipeline.json"
         },
+        "azureactivedirectory": {
+          "$ref": "azureactivedirectory.json"
+        },
         "backlog": {
           "$ref": "backlog.json"
         },
@@ -47,6 +50,9 @@
         },
         "firehydrant": {
           "$ref": "firehydrant.json"
+        },
+        "googlecalendar": {
+          "$ref": "googlecalendar.json"
         },
         "jenkins": {
           "$ref": "jenkins.json"

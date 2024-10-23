@@ -1,14 +1,11 @@
 import {getLocal} from 'mockttp';
 
 import {initMockttp, tempConfig} from '../testing-tools';
-import {googlecalendarAllStreamsLog} from './data';
 import {destinationWriteTest} from './utils';
 
 describe('googlecalendar', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const catalogPath = 'test/resources/googlecalendar/catalog.json';
   let configPath: string;
-  const streamNamePrefix = 'mytestsource__googlecalendar__';
 
   beforeEach(async () => {
     const locationsRes = [
@@ -36,7 +33,7 @@ describe('googlecalendar', () => {
     mockttp
       .forPost('/geocoding/lookup')
       .thenReply(200, JSON.stringify({locations: locationsRes}));
-    configPath = await tempConfig({api_url: mockttp.url});
+    configPath = await tempConfig({api_url: mockttp.url, log_records: true});
   });
 
   afterEach(async () => {
@@ -48,6 +45,7 @@ describe('googlecalendar', () => {
       configPath,
       catalogPath: 'test/resources/googlecalendar/catalog.json',
       inputRecordsPath: 'googlecalendar/all-streams.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
 });

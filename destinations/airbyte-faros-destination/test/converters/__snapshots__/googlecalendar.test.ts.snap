@@ -4,9 +4,251 @@ exports[`googlecalendar process records from all streams 1`] = `
 Array [
   "Processed 4 records",
   "Processed records by stream: {\\\\\\"mytestsource__googlecalendar__calendars\\\\\\":1,\\\\\\"mytestsource__googlecalendar__events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 14 records",
-  "Would write records by model: {\\\\\\"cal_Calendar\\\\\\":1,\\\\\\"cal_Event\\\\\\":3,\\\\\\"cal_EventGuestAssociation\\\\\\":2,\\\\\\"cal_User\\\\\\":2,\\\\\\"geo_Address\\\\\\":2,\\\\\\"geo_Coordinates\\\\\\":2,\\\\\\"geo_Location\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 12 records",
+  "Would write records by model: {\\\\\\"cal_Calendar\\\\\\":1,\\\\\\"cal_Event\\\\\\":3,\\\\\\"cal_EventGuestAssociation\\\\\\":2,\\\\\\"cal_User\\\\\\":2,\\\\\\"geo_Address\\\\\\":1,\\\\\\"geo_Coordinates\\\\\\":1,\\\\\\"geo_Location\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
+]
+`;
+
+exports[`googlecalendar process records from all streams 2`] = `
+Array [
+  Object {
+    "cal_Calendar": Object {
+      "description": null,
+      "source": "GoogleCalendar",
+      "title": "First created calendar in this account",
+      "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Test Attender",
+      "email": "test@gmail.com",
+      "source": "GoogleCalendar",
+      "uid": "1",
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "GoogleCalendar",
+          "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+        },
+        "uid": "pu9eddmgti5ui6gqgnhf8ki75g",
+      },
+      "guest": Object {
+        "source": "GoogleCalendar",
+        "uid": "1",
+      },
+      "source": "GoogleCalendar",
+      "status": Object {
+        "category": "Accepted",
+        "detail": "accepted",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": null,
+      "email": "faros-test@faros-test-332209.iam.gserviceaccount.com",
+      "source": "GoogleCalendar",
+      "uid": "faros-test@faros-test-332209.iam.gserviceaccount.com",
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "GoogleCalendar",
+        "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+      },
+      "conferenceUrl": null,
+      "description": null,
+      "durationMs": 14400000,
+      "end": "2022-01-01T00:00:00.000Z",
+      "location": Object {
+        "uid": "419 University Ave, Palo Alto, CA 94301",
+      },
+      "organizer": Object {
+        "source": "GoogleCalendar",
+        "uid": "faros-test@faros-test-332209.iam.gserviceaccount.com",
+      },
+      "privacy": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "source": "GoogleCalendar",
+      "start": "2021-12-31T20:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "UTC",
+      "title": null,
+      "type": Object {
+        "category": "Regular",
+        "detail": "default",
+      },
+      "uid": "pu9eddmgti5ui6gqgnhf8ki75g",
+      "url": "https://www.google.com/calendar/event?eid=cHU5ZWRkbWd0aTV1aTZncWduaGY4a2k3NWcgZmFyb3MtdGVzdEBmYXJvcy10ZXN0LTMzMjIwOS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbQ",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "unknown",
+      },
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "GoogleCalendar",
+        "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+      },
+      "conferenceUrl": null,
+      "description": null,
+      "durationMs": 10800000,
+      "end": "2021-12-31T15:00:00.000Z",
+      "location": Object {
+        "uid": "419 University Ave, Palo Alto, CA 94301",
+      },
+      "organizer": Object {
+        "source": "GoogleCalendar",
+        "uid": "faros-test@faros-test-332209.iam.gserviceaccount.com",
+      },
+      "privacy": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "source": "GoogleCalendar",
+      "start": "2021-12-31T12:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "Europe/Zurich",
+      "title": null,
+      "type": Object {
+        "category": "Regular",
+        "detail": "default",
+      },
+      "uid": "violnsh17k2gpmf15s74t07uak",
+      "url": "https://www.google.com/calendar/event?eid=dmlvbG5zaDE3azJncG1mMTVzNzR0MDd1YWsgZmFyb3MtdGVzdEBmYXJvcy10ZXN0LTMzMjIwOS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbQ",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "unknown",
+      },
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "GoogleCalendar",
+          "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+        },
+        "uid": "eeo5b8rm34097ahr16eovtdceo",
+      },
+      "guest": Object {
+        "source": "GoogleCalendar",
+        "uid": "1",
+      },
+      "source": "GoogleCalendar",
+      "status": Object {
+        "category": "Accepted",
+        "detail": "accepted",
+      },
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "GoogleCalendar",
+        "uid": "5vokul6v3odfgpopgq0pec51k0@group.calendar.google.com",
+      },
+      "conferenceUrl": null,
+      "description": null,
+      "durationMs": 14400000,
+      "end": "2021-12-31T15:00:00.000Z",
+      "location": null,
+      "organizer": Object {
+        "source": "GoogleCalendar",
+        "uid": "faros-test@faros-test-332209.iam.gserviceaccount.com",
+      },
+      "privacy": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "source": "GoogleCalendar",
+      "start": "2021-12-31T11:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "Europe/Kiev",
+      "title": null,
+      "type": Object {
+        "category": "Regular",
+        "detail": "default",
+      },
+      "uid": "eeo5b8rm34097ahr16eovtdceo",
+      "url": "https://www.google.com/calendar/event?eid=ZWVvNWI4cm0zNDA5N2FocjE2ZW92dGRjZW8gZmFyb3MtdGVzdEBmYXJvcy10ZXN0LTMzMjIwOS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbQ",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "unknown",
+      },
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "city": "Palo Alto",
+      "country": "United States",
+      "countryCode": "US",
+      "fullAddress": "420 University Ave #333a, Palo Alto, CA 94301, USA",
+      "houseNumber": "420",
+      "postalCode": "94301",
+      "source": "GoogleCalendar",
+      "state": "California",
+      "stateCode": "CA",
+      "street": "University Avenue",
+      "uid": "EjI0MjAgVW5pdmVyc2l0eSBBdmUgIzMzM2EsIFBhbG8gQWx0bywgQ0EgOTQzMDEsIFVTQSIgGh4KFgoUChIJJy30Azm7j4ARbLmzlBtnYb8SBDMzM2E",
+      "unit": "333a",
+    },
+  },
+  Object {
+    "geo_Coordinates": Object {
+      "lat": 37.4471709,
+      "lon": -122.1599896,
+      "source": "GoogleCalendar",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "EjI0MjAgVW5pdmVyc2l0eSBBdmUgIzMzM2EsIFBhbG8gQWx0bywgQ0EgOTQzMDEsIFVTQSIgGh4KFgoUChIJJy30Azm7j4ARbLmzlBtnYb8SBDMzM2E",
+      },
+      "coordinates": Object {
+        "lat": 37.4471709,
+        "lon": -122.1599896,
+        "source": "GoogleCalendar",
+      },
+      "raw": "419 University Ave, Palo Alto, CA 94301",
+      "source": "GoogleCalendar",
+      "uid": "419 University Ave, Palo Alto, CA 94301",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "EjI0MjAgVW5pdmVyc2l0eSBBdmUgIzMzM2EsIFBhbG8gQWx0bywgQ0EgOTQzMDEsIFVTQSIgGh4KFgoUChIJJy30Azm7j4ARbLmzlBtnYb8SBDMzM2E",
+      },
+      "coordinates": Object {
+        "lat": 37.4471709,
+        "lon": -122.1599896,
+      },
+      "raw": "419 University Ave, Palo Alto, CA 94301",
+      "source": "GoogleCalendar",
+      "uid": "419 University Ave, Palo Alto, CA 94301",
+    },
+  },
 ]
 `;
