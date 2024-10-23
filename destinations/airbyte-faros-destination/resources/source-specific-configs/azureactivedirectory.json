@@ -1,0 +1,23 @@
+{
+  "title": "Azure Active Directory",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Azure Active Directory",
+          "order": 0
+        },
+        "resolve_locations": {
+          "type": "boolean",
+          "title": "Resolve Locations",
+          "description": "If true, will resolve location information with Faros Geocoding API.",
+          "default": false
+        }
+      }
+    }
+  ]
+}
