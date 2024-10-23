@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Location, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 
 import {LocationCollector} from '../common/geo';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';

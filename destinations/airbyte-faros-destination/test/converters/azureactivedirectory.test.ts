@@ -1,7 +1,7 @@
 import {getLocal} from 'mockttp';
 
 import {initMockttp, tempConfig} from '../testing-tools';
-import {destinationWriteTest, generateBasicTestSuite} from './utils';
+import {destinationWriteTest} from './utils';
 
 describe('azureactivedirectory', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
