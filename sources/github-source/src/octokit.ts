@@ -30,6 +30,7 @@ export type ExtendedOctokit = OctokitRest &
 const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
   timeout,
+  retryAdditionalConditions,
   retry,
   throttling
 );
@@ -204,10 +205,10 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
         ])) as OctokitResponse<any, number>;
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          // simulate 500 so that retry plugin retries the request
+          // simulate request error so that retry plugin retries the request
           throw new RequestError(
             `GitHub request timed-out after ${timeoutMs} ms`,
-            500,
+            1000,
             {
               request: options,
             }
@@ -219,5 +220,20 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
       }
     });
   }
+  return {};
+}
+
+function retryAdditionalConditions(octokit: OctokitCore) {
+  octokit.hook.error('request', async (error, options) => {
+    const retryAdditionalError = options.request.retryAdditionalError;
+    if (!retryAdditionalError || !retryAdditionalError(error)) {
+      throw error;
+    }
+
+    // simulate request error so that retry plugin retries the request
+    throw new RequestError(error.message, 1000, {
+      request: options,
+    });
+  });
   return {};
 }
