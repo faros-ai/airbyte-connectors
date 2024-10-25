@@ -23,8 +23,10 @@ export class Customreports extends Converter {
     'org_Team',
     'org_Employee',
     'identity_Identity',
-    'geo_Location',
     'org_TeamMembership',
+    'geo_Location',
+    'geo_Address',
+    'geo_Coordinates',
   ];
   source = 'workday';
   FAROS_TEAM_ROOT = 'all_teams';

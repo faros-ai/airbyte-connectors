@@ -32,9 +32,18 @@ exports[`ProjectBoardFilter getBoards - all boards - empty list 1`] = `
 
 exports[`ProjectBoardFilter getBoards - all boards - no list 1`] = `
 [
-  "1",
-  "2",
-  "3",
+  {
+    "syncIssues": true,
+    "uid": "1",
+  },
+  {
+    "syncIssues": true,
+    "uid": "2",
+  },
+  {
+    "syncIssues": true,
+    "uid": "3",
+  },
 ]
 `;
 
