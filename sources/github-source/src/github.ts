@@ -1,3 +1,4 @@
+import {RequestError} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -448,6 +449,9 @@ export abstract class GitHub {
         pull_number: number,
         per_page: this.pageSize,
         page: startingPage,
+        request: {
+          retryAdditionalError: (err: RequestError) => err.status === 422,
+        },
       }
     );
     const files: PullRequestFile[] = [];

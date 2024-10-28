@@ -30,6 +30,7 @@ export type ExtendedOctokit = OctokitRest &
 const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
   timeout,
+  retryAdditionalConditions,
   retry,
   throttling
 );
@@ -185,6 +186,9 @@ function beforeRequestHook(
   }
 }
 
+// Fake HTTP status code used by manually thrown errors to trigger retries by the retry-plugin
+const RETRYABLE_STATUS_CODE = 1000;
+
 function timeout(octokit: OctokitCore, octokitOptions: any) {
   const timeoutMs = octokitOptions.timeout?.ms;
   if (timeoutMs > 0) {
@@ -204,10 +208,10 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
         ])) as OctokitResponse<any, number>;
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          // simulate 500 so that retry plugin retries the request
+          // simulate request error so that retry plugin retries the request
           throw new RequestError(
             `GitHub request timed-out after ${timeoutMs} ms`,
-            500,
+            RETRYABLE_STATUS_CODE,
             {
               request: options,
             }
@@ -219,5 +223,20 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
       }
     });
   }
+  return {};
+}
+
+function retryAdditionalConditions(octokit: OctokitCore) {
+  octokit.hook.error('request', async (error, options) => {
+    const retryAdditionalError = options.request.retryAdditionalError;
+    if (!retryAdditionalError?.(error)) {
+      throw error;
+    }
+
+    // simulate request error so that retry plugin retries the request
+    throw new RequestError(error.message, RETRYABLE_STATUS_CODE, {
+      request: options,
+    });
+  });
   return {};
 }
