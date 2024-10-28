@@ -207,7 +207,7 @@ export class ProjectBoardFilter {
     );
     for await (const project of projects) {
       for (const board of project.boardUids) {
-        if (this.getBoardInclusion(board)) {
+        if (await this.getBoardInclusion(board)) {
           this.boards.set(board, {uid: board, syncIssues: true});
         }
       }
