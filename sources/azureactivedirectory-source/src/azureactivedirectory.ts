@@ -135,6 +135,8 @@ export class AzureActiveDirectory {
           'createdDateTime',
           'identities',
           'streetAddress',
+          'jobTitle',
+          'officeLocation',
         ],
         $top: maxResults,
       },
