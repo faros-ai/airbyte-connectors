@@ -163,8 +163,7 @@ export class ProjectBoardFilter {
       const included = true;
 
       const syncIssues =
-        (!boards || boards.size === 0 || boards.has(board)) &&
-        (!excludedBoards || !excludedBoards.has(board));
+        (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
       return {included, syncIssues};
     }
 
