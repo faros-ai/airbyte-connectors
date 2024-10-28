@@ -229,7 +229,7 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
 function retryAdditionalConditions(octokit: OctokitCore) {
   octokit.hook.error('request', async (error, options) => {
     const retryAdditionalError = options.request.retryAdditionalError;
-    if (!retryAdditionalError || !retryAdditionalError(error)) {
+    if (!retryAdditionalError?.(error)) {
       throw error;
     }
 
