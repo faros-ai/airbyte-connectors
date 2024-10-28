@@ -45,7 +45,7 @@ export class FarosBoards extends JiraConverter {
     ];
     if (
       board.issueSync &&
-      ctx?.config?.edition_configs?.edition === Edition.CLOUD
+      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
     ) {
       results.push({
         model: 'faros_TmsTaskBoardOptions',
