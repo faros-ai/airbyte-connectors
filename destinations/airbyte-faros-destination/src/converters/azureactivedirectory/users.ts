@@ -38,6 +38,7 @@ export class Users extends AzureActiveDirectoryConverter {
     const source = this.streamName.source;
     const user = record.record.data as User;
     const joinedAt = Utils.toDate(user.employeeHireDate);
+    const terminatedAt = Utils.toDate(user.employeeLeaveDateTime);
     const manager = user.manager ? {uid: user.manager, source} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
@@ -73,8 +74,8 @@ export class Users extends AzureActiveDirectoryConverter {
         uid,
         title: user.jobTitle,
         joinedAt,
-        terminatedAt: Utils.toDate(user.employeeLeaveDateTime),
-        inactive: user.employeeLeaveDateTime ? true : null,
+        terminatedAt,
+        inactive: terminatedAt ? true : null,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
         manager,
