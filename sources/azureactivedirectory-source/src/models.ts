@@ -33,6 +33,8 @@ export interface User {
   manager?: string;
   createdDateTime?: string;
   streetAddress?: string;
+  employeeHireDate?: string;
+  employeeLeaveDateTime?: string;
   identities: UserIdentity[];
 }
 
