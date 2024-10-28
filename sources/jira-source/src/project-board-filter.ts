@@ -152,24 +152,32 @@ export class ProjectBoardFilter {
    *   - included: Whether the board should be included in the sync.
    *   - syncIssues: Whether the issues from this board should be synced.
    */
-  getBoardInclusion(board: string): {
+  async getBoardInclusion(board: string): Promise<{
     included: boolean;
     syncIssues: boolean;
-  } {
+  }> {
+    await this.loadSelectedBoards();
     const {boards, excludedBoards} = this.filterConfig;
 
     if (this.useFarosGraphBoardsSelection) {
       const included = true;
-      const syncIssues = !(
-        excludedBoards?.has(board) ||
-        (!boards?.has(board) && !excludedBoards?.has(board))
-      );
+
+      const syncIssues =
+        (!boards || boards.size === 0 || boards.has(board)) &&
+        (!excludedBoards || !excludedBoards.has(board));
       return {included, syncIssues};
     }
 
-    const included = boards?.has(board) || !excludedBoards?.has(board);
-    const syncIssues = included;
-    return {included, syncIssues};
+    if (boards?.size) {
+      const included = boards.has(board);
+      return {included, syncIssues: included};
+    }
+
+    if (excludedBoards?.size) {
+      const included = !excludedBoards.has(board);
+      return {included, syncIssues: included};
+    }
+    return {included: true, syncIssues: true};
   }
 
   /**
@@ -183,7 +191,7 @@ export class ProjectBoardFilter {
     for (const project of this.projects) {
       for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
-        const {included, syncIssues} = this.getBoardInclusion(boardId);
+        const {included, syncIssues} = await this.getBoardInclusion(boardId);
         if (included) {
           this.boards.set(boardId, {uid: boardId, syncIssues: syncIssues});
         }

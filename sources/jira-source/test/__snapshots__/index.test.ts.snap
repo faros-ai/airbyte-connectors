@@ -762,6 +762,7 @@ exports[`index streams - board_issues using board ids 1`] = `
 exports[`index streams - boards 1`] = `
 [
   {
+    "issueSync": false,
     "name": "Tasks without a board in project TEST",
     "projectKey": "TEST",
     "type": "Custom",
@@ -769,6 +770,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 1,
+    "issueSync": true,
     "name": "Board 1",
     "projectKey": "TEST",
     "type": "scrum",
@@ -776,6 +778,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 2,
+    "issueSync": true,
     "name": "Board 2",
     "projectKey": "TEST",
     "type": "scrum",
@@ -783,6 +786,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 3,
+    "issueSync": true,
     "name": "Board 3",
     "projectKey": "TEST",
     "type": "kanban",
