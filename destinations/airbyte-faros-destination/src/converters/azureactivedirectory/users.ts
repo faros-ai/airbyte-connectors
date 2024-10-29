@@ -37,7 +37,8 @@ export class Users extends AzureActiveDirectoryConverter {
 
     const source = this.streamName.source;
     const user = record.record.data as User;
-    const joinedAt = Utils.toDate(user.createdDateTime);
+    const joinedAt = Utils.toDate(user.employeeHireDate);
+    const terminatedAt = Utils.toDate(user.employeeLeaveDateTime);
     const manager = user.manager ? {uid: user.manager, source} : undefined;
     const uid = user.id;
     const res: DestinationRecord[] = [];
@@ -64,14 +65,17 @@ export class Users extends AzureActiveDirectoryConverter {
       },
     });
 
-    const location = await this.locationCollector.collect(user.streetAddress);
+    const location = await this.locationCollector.collect(
+      user.officeLocation || user.streetAddress
+    );
     res.push({
       model: 'org_Employee',
       record: {
         uid,
-        title: user.displayName,
-        level: 0,
+        title: user.jobTitle,
         joinedAt,
+        terminatedAt,
+        inactive: terminatedAt ? true : null,
         department: user.department ? {uid: user.department} : null,
         identity: {uid, source},
         manager,

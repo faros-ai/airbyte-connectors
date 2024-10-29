@@ -8,10 +8,10 @@ export interface User {
   businessPhones: string[];
   displayName: string;
   givenName: string;
-  jobTitle: string;
+  jobTitle?: string;
   mail: string;
   mobilePhone: string;
-  officeLocation: string;
+  officeLocation?: string;
   preferredLanguage?: string;
   surname: string;
   userPrincipalName: string;
@@ -21,6 +21,8 @@ export interface User {
   manager?: string;
   createdDateTime?: string;
   streetAddress?: string;
+  employeeHireDate?: string;
+  employeeLeaveDateTime?: string;
   identities: UserIdentity[];
 }
 
