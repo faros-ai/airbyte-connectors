@@ -1,7 +1,11 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
+import {
+  bucket,
+  normalizeString,
+  validateBucketingConfig,
+} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -266,7 +270,7 @@ export class Jira {
     const statusByName = new Map<string, Status>();
     for (const status of await api.v2.workflowStatuses.getStatuses()) {
       if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
+        statusByName.set(normalizeString(status.name), {
           category: status.statusCategory.name,
           detail: status.name,
         });
@@ -673,19 +677,6 @@ export class Jira {
     });
 
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
-  }
-  @Memoize()
-  async getStatuses(): Promise<Map<string, Status>> {
-    const statusByName = new Map<string, Status>();
-    for (const status of await this.api.v2.workflowStatuses.getStatuses()) {
-      if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
-          category: status.statusCategory.name,
-          detail: status.name,
-        });
-      }
-    }
-    return statusByName;
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
