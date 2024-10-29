@@ -10,24 +10,15 @@
       "token": {
         "type": "string",
         "title": "API Token",
-        "const": "token"
-      },
-      "queryTypes": {
-        "type": "array",
-        "title": "Query Types",
-        "items": {
-          "type": "string",
-          "enum": ["gitv2", "awsv2"]
-        },
-        "default": ["gitv2", "awsv2"]
+        "description": "Vanta API token"
       },
       "apiUrl": {
         "type": "string",
         "title": "Vanta GraphQL API URL",
         "description": "Vanta GraphQL API, e.g. ",
-        "default": "https://api.vanta.com/graphql"
+        "default": "https://api.vanta.com/"
       },
-      "limit": {
+      "page_size": {
         "type": "number",
         "title": "Page Limit",
         "minimum": 1,

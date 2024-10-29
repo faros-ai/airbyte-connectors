@@ -22,14 +22,17 @@ export class Vulnerabilities extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any>> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
-    for (const queryType of this.cfg.queryTypes) {
-      this.logger.debug(`Querying Vanta for ${queryType}`);
-      for await (const record of vanta.vulns(queryType)) {
-        yield {
-          vuln_type: queryType,
-          vuln_data: record,
-        };
-      }
+    for await (const vuln of vanta.getVulnerabilities()) {
+      yield {
+        recordType: 'vulnerability',
+        data: vuln,
+      };
+    }
+    for await (const vulnRemediation of vanta.getVulnerabilityRemediations()) {
+      yield {
+        recordType: 'vulnerability-remediation',
+        data: vulnRemediation,
+      };
     }
   }
 }

@@ -2,11 +2,11 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "vuln_type": {
+    "recordType": {
       "type": "string",
-      "enum": ["gitv2", "awsv2"]
+      "enum": ["vulnerability", "vulnerability-remediation"]
     },
-    "vuln_data": {}
+    "data": {}
   }
 }
 

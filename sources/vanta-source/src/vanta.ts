@@ -3,7 +3,6 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {VantaConfig} from '.';
-import {QueryHolder, queryTypeToQueryHolder} from './types';
 import {getQueryFromName} from './utils';
 
 const DEFAULT_PAGE_LIMIT = 100;
@@ -65,7 +64,7 @@ export class Vanta {
     };
     try {
       const packed_response: AxiosResponse = await this.getAxiosResponse(
-        this.apiUrl,
+        this.apiUrl + '/graphql',
         body
       );
       return [packed_response.status === 200, undefined];
@@ -74,14 +73,62 @@ export class Vanta {
     }
   }
 
-  async *vulns(queryType: string): AsyncGenerator<any> {
-    const queryHolder: QueryHolder = queryTypeToQueryHolder[queryType];
-    if (!queryHolder) {
-      throw new VError('Unknown query type: %s', queryType);
+  async *getVulnerabilities(): AsyncGenerator<any> {
+    let cursor = null;
+    let hasNext = true;
+
+    while (hasNext) {
+      const {data, pageInfo} = await this.fetchVulnerabilities(cursor);
+
+      for (const vulnerability of data) {
+        yield vulnerability;
+      }
+
+      cursor = pageInfo.endCursor;
+      hasNext = pageInfo.hasNextPage;
     }
-    const res = await this.paginate(queryHolder);
-    for (const item of res) {
-      yield item;
+  }
+
+  async *getVulnerabilityRemediations(): AsyncGenerator<any> {
+    let cursor = null;
+    let hasNext = true;
+
+    while (hasNext) {
+      const {data, pageInfo} =
+        await this.fetchVulnerabilityRemediations(cursor);
+
+      for (const vulnerability of data) {
+        yield vulnerability;
+      }
+
+      cursor = pageInfo.endCursor;
+      hasNext = pageInfo.hasNextPage;
+    }
+  }
+
+  private async fetchVulnerabilities(cursor: string | null): Promise<any> {
+    const url = `${this.apiUrl}/v1/vulnerabilities`;
+    const params = {pageSize: this.limit, pageCursor: cursor};
+
+    try {
+      const response: AxiosResponse = await this.api.get(url, {params});
+      return response?.data?.results;
+    } catch (error) {
+      throw new VError('Failed to fetch vulnerabilities: %s', error);
+    }
+  }
+
+  private async fetchVulnerabilityRemediations(
+    cursor: string | null
+  ): Promise<any> {
+    const url = `${this.apiUrl}/v1/vulnerability-remediations`;
+    const params = {pageSize: this.limit, pageCursor: cursor};
+
+    try {
+      const response: AxiosResponse = await this.api.get(url, {params});
+      return response?.data?.results;
+    } catch (error) {
+      throw new VError('Failed to fetch vulnerability remediations: %s', error);
     }
   }
 
@@ -114,59 +161,5 @@ export class Vanta {
         error
       );
     }
-  }
-
-  private async paginate(queryHolder: QueryHolder): Promise<any[]> {
-    const store: any[] = [];
-    let cursor = null;
-    // Eventual queries will have cursor as a string
-    const variables = {last: this.limit, before: cursor};
-    const query = getQueryFromName(queryHolder.queryName);
-    let body = {
-      query,
-      variables,
-    };
-    let continueLoop = true;
-    let nPages = 0;
-    this.logger.debug(
-      'Starting pagination with query: %s',
-      queryHolder.queryName
-    );
-    while (continueLoop) {
-      // Assuming vanta_client is an instance of Axios or similar
-      this.logger.debug(`Running query with page ${nPages++}`);
-      const packed_response: AxiosResponse = await this.getAxiosResponse(
-        this.apiUrl,
-        body
-      );
-      const response = packed_response?.data;
-      const newEdges =
-        response?.data?.organization?.[queryHolder.queryName]?.edges;
-      const newNodes = newEdges?.map((edge: any) => edge.node);
-      if (newNodes) {
-        store.push(...newNodes);
-      }
-      this.logger.debug(`Number of new edges: ${newEdges.length}`);
-
-      // Preparing for next cycle
-      if (newEdges.length < this.limit) {
-        continueLoop = false;
-      }
-      if (newEdges.length > 0) {
-        cursor = newEdges[0].cursor;
-        if (!cursor) {
-          throw new Error(
-            'Cursor is missing from query result: ' +
-              JSON.stringify(newEdges[0])
-          );
-        }
-        variables['before'] = cursor;
-        body = {
-          query,
-          variables,
-        };
-      }
-    }
-    return store;
   }
 }
