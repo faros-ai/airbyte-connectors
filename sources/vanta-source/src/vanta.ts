@@ -37,7 +37,7 @@ export class Vanta {
     const timeout = cfg.timeout ?? DEFAULT_TIMEOUT;
     const headers = {
       'content-type': 'application/json',
-      Authorization: `token ${cfg.token}`,
+      Authorization: `Bearer ${cfg.token}`,
       Accept: '*/*',
     };
     const api = axios.create({
@@ -107,7 +107,8 @@ export class Vanta {
   }
 
   private async fetchVulnerabilities(cursor: string | null): Promise<any> {
-    const url = `${this.apiUrl}/v1/vulnerabilities`;
+    const url = `${this.apiUrl}v1/vulnerabilities`;
+    console.log('url:', url);
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {
@@ -121,7 +122,7 @@ export class Vanta {
   private async fetchVulnerabilityRemediations(
     cursor: string | null
   ): Promise<any> {
-    const url = `${this.apiUrl}/v1/vulnerability-remediations`;
+    const url = `${this.apiUrl}v1/vulnerability-remediations`;
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {
