@@ -8,7 +8,7 @@ import VError from 'verror';
 import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
 import {RunMode} from './streams/common';
 
-type BoardInclusion = {uid: string; syncIssues: boolean};
+type BoardInclusion = {uid: string; issueSync: boolean};
 
 type FilterConfig = {
   projects?: Set<string>;
@@ -143,8 +143,8 @@ export class ProjectBoardFilter {
 
   /**
    * Determines how a board should be included in the sync.
-   * 1. When using Faros Graph, all boards are included but only those explicitly
-   *    included in the Faros Graph are synced.
+   * 1. When using Faros Graph, all boards are included for boards stream but
+   *    only those explicitly included in the Faros Graph are synced.
    * 2. When not using Faros Graph, boards are included if they are in the
    *    `boards` set or not in the `excludedBoards` set.
    *
@@ -154,7 +154,7 @@ export class ProjectBoardFilter {
    */
   async getBoardInclusion(board: string): Promise<{
     included: boolean;
-    syncIssues: boolean;
+    issueSync: boolean;
   }> {
     await this.loadSelectedBoards();
     const {boards, excludedBoards} = this.filterConfig;
@@ -162,21 +162,21 @@ export class ProjectBoardFilter {
     if (this.useFarosGraphBoardsSelection) {
       const included = true;
 
-      const syncIssues =
+      const issueSync =
         (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
-      return {included, syncIssues};
+      return {included, issueSync};
     }
 
     if (boards?.size) {
       const included = boards.has(board);
-      return {included, syncIssues: included};
+      return {included, issueSync: included};
     }
 
     if (excludedBoards?.size) {
       const included = !excludedBoards.has(board);
-      return {included, syncIssues: included};
+      return {included, issueSync: included};
     }
-    return {included: true, syncIssues: true};
+    return {included: true, issueSync: true};
   }
 
   /**
@@ -190,9 +190,9 @@ export class ProjectBoardFilter {
     for (const project of this.projects) {
       for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
-        const {included, syncIssues} = await this.getBoardInclusion(boardId);
+        const {included, issueSync} = await this.getBoardInclusion(boardId);
         if (included) {
-          this.boards.set(boardId, {uid: boardId, syncIssues: syncIssues});
+          this.boards.set(boardId, {uid: boardId, issueSync});
         }
       }
     }
@@ -206,8 +206,9 @@ export class ProjectBoardFilter {
     );
     for await (const project of projects) {
       for (const board of project.boardUids) {
-        if (await this.getBoardInclusion(board)) {
-          this.boards.set(board, {uid: board, syncIssues: true});
+        const {included, issueSync} = await this.getBoardInclusion(board);
+        if (included) {
+          this.boards.set(board, {uid: board, issueSync});
         }
       }
     }

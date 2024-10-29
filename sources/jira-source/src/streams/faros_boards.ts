@@ -35,14 +35,14 @@ export class FarosBoards extends StreamWithProjectSlices {
 
     for (const board of await jira.getProjectBoards(projectKey)) {
       const boardId = toString(board.id);
-      const {included, syncIssues} =
+      const {included, issueSync} =
         await this.projectBoardFilter.getBoardInclusion(boardId);
       if (included) {
         yield {
           ...pick(board, ['id', 'name', 'type']),
           uid: boardId,
           projectKey,
-          issueSync: syncIssues,
+          issueSync,
         };
       }
     }

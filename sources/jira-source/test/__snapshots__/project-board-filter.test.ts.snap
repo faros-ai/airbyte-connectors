@@ -3,15 +3,15 @@
 exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - nothing excluded 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -20,15 +20,15 @@ exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - nothing 
 exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - some excluded 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": false,
+    "issueSync": false,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -37,15 +37,15 @@ exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - some exc
 exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - nothing excluded 1`] = `
 [
   {
-    "syncIssues": false,
+    "issueSync": false,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -54,15 +54,15 @@ exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - nothing exc
 exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - some excluded 1`] = `
 [
   {
-    "syncIssues": false,
+    "issueSync": false,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": false,
+    "issueSync": false,
     "uid": "3",
   },
 ]
@@ -71,15 +71,15 @@ exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - some exclud
 exports[`ProjectBoardFilter getBoards - all boards - empty list 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -88,15 +88,15 @@ exports[`ProjectBoardFilter getBoards - all boards - empty list 1`] = `
 exports[`ProjectBoardFilter getBoards - all boards - no list 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -105,15 +105,15 @@ exports[`ProjectBoardFilter getBoards - all boards - no list 1`] = `
 exports[`ProjectBoardFilter getBoards - all boards - project list 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -122,11 +122,11 @@ exports[`ProjectBoardFilter getBoards - all boards - project list 1`] = `
 exports[`ProjectBoardFilter getBoards - specific boards excluded 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "1",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]
@@ -135,11 +135,11 @@ exports[`ProjectBoardFilter getBoards - specific boards excluded 1`] = `
 exports[`ProjectBoardFilter getBoards - specific boards included 1`] = `
 [
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "2",
   },
   {
-    "syncIssues": true,
+    "issueSync": true,
     "uid": "3",
   },
 ]

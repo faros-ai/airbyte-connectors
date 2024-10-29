@@ -164,7 +164,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     for (const board of await this.projectBoardFilter.getBoards()) {
-      if (board.syncIssues) {
+      if (board.issueSync) {
         yield {board: board.uid};
       }
     }
