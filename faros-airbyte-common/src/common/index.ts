@@ -46,6 +46,10 @@ export function nextBucketId(
   return (lastExecutedBucketId % bucketTotal) + 1;
 }
 
+export function normalizeString(str: string): string {
+  return str.replace(/\s/g, '').toLowerCase();
+}
+
 export function calculateDateRange(options: {
   start_date?: string;
   end_date?: string;

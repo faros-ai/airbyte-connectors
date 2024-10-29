@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {normalizeString} from 'faros-airbyte-common/common';
 import {
   Assignee,
   Dependency,
@@ -92,8 +93,19 @@ export class IssueTransformer {
     const statusChangelog: Array<[Status, Date]> = [];
 
     const pushStatusChange = (statusName: string, date: Date): void => {
-      const status = this.statusByName.get(statusName);
-      if (status) statusChangelog.push([status, date]);
+      const normalizedName = normalizeString(statusName);
+      const status = this.statusByName.get(normalizedName);
+      if (status) {
+        statusChangelog.push([status, date]);
+      } else {
+        this.logger?.warn(
+          `Status '${statusName}' not found in statuses, reverting to original status`
+        );
+        statusChangelog.push([
+          {category: statusName, detail: statusName},
+          date,
+        ]);
+      }
     };
 
     const statusChanges = IssueTransformer.fieldChangelog(changelog, 'status');

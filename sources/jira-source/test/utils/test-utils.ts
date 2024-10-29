@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {Status} from 'faros-airbyte-common/jira';
 
 import {Jira, JiraConfig} from '../../src/jira';
 
@@ -8,6 +9,12 @@ export function setupJiraInstance(
   sourceConfig: JiraConfig,
   logger: AirbyteLogger
 ): void {
+  const statusByName = new Map<string, Status>();
+  statusByName.set('backlog', {category: 'To Do', detail: 'Backlog'});
+  statusByName.set('inprogress', {
+    category: 'In Progress',
+    detail: 'In Progress',
+  });
   Jira.instance = jest.fn().mockImplementation(() => {
     return new Jira(
       'https://jira.com',
@@ -24,7 +31,7 @@ export function setupJiraInstance(
         ['customfield_10020', 'Sprint'],
       ]),
       50,
-      new Map(),
+      statusByName,
       isCloud,
       5,
       100,
