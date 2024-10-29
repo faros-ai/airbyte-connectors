@@ -4,13 +4,18 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Vanta Spec",
     "type": "object",
-    "required": ["token", "queryTypes"],
+    "required": ["client_id", "client_secret"],
     "additionalProperties": true,
     "properties": {
-      "token": {
+      "client_id": {
         "type": "string",
-        "title": "API Token",
-        "description": "Vanta API token"
+        "title": "API Client Id",
+        "description": "Vanta Client Id"
+      },
+      "client_secret": {
+        "type": "string",
+        "title": "API Client Secret",
+        "description": "Vanta Client Secret"
       },
       "apiUrl": {
         "type": "string",

@@ -25,8 +25,8 @@ export class Vanta {
     cfg: VantaConfig,
     logger: AirbyteLogger
   ): Promise<Vanta> {
-    if (!cfg.token) {
-      throw new VError('Vanta token missing.');
+    if (!cfg.client_id || !cfg.client_secret) {
+      throw new VError('Vanta client ID or secret missing.');
     }
     if (!cfg.apiUrl) {
       throw new VError('apiUrl missing.');
@@ -34,12 +34,22 @@ export class Vanta {
 
     // Checks apiUrl is in the correct format
     const apiUrl = new URL(cfg.apiUrl);
-    const timeout = cfg.timeout ?? DEFAULT_TIMEOUT;
+
+    const timeout: number = cfg.timeout ?? DEFAULT_TIMEOUT;
+
+    const sessionToken: string = await Vanta.getSessionToken(
+      apiUrl.toString(),
+      cfg.client_id,
+      cfg.client_secret,
+      timeout
+    );
+
     const headers = {
       'content-type': 'application/json',
-      Authorization: `Bearer ${cfg.token}`,
+      Authorization: `Bearer ${sessionToken}`,
       Accept: '*/*',
     };
+
     const api = axios.create({
       timeout, // default is `0` (no timeout)
       maxContentLength: Infinity, //default is 2000 bytes,
@@ -54,6 +64,41 @@ export class Vanta {
       apiUrl.toString(),
       cfg.skipConnectionCheck ? cfg.skipConnectionCheck : true
     );
+  }
+
+  static async getSessionToken(
+    apiUrl: string,
+    clientId: string,
+    clientSecret: string,
+    timeout: number
+  ): Promise<string> {
+    // The expectation is that this token will last long enough to complete the connector.
+    // If that is not the case, we will need to update the connector to match the requirements
+
+    const headers = {
+      'content-type': 'application/json',
+    };
+    const api = axios.create({
+      timeout, // default is `0` (no timeout)
+      maxContentLength: Infinity, //default is 2000 bytes,
+      maxBodyLength: Infinity, //default is 2000 bytes,
+      headers,
+    });
+    const tokenUrl = `${apiUrl}oauth/token`;
+    const body = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: 'client_credentials',
+      scope: 'vanta-api.all:read',
+    };
+    try {
+      const packed_response: AxiosResponse = await api.post(tokenUrl, body, {
+        headers,
+      });
+      return packed_response.data.access_token;
+    } catch (error) {
+      throw new VError('Failed to fetch session token: %s', error);
+    }
   }
 
   async checkConnection(): Promise<[boolean, VError]> {
