@@ -14,6 +14,12 @@
         "scrum",
         "kanban"
       ]
+    },
+    "issueSync": {
+      "type": "boolean"
+    },
+    "projectKey": {
+      "type": "string"
     }
   }
 }
