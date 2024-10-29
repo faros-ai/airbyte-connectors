@@ -133,6 +133,7 @@ export interface User extends Version2Models.User {
 export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
+  issueSync: boolean;
 }
 
 export interface ProjectVersion extends Version2Models.Version {
