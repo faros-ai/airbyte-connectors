@@ -995,7 +995,7 @@ Array [
         },
       },
       "status": Object {
-        "category": "Custom",
+        "category": "InProgress",
         "detail": "QA",
       },
     },
@@ -1024,7 +1024,7 @@ Array [
         },
       },
       "status": Object {
-        "category": "Custom",
+        "category": "Todo",
         "detail": "Open",
       },
     },
@@ -1169,7 +1169,7 @@ Array [
         },
       },
       "status": Object {
-        "category": "Custom",
+        "category": "InProgress",
         "detail": "QA",
       },
     },

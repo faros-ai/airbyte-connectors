@@ -15,6 +15,14 @@ export function setupJiraInstance(
     category: 'In Progress',
     detail: 'In Progress',
   });
+
+  const statusById = new Map<string, Status>();
+  statusById.set('10001', {category: 'To Do', detail: 'Backlog'});
+  statusById.set('10002', {category: 'Done', detail: 'Done'});
+  statusById.set('10004', {
+    category: 'In Progress',
+    detail: 'In Progress',
+  });
   Jira.instance = jest.fn().mockImplementation(() => {
     return new Jira(
       'https://jira.com',
@@ -32,6 +40,7 @@ export function setupJiraInstance(
       ]),
       50,
       statusByName,
+      statusById,
       isCloud,
       5,
       100,

@@ -1080,7 +1080,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-1",
         "plannedPoints": 5,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1088,7 +1091,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-2",
         "plannedPoints": 4,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1096,7 +1102,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-5",
         "plannedPoints": 15,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1104,7 +1113,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-3",
         "plannedPoints": 15,
         "points": 10,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1112,7 +1124,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-4",
         "plannedPoints": 15,
         "points": 15,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1120,7 +1135,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-6",
         "plannedPoints": 20,
         "points": 20,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
     ],
     "sprintId": 1,
@@ -1140,7 +1158,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-1",
         "plannedPoints": 5,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1148,7 +1169,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-2",
         "plannedPoints": 4,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1156,7 +1180,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-5",
         "plannedPoints": 15,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1164,7 +1191,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-3",
         "plannedPoints": 15,
         "points": 10,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1172,7 +1202,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-4",
         "plannedPoints": 15,
         "points": 15,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1180,7 +1213,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-6",
         "plannedPoints": 20,
         "points": 20,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
     ],
     "sprintId": 1,
