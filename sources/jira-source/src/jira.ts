@@ -1191,7 +1191,7 @@ export class Jira {
         return {
           key: issue.key,
           classification,
-          status: issue.status.name,
+          status: issue.status?.name,
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
           ),
