@@ -177,6 +177,7 @@ export class Jira {
     private readonly fieldNameById: Map<string, string>,
     private readonly additionalFieldsArrayLimit: number,
     private readonly statusByName: Map<string, Status>,
+    private readonly statusById: Map<string, Status>,
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
@@ -268,9 +269,16 @@ export class Jira {
     );
 
     const statusByName = new Map<string, Status>();
+    const statusById = new Map<string, Status>();
     for (const status of await api.v2.workflowStatuses.getStatuses()) {
       if (status.name && status.statusCategory?.name) {
         statusByName.set(normalizeString(status.name), {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+      if (status.id && status.statusCategory?.name) {
+        statusById.set(status.id, {
           category: status.statusCategory.name,
           detail: status.name,
         });
@@ -291,6 +299,7 @@ export class Jira {
       cfg.additional_fields_array_limit ??
         DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
       statusByName,
+      statusById,
       isCloud,
       cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
       cfg.page_size ?? DEFAULT_PAGE_SIZE,
@@ -1188,10 +1197,13 @@ export class Jira {
   toSprintReportIssues(report: any): SprintIssue[] {
     const toSprintIssues = (issues: any, classification: string): any[] =>
       issues?.map((issue: any) => {
+        // Jira Server returns statusId in issue.statusId, while Jira Cloud returns it in issue.status.id
+        const statusId = issue.status?.id ?? issue.statusId;
+        const status = this.statusById.get(statusId);
         return {
           key: issue.key,
           classification,
-          status: issue.status?.name,
+          status,
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
           ),
