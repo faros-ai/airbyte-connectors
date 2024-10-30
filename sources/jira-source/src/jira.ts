@@ -1199,7 +1199,7 @@ export class Jira {
       issues?.map((issue: any) => {
         // Jira Server returns statusId in issue.statusId, while Jira Cloud returns it in issue.status.id
         const statusId = issue.status?.id ?? issue.statusId;
-        const status = this.statusById.get(statusId);
+        const status = statusId ? this.statusById.get(statusId) : undefined;
         return {
           key: issue.key,
           classification,
