@@ -153,7 +153,6 @@ export class Vanta {
 
   private async fetchVulnerabilities(cursor: string | null): Promise<any> {
     const url = `${this.apiUrl}v1/vulnerabilities`;
-    console.log('url:', url);
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {

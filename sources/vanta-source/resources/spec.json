@@ -10,12 +10,14 @@
       "client_id": {
         "type": "string",
         "title": "API Client Id",
-        "description": "Vanta Client Id"
+        "description": "Vanta Client Id",
+        "airbyte_secret": true
       },
       "client_secret": {
         "type": "string",
         "title": "API Client Secret",
-        "description": "Vanta Client Secret"
+        "description": "Vanta Client Secret",
+        "airbyte_secret": true
       },
       "apiUrl": {
         "type": "string",
