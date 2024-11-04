@@ -428,6 +428,113 @@ exports[`index streams - copilot seats without audit logs API 1`] = `
 ]
 `;
 
+exports[`index streams - copilot usage with teams (GA API) 1`] = `
+[
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 123,
+        "active_users": 6,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 135,
+        "lines_suggested": 225,
+        "suggestions_count": 249,
+      },
+      {
+        "acceptances_count": 253,
+        "active_users": 7,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 270,
+        "lines_suggested": 520,
+        "suggestions_count": 496,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": null,
+    "total_acceptances_count": 499,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_acceptances": 0,
+    "total_chat_turns": 0,
+    "total_lines_accepted": 538,
+    "total_lines_suggested": 1042,
+    "total_suggestions_count": 989,
+  },
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 123,
+        "active_users": 6,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 135,
+        "lines_suggested": 225,
+        "suggestions_count": 249,
+      },
+      {
+        "acceptances_count": 253,
+        "active_users": 7,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 270,
+        "lines_suggested": 520,
+        "suggestions_count": 496,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": "justice-league",
+    "total_acceptances_count": 499,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_acceptances": 0,
+    "total_chat_turns": 0,
+    "total_lines_accepted": 538,
+    "total_lines_suggested": 1042,
+    "total_suggestions_count": 989,
+  },
+]
+`;
+
 exports[`index streams - copilot usage with teams 1`] = `
 [
   {
@@ -597,6 +704,62 @@ exports[`index streams - copilot usage with teams 1`] = `
     "total_lines_accepted": 700,
     "total_lines_suggested": 1100,
     "total_suggestions_count": 800,
+  },
+]
+`;
+
+exports[`index streams - copilot usage without teams (GA API) 1`] = `
+[
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 123,
+        "active_users": 6,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 135,
+        "lines_suggested": 225,
+        "suggestions_count": 249,
+      },
+      {
+        "acceptances_count": 253,
+        "active_users": 7,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 270,
+        "lines_suggested": 520,
+        "suggestions_count": 496,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": null,
+    "total_acceptances_count": 499,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_acceptances": 0,
+    "total_chat_turns": 0,
+    "total_lines_accepted": 538,
+    "total_lines_suggested": 1042,
+    "total_suggestions_count": 989,
   },
 ]
 `;

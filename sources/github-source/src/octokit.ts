@@ -26,6 +26,8 @@ import {GitHubConfig} from './types';
 export type ExtendedOctokit = OctokitRest &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
+    copilotMetrics: string;
+    copilotMetricsForTeam: string;
   };
 const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
@@ -86,6 +88,8 @@ export function makeOctokitClient(
   return {
     ...kit,
     auditLogs: 'GET /orgs/{org}/audit-log',
+    copilotMetrics: 'GET /orgs/{org}/copilot/metrics',
+    copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/usage',
   };
 }
 

@@ -1,4 +1,8 @@
-import {RequestError} from '@octokit/types';
+import {
+  GetResponseDataTypeFromEndpointMethod,
+  OctokitResponse,
+  RequestError,
+} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -75,7 +79,12 @@ import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
-import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
+import {
+  AuditLogTeamMember,
+  CopilotMetricsResponse,
+  GitHubConfig,
+  GraphQLErrorResponse,
+} from './types';
 
 export const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -105,6 +114,10 @@ type TeamMemberTimestamps = {
 };
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
+
+type CopilotUsageResponse = Awaited<
+  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
+>['data'];
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
@@ -928,29 +941,51 @@ export abstract class GitHub {
   }
 
   async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
+    let data: CopilotUsageResponse;
+    let useBetaAPI = false;
     try {
-      const res = await this.octokit(org).copilot.usageMetricsForOrg({
-        org,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      // try to use GA API first
+      try {
+        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+          org
+        ).request(this.octokit(org).copilotMetrics, {org});
+        data = transformCopilotMetricsResponse(res.data);
+      } catch (err: any) {
+        if (err.message) {
+          this.logger.warn(err.message);
+        }
+        this.logger.warn(
+          'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
+        );
+      }
+      if (!data) {
+        // try to use beta API as fallback (supposed to be available until EOY24)
+        const res = await this.octokit(org).copilot.usageMetricsForOrg({
+          org,
+        });
+        data = res.data;
+        useBetaAPI = true;
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
         return;
       }
-      for (const usage of res.data) {
+      for (const usage of data) {
         yield {
           org,
           team: null,
           ...usage,
         };
       }
-      yield* this.getCopilotUsageTeams(org);
+      yield* this.getCopilotUsageTeams(org, useBetaAPI);
     } catch (err: any) {
       this.handleCopilotError(err, org, 'usage');
     }
   }
 
   async *getCopilotUsageTeams(
-    org: string
+    org: string,
+    useBetaAPI: boolean
   ): AsyncGenerator<CopilotUsageSummary> {
     let teams: ReadonlyArray<Team>;
     try {
@@ -965,17 +1000,29 @@ export abstract class GitHub {
       throw err;
     }
     for (const team of teams) {
-      const res = await this.octokit(org).copilot.usageMetricsForTeam({
-        org,
-        team_slug: team.slug,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      let data: CopilotUsageResponse;
+      if (useBetaAPI) {
+        const res = await this.octokit(org).copilot.usageMetricsForTeam({
+          org,
+          team_slug: team.slug,
+        });
+        data = res.data;
+      } else {
+        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+          org
+        ).request(this.octokit(org).copilotMetricsForTeam, {
+          org,
+          team_slug: team.slug,
+        });
+        data = transformCopilotMetricsResponse(res.data);
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
           `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
         );
         continue;
       }
-      for (const usage of res.data) {
+      for (const usage of data) {
         yield {
           org,
           team: team.slug,
@@ -987,6 +1034,9 @@ export abstract class GitHub {
 
   private handleCopilotError(err: any, org: string, context: string) {
     if (err.status >= 400 && err.status < 500) {
+      if (err.message) {
+        this.logger.warn(err.message);
+      }
       this.logger.warn(
         `Failed to sync GitHub Copilot ${context} for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
       );
@@ -1774,4 +1824,49 @@ function getLastCopilotTeamForUser(
     }
   }
   return lastCopilotTeamLeft;
+}
+
+function transformCopilotMetricsResponse(
+  data: CopilotMetricsResponse
+): CopilotUsageResponse {
+  return data.map((d) => {
+    const breakdown =
+      d.copilot_ide_code_completions?.editors.flatMap((e) =>
+        e.models.flatMap((m) =>
+          m.languages.map((l) => ({
+            language: l.name,
+            editor: e.name,
+            suggestions_count: l.total_code_suggestions,
+            acceptances_count: l.total_code_acceptances,
+            lines_suggested: l.total_code_lines_suggested,
+            lines_accepted: l.total_code_lines_accepted,
+            active_users: l.total_engaged_users,
+          }))
+        )
+      ) ?? [];
+    return {
+      day: d.date,
+      total_suggestions_count: breakdown.reduce(
+        (acc, c) => acc + c.suggestions_count,
+        0
+      ),
+      total_acceptances_count: breakdown.reduce(
+        (acc, c) => acc + c.acceptances_count,
+        0
+      ),
+      total_lines_suggested: breakdown.reduce(
+        (acc, c) => acc + c.lines_suggested,
+        0
+      ),
+      total_lines_accepted: breakdown.reduce(
+        (acc, c) => acc + c.lines_accepted,
+        0
+      ),
+      total_active_users: d.total_active_users,
+      total_chat_acceptances: 0, // not available in GA API
+      total_chat_turns: 0, // not available in GA API
+      total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
+      breakdown,
+    };
+  });
 }
