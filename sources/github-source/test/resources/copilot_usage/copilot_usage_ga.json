@@ -33,6 +33,30 @@
                   "total_code_lines_accepted": 270
                 }
               ]
+            },
+            {
+              "name": "other-model",
+              "is_custom_model": false,
+              "custom_model_training_date": null,
+              "total_engaged_users": 13,
+              "languages": [
+                {
+                  "name": "python",
+                  "total_engaged_users": 6,
+                  "total_code_suggestions": 249,
+                  "total_code_acceptances": 123,
+                  "total_code_lines_suggested": 225,
+                  "total_code_lines_accepted": 135
+                },
+                {
+                  "name": "ruby",
+                  "total_engaged_users": 7,
+                  "total_code_suggestions": 496,
+                  "total_code_acceptances": 253,
+                  "total_code_lines_suggested": 520,
+                  "total_code_lines_accepted": 270
+                }
+              ]
             }
           ]
         },

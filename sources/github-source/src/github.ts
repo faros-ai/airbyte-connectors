@@ -1,8 +1,4 @@
-import {
-  GetResponseDataTypeFromEndpointMethod,
-  OctokitResponse,
-  RequestError,
-} from '@octokit/types';
+import {OctokitResponse, RequestError} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -1831,19 +1827,38 @@ function transformCopilotMetricsResponse(
 ): CopilotUsageResponse {
   return data.map((d) => {
     const breakdown =
-      d.copilot_ide_code_completions?.editors.flatMap((e) =>
-        e.models.flatMap((m) =>
-          m.languages.map((l) => ({
-            language: l.name,
-            editor: e.name,
-            suggestions_count: l.total_code_suggestions,
-            acceptances_count: l.total_code_acceptances,
-            lines_suggested: l.total_code_lines_suggested,
-            lines_accepted: l.total_code_lines_accepted,
-            active_users: l.total_engaged_users,
-          }))
-        )
-      ) ?? [];
+      d.copilot_ide_code_completions?.editors.flatMap((e) => {
+        const languages: {
+          [language: string]: {
+            suggestions_count: number;
+            acceptances_count: number;
+            lines_suggested: number;
+            lines_accepted: number;
+            active_users: number;
+          };
+        } = {};
+        for (const m of e.models) {
+          for (const l of m.languages) {
+            const language = (languages[l.name] = languages[l.name] ?? {
+              suggestions_count: 0,
+              acceptances_count: 0,
+              lines_suggested: 0,
+              lines_accepted: 0,
+              active_users: 0,
+            });
+            language.suggestions_count += l.total_code_suggestions;
+            language.acceptances_count += l.total_code_acceptances;
+            language.lines_suggested += l.total_code_lines_suggested;
+            language.lines_accepted += l.total_code_lines_accepted;
+            language.active_users += l.total_engaged_users;
+          }
+        }
+        return Object.entries(languages).map(([k, v]) => ({
+          ...v,
+          language: k,
+          editor: e.name,
+        }));
+      }) ?? [];
     return {
       day: d.date,
       total_suggestions_count: breakdown.reduce(
