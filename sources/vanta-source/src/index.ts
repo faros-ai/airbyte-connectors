@@ -13,11 +13,10 @@ import {Vulnerabilities} from './streams';
 import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
-  readonly apiUrl: string;
-  readonly queryTypes: string[];
+  readonly api_url: string;
   readonly token: string;
-  readonly skipConnectionCheck?: boolean;
-  readonly limit?: number;
+  readonly skip_connection_check?: boolean;
+  readonly page_size?: number;
   readonly timeout?: number;
 }
 

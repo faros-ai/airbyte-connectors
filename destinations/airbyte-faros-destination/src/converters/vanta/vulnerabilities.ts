@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 
 // import fs
 // import fs from 'fs-extra';
@@ -20,6 +20,8 @@ import {
   GitV2VulnerabilityData,
   VcsRepoKey,
   VcsRepositoryVulnerabilityResponse,
+  Vulnerability,
+  VulnerabilityRemediation,
 } from './types';
 import {getQueryFromName, looksLikeGitCommitSha} from './utils';
 
@@ -90,10 +92,13 @@ export abstract class Vulnerabilities extends Converter {
   nRecordsProcessed: number = 0;
   maxNRecords: number | null = 100;
   filterLastNDays: number | null = null;
+  maxDescriptionLength: number = 1000; // TODO: Add config parameter
+  vcsIntegrationIds = ['github']; // TODO: Receive this from config
+  cicdIntegrationIds = ['aws']; // TODO: Receive this from config
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.vuln_data?.id;
+    return record?.record?.data?.data.id;
   }
 
   async convert(
@@ -102,25 +107,165 @@ export abstract class Vulnerabilities extends Converter {
     if (this.maxNRecords && this.nRecordsProcessed >= this.maxNRecords) {
       return [];
     }
-    if (this.filterLastNDays && record?.record?.data?.vuln_data?.createdAt) {
-      // We get the current date and subtract the number of days we want to filter by
-      const prev_date = new Date();
-      prev_date.setDate(prev_date.getDate() - this.filterLastNDays);
-      const record_date = new Date(record?.record?.data?.vuln_data?.createdAt);
-      if (record_date.getTime() < prev_date.getTime()) {
-        return [];
-      }
-    }
-    if (record?.record?.data?.vuln_type === 'gitv2') {
-      this.git_vulns.push(
-        record?.record?.data?.vuln_data as GitV2VulnerabilityData
-      );
-    } else if (record?.record?.data?.vuln_type === 'awsv2') {
-      this.awsv2_vulns.push(
-        record?.record?.data?.vuln_data as AWSV2VulnerabilityData
+    const recordType = record?.record?.data?.recordType;
+    if (recordType === 'vulnerability') {
+      return this.convertVulnerabilityRecord(record?.record?.data.data);
+    } else if (recordType === 'vulnerability-remediation') {
+      return this.convertVulnerabilityRemediationRecord(
+        record?.record?.data.data
       );
     }
+    // Move this to separate function
+    // const data = record?.record?.data;
+    // if (this.filterLastNDays && data.firstDetectedDate) {
+    //   // We get the current date and subtract the number of days we want to filter by
+    //   const prev_date = new Date();
+    //   prev_date.setDate(prev_date.getDate() - this.filterLastNDays);
+    //   const record_date = new Date(record?.record?.data?.vuln_data?.createdAt);
+    //   if (record_date.getTime() < prev_date.getTime()) {
+    //     return [];
+    //   }
+    // }
+    // if (record?.record?.data?.vuln_type === 'gitv2') {
+    //   this.git_vulns.push(
+    //     record?.record?.data?.vuln_data as GitV2VulnerabilityData
+    //   );
+    // } else if (record?.record?.data?.vuln_type === 'awsv2') {
+    //   this.awsv2_vulns.push(
+    //     record?.record?.data?.vuln_data as AWSV2VulnerabilityData
+    //   );
+    // }
     return [];
+  }
+
+  async convertVulnerabilityRecord(
+    data: Vulnerability
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const records: DestinationRecord[] = [];
+
+    // Creating the base sec_Vulnerability record
+    const vulnRecord: DestinationRecord = {
+      model: 'sec_Vulnerability',
+      record: {
+        uid: data.id,
+        source: this.source,
+        title: data.name,
+        description: Utils.cleanAndTruncate(
+          data.description,
+          this.maxDescriptionLength
+        ),
+        severity: data.severity
+          ? this.severityMap[data.severity].toString()
+          : '0',
+        url: data.externalURL,
+        discoveredAt: this.convertDateFormat(data.firstDetectedDate),
+        vulnerabilityIds: data.relatedVulns,
+      },
+    };
+    records.push(vulnRecord);
+
+    for (const identifierId of data.relatedVulns) {
+      const category = this.getVulnerabilityCatalogCategory(identifierId);
+      const type = {category, detail: category};
+      const identifierRecord: DestinationRecord = {
+        model: 'sec_VulnerabilityIdentifier',
+        record: {
+          uid: identifierId,
+          type,
+        },
+      };
+      records.push(identifierRecord);
+
+      const identifierRelationshipRecord: DestinationRecord = {
+        model: 'sec_VulnerabilityIdentifierRelationship',
+        record: {
+          vulnerability: {uid: data.id, source: this.source},
+          identifier: {uid: identifierId, type},
+        },
+      };
+      records.push(identifierRelationshipRecord);
+    }
+
+    // Creating repository or CICD artifact vulnerability records based on vulnerability type
+    if (this.vcsIntegrationIds.includes(data.integrationId)) {
+      // TODO: query for vcs repository based on repository uid
+      const repoVulnerabilityRecord: DestinationRecord = {
+        model: 'vcs_RepositoryVulnerability',
+        record: {
+          vulnerability: {uid: data.id, source: this.source},
+          repository: {uid: data.targetId, source: this.source},
+          url: data.externalURL,
+          dueAt: this.convertDateFormat(data.remediateByDate),
+          createdAt: this.convertDateFormat(data.firstDetectedDate),
+          status: {
+            category: data.deactivateMetadata ? 'Ignored' : 'Open',
+            detail: data.deactivateMetadata?.deactivationReason || '',
+          },
+        },
+      };
+      records.push(repoVulnerabilityRecord);
+    } else if (this.cicdIntegrationIds.includes(data.integrationId)) {
+      // TODO: query for cicd artifact based on artifact uid
+      const artifactVulnerabilityRecord: DestinationRecord = {
+        model: 'cicd_ArtifactVulnerability',
+        record: {
+          vulnerability: {uid: data.id, source: this.source},
+          artifact: {
+            uid: data.targetId,
+            repository: {uid: 'cicd-repo-uid', source: this.source},
+          },
+          url: data.externalURL,
+          dueAt: this.convertDateFormat(data.remediateByDate),
+          createdAt: this.convertDateFormat(data.firstDetectedDate),
+          status: {
+            category: data.deactivateMetadata ? 'Ignored' : 'Open',
+            detail: data.deactivateMetadata?.deactivationReason || '',
+          },
+        },
+      };
+      records.push(artifactVulnerabilityRecord);
+    }
+
+    return records;
+  }
+
+  async convertVulnerabilityRemediationRecord(
+    data: VulnerabilityRemediation
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    // TODO: update this function to handle remediation records correctly
+    const updateRecord: DestinationRecord = {
+      model: 'vcs_RepositoryVulnerability__Update',
+      record: {
+        at: new Date().toISOString(),
+        where: {
+          vulnerability: {
+            uid: data.vulnerabilityId,
+            source: this.source,
+          },
+          repository: {
+            uid: data.vulnerableAssetId,
+            source: this.source,
+          },
+        },
+        mask: ['resolvedAt', 'status'],
+        patch: {
+          resolvedAt: data.remediationDate,
+          status: {
+            category: 'Resolved',
+            detail: 'Resolved via remediation',
+          },
+        },
+      },
+    };
+    return [updateRecord];
+  }
+
+  getVulnerabilityCatalogCategory(identifierId: string): string {
+    if (identifierId.includes('CVE')) {
+      return 'CVE';
+    } else if (identifierId.includes('GHSA')) {
+      return 'GHSA';
+    }
   }
 
   addUIDToMapping(

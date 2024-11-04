@@ -60,9 +60,9 @@ export class Vanta {
     return new Vanta(
       logger,
       api,
-      cfg.limit ?? DEFAULT_PAGE_LIMIT,
+      cfg.page_size ?? DEFAULT_PAGE_LIMIT,
       apiUrl.toString(),
-      cfg.skipConnectionCheck ? cfg.skipConnectionCheck : true
+      cfg.skip_connection_check ?? true
     );
   }
 

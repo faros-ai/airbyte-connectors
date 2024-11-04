@@ -19,7 +19,7 @@
         "description": "Vanta Client Secret",
         "airbyte_secret": true
       },
-      "apiUrl": {
+      "api_url": {
         "type": "string",
         "title": "Vanta GraphQL API URL",
         "description": "Vanta GraphQL API, e.g. ",
@@ -39,7 +39,7 @@
         "default": 60000,
         "description": "The time allowed for a request to timeout (in milliseconds)."
       },
-      "skipConnectionCheck": {
+      "skip_connection_check": {
         "type": "boolean",
         "title": "Skip Connection Check",
         "default": false
