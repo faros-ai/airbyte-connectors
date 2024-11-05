@@ -1,4 +1,3 @@
-import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import {getLocal} from 'mockttp';
 
