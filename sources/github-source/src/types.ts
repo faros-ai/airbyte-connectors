@@ -1,6 +1,7 @@
 import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 
+import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
 
 export interface GitHubConfig extends AirbyteConfig {
@@ -59,3 +60,74 @@ export type AuditLogTeamMember = {
   team: string;
   user: string;
 };
+
+export type CopilotUsageResponse = Awaited<
+  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
+>['data'];
+
+export type CopilotMetricsResponse = {
+  date: string;
+  total_active_users: number;
+  total_engaged_users: number;
+  copilot_ide_code_completions: {
+    total_engaged_users: number;
+    editors: {
+      name: string;
+      total_engaged_users: number;
+      models: {
+        name: string;
+        is_custom_model: boolean;
+        custom_model_training_date: string | null;
+        total_engaged_users: number;
+        languages: {
+          name: string;
+          total_engaged_users: number;
+          total_code_suggestions: number;
+          total_code_acceptances: number;
+          total_code_lines_suggested: number;
+          total_code_lines_accepted: number;
+        }[];
+      }[];
+    }[];
+  } | null;
+  copilot_ide_chat: {
+    total_engaged_users: number;
+    editors: {
+      name: string;
+      total_engaged_users: number;
+      models: {
+        name: string;
+        is_custom_model: boolean;
+        custom_model_training_date: string | null;
+        total_engaged_users: number;
+        total_chats: number;
+        total_chat_insertion_events: number;
+        total_chat_copy_events: number;
+      };
+    }[];
+  } | null;
+  copilot_dotcom_chat: {
+    total_engaged_users: number;
+    models: {
+      name: string;
+      is_custom_model: boolean;
+      custom_model_training_date: string | null;
+      total_engaged_users: number;
+      total_chats: number;
+    }[];
+  } | null;
+  copilot_dotcom_pull_requests: {
+    total_engaged_users: number;
+    repositories: {
+      name: string;
+      total_engaged_users: number;
+      models: {
+        name: string;
+        is_custom_model: boolean;
+        custom_model_training_date: string | null;
+        total_pr_summaries_created: number;
+        total_engaged_users: number;
+      }[];
+    }[];
+  } | null;
+}[];

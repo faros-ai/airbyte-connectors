@@ -258,6 +258,57 @@ describe('index', () => {
     });
   });
 
+  test('streams - copilot usage without teams (GA API)', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getTeamsMockedImplementation(
+              new ErrorWithStatus(400, 'API not available')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage with teams (GA API)', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getCopilotUsageForTeamGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - organizations', async () => {
     await sourceReadTest({
       source,
@@ -967,6 +1018,14 @@ const getCopilotUsageForTeamMockedImplementation = (res: any) => ({
   },
 });
 
+const getCopilotUsageForOrgGAMockedImplementation = (res: any) => ({
+  copilotMetrics: jest.fn().mockReturnValue({data: res}),
+});
+
+const getCopilotUsageForTeamGAMockedImplementation = (res: any) => ({
+  copilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
+});
+
 const getOrganizationMockedImplementation = (res: any) => ({
   orgs: {
     get: jest.fn().mockReturnValue({data: res}),
@@ -1035,9 +1094,6 @@ const getProjectsClassicMockedImplementation = (res: any) => ({
     listForOrg: jest.fn().mockReturnValue(res),
   },
 });
-
-const getCommitsMockedImplementation = (res: any) =>
-  graphqlMockedImplementation('commits', res);
 
 const getRepositoryTagsMockedImplementation = (res: any) =>
   graphqlMockedImplementation('repoTags', res);
