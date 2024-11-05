@@ -73,7 +73,7 @@ export class LocationCollector {
         if (!seenCoordinates.has(coordinatesKey)) {
           records.push({
             model: 'geo_Coordinates',
-            record: rawCoordinates,
+            record: coordinates,
           });
           seenCoordinates.add(coordinatesKey);
         }

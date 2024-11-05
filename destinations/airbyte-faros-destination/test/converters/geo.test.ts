@@ -131,6 +131,10 @@ describe('LocationCollector', () => {
               ...geocodeResponse[0],
               uid: 'Brooklyn, New York, NY, USA',
               raw: 'Brooklyn, New York, NY, USA',
+              coordinates: {
+                lat: '40.6781784',
+                lon: '-73.9441579',
+              },
             },
           ],
         })
