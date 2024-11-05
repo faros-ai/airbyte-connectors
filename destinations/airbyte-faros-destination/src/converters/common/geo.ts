@@ -67,7 +67,7 @@ export class LocationCollector {
       const rawCoordinates = location.coordinates;
       const lat = rawCoordinates?.lat ? toNumber(rawCoordinates.lat) : null;
       const lon = rawCoordinates?.lon ? toNumber(rawCoordinates.lon) : null;
-      const coordinates = isFinite(lat) && isFinite(lon) ? {lat, lon} : null;
+      const coordinates = isFinite(lat) || isFinite(lon) ? {lat, lon} : null;
       if (coordinates) {
         const coordinatesKey = `${rawCoordinates.lat}-${rawCoordinates.lon}`;
         if (!seenCoordinates.has(coordinatesKey)) {
@@ -77,6 +77,12 @@ export class LocationCollector {
           });
           seenCoordinates.add(coordinatesKey);
         }
+      } else {
+        this.logger?.warn(
+          `Invalid coordinates lat: ${rawCoordinates.lat} and lon: ` +
+            `${rawCoordinates.lon} for location '${location.raw}'. ` +
+            'Will use non-geocoded location.'
+        );
       }
 
       // Create location record with optional address and coordinates
