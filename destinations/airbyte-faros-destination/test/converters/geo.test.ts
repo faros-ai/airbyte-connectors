@@ -121,16 +121,22 @@ describe('LocationCollector', () => {
       .once()
       .thenReply(200, JSON.stringify({locations: geocodeResponse}));
 
-    const geoResponse2 = {
-      ...geocodeResponse[0],
-      uid: 'Brooklyn, New York, NY, USA',
-      raw: 'Brooklyn, New York, NY, USA',
-    };
     await mockttp
       .forPost('/geocoding/lookup')
       .withJsonBody({locations: ['Brooklyn, New York, NY, USA']})
       .once()
-      .thenReply(200, JSON.stringify({locations: [geoResponse2]}));
+      .thenReply(
+        200,
+        JSON.stringify({
+          locations: [
+            {
+              ...geocodeResponse[0],
+              uid: 'Brooklyn, New York, NY, USA',
+              raw: 'Brooklyn, New York, NY, USA',
+            },
+          ],
+        })
+      );
 
     await collector.collect('Brooklyn, NY');
     await collector.collect('Brooklyn, New York, NY, USA');

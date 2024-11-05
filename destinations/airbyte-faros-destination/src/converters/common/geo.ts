@@ -1,6 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient, Location} from 'faros-js-client';
-import {isFinite,isNil, toNumber} from 'lodash';
+import {isFinite, toNumber} from 'lodash';
 
 import {DestinationRecord} from '../converter';
 
