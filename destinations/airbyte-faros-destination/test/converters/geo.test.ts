@@ -6,7 +6,6 @@ import {LocationCollector} from '../../src/converters/common/geo';
 
 describe('LocationCollector', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
-  const logger = new AirbyteLogger(AirbyteLogLevel.INFO);
 
   const geocodeResponse = [
     {
@@ -43,7 +42,7 @@ describe('LocationCollector', () => {
       apiKey: 'test-key',
     });
 
-    const collector = new LocationCollector(false, farosClient, logger);
+    const collector = new LocationCollector(false, farosClient);
     expect(await collector.collect()).toBeNull();
     expect(await collector.collect('')).toBeNull();
     expect(await collector.collect('  ')).toBeNull();
@@ -51,7 +50,7 @@ describe('LocationCollector', () => {
   });
 
   test('caches and returns uncoded locations', async () => {
-    const collector = new LocationCollector(false, undefined, logger);
+    const collector = new LocationCollector(false, undefined);
     const location = 'New York, NY';
     const result = await collector.collect(location);
     expect(result).toEqual({uid: location});
@@ -59,7 +58,7 @@ describe('LocationCollector', () => {
   });
 
   test('caches and returns previously seen locations', async () => {
-    const collector = new LocationCollector(false, undefined, logger);
+    const collector = new LocationCollector(false, undefined);
     const location = 'New York, NY';
 
     const result1 = await collector.collect(location);
@@ -81,7 +80,7 @@ describe('LocationCollector', () => {
       .once() // Should call FarosClient once for same location
       .thenReply(200, JSON.stringify({locations: geocodeResponse}));
 
-    const collector = new LocationCollector(true, farosClient, logger);
+    const collector = new LocationCollector(true, farosClient);
     const result1 = await collector.collect('Brooklyn, New York');
     const result2 = await collector.collect('Brooklyn, New York');
 
@@ -100,7 +99,7 @@ describe('LocationCollector', () => {
       apiKey: 'test-key',
     });
 
-    const collector = new LocationCollector(true, farosClient, logger);
+    const collector = new LocationCollector(true, farosClient);
     const location = 'San Francisco, CA';
     const result = await collector.collect(location);
 
@@ -113,7 +112,7 @@ describe('LocationCollector', () => {
       url: mockttp.url,
       apiKey: 'test-key',
     });
-    const collector = new LocationCollector(true, farosClient, logger);
+    const collector = new LocationCollector(true, farosClient);
 
     await mockttp
       .forPost('/geocoding/lookup')
