@@ -268,7 +268,6 @@ Array [
       "coordinates": Object {
         "lat": 41.6032207,
         "lon": -73.087749,
-        "source": "workday",
       },
       "raw": "Connecticut",
       "source": "workday",
@@ -306,7 +305,6 @@ Array [
       "coordinates": Object {
         "lat": 32.3182314,
         "lon": -86.902298,
-        "source": "workday",
       },
       "raw": "Alabama",
       "source": "workday",
