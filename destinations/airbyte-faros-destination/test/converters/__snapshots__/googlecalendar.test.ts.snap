@@ -229,7 +229,6 @@ Array [
       "coordinates": Object {
         "lat": 37.4471709,
         "lon": -122.1599896,
-        "source": "GoogleCalendar",
       },
       "raw": "419 University Ave, Palo Alto, CA 94301",
       "source": "GoogleCalendar",

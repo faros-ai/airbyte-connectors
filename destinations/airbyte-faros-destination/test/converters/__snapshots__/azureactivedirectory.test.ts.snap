@@ -156,7 +156,6 @@ Array [
       "coordinates": Object {
         "lat": 20.9847782,
         "lon": 105.8385857,
-        "source": "AzureActiveDirectory",
       },
       "raw": "32 dai tu, ha noi",
       "source": "AzureActiveDirectory",
