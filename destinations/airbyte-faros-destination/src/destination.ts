@@ -733,6 +733,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       let stateReset = false;
       let streamStatusReceived = false;
       const processedStreams: Set<string> = new Set();
+      const failedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
         let stateMessage: AirbyteStateMessage = undefined;
@@ -756,26 +757,37 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.src.warnings.push(syncMessage);
                 }
               }
-              stateMessage = new AirbyteStateMessage(msg.state);
-              if (msg.streamStatus?.name) {
+              const streamName = msg.streamStatus?.name;
+              if (streamName) {
                 this.logger.info(
-                  `Received ${msg.streamStatus.status} status for ${msg.streamStatus.name} stream`
+                  `Received ${msg.streamStatus.status} status for ${streamName} stream`
                 );
                 if (msg.streamStatus.status === 'SUCCESS') {
-                  if (msg.streamStatus.recordsEmitted) {
-                    this.logger.info(
-                      `Marking ${msg.streamStatus.name} stream models for reset`
-                    );
-                    ctx.markStreamForReset(msg.streamStatus.name);
-                  } else {
+                  if (!msg.streamStatus.recordsEmitted) {
                     this.logger.warn(
-                      `No records emitted for ${msg.streamStatus.name} stream.` +
+                      `No records emitted for ${streamName} stream.` +
                         ' Will not reset non-incremental models.'
                     );
+                  } else if (failedStreams.has(streamName)) {
+                    this.logger.warn(
+                      `Error previously occurred for ${streamName} stream. Will not reset its models.`
+                    );
+                  } else {
+                    this.logger.info(
+                      `Marking ${streamName} stream models for reset`
+                    );
+                    ctx.markStreamForReset(streamName);
                   }
+                } else if (msg.streamStatus.status === 'ERROR') {
+                  // Both fatal and non-fatal stream errors will prevent model reset.
+                  failedStreams.add(streamName);
+                  this.logger.warn(
+                    `Will not reset ${streamName} stream models`
+                  );
                 }
                 streamStatusReceived = true;
               }
+              stateMessage = new AirbyteStateMessage(msg.state);
             } else if (isSourceConfigMessage(msg)) {
               if (msg.redactedConfig?.backfill) {
                 isBackfillSync = true;
