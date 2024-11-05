@@ -78,6 +78,7 @@ import {RunMode, StreamBase} from './streams/common';
 import {
   AuditLogTeamMember,
   CopilotMetricsResponse,
+  CopilotUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -110,10 +111,6 @@ type TeamMemberTimestamps = {
 };
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
-
-type CopilotUsageResponse = Awaited<
-  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
->['data'];
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days

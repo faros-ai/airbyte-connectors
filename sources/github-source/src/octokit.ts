@@ -89,7 +89,7 @@ export function makeOctokitClient(
     ...kit,
     auditLogs: 'GET /orgs/{org}/audit-log',
     copilotMetrics: 'GET /orgs/{org}/copilot/metrics',
-    copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/usage',
+    copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/metrics',
   };
 }
 

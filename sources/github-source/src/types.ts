@@ -1,6 +1,7 @@
 import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 
+import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
 
 export interface GitHubConfig extends AirbyteConfig {
@@ -60,16 +61,16 @@ export type AuditLogTeamMember = {
   user: string;
 };
 
+export type CopilotUsageResponse = Awaited<
+  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
+>['data'];
+
 export type CopilotMetricsResponse = {
   date: string;
   total_active_users: number;
   total_engaged_users: number;
   copilot_ide_code_completions: {
     total_engaged_users: number;
-    // languages: {
-    //   name: string;
-    //   total_engaged_users: number;
-    // }[]; // appears on docs but not in the actual response
     editors: {
       name: string;
       total_engaged_users: number;
