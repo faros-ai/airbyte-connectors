@@ -206,7 +206,8 @@ export abstract class AirbyteSourceBase<
             if (isSourceStatusMessage(message)) {
               yield new AirbyteSourceStatusMessage(
                 {data: msgState},
-                message.sourceStatus
+                message.sourceStatus,
+                message.streamStatus
               );
             } else {
               yield new AirbyteStateMessage({data: msgState});
