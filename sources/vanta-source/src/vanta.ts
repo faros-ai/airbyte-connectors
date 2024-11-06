@@ -19,7 +19,7 @@ export class Vanta {
     private readonly limit: number,
     private readonly apiUrl: string,
     private readonly skipConnectionCheck: boolean,
-    private readonly resourceIdToName: Map<string, string>
+    private resourceIdToName: Map<string, string>
   ) {}
 
   static async instance(
@@ -64,7 +64,7 @@ export class Vanta {
       cfg.page_size ?? DEFAULT_PAGE_LIMIT,
       apiUrl.toString(),
       cfg.skip_connection_check ?? true,
-      cfg.resourceIdToNameMap
+      new Map<string, string>()
     );
   }
 
@@ -301,5 +301,23 @@ export class Vanta {
         error
       );
     }
+  }
+
+  async generateVulnerabilityResourcesMap(): Promise<void> {
+    const resources = await this.getAllResources();
+
+    // Initialize a map to store resourceId -> displayName mappings
+    this.resourceIdToName = new Map<string, string>();
+
+    // Populate the map with resourceId and displayName from resources
+    for (const [resourceId, resourceData] of resources.entries()) {
+      const displayName =
+        resourceData?.displayName || resourceData?.name || 'Unknown';
+      this.resourceIdToName.set(resourceId, displayName);
+    }
+
+    this.logger.info(
+      `Loaded ${this.resourceIdToName.size} resource ID to displayName mappings`
+    );
   }
 }
