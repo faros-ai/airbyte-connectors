@@ -22,6 +22,7 @@ export class Vulnerabilities extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<Dictionary<any>> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
+    await vanta.generateVulnerabilityResourcesMap();
     for await (const vuln of vanta.getVulnerabilities()) {
       yield {
         recordType: 'vulnerability',
@@ -38,6 +39,6 @@ export class Vulnerabilities extends AirbyteStreamBase {
 
   async onBeforeRead(): Promise<void> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
-    await vanta.generateVulnerabilityResourcesMap();
+    // await vanta.generateVulnerabilityResourcesMap();
   }
 }

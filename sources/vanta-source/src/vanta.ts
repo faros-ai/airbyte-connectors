@@ -181,7 +181,7 @@ export class Vanta {
   }
 
   // Method to fetch all integrations
-  private async fetchIntegrations(): Promise<any[]> {
+  private async fetchIntegrations(): Promise<any> {
     const url = `${this.apiUrl}v1/integrations`;
     try {
       const response: AxiosResponse = await this.api.get(url);
@@ -192,11 +192,11 @@ export class Vanta {
   }
 
   // Method to fetch all resource kinds for a specific integration
-  private async fetchResourceKinds(integrationId: string): Promise<any[]> {
+  private async fetchResourceKinds(integrationId: string): Promise<any> {
     const url = `${this.apiUrl}v1/integrations/${integrationId}/resource-kinds`;
     try {
       const response: AxiosResponse = await this.api.get(url);
-      return response.data.results;
+      return response.data;
     } catch (error) {
       throw new VError(
         `Failed to fetch resource kinds for integration ${integrationId}: %s`,
@@ -233,8 +233,8 @@ export class Vanta {
       const integrations = await this.fetchIntegrations();
 
       // Step 2: Iterate over each integration
-      for (const integration of integrations) {
-        const integrationId = integration.id;
+      for (const integration of integrations.data) {
+        const integrationId = integration.integrationId;
 
         // Step 3: Fetch resource kinds for each integration
         const resourceKinds = await this.fetchResourceKinds(integrationId);
@@ -245,19 +245,19 @@ export class Vanta {
           let hasNext = true;
 
           while (hasNext) {
-            const {results, pageInfo} = await this.fetchResources(
+            const {results} = await this.fetchResources(
               integrationId,
-              kind.id,
+              kind.resourceKind,
               cursor
             );
 
             // Store each resource in the map by its ID for quick lookup
-            for (const resource of results) {
-              allResources.set(resource.id, resource);
+            for (const resource of results.data) {
+              allResources.set(resource.resourceId, resource);
             }
 
-            cursor = pageInfo.endCursor;
-            hasNext = pageInfo.hasNextPage;
+            cursor = results.pageInfo.endCursor;
+            hasNext = results.pageInfo.hasNextPage;
           }
         }
       }
