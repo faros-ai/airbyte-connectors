@@ -67,7 +67,7 @@ export class LocationCollector {
       const rawCoordinates = location.coordinates;
       const lat = rawCoordinates?.lat ? toNumber(rawCoordinates.lat) : null;
       const lon = rawCoordinates?.lon ? toNumber(rawCoordinates.lon) : null;
-      const coordinates = isFinite(lat) || isFinite(lon) ? {lat, lon} : null;
+      const coordinates = isFinite(lat) && isFinite(lon) ? {lat, lon} : null;
       if (coordinates) {
         const coordinatesKey = `${rawCoordinates.lat}:${rawCoordinates.lon}`;
         if (!seenCoordinates.has(coordinatesKey)) {
