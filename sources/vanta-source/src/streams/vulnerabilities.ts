@@ -35,4 +35,23 @@ export class Vulnerabilities extends AirbyteStreamBase {
       };
     }
   }
+
+  async onBeforeRead(): Promise<void> {
+    const vanta = await Vanta.instance(this.cfg, this.logger);
+    const resources = await vanta.getAllResources();
+
+    // Initialize a map to store resourceId -> displayName mappings
+    this.cfg.resourceIdToNameMap = new Map<string, string>();
+
+    // Populate the map with resourceId and displayName from resources
+    for (const [resourceId, resourceData] of resources.entries()) {
+      const displayName =
+        resourceData?.displayName || resourceData?.name || 'Unknown';
+      this.cfg.resourceIdToNameMap.set(resourceId, displayName);
+    }
+
+    this.logger.info(
+      `Loaded ${this.cfg.resourceIdToNameMap.size} resource ID to displayName mappings`
+    );
+  }
 }

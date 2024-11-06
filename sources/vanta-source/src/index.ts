@@ -18,6 +18,7 @@ export interface VantaConfig extends AirbyteConfig {
   readonly skip_connection_check?: boolean;
   readonly page_size?: number;
   readonly timeout?: number;
+  resourceIdToNameMap: Map<string, string>;
 }
 
 /** The main entry point. */
