@@ -69,7 +69,7 @@ export class LocationCollector {
       const lon = rawCoordinates?.lon ? toNumber(rawCoordinates.lon) : null;
       const coordinates = isFinite(lat) || isFinite(lon) ? {lat, lon} : null;
       if (coordinates) {
-        const coordinatesKey = `${rawCoordinates.lat}-${rawCoordinates.lon}`;
+        const coordinatesKey = `${rawCoordinates.lat}:${rawCoordinates.lon}`;
         if (!seenCoordinates.has(coordinatesKey)) {
           records.push({
             model: 'geo_Coordinates',
@@ -80,8 +80,7 @@ export class LocationCollector {
       } else {
         this.logger?.warn(
           `Invalid coordinates lat: ${rawCoordinates.lat} and lon: ` +
-            `${rawCoordinates.lon} for location '${location.raw}'. ` +
-            'Will use non-geocoded location.'
+            `${rawCoordinates.lon} for location '${location.raw}'.`
         );
       }
 
@@ -92,7 +91,7 @@ export class LocationCollector {
           uid: location.uid,
           raw: location.raw,
           address: isValidAddress ? {uid: address.uid} : null,
-          coordinates,
+          coordinates: coordinates ? {lat, lon} : null,
         },
       });
     });
