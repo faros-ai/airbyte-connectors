@@ -18,7 +18,8 @@ export class Vanta {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly apiUrl: string,
-    private readonly skipConnectionCheck: boolean
+    private readonly skipConnectionCheck: boolean,
+    private readonly resourceIdToName: Map<string, string>
   ) {}
 
   static async instance(
@@ -62,7 +63,8 @@ export class Vanta {
       api,
       cfg.page_size ?? DEFAULT_PAGE_LIMIT,
       apiUrl.toString(),
-      cfg.skip_connection_check ?? true
+      cfg.skip_connection_check ?? true,
+      cfg.resourceIdToNameMap
     );
   }
 
@@ -117,7 +119,6 @@ export class Vanta {
       return [false, new VError(error, 'Connection check failed')];
     }
   }
-
   async *getVulnerabilities(): AsyncGenerator<any> {
     let cursor = null;
     let hasNext = true;
@@ -126,7 +127,9 @@ export class Vanta {
       const {data, pageInfo} = await this.fetchVulnerabilities(cursor);
 
       for (const vulnerability of data) {
-        yield vulnerability;
+        const resourceId = vulnerability.targetId;
+        const resource = this.getResourceName(resourceId);
+        yield {...vulnerability, resource};
       }
 
       cursor = pageInfo.endCursor;
@@ -175,6 +178,98 @@ export class Vanta {
     } catch (error) {
       throw new VError('Failed to fetch vulnerability remediations: %s', error);
     }
+  }
+
+  // Method to fetch all integrations
+  private async fetchIntegrations(): Promise<any[]> {
+    const url = `${this.apiUrl}v1/integrations`;
+    try {
+      const response: AxiosResponse = await this.api.get(url);
+      return response.data.results;
+    } catch (error) {
+      throw new VError('Failed to fetch integrations: %s', error);
+    }
+  }
+
+  // Method to fetch all resource kinds for a specific integration
+  private async fetchResourceKinds(integrationId: string): Promise<any[]> {
+    const url = `${this.apiUrl}v1/integrations/${integrationId}/resource-kinds`;
+    try {
+      const response: AxiosResponse = await this.api.get(url);
+      return response.data.results;
+    } catch (error) {
+      throw new VError(
+        `Failed to fetch resource kinds for integration ${integrationId}: %s`,
+        error
+      );
+    }
+  }
+
+  // Method to fetch all resources for a specific integration and resource kind
+  private async fetchResources(
+    integrationId: string,
+    resourceKind: string,
+    cursor: string | null = null
+  ): Promise<any> {
+    const url = `${this.apiUrl}v1/integrations/${integrationId}/resource-kinds/${resourceKind}/resources`;
+    const params = {pageSize: this.limit, pageCursor: cursor};
+    try {
+      const response: AxiosResponse = await this.api.get(url, {params});
+      return response.data;
+    } catch (error) {
+      throw new VError(
+        `Failed to fetch resources for integration ${integrationId} and kind ${resourceKind}: %s`,
+        error
+      );
+    }
+  }
+
+  // Method to fetch all resources across all integrations and kinds
+  async getAllResources(): Promise<Map<string, any>> {
+    const allResources = new Map<string, any>();
+
+    try {
+      // Step 1: Fetch all integrations
+      const integrations = await this.fetchIntegrations();
+
+      // Step 2: Iterate over each integration
+      for (const integration of integrations) {
+        const integrationId = integration.id;
+
+        // Step 3: Fetch resource kinds for each integration
+        const resourceKinds = await this.fetchResourceKinds(integrationId);
+
+        // Step 4: For each resource kind, fetch resources
+        for (const kind of resourceKinds) {
+          let cursor = null;
+          let hasNext = true;
+
+          while (hasNext) {
+            const {results, pageInfo} = await this.fetchResources(
+              integrationId,
+              kind.id,
+              cursor
+            );
+
+            // Store each resource in the map by its ID for quick lookup
+            for (const resource of results) {
+              allResources.set(resource.id, resource);
+            }
+
+            cursor = pageInfo.endCursor;
+            hasNext = pageInfo.hasNextPage;
+          }
+        }
+      }
+
+      return allResources;
+    } catch (error) {
+      throw new VError('Failed to fetch all resources: %s', error);
+    }
+  }
+
+  private getResourceName(resourceId: string): string {
+    return this.resourceIdToName.get(resourceId);
   }
 
   async getAxiosResponse(
