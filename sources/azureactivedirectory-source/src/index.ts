@@ -61,7 +61,7 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDir
     state?: AirbyteState;
   }> {
     const streamNames = [Users.name];
-    if (config.fetch_teams) {
+    if (config.fetch_teams ?? true) {
       streamNames.push(Groups.name);
     }
     const streams = catalog.streams.filter((stream) =>
