@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosInstance, isAxiosError} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
@@ -14,6 +14,7 @@ export interface AzureActiveDirectoryConfig {
   readonly tenant_id: string;
   readonly auth_version?: string;
   readonly version?: string;
+  readonly fetch_teams?: boolean;
 }
 
 export class AzureActiveDirectory {
@@ -153,10 +154,12 @@ export class AzureActiveDirectory {
           user.manager = managerItem.data.id;
         }
       } catch (e: any) {
-        if (e.status === 404) {
+        // If the user has no manager, the API returns a 404 error.
+        if (isAxiosError(e) && e.response?.status === 404) {
           this.noManagerUsers.add(user.id);
         } else {
           const w = wrapApiError(e);
+          this.noManagerUsers.add(user.id);
           this.logger.error(w.message, w.stack);
         }
       }
