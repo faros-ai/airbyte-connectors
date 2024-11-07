@@ -1,9 +1,11 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
@@ -30,6 +32,7 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDir
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
+
   async checkConnection(
     config: AzureActiveDirectoryConfig
   ): Promise<[boolean, VError]> {
@@ -46,5 +49,25 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDir
   }
   streams(config: AzureActiveDirectoryConfig): AirbyteStreamBase[] {
     return [new Users(config, this.logger), new Groups(config, this.logger)];
+  }
+
+  async onBeforeRead(
+    config: AzureActiveDirectoryConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: AzureActiveDirectoryConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const streamNames = [Users.name];
+    if (config.fetch_teams) {
+      streamNames.push(Groups.name);
+    }
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
+
+    return {config, catalog: {streams}, state};
   }
 }
