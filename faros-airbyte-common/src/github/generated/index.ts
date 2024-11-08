@@ -8272,7 +8272,10 @@ export type PullRequestsQuery = {
               type: 'User';
             }
           | null;
-        commits: {totalCount: number};
+        commits: {
+          totalCount: number;
+          nodes?: Array<{commit: {oid: string}} | null> | null;
+        };
         comments: {totalCount: number};
         mergeCommit?: {oid: string} | null;
         reviewEvents: {

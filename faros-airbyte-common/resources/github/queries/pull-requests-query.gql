@@ -36,8 +36,13 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
         body
         changedFiles
         createdAt
-        commits {
+        commits(last: 1) {
           totalCount
+          nodes {
+            commit {
+              oid
+            }
+          }
         }
         comments {
           totalCount
