@@ -61,6 +61,12 @@ describe('index', () => {
       catalog
     );
     expect(newCatalog).toMatchSnapshot();
+
+    const {catalog: originalCatalog} = await source.onBeforeRead(
+      {} as any,
+      catalog
+    );
+    expect(originalCatalog).toMatchSnapshot();
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
