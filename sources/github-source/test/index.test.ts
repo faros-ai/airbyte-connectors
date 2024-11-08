@@ -162,10 +162,13 @@ describe('index', () => {
   });
 
   test('streams - copilot seats with audit logs API but licenses dates fix disabled', async () => {
-    const config = readTestResourceAsJSON('config.json');
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_licenses_dates_fix: false,
+    };
     await sourceReadTest({
       source,
-      configOrPath: {...config, copilot_licenses_dates_fix: false},
+      configOrPath: config,
       catalogOrPath: 'copilot_seats/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -179,7 +182,8 @@ describe('index', () => {
               )
             )
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -259,9 +263,13 @@ describe('index', () => {
   });
 
   test('streams - copilot usage without teams (GA API)', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_ga: true,
+    };
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: config,
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -273,7 +281,8 @@ describe('index', () => {
               new ErrorWithStatus(400, 'API not available')
             )
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -283,9 +292,13 @@ describe('index', () => {
   });
 
   test('streams - copilot usage with teams (GA API)', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_ga: true,
+    };
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: config,
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -300,7 +313,8 @@ describe('index', () => {
               readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
             )
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {

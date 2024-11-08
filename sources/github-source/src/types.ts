@@ -19,6 +19,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly fetch_pull_request_files?: boolean;
   readonly fetch_pull_request_reviews?: boolean;
   readonly copilot_licenses_dates_fix?: boolean;
+  readonly copilot_metrics_ga?: boolean;
   readonly cutoff_days?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -103,7 +104,7 @@ export type CopilotMetricsResponse = {
         total_chats: number;
         total_chat_insertion_events: number;
         total_chat_copy_events: number;
-      };
+      }[];
     }[];
   } | null;
   copilot_dotcom_chat: {

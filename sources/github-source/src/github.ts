@@ -90,6 +90,7 @@ export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
+export const DEFAULT_COPILOT_METRICS_GA = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -119,6 +120,7 @@ export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
+  protected readonly copilotMetricsGA: boolean;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -134,6 +136,8 @@ export abstract class GitHub {
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
+    this.copilotMetricsGA =
+      config.copilot_metrics_ga ?? DEFAULT_COPILOT_METRICS_GA;
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -937,19 +941,22 @@ export abstract class GitHub {
     let data: CopilotUsageResponse;
     let useBetaAPI = false;
     try {
-      // try to use GA API first
-      try {
-        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
-          org
-        ).request(this.octokit(org).copilotMetrics, {org});
-        data = transformCopilotMetricsResponse(res.data);
-      } catch (err: any) {
-        if (err.message) {
-          this.logger.warn(err.message);
+      if (this.copilotMetricsGA) {
+        // try to use GA API first
+        try {
+          const res: OctokitResponse<CopilotMetricsResponse> =
+            await this.octokit(org).request(this.octokit(org).copilotMetrics, {
+              org,
+            });
+          data = transformCopilotMetricsResponse(res.data);
+        } catch (err: any) {
+          if (err.message) {
+            this.logger.warn(err.message);
+          }
+          this.logger.warn(
+            'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
+          );
         }
-        this.logger.warn(
-          'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
-        );
       }
       if (!data) {
         // try to use beta API as fallback (supposed to be available until EOY24)
@@ -1856,6 +1863,16 @@ function transformCopilotMetricsResponse(
           editor: e.name,
         }));
       }) ?? [];
+    let total_chats = 0,
+      total_chat_insertion_events = 0,
+      total_chat_copy_events = 0;
+    for (const e of d.copilot_ide_chat?.editors ?? []) {
+      for (const m of e.models) {
+        total_chats += m.total_chats;
+        total_chat_insertion_events += m.total_chat_insertion_events;
+        total_chat_copy_events += m.total_chat_copy_events;
+      }
+    }
     return {
       day: d.date,
       total_suggestions_count: breakdown.reduce(
@@ -1875,8 +1892,9 @@ function transformCopilotMetricsResponse(
         0
       ),
       total_active_users: d.total_active_users,
-      total_chat_acceptances: 0, // not available in GA API
-      total_chat_turns: 0, // not available in GA API
+      total_chats,
+      total_chat_insertion_events,
+      total_chat_copy_events,
       total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
       breakdown,
     };
