@@ -20,6 +20,8 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  const source = new sut.AzureActiveDirectorySource(logger);
+
   beforeEach(() => {
     AzureActiveDirectory.instance = azureActiveDirectoryInstance;
   });
@@ -52,6 +54,15 @@ describe('index', () => {
     ]);
   });
 
+  test('filters groups stream when fetch_teams is false', async () => {
+    const catalog = readTestResourceFile('full_configured_catalog.json');
+    const {catalog: newCatalog} = await source.onBeforeRead(
+      {fetch_teams: false} as any,
+      catalog
+    );
+    expect(newCatalog).toMatchSnapshot();
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
@@ -66,7 +77,6 @@ describe('index', () => {
         null
       );
     });
-    const source = new sut.AzureActiveDirectorySource(logger);
     const streams = source.streams({} as any);
 
     const usersStream = streams[0];
@@ -94,7 +104,6 @@ describe('index', () => {
         null
       );
     });
-    const source = new sut.AzureActiveDirectorySource(logger);
     const streams = source.streams({} as any);
 
     const groupsStream = streams[1];

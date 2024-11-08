@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index filters groups stream when fetch_teams is false 1`] = `
+{
+  "streams": [
+    {
+      "destination_sync_mode": "overwrite",
+      "stream": {
+        "json_schema": {},
+        "name": "users",
+        "source_defined_cursor": true,
+        "source_defined_primary_key": [
+          [
+            "uid",
+          ],
+        ],
+        "supported_sync_modes": [
+          "full_refresh",
+        ],
+      },
+      "sync_mode": "full_refresh",
+    },
+  ],
+}
+`;
