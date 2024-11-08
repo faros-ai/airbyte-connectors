@@ -1349,6 +1349,7 @@ Add any other context about the changes here.
     "commits": {
       "totalCount": 13,
     },
+    "coverage": undefined,
     "createdAt": "2021-02-12T05:35:19Z",
     "deletions": 763,
     "files": [
@@ -1463,6 +1464,7 @@ N/A
     "commits": {
       "totalCount": 2,
     },
+    "coverage": undefined,
     "createdAt": "2021-02-04T23:54:56Z",
     "deletions": 4787,
     "files": [
@@ -1531,6 +1533,7 @@ N/A
     "commits": {
       "totalCount": 9,
     },
+    "coverage": undefined,
     "createdAt": "2021-02-04T15:49:42Z",
     "deletions": 23,
     "files": [

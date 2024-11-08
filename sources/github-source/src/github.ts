@@ -12,6 +12,7 @@ import {
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  CoverageReport,
   DependabotAlert,
   Issue,
   Label,
@@ -277,11 +278,27 @@ export abstract class GitHub {
             if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
               return;
             }
+            const labels = await this.extractPullRequestLabels(pr, org, repo);
+            const mergedByMergeQueue = labels.some(
+              (label) => label.name === 'merged-by-mq'
+            );
+            let coverage;
+            if (pr.mergeCommit || mergedByMergeQueue) {
+              const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
+              if (lastCommitSha) {
+                coverage = await this.getDiffCoverage(
+                  org,
+                  repo,
+                  lastCommitSha,
+                  pr.number
+                );
+              }
+            }
             yield {
               org,
               repo,
               ...pr,
-              labels: await this.extractPullRequestLabels(pr, org, repo),
+              labels,
               files: await this.extractPullRequestFiles(pr, org, repo),
               reviews: await this.extractPullRequestReviews(pr, org, repo),
               reviewRequests: await this.extractPullRequestReviewRequests(
@@ -289,6 +306,7 @@ export abstract class GitHub {
                 org,
                 repo
               ),
+              coverage,
             };
           }
           // increase page size for the next iteration in case it was decreased previously
@@ -343,6 +361,79 @@ export abstract class GitHub {
         }
       }
     }
+  }
+
+  private async getDiffCoverage(
+    org: string,
+    repo: string,
+    commitSha: string,
+    prNumber: number
+  ): Promise<CoverageReport | undefined> {
+    // if (!this.codeClimateDiffCoverage) {
+    //   return undefined;
+    // }
+
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listCommitStatusesForRef,
+      {
+        owner: org,
+        repo,
+        ref: commitSha,
+        per_page: this.pageSize,
+      }
+    );
+
+    try {
+      let codeClimateResult = undefined;
+      let codeCovResult = undefined;
+      this.logger.debug(
+        `Attempting to parse code coverage for commit ${commitSha} in ${org}/${repo} for PR #${prNumber}`
+      );
+
+      const processStatus = (status: any) => {
+        const match = status.description.match(/(\d+(?:\.\d+)?)%/);
+
+        if (match) {
+          const coveragePercentage = parseFloat(match[1]);
+          this.logger.debug(
+            `Successfully parsed code coverage from ${status.context}`
+          );
+          return {
+            coveragePercentage: coveragePercentage,
+            createdAt: Utils.toDate(status.created_at),
+            commitSha,
+          };
+        } else {
+          this.logger.warn(
+            `Failed to parse ${status.context} status description: ${status.description}`
+          );
+          return undefined;
+        }
+      };
+
+      for await (const res of iter) {
+        for (const status of res.data) {
+          if (status?.context === 'codeclimate/diff-coverage') {
+            codeClimateResult = processStatus(status);
+          } else if (status?.context === 'codecov/patch') {
+            codeCovResult = processStatus(status);
+          }
+        }
+      }
+
+      if (codeCovResult) {
+        return codeCovResult;
+      } else if (codeClimateResult) {
+        return codeClimateResult;
+      }
+    } catch (err: any) {
+      if (err?.status == 403) {
+        throw new VError(err, 'unable to list commit statuses');
+      }
+      throw err;
+    }
+
+    return undefined;
   }
 
   private buildPRQuery(): string {
