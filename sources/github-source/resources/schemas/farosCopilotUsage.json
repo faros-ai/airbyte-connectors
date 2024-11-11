@@ -42,6 +42,15 @@
     "total_active_chat_users": {
       "type": "number"
     },
+    "total_chats": {
+      "type": "number"
+    },
+    "total_chat_insertion_events": {
+      "type": "number"
+    },
+    "total_chat_copy_events": {
+      "type": "number"
+    },
     "breakdown": {
       "type": "array",
       "items": {

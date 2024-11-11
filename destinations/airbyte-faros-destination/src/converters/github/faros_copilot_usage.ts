@@ -39,6 +39,9 @@ export class FarosCopilotUsage extends GitHubConverter {
       ['total_chat_acceptances', 'DailyChatAcceptanceCount'],
       ['total_chat_turns', 'DailyChatTurnCount'],
       ['total_active_chat_users', 'DailyActiveChatUserTrend'],
+      ['total_chats', 'DailyChatCount'],
+      ['total_chat_insertion_events', 'DailyChatInsertionCount'],
+      ['total_chat_copy_events', 'DailyChatCopyCount'],
     ]);
 
     const org = toLower(usage.org);
