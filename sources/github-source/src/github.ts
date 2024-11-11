@@ -261,6 +261,14 @@ export abstract class GitHub {
     if (this.backfill && !startCursor) {
       return;
     }
+    const adjustedStartDate = startDate
+      ? new Date(
+          Math.max(
+            startDate.getTime() - this.pullRequestCutoffLagSeconds * 1000,
+            0
+          )
+        )
+      : undefined;
     const query = this.buildPRQuery();
     let currentPageSize = this.pullRequestsPageSize;
     let currentCursor = startCursor;
@@ -287,7 +295,10 @@ export abstract class GitHub {
             ) {
               continue;
             }
-            if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+            if (
+              adjustedStartDate &&
+              Utils.toDate(pr.updatedAt) < adjustedStartDate
+            ) {
               return;
             }
             const labels = await this.extractPullRequestLabels(pr, org, repo);
