@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "toolName": {
+      "type": "string"
+    },
+    "dbCreatedAt": {
+      "type": "string"
+    },
+    "dbUpdatedAt": {
+      "type": "string"
+    },
+    "scannerCreatedAt": {
+      "type": "string"
+    },
+    "scannerUpdatedAt": {
+      "type": "string"
+    },
+    "businessRisk": {
+      "type": "string"
+    },
+    "dismissReason": {
+      "type": "string"
+    },
+    "dismissedAt": {
+      "type": "string"
+    },
+    "scannerDismissedAt": {
+      "type": "string"
+    },
+    "userDueDate": {
+      "type": "string"
+    },
+    "sourceFilename": {
+      "type": "string"
+    },
+    "sourcePath": {
+      "type": "string"
+    },
+    "vulnerableVersion": {
+      "type": "string"
+    },
+    "vulnerability": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string"
+        },
+        "cve": {
+          "type": "string"
+        },
+        "ghsa": {
+          "type": "string"
+        },
+        "fixAvailable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "type": "string"
+    },
+    "scannerStatus": {
+      "type": "string"
+    },
+    "userUpdatedStatus": {
+      "type": "string"
+    },
+    "line": {
+      "type": "number"
+    },
+    "jiraUrl": {
+      "type": "string"
+    },
+    "lastReviewed": {
+      "type": "string"
+    },
+    "scannerConfidence": {
+      "type": "string"
+    },
+    "asset": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "projects": {
+      "type": "object"
+    },
+    "key": {
+      "type": "string"
+    }
+  }
+}
