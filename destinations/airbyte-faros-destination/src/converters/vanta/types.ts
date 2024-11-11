@@ -163,6 +163,7 @@ export type Vulnerability = {
     deactivatedOnDate: string; // ISO date string
     deactivatedBy: string;
   } | null;
+  resourceName: string; // The name of the related resource, e.g. a repository name or an artifact name.
 };
 
 export type VulnerabilityRemediation = {

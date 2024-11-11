@@ -14,11 +14,11 @@ import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
   readonly api_url: string;
-  readonly token: string;
+  readonly client_id: string;
+  readonly client_secret: string;
   readonly skip_connection_check?: boolean;
   readonly page_size?: number;
   readonly timeout?: number;
-  resourceIdToNameMap: Map<string, string>;
 }
 
 /** The main entry point. */

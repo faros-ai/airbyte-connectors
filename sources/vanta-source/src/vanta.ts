@@ -29,12 +29,12 @@ export class Vanta {
     if (!cfg.client_id || !cfg.client_secret) {
       throw new VError('Vanta client ID or secret missing.');
     }
-    if (!cfg.apiUrl) {
-      throw new VError('apiUrl missing.');
+    if (!cfg.api_url) {
+      throw new VError('Api URL missing.');
     }
 
     // Checks apiUrl is in the correct format
-    const apiUrl = new URL(cfg.apiUrl);
+    const apiUrl = new URL(cfg.api_url);
 
     const timeout: number = cfg.timeout ?? DEFAULT_TIMEOUT;
 
@@ -120,6 +120,9 @@ export class Vanta {
     }
   }
   async *getVulnerabilities(): AsyncGenerator<any> {
+    // Fetch all resources and generate a map of resourceId -> displayName to populate the resource field in vulnerabilities
+    await this.generateVulnerabilityResourcesMap();
+
     let cursor = null;
     let hasNext = true;
 
@@ -128,8 +131,8 @@ export class Vanta {
 
       for (const vulnerability of data) {
         const resourceId = vulnerability.targetId;
-        const resource = this.getResourceName(resourceId);
-        yield {...vulnerability, resource};
+        const resourceName = this.getResourceName(resourceId);
+        yield {...vulnerability, resourceName};
       }
 
       cursor = pageInfo.endCursor;
@@ -225,7 +228,7 @@ export class Vanta {
   }
 
   // Method to fetch all resources across all integrations and kinds
-  async getAllResources(): Promise<Map<string, any>> {
+  private async getAllResources(): Promise<Map<string, any>> {
     const allResources = new Map<string, any>();
 
     try {
@@ -303,7 +306,7 @@ export class Vanta {
     }
   }
 
-  async generateVulnerabilityResourcesMap(): Promise<void> {
+  private async generateVulnerabilityResourcesMap(): Promise<void> {
     const resources = await this.getAllResources();
 
     // Initialize a map to store resourceId -> displayName mappings
