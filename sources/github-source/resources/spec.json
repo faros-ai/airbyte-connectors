@@ -291,6 +291,19 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
+      },
+      "fetch_pull_request_diff_coverage": {
+        "type": "boolean",
+        "title": "Fetch Pull Request diff coverage", 
+        "default": false,
+        "order": 28
+      },
+      "pull_request_cutoff_lag_seconds": {
+        "title": "Pull Request Cutoff Lag (seconds)", 
+        "description": "Apply lag to the end cutoff saved in the state. PRs updated after this will be rewritten during the next sync.",
+        "type": "integer",
+        "default": 0,
+        "order": 29
       }
     }
   }

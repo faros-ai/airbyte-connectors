@@ -101,6 +101,8 @@ export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
+export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
+export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -125,6 +127,8 @@ export abstract class GitHub {
   protected readonly pageSize: number;
   protected readonly pullRequestsPageSize: number;
   protected readonly backfill: boolean;
+  protected readonly fetchPullRequestDiffCoverage: boolean;
+  protected readonly pullRequestCutoffLagSeconds: number;
 
   constructor(
     config: GitHubConfig,
@@ -141,6 +145,10 @@ export abstract class GitHub {
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
+    this.fetchPullRequestDiffCoverage =
+      config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
+    this.pullRequestCutoffLagSeconds =
+      config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
   }
 
   static async instance(
@@ -283,7 +291,10 @@ export abstract class GitHub {
               (label) => label.name === 'merged-by-mq'
             );
             let coverage;
-            if (pr.mergeCommit || mergedByMergeQueue) {
+            if (
+              this.fetchPullRequestDiffCoverage &&
+              (pr.mergeCommit || mergedByMergeQueue)
+            ) {
               const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
               if (lastCommitSha) {
                 coverage = await this.getDiffCoverage(
@@ -368,10 +379,10 @@ export abstract class GitHub {
     repo: string,
     commitSha: string,
     prNumber: number
-  ): Promise<CoverageReport | undefined> {
-    // if (!this.codeClimateDiffCoverage) {
-    //   return undefined;
-    // }
+  ): Promise<CoverageReport | null> {
+    if (!this.fetchPullRequestDiffCoverage) {
+      return null;
+    }
 
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).repos.listCommitStatusesForRef,
@@ -433,7 +444,7 @@ export abstract class GitHub {
       throw err;
     }
 
-    return undefined;
+    return null;
   }
 
   private buildPRQuery(): string {
@@ -729,519 +740,6 @@ export abstract class GitHub {
       }
     }
     return reviewRequests;
-  }
-
-  async *getCommits(
-    org: string,
-    repo: string,
-    branch: string,
-    startDate?: Date,
-    endDate?: Date
-  ): AsyncGenerator<Commit> {
-    // query supports filtering by start date (since) and end date (until)
-    const queryParameters = {
-      owner: org,
-      repo,
-      branch,
-      page_size: this.pageSize,
-      since: startDate?.toISOString(),
-      ...(this.backfill && {until: endDate?.toISOString()}),
-    };
-    const query = await this.getCommitsQuery(queryParameters);
-    yield* this.queryCommits(org, repo, branch, query, queryParameters);
-  }
-
-  private async *queryCommits(
-    org: string,
-    repo: string,
-    branch: string,
-    query: string,
-    queryParameters: any
-  ): AsyncGenerator<Commit> {
-    // Need to handle pagination manually because graphql paginate plugin throws error
-    // if paginated field is not found in the response
-    let res: CommitsQuery;
-    let hasNextPage: boolean;
-    let cursor: string | null = null;
-    do {
-      try {
-        res = await this.octokit(org).graphql<CommitsQuery>(query, {
-          ...queryParameters,
-          cursor,
-        });
-      } catch (err: any) {
-        res = await this.handleCommitsQueryError(
-          org,
-          repo,
-          query,
-          queryParameters,
-          cursor,
-          err
-        );
-      }
-      if (res?.repository?.ref?.target?.type !== 'Commit') {
-        // check to make ts happy
-        return;
-      }
-      const history = res.repository.ref.target.history;
-      if (!history) {
-        this.logger.warn(`No commit history found for ${org}/${repo}`);
-        return;
-      }
-      for (const commit of history.nodes) {
-        yield {
-          org,
-          repo,
-          branch,
-          ...commit,
-        };
-      }
-      hasNextPage = history.pageInfo.hasNextPage;
-      cursor = history.pageInfo.endCursor;
-    } while (hasNextPage && cursor);
-  }
-
-  // checks if the error is caused by querying an unavailable
-  // field and retry the query removing it / skip without failing
-  private async handleCommitsQueryError(
-    org: string,
-    repo: string,
-    query: string,
-    queryParameters: any,
-    cursor: string | null,
-    err: any
-  ): Promise<CommitsQuery | null> {
-    const errorMessages = err?.errors?.map((e: any) => e.message);
-    if (!errorMessages || errorMessages.length != 1) {
-      throw err;
-    }
-    if (/changedFiles/.test(errorMessages[0])) {
-      const newQuery = query.replace(/changedFiles\s+/, '');
-      this.logger.warn(
-        `Failed to fetch commits with changedFiles for repo ${org}/${repo} (cursor: ${cursor}). Retrying without changedFiles.`
-      );
-      return this.octokit(org).graphql<CommitsQuery>(newQuery, {
-        ...queryParameters,
-        cursor,
-      });
-    } else if (/additions|deletions/.test(errorMessages[0])) {
-      this.logger.warn(
-        `Failed to fetch commits with additions/deletions for repo ${org}/${repo} (cursor: ${cursor}). Skipping.`
-      );
-      return null;
-    }
-    throw err;
-  }
-
-  // memoize since one call is enough to check if the field is available
-  @Memoize(() => null)
-  private async getCommitsQuery(queryParameters: any): Promise<string> {
-    // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
-    // See: https://docs.github.com/en/graphql/reference/objects#commit
-    const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
-      .replace(/additions\s+/, '')
-      .replace(/deletions\s+/, '');
-    try {
-      await this.octokit(queryParameters.owner).graphql(query, {
-        ...queryParameters,
-        page_size: 1,
-      });
-    } catch (err: any) {
-      const errorCode = err?.errors?.[0]?.extensions?.code;
-      // Check if the error was caused by querying undefined changedFilesIfAvailable field
-      if (errorCode === 'undefinedField') {
-        this.logger.warn(
-          `GQL schema Commit object doesn't contain field changedFilesIfAvailable. Will query for changedFiles instead.`
-        );
-        return COMMITS_QUERY.replace(/changedFilesIfAvailable\s+/, '');
-      }
-      throw err;
-    }
-    return COMMITS_QUERY.replace(/changedFiles\s+/, '');
-  }
-
-  async *getOrganizationMembers(org: string): AsyncGenerator<User> {
-    const iter = this.octokit(org).graphql.paginate.iterator<ListMembersQuery>(
-      ORG_MEMBERS_QUERY,
-      {
-        login: org,
-        page_size: this.pageSize,
-      }
-    );
-    for await (const res of this.wrapIterable(
-      iter,
-      this.acceptPartialResponseWrapper(`org users for ${org}`)
-    )) {
-      for (const member of res.organization.membersWithRole.nodes) {
-        if (member?.login) {
-          yield {
-            org,
-            ...member,
-          };
-        }
-      }
-    }
-  }
-
-  @Memoize()
-  async getTeams(org: string): Promise<ReadonlyArray<Team>> {
-    const teams: Team[] = [];
-    const iter = this.octokit(org).paginate.iterator(
-      this.octokit(org).teams.list,
-      {
-        org,
-        per_page: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
-      for (const team of res.data) {
-        teams.push({
-          org,
-          parentSlug: team.parent?.slug ?? null,
-          ...pick(team, ['name', 'slug', 'description']),
-        });
-      }
-    }
-    return teams;
-  }
-
-  async *getTeamMemberships(org: string): AsyncGenerator<TeamMembership> {
-    for (const team of await this.getTeams(org)) {
-      const iter = this.octokit(org).paginate.iterator(
-        this.octokit(org).teams.listMembersInOrg,
-        {
-          org,
-          team_slug: team.slug,
-          per_page: this.pageSize,
-        }
-      );
-      for await (const res of iter) {
-        for (const member of res.data) {
-          if (member.login) {
-            yield {
-              org,
-              team: team.slug,
-              user: pick(member, [
-                'login',
-                'name',
-                'email',
-                'html_url',
-                'type',
-              ]),
-            };
-          }
-        }
-      }
-    }
-  }
-
-  async *getCopilotSeats(
-    org: string,
-    cutoffDate: Date,
-    useCopilotTeamAssignmentsFix: boolean
-  ): AsyncGenerator<CopilotSeatsStreamRecord> {
-    let seatsFound: boolean = false;
-    const assignedTeams: CopilotAssignedTeams = {};
-    const assignedUsers = new Set<string>();
-    let teamMemberTimestamps: TeamMemberTimestamps;
-    const iter = this.octokit(org).paginate.iterator(
-      this.octokit(org).copilot.listCopilotSeats,
-      {
-        org,
-        per_page: this.pageSize,
-      }
-    );
-    try {
-      for await (const res of iter) {
-        for (const seat of res.data.seats) {
-          seatsFound = true;
-          const userAssignee = seat.assignee.login as string;
-          const teamAssignee = seat.assigning_team?.slug;
-          let teamJoinedAt: Date;
-          let startedAt = Utils.toDate(seat.created_at);
-          assignedUsers.add(userAssignee);
-          if (teamAssignee && useCopilotTeamAssignmentsFix) {
-            if (!assignedTeams[teamAssignee]) {
-              assignedTeams[teamAssignee] = pick(seat, ['created_at']);
-            }
-            if (!teamMemberTimestamps) {
-              // try to fetch team member timestamps only if there are seats with team assignments
-              teamMemberTimestamps = await this.getTeamMemberTimestamps(
-                org,
-                'copilot team assignments',
-                cutoffDate
-              );
-            }
-            teamJoinedAt =
-              teamMemberTimestamps?.[userAssignee]?.[teamAssignee]?.addedAt;
-            if (teamJoinedAt > startedAt) {
-              startedAt = teamJoinedAt;
-            }
-          }
-          const isStartedAtUpdated = startedAt > cutoffDate;
-          yield {
-            org,
-            user: userAssignee,
-            team: teamAssignee,
-            teamJoinedAt: teamJoinedAt?.toISOString(),
-            ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
-            ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
-          } as CopilotSeat;
-        }
-      }
-      if (!seatsFound) {
-        yield {
-          empty: true,
-          org,
-        } as CopilotSeatsEmpty;
-      } else if (teamMemberTimestamps) {
-        for (const [user, teams] of Object.entries(teamMemberTimestamps)) {
-          // user doesn't currently have assigned a copilot seat
-          if (!assignedUsers.has(user)) {
-            const lastCopilotTeam = getLastCopilotTeamForUser(
-              teams,
-              assignedTeams,
-              cutoffDate
-            );
-            if (lastCopilotTeam) {
-              const lastCopilotTeamLeftAt = teams[lastCopilotTeam].removedAt;
-              yield {
-                org,
-                user,
-                team: lastCopilotTeam,
-                teamLeftAt: lastCopilotTeamLeftAt.toISOString(),
-                endedAt: lastCopilotTeamLeftAt.toISOString(),
-              } as CopilotSeatEnded;
-            }
-          }
-        }
-      }
-    } catch (err: any) {
-      this.handleCopilotError(err, org, 'seats');
-    }
-    this.logger.debug(
-      `Found ${Object.keys(assignedTeams).length} copilot team assignments: ${Object.keys(assignedTeams).join(',')}`
-    );
-  }
-
-  async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
-    let data: CopilotUsageResponse;
-    let useBetaAPI = false;
-    try {
-      // try to use GA API first
-      try {
-        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
-          org
-        ).request(this.octokit(org).copilotMetrics, {org});
-        data = transformCopilotMetricsResponse(res.data);
-      } catch (err: any) {
-        if (err.message) {
-          this.logger.warn(err.message);
-        }
-        this.logger.warn(
-          'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
-        );
-      }
-      if (!data) {
-        // try to use beta API as fallback (supposed to be available until EOY24)
-        const res = await this.octokit(org).copilot.usageMetricsForOrg({
-          org,
-        });
-        data = res.data;
-        useBetaAPI = true;
-      }
-      if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
-        return;
-      }
-      for (const usage of data) {
-        yield {
-          org,
-          team: null,
-          ...usage,
-        };
-      }
-      yield* this.getCopilotUsageTeams(org, useBetaAPI);
-    } catch (err: any) {
-      this.handleCopilotError(err, org, 'usage');
-    }
-  }
-
-  async *getCopilotUsageTeams(
-    org: string,
-    useBetaAPI: boolean
-  ): AsyncGenerator<CopilotUsageSummary> {
-    let teams: ReadonlyArray<Team>;
-    try {
-      teams = await this.getTeams(org);
-    } catch (err: any) {
-      if (err.status >= 400 && err.status < 500) {
-        this.logger.warn(
-          `Failed to fetch teams for org ${org}. Ensure Teams permissions are given. Skipping pulling GitHub Copilot usage by teams.`
-        );
-        return;
-      }
-      throw err;
-    }
-    for (const team of teams) {
-      let data: CopilotUsageResponse;
-      if (useBetaAPI) {
-        const res = await this.octokit(org).copilot.usageMetricsForTeam({
-          org,
-          team_slug: team.slug,
-        });
-        data = res.data;
-      } else {
-        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
-          org
-        ).request(this.octokit(org).copilotMetricsForTeam, {
-          org,
-          team_slug: team.slug,
-        });
-        data = transformCopilotMetricsResponse(res.data);
-      }
-      if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(
-          `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
-        );
-        continue;
-      }
-      for (const usage of data) {
-        yield {
-          org,
-          team: team.slug,
-          ...usage,
-        };
-      }
-    }
-  }
-
-  private handleCopilotError(err: any, org: string, context: string) {
-    if (err.status >= 400 && err.status < 500) {
-      if (err.message) {
-        this.logger.warn(err.message);
-      }
-      this.logger.warn(
-        `Failed to sync GitHub Copilot ${context} for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
-      );
-      return;
-    }
-    throw err;
-  }
-
-  /**
-   * API only available to enterprise organizations
-   * Audit logs older than 180 days are not available
-   */
-  async getAuditLogs<T>(
-    org: string,
-    phrase: string,
-    context: string
-  ): Promise<ReadonlyArray<T>> {
-    const logs = [];
-    const iter = this.octokit(org).paginate.iterator(
-      this.octokit(org).auditLogs,
-      {
-        org,
-        phrase,
-        order: 'asc',
-        per_page: this.pageSize,
-      }
-    );
-    try {
-      for await (const res of iter) {
-        for (const log of res.data) {
-          logs.push(log);
-        }
-      }
-    } catch (err: any) {
-      if (err.status >= 400 && err.status < 500) {
-        this.logger.warn(
-          `Couldn't fetch audit logs for org ${org}. API only available to Enterprise organizations. Status: ${err.status}. Context: ${context}`
-        );
-        return [];
-      }
-      throw err;
-    }
-    return logs;
-  }
-
-  /**
-   * Returns a map of user logins to a map of team slugs
-   * to the timestamp when the user was last added/removed to the team.
-   */
-  async getTeamMemberTimestamps(
-    org: string,
-    context: string,
-    cutoffDate: Date
-  ): Promise<TeamMemberTimestamps> {
-    const cutoff = cutoffDate;
-    const users: TeamMemberTimestamps = {};
-    const logs = await this.getAuditLogs<AuditLogTeamMember>(
-      org,
-      `action:team.add_member action:team.remove_member created:>${cutoff.toISOString()}`,
-      context
-    );
-    for await (const log of logs) {
-      if (!users[log.user]) {
-        users[log.user] = {};
-      }
-      const team = log.team.split('/')[1];
-      if (!users[log.user][team]) {
-        users[log.user][team] = {};
-      }
-      if (log.action === 'team.add_member') {
-        users[log.user][team].addedAt = Utils.toDate(log.created_at);
-      } else if (log.action === 'team.remove_member') {
-        users[log.user][team].removedAt = Utils.toDate(log.created_at);
-      }
-    }
-    return users;
-  }
-
-  async *getOutsideCollaborators(
-    org: string
-  ): AsyncGenerator<OutsideCollaborator> {
-    const iter = this.octokit(org).paginate.iterator(
-      this.octokit(org).orgs.listOutsideCollaborators,
-      {
-        org,
-        per_page: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
-      for (const collaborator of res.data) {
-        yield {
-          org,
-          ...pick(collaborator, ['login', 'email', 'name', 'type', 'html_url']),
-        };
-      }
-    }
-  }
-
-  async *getSamlSsoUsers(org: string): AsyncGenerator<SamlSsoUser> {
-    const iter = this.octokit(
-      org
-    ).graphql.paginate.iterator<ListSamlSsoUsersQuery>(
-      LIST_SAML_SSO_USERS_QUERY,
-      {
-        login: org,
-        page_size: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
-      const identities =
-        res.organization.samlIdentityProvider?.externalIdentities?.nodes ?? [];
-      for (const identity of identities) {
-        if (!identity?.user?.login) {
-          continue;
-        }
-        yield {
-          org,
-          ...identity,
-        };
-      }
-    }
   }
 
   async *getTags(org: string, repo: string): AsyncGenerator<Tag> {
