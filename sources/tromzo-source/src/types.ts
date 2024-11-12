@@ -1,5 +1,3 @@
-import {Dictionary} from 'ts-essentials';
-
 export interface TromzoConfig {
   api_key: string;
   organization: string;
