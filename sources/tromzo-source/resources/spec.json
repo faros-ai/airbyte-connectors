@@ -18,7 +18,7 @@
         "type": "string",
         "title": "Organization",
         "description": "Your Tromzo organization subdomain used as part of the API URL (e.g., if your URL is https://acme.tromzo.com, enter 'acme')",
-        "default": ""
+        "examples": ["https://acme.tromzo.com"]
       },
       "api_timeout": {
         "order": 3,
