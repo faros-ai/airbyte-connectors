@@ -18,8 +18,7 @@ export class Vanta {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly apiUrl: string,
-    private readonly skipConnectionCheck: boolean,
-    private resourceIdToName: Map<string, string>
+    private readonly skipConnectionCheck: boolean
   ) {}
 
   static async instance(
@@ -63,8 +62,7 @@ export class Vanta {
       api,
       cfg.page_size ?? DEFAULT_PAGE_LIMIT,
       apiUrl.toString(),
-      cfg.skip_connection_check ?? true,
-      new Map<string, string>()
+      cfg.skip_connection_check ?? true
     );
   }
 
@@ -219,10 +217,6 @@ export class Vanta {
     } catch (error) {
       throw new VError('Failed to fetch vulnerable assets: %s', error);
     }
-  }
-
-  private getResourceName(resourceId: string): string {
-    return this.resourceIdToName.get(resourceId);
   }
 
   async getAxiosResponse(
