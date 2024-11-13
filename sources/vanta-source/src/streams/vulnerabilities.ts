@@ -1,4 +1,5 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {Record, VulnerabilityRecordType} from 'faros-airbyte-common/vanta';
 import {Dictionary} from 'ts-essentials';
 
 import {VantaConfig} from '..';
@@ -19,17 +20,17 @@ export class Vulnerabilities extends AirbyteStreamBase {
     return ['id'];
   }
 
-  async *readRecords(): AsyncGenerator<Dictionary<any>> {
+  async *readRecords(): AsyncGenerator<Record> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
     for await (const vuln of vanta.getVulnerabilities()) {
       yield {
-        recordType: 'vulnerability',
+        recordType: VulnerabilityRecordType.VULNERABILITY,
         data: vuln,
       };
     }
     for await (const vulnRemediation of vanta.getVulnerabilityRemediations()) {
       yield {
-        recordType: 'vulnerability-remediation',
+        recordType: VulnerabilityRecordType.VULNERABILITY_REMEDIATION,
         data: vulnRemediation,
       };
     }

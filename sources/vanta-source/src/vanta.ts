@@ -120,8 +120,8 @@ export class Vanta {
     }
   }
   async *getVulnerabilities(): AsyncGenerator<any> {
-    // Fetch all resources and generate a map of resourceId -> displayName to populate the resource field in vulnerabilities
-    await this.generateVulnerabilityResourcesMap();
+    // Build asset map to get the associated repos and images for vulnerabilities.
+    const assetMap = await this.buildAssetMap();
 
     let cursor = null;
     let hasNext = true;
@@ -130,11 +130,14 @@ export class Vanta {
       const {data, pageInfo} = await this.fetchVulnerabilities(cursor);
 
       for (const vulnerability of data) {
-        const resourceId = vulnerability.targetId;
-        const resourceName = this.getResourceName(resourceId);
-        yield {...vulnerability, resourceName};
+        const asset = assetMap.get(vulnerability.targetId);
+        // Image tage scan won't be available if asset is a repository: https://developer.vanta.com/reference/listvulnerableassets#:~:text=has%20been%20scanned.-,imageScanTag,-string%20%7C%20null
+        yield {
+          ...vulnerability,
+          repoName: asset?.name,
+          imageTag: asset?.imageScanTag,
+        };
       }
-
       cursor = pageInfo.endCursor;
       hasNext = pageInfo.hasNextPage;
     }
@@ -183,91 +186,38 @@ export class Vanta {
     }
   }
 
-  // Method to fetch all integrations
-  private async fetchIntegrations(): Promise<any> {
-    const url = `${this.apiUrl}v1/integrations`;
-    try {
-      const response: AxiosResponse = await this.api.get(url);
-      return response.data.results;
-    } catch (error) {
-      throw new VError('Failed to fetch integrations: %s', error);
-    }
-  }
+  private async buildAssetMap(): Promise<Map<string, any>> {
+    const assetMap = new Map<string, any>();
+    let cursor = null;
+    let hasNext = true;
 
-  // Method to fetch all resource kinds for a specific integration
-  private async fetchResourceKinds(integrationId: string): Promise<any> {
-    const url = `${this.apiUrl}v1/integrations/${integrationId}/resource-kinds`;
-    try {
-      const response: AxiosResponse = await this.api.get(url);
-      return response.data;
-    } catch (error) {
-      throw new VError(
-        `Failed to fetch resource kinds for integration ${integrationId}: %s`,
-        error
-      );
-    }
-  }
+    while (hasNext) {
+      const {data, pageInfo} = await this.fetchVulnerableAssets(cursor);
 
-  // Method to fetch all resources for a specific integration and resource kind
-  private async fetchResources(
-    integrationId: string,
-    resourceKind: string,
-    cursor: string | null = null
-  ): Promise<any> {
-    const url = `${this.apiUrl}v1/integrations/${integrationId}/resource-kinds/${resourceKind}/resources`;
-    const params = {pageSize: this.limit, pageCursor: cursor};
-    try {
-      const response: AxiosResponse = await this.api.get(url, {params});
-      return response.data;
-    } catch (error) {
-      throw new VError(
-        `Failed to fetch resources for integration ${integrationId} and kind ${resourceKind}: %s`,
-        error
-      );
-    }
-  }
-
-  // Method to fetch all resources across all integrations and kinds
-  private async getAllResources(): Promise<Map<string, any>> {
-    const allResources = new Map<string, any>();
-
-    try {
-      // Step 1: Fetch all integrations
-      const integrations = await this.fetchIntegrations();
-
-      // Step 2: Iterate over each integration
-      for (const integration of integrations.data) {
-        const integrationId = integration.integrationId;
-
-        // Step 3: Fetch resource kinds for each integration
-        const resourceKinds = await this.fetchResourceKinds(integrationId);
-
-        // Step 4: For each resource kind, fetch resources
-        for (const kind of resourceKinds) {
-          let cursor = null;
-          let hasNext = true;
-
-          while (hasNext) {
-            const {results} = await this.fetchResources(
-              integrationId,
-              kind.resourceKind,
-              cursor
-            );
-
-            // Store each resource in the map by its ID for quick lookup
-            for (const resource of results.data) {
-              allResources.set(resource.resourceId, resource);
-            }
-
-            cursor = results.pageInfo.endCursor;
-            hasNext = results.pageInfo.hasNextPage;
-          }
-        }
+      // Populate asset map with targetId as the key
+      for (const asset of data) {
+        assetMap.set(asset.targetId, {
+          name: asset.name,
+          imageScanTag: asset.imageScanTag,
+        });
       }
 
-      return allResources;
+      cursor = pageInfo.endCursor;
+      hasNext = pageInfo.hasNextPage;
+    }
+
+    return assetMap;
+  }
+
+  private async fetchVulnerableAssets(cursor: string | null): Promise<any> {
+    const url = `${this.apiUrl}v1/vulnerable-assets`;
+    const params = {pageSize: this.limit, pageCursor: cursor};
+
+    try {
+      const response: AxiosResponse = await this.api.get(url, {params});
+      return response?.data?.results;
     } catch (error) {
-      throw new VError('Failed to fetch all resources: %s', error);
+      throw new VError('Failed to fetch vulnerable assets: %s', error);
     }
   }
 
@@ -304,23 +254,5 @@ export class Vanta {
         error
       );
     }
-  }
-
-  private async generateVulnerabilityResourcesMap(): Promise<void> {
-    const resources = await this.getAllResources();
-
-    // Initialize a map to store resourceId -> displayName mappings
-    this.resourceIdToName = new Map<string, string>();
-
-    // Populate the map with resourceId and displayName from resources
-    for (const [resourceId, resourceData] of resources.entries()) {
-      const displayName =
-        resourceData?.displayName || resourceData?.name || 'Unknown';
-      this.resourceIdToName.set(resourceId, displayName);
-    }
-
-    this.logger.info(
-      `Loaded ${this.resourceIdToName.size} resource ID to displayName mappings`
-    );
   }
 }

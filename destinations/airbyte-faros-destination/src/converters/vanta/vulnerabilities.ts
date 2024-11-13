@@ -1,5 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosClient, Utils} from 'faros-js-client';
+import {
+  Vulnerability,
+  VulnerabilityRemediation,
+} from 'faros-airbyte-common/vanta';
+import {Utils} from 'faros-js-client';
 
 import {
   Converter,
@@ -7,16 +11,10 @@ import {
   DestinationRecord,
   StreamContext,
 } from '../converter';
-import {
-  AWSV2VulnerabilityData,
-  CicdArtifactKey,
-  ExtendedVulnerabilityType,
-  GitV2VulnerabilityData,
-  VcsRepoKey,
-  Vulnerability,
-  VulnerabilityRemediation,
-} from './types';
+import {CicdArtifactKey, VcsRepoKey} from './types';
 import {getQueryFromName} from './utils';
+
+const MAX_DESCRIPTION_LENGTH = 1000;
 
 export abstract class Vulnerabilities extends Converter {
   source = 'vanta';
@@ -28,57 +26,18 @@ export abstract class Vulnerabilities extends Converter {
     'cicd_ArtifactVulnerability',
     'vcs_RepositoryVulnerability__Update',
     'cicd_ArtifactVulnerability__Update',
-    'vcs_Repository',
-    'cicd_Artifact',
-    'cicd_Repository',
   ];
-  git_vulns: GitV2VulnerabilityData[] = [];
-  awsv2_vulns: AWSV2VulnerabilityData[] = [];
-  vulnsMissingIds: ExtendedVulnerabilityType[] = [];
   severityMap: {[key: string]: number} = {
     LOW: 3.0,
     MEDIUM: 6.0,
     HIGH: 9.0,
     CRITICAL: 10.0,
   };
-  duplicateAwsV2UidsAndTitles: Set<[string, string]> = new Set();
-
-  duplicateAwsUids: Set<string> = new Set();
-  // We read from file synchronously to get query from file
   vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
-  cicdArtifactQueryByRepoName = getQueryFromName('cicdArtifactQueryByRepoName');
-  vcsRepositoryVulnerabilityQuery = getQueryFromName(
-    'vcsRepositoryVulnerabilityQuery'
-  );
-  cicdArtifactVulnerabilityQuery = getQueryFromName(
-    'cicdArtifactVulnerabilityQuery'
-  );
   secVulnerabilityQuery = getQueryFromName('secVulnerabilityQuery');
-  vulnerabilitiesWithMissingRepositoryNames: Set<string> = new Set();
-  vulnerabilitiesWithMissingCICDArtifacts: Set<string> = new Set();
-  noResponseFromVcsRepositoryQuery: Set<string> = new Set();
-  noResponseFromCicdArtifactQuery: Set<string> = new Set();
-  emptyResultsFromVcsRepositoryQuery: Set<string> = new Set();
-  emptyResultsFromCicdArtifactQuery: Set<string> = new Set();
-  noResponseAWSArtifactFromName: Set<string> = new Set();
-  emptyResultsAWSArtifactFromName: Set<string> = new Set();
-  nUpdatedVcsVulns: number = 0;
-  nUpdatedCicdVulns: number = 0;
-  missedRepositoryNames: Set<string> = new Set();
-  nFarosRequests: number = 0;
-  skipRepoNames: Set<string> = new Set([
-    'destination-bigquery',
-    'destination-postgres',
-  ]);
-  nRecordsProcessed: number = 0;
-  maxNRecords: number | null = 100; // TODO: remove this config
-  filterLastNDays: number | null = null; // TODO: move this config to the source
-  maxDescriptionLength: number = 1000; // TODO: Add config parameter
-  vcsIntegrationIds = ['github']; // TODO: Receive this from config
-  cicdIntegrationIds = ['aws']; // TODO: Receive this from config
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
@@ -119,7 +78,7 @@ export abstract class Vulnerabilities extends Converter {
         title: data.name,
         description: Utils.cleanAndTruncate(
           data.description,
-          this.maxDescriptionLength
+          this.maxDescriptionLength(ctx)
         ),
         severity: data.severity
           ? this.severityMap[data.severity].toString()
@@ -152,12 +111,10 @@ export abstract class Vulnerabilities extends Converter {
     };
     records.push(identifierRelationshipRecord);
 
-    // Creating repository or CICD artifact vulnerability records based on vulnerability type
-    if (this.vcsIntegrationIds.includes(data.integrationId)) {
-      const vcsRepo = await this.getVCSRepositoryFromName(
-        data.resourceName,
-        ctx
-      );
+    // If the vulnerability has repo name but no image tag,
+    // we assume it is a VCS vulnerability and search for the related repository
+    if (data.repoName && !data.imageTag) {
+      const vcsRepo = await this.getVCSRepositoryFromName(data.repoName, ctx);
       const repoVulnerabilityRecord: DestinationRecord = {
         model: 'vcs_RepositoryVulnerability',
         record: {
@@ -173,16 +130,16 @@ export abstract class Vulnerabilities extends Converter {
         },
       };
       records.push(repoVulnerabilityRecord);
-    } else if (this.cicdIntegrationIds.includes(data.integrationId)) {
-      // TODO: query for cicd artifact based on artifact uid
+    } else if (data.imageTag) {
+      const cicdArtifact = await this.getCICDArtifactImageTag(
+        data.imageTag,
+        ctx
+      );
       const artifactVulnerabilityRecord: DestinationRecord = {
         model: 'cicd_ArtifactVulnerability',
         record: {
           vulnerability: {uid: data.id, source: this.source},
-          artifact: {
-            uid: data.targetId, // This should be the artifact uid, and use the repo where the artifact is from
-            repository: {uid: 'cicd-repo-uid', source: this.source},
-          },
+          artifact: cicdArtifact,
           url: data.externalURL,
           dueAt: this.convertDateFormat(data.remediateByDate),
           createdAt: this.convertDateFormat(data.firstDetectedDate),
@@ -212,13 +169,39 @@ export abstract class Vulnerabilities extends Converter {
     const results = result?.vcs_Repository;
     if (!results || results.length === 0) {
       ctx.logger.debug(
-        `Did not get any results for vcsRepository query with name "${vcsRepoName}"`
+        `Did not get any results for vcs_Repository query with name "${vcsRepoName}"`
       );
       return null;
     }
     if (results.length > 1) {
       ctx.logger.warn(
-        `Got more than one result for vcsRepository query with name "${vcsRepoName}, using the first one"`
+        `Got more than one result for vcs_Repository query with name "${vcsRepoName}, using the first one"`
+      );
+    }
+    return results[0];
+  }
+
+  async getCICDArtifactImageTag(
+    commitSha: string,
+    ctx: StreamContext
+  ): Promise<CicdArtifactKey | null> {
+    const result = await ctx.farosClient.gql(
+      ctx.graph,
+      this.cicdArtifactQueryByCommitSha,
+      {
+        commitSha,
+      }
+    );
+    const results = result?.cicd_Artifact;
+    if (!results || results.length === 0) {
+      ctx.logger.debug(
+        `Did not get any results for cicd_Artifact query with commit sha "${commitSha}"`
+      );
+      return null;
+    }
+    if (results.length > 1) {
+      ctx.logger.warn(
+        `Got more than one result for cicd_Artifact query with name "${commitSha}, using the first one"`
       );
     }
     return results[0];
@@ -346,46 +329,8 @@ export abstract class Vulnerabilities extends Converter {
       return repositories[0];
     }
   }
-  async getCICDArtifactsFromCommitShas(
-    commitShas: string[],
-    fc: FarosClient,
-    ctx: StreamContext
-  ): Promise<CicdArtifactKey[]> {
-    const result = await fc.gql(ctx.graph, this.cicdArtifactQueryByCommitSha, {
-      commitShas,
-      limit: commitShas.length,
-    });
-    const results = result?.cicd_Artifact;
-    if (!results) {
-      ctx.logger.debug(
-        `Did not get a response for cicdArtifact query with commit shas "${commitShas}"`
-      );
-      commitShas.forEach((sha) =>
-        this.noResponseFromCicdArtifactQuery.add(sha)
-      );
-      return [];
-    }
-    return results;
-  }
 
-  async getAWSCicdArtifactsFromNames(
-    repoNames: string[],
-    fc: FarosClient,
-    ctx: StreamContext
-  ): Promise<CicdArtifactKey[]> {
-    ctx.logger.info(`Getting AWS cicd artifacts from names: ${repoNames}`);
-    const result = await fc.gql(ctx.graph, this.cicdArtifactQueryByRepoName, {
-      repoNames,
-      limit: repoNames.length,
-    });
-    const results = result?.cicd_Artifact;
-    if (!results) {
-      ctx.logger.debug(
-        `Did not get a response for cicdArtifact query with repository names "${repoNames}"`
-      );
-      repoNames.forEach((name) => this.noResponseAWSArtifactFromName.add(name));
-      return [];
-    }
-    return results;
+  private maxDescriptionLength(ctx: StreamContext): number {
+    return ctx.config.max_description_lenght || MAX_DESCRIPTION_LENGTH;
   }
 }

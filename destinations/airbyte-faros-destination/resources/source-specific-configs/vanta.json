@@ -11,12 +11,12 @@
           "const": "Vanta",
           "order": 0
         },
-        "updateExistingVulnerabilities": {
-          "type": "boolean",
-          "title": "Update Faros Vulnerabilities to Resolved",
-          "default": true,
-          "order": 1
-        } 
+        "max_description_length": {
+          "type": "integer",
+          "title": "Max Description Length",
+          "description": "Defines the maximum length for descriptions before truncation",
+          "default": 1000
+        }
       }
     }
   ]
