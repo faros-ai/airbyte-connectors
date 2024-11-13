@@ -1,8 +1,8 @@
 [
-    {
-      "description": "97% (80% threshold)",
-      "context": "codeclimate/diff-coverage",
-      "created_at": "2024-06-12T23:20:22Z",
-      "updated_at": "2024-06-12T23:20:22Z"
-    }
+  {
+    "description": "97% (80% threshold)",
+    "context": "codeclimate/diff-coverage",
+    "created_at": "2024-06-12T23:20:22Z",
+    "updated_at": "2024-06-12T23:20:22Z"
+  }
 ]
