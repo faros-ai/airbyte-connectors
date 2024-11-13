@@ -305,7 +305,7 @@ export abstract class GitHub {
             const mergedByMergeQueue = labels.some(
               (label) => label.name === 'merged-by-mq'
             );
-            let coverage;
+            let coverage = null;
             if (
               this.fetchPullRequestDiffCoverage &&
               (pr.mergeCommit || mergedByMergeQueue)
