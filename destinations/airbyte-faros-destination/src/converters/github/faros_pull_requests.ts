@@ -34,6 +34,7 @@ export class FarosPullRequests extends GitHubConverter {
     'vcs_PullRequestFile',
     'vcs_PullRequestLabel',
     'vcs_PullRequestReview',
+    'qa_CodeQuality',
   ];
 
   async convert(
@@ -96,6 +97,29 @@ export class FarosPullRequests extends GitHubConverter {
       pr.repo,
       this.streamName.source
     );
+
+    const qa_CodeQuality: DestinationRecord[] = [];
+    if (pr.coverage) {
+      qa_CodeQuality.push({
+        model: 'qa_CodeQuality',
+        record: {
+          uid: pr.coverage.commitSha,
+          coverage: {
+            category: 'Coverage',
+            type: 'Percent',
+            name: 'Coverage',
+            value: pr.coverage.coveragePercentage,
+          },
+          createdAt: Utils.toDate(pr.coverage.createdAt),
+          pullRequest: prKey,
+          commit: {
+            sha: pr.coverage.commitSha,
+            repository: repoKey,
+          },
+          repository: repoKey,
+        },
+      });
+    }
 
     return [
       {
@@ -167,6 +191,7 @@ export class FarosPullRequests extends GitHubConverter {
           requestedReviewer: {uid: reviewer, source: this.streamName.source},
         },
       })),
+      ...qa_CodeQuality,
     ];
   }
 
