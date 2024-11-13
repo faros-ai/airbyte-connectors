@@ -281,6 +281,21 @@
           }
         }
       }
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "commitSha": {
+          "type": "string"
+        },
+        "coveragePercentage": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   }
 }

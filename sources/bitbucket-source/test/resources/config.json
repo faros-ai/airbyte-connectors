@@ -3,5 +3,6 @@
   "password": "secret",
   "bucket_id": 1,
   "bucket_total": 1,
-  "run_mode": "Custom"
+  "run_mode": "Custom",
+  "cutoff_days": 9999
 }

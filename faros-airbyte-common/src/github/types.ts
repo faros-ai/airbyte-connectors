@@ -44,9 +44,16 @@ export type Repository = {
 export type PullRequestNode =
   PullRequestsQuery['repository']['pullRequests']['nodes'][0];
 
+export type CoverageReport = {
+  coveragePercentage: number;
+  createdAt: Date;
+  commitSha: string;
+};
+
 export type PullRequest = {
   org: string;
   repo: string;
+  coverage?: CoverageReport;
 } & Omit<PullRequestNode, 'labels' | 'files' | 'reviews' | 'reviewRequests'> & {
     labels: PullRequestNode['labels']['nodes'];
     files: PullRequestNode['files']['nodes'];
