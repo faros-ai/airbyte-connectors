@@ -1350,6 +1350,13 @@ Add any other context about the changes here.
       "totalCount": 3,
     },
     "commits": {
+      "nodes": [
+        {
+          "commit": {
+            "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+          },
+        },
+      ],
       "totalCount": 13,
     },
     "coverage": undefined,
@@ -1551,6 +1558,298 @@ N/A
         "path": "nehanda/test/file2.ts",
       },
     ],
+    "headRefName": "fix-edge-cases",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "dora",
+      },
+    },
+    "isDraft": false,
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+    ],
+    "mergeCommit": {
+      "oid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
+    },
+    "mergedAt": "2021-02-04T21:53:00Z",
+    "number": 46,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/user1",
+          "login": "user1",
+          "name": null,
+          "type": "User",
+        },
+      },
+      {
+        "requestedReviewer": {
+          "members": {
+            "nodes": [
+              {
+                "html_url": "https://github.com/user2",
+                "login": "user2",
+                "name": null,
+                "type": "User",
+              },
+              {
+                "html_url": "https://github.com/user3",
+                "login": "user3",
+                "name": null,
+                "type": "User",
+              },
+            ],
+          },
+          "type": "Team",
+        },
+      },
+    ],
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199689,
+        "state": "APPROVED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
+      },
+    ],
+    "state": "MERGED",
+    "title": "Fix edge cases for deploy cycle breakdown",
+    "updatedAt": "2021-02-04T21:53:09Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/46",
+  },
+]
+`;
+
+exports[`index streams - pull requests diff coverage 1`] = `
+[
+  {
+    "additions": 1077,
+    "author": {
+      "html_url": "https://github.com/dolos",
+      "login": "dolos",
+      "name": "Dolos",
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "**Related issues**
+https://github.com/faros-ai/tickets/issues/120
+
+**Describe the proposed solution**
+Optional \`employee\` param changes DORA app behavior to return metrics rolled-up by owner.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context about the changes here.
+",
+    "changedFiles": 21,
+    "comments": {
+      "totalCount": 3,
+    },
+    "commits": {
+      "nodes": [
+        {
+          "commit": {
+            "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+          },
+        },
+      ],
+      "totalCount": 13,
+    },
+    "coverage": {
+      "commitSha": "b4c35c299ad22fe858569482a7696597ca038651",
+      "coveragePercentage": 97,
+      "createdAt": 2024-06-12T23:20:22.000Z,
+    },
+    "createdAt": "2021-02-12T05:35:19Z",
+    "deletions": 763,
+    "files": [],
+    "headRefName": "dora-employee-param",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "isDraft": false,
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+      {
+        "name": "typescript",
+      },
+    ],
+    "mergeCommit": {
+      "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+    },
+    "mergedAt": "2021-02-16T17:15:27Z",
+    "number": 48,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+      },
+    ],
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 1,
+        },
+        "databaseId": 2192199611,
+        "state": "COMMENTED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
+      },
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199612,
+        "state": "APPROVED",
+        "submittedAt": "2021-03-04T21:53:09Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
+      },
+    ],
+    "state": "MERGED",
+    "title": "DORA apps take optional employee uid param",
+    "updatedAt": "2021-02-16T17:15:29Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/48",
+  },
+  {
+    "additions": 0,
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": "nehanda",
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "**Related issues**
+Ensures we only expose the apps that can run on the latest Faros API 
+
+**Describe the proposed solution**
+Moving all apps that are not compatible with our new schema and/or do not have feed and model support yet. As we add more feeds re-add them after full testing.
+
+**Describe alternatives you've considered**
+N/A
+
+",
+    "changedFiles": 140,
+    "comments": {
+      "totalCount": 1,
+    },
+    "commits": {
+      "totalCount": 2,
+    },
+    "coverage": undefined,
+    "createdAt": "2021-02-04T23:54:56Z",
+    "deletions": 4787,
+    "files": [],
+    "headRefName": "nehanda/cleanup-apps",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "isDraft": false,
+    "labels": [],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 47,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [],
+    "reviews": [],
+    "state": "CLOSED",
+    "title": "Move apps with no feed support temporarily to internal",
+    "updatedAt": "2021-02-11T18:10:08Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/47",
+  },
+  {
+    "additions": 109,
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": null,
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "Handle cases and add tests for when:
+1. Deployments have no associated builds
+2. Builds have no associated commits",
+    "changedFiles": 2,
+    "comments": {
+      "totalCount": 0,
+    },
+    "commits": {
+      "totalCount": 9,
+    },
+    "coverage": undefined,
+    "createdAt": "2021-02-04T15:49:42Z",
+    "deletions": 23,
+    "files": [],
     "headRefName": "fix-edge-cases",
     "headRepository": {
       "name": "faros-apps",

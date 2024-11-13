@@ -18,7 +18,14 @@
           "changedFiles": 21,
           "createdAt": "2021-02-12T05:35:19Z",
           "commits": {
-            "totalCount": 13
+            "totalCount": 13,
+            "nodes": [
+              {
+                "commit": {
+                  "oid": "b4c35c299ad22fe858569482a7696597ca038651"
+                }
+              }
+            ]
           },
           "comments": {
             "totalCount": 3

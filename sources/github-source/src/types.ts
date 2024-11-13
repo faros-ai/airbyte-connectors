@@ -33,6 +33,8 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly concurrency_limit?: number;
   readonly start_date?: string;
   readonly end_date?: string;
+  readonly fetch_pull_request_diff_coverage?: boolean;
+  readonly pull_request_cutoff_lag_seconds?: number;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;

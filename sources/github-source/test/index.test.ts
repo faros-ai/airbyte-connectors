@@ -406,6 +406,39 @@ describe('index', () => {
     });
   });
 
+  test('streams - pull requests diff coverage', async () => {
+    const config = readTestResourceAsJSON(
+      'pull_requests/pull_requests_diff_coverage/config.json'
+    );
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getPullRequestsMockedImplementation(
+              readTestResourceAsJSON('pull_requests/pull_requests.json')
+            ),
+            getListCommitStatusesForRefMockedImplementation(
+              readTestResourceAsJSON(
+                'pull_requests/pull_requests_diff_coverage/listCommitStatuses.json'
+              )
+            )
+          ),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - labels', async () => {
     await sourceReadTest({
       source,
@@ -1154,5 +1187,11 @@ const getWorkflowJobsMockedImplementation = (res: any) => ({
 const getArtifactsMockedImplementation = (res: any) => ({
   actions: {
     listWorkflowRunArtifacts: jest.fn().mockReturnValue(res.artifacts),
+  },
+});
+
+const getListCommitStatusesForRefMockedImplementation = (res: any) => ({
+  repos: {
+    listCommitStatusesForRef: jest.fn().mockReturnValue(res),
   },
 });
