@@ -35,14 +35,17 @@ export abstract class Vulnerabilities extends Converter {
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.data.id;
+    return record?.record?.data?.id;
   }
 
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.convertVulnerabilityRecord(record?.record?.data.data, ctx);
+    return this.convertVulnerabilityRecord(
+      record?.record?.data as Vulnerability,
+      ctx
+    );
   }
 
   async convertVulnerabilityRecord(
