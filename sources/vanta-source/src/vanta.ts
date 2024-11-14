@@ -163,7 +163,7 @@ export class Vanta {
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {
-      const response: AxiosResponse = await this.api.get(url, {params});
+      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
       return response?.data?.results;
     } catch (error) {
       throw new VError('Failed to fetch vulnerabilities: %s', error);
@@ -177,10 +177,22 @@ export class Vanta {
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {
-      const response: AxiosResponse = await this.api.get(url, {params});
+      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
       return response?.data?.results;
     } catch (error) {
       throw new VError('Failed to fetch vulnerability remediations: %s', error);
+    }
+  }
+
+  private async fetchVulnerableAssets(cursor: string | null): Promise<any> {
+    const url = `${this.apiUrl}v1/vulnerable-assets`;
+    const params = {pageSize: this.limit, pageCursor: cursor};
+
+    try {
+      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
+      return response?.data?.results;
+    } catch (error) {
+      throw new VError('Failed to fetch vulnerable assets: %s', error);
     }
   }
 
@@ -207,29 +219,20 @@ export class Vanta {
     return assetMap;
   }
 
-  private async fetchVulnerableAssets(cursor: string | null): Promise<any> {
-    const url = `${this.apiUrl}v1/vulnerable-assets`;
-    const params = {pageSize: this.limit, pageCursor: cursor};
-
-    try {
-      const response: AxiosResponse = await this.api.get(url, {params});
-      return response?.data?.results;
-    } catch (error) {
-      throw new VError('Failed to fetch vulnerable assets: %s', error);
-    }
-  }
-
   async getAxiosResponse(
     url: string,
-    body: any,
+    bodyOrParams: any = null, // optional body parameter for GET requests
     requestCount: number = 0,
-    baseDelay: number = 1000 // initial delay for exponential backoff in ms
+    baseDelay: number = 1000, // initial delay for exponential backoff in ms
+    method: 'get' | 'post' = 'post'
   ): Promise<AxiosResponse> {
     if (requestCount > 5) {
       throw new VError('Too many retries for Vanta API');
     }
     try {
-      return await this.api.post(url, body);
+      return method === 'post'
+        ? await this.api.post(url, bodyOrParams)
+        : await this.api.get(url, {params: bodyOrParams});
     } catch (error: any) {
       const statusCode = error?.response?.status;
 
@@ -242,9 +245,10 @@ export class Vanta {
         await new Promise((resolve) => setTimeout(resolve, 30000));
         return await this.getAxiosResponse(
           url,
-          body,
+          bodyOrParams,
           requestCount + 1,
-          baseDelay
+          baseDelay,
+          method
         );
       }
 
@@ -257,9 +261,10 @@ export class Vanta {
         await new Promise((resolve) => setTimeout(resolve, delay));
         return await this.getAxiosResponse(
           url,
-          body,
+          bodyOrParams,
           requestCount + 1,
-          baseDelay
+          baseDelay,
+          method
         );
       }
 
