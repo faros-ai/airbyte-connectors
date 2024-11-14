@@ -1,9 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {
-  Vulnerability,
-  VulnerabilityRecordType,
-  VulnerabilityRemediation,
-} from 'faros-airbyte-common/vanta';
+import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
 import {
@@ -36,7 +32,6 @@ export abstract class Vulnerabilities extends Converter {
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
-  secVulnerabilityQuery = getQueryFromName('secVulnerabilityQuery');
 
   /** All Vanta records should have id property */
   id(record: AirbyteRecord): any {
@@ -47,21 +42,7 @@ export abstract class Vulnerabilities extends Converter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const recordType = record?.record?.data?.recordType;
-    if (recordType === VulnerabilityRecordType.VULNERABILITY) {
-      return this.convertVulnerabilityRecord(record?.record?.data.data, ctx);
-    } else if (
-      recordType === VulnerabilityRecordType.VULNERABILITY_REMEDIATION
-    ) {
-      return this.convertVulnerabilityRemediationRecord(
-        record?.record?.data.data,
-        ctx
-      );
-    }
-    ctx.logger.warn(
-      'Skipping vulnerability stream record. Unknown record type: ' + recordType
-    );
-    return [];
+    return this.convertVulnerabilityRecord(record?.record?.data.data, ctx);
   }
 
   async convertVulnerabilityRecord(
@@ -208,88 +189,6 @@ export abstract class Vulnerabilities extends Converter {
     return results[0];
   }
 
-  async convertVulnerabilityRemediationRecord(
-    data: VulnerabilityRemediation,
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
-    const relatedEntity = await this.getVulnerabilityRelatedEntityById(
-      data.vulnerabilityId,
-      ctx
-    );
-    if (!relatedEntity) {
-      ctx.logger.warn(
-        `No related entity found for vulnerability id ${data.vulnerabilityId}`
-      );
-      return [];
-    }
-    if (relatedEntity.repository) {
-      return [
-        {
-          model: 'vcs_RepositoryVulnerability__Update',
-          record: {
-            at: Date.now(),
-            where: {
-              vulnerability: {
-                uid: data.vulnerabilityId,
-                source: this.source,
-              },
-              repository: {
-                name: relatedEntity.repository.name,
-                organization: {
-                  uid: relatedEntity.repository.organization.uid,
-                  source: relatedEntity.repository.organization.source,
-                },
-              },
-            },
-            mask: ['resolvedAt', 'status'],
-            patch: {
-              resolvedAt: data.remediationDate,
-              status: {
-                category: 'Resolved',
-                detail: 'Resolved',
-              },
-            },
-          },
-        },
-      ];
-    }
-    if (relatedEntity.artifact) {
-      return [
-        {
-          model: 'cicd_ArtifactVulnerability__Update',
-          record: {
-            at: Date.now(),
-            where: {
-              vulnerability: {
-                uid: data.vulnerabilityId,
-                source: this.source,
-              },
-              artifact: {
-                uid: relatedEntity.artifact.uid,
-                repository: {
-                  uid: relatedEntity.artifact.repository.uid,
-                  organization: {
-                    uid: relatedEntity.artifact.repository.organization.uid,
-                    source:
-                      relatedEntity.artifact.repository.organization.source,
-                  },
-                },
-              },
-            },
-            mask: ['resolvedAt', 'status'],
-            patch: {
-              resolvedAt: data.remediationDate,
-              status: {
-                category: 'Resolved',
-                detail: 'Resolved',
-              },
-            },
-          },
-        },
-      ];
-    }
-  }
-
   getVulnerabilityCatalogCategory(identifierId: string): string {
     if (identifierId.includes('CVE')) {
       return 'CVE';
@@ -310,27 +209,6 @@ export abstract class Vulnerabilities extends Converter {
       return null;
     }
   }
-
-  /** Sec vulnerability has artifacts and repository relationship. When source is Vanta, each sec vulnerability will have only
-   * one cicd artifact or vcs repository, as it represents a finding. **/
-  async getVulnerabilityRelatedEntityById(
-    id: string,
-    ctx: StreamContext
-  ): Promise<any> {
-    const result = await ctx.farosClient.gql(
-      ctx.graph,
-      this.secVulnerabilityQuery,
-      {id, source: this.source}
-    );
-    const artifacts = result?.sec_Vulnerability[0]?.artifacts;
-    const repositories = result?.sec_Vulnerability[0]?.repositories;
-    if (artifacts && artifacts.length > 0) {
-      return artifacts[0];
-    } else if (repositories && repositories.length > 0) {
-      return repositories[0];
-    }
-  }
-
   private maxDescriptionLength(ctx: StreamContext): number {
     return ctx.config.max_description_lenght || MAX_DESCRIPTION_LENGTH;
   }

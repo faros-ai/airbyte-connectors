@@ -38,13 +38,3 @@ export type VulnerabilityRemediation = {
   slaDeadlineDate: string; // ISO date string
   remediationDate: string; // ISO date string
 };
-
-export enum VulnerabilityRecordType {
-  VULNERABILITY = 'vulnerability',
-  VULNERABILITY_REMEDIATION = 'vulnerability_remediation',
-}
-
-export type Record = {
-  data: Vulnerability | VulnerabilityRemediation;
-  recordType: VulnerabilityRecordType;
-};

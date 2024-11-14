@@ -222,24 +222,47 @@ export class Vanta {
   async getAxiosResponse(
     url: string,
     body: any,
-    requestCount: number = 0
+    requestCount: number = 0,
+    baseDelay: number = 1000 // initial delay for exponential backoff in ms
   ): Promise<AxiosResponse> {
     if (requestCount > 5) {
       throw new VError('Too many retries for Vanta API');
     }
     try {
-      const packed_response: AxiosResponse = await this.api.post(url, body);
-      return packed_response;
-    } catch (error) {
-      if (error instanceof Error && error.message?.includes('504')) {
-        // Sleep for 30 seconds and continue:
+      return await this.api.post(url, body);
+    } catch (error: any) {
+      const statusCode = error?.response?.status;
+
+      // Handle 504 error with a fixed delay
+      if (statusCode === 504) {
         this.logger.info(
           'Got 504 from Vanta API, sleeping for 30 seconds, then retrying. Retry count: %s',
           (requestCount + 1).toString()
         );
         await new Promise((resolve) => setTimeout(resolve, 30000));
-        return await this.getAxiosResponse(url, body, requestCount + 1);
+        return await this.getAxiosResponse(
+          url,
+          body,
+          requestCount + 1,
+          baseDelay
+        );
       }
+
+      // Handle 429 error with exponential backoff
+      if (statusCode === 429) {
+        const delay = baseDelay * Math.pow(2, requestCount); // Exponential backoff
+        this.logger.warn(
+          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds (attempt ${requestCount + 1}/5).`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return await this.getAxiosResponse(
+          url,
+          body,
+          requestCount + 1,
+          baseDelay
+        );
+      }
+
       this.logger.error(
         `Error occurred: ${error instanceof Error ? error.message : error}`
       );

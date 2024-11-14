@@ -10,6 +10,7 @@ import {
 import VError from 'verror';
 
 import {Vulnerabilities} from './streams';
+import {VulnerabilityRemediations} from './streams/vulnerability_remediations';
 import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
@@ -52,6 +53,9 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
   }
 
   streams(config: VantaConfig): AirbyteStreamBase[] {
-    return [new Vulnerabilities(config, this.logger)];
+    return [
+      new Vulnerabilities(config, this.logger),
+      new VulnerabilityRemediations(config, this.logger),
+    ];
   }
 }
