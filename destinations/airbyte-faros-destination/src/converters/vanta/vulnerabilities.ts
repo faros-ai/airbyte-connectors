@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   Vulnerability,
+  VulnerabilityRecordType,
   VulnerabilityRemediation,
 } from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
@@ -24,8 +25,6 @@ export abstract class Vulnerabilities extends Converter {
     'sec_VulnerabilityIdentifierRelationship',
     'vcs_RepositoryVulnerability',
     'cicd_ArtifactVulnerability',
-    'vcs_RepositoryVulnerability__Update',
-    'cicd_ArtifactVulnerability__Update',
   ];
   severityMap: {[key: string]: number} = {
     LOW: 3.0,
@@ -49,9 +48,11 @@ export abstract class Vulnerabilities extends Converter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const recordType = record?.record?.data?.recordType;
-    if (recordType === 'vulnerability') {
+    if (recordType === VulnerabilityRecordType.VULNERABILITY) {
       return this.convertVulnerabilityRecord(record?.record?.data.data, ctx);
-    } else if (recordType === 'vulnerability-remediation') {
+    } else if (
+      recordType === VulnerabilityRecordType.VULNERABILITY_REMEDIATION
+    ) {
       return this.convertVulnerabilityRemediationRecord(
         record?.record?.data.data,
         ctx
