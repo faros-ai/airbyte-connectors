@@ -1,5 +1,5 @@
-query {
-  findings(offset: 100, first: 50, q: "tool_name in (\"github dependabot\") ") {
+query getFindings($offset: Int, $first: Int, $q: String) {
+  findings(offset: $offset, first: $first, q: $q) {
     edges {
       node {
         repository {

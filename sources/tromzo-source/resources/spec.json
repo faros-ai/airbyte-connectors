@@ -20,22 +20,33 @@
         "description": "Your Tromzo organization subdomain used as part of the API URL (e.g., if your URL is https://acme.tromzo.com, enter 'acme')",
         "examples": ["https://acme.tromzo.com"]
       },
-      "api_timeout": {
+      "tools": {
         "order": 3,
+        "type": "array",
+        "title": "Tools",
+        "description": "The tools to get findings for",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "examples": ["codeql", "github dependabot"]
+      },
+      "api_timeout": {
+        "order": 4,
         "type": "integer",
         "title": "API Request Timeout",
         "description": "Timeout in milliseconds for each request to the Tromzo API. 0 means no timeout",
         "default": 60000
       },
       "api_page_size": {
-        "order": 4,
+        "order": 5,
         "type": "integer",
         "title": "API Page Size",
         "description": "The number of records to request from the API per call",
         "default": 100
       },
       "api_max_retries": {
-        "order": 5,
+        "order": 6,
         "type": "integer",
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to the Tromzo API",

@@ -9,6 +9,10 @@ import {Dictionary} from 'ts-essentials';
 import {Tromzo} from '../tromzo';
 import {Finding, TromzoConfig} from '../types';
 
+type StreamSlice = {
+  tool: string;
+};
+
 export class Findings extends AirbyteStreamBase {
   constructor(
     private readonly config: TromzoConfig,
@@ -29,15 +33,23 @@ export class Findings extends AirbyteStreamBase {
     return 'updated_at';
   }
 
+  async *streamSlices(): AsyncGenerator<StreamSlice> {
+    for (const tool of this.config.tools ?? []) {
+      yield {tool};
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any>,
+    streamSlice?: StreamSlice,
     streamState?: Dictionary<any>
   ): AsyncGenerator<Finding> {
     const tromzo = await Tromzo.instance(this.config, this.logger);
 
     // TODO: Add state and incremental sync
-    yield* tromzo.findings();
+    for (const tool of streamSlice.tool) {
+      yield* tromzo.findings(tool);
+    }
   }
 }
