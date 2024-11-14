@@ -12,6 +12,7 @@ import {
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  CoverageReport,
   DependabotAlert,
   Issue,
   Label,
@@ -101,6 +102,8 @@ export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
+export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
+export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -126,6 +129,8 @@ export abstract class GitHub {
   protected readonly pageSize: number;
   protected readonly pullRequestsPageSize: number;
   protected readonly backfill: boolean;
+  protected readonly fetchPullRequestDiffCoverage: boolean;
+  protected readonly pullRequestCutoffLagSeconds: number;
 
   constructor(
     config: GitHubConfig,
@@ -144,6 +149,10 @@ export abstract class GitHub {
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
+    this.fetchPullRequestDiffCoverage =
+      config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
+    this.pullRequestCutoffLagSeconds =
+      config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
   }
 
   static async instance(
@@ -252,6 +261,14 @@ export abstract class GitHub {
     if (this.backfill && !startCursor) {
       return;
     }
+    const adjustedStartDate = startDate
+      ? new Date(
+          Math.max(
+            startDate.getTime() - this.pullRequestCutoffLagSeconds * 1000,
+            0
+          )
+        )
+      : undefined;
     const query = this.buildPRQuery();
     let currentPageSize = this.pullRequestsPageSize;
     let currentCursor = startCursor;
@@ -278,14 +295,36 @@ export abstract class GitHub {
             ) {
               continue;
             }
-            if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+            if (
+              adjustedStartDate &&
+              Utils.toDate(pr.updatedAt) < adjustedStartDate
+            ) {
               return;
+            }
+            const labels = await this.extractPullRequestLabels(pr, org, repo);
+            const mergedByMergeQueue = labels.some(
+              (label) => label.name === 'merged-by-mq'
+            );
+            let coverage = null;
+            if (
+              this.fetchPullRequestDiffCoverage &&
+              (pr.mergeCommit || mergedByMergeQueue)
+            ) {
+              const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
+              if (lastCommitSha) {
+                coverage = await this.getDiffCoverage(
+                  org,
+                  repo,
+                  lastCommitSha,
+                  pr.number
+                );
+              }
             }
             yield {
               org,
               repo,
               ...pr,
-              labels: await this.extractPullRequestLabels(pr, org, repo),
+              labels,
               files: await this.extractPullRequestFiles(pr, org, repo),
               reviews: await this.extractPullRequestReviews(pr, org, repo),
               reviewRequests: await this.extractPullRequestReviewRequests(
@@ -293,6 +332,7 @@ export abstract class GitHub {
                 org,
                 repo
               ),
+              coverage,
             };
           }
           // increase page size for the next iteration in case it was decreased previously
@@ -347,6 +387,79 @@ export abstract class GitHub {
         }
       }
     }
+  }
+
+  private async getDiffCoverage(
+    org: string,
+    repo: string,
+    commitSha: string,
+    prNumber: number
+  ): Promise<CoverageReport | null> {
+    if (!this.fetchPullRequestDiffCoverage) {
+      return null;
+    }
+
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listCommitStatusesForRef,
+      {
+        owner: org,
+        repo,
+        ref: commitSha,
+        per_page: this.pageSize,
+      }
+    );
+
+    try {
+      let codeClimateResult = undefined;
+      let codeCovResult = undefined;
+      this.logger.debug(
+        `Attempting to parse code coverage for commit ${commitSha} in ${org}/${repo} for PR #${prNumber}`
+      );
+
+      const processStatus = (status: any) => {
+        const match = status.description.match(/(\d+(?:\.\d+)?)%/);
+
+        if (match) {
+          const coveragePercentage = parseFloat(match[1]);
+          this.logger.debug(
+            `Successfully parsed code coverage from ${status.context}`
+          );
+          return {
+            coveragePercentage: coveragePercentage,
+            createdAt: Utils.toDate(status.created_at),
+            commitSha,
+          };
+        } else {
+          this.logger.warn(
+            `Failed to parse ${status.context} status description: ${status.description}`
+          );
+          return undefined;
+        }
+      };
+
+      for await (const res of iter) {
+        for (const status of res.data) {
+          if (status?.context === 'codeclimate/diff-coverage') {
+            codeClimateResult = processStatus(status);
+          } else if (status?.context === 'codecov/patch') {
+            codeCovResult = processStatus(status);
+          }
+        }
+      }
+
+      if (codeCovResult) {
+        return codeCovResult;
+      } else if (codeClimateResult) {
+        return codeClimateResult;
+      }
+    } catch (err: any) {
+      if (err?.status == 403) {
+        throw new VError(err, 'unable to list commit statuses');
+      }
+      throw err;
+    }
+
+    return null;
   }
 
   private buildPRQuery(): string {

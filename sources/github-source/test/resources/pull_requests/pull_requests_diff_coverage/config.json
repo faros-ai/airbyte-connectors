@@ -1,0 +1,11 @@
+{
+  "fetch_pull_request_diff_coverage": true,
+  "authentication": {
+    "type": "token",
+    "personal_access_token": "ghp_1234567890"
+  },
+  "run_mode": "Custom",
+  "cutoff_days": 9999,
+  "bucket_id": 1,
+  "bucket_total": 1
+}
