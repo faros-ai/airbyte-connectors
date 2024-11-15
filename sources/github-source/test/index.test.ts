@@ -835,6 +835,30 @@ describe('index', () => {
     });
   });
 
+  test('streams - issue comments', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'issue_comments/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getIssueCommentsMockedImplementation(
+              readTestResourceAsJSON('issue_comments/issue_comments.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - code scanning alerts', async () => {
     await sourceReadTest({
       source,
@@ -1147,6 +1171,12 @@ const getRepositoryTagsMockedImplementation = (res: any) =>
 
 const getIssuesMockedImplementation = (res: any) =>
   graphqlMockedImplementation('issues', res);
+
+const getIssueCommentsMockedImplementation = (res: any) => ({
+  issues: {
+    listCommentsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
 
 const getCodeScanningAlertsMockedImplementation = (res: any) => ({
   codeScanning: {

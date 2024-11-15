@@ -43,6 +43,13 @@ export class FarosPullRequests extends GitHubConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const pr = record.record.data as PullRequest;
 
+    const prKey = GitHubCommon.pullRequestKey(
+      pr.number,
+      pr.org,
+      pr.repo,
+      this.streamName.source
+    );
+
     this.collectUser(pr.author);
 
     // Github PR states
@@ -82,20 +89,33 @@ export class FarosPullRequests extends GitHubConverter {
     });
 
     let reviewCommentCount = 0;
+    const reviewSubmissionComments: DestinationRecord[] = [];
     pr.reviews.forEach((review) => {
       reviewCommentCount += review.comments.totalCount;
+      if (review.body) {
+        reviewSubmissionComments.push({
+          model: 'vcs_PullRequestComment',
+          record: {
+            number: review.databaseId,
+            uid: review.databaseId.toString(),
+            comment: Utils.cleanAndTruncate(
+              review.body,
+              GitHubCommon.MAX_DESCRIPTION_LENGTH
+            ),
+            createdAt: Utils.toDate(review.submittedAt),
+            updatedAt: Utils.toDate(review.updatedAt),
+            author: review.author
+              ? {uid: review.author.login, source: this.streamName.source}
+              : null,
+            pullRequest: prKey,
+          },
+        });
+      }
       this.collectUser(review.author);
     });
 
     const requestedReviewers = this.collectReviewRequestReviewers(
       pr.reviewRequests
-    );
-
-    const prKey = GitHubCommon.pullRequestKey(
-      pr.number,
-      pr.org,
-      pr.repo,
-      this.streamName.source
     );
 
     const qa_CodeQuality: DestinationRecord[] = [];
@@ -135,7 +155,10 @@ export class FarosPullRequests extends GitHubConverter {
           mergedAt: Utils.toDate(pr.mergedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
-          commentCount: pr.comments.totalCount + reviewCommentCount,
+          commentCount:
+            pr.comments.totalCount +
+            reviewCommentCount +
+            reviewSubmissionComments.length,
           diffStats: {
             linesAdded: pr.additions,
             linesDeleted: pr.deletions,
@@ -191,6 +214,7 @@ export class FarosPullRequests extends GitHubConverter {
           requestedReviewer: {uid: reviewer, source: this.streamName.source},
         },
       })),
+      ...reviewSubmissionComments,
       ...qa_CodeQuality,
     ];
   }

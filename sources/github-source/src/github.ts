@@ -15,6 +15,7 @@ import {
   CoverageReport,
   DependabotAlert,
   Issue,
+  IssueComment,
   Label,
   Organization,
   OutsideCollaborator,
@@ -682,6 +683,7 @@ export abstract class GitHub {
             'created_at',
             'updated_at',
             'pull_request_url',
+            'html_url',
           ]),
         };
       }
@@ -1464,6 +1466,56 @@ export abstract class GitHub {
           org,
           repo,
           ...issue,
+        };
+      }
+    }
+  }
+
+  async *getIssueComments(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<IssueComment> {
+    // query supports filtering by start date (since) but not by end date
+    // for backfill, we iterate in ascending order from the start date and stop when we reach the end date
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).issues.listCommentsForRepo,
+      {
+        owner: org,
+        repo: repo,
+        since: startDate?.toISOString(),
+        direction: this.backfill ? 'asc' : 'desc',
+        sort: 'updated',
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const comment of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(comment.updated_at) > endDate
+        ) {
+          return;
+        }
+        yield {
+          repository: `${org}/${repo}`,
+          user: pick(comment.user, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
+          ...pick(comment, [
+            'id',
+            'body',
+            'created_at',
+            'updated_at',
+            'issue_url',
+            'html_url',
+          ]),
         };
       }
     }

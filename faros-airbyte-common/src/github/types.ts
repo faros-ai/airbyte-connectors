@@ -77,7 +77,7 @@ export type PullRequestComment = {
   >;
 } & Pick<
   PullRequestCommentNode,
-  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
+  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url' | 'html_url'
 >;
 
 export type PullRequestReview = PullRequestNode['reviews']['nodes'][0];
@@ -179,6 +179,21 @@ export type Issue = {
 } & IssuesQuery['repository']['issues']['nodes'][0];
 
 export type IssueAssignment = Issue['assignments']['nodes'][0];
+
+type IssueCommentNode = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.issues.listCommentsForRepo
+>[0];
+
+export type IssueComment = {
+  repository: string;
+  user: Pick<
+    IssueCommentNode['user'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
+} & Pick<
+  IssueCommentNode,
+  'id' | 'body' | 'created_at' | 'updated_at' | 'issue_url' | 'html_url'
+>;
 
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
