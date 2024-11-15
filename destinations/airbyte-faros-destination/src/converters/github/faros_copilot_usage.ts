@@ -410,8 +410,8 @@ export class FarosCopilotUsage extends GitHubConverter {
         record: {
           uid,
           source: this.streamName.source,
-          computeStartedAt: day,
-          computeEndedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
           type: {category: assistantMetricType},
           valueType: 'Int',
           value: String(value),
