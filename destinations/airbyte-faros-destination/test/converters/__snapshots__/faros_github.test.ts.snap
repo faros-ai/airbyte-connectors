@@ -250,15 +250,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -313,15 +313,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -420,15 +420,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -519,15 +519,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -618,15 +618,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -681,15 +681,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -772,15 +772,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -863,15 +863,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -954,15 +954,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1017,15 +1017,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1108,15 +1108,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1199,15 +1199,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1290,15 +1290,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1353,15 +1353,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1444,15 +1444,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1535,15 +1535,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1626,15 +1626,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1689,15 +1689,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1780,15 +1780,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -1871,15 +1871,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2044,15 +2044,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2107,15 +2107,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2170,15 +2170,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2261,15 +2261,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2352,15 +2352,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2443,15 +2443,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2506,15 +2506,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2597,15 +2597,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2688,15 +2688,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2779,15 +2779,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2842,15 +2842,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -2933,15 +2933,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3024,15 +3024,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3115,15 +3115,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3178,15 +3178,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3269,15 +3269,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3360,15 +3360,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3451,15 +3451,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3514,15 +3514,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3605,15 +3605,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3696,15 +3696,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3787,15 +3787,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3850,15 +3850,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3913,15 +3913,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -3976,15 +3976,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -4047,15 +4047,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4127,15 +4127,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4235,15 +4235,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4343,15 +4343,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4451,15 +4451,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4531,15 +4531,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4639,15 +4639,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4747,15 +4747,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4855,15 +4855,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -4935,15 +4935,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5043,15 +5043,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5151,15 +5151,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5259,15 +5259,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5339,15 +5339,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5447,15 +5447,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5555,15 +5555,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5663,15 +5663,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5743,15 +5743,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5851,15 +5851,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -5959,15 +5959,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6177,15 +6177,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-16T00:00:00.000Z",
-      "computeStartedAt": "2023-10-15T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6257,15 +6257,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6337,15 +6337,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6445,15 +6445,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6553,15 +6553,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6661,15 +6661,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6741,15 +6741,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6849,15 +6849,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -6957,15 +6957,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7065,15 +7065,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7145,15 +7145,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7253,15 +7253,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7361,15 +7361,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7469,15 +7469,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7549,15 +7549,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7657,15 +7657,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7765,15 +7765,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7873,15 +7873,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -7953,15 +7953,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8061,15 +8061,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "jetbrains",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8169,15 +8169,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8277,15 +8277,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8357,15 +8357,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8437,15 +8437,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
@@ -8517,15 +8517,15 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "computeEndedAt": "2023-10-17T00:00:00.000Z",
-      "computeStartedAt": "2023-10-16T00:00:00.000Z",
       "editor": null,
+      "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
       },
       "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
       "team": Object {
         "uid": "justice-league",
       },
