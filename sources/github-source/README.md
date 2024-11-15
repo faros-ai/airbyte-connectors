@@ -92,7 +92,8 @@ connectors, such as linting/formatting tools, should go in the root
 | Copilot Seats ( ** )   | read:org             | Organization: Administration                     |
 | Copilot Usage ( ** )   | read:org             | Organization: Administration & Members           |
 | Dependabot Alerts      | repo                 | Repository: Metadata & Dependabot Alerts         |
-| Issues                 | repo                 | Repository: Issues                               |
+| Issues                 | repo                 | Repository: Metadata & Issues                    |
+| Issue Comments         | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
 | Labels                 | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
 | Organizations          | —                    | —                                                |
 | Projects               | read:project         | Organization: Projects                           |
