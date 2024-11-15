@@ -242,7 +242,7 @@ export class Vanta {
     baseDelay: number = 1000, // initial delay for exponential backoff in ms
     method: 'get' | 'post' = 'post'
   ): Promise<AxiosResponse> {
-    if (requestCount > 5) {
+    if (requestCount > 8) {
       throw new VError('Too many retries for Vanta API');
     }
     try {
@@ -272,7 +272,7 @@ export class Vanta {
       if (statusCode === 429) {
         const delay = baseDelay * Math.pow(2, requestCount); // Exponential backoff
         this.logger.warn(
-          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds (attempt ${requestCount + 1}/5).`
+          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds (attempt ${requestCount + 1}/8).`
         );
         await new Promise((resolve) => setTimeout(resolve, delay));
         return await this.getAxiosResponse(
