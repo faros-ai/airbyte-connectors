@@ -30,7 +30,7 @@ export class Tromzo {
       throw new VError('Please provide a valid Tromzo organization');
     }
 
-    const baseURL = `https://${organization}.tromzo.com/api`;
+    const baseURL = `https://${organization}.tromzo.com/api/`;
     const api = makeAxiosInstanceWithRetry(
       {
         baseURL,
@@ -60,8 +60,7 @@ export class Tromzo {
   }
 
   async *findings(tool: string): AsyncGenerator<Finding> {
-    const gqlQuery = Tromzo.readQueryFile('findings.gql');
-    const query = `tool_name in ("${tool}")`;
+    const query = Tromzo.readQueryFile('findings.gql');
     let offset = 0;
     let count = 0;
     let totalObjects = 0;
@@ -70,17 +69,16 @@ export class Tromzo {
       const variables = {
         offset,
         first: this.limit,
-        q: query,
+        q: `tool_name in ("${tool}")`,
       };
       let response;
+
       try {
-        response = await this.api.post('/graphql', {
-          query: gqlQuery,
-          variables,
-        });
+        response = await this.api.post('', {query, variables});
       } catch (err) {
         throw new VError(err, 'Failed to fetch findings from Tromzo');
       }
+
       const findings = response.data?.data?.findings;
       const edges = findings?.edges;
       if (!edges || !edges.length) {
