@@ -47,9 +47,8 @@ export class Findings extends AirbyteStreamBase {
   ): AsyncGenerator<Finding> {
     const tromzo = await Tromzo.instance(this.config, this.logger);
 
-    // TODO: Add state and incremental sync
-    for (const tool of streamSlice.tool) {
-      yield* tromzo.findings(tool);
+    for await (const finding of tromzo.findings(streamSlice.tool)) {
+      yield finding;
     }
   }
 }
