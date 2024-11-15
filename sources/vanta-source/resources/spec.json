@@ -33,6 +33,12 @@
         "default": 100,
         "description": "The maximum number of objects in a single response."
       },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
       "timeout": {
         "type": "number",
         "title": "Request Timeout",

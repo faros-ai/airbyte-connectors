@@ -1,27 +1,36 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/lib/vanta';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {VantaConfig} from '..';
 import {Vanta} from '../vanta';
+import {StreamBase, StreamState} from './common';
 
-export class Vulnerabilities extends AirbyteStreamBase {
-  constructor(
-    private readonly cfg: VantaConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Vulnerabilities extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/vulnerabilities.json');
   }
-  get primaryKey(): StreamKey {
-    return ['id'];
+
+  get cursorField(): string | string[] {
+    return ['remediateByDate'];
   }
 
-  async *readRecords(): AsyncGenerator<Vulnerability> {
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: StreamState
+  ): AsyncGenerator<Vulnerability> {
     const vanta = await Vanta.instance(this.cfg, this.logger);
-    yield* vanta.getVulnerabilities();
+    const remediatedAfter = this.getRemediatedAfter(streamState.cutoff);
+    yield* vanta.getVulnerabilities(remediatedAfter);
+  }
+
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: Vulnerability
+  ): StreamState {
+    const latestRecordCutoff = Utils.toDate(latestRecord.remediateByDate);
+    return this.getUpdatedStreamState(latestRecordCutoff, currentStreamState);
   }
 }

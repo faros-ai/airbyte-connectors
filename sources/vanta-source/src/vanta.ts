@@ -7,6 +7,7 @@ import {getQueryFromName} from './utils';
 
 const DEFAULT_PAGE_LIMIT = 100;
 const DEFAULT_TIMEOUT = 60000;
+export const DEFAULT_CUTOFF_DAYS = 90;
 
 /**
  * Vanta REST API client
@@ -117,7 +118,7 @@ export class Vanta {
       return [false, new VError(error, 'Connection check failed')];
     }
   }
-  async *getVulnerabilities(): AsyncGenerator<any> {
+  async *getVulnerabilities(remediatedAfter: Date): AsyncGenerator<any> {
     // Build asset map to get the associated repos and images for vulnerabilities.
     const assetMap = await this.buildAssetMap();
 
@@ -125,7 +126,10 @@ export class Vanta {
     let hasNext = true;
 
     while (hasNext) {
-      const {data, pageInfo} = await this.fetchVulnerabilities(cursor);
+      const {data, pageInfo} = await this.fetchVulnerabilities(
+        cursor,
+        remediatedAfter
+      );
 
       for (const vulnerability of data) {
         const asset = assetMap.get(vulnerability.targetId);
@@ -141,13 +145,17 @@ export class Vanta {
     }
   }
 
-  async *getVulnerabilityRemediations(): AsyncGenerator<any> {
+  async *getVulnerabilityRemediations(
+    remediatedAfter: Date
+  ): AsyncGenerator<any> {
     let cursor = null;
     let hasNext = true;
 
     while (hasNext) {
-      const {data, pageInfo} =
-        await this.fetchVulnerabilityRemediations(cursor);
+      const {data, pageInfo} = await this.fetchVulnerabilityRemediations(
+        cursor,
+        remediatedAfter
+      );
 
       for (const vulnerability of data) {
         yield vulnerability;
@@ -158,9 +166,16 @@ export class Vanta {
     }
   }
 
-  private async fetchVulnerabilities(cursor: string | null): Promise<any> {
+  private async fetchVulnerabilities(
+    cursor: string | null,
+    slaDeadlineAfterDate: Date
+  ): Promise<any> {
     const url = `${this.apiUrl}v1/vulnerabilities`;
-    const params = {pageSize: this.limit, pageCursor: cursor};
+    const params = {
+      pageSize: this.limit,
+      pageCursor: cursor,
+      slaDeadlineAfterDate,
+    };
 
     try {
       const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
@@ -171,10 +186,11 @@ export class Vanta {
   }
 
   private async fetchVulnerabilityRemediations(
-    cursor: string | null
+    cursor: string | null,
+    remediatedAfter: Date
   ): Promise<any> {
     const url = `${this.apiUrl}v1/vulnerability-remediations`;
-    const params = {pageSize: this.limit, pageCursor: cursor};
+    const params = {pageSize: this.limit, pageCursor: cursor, remediatedAfter};
 
     try {
       const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
