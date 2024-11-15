@@ -68,9 +68,9 @@ export function makeOctokitClient(
       ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
     },
     log: {
-      info: logger.info.bind(logger),
-      warn: logger.warn.bind(logger),
-      error: logger.error.bind(logger),
+      info: logger.debug.bind(logger),
+      warn: logger.debug.bind(logger),
+      error: logger.debug.bind(logger),
       debug: logger.debug.bind(logger),
     },
   });
