@@ -110,6 +110,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__github__faros_issue_comments"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__github__faros_code_scanning_alerts"
       },
       "destination_sync_mode": "append"

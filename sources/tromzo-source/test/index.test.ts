@@ -7,7 +7,6 @@ import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
-import {Tromzo} from '../src/tromzo';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -23,6 +22,7 @@ describe('index', () => {
   const config = {
     api_key: 'test_api_key',
     organization: 'test',
+    tools: ['codeql'],
   };
 
   test('spec', async () => {
@@ -51,9 +51,6 @@ describe('index', () => {
   });
 
   test('check connection - valid credentials', async () => {
-    Tromzo.instance = jest.fn().mockImplementation(() => {
-      return new Tromzo(config, logger);
-    });
     const source = new sut.TromzoSource(logger);
     await expect(source.checkConnection(config)).resolves.toStrictEqual([
       true,

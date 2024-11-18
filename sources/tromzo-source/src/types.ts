@@ -1,6 +1,7 @@
 export interface TromzoConfig {
   api_key: string;
   organization: string;
+  tools: ReadonlyArray<string>;
   api_timeout?: number;
   api_page_size?: number;
   api_max_retries?: number;
