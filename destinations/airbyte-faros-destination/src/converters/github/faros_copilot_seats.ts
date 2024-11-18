@@ -75,10 +75,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         }),
       },
     });
-    if (
-      activeSeat.last_activity_at &&
-      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
-    ) {
+    if (activeSeat.last_activity_at) {
       const lastActivityAt = Utils.toDate(activeSeat.last_activity_at);
       const recordedAt = Utils.toDate(record.record.emitted_at);
       res.push({
@@ -89,29 +86,31 @@ export class FarosCopilotSeats extends GitHubConverter {
           recordedAt,
         },
       });
-      res.push({
-        model: 'vcs_AssistantMetric',
-        record: {
-          uid: [
-            'GitHubCopilot',
-            'LastActivity',
-            recordedAt.toISOString(),
-            activeSeat.org,
-            activeSeat.user,
-          ].join('__'),
-          source: this.streamName.source,
-          startedAt: recordedAt,
-          endedAt: recordedAt,
-          type: {category: 'LastActivity'},
-          valueType: 'Timestamp',
-          value: lastActivityAt.toISOString(),
-          organization: {
-            uid: org,
+      if (ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY) {
+        res.push({
+          model: 'vcs_AssistantMetric',
+          record: {
+            uid: [
+              'GitHubCopilot',
+              'LastActivity',
+              recordedAt.toISOString(),
+              activeSeat.org,
+              activeSeat.user,
+            ].join('__'),
             source: this.streamName.source,
+            startedAt: recordedAt,
+            endedAt: recordedAt,
+            type: {category: 'LastActivity'},
+            valueType: 'Timestamp',
+            value: lastActivityAt.toISOString(),
+            organization: {
+              uid: org,
+              source: this.streamName.source,
+            },
+            tool: {category: GitHubTool.Copilot},
           },
-          tool: {category: GitHubTool.Copilot},
-        },
-      });
+        });
+      }
     }
     return res;
   }
