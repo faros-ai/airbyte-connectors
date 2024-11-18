@@ -1,5 +1,5 @@
 import {SyncMode} from 'faros-airbyte-cdk';
-import {Vulnerability} from 'faros-airbyte-common/lib/vanta';
+import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 

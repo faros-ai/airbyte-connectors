@@ -2,19 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
-import {
-  Converter,
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {VantaConverter} from './common';
 import {CicdArtifactKey, VcsRepoKey} from './types';
 import {getQueryFromName} from './utils';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
-export abstract class Vulnerabilities extends Converter {
-  source = 'vanta';
+export abstract class Vulnerabilities extends VantaConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'sec_Vulnerability',
     'sec_VulnerabilityIdentifier',
@@ -22,21 +17,11 @@ export abstract class Vulnerabilities extends Converter {
     'vcs_RepositoryVulnerability',
     'cicd_ArtifactVulnerability',
   ];
-  severityMap: {[key: string]: number} = {
-    LOW: 3.0,
-    MEDIUM: 6.0,
-    HIGH: 9.0,
-    CRITICAL: 10.0,
-  };
+
   vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
-
-  /** All Vanta records should have id property */
-  id(record: AirbyteRecord): any {
-    return record?.record?.data?.id;
-  }
 
   async convert(
     record: AirbyteRecord,
@@ -69,7 +54,7 @@ export abstract class Vulnerabilities extends Converter {
           ? this.severityMap[data.severity].toString()
           : '0',
         url: data.externalURL,
-        discoveredAt: this.convertDateFormat(data.firstDetectedDate),
+        discoveredAt: Utils.toDate(data.firstDetectedDate),
         vulnerabilityIds: data.relatedVulns,
       },
     };
@@ -106,8 +91,8 @@ export abstract class Vulnerabilities extends Converter {
           vulnerability: {uid: data.id, source: this.source},
           repository: vcsRepo,
           url: data.externalURL,
-          dueAt: this.convertDateFormat(data.remediateByDate),
-          createdAt: this.convertDateFormat(data.firstDetectedDate),
+          dueAt: Utils.toDate(data.remediateByDate),
+          createdAt: Utils.toDate(data.firstDetectedDate),
           status: {
             category: data.deactivateMetadata ? 'Ignored' : 'Open',
             detail: data.deactivateMetadata?.deactivationReason || '',
@@ -126,8 +111,8 @@ export abstract class Vulnerabilities extends Converter {
           vulnerability: {uid: data.id, source: this.source},
           artifact: cicdArtifact,
           url: data.externalURL,
-          dueAt: this.convertDateFormat(data.remediateByDate),
-          createdAt: this.convertDateFormat(data.firstDetectedDate),
+          dueAt: Utils.toDate(data.remediateByDate),
+          createdAt: Utils.toDate(data.firstDetectedDate),
           status: {
             category: data.deactivateMetadata ? 'Ignored' : 'Open',
             detail: data.deactivateMetadata?.deactivationReason || '',
@@ -197,19 +182,6 @@ export abstract class Vulnerabilities extends Converter {
       return 'CVE';
     } else if (identifierId.includes('GHSA')) {
       return 'GHSA';
-    }
-  }
-
-  convertDateFormat(inputDate: string): Date | null {
-    // Try to parse the input date
-    if (!inputDate) {
-      return null;
-    }
-    try {
-      const date = new Date(inputDate);
-      return date;
-    } catch (e) {
-      return null;
     }
   }
   private maxDescriptionLength(ctx: StreamContext): number {

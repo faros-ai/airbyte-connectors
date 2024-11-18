@@ -14,13 +14,12 @@ import {VulnerabilityRemediations} from './streams/vulnerability_remediations';
 import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
-  readonly api_url: string;
   readonly client_id: string;
   readonly client_secret: string;
-  readonly skip_connection_check?: boolean;
   readonly page_size?: number;
-  readonly timeout?: number;
   readonly cutoff_days?: number;
+  readonly api_max_retries?: number;
+  readonly api_timeout?: number;
 }
 
 /** The main entry point. */
@@ -41,9 +40,6 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: VantaConfig): Promise<[boolean, VError]> {
-    if (config.skipConnectionCheck) {
-      return [true, undefined];
-    }
     const vanta = await Vanta.instance(config, this.logger);
     try {
       const res = await vanta.checkConnection();

@@ -19,12 +19,6 @@
         "description": "Vanta Client Secret",
         "airbyte_secret": true
       },
-      "api_url": {
-        "type": "string",
-        "title": "Vanta GraphQL API URL",
-        "description": "Vanta GraphQL API, e.g. ",
-        "default": "https://api.vanta.com/"
-      },
       "page_size": {
         "type": "number",
         "title": "Page Limit",
@@ -39,16 +33,17 @@
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "timeout": {
+      "api_timeout": {
         "type": "number",
         "title": "Request Timeout",
         "default": 60000,
         "description": "The time allowed for a request to timeout (in milliseconds)."
       },
-      "skip_connection_check": {
-        "type": "boolean",
-        "title": "Skip Connection Check",
-        "default": false
+      "api_max_retries": {
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Vanta API.",
+        "default": 8
       }
     }
   }

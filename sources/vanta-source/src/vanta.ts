@@ -1,91 +1,98 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import VError from 'verror';
 
 import {VantaConfig} from '.';
 import {getQueryFromName} from './utils';
 
+const BASE_URL = 'https://api.vanta.com';
 const DEFAULT_PAGE_LIMIT = 100;
 const DEFAULT_TIMEOUT = 60000;
+const DEFAULT_MAX_RETRIES = 8;
 export const DEFAULT_CUTOFF_DAYS = 90;
+
+const DEFAULT_RETRY_DELAY = 1000;
 
 /**
  * Vanta REST API client
  *
  */
 export class Vanta {
+  private static vanta: Vanta;
   constructor(
-    private readonly logger: AirbyteLogger,
     private readonly api: AxiosInstance,
     private readonly limit: number,
-    private readonly apiUrl: string,
-    private readonly skipConnectionCheck: boolean
+    private readonly logger: AirbyteLogger
   ) {}
 
   static async instance(
     cfg: VantaConfig,
     logger: AirbyteLogger
   ): Promise<Vanta> {
+    if (Vanta.vanta) return Vanta.vanta;
+
+    const delayLogic = (
+      error: AxiosError<unknown, any>,
+      retryNumber: number
+    ): number => {
+      const statusCode = error?.response?.status;
+      if (statusCode == 429) {
+        // Retrying using an exponential backoff as recommended in the API documentation:
+        // https://developer.vanta.com/docs/faq#:~:text=What%20should%20I%20do%20if%20I%20hit%20the%20rate%20limit%3F
+        const delay = DEFAULT_RETRY_DELAY * Math.pow(2, retryNumber);
+        logger.warn(
+          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds.`
+        );
+        return delay;
+      }
+      if (statusCode === 504) {
+        logger.warn(
+          'Got 504 from Vanta API, sleeping for 30 seconds, then retrying.'
+        );
+        return 30000;
+      }
+      logger.warn(
+        `Retrying in ${DEFAULT_RETRY_DELAY} milliseconds using default delay.`
+      );
+      return DEFAULT_RETRY_DELAY;
+    };
+
+    const api = makeAxiosInstanceWithRetry(
+      {
+        baseURL: BASE_URL,
+        timeout: cfg.api_timeout ?? DEFAULT_TIMEOUT,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        maxContentLength: Infinity, //default is 2000 bytes
+      },
+      logger?.asPino(),
+      cfg.api_max_retries ?? DEFAULT_MAX_RETRIES,
+      delayLogic
+    );
+
     if (!cfg.client_id || !cfg.client_secret) {
       throw new VError('Vanta client ID or secret missing.');
     }
-    if (!cfg.api_url) {
-      throw new VError('Api URL missing.');
-    }
 
-    // Checks apiUrl is in the correct format
-    const apiUrl = new URL(cfg.api_url);
-
-    const timeout: number = cfg.timeout ?? DEFAULT_TIMEOUT;
-
-    const sessionToken: string = await Vanta.getSessionToken(
-      apiUrl.toString(),
-      cfg.client_id,
-      cfg.client_secret,
-      timeout
-    );
-
-    const headers = {
-      'content-type': 'application/json',
-      Authorization: `Bearer ${sessionToken}`,
-      Accept: '*/*',
+    const refreshToken = async (): Promise<void> => {
+      const token = await Vanta.getSessionToken(
+        cfg.client_id,
+        cfg.client_secret
+      );
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     };
+    createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
 
-    const api = axios.create({
-      timeout, // default is `0` (no timeout)
-      maxContentLength: Infinity, //default is 2000 bytes,
-      maxBodyLength: Infinity, //default is 2000 bytes,
-      headers,
-    });
-
-    return new Vanta(
-      logger,
-      api,
-      cfg.page_size ?? DEFAULT_PAGE_LIMIT,
-      apiUrl.toString(),
-      cfg.skip_connection_check ?? true
-    );
+    return new Vanta(api, cfg.page_size ?? DEFAULT_PAGE_LIMIT, logger);
   }
 
   static async getSessionToken(
-    apiUrl: string,
     clientId: string,
-    clientSecret: string,
-    timeout: number
+    clientSecret: string
   ): Promise<string> {
-    // The expectation is that this token will last long enough to complete the connector.
-    // If that is not the case, we will need to update the connector to match the requirements
-
-    const headers = {
-      'content-type': 'application/json',
-    };
-    const api = axios.create({
-      timeout, // default is `0` (no timeout)
-      maxContentLength: Infinity, //default is 2000 bytes,
-      maxBodyLength: Infinity, //default is 2000 bytes,
-      headers,
-    });
-    const tokenUrl = `${apiUrl}oauth/token`;
     const body = {
       client_id: clientId,
       client_secret: clientSecret,
@@ -93,12 +100,13 @@ export class Vanta {
       scope: 'vanta-api.all:read',
     };
     try {
-      const packed_response: AxiosResponse = await api.post(tokenUrl, body, {
-        headers,
-      });
-      return packed_response.data.access_token;
-    } catch (error) {
-      throw new VError('Failed to fetch session token: %s', error);
+      const {data}: AxiosResponse = await axios.post(
+        `${BASE_URL}/oauth/token`,
+        body
+      );
+      return data.access_token;
+    } catch (error: any) {
+      throw wrapApiError(error, 'Failed to get authentication token');
     }
   }
 
@@ -109,11 +117,8 @@ export class Vanta {
       variables: {},
     };
     try {
-      const packed_response: AxiosResponse = await this.getAxiosResponse(
-        this.apiUrl + '/graphql',
-        body
-      );
-      return [packed_response.status === 200, undefined];
+      const response = await this.api.post('/graphql', body);
+      return [response.status === 200, undefined];
     } catch (error) {
       return [false, new VError(error, 'Connection check failed')];
     }
@@ -170,7 +175,6 @@ export class Vanta {
     cursor: string | null,
     slaDeadlineAfterDate: Date
   ): Promise<any> {
-    const url = `${this.apiUrl}v1/vulnerabilities`;
     const params = {
       pageSize: this.limit,
       pageCursor: cursor,
@@ -178,10 +182,10 @@ export class Vanta {
     };
 
     try {
-      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
+      const response = await this.api.get('/v1/vulnerabilities', {params});
       return response?.data?.results;
-    } catch (error) {
-      throw new VError('Failed to fetch vulnerabilities: %s', error);
+    } catch (error: any) {
+      throw wrapApiError(error, 'Failed to fetch vulnerabilities: %s');
     }
   }
 
@@ -189,26 +193,29 @@ export class Vanta {
     cursor: string | null,
     remediatedAfter: Date
   ): Promise<any> {
-    const url = `${this.apiUrl}v1/vulnerability-remediations`;
     const params = {pageSize: this.limit, pageCursor: cursor, remediatedAfter};
 
     try {
-      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
+      const response = await this.api.get('/v1/vulnerability-remediations', {
+        params,
+      });
       return response?.data?.results;
-    } catch (error) {
-      throw new VError('Failed to fetch vulnerability remediations: %s', error);
+    } catch (error: any) {
+      throw wrapApiError(
+        error,
+        'Failed to fetch vulnerability remediations: %s'
+      );
     }
   }
 
   private async fetchVulnerableAssets(cursor: string | null): Promise<any> {
-    const url = `${this.apiUrl}v1/vulnerable-assets`;
     const params = {pageSize: this.limit, pageCursor: cursor};
 
     try {
-      const response = await this.getAxiosResponse(url, params, 0, 1000, 'get');
+      const response = await this.api.get('/v1/vulnerable-assets', {params});
       return response?.data?.results;
-    } catch (error) {
-      throw new VError('Failed to fetch vulnerable assets: %s', error);
+    } catch (error: any) {
+      throw wrapApiError(error, 'Failed to fetch vulnerable assets: %s');
     }
   }
 
@@ -233,64 +240,5 @@ export class Vanta {
     }
 
     return assetMap;
-  }
-
-  async getAxiosResponse(
-    url: string,
-    bodyOrParams: any = null, // optional body parameter for GET requests
-    requestCount: number = 0,
-    baseDelay: number = 1000, // initial delay for exponential backoff in ms
-    method: 'get' | 'post' = 'post'
-  ): Promise<AxiosResponse> {
-    if (requestCount > 8) {
-      throw new VError('Too many retries for Vanta API');
-    }
-    try {
-      return method === 'post'
-        ? await this.api.post(url, bodyOrParams)
-        : await this.api.get(url, {params: bodyOrParams});
-    } catch (error: any) {
-      const statusCode = error?.response?.status;
-
-      // Handle 504 error with a fixed delay
-      if (statusCode === 504) {
-        this.logger.info(
-          'Got 504 from Vanta API, sleeping for 30 seconds, then retrying. Retry count: %s',
-          (requestCount + 1).toString()
-        );
-        await new Promise((resolve) => setTimeout(resolve, 30000));
-        return await this.getAxiosResponse(
-          url,
-          bodyOrParams,
-          requestCount + 1,
-          baseDelay,
-          method
-        );
-      }
-
-      // Handle 429 error with exponential backoff
-      if (statusCode === 429) {
-        const delay = baseDelay * Math.pow(2, requestCount); // Exponential backoff
-        this.logger.warn(
-          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds (attempt ${requestCount + 1}/8).`
-        );
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return await this.getAxiosResponse(
-          url,
-          bodyOrParams,
-          requestCount + 1,
-          baseDelay,
-          method
-        );
-      }
-
-      this.logger.error(
-        `Error occurred: ${error instanceof Error ? error.message : error}`
-      );
-      throw new VError(
-        'Error occurred while fetching data from Vanta API: %s',
-        error
-      );
-    }
   }
 }
