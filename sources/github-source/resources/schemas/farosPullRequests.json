@@ -147,6 +147,9 @@
           "url": {
             "type": "string"
           },
+          "body": {
+            "type": "string"
+          },
           "comments": {
             "type": "object",
             "properties": {

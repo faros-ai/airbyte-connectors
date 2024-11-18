@@ -77,6 +77,7 @@ export const CustomStreamNames = [
   'faros_copilot_usage',
   'faros_dependabot_alerts',
   'faros_issues',
+  'faros_issue_comments',
   'faros_labels',
   'faros_organizations',
   'faros_outside_collaborators',

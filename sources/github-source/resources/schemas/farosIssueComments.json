@@ -31,7 +31,7 @@
     "body": {
       "type": "string"
     },
-    "pull_request_url": {
+    "issue_url": {
       "type": "string"
     },
     "html_url": {

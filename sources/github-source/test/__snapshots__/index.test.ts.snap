@@ -1076,6 +1076,25 @@ exports[`index streams - dependabot alerts 1`] = `
 ]
 `;
 
+exports[`index streams - issue comments 1`] = `
+[
+  {
+    "body": "Me too",
+    "created_at": "2011-04-14T16:00:49Z",
+    "html_url": "https://github.com/octocat/Hello-World/issues/1347#issuecomment-1",
+    "id": 1,
+    "issue_url": "https://api.github.com/repos/octocat/Hello-World/issues/1347",
+    "repository": "github/Hello-World",
+    "updated_at": "2011-04-14T16:00:49Z",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
+  },
+]
+`;
+
 exports[`index streams - issues 1`] = `
 [
   {
@@ -1290,6 +1309,7 @@ exports[`index streams - pull request comments 1`] = `
   {
     "body": "This is a test comment.",
     "created_at": "2024-07-18T17:04:03Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000001",
     "id": 1683209890,
     "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
     "repository": "github/Hello-World",
@@ -1303,6 +1323,7 @@ exports[`index streams - pull request comments 1`] = `
   {
     "body": "Another comment to test :)",
     "created_at": "2024-07-18T17:04:03Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000002",
     "id": 1683209891,
     "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
     "repository": "github/Hello-World",
@@ -1413,12 +1434,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "LGTM",
         "comments": {
           "totalCount": 1,
         },
         "databaseId": 2192199611,
         "state": "COMMENTED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
       },
       {
@@ -1428,12 +1451,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199612,
         "state": "APPROVED",
         "submittedAt": "2021-03-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
       },
     ],
@@ -1620,12 +1645,14 @@ N/A
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199689,
         "state": "APPROVED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-02-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
       },
     ],
@@ -1732,12 +1759,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "LGTM",
         "comments": {
           "totalCount": 1,
         },
         "databaseId": 2192199611,
         "state": "COMMENTED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
       },
       {
@@ -1747,12 +1776,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199612,
         "state": "APPROVED",
         "submittedAt": "2021-03-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
       },
     ],
@@ -1912,12 +1943,14 @@ N/A
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199689,
         "state": "APPROVED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-02-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
       },
     ],
