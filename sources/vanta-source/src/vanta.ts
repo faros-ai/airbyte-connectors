@@ -86,7 +86,8 @@ export class Vanta {
     };
     createAuthRefreshInterceptor(api, refreshToken, {statusCodes: [401]});
 
-    return new Vanta(api, cfg.page_size ?? DEFAULT_PAGE_LIMIT, logger);
+    Vanta.vanta = new Vanta(api, cfg.page_size ?? DEFAULT_PAGE_LIMIT, logger);
+    return Vanta.vanta;
   }
 
   static async getSessionToken(
