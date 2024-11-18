@@ -7,7 +7,6 @@ import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
-import {Tromzo} from '../src/tromzo';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));

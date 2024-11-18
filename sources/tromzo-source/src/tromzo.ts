@@ -11,7 +11,7 @@ export class Tromzo {
   private static tromzo: Tromzo;
   constructor(
     private readonly api: AxiosInstance,
-    private limit: number = 100,
+    private readonly limit: number = 100,
     private readonly logger?: AirbyteLogger
   ) {}
 
@@ -81,7 +81,7 @@ export class Tromzo {
 
       const findings = response.data?.data?.findings;
       const edges = findings?.edges;
-      if (!edges || !edges.length) {
+      if (!edges?.length) {
         break;
       }
 
