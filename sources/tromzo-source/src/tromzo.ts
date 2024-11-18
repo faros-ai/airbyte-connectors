@@ -91,7 +91,9 @@ export class Tromzo {
       }
 
       totalObjects = findings?.pageInfo?.totalObjects;
-      this.logger?.debug(`Fetched ${count} records of ${totalObjects}`);
+      this.logger?.debug(
+        `Fetched ${count} records of ${totalObjects} total findings`
+      );
 
       offset += this.limit;
     } while (offset < totalObjects);
