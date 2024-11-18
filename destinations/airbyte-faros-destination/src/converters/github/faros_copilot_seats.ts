@@ -8,6 +8,7 @@ import {
 import {paginatedQueryV2, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
+import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubConverter} from './common';
 
@@ -74,13 +75,41 @@ export class FarosCopilotSeats extends GitHubConverter {
         }),
       },
     });
-    if (activeSeat.last_activity_at) {
+    if (
+      activeSeat.last_activity_at &&
+      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
+    ) {
+      const lastActivityAt = Utils.toDate(activeSeat.last_activity_at);
+      const recordedAt = Utils.toDate(record.record.emitted_at);
       res.push({
         model: 'vcs_UserToolUsage',
         record: {
           userTool,
-          usedAt: Utils.toDate(activeSeat.last_activity_at),
-          recordedAt: Utils.toDate(record.record.emitted_at),
+          usedAt: lastActivityAt,
+          recordedAt,
+        },
+      });
+      res.push({
+        model: 'vcs_AssistantMetric',
+        record: {
+          uid: [
+            'GitHubCopilot',
+            'LastActivity',
+            recordedAt.toISOString(),
+            activeSeat.org,
+            activeSeat.user,
+          ].join('__'),
+          source: this.streamName.source,
+          startedAt: recordedAt,
+          endedAt: recordedAt,
+          type: {category: 'LastActivity'},
+          valueType: 'Timestamp',
+          value: lastActivityAt.toISOString(),
+          organization: {
+            uid: org,
+            source: this.streamName.source,
+          },
+          tool: {category: GitHubTool.Copilot},
         },
       });
     }

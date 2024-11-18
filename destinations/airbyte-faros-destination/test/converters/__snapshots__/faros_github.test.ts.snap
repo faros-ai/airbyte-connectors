@@ -4,8 +4,8 @@ exports[`faros_github process records from all streams 1`] = `
 Array [
   "Processed 50 records",
   "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_contributors_stats\\\\\\":1,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":1,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 699 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":94,\\\\\\"faros_MetricDefinition\\\\\\":11,\\\\\\"faros_MetricValue\\\\\\":94,\\\\\\"faros_MetricValueTag\\\\\\":261,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":3,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":90,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 701 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":94,\\\\\\"faros_MetricDefinition\\\\\\":11,\\\\\\"faros_MetricValue\\\\\\":94,\\\\\\"faros_MetricValueTag\\\\\\":261,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":3,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":92,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":3,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_RepositoryContribution\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -53,6 +53,26 @@ Array [
     },
   },
   Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-06-20T09:54:42.836Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "startedAt": "2024-06-20T09:54:42.836Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LastActivity",
+      },
+      "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.836Z__github__octocat",
+      "value": "2021-10-14T06:53:32.000Z",
+      "valueType": "Timestamp",
+    },
+  },
+  Object {
     "vcs_UserTool": Object {
       "endedAt": "2021-11-01T00:00:00.000Z",
       "inactive": false,
@@ -88,6 +108,26 @@ Array [
           "uid": "octokitten",
         },
       },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-06-20T09:54:42.837Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "startedAt": "2024-06-20T09:54:42.837Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LastActivity",
+      },
+      "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.837Z__github__octokitten",
+      "value": "2021-10-13T06:53:32.000Z",
+      "valueType": "Timestamp",
     },
   },
   Object {
@@ -265,7 +305,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github",
       "value": "200",
       "valueType": "Int",
     },
@@ -328,7 +368,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__vscode__python",
       "value": "50",
       "valueType": "Int",
     },
@@ -435,7 +475,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__jetbrains__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -534,7 +574,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -633,7 +673,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github",
       "value": "800",
       "valueType": "Int",
     },
@@ -696,7 +736,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__vscode__python",
       "value": "250",
       "valueType": "Int",
     },
@@ -787,7 +827,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__jetbrains__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -878,7 +918,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__vscode__ruby",
       "value": "350",
       "valueType": "Int",
     },
@@ -969,7 +1009,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github",
       "value": "600",
       "valueType": "Int",
     },
@@ -1032,7 +1072,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__vscode__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -1123,7 +1163,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__jetbrains__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -1214,7 +1254,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__vscode__ruby",
       "value": "300",
       "valueType": "Int",
     },
@@ -1305,7 +1345,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github",
       "value": "1200",
       "valueType": "Int",
     },
@@ -1368,7 +1408,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__vscode__python",
       "value": "700",
       "valueType": "Int",
     },
@@ -1459,7 +1499,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__jetbrains__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -1550,7 +1590,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__vscode__ruby",
       "value": "200",
       "valueType": "Int",
     },
@@ -1641,7 +1681,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github",
       "value": "10",
       "valueType": "Int",
     },
@@ -1704,7 +1744,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__vscode__python",
       "value": "5",
       "valueType": "Int",
     },
@@ -1795,7 +1835,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__jetbrains__python",
       "value": "2",
       "valueType": "Int",
     },
@@ -1886,7 +1926,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__vscode__ruby",
       "value": "3",
       "valueType": "Int",
     },
@@ -2059,7 +2099,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-15",
+      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-15T00:00:00.000Z__github",
       "value": "4",
       "valueType": "Int",
     },
@@ -2122,7 +2162,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github",
       "value": "200",
       "valueType": "Int",
     },
@@ -2185,7 +2225,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__vscode__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -2276,7 +2316,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__jetbrains__python",
       "value": "150",
       "valueType": "Int",
     },
@@ -2367,7 +2407,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -2458,7 +2498,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github",
       "value": "600",
       "valueType": "Int",
     },
@@ -2521,7 +2561,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__vscode__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -2612,7 +2652,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__jetbrains__python",
       "value": "150",
       "valueType": "Int",
     },
@@ -2703,7 +2743,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotOrg__github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__vscode__ruby",
       "value": "150",
       "valueType": "Int",
     },
@@ -2794,7 +2834,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github",
       "value": "400",
       "valueType": "Int",
     },
@@ -2857,7 +2897,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__vscode__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -2948,7 +2988,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__jetbrains__python",
       "value": "50",
       "valueType": "Int",
     },
@@ -3039,7 +3079,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -3130,7 +3170,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github",
       "value": "700",
       "valueType": "Int",
     },
@@ -3193,7 +3233,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__vscode__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -3284,7 +3324,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__jetbrains__python",
       "value": "250",
       "valueType": "Int",
     },
@@ -3375,7 +3415,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotOrg__github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__vscode__ruby",
       "value": "150",
       "valueType": "Int",
     },
@@ -3466,7 +3506,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github",
       "value": "12",
       "valueType": "Int",
     },
@@ -3529,7 +3569,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__vscode__python",
       "value": "2",
       "valueType": "Int",
     },
@@ -3620,7 +3660,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__jetbrains__python",
       "value": "6",
       "valueType": "Int",
     },
@@ -3711,7 +3751,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__vscode__ruby",
       "value": "3",
       "valueType": "Int",
     },
@@ -3802,7 +3842,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "copilotOrg__github-DailyActiveChatUserTrend-2023-10-16",
+      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-16T00:00:00.000Z__github",
       "value": "8",
       "valueType": "Int",
     },
@@ -3865,7 +3905,7 @@ Array [
       "type": Object {
         "category": "ChatConversations",
       },
-      "uid": "copilotOrg__github-DailyChatCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatConversations__2023-10-16T00:00:00.000Z__github",
       "value": "100",
       "valueType": "Int",
     },
@@ -3928,7 +3968,7 @@ Array [
       "type": Object {
         "category": "ChatInsertionEvents",
       },
-      "uid": "copilotOrg__github-DailyChatInsertionCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatInsertionEvents__2023-10-16T00:00:00.000Z__github",
       "value": "101",
       "valueType": "Int",
     },
@@ -3991,7 +4031,7 @@ Array [
       "type": Object {
         "category": "ChatCopyEvents",
       },
-      "uid": "copilotOrg__github-DailyChatCopyCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatCopyEvents__2023-10-16T00:00:00.000Z__github",
       "value": "102",
       "valueType": "Int",
     },
@@ -4065,7 +4105,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "200",
       "valueType": "Int",
     },
@@ -4145,7 +4185,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "50",
       "valueType": "Int",
     },
@@ -4253,7 +4293,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -4361,7 +4401,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -4469,7 +4509,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "800",
       "valueType": "Int",
     },
@@ -4549,7 +4589,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "250",
       "valueType": "Int",
     },
@@ -4657,7 +4697,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -4765,7 +4805,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "350",
       "valueType": "Int",
     },
@@ -4873,7 +4913,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "600",
       "valueType": "Int",
     },
@@ -4953,7 +4993,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -5061,7 +5101,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -5169,7 +5209,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "300",
       "valueType": "Int",
     },
@@ -5277,7 +5317,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "1200",
       "valueType": "Int",
     },
@@ -5357,7 +5397,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "700",
       "valueType": "Int",
     },
@@ -5465,7 +5505,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -5573,7 +5613,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "200",
       "valueType": "Int",
     },
@@ -5681,7 +5721,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "10",
       "valueType": "Int",
     },
@@ -5761,7 +5801,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "5",
       "valueType": "Int",
     },
@@ -5869,7 +5909,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "2",
       "valueType": "Int",
     },
@@ -5977,7 +6017,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "3",
       "valueType": "Int",
     },
@@ -6195,7 +6235,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveChatUserTrend-2023-10-15",
+      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league",
       "value": "4",
       "valueType": "Int",
     },
@@ -6275,7 +6315,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "200",
       "valueType": "Int",
     },
@@ -6355,7 +6395,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "100",
       "valueType": "Int",
     },
@@ -6463,7 +6503,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "150",
       "valueType": "Int",
     },
@@ -6571,7 +6611,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -6679,7 +6719,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "600",
       "valueType": "Int",
     },
@@ -6759,7 +6799,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "200",
       "valueType": "Int",
     },
@@ -6867,7 +6907,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "150",
       "valueType": "Int",
     },
@@ -6975,7 +7015,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "150",
       "valueType": "Int",
     },
@@ -7083,7 +7123,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "400",
       "valueType": "Int",
     },
@@ -7163,7 +7203,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -7271,7 +7311,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "50",
       "valueType": "Int",
     },
@@ -7379,7 +7419,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "50",
       "valueType": "Int",
     },
@@ -7487,7 +7527,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "700",
       "valueType": "Int",
     },
@@ -7567,7 +7607,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "300",
       "valueType": "Int",
     },
@@ -7675,7 +7715,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "250",
       "valueType": "Int",
     },
@@ -7783,7 +7823,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "copilotTeam__github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "150",
       "valueType": "Int",
     },
@@ -7891,7 +7931,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "12",
       "valueType": "Int",
     },
@@ -7971,7 +8011,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
       "value": "2",
       "valueType": "Int",
     },
@@ -8079,7 +8119,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
       "value": "6",
       "valueType": "Int",
     },
@@ -8187,7 +8227,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-16",
+      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
       "value": "3",
       "valueType": "Int",
     },
@@ -8295,7 +8335,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "copilotTeam__github/justice-league-DailyActiveChatUserTrend-2023-10-16",
+      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "8",
       "valueType": "Int",
     },
@@ -8375,7 +8415,7 @@ Array [
       "type": Object {
         "category": "ChatConversations",
       },
-      "uid": "copilotTeam__github/justice-league-DailyChatCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatConversations__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "100",
       "valueType": "Int",
     },
@@ -8455,7 +8495,7 @@ Array [
       "type": Object {
         "category": "ChatInsertionEvents",
       },
-      "uid": "copilotTeam__github/justice-league-DailyChatInsertionCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatInsertionEvents__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "101",
       "valueType": "Int",
     },
@@ -8535,7 +8575,7 @@ Array [
       "type": Object {
         "category": "ChatCopyEvents",
       },
-      "uid": "copilotTeam__github/justice-league-DailyChatCopyCount-2023-10-16",
+      "uid": "GitHubCopilot__ChatCopyEvents__2023-10-16T00:00:00.000Z__github__justice-league",
       "value": "102",
       "valueType": "Int",
     },

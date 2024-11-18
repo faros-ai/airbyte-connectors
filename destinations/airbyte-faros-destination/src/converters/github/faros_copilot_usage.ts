@@ -197,7 +197,6 @@ export class FarosCopilotUsage extends GitHubConverter {
       if (assistantMetricType) {
         res.push(
           ...this.getAssistantMetric(
-            breakdownMetricValueUid,
             day,
             farosMetric,
             breakdown[breakdownMetric] as number,
@@ -300,7 +299,6 @@ export class FarosCopilotUsage extends GitHubConverter {
       if (assistantMetricType) {
         res.push(
           ...this.getAssistantMetric(
-            metricValueUid,
             day,
             farosMetric,
             summary[metric],
@@ -391,7 +389,6 @@ export class FarosCopilotUsage extends GitHubConverter {
   }
 
   private getAssistantMetric(
-    uid: string,
     day: Date,
     farosMetric: string,
     value: number,
@@ -408,7 +405,17 @@ export class FarosCopilotUsage extends GitHubConverter {
       {
         model: 'vcs_AssistantMetric',
         record: {
-          uid,
+          uid: [
+            'GitHubCopilot',
+            assistantMetricType,
+            day.toISOString(),
+            org,
+            team,
+            editor,
+            language,
+          ]
+            .filter(Boolean)
+            .join('__'),
           source: this.streamName.source,
           startedAt: day,
           endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
