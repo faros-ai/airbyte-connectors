@@ -107,6 +107,10 @@ export class FarosCopilotSeats extends GitHubConverter {
               uid: org,
               source: this.streamName.source,
             },
+            user: {
+              uid: activeSeat.user,
+              source: this.streamName.source,
+            },
             tool: {category: GitHubTool.Copilot},
           },
         });

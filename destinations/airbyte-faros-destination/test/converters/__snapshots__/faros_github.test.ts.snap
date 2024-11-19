@@ -68,6 +68,10 @@ Array [
         "category": "LastActivity",
       },
       "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.836Z__github__octocat",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
       "value": "2021-10-14T06:53:32.000Z",
       "valueType": "Timestamp",
     },
@@ -126,6 +130,10 @@ Array [
         "category": "LastActivity",
       },
       "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.837Z__github__octokitten",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
       "value": "2021-10-13T06:53:32.000Z",
       "valueType": "Timestamp",
     },
