@@ -2029,6 +2029,7 @@ exports[`index streams - repositories 1`] = `
     "org": "github",
     "private": false,
     "size": 108,
+    "syncNestedData": true,
     "topics": [
       "octocat",
       "atom",
@@ -2054,6 +2055,7 @@ exports[`index streams - repositories with bucketing 1`] = `
     "org": "github",
     "private": false,
     "size": 256,
+    "syncNestedData": true,
     "topics": [
       "github",
       "api",

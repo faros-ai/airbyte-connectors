@@ -9,6 +9,11 @@ import VError from 'verror';
 import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
 import {GitHubConfig} from './types';
 
+type RepoInclusion = {
+  repo: Repository;
+  syncNestedData: boolean;
+};
+
 type FilterConfig = {
   organizations?: Set<string>;
   excludedOrganizations?: Set<string>;
@@ -20,7 +25,7 @@ export class OrgRepoFilter {
   private readonly filterConfig: FilterConfig;
   private readonly useFarosGraphReposSelection: boolean;
   private organizations?: Set<string>;
-  private reposByOrg: Map<string, Map<string, Repository>> = new Map();
+  private reposByOrg: Map<string, Map<string, RepoInclusion>> = new Map();
   private loadedSelectedRepos: boolean = false;
 
   private static _instance: OrgRepoFilter;
@@ -121,14 +126,14 @@ export class OrgRepoFilter {
   }
 
   @Memoize()
-  async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+  async getRepositories(org: string): Promise<ReadonlyArray<RepoInclusion>> {
     const lowerOrg = toLower(org);
 
     // Ensure included / excluded repositories are loaded
     await this.loadSelectedRepos();
 
     if (!this.reposByOrg.has(lowerOrg)) {
-      const repos = new Map<string, Repository>();
+      const repos = new Map<string, RepoInclusion>();
       const github = await GitHub.instance(this.config, this.logger);
       const visibleRepos = await github.getRepositories(lowerOrg);
       if (!visibleRepos.length) {
@@ -136,41 +141,56 @@ export class OrgRepoFilter {
           `No visible repositories found for organization ${lowerOrg}`
         );
       }
-      if (!this.filterConfig.reposByOrg.has(lowerOrg)) {
-        visibleRepos.forEach((repo) => {
-          const lowerRepoName = toLower(repo.name);
-          if (
-            !this.filterConfig.excludedReposByOrg
-              .get(lowerOrg)
-              ?.has(lowerRepoName)
-          ) {
-            repos.set(lowerRepoName, repo);
-          }
-        });
-      } else {
-        this.filterConfig.reposByOrg.get(lowerOrg).forEach((repoName) => {
-          const lowerRepoName = toLower(repoName);
-          const repo = visibleRepos.find(
-            (r) => toLower(r.name) === lowerRepoName
-          );
-          if (!repo) {
-            this.logger.warn(
-              `Skipping not found repository ${lowerOrg}/${lowerRepoName}`
-            );
-            return;
-          }
-          repos.set(lowerRepoName, repo);
-        });
+      for (const repo of visibleRepos) {
+        const lowerRepoName = toLower(repo.name);
+        const {included, syncNestedData} = await this.getRepoInclusion(
+          lowerOrg,
+          lowerRepoName
+        );
+        if (included) {
+          repos.set(lowerRepoName, {repo, syncNestedData});
+        }
       }
       this.reposByOrg.set(lowerOrg, repos);
     }
     return Array.from(this.reposByOrg.get(lowerOrg).values());
   }
 
+  async getRepoInclusion(
+    org: string,
+    repo: string
+  ): Promise<{
+    included: boolean;
+    syncNestedData: boolean;
+  }> {
+    const {reposByOrg, excludedReposByOrg} = this.filterConfig;
+    const repos = reposByOrg.get(org);
+    const excludedRepos = excludedReposByOrg.get(org);
+
+    if (this.useFarosGraphReposSelection) {
+      const included = true;
+
+      const syncNestedData =
+        (!repos?.size || repos.has(repo)) && !excludedRepos?.has(repo);
+      return {included, syncNestedData};
+    }
+
+    if (repos?.size) {
+      const included = repos.has(repo);
+      return {included, syncNestedData: included};
+    }
+
+    if (excludedRepos?.size) {
+      const included = !excludedRepos.has(repo);
+      return {included, syncNestedData: included};
+    }
+    return {included: true, syncNestedData: true};
+  }
+
   getRepository(org: string, name: string): Repository {
     const lowerOrg = toLower(org);
     const lowerRepoName = toLower(name);
-    const repo = this.reposByOrg.get(lowerOrg)?.get(lowerRepoName);
+    const {repo} = this.reposByOrg.get(lowerOrg)?.get(lowerRepoName) ?? {};
     if (!repo) {
       throw new VError('Repository not found: %s/%s', lowerOrg, lowerRepoName);
     }

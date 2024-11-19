@@ -17,11 +17,16 @@ export class FarosRepositories extends StreamWithOrgSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: OrgStreamSlice
-  ): AsyncGenerator<Repository> {
+  ): AsyncGenerator<Repository & {syncNestedData: boolean}> {
     const org = streamSlice?.org;
-    const repositories = await this.orgRepoFilter.getRepositories(org);
-    for (const repository of repositories) {
-      yield repository;
+    for (const {
+      repo,
+      syncNestedData,
+    } of await this.orgRepoFilter.getRepositories(org)) {
+      yield {
+        ...repo,
+        syncNestedData,
+      };
     }
   }
 }

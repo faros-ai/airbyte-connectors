@@ -45,6 +45,9 @@
     },
     "archived": {
       "type": "boolean"
+    },
+    "syncNestedData": {
+      "type": "boolean"
     }
   }
 }
