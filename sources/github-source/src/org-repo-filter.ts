@@ -163,6 +163,7 @@ export class OrgRepoFilter {
     included: boolean;
     syncNestedData: boolean;
   }> {
+    await this.loadSelectedRepos();
     const {reposByOrg, excludedReposByOrg} = this.filterConfig;
     const repos = reposByOrg.get(org);
     const excludedRepos = excludedReposByOrg.get(org);
