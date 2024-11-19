@@ -155,8 +155,13 @@ export abstract class StreamWithOrgSlices extends StreamBase {
 export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
-      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo: repo.name};
+      for (const {
+        repo,
+        syncRepoData,
+      } of await this.orgRepoFilter.getRepositories(org)) {
+        if (syncRepoData) {
+          yield {org, repo: repo.name};
+        }
       }
     }
   }

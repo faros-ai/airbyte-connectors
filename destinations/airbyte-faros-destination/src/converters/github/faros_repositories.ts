@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 
+import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
@@ -14,13 +15,13 @@ export class FarosRepositories extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const repo = record.record.data as Repository;
+    const repo = record.record.data as Repository & {syncRepoData: boolean};
     const repoKey = GitHubCommon.repoKey(
       repo.org,
       repo.name,
       this.streamName.source
     );
-    return [
+    const res: DestinationRecord[] = [
       {
         model: 'vcs_Repository',
         record: {
@@ -39,5 +40,18 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
+    if (
+      repo.syncRepoData &&
+      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
+    ) {
+      res.push({
+        model: 'faros_VcsRepositoryOptions',
+        record: {
+          repository: repoKey,
+          inclusion: {category: 'Included'},
+        },
+      });
+    }
+    return res;
   }
 }
