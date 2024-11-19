@@ -91,7 +91,7 @@ export class FarosCopilotSeats extends GitHubConverter {
           model: 'vcs_AssistantMetric',
           record: {
             uid: [
-              'GitHubCopilot',
+              GitHubTool.Copilot,
               AssistantMetric.LastActivity,
               recordedAt.toISOString(),
               activeSeat.org,

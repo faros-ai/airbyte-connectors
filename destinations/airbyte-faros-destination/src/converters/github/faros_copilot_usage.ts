@@ -402,7 +402,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         model: 'vcs_AssistantMetric',
         record: {
           uid: [
-            'GitHubCopilot',
+            GitHubTool.Copilot,
             assistantMetricType,
             day.toISOString(),
             org,
