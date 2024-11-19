@@ -758,32 +758,6 @@ describe('index', () => {
     });
   });
 
-  test('streams - contributors stats', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: 'config.json',
-      catalogOrPath: 'contributors_stats/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getRepositoriesMockedImplementation(
-              readTestResourceAsJSON('repositories/repositories.json')
-            ),
-            getContributorsStatsMockedImplementation(
-              readTestResourceAsJSON(
-                'contributors_stats/contributors_stats.json'
-              )
-            )
-          ),
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
   test('streams - projects', async () => {
     await sourceReadTest({
       source,

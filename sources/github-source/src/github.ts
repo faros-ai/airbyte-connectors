@@ -6,7 +6,6 @@ import {
   Artifact,
   CodeScanningAlert,
   Commit,
-  ContributorStats,
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsEmpty,
@@ -1341,49 +1340,6 @@ export abstract class GitHub {
           ]),
         };
       }
-    }
-  }
-
-  async *getContributorsStats(
-    org: string,
-    repo: string
-  ): AsyncGenerator<ContributorStats> {
-    const params = {owner: org, repo};
-    let res = await this.octokit(org).repos.getContributorsStats(params);
-
-    // GitHub REST API may return a 202 status code when stats are being prepared
-    // https://docs.github.com/en/rest/metrics/statistics?apiVersion=2022-11-28#best-practices-for-caching
-    const delaySecs = 5;
-    const maxAttempts = 3;
-    let attempts = 0;
-
-    while (res?.status === 202 && attempts < maxAttempts) {
-      attempts++;
-      const delay = delaySecs * attempts;
-      this.logger.debug(
-        `Stats are being prepared for repo ${repo} in org ${org}. Trying again in ${delay} seconds.`
-      );
-      await Utils.sleep(delay * 1000);
-      res = await this.octokit(org).repos.getContributorsStats(params);
-    }
-
-    if (res?.status === 202) {
-      this.logger.info(
-        `Stats are currently unavailable for repo ${repo} in org ${org}. Will sync them next time.`
-      );
-      return;
-    }
-
-    const data = Array.isArray(res.data) ? res.data : [];
-    for (const stats of data) {
-      const user = stats?.author;
-      if (!user?.login) continue;
-      yield {
-        org,
-        repo,
-        user: pick(user, ['login', 'name', 'email', 'html_url', 'type']),
-        ...pick(stats, ['total', 'weeks']),
-      };
     }
   }
 
