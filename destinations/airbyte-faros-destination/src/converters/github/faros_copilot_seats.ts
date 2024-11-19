@@ -10,7 +10,7 @@ import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {AssistantMetric, GitHubConverter} from './common';
 
 interface UserToolKey {
   user: {uid: string; source: string};
@@ -92,7 +92,7 @@ export class FarosCopilotSeats extends GitHubConverter {
           record: {
             uid: [
               'GitHubCopilot',
-              'LastActivity',
+              AssistantMetric.LastActivity,
               recordedAt.toISOString(),
               activeSeat.org,
               activeSeat.user,
@@ -100,7 +100,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             source: this.streamName.source,
             startedAt: recordedAt,
             endedAt: recordedAt,
-            type: {category: 'LastActivity'},
+            type: {category: AssistantMetric.LastActivity},
             valueType: 'Timestamp',
             value: lastActivityAt.toISOString(),
             organization: {

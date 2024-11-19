@@ -18,6 +18,19 @@ export type GitHubConfig = {
   sync_repo_issues?: boolean;
 };
 
+export enum AssistantMetric {
+  SuggestionsDiscarded = 'SuggestionsDiscarded',
+  SuggestionsAccepted = 'SuggestionsAccepted',
+  LinesDiscarded = 'LinesDiscarded',
+  LinesAccepted = 'LinesAccepted',
+  ActiveUsers = 'ActiveUsers',
+  ChatConversations = 'ChatConversations',
+  ChatInsertionEvents = 'ChatInsertionEvents',
+  ChatCopyEvents = 'ChatCopyEvents',
+  ChatActiveUsers = 'ChatActiveUsers',
+  LastActivity = 'LastActivity',
+}
+
 type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
 type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 

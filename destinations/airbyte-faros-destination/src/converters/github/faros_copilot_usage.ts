@@ -10,18 +10,18 @@ import {isNil, toLower} from 'lodash';
 import {Edition} from '../../common/types';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {AssistantMetric, GitHubConverter} from './common';
 
 const FarosMetricToAssistantMetricType = {
-  DailySuggestionReferenceCount_Discard: 'SuggestionsDiscarded',
-  DailySuggestionReferenceCount_Accept: 'SuggestionsAccepted',
-  DailyGeneratedLineCount_Discard: 'LinesDiscarded',
-  DailyGeneratedLineCount_Accept: 'LinesAccepted',
-  DailyActiveUserTrend: 'ActiveUsers',
-  DailyActiveChatUserTrend: 'ChatActiveUsers',
-  DailyChatCount: 'ChatConversations',
-  DailyChatInsertionCount: 'ChatInsertionEvents',
-  DailyChatCopyCount: 'ChatCopyEvents',
+  DailySuggestionReferenceCount_Discard: AssistantMetric.SuggestionsDiscarded,
+  DailySuggestionReferenceCount_Accept: AssistantMetric.SuggestionsAccepted,
+  DailyGeneratedLineCount_Discard: AssistantMetric.LinesDiscarded,
+  DailyGeneratedLineCount_Accept: AssistantMetric.LinesAccepted,
+  DailyActiveUserTrend: AssistantMetric.ActiveUsers,
+  DailyActiveChatUserTrend: AssistantMetric.ChatActiveUsers,
+  DailyChatCount: AssistantMetric.ChatConversations,
+  DailyChatInsertionCount: AssistantMetric.ChatInsertionEvents,
+  DailyChatCopyCount: AssistantMetric.ChatCopyEvents,
 };
 
 export class FarosCopilotUsage extends GitHubConverter {
@@ -198,7 +198,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         res.push(
           ...this.getAssistantMetric(
             day,
-            farosMetric,
+            assistantMetricType,
             breakdown[breakdownMetric] as number,
             org,
             team,
@@ -300,7 +300,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         res.push(
           ...this.getAssistantMetric(
             day,
-            farosMetric,
+            assistantMetricType,
             summary[metric],
             org,
             team
@@ -390,17 +390,13 @@ export class FarosCopilotUsage extends GitHubConverter {
 
   private getAssistantMetric(
     day: Date,
-    farosMetric: string,
+    assistantMetricType: AssistantMetric,
     value: number,
     org: string,
     team: string | null,
     editor?: string,
     language?: string
   ): DestinationRecord[] {
-    const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
-    if (!assistantMetricType) {
-      return [];
-    }
     return [
       {
         model: 'vcs_AssistantMetric',
