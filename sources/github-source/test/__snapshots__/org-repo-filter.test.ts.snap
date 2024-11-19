@@ -36,63 +36,63 @@ exports[`OrgRepoFilter getRepositories (FarosGraph) - nothing included - nothing
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -104,63 +104,63 @@ exports[`OrgRepoFilter getRepositories (FarosGraph) - nothing included - some ex
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -172,63 +172,63 @@ exports[`OrgRepoFilter getRepositories (FarosGraph) - some included - nothing ex
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": false,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -240,63 +240,63 @@ exports[`OrgRepoFilter getRepositories - all - empty list 1`] = `
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -308,63 +308,63 @@ exports[`OrgRepoFilter getRepositories - all - no list 1`] = `
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -376,49 +376,49 @@ exports[`OrgRepoFilter getRepositories - specific repositories excluded 1`] = `
       "name": "repo-2",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;
@@ -430,35 +430,35 @@ exports[`OrgRepoFilter getRepositories - specific repositories included 1`] = `
       "name": "repo-1",
       "org": "org-1",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-2",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncNestedData": true,
+    "syncRepoData": true,
   },
 ]
 `;

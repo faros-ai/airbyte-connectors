@@ -46,7 +46,7 @@
     "archived": {
       "type": "boolean"
     },
-    "syncNestedData": {
+    "syncRepoData": {
       "type": "boolean"
     }
   }

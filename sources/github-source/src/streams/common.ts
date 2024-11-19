@@ -157,9 +157,9 @@ export abstract class StreamWithRepoSlices extends StreamBase {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       for (const {
         repo,
-        syncNestedData,
+        syncRepoData,
       } of await this.orgRepoFilter.getRepositories(org)) {
-        if (syncNestedData) {
+        if (syncRepoData) {
           yield {org, repo: repo.name};
         }
       }

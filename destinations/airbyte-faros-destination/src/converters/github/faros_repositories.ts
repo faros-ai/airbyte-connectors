@@ -15,7 +15,7 @@ export class FarosRepositories extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const repo = record.record.data as Repository & {syncNestedData: boolean};
+    const repo = record.record.data as Repository & {syncRepoData: boolean};
     const repoKey = GitHubCommon.repoKey(
       repo.org,
       repo.name,
@@ -41,7 +41,7 @@ export class FarosRepositories extends GitHubConverter {
       },
     ];
     if (
-      repo.syncNestedData &&
+      repo.syncRepoData &&
       ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
     ) {
       res.push({

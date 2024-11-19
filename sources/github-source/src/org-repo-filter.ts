@@ -11,7 +11,7 @@ import {GitHubConfig} from './types';
 
 type RepoInclusion = {
   repo: Repository;
-  syncNestedData: boolean;
+  syncRepoData: boolean;
 };
 
 type FilterConfig = {
@@ -143,12 +143,12 @@ export class OrgRepoFilter {
       }
       for (const repo of visibleRepos) {
         const lowerRepoName = toLower(repo.name);
-        const {included, syncNestedData} = await this.getRepoInclusion(
+        const {included, syncRepoData} = await this.getRepoInclusion(
           lowerOrg,
           lowerRepoName
         );
         if (included) {
-          repos.set(lowerRepoName, {repo, syncNestedData});
+          repos.set(lowerRepoName, {repo, syncRepoData});
         }
       }
       this.reposByOrg.set(lowerOrg, repos);
@@ -161,7 +161,7 @@ export class OrgRepoFilter {
     repo: string
   ): Promise<{
     included: boolean;
-    syncNestedData: boolean;
+    syncRepoData: boolean;
   }> {
     await this.loadSelectedRepos();
     const {reposByOrg, excludedReposByOrg} = this.filterConfig;
@@ -171,21 +171,21 @@ export class OrgRepoFilter {
     if (this.useFarosGraphReposSelection) {
       const included = true;
 
-      const syncNestedData =
+      const syncRepoData =
         (!repos?.size || repos.has(repo)) && !excludedRepos?.has(repo);
-      return {included, syncNestedData};
+      return {included, syncRepoData};
     }
 
     if (repos?.size) {
       const included = repos.has(repo);
-      return {included, syncNestedData: included};
+      return {included, syncRepoData: included};
     }
 
     if (excludedRepos?.size) {
       const included = !excludedRepos.has(repo);
-      return {included, syncNestedData: included};
+      return {included, syncRepoData: included};
     }
-    return {included: true, syncNestedData: true};
+    return {included: true, syncRepoData: true};
   }
 
   getRepository(org: string, name: string): Repository {
