@@ -13,8 +13,15 @@ type TestCase = {
   cycles: Set<string>;
 };
 
+type ReleaseVersion = {
+  uid: string;
+  name: string;
+  source: string;
+};
+
 export class TestExecutions extends ZephyrConverter {
-  private collectedTestCases = new Map<string, TestCase>();
+  private readonly collectedTestCases = new Map<string, TestCase>();
+  private readonly collectedReleaseVersions = new Map<string, ReleaseVersion>();
   readonly destinationModels = [
     'tms_TaskTestCaseResultAssociation',
     'qa_TestCase',
@@ -43,6 +50,22 @@ export class TestExecutions extends ZephyrConverter {
       source: this.source,
     };
 
+    const versionId = testExecution.versionId;
+    // -1 means no version is used.
+    // https://support.smartbear.com/zephyr-squad-server/docs/en/zephyr-squad-server-rest-api/zephyr-squad-api---how-to/get-test-execution-properties.html
+    const releaseVersion =
+      versionId && versionId !== -1
+        ? {uid: toString(versionId), source: this.source}
+        : null;
+    if (releaseVersion?.uid) {
+      const uid = releaseVersion.uid;
+      this.collectedReleaseVersions.set(uid, {
+        uid,
+        name: testExecution.versionName,
+        source: this.source,
+      });
+    }
+
     const results = [];
     results.push({
       model: 'qa_TestCaseResult',
@@ -53,7 +76,7 @@ export class TestExecutions extends ZephyrConverter {
         status: TestExecutions.getStatus(testExecution.executionStatusName),
         tags: this.labelToTag(testExecution.label),
         testCase,
-        // Zephyr does not have a test execution so will be empty
+        releaseVersion,
       },
     });
 
@@ -73,7 +96,7 @@ export class TestExecutions extends ZephyrConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.convertTestCases();
+    return [...this.convertTestCases(), ...this.convertReleaseVersions()];
   }
 
   private static getStatus(status: string): {category: string; detail: string} {
@@ -143,5 +166,14 @@ export class TestExecutions extends ZephyrConverter {
     }
 
     return results;
+  }
+
+  private convertReleaseVersions(): DestinationRecord[] {
+    return Array.from(this.collectedReleaseVersions.values()).map(
+      (releaseVersion) => ({
+        model: 'qa_ReleaseVersion',
+        record: releaseVersion,
+      })
+    );
   }
 }
