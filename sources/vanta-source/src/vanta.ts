@@ -138,6 +138,7 @@ export class Vanta {
       );
 
       for (const vulnerability of data) {
+        this.logger.debug(`Vulnerability target id: ${vulnerability.targetId}`);
         const asset = assetMap.get(vulnerability.targetId);
         // Image tage scan won't be available if asset is a repository: https://developer.vanta.com/reference/listvulnerableassets#:~:text=has%20been%20scanned.-,imageScanTag,-string%20%7C%20null
         yield {
@@ -230,6 +231,9 @@ export class Vanta {
 
       // Populate asset map with targetId as the key
       for (const asset of data) {
+        this.logger.debug(`Asset target id: ${asset.targetId}`);
+        this.logger.debug(`Asset name: ${asset.name}`);
+        this.logger.debug(`Asset tag: ${asset.imageScanTag}`);
         assetMap.set(asset.targetId, {
           name: asset.name,
           imageScanTag: asset.imageScanTag,
@@ -239,7 +243,7 @@ export class Vanta {
       cursor = pageInfo.endCursor;
       hasNext = pageInfo.hasNextPage;
     }
-
+    this.logger.debug(`Asset map size: ${assetMap.size}`);
     return assetMap;
   }
 }
