@@ -121,7 +121,7 @@ describe('calculateUpdatedStreamState', () => {
     });
   });
 
-  describe('jiira use case', () => {
+  describe('jira use case', () => {
     it('should return currentStreamState if latestRecordCutoff is null', () => {
       const currentStreamState = {project1: {cutoff: 1627641720000}};
       const result = calculateUpdatedStreamState(
