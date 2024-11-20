@@ -51,6 +51,14 @@ describe('AirbyteStreamBase', () => {
         ['profile', 'name'],
       ]);
     });
+
+    it('should wrap a primary key with single and nested fields', () => {
+      expect(wpk([['profile', 'id'], ['profile', 'name'], ['hash']])).toEqual([
+        ['profile', 'id'],
+        ['profile', 'name'],
+        ['hash'],
+      ]);
+    });
   });
 
   describe('asAirbyeStream', () => {
