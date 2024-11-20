@@ -36,11 +36,11 @@ describe('AirbyteStreamBase', () => {
       expect(wpk(['name', 'id'])).toEqual([['name'], ['id']]);
     });
 
-    it('should wrap a primary key with a single nested-field', () => {
+    it('should wrap a primary key with a single nested field', () => {
       expect(wpk([['profile', 'id']])).toEqual([['profile', 'id']]);
     });
 
-    it('should wrap a primary key with multiple nested-fields', () => {
+    it('should wrap a primary key with multiple nested fields', () => {
       expect(
         wpk([
           ['profile', 'id'],
