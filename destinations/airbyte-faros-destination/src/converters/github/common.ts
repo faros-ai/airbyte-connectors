@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   CodeScanningAlert,
@@ -331,6 +332,10 @@ export class GitHubCommon {
       default:
         return {category: 'Custom', detail: conclusionLower};
     }
+  }
+
+  static digest(input: string): string {
+    return createHash('sha256').update(input).digest('hex');
   }
 }
 

@@ -67,7 +67,7 @@ Array [
       "type": Object {
         "category": "LastActivity",
       },
-      "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.836Z__github__octocat",
+      "uid": "241e60b7c19d9c15ef16ff8cda62fd6cb7b627e1e580703f377f3cd2bfb524de",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -129,7 +129,7 @@ Array [
       "type": Object {
         "category": "LastActivity",
       },
-      "uid": "GitHubCopilot__LastActivity__2024-06-20T09:54:42.837Z__github__octokitten",
+      "uid": "0819c73334322631edcd76b94f194a579af8badd86368980b17dbc0f4af43b66",
       "user": Object {
         "source": "GitHub",
         "uid": "octokitten",
@@ -313,7 +313,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github",
+      "uid": "e07f2600225c761b915965b2adbe00c162498514ee2b89799471d33344b5aa15",
       "value": "200",
       "valueType": "Int",
     },
@@ -376,7 +376,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__vscode__python",
+      "uid": "734d840c6f8b8397582d9ffaea714958379c05925f8a63bde34475a2e905fa39",
       "value": "50",
       "valueType": "Int",
     },
@@ -483,7 +483,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__jetbrains__python",
+      "uid": "a46935f0b5a63d2f53b6cdc1622c049fc5d18d379ea8c16706722f5984547ddf",
       "value": "100",
       "valueType": "Int",
     },
@@ -582,7 +582,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__vscode__ruby",
+      "uid": "bea49a0cadc8227ff61f3def00a1ff6b65fe688f82d965e30cb27012c8c8bd48",
       "value": "50",
       "valueType": "Int",
     },
@@ -681,7 +681,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github",
+      "uid": "ff313eb1df64316bb868fc5ec2562345b245cf58aa6ca186ef834213d9aeb780",
       "value": "800",
       "valueType": "Int",
     },
@@ -744,7 +744,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__vscode__python",
+      "uid": "7d6e7435bba86c88d998b449047c39a0719f28ebd9c372a53f871007d92ad463",
       "value": "250",
       "valueType": "Int",
     },
@@ -835,7 +835,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__jetbrains__python",
+      "uid": "d5faa0cceef8e29c7c3f03cc45230bec756814843d240b4a2d7a30d5c09cae6b",
       "value": "200",
       "valueType": "Int",
     },
@@ -926,7 +926,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__vscode__ruby",
+      "uid": "553ab7c1425a3374224a878683dd2ffbf2f5bd9f2f370568019a69b12d6a701e",
       "value": "350",
       "valueType": "Int",
     },
@@ -1017,7 +1017,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github",
+      "uid": "16254b6c94f26c64687545c4dcf06062b767f91f238ce9a0e3fd131434ae3aea",
       "value": "600",
       "valueType": "Int",
     },
@@ -1080,7 +1080,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__vscode__python",
+      "uid": "aad5d3f0bd036852a7814554a9c2a5c7b76bb68318fd5f202deab0105e37c94f",
       "value": "200",
       "valueType": "Int",
     },
@@ -1171,7 +1171,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__jetbrains__python",
+      "uid": "dec894f79a8f26e3970df699763297c28881c5e6f1dcca1612aeb8c7577b692c",
       "value": "100",
       "valueType": "Int",
     },
@@ -1262,7 +1262,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__vscode__ruby",
+      "uid": "c1d9e6cbc26da0e848f5ebf7e61fbbf362c61980b97a8a7ce38c8c79d5610369",
       "value": "300",
       "valueType": "Int",
     },
@@ -1353,7 +1353,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github",
+      "uid": "2bdb8b7062e1d12a3db226201fe26bf4e4972794d59555018c2f2ed308d82a8f",
       "value": "1200",
       "valueType": "Int",
     },
@@ -1416,7 +1416,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__vscode__python",
+      "uid": "64986e7c849b2f73bcd5e032eaa2e5596f36e280dda1f536006a7dd2f809ee52",
       "value": "700",
       "valueType": "Int",
     },
@@ -1507,7 +1507,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__jetbrains__python",
+      "uid": "9c7ad8f5f841eb3a2e8d0b3f15dee4c02ef302940f3d50717ff0af8a3c5c9927",
       "value": "300",
       "valueType": "Int",
     },
@@ -1598,7 +1598,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__vscode__ruby",
+      "uid": "bafcb7a0a2dac2bb5f7de76393f302b7b6d614a57b448a5a9da6c4e4830815fb",
       "value": "200",
       "valueType": "Int",
     },
@@ -1689,7 +1689,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github",
+      "uid": "cfdb582174179849b516014902dd5d397f8727c0f9440cb179f7137410e1fd8b",
       "value": "10",
       "valueType": "Int",
     },
@@ -1752,7 +1752,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__vscode__python",
+      "uid": "ec24dc391b4034cd3312fdf4100cf162df1070722ed6251d1e2ef5b6513f4ee8",
       "value": "5",
       "valueType": "Int",
     },
@@ -1843,7 +1843,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__jetbrains__python",
+      "uid": "e7b44506603dcb26b6036f55c60a69838b400955cb8fbd52e85d7b02a89302c2",
       "value": "2",
       "valueType": "Int",
     },
@@ -1934,7 +1934,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__vscode__ruby",
+      "uid": "65c768a52185917f7d03b48b5cc56df9c26887e182fc637d07eab8058b2fd500",
       "value": "3",
       "valueType": "Int",
     },
@@ -2107,7 +2107,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-15T00:00:00.000Z__github",
+      "uid": "6d11a7051eb75424f0f2ae9211ecb57453cdfcf174178be13cbaa32048160e71",
       "value": "4",
       "valueType": "Int",
     },
@@ -2170,7 +2170,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github",
+      "uid": "90f574dfd8b9340792bb3b46aa64461b0cfbb2b1da30eb249f615c6bf2af9a5c",
       "value": "200",
       "valueType": "Int",
     },
@@ -2233,7 +2233,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__vscode__python",
+      "uid": "d8a730e4e8412682f88f6a6acda9391061537385217278db14b51493f04b49db",
       "value": "100",
       "valueType": "Int",
     },
@@ -2324,7 +2324,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__jetbrains__python",
+      "uid": "08409df83e04bb0f0e9dedca204ebfdaa9bc3344d6705e1beaa7b3aa5bc2ede2",
       "value": "150",
       "valueType": "Int",
     },
@@ -2415,7 +2415,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__vscode__ruby",
+      "uid": "d9015d13d18d51b80f13629b3e587482b9a6db3136e0fdd571905eb4b121cd1f",
       "value": "50",
       "valueType": "Int",
     },
@@ -2506,7 +2506,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github",
+      "uid": "5de4f143f193a47dc388577e3f76e0cd7fd40da6e90be285ce9807367a4cb2f6",
       "value": "600",
       "valueType": "Int",
     },
@@ -2569,7 +2569,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__vscode__python",
+      "uid": "de6fbff088c1bdc448c05e3f3b2f66901a956926459499c71c2dde8ec7f3572c",
       "value": "200",
       "valueType": "Int",
     },
@@ -2660,7 +2660,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__jetbrains__python",
+      "uid": "fc8409f9db62f377063dca23bfd4f348dd154117d7cce162848c98d72961520f",
       "value": "150",
       "valueType": "Int",
     },
@@ -2751,7 +2751,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__vscode__ruby",
+      "uid": "07f7c2b154b4e280880baa2cc1675375d17b389ff4b096eb0e75b82c8c95457f",
       "value": "150",
       "valueType": "Int",
     },
@@ -2842,7 +2842,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github",
+      "uid": "e051b1bae8a45799a69bd605fe9030d4bb9690fb16de52a455dfc3ae0ae02103",
       "value": "400",
       "valueType": "Int",
     },
@@ -2905,7 +2905,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__vscode__python",
+      "uid": "10ceee87cc838e8dc8c7ba71cbf4a7d0ed7d2609d10e9aa35eeca85ee2ee6ad5",
       "value": "300",
       "valueType": "Int",
     },
@@ -2996,7 +2996,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__jetbrains__python",
+      "uid": "37f5b05fe437ae515f71e616bf76f00622fea586454a53f98e493d988a763545",
       "value": "50",
       "valueType": "Int",
     },
@@ -3087,7 +3087,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__vscode__ruby",
+      "uid": "ccc9e93f50606c0031afec64c96f612d8975c4ba037bf9c3e4f23477ca5b4b25",
       "value": "50",
       "valueType": "Int",
     },
@@ -3178,7 +3178,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github",
+      "uid": "ad77755239a277cb0b81260a2bf5717ab82b73856bcf9415000b2b85e64c0abe",
       "value": "700",
       "valueType": "Int",
     },
@@ -3241,7 +3241,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__vscode__python",
+      "uid": "567534b54f1a0d523bbea6cb79bf7833611f9d927c29fd8c1ceb4aa435fb0b38",
       "value": "300",
       "valueType": "Int",
     },
@@ -3332,7 +3332,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__jetbrains__python",
+      "uid": "a8c86b59ea5bc07504c13b487ee5b3e7eb180d77507c4d864c3ad7ea80c5dead",
       "value": "250",
       "valueType": "Int",
     },
@@ -3423,7 +3423,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__vscode__ruby",
+      "uid": "65264f71741f964bc9430157799dab7e005476f4350d0027e14e6029fd4fd0a9",
       "value": "150",
       "valueType": "Int",
     },
@@ -3514,7 +3514,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github",
+      "uid": "2276c561012c0a744a20ef4fe2e6ac27e8684d16ad4bafcb46867feeac752940",
       "value": "12",
       "valueType": "Int",
     },
@@ -3577,7 +3577,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__vscode__python",
+      "uid": "73e7a3e2001db6093049698e2b6019294d63f5cae0329e85c6aada630a8ca9a7",
       "value": "2",
       "valueType": "Int",
     },
@@ -3668,7 +3668,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__jetbrains__python",
+      "uid": "a5cb3c2a4e66523f80d6a8f4b46460b595dcdbec99f5cfc15d7c97f9032f19c3",
       "value": "6",
       "valueType": "Int",
     },
@@ -3759,7 +3759,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__vscode__ruby",
+      "uid": "e36b55368bd355f8840383408cb270db9fbc026797ba2630b98ae33de78b05e4",
       "value": "3",
       "valueType": "Int",
     },
@@ -3850,7 +3850,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-16T00:00:00.000Z__github",
+      "uid": "c9882afddeecb2c20ae646f84cf508ad90034de5eb174e5dd8d054879b509806",
       "value": "8",
       "valueType": "Int",
     },
@@ -3913,7 +3913,7 @@ Array [
       "type": Object {
         "category": "ChatConversations",
       },
-      "uid": "GitHubCopilot__ChatConversations__2023-10-16T00:00:00.000Z__github",
+      "uid": "75f8d311898dd6c243ccfa665e3215fc9fa615795a91ccb026515b67f2ca3cba",
       "value": "100",
       "valueType": "Int",
     },
@@ -3976,7 +3976,7 @@ Array [
       "type": Object {
         "category": "ChatInsertionEvents",
       },
-      "uid": "GitHubCopilot__ChatInsertionEvents__2023-10-16T00:00:00.000Z__github",
+      "uid": "b14b4d19aef018766d5cc18619f5dca6cc1221d46ca14eaed963dfff5b8cc0f3",
       "value": "101",
       "valueType": "Int",
     },
@@ -4039,7 +4039,7 @@ Array [
       "type": Object {
         "category": "ChatCopyEvents",
       },
-      "uid": "GitHubCopilot__ChatCopyEvents__2023-10-16T00:00:00.000Z__github",
+      "uid": "1fb74ae1263fbb2281eb49e902c16d05da781497d83ef49ff3c7abe7355fe8ad",
       "value": "102",
       "valueType": "Int",
     },
@@ -4113,7 +4113,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "411ae52b25ef30f784e8a61468d1a1dcfd76fc0b5baa4ca20e1b85bab70e5814",
       "value": "200",
       "valueType": "Int",
     },
@@ -4193,7 +4193,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "496b0c5b87522e98b8b18096374c0ac5149fbec743c2a00efa72e88c5419b09a",
       "value": "50",
       "valueType": "Int",
     },
@@ -4301,7 +4301,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "be4564b44a17118992d7acbdc19766b30b8e1d9e133b4de60ea64ff7e99e5889",
       "value": "100",
       "valueType": "Int",
     },
@@ -4409,7 +4409,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "66a17798a9a00338a6ebd30f30c0d3f6dcedb2de4c541786eeb6b9b0e1a8e999",
       "value": "50",
       "valueType": "Int",
     },
@@ -4517,7 +4517,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "848857193c4be22c5709cb08548a311f49de72e942f76acc17d6b0b5f26295d0",
       "value": "800",
       "valueType": "Int",
     },
@@ -4597,7 +4597,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "7709e5a394ace14a5c7fdd4577e6dbf22e828bbc17b0b616f6ccfc04c96e92fe",
       "value": "250",
       "valueType": "Int",
     },
@@ -4705,7 +4705,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "c6a5c6f53e1923bdd030de378bfa52d0c573c593e1b4e60441fd183b1973893a",
       "value": "200",
       "valueType": "Int",
     },
@@ -4813,7 +4813,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "32c4b651e8838057d772d920dd643e365561c4f58d793c981ec67541bd40ea35",
       "value": "350",
       "valueType": "Int",
     },
@@ -4921,7 +4921,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "7b909aec9a8b3b1dad230c420f5e096583adf21115a4902fd104632e10d2efb0",
       "value": "600",
       "valueType": "Int",
     },
@@ -5001,7 +5001,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "aa58502a13e3821fbdd247dbf448c0608d6b48276167a8cec459237b52639be0",
       "value": "200",
       "valueType": "Int",
     },
@@ -5109,7 +5109,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "97cc8df49d83d31d714ef8ac755801d3161f077c7d4ca2c7021246f6a72def0b",
       "value": "100",
       "valueType": "Int",
     },
@@ -5217,7 +5217,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "1958fa64ef3d0e0adc9ccd73a6594966879385030a17aa1511f36fc6c0f782ec",
       "value": "300",
       "valueType": "Int",
     },
@@ -5325,7 +5325,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "c8ba774fc9d293d49eddaca3d78612e196475bd414f9fe11fcabba7bd10eb80f",
       "value": "1200",
       "valueType": "Int",
     },
@@ -5405,7 +5405,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "9cd88c4980a30dda76f56958b60e6d885098cf003251ca60de29ab686a11e3b1",
       "value": "700",
       "valueType": "Int",
     },
@@ -5513,7 +5513,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "9eb9bb576d7bc3c9c93e1714a29baf60ffabbebf9f13d6248de82b15630f73b1",
       "value": "300",
       "valueType": "Int",
     },
@@ -5621,7 +5621,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "5953e7719540dff20f6a33be3e2b288a3263fd3c909089b26443b295a1c0b853",
       "value": "200",
       "valueType": "Int",
     },
@@ -5729,7 +5729,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "9d380746fe563e6c18d2544e70e16445b2ee4127e1ac67b8a06e98d0057883aa",
       "value": "10",
       "valueType": "Int",
     },
@@ -5809,7 +5809,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "95f9b282dc891de3e38734a478c88b8fba9aebfb81896a7d1035845d63700007",
       "value": "5",
       "valueType": "Int",
     },
@@ -5917,7 +5917,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "8f7c3eea0137cfcad90123103b731db36add490bf2be622a5f32eb0ad5adc0a0",
       "value": "2",
       "valueType": "Int",
     },
@@ -6025,7 +6025,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "29168c82d95b4ca6ee817479be4d3f212bbb6f6090d71b37e0ffdd909db55863",
       "value": "3",
       "valueType": "Int",
     },
@@ -6243,7 +6243,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-15T00:00:00.000Z__github__justice-league",
+      "uid": "e73b342bb0d91a00d59edf9b2ce366b02a0b3c1fd16be2ee03c25f745d07214b",
       "value": "4",
       "valueType": "Int",
     },
@@ -6323,7 +6323,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "38b38aa4506dc8efd2e8ad4d80939788d66f438d7ea022240f3f7d8115c507f7",
       "value": "200",
       "valueType": "Int",
     },
@@ -6403,7 +6403,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "94d63a2c712b5e977726d80b632b58cfef6dac342dbc297c056452891486fef5",
       "value": "100",
       "valueType": "Int",
     },
@@ -6511,7 +6511,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "9cfcad53c684f7c9aa57d2157a0c1d112c26bb73733fa7ce7d9e2ab9b042f16f",
       "value": "150",
       "valueType": "Int",
     },
@@ -6619,7 +6619,7 @@ Array [
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "GitHubCopilot__SuggestionsDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "872ebac03b0c14b1e982357d5db7f7c7dd91a01b4459aacf95a6248885da1369",
       "value": "50",
       "valueType": "Int",
     },
@@ -6727,7 +6727,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "606f634461c3089e4e5611dbc2cee93cf2c45e67eca8051f6b1bd38df6e39d33",
       "value": "600",
       "valueType": "Int",
     },
@@ -6807,7 +6807,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "49b2e598d98d23e388b2e4b888d54ac564167de55b0fbcdd0bb510786ce4bd38",
       "value": "200",
       "valueType": "Int",
     },
@@ -6915,7 +6915,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "96c9ae8708e8527c37a599f4fc7cdb4a76a63fbf8a07edc4408a367ddaa9a6f8",
       "value": "150",
       "valueType": "Int",
     },
@@ -7023,7 +7023,7 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "GitHubCopilot__SuggestionsAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "2f7ac567cff260f64eb7e79989f08ff6013f1a3298e8b2a70389655763ea4158",
       "value": "150",
       "valueType": "Int",
     },
@@ -7131,7 +7131,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "7e85704eb9121d43643c42a4da88b7674195967e0857c378bcdd0220de4808e0",
       "value": "400",
       "valueType": "Int",
     },
@@ -7211,7 +7211,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "6d434bdf110fcedffc9a0711a2107a188f9d78ea5cd3a43535ff9da6d11d00c8",
       "value": "300",
       "valueType": "Int",
     },
@@ -7319,7 +7319,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "b6523231f057ec278fac98c9eaa14a55f98ebc17447595e9811e30441445f621",
       "value": "50",
       "valueType": "Int",
     },
@@ -7427,7 +7427,7 @@ Array [
       "type": Object {
         "category": "LinesDiscarded",
       },
-      "uid": "GitHubCopilot__LinesDiscarded__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "0d5ddcd8ff8fd2cb766a6545c804f1f8b7122bab5532a3502b530eace52b4814",
       "value": "50",
       "valueType": "Int",
     },
@@ -7535,7 +7535,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "344c8b75f0382bfc4bbd886578665771da3089177e4829ecb08b48e3bac40714",
       "value": "700",
       "valueType": "Int",
     },
@@ -7615,7 +7615,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "a1201fb9e9762801031e293212f1fc8a61a388a60f20f6be10810b578e5562df",
       "value": "300",
       "valueType": "Int",
     },
@@ -7723,7 +7723,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "fb2da83fdfb68a1369debeeb85135bc63ce9b318c5c1d5163f34706679cb3d8d",
       "value": "250",
       "valueType": "Int",
     },
@@ -7831,7 +7831,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "GitHubCopilot__LinesAccepted__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "d594cddf4624d4584e89b4897dbc7a9d4dcafd0f82ead3156c1dae17bf1999d0",
       "value": "150",
       "valueType": "Int",
     },
@@ -7939,7 +7939,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "35003d7e733c0e046f509f32817c84100527f85c2c9d3ceda670023103fb911c",
       "value": "12",
       "valueType": "Int",
     },
@@ -8019,7 +8019,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__vscode__python",
+      "uid": "7ca7b8b178809676a2cabc858f2ae14785a91095d3d488c6f496264d761fcb93",
       "value": "2",
       "valueType": "Int",
     },
@@ -8127,7 +8127,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__jetbrains__python",
+      "uid": "a81712756a31e8d7ba7ea2506abeb0f4e2ba7d7535152b45d0ea39cbc90bd874",
       "value": "6",
       "valueType": "Int",
     },
@@ -8235,7 +8235,7 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "GitHubCopilot__ActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league__vscode__ruby",
+      "uid": "7c3cf8dd7940666ecf3e5e4d551b3c29f29d6932bf2d2d95f20bd17ad972c91c",
       "value": "3",
       "valueType": "Int",
     },
@@ -8343,7 +8343,7 @@ Array [
       "type": Object {
         "category": "ChatActiveUsers",
       },
-      "uid": "GitHubCopilot__ChatActiveUsers__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "ebfe632491b774dc91e6e6abaf259769c6bf46c3e68556d5f532d1126f3a7fd6",
       "value": "8",
       "valueType": "Int",
     },
@@ -8423,7 +8423,7 @@ Array [
       "type": Object {
         "category": "ChatConversations",
       },
-      "uid": "GitHubCopilot__ChatConversations__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "0e5e28b699ecb2303c4bd930313f8ba790405600e69f8da18e2adf550859c663",
       "value": "100",
       "valueType": "Int",
     },
@@ -8503,7 +8503,7 @@ Array [
       "type": Object {
         "category": "ChatInsertionEvents",
       },
-      "uid": "GitHubCopilot__ChatInsertionEvents__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "f6ce0b71e51693ef23d3ada5ac0e17e5a27ec1ee555721a901b2f6d3894d95a0",
       "value": "101",
       "valueType": "Int",
     },
@@ -8583,7 +8583,7 @@ Array [
       "type": Object {
         "category": "ChatCopyEvents",
       },
-      "uid": "GitHubCopilot__ChatCopyEvents__2023-10-16T00:00:00.000Z__github__justice-league",
+      "uid": "f3fb198eae252837d26dad6ba1e386ed10bd27e95f6eb5b2363e93b99ee20286",
       "value": "102",
       "valueType": "Int",
     },

@@ -10,7 +10,7 @@ import {isNil, toLower} from 'lodash';
 import {Edition} from '../../common/types';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubConverter} from './common';
+import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
 
 const FarosMetricToAssistantMetricType = {
   DailySuggestionReferenceCount_Discard: AssistantMetric.SuggestionsDiscarded,
@@ -401,17 +401,17 @@ export class FarosCopilotUsage extends GitHubConverter {
       {
         model: 'vcs_AssistantMetric',
         record: {
-          uid: [
-            GitHubTool.Copilot,
-            assistantMetricType,
-            day.toISOString(),
-            org,
-            team,
-            editor,
-            language,
-          ]
-            .filter(Boolean)
-            .join('__'),
+          uid: GitHubCommon.digest(
+            [
+              GitHubTool.Copilot,
+              assistantMetricType,
+              day.toISOString(),
+              org,
+              team,
+              editor,
+              language,
+            ].join('__')
+          ),
           source: this.streamName.source,
           startedAt: day,
           endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),

@@ -10,7 +10,7 @@ import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubConverter} from './common';
+import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
 
 interface UserToolKey {
   user: {uid: string; source: string};
@@ -90,13 +90,15 @@ export class FarosCopilotSeats extends GitHubConverter {
         res.push({
           model: 'vcs_AssistantMetric',
           record: {
-            uid: [
-              GitHubTool.Copilot,
-              AssistantMetric.LastActivity,
-              recordedAt.toISOString(),
-              activeSeat.org,
-              activeSeat.user,
-            ].join('__'),
+            uid: GitHubCommon.digest(
+              [
+                GitHubTool.Copilot,
+                AssistantMetric.LastActivity,
+                recordedAt.toISOString(),
+                activeSeat.org,
+                activeSeat.user,
+              ].join('__')
+            ),
             source: this.streamName.source,
             startedAt: recordedAt,
             endedAt: recordedAt,
