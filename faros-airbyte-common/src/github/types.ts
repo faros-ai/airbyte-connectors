@@ -245,25 +245,6 @@ export type CopilotUsageSummary = {
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
 
-export type ContributorStats = {
-  org: string;
-  repo: string;
-  user: {
-    login: string;
-    name?: string;
-    email?: string;
-    html_url: string;
-    type: string;
-  };
-  total: number;
-  weeks: {
-    w?: number;
-    a?: number;
-    d?: number;
-    c?: number;
-  }[];
-};
-
 export type CodeScanningAlert = {
   org: string;
   repo: string;
