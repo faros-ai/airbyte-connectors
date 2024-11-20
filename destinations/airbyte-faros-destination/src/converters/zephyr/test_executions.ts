@@ -57,10 +57,10 @@ export class TestExecutions extends ZephyrConverter {
       versionId && versionId !== -1
         ? {uid: toString(versionId), source: this.source}
         : null;
-    if (releaseVersion) {
-      const versionIdStr = toString(versionId);
-      this.collectedReleaseVersions.set(versionIdStr, {
-        uid: versionIdStr,
+    if (releaseVersion?.uid) {
+      const uid = releaseVersion.uid;
+      this.collectedReleaseVersions.set(uid, {
+        uid,
         name: testExecution.versionName,
         source: this.source,
       });
