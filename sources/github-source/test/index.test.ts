@@ -232,6 +232,9 @@ describe('index', () => {
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
     });
   });
 
@@ -240,6 +243,11 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'copilot_usage/catalog.json',
+      stateOrPath: {
+        faros_copilot_usage: {
+          github: {cutoff: new Date('2023-10-15').getTime()},
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
@@ -258,6 +266,9 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
       },
     });
   });
@@ -319,6 +330,38 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage with teams already up-to-date', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      stateOrPath: {
+        faros_copilot_usage: {
+          github: {cutoff: new Date('2023-10-16').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            ),
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getCopilotUsageForTeamMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(0);
       },
     });
   });
