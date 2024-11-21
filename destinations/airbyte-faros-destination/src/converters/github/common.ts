@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   CodeScanningAlert,
@@ -17,6 +18,19 @@ export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 export type GitHubConfig = {
   sync_repo_issues?: boolean;
 };
+
+export enum AssistantMetric {
+  SuggestionsDiscarded = 'SuggestionsDiscarded',
+  SuggestionsAccepted = 'SuggestionsAccepted',
+  LinesDiscarded = 'LinesDiscarded',
+  LinesAccepted = 'LinesAccepted',
+  ActiveUsers = 'ActiveUsers',
+  ChatConversations = 'ChatConversations',
+  ChatInsertionEvents = 'ChatInsertionEvents',
+  ChatCopyEvents = 'ChatCopyEvents',
+  ChatActiveUsers = 'ChatActiveUsers',
+  LastActivity = 'LastActivity',
+}
 
 type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
 type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
@@ -318,6 +332,10 @@ export class GitHubCommon {
       default:
         return {category: 'Custom', detail: conclusionLower};
     }
+  }
+
+  static digest(input: string): string {
+    return createHash('sha256').update(input).digest('hex');
   }
 }
 
