@@ -184,6 +184,14 @@ export class FarosPullRequests extends GitHubConverter {
           label: {name: label.name},
         },
       })),
+      {
+        model: 'vcs_PullRequestFile__Deletion',
+        record: {
+          where: {
+            pullRequest: prKey,
+          },
+        },
+      },
       ...pr.files.map((file) => ({
         model: 'vcs_PullRequestFile',
         record: {
