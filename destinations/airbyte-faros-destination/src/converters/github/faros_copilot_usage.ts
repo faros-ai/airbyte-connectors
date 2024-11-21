@@ -34,6 +34,7 @@ export class FarosCopilotUsage extends GitHubConverter {
     'faros_MetricValue',
     'faros_MetricValueTag',
     'faros_Tag',
+    'vcs_AssistantMetric',
   ];
 
   async convert(

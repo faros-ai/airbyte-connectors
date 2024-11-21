@@ -23,6 +23,7 @@ export class FarosCopilotSeats extends GitHubConverter {
   private readonly endedSeatsByOrg = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_AssistantMetric',
     'vcs_OrganizationTool',
     'vcs_UserTool',
     'vcs_UserToolUsage',
