@@ -144,9 +144,7 @@ export class Vanta {
       );
 
       for (const vulnerability of data) {
-        this.logger.debug(`Vulnerability target id: ${vulnerability.targetId}`);
         const asset = assetMap.get(vulnerability.targetId);
-        this.logger.debug(`Asset: ${asset}`);
         yield {
           ...vulnerability,
           repoName: asset?.name,

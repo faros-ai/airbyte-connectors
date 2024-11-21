@@ -22,8 +22,10 @@ export abstract class Vulnerabilities extends VantaConverter {
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
-  private reposByName = new Map<string, VcsRepoKey>();
-  private cicdArtifactsByCommitSha = new Map<string, CicdArtifactKey>();
+  private collectedVulnerabilities = new Set<Vulnerability>();
+  private collectedIdentifiers = new Set<string>();
+  private collectedRepoNames = new Set<string>();
+  private collectedArtifactCommitShas = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -64,8 +66,7 @@ export abstract class Vulnerabilities extends VantaConverter {
 
     // Get catalog identifier either from vulnerability name or relatedVulns.
     let identifier = data.name;
-    let category = this.getVulnerabilityCatalogCategory(identifier);
-    if (!category) {
+    if (!this.isVulnerabilityCatalogIdentifier(identifier)) {
       const identifiers = data.relatedVulns.filter(
         this.isVulnerabilityCatalogIdentifier
       );
@@ -76,73 +77,26 @@ export abstract class Vulnerabilities extends VantaConverter {
         return records;
       }
       identifier = identifiers[0];
-      category = this.getVulnerabilityCatalogCategory(identifier);
     }
-    const type = {category, detail: category};
-    const identifierRecord: DestinationRecord = {
-      model: 'sec_VulnerabilityIdentifier',
-      record: {
-        uid: identifier,
-        type,
-      },
-    };
-    records.push(identifierRecord);
 
+    const category = this.getVulnerabilityCatalogCategory(identifier);
     const identifierRelationshipRecord: DestinationRecord = {
       model: 'sec_VulnerabilityIdentifierRelationship',
       record: {
         vulnerability: {uid: data.id, source: this.source},
-        identifier: {uid: identifier, type},
+        identifier: {uid: identifier, type: {category, detail: category}},
       },
     };
     records.push(identifierRelationshipRecord);
 
-    // If the vulnerability has repo name but no image tag,
-    // we assume it is a VCS vulnerability and search for the related repository
+    this.collectedIdentifiers.add(identifier);
+    this.collectedVulnerabilities.add(data);
+
     if (data.assetType === 'CODE_REPOSITORY') {
-      const vcsRepo = await this.getVCSRepositoryFromName(data.repoName, ctx);
-      const repoVulnerabilityRecord: DestinationRecord = {
-        model: 'vcs_RepositoryVulnerability',
-        record: {
-          vulnerability: {uid: data.id, source: this.source},
-          repository: vcsRepo,
-          url: data.externalURL,
-          dueAt: Utils.toDate(data.remediateByDate),
-          createdAt: Utils.toDate(data.firstDetectedDate),
-          status: {
-            category: data.deactivateMetadata ? 'Ignored' : 'Open',
-            detail: data.deactivateMetadata?.deactivationReason || '',
-          },
-        },
-      };
-      records.push(repoVulnerabilityRecord);
+      this.collectedRepoNames.add(data.repoName);
     } else if (data.imageTags && data.imageTags.length > 0) {
       const commitSha = this.getCommitSha(data.imageTags);
-      if (!commitSha) {
-        ctx.logger.warn(
-          `Could not find commit sha in image tags for vulnerability ${data.id}`
-        );
-        return records;
-      }
-      const cicdArtifact = await this.getCICDArtifactFromCommitSha(
-        commitSha,
-        ctx
-      );
-      const artifactVulnerabilityRecord: DestinationRecord = {
-        model: 'cicd_ArtifactVulnerability',
-        record: {
-          vulnerability: {uid: data.id, source: this.source},
-          artifact: cicdArtifact,
-          url: data.externalURL,
-          dueAt: Utils.toDate(data.remediateByDate),
-          createdAt: Utils.toDate(data.firstDetectedDate),
-          status: {
-            category: data.deactivateMetadata ? 'Ignored' : 'Open',
-            detail: data.deactivateMetadata?.deactivationReason || '',
-          },
-        },
-      };
-      records.push(artifactVulnerabilityRecord);
+      if (commitSha) this.collectedArtifactCommitShas.add(commitSha);
     }
 
     return records;
@@ -157,64 +111,119 @@ export abstract class Vulnerabilities extends VantaConverter {
     return null;
   }
 
-  async getVCSRepositoryFromName(
-    vcsRepoName: string,
+  async onProcessingComplete(
     ctx: StreamContext
-  ): Promise<VcsRepoKey | null> {
-    if (!this.reposByName.has(vcsRepoName)) {
-      const result = await ctx.farosClient.gql(
-        ctx.graph,
-        this.vcsRepositoryQuery,
-        {
-          vcsRepoName,
-        }
-      );
-      const results = result?.vcs_Repository;
-      if (!results || results.length === 0) {
-        ctx.logger.debug(
-          `Did not get any results for vcs_Repository query with name "${vcsRepoName}"`
-        );
-        return null;
-      }
-      if (results.length > 1) {
-        ctx.logger.warn(
-          `Got more than one result for vcs_Repository query with name "${vcsRepoName}, using the first one"`
-        );
-      }
-      this.reposByName.set(vcsRepoName, results[0]);
-      return results[0];
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const records: DestinationRecord[] = [];
+    for (const identifier of this.collectedIdentifiers) {
+      const identifierRecord: DestinationRecord = {
+        model: 'sec_VulnerabilityIdentifier',
+        record: {
+          uid: identifier,
+          type: {
+            category: this.getVulnerabilityCatalogCategory(identifier),
+            detail: identifier,
+          },
+          source: this.source,
+        },
+      };
+      records.push(identifierRecord);
     }
-    return this.reposByName.get(vcsRepoName);
+    const vcsRepos = await this.getVCSRepositoriesFromNames(
+      Array.from(this.collectedRepoNames),
+      ctx
+    );
+    const cicdArtifacts = await this.getCICDArtifactsFromCommitShas(
+      Array.from(this.collectedArtifactCommitShas),
+      ctx
+    );
+    for (const vuln of this.collectedVulnerabilities) {
+      if (vuln.assetType === 'CODE_REPOSITORY') {
+        const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.repoName);
+        if (!vcsRepo) {
+          ctx.logger.warn(
+            `Could not find VCS repository for vulnerability ${vuln.id}`
+          );
+          continue;
+        }
+        const repoVulnerabilityRecord: DestinationRecord = {
+          model: 'vcs_RepositoryVulnerability',
+          record: {
+            vulnerability: {uid: vuln.id, source: this.source},
+            repository: vcsRepo,
+            url: vuln.externalURL,
+            dueAt: Utils.toDate(vuln.remediateByDate),
+            createdAt: Utils.toDate(vuln.firstDetectedDate),
+            status: {
+              category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
+              detail: vuln.deactivateMetadata?.deactivationReason || '',
+            },
+          },
+        };
+        records.push(repoVulnerabilityRecord);
+      } else if (vuln.imageTags && vuln.imageTags.length > 0) {
+        const commitSha = this.getCommitSha(vuln.imageTags);
+        if (!commitSha) {
+          ctx.logger.warn(
+            `Could not find commit sha in image tags for vulnerability ${vuln.id}`
+          );
+          continue;
+        }
+        const cicdArtifact = cicdArtifacts?.find(
+          (artifact) => artifact.uid === commitSha
+        );
+        if (!cicdArtifact) {
+          ctx.logger.warn(
+            `Could not find CICD artifact for vulnerability ${vuln.id} and commit sha ${commitSha}`
+          );
+          continue;
+        }
+        const artifactVulnerabilityRecord: DestinationRecord = {
+          model: 'cicd_ArtifactVulnerability',
+          record: {
+            vulnerability: {uid: vuln.id, source: this.source},
+            artifact: cicdArtifact,
+            url: vuln.externalURL,
+            dueAt: Utils.toDate(vuln.remediateByDate),
+            createdAt: Utils.toDate(vuln.firstDetectedDate),
+            status: {
+              category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
+              detail: vuln.deactivateMetadata?.deactivationReason || '',
+            },
+          },
+        };
+        records.push(artifactVulnerabilityRecord);
+      }
+    }
+    return records;
   }
 
-  async getCICDArtifactFromCommitSha(
-    commitSha: string,
+  async getVCSRepositoriesFromNames(
+    vcsRepoNames: string[],
     ctx: StreamContext
-  ): Promise<CicdArtifactKey | null> {
-    if (!this.cicdArtifactsByCommitSha.has(commitSha)) {
-      const result = await ctx.farosClient.gql(
-        ctx.graph,
-        this.cicdArtifactQueryByCommitSha,
-        {
-          commitSha,
-        }
-      );
-      const results = result?.cicd_Artifact;
-      if (!results || results.length === 0) {
-        ctx.logger.debug(
-          `Did not get any results for cicd_Artifact query with commit sha "${commitSha}"`
-        );
-        return null;
+  ): Promise<VcsRepoKey[] | null> {
+    const result = await ctx.farosClient.gql(
+      ctx.graph,
+      this.vcsRepositoryQuery,
+      {
+        vcsRepoNames,
       }
-      if (results.length > 1) {
-        ctx.logger.warn(
-          `Got more than one result for cicd_Artifact query with name "${commitSha}, using the first one"`
-        );
+    );
+    return result?.vcs_Repository;
+  }
+
+  async getCICDArtifactsFromCommitShas(
+    commitShas: string[],
+    ctx: StreamContext
+  ): Promise<CicdArtifactKey[] | null> {
+    const result = await ctx.farosClient.gql(
+      ctx.graph,
+      this.cicdArtifactQueryByCommitSha,
+      {
+        commitShas,
       }
-      this.cicdArtifactsByCommitSha.set(commitSha, results[0]);
-      return results[0];
-    }
-    return this.cicdArtifactsByCommitSha.get(commitSha);
+    );
+    return result?.cicd_Artifact;
   }
 
   getVulnerabilityCatalogCategory(identifierId: string): string {
