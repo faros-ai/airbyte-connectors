@@ -26,7 +26,7 @@ export type Vulnerability = {
     deactivatedBy: string;
   } | null;
   repoName: string;
-  imageTag: string;
+  imageTags: string[];
 };
 
 export type VulnerabilityRemediation = {

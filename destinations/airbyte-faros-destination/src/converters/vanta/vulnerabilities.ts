@@ -5,7 +5,7 @@ import {Utils} from 'faros-js-client';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VantaConverter} from './common';
 import {CicdArtifactKey, VcsRepoKey} from './types';
-import {getQueryFromName} from './utils';
+import {getQueryFromName, looksLikeGitCommitSha} from './utils';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -22,6 +22,8 @@ export abstract class Vulnerabilities extends VantaConverter {
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
+  private reposByName = new Map<string, VcsRepoKey>();
+  private cicdArtifactsByCommitSha = new Map<string, CicdArtifactKey>();
 
   async convert(
     record: AirbyteRecord,
@@ -60,8 +62,22 @@ export abstract class Vulnerabilities extends VantaConverter {
     };
     records.push(vulnRecord);
 
-    const identifier = data.name;
-    const category = this.getVulnerabilityCatalogCategory(identifier);
+    // Get catalog identifier either from vulnerability name or relatedVulns.
+    let identifier = data.name;
+    let category = this.getVulnerabilityCatalogCategory(identifier);
+    if (!category) {
+      const identifiers = data.relatedVulns.filter(
+        this.isVulnerabilityCatalogIdentifier
+      );
+      if (identifiers.length == 0) {
+        ctx.logger.warn(
+          `No vulnerability catalog identifier found for vulnerability ${data.id}-${data.name}`
+        );
+        return records;
+      }
+      identifier = identifiers[0];
+      category = this.getVulnerabilityCatalogCategory(identifier);
+    }
     const type = {category, detail: category};
     const identifierRecord: DestinationRecord = {
       model: 'sec_VulnerabilityIdentifier',
@@ -83,7 +99,7 @@ export abstract class Vulnerabilities extends VantaConverter {
 
     // If the vulnerability has repo name but no image tag,
     // we assume it is a VCS vulnerability and search for the related repository
-    if (data.repoName && !data.imageTag) {
+    if (data.repoName && !data.imageTags) {
       const vcsRepo = await this.getVCSRepositoryFromName(data.repoName, ctx);
       const repoVulnerabilityRecord: DestinationRecord = {
         model: 'vcs_RepositoryVulnerability',
@@ -100,9 +116,16 @@ export abstract class Vulnerabilities extends VantaConverter {
         },
       };
       records.push(repoVulnerabilityRecord);
-    } else if (data.imageTag) {
-      const cicdArtifact = await this.getCICDArtifactImageTag(
-        data.imageTag,
+    } else if (data.imageTags && data.imageTags.length > 0) {
+      const commitSha = this.getCommitSha(data.imageTags);
+      if (!commitSha) {
+        ctx.logger.warn(
+          `Could not find commit sha in image tags for vulnerability ${data.id}`
+        );
+        return records;
+      }
+      const cicdArtifact = await this.getCICDArtifactFromCommitSha(
+        commitSha,
         ctx
       );
       const artifactVulnerabilityRecord: DestinationRecord = {
@@ -125,56 +148,73 @@ export abstract class Vulnerabilities extends VantaConverter {
     return records;
   }
 
+  private getCommitSha(imageTags: string[]): string | null {
+    for (const imageTag of imageTags) {
+      if (looksLikeGitCommitSha(imageTag)) {
+        return imageTag;
+      }
+    }
+    return null;
+  }
+
   async getVCSRepositoryFromName(
     vcsRepoName: string,
     ctx: StreamContext
   ): Promise<VcsRepoKey | null> {
-    const result = await ctx.farosClient.gql(
-      ctx.graph,
-      this.vcsRepositoryQuery,
-      {
-        vcsRepoName,
+    if (!this.reposByName.has(vcsRepoName)) {
+      const result = await ctx.farosClient.gql(
+        ctx.graph,
+        this.vcsRepositoryQuery,
+        {
+          vcsRepoName,
+        }
+      );
+      const results = result?.vcs_Repository;
+      if (!results || results.length === 0) {
+        ctx.logger.debug(
+          `Did not get any results for vcs_Repository query with name "${vcsRepoName}"`
+        );
+        return null;
       }
-    );
-    const results = result?.vcs_Repository;
-    if (!results || results.length === 0) {
-      ctx.logger.debug(
-        `Did not get any results for vcs_Repository query with name "${vcsRepoName}"`
-      );
-      return null;
+      if (results.length > 1) {
+        ctx.logger.warn(
+          `Got more than one result for vcs_Repository query with name "${vcsRepoName}, using the first one"`
+        );
+      }
+      this.reposByName.set(vcsRepoName, results[0]);
+      return results[0];
     }
-    if (results.length > 1) {
-      ctx.logger.warn(
-        `Got more than one result for vcs_Repository query with name "${vcsRepoName}, using the first one"`
-      );
-    }
-    return results[0];
+    return this.reposByName.get(vcsRepoName);
   }
 
-  async getCICDArtifactImageTag(
+  async getCICDArtifactFromCommitSha(
     commitSha: string,
     ctx: StreamContext
   ): Promise<CicdArtifactKey | null> {
-    const result = await ctx.farosClient.gql(
-      ctx.graph,
-      this.cicdArtifactQueryByCommitSha,
-      {
-        commitSha,
+    if (!this.cicdArtifactsByCommitSha.has(commitSha)) {
+      const result = await ctx.farosClient.gql(
+        ctx.graph,
+        this.cicdArtifactQueryByCommitSha,
+        {
+          commitSha,
+        }
+      );
+      const results = result?.cicd_Artifact;
+      if (!results || results.length === 0) {
+        ctx.logger.debug(
+          `Did not get any results for cicd_Artifact query with commit sha "${commitSha}"`
+        );
+        return null;
       }
-    );
-    const results = result?.cicd_Artifact;
-    if (!results || results.length === 0) {
-      ctx.logger.debug(
-        `Did not get any results for cicd_Artifact query with commit sha "${commitSha}"`
-      );
-      return null;
+      if (results.length > 1) {
+        ctx.logger.warn(
+          `Got more than one result for cicd_Artifact query with name "${commitSha}, using the first one"`
+        );
+      }
+      this.cicdArtifactsByCommitSha.set(commitSha, results[0]);
+      return results[0];
     }
-    if (results.length > 1) {
-      ctx.logger.warn(
-        `Got more than one result for cicd_Artifact query with name "${commitSha}, using the first one"`
-      );
-    }
-    return results[0];
+    return this.cicdArtifactsByCommitSha.get(commitSha);
   }
 
   getVulnerabilityCatalogCategory(identifierId: string): string {
@@ -184,6 +224,11 @@ export abstract class Vulnerabilities extends VantaConverter {
       return 'GHSA';
     }
   }
+
+  isVulnerabilityCatalogIdentifier(identifierId: string): boolean {
+    return identifierId.includes('CVE') || identifierId.includes('GHSA');
+  }
+
   private maxDescriptionLength(ctx: StreamContext): number {
     return ctx.config.max_description_lenght || MAX_DESCRIPTION_LENGTH;
   }
