@@ -687,6 +687,16 @@ exports[`index streams - copilot usage with teams 1`] = `
 ]
 `;
 
+exports[`index streams - copilot usage with teams 2`] = `
+{
+  "faros_copilot_usage": {
+    "github": {
+      "cutoff": 1697414400000,
+    },
+  },
+}
+`;
+
 exports[`index streams - copilot usage without teams (GA API) 1`] = `
 [
   {
@@ -831,6 +841,16 @@ exports[`index streams - copilot usage without teams 1`] = `
     "total_suggestions_count": 800,
   },
 ]
+`;
+
+exports[`index streams - copilot usage without teams 2`] = `
+{
+  "faros_copilot_usage": {
+    "github": {
+      "cutoff": 1697414400000,
+    },
+  },
+}
 `;
 
 exports[`index streams - dependabot alerts 1`] = `

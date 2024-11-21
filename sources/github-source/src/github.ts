@@ -1051,7 +1051,10 @@ export abstract class GitHub {
     );
   }
 
-  async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
+  async *getCopilotUsage(
+    org: string,
+    cutoffDate: number
+  ): AsyncGenerator<CopilotUsageSummary> {
     let data: CopilotUsageResponse;
     let useBetaAPI = false;
     try {
@@ -1082,6 +1085,16 @@ export abstract class GitHub {
       }
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
+        return;
+      }
+      const latestDay = Math.max(
+        0,
+        ...data.map((usage) => Utils.toDate(usage.day).getTime())
+      );
+      if (latestDay <= cutoffDate) {
+        this.logger.info(
+          `GitHub Copilot usage data for org ${org} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+        );
         return;
       }
       for (const usage of data) {
