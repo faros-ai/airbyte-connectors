@@ -150,6 +150,7 @@ export class Vanta {
         yield {
           ...vulnerability,
           repoName: asset?.name,
+          assetType: asset?.type,
           imageTags: asset?.imageTags,
         };
       }
@@ -242,6 +243,7 @@ export class Vanta {
         );
         assetMap.set(asset.id, {
           name: asset.name,
+          type: asset.assetType,
           imageTags,
         });
       }

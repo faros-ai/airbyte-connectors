@@ -27,6 +27,7 @@ export type Vulnerability = {
   } | null;
   repoName: string;
   imageTags: string[];
+  assetType: string;
 };
 
 export type VulnerabilityRemediation = {

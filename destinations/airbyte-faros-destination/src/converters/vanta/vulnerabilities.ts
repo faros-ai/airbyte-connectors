@@ -99,7 +99,7 @@ export abstract class Vulnerabilities extends VantaConverter {
 
     // If the vulnerability has repo name but no image tag,
     // we assume it is a VCS vulnerability and search for the related repository
-    if (data.repoName && !data.imageTags) {
+    if (data.assetType === 'CODE_REPOSITORY') {
       const vcsRepo = await this.getVCSRepositoryFromName(data.repoName, ctx);
       const repoVulnerabilityRecord: DestinationRecord = {
         model: 'vcs_RepositoryVulnerability',
