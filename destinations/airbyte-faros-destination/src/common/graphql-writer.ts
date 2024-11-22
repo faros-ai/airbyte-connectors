@@ -56,7 +56,9 @@ export class GraphQLWriter {
       // been processed yet.
       if (operation === Operation.DELETION && !result.record.at) {
         await this.writeTimestampedRecord(timestampedRecord);
-        await this.graphQLClient.flush();
+        if (result.record.flushRequired ?? true) {
+          await this.graphQLClient.flush();
+        }
       } else {
         this.timestampedRecords.push(timestampedRecord);
       }

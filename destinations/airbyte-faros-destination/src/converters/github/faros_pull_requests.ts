@@ -314,7 +314,7 @@ export class FarosPullRequests extends GitHubConverter {
       ...Array.from(this.prFileAssoc.keys()).map((prKeyStr) => ({
         model: 'vcs_PullRequestFile__Deletion',
         record: {
-          at: Date.now(),
+          flushRequired: false,
           where: {
             pullRequest: this.prKeyMap.get(prKeyStr),
           },

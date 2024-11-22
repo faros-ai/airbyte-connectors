@@ -10697,6 +10697,7 @@ N/A
   },
   Object {
     "vcs_PullRequestFile__Deletion": Object {
+      "flushRequired": false,
       "source": "GitHub",
       "where": Object {
         "pullRequest": Object {
@@ -10716,6 +10717,7 @@ N/A
   },
   Object {
     "vcs_PullRequestFile__Deletion": Object {
+      "flushRequired": false,
       "source": "GitHub",
       "where": Object {
         "pullRequest": Object {
@@ -10735,6 +10737,7 @@ N/A
   },
   Object {
     "vcs_PullRequestFile__Deletion": Object {
+      "flushRequired": false,
       "source": "GitHub",
       "where": Object {
         "pullRequest": Object {
