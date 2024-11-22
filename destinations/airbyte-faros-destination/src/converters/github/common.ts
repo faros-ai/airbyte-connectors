@@ -306,11 +306,11 @@ export class GitHubCommon {
       (alert as DependabotAlert).security_vulnerability?.severity;
     switch (level) {
       case 'low':
-        return 3.0;
+        return 3.9;
       case 'medium':
-        return 6.0;
+        return 6.9;
       case 'high':
-        return 9.0;
+        return 8.9;
       case 'critical':
         return 10.0;
     }
