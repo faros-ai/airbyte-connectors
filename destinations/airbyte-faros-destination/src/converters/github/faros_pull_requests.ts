@@ -6,6 +6,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
+import {FLUSH} from '../../common/types';
 import {FileCollector, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
@@ -192,6 +193,7 @@ export class FarosPullRequests extends GitHubConverter {
           },
         },
       },
+      FLUSH,
       ...pr.files.map((file) => ({
         model: 'vcs_PullRequestFile',
         record: {

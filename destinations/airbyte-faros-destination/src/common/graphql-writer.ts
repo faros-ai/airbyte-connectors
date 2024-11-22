@@ -38,6 +38,11 @@ export class GraphQLWriter {
       );
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
+      if (operation === Operation.FLUSH) {
+        await this.graphQLClient.flush();
+        return true;
+      }
+
       const timestampedRecord: TimestampedRecord = {
         ...result.record,
         model: baseModel,

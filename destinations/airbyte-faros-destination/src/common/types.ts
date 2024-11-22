@@ -38,6 +38,7 @@ export enum Operation {
   UPSERT = 'Upsert',
   UPDATE = 'Update',
   DELETION = 'Deletion',
+  FLUSH = 'Flush',
 }
 
 export interface TimestampedRecord {
@@ -63,3 +64,8 @@ export interface DeletionRecord extends TimestampedRecord {
   operation: Operation.DELETION;
   where: Dictionary<any>;
 }
+
+export const FLUSH = {
+  model: `__${Operation.FLUSH}`,
+  record: {},
+};
