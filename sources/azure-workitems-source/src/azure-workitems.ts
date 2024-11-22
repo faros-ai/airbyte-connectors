@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
@@ -44,17 +45,23 @@ export class AzureWorkitems {
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
-    const httpClient = axios.create({
-      baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
+
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
+        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+        maxContentLength: Infinity, //default is 2000 bytes
+        params: {
+          'api-version': version,
+        },
+        headers: {
+          Authorization: `Basic ${accessToken}`,
+        },
       },
-      headers: {
-        Authorization: `Basic ${accessToken}`,
-      },
-    });
+      undefined,
+      3,
+      1000
+    );
 
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
@@ -74,8 +81,7 @@ export class AzureWorkitems {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getStories();
-      await iter.next();
+      await this.getIdsFromAWorkItemType('Task');
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
       if (err.error_code || err.error_info) {
