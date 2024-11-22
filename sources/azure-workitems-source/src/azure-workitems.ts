@@ -81,7 +81,8 @@ export class AzureWorkitems {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.getIdsFromAWorkItemType('Task');
+      const iter = this.getBoards();
+      await iter.next();
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
       if (err.error_code || err.error_info) {
@@ -118,10 +119,11 @@ export class AzureWorkitems {
   }
   private post<T = any, R = AxiosResponse<T>>(
     path: string,
-    data: any
+    data: any,
+    params?: any
   ): Promise<R | undefined> {
     return this.handleNotFound<T, R>(() =>
-      this.httpClient.post<T, R>(path, data)
+      this.httpClient.post<T, R>(path, data, {params})
     );
   }
 
@@ -185,6 +187,7 @@ export class AzureWorkitems {
     }
   }
 
+  // TODO - Fetch all work items instead of only max 20000
   async getIdsFromAWorkItemType(
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
@@ -192,9 +195,11 @@ export class AzureWorkitems {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
-        ' order by [id] asc',
+        ' AND [System.ChangedDate] >= @Today-180' +
+        ' ORDER BY [System.ChangedDate] DESC',
     };
-    const list = await this.post<any>('wit/wiql', data);
+    // Azure API has a limit of 20000 items per request.
+    const list = await this.post<any>('wit/wiql', data, {$top: 19999});
     const ids = [];
     for (let i = 0; i < list.data.workItems.length; i++) {
       ids.push(list.data.workItems[i].id);
