@@ -192,7 +192,7 @@ export class Vanta {
       const response = await this.api.get('/v1/vulnerabilities', {params});
       return response?.data?.results;
     } catch (error: any) {
-      throw wrapApiError(error, 'Failed to fetch vulnerabilities: %s');
+      throw wrapApiError(error, 'Failed to fetch vulnerabilities');
     }
   }
 
@@ -208,10 +208,7 @@ export class Vanta {
       });
       return response?.data?.results;
     } catch (error: any) {
-      throw wrapApiError(
-        error,
-        'Failed to fetch vulnerability remediations: %s'
-      );
+      throw wrapApiError(error, 'Failed to fetch vulnerability remediations');
     }
   }
 
@@ -222,7 +219,7 @@ export class Vanta {
       const response = await this.api.get('/v1/vulnerable-assets', {params});
       return response?.data?.results;
     } catch (error: any) {
-      throw wrapApiError(error, 'Failed to fetch vulnerable assets: %s');
+      throw wrapApiError(error, 'Failed to fetch vulnerable assets');
     }
   }
 

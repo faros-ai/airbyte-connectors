@@ -1,45 +1,265 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`vanta test entries 1`] = `
+exports[`vanta vulnerabilities 1`] = `
 Array [
-  "Processed 8 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 20 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability\\\\\\":3,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":7,\\\\\\"vcs_Repository\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 12 records",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":3,\\\\\\"vcs_RepositoryVulnerability\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
 `;
 
-exports[`vanta test entries with duplicate UIDs 1`] = `
+exports[`vanta vulnerabilities 2`] = `
 Array [
-  "Processed 2 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  Object {
+    "sec_Vulnerability": Object {
+      "description": "Prototype pollution vulnerability in function parseQuery in parseQuery.js in webpack loader-utils prior to version 2.0.3 via the name variable in parseQuery.js.",
+      "discoveredAt": "2023-03-07T20:01:49.516Z",
+      "severity": "10",
+      "source": "Vanta",
+      "title": "CVE-2022-37601",
+      "uid": "657191308e0674a0e8e62468",
+      "url": "https://github.com/test-org/test-repo/security/dependabot/76",
+      "vulnerabilityIds": Array [],
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "CVE",
+          "detail": "CVE",
+        },
+        "uid": "CVE-2022-37601",
+      },
+      "source": "Vanta",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "657191308e0674a0e8e62468",
+      },
+    },
+  },
+  Object {
+    "sec_Vulnerability": Object {
+      "description": "Webpack 5 before 5.76.0 does not avoid cross-realm object access. ImportParserPlugin.js mishandles the magic comment feature. An attacker who controls a property of an untrusted object can obtain access to the real global object.",
+      "discoveredAt": "2024-05-03T19:26:15.231Z",
+      "severity": "10",
+      "source": "Vanta",
+      "title": "CVE-2023-28154",
+      "uid": "66353a575360cc947a8af658",
+      "url": "https://github.com/test-org/test-repo/security/dependabot/18",
+      "vulnerabilityIds": Array [],
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "CVE",
+          "detail": "CVE",
+        },
+        "uid": "CVE-2023-28154",
+      },
+      "source": "Vanta",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "66353a575360cc947a8af658",
+      },
+    },
+  },
+  Object {
+    "sec_Vulnerability": Object {
+      "description": "An unchecked return value in TLS handshake code could have caused a potentially exploitable crash. This vulnerability affects Firefox < 122, Firefox ESR < 115.9, and Thunderbird < 115.9.",
+      "discoveredAt": "2024-04-13T09:52:49.659Z",
+      "severity": "9",
+      "source": "Vanta",
+      "title": "CVE-2024-0743",
+      "uid": "661a55f156ebe8ef9f74e841",
+      "url": "https://console.aws.amazon.com/inspector/v2/home?region=us-east-1#/findings?findingArn=arn%123456",
+      "vulnerabilityIds": Array [],
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifierRelationship": Object {
+      "identifier": Object {
+        "type": Object {
+          "category": "CVE",
+          "detail": "CVE",
+        },
+        "uid": "CVE-2024-0743",
+      },
+      "source": "Vanta",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "661a55f156ebe8ef9f74e841",
+      },
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "Vanta",
+      "type": Object {
+        "category": "CVE",
+        "detail": "CVE-2022-37601",
+      },
+      "uid": "CVE-2022-37601",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "Vanta",
+      "type": Object {
+        "category": "CVE",
+        "detail": "CVE-2023-28154",
+      },
+      "uid": "CVE-2023-28154",
+    },
+  },
+  Object {
+    "sec_VulnerabilityIdentifier": Object {
+      "source": "Vanta",
+      "type": Object {
+        "category": "CVE",
+        "detail": "CVE-2024-0743",
+      },
+      "uid": "CVE-2024-0743",
+    },
+  },
+  Object {
+    "vcs_RepositoryVulnerability": Object {
+      "createdAt": "2023-03-07T20:01:49.516Z",
+      "dueAt": "2024-01-17T15:26:43.534Z",
+      "repository": Object {
+        "name": "dolos",
+        "organization": Object {
+          "source": "github",
+          "uid": "test-org",
+        },
+      },
+      "source": "Vanta",
+      "status": Object {
+        "category": "Ignored",
+        "detail": "Not applicable",
+      },
+      "url": "https://github.com/test-org/test-repo/security/dependabot/76",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "657191308e0674a0e8e62468",
+      },
+    },
+  },
+  Object {
+    "vcs_RepositoryVulnerability": Object {
+      "createdAt": "2024-05-03T19:26:15.231Z",
+      "dueAt": "2024-06-02T19:26:20.454Z",
+      "repository": Object {
+        "name": "dolos",
+        "organization": Object {
+          "source": "github",
+          "uid": "test-org",
+        },
+      },
+      "source": "Vanta",
+      "status": Object {
+        "category": "Open",
+        "detail": "",
+      },
+      "url": "https://github.com/test-org/test-repo/security/dependabot/18",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "66353a575360cc947a8af658",
+      },
+    },
+  },
+  Object {
+    "cicd_ArtifactVulnerability": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "github",
+            "uid": "test-org",
+          },
+          "uid": "123",
+        },
+        "uid": "e99a18c428cb38d5f260853678922e03abd8334f",
+      },
+      "createdAt": "2024-04-13T09:52:49.659Z",
+      "dueAt": "2024-05-13T09:59:10.288Z",
+      "source": "Vanta",
+      "status": Object {
+        "category": "Open",
+        "detail": "",
+      },
+      "url": "https://console.aws.amazon.com/inspector/v2/home?region=us-east-1#/findings?findingArn=arn%123456",
+      "vulnerability": Object {
+        "source": "Vanta",
+        "uid": "661a55f156ebe8ef9f74e841",
+      },
+    },
+  },
+]
+`;
+
+exports[`vanta vulnerability remediations 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerability_remediations\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 2 records",
-  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
 `;
 
-exports[`vanta test getting update records 1`] = `
+exports[`vanta vulnerability remediations 2`] = `
 Array [
-  "Processed 8 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 24 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability\\\\\\":3,\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":7,\\\\\\"vcs_Repository\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability\\\\\\":4,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Skipped 0 records",
-  "Errored 0 records",
-]
-`;
-
-exports[`vanta test getting update records 2`] = `
-Array [
-  "Processed 2 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 6 records",
-  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":2,\\\\\\"sec_Vulnerability\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Skipped 0 records",
-  "Errored 0 records",
+  Object {
+    "vcs_RepositoryVulnerability__Update": Object {
+      "at": 1732289685837,
+      "mask": Array [
+        "resolvedAt",
+        "status",
+      ],
+      "patch": Object {
+        "resolvedAt": "2024-10-29T17:00:44.826Z",
+        "status": Object {
+          "category": "Resolved",
+          "detail": "Resolved",
+        },
+      },
+      "source": "Vanta",
+      "where": Object {
+        "vulnerability": Object {
+          "source": "Vanta",
+          "uid": "671c99a88f205f26605be227",
+        },
+      },
+    },
+  },
+  Object {
+    "cicd_ArtifactVulnerability__Update": Object {
+      "at": 1732289685837,
+      "mask": Array [
+        "resolvedAt",
+        "status",
+      ],
+      "patch": Object {
+        "resolvedAt": "2024-10-29T17:00:44.826Z",
+        "status": Object {
+          "category": "Resolved",
+          "detail": "Resolved",
+        },
+      },
+      "source": "Vanta",
+      "where": Object {
+        "vulnerability": Object {
+          "source": "Vanta",
+          "uid": "671c99a88f205f26605be227",
+        },
+      },
+    },
+  },
 ]
 `;

@@ -18,7 +18,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['id'];
+    return 'id';
   }
 
   protected getUpdatedStreamState(

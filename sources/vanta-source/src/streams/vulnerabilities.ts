@@ -12,7 +12,7 @@ export class Vulnerabilities extends StreamBase {
   }
 
   get cursorField(): string | string[] {
-    return ['remediateByDate'];
+    return 'remediateByDate';
   }
 
   async *readRecords(

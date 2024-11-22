@@ -2,41 +2,147 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "data": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "integrationId": { "type": "string" },
-        "packageIdentifier": { "type": ["string", "null"] },
-        "vulnerabilityType": { "type": "string", "enum": ["CONFIGURATION", "COMMON", "GROUPED"] },
-        "targetId": { "type": "string" },
-        "firstDetectedDate": { "type": "string", "format": "date-time" },
-        "sourceDetectedDate": { "type": ["string", "null"], "format": "date-time" },
-        "lastDetectedDate": { "type": ["string", "null"], "format": "date-time" },
-        "severity": { "type": ["string", "null"], "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
-        "cvssSeverityScore": { "type": ["number", "null"] },
-        "scannerScore": { "type": ["number", "null"] },
-        "isFixable": { "type": "boolean" },
-        "remediateByDate": { "type": ["string", "null"], "format": "date-time" },
-        "relatedVulns": { "type": "array", "items": { "type": "string" } },
-        "relatedUrls": { "type": "array", "items": { "type": "string" } },
-        "externalURL": { "type": "string" },
-        "scanSource": { "type": ["string", "null"] },
-        "deactivateMetadata": {
-          "type": ["object", "null"],
-          "properties": {
-            "isVulnDeactivatedIndefinitely": { "type": "boolean" },
-            "deactivatedUntilDate": { "type": ["string", "null"], "format": "date-time" },
-            "deactivationReason": { "type": "string" },
-            "deactivatedOnDate": { "type": "string", "format": "date-time" },
-            "deactivatedBy": { "type": "string" }
-          }
-        },
-        "repoName": { "type": "string" },
-        "imageTag": { "type": "string" }
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "integrationId": {
+      "type": "string"
+    },
+    "packageIdentifier": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vulnerabilityType": {
+      "type": "string",
+      "enum": [
+        "CONFIGURATION",
+        "COMMON",
+        "GROUPED"
+      ]
+    },
+    "targetId": {
+      "type": "string"
+    },
+    "firstDetectedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceDetectedDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "lastDetectedDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "severity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "cvssSeverityScore": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "scannerScore": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "isFixable": {
+      "type": "boolean"
+    },
+    "remediateByDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "relatedVulns": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
+    },
+    "relatedUrls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "externalURL": {
+      "type": "string"
+    },
+    "scanSource": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deactivateMetadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "isVulnDeactivatedIndefinitely": {
+          "type": "boolean"
+        },
+        "deactivatedUntilDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "deactivationReason": {
+          "type": "string"
+        },
+        "deactivatedOnDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivatedBy": {
+          "type": "string"
+        }
+      }
+    },
+    "repoName": {
+      "type": "string"
+    },
+    "imageTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assetType": {
+      "type": "string"
     }
   }
 }

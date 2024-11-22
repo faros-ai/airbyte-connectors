@@ -1,0 +1,113 @@
+{
+  "data": {
+    "results": {
+      "pageInfo": {
+        "endCursor": "eyJyZW1lZGlhdGVCeSI6eyIkZGF0ZSI6IjIwMjQtMDYtMDJUMTk6MjY6MjAuNzQ4WiJ9LCJfaWQiOnsiJG9pZCI6IjY2MzUzYTU3NTM2MGNjOTQ3YThhZjk1OSJ9fQ==",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "eyJyZW1lZGlhdGVCeSI6eyIkZGF0ZSI6IjIwMjQtMDEtMTdUMTU6MjY6NDMuNTM0WiJ9LCJfaWQiOnsiJG9pZCI6IjY1NzE5MTMwOGUwNjc0YTBlOGU2MjQ2OCJ9fQ=="
+      },
+      "data": [
+        {
+          "id": "657191308e0674a0e8e62468",
+          "name": "CVE-2022-37601",
+          "description": "Prototype pollution vulnerability in function parseQuery in parseQuery.js in webpack loader-utils prior to version 2.0.3 via the name variable in parseQuery.js.",
+          "integrationId": "github",
+          "packageIdentifier": "npm-loader-utils < 1.4.1",
+          "vulnerabilityType": "COMMON",
+          "targetId": "650e067c251f3b02f5e438fc",
+          "firstDetectedDate": "2023-03-07T20:01:49.516Z",
+          "sourceDetectedDate": null,
+          "lastDetectedDate": null,
+          "severity": "CRITICAL",
+          "cvssSeverityScore": 9.8,
+          "scannerScore": null,
+          "isFixable": true,
+          "remediateByDate": "2024-01-17T15:26:43.534Z",
+          "relatedVulns": [],
+          "relatedUrls": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-37601",
+            "https://github.com/webpack/loader-utils/issues/212",
+            "https://github.com/webpack/loader-utils/releases/tag/v2.0.3",
+            "https://github.com/webpack/loader-utils/pull/217",
+            "https://github.com/webpack/loader-utils/pull/220",
+            "https://github.com/webpack/loader-utils/releases/tag/v1.4.1",
+            "https://github.com/webpack/loader-utils/issues/212#issuecomment-1319192884",
+            "https://github.com/xmldom/xmldom/issues/436#issuecomment-1319412826",
+            "https://dl.acm.org/doi/abs/10.1145/3488932.3497769",
+            "https://dl.acm.org/doi/pdf/10.1145/3488932.3497769",
+            "https://lists.debian.org/debian-lts-announce/2022/12/msg00044.html",
+            "http://users.encs.concordia.ca/~mmannan/publications/JS-vulnerability-aisaccs2022.pdf",
+            "https://github.com/webpack/loader-utils/commit/f4e48a232fae900237c3e5ff7b57ce9e1c734de1",
+            "https://github.com/webpack/loader-utils/commit/4504e34c4796a5836ef70458327351675aed48a5",
+            "https://github.com/webpack/loader-utils/commit/a93cf6f4702012030f6b5ee8340d5c95ec1c7d4c",
+            "https://github.com/advisories/GHSA-76p3-8jx3-jpfq"
+          ],
+          "externalURL": "https://github.com/test-org/test-repo/security/dependabot/76",
+          "scanSource": "Not provided",
+          "deactivateMetadata": {
+            "deactivatedBy": "6053d6fc96bef488c3739822",
+            "deactivatedOnDate": "2024-01-19T00:57:50.033Z",
+            "deactivationReason": "Not applicable",
+            "deactivatedUntilDate": null,
+            "isVulnDeactivatedIndefinitely": true
+          }
+        },
+        {
+          "id": "66353a575360cc947a8af658",
+          "name": "CVE-2023-28154",
+          "description": "Webpack 5 before 5.76.0 does not avoid cross-realm object access. ImportParserPlugin.js mishandles the magic comment feature. An attacker who controls a property of an untrusted object can obtain access to the real global object.",
+          "integrationId": "github",
+          "packageIdentifier": "npm-webpack >= 5.0.0, < 5.76.0",
+          "vulnerabilityType": "COMMON",
+          "targetId": "650e067c251f3b02f5e438fc",
+          "firstDetectedDate": "2024-05-03T19:26:15.231Z",
+          "sourceDetectedDate": null,
+          "lastDetectedDate": null,
+          "severity": "CRITICAL",
+          "cvssSeverityScore": 9.8,
+          "scannerScore": null,
+          "isFixable": true,
+          "remediateByDate": "2024-06-02T19:26:20.454Z",
+          "relatedVulns": [],
+          "relatedUrls": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-28154",
+            "https://github.com/webpack/webpack/pull/16500",
+            "https://github.com/webpack/webpack/compare/v5.75.0...v5.76.0",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AU7BOXTBK3KDYSWH67ASZ22TUIOZ3X5G/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/PPSAXUTXBCCTAHTCX5BUR4YVP25XALQ3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2AFCM6FFE3LRYI6KNEQWKMXMQOBZQ2D/",
+            "https://github.com/advisories/GHSA-hc6q-2mpp-qw7j"
+          ],
+          "externalURL": "https://github.com/test-org/test-repo/security/dependabot/18",
+          "scanSource": "Not provided",
+          "deactivateMetadata": null
+        },
+        {
+          "id": "661a55f156ebe8ef9f74e841",
+          "name": "CVE-2024-0743",
+          "description": "An unchecked return value in TLS handshake code could have caused a potentially exploitable crash. This vulnerability affects Firefox < 122, Firefox ESR < 115.9, and Thunderbird < 115.9.",
+          "integrationId": "aws",
+          "packageIdentifier": "nss:3.87.1",
+          "vulnerabilityType": "COMMON",
+          "targetId": "64e9698a9fb4f7ed165bc471",
+          "firstDetectedDate": "2024-04-13T09:52:49.659Z",
+          "sourceDetectedDate": null,
+          "lastDetectedDate": null,
+          "severity": "HIGH",
+          "cvssSeverityScore": 7.5,
+          "scannerScore": null,
+          "isFixable": false,
+          "remediateByDate": "2024-05-13T09:59:10.288Z",
+          "relatedVulns": [],
+          "relatedUrls": [
+            "https://security-tracker.debian.org/tracker/CVE-2024-0743"
+          ],
+          "externalURL": "https://console.aws.amazon.com/inspector/v2/home?region=us-east-1#/findings?findingArn=arn%123456",
+          "scanSource": "Not provided",
+          "deactivateMetadata": null
+        }
+      ]
+    }
+  }
+}

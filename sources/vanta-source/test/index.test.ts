@@ -1,12 +1,19 @@
 import axios, {AxiosInstance} from 'axios';
-import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteLogLevel,
+  AirbyteSpec,
+  sourceCheckTest,
+  sourceReadTest,
+  sourceSchemaTest,
+} from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Vanta} from '../src/vanta';
 
 function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
+  return JSON.parse(fs.readFileSync(`test/resources/${fileName}`, 'utf8'));
 }
 
 function readResourceFile(fileName: string): any {
@@ -15,74 +22,40 @@ function readResourceFile(fileName: string): any {
 
 jest.mock('axios');
 
-function paginatedValues(data: any, variables: any): any {
-  const cursor = variables.before;
-  const last = variables.last;
-  const edges =
-    data['data']['data']['organization']['AwsContainerVulnerabilityV2List'][
-      'edges'
-    ];
-  let new_edges = [];
-  if (cursor === null) {
-    new_edges = edges.slice(-1 * last);
-  } else {
-    const index = edges.findIndex((edge: any) => edge.cursor === cursor);
-    if (index - last < 0) {
-      new_edges = edges.slice(0, index);
-    } else {
-      new_edges = edges.slice(index - last, index);
-    }
+function getResponseByPath(url: any): any {
+  if (url.includes('vulnerabilities')) {
+    return readTestResourceFile('vulnerabilities_response.json');
   }
-  // We replace edges in the original data with new_edges:
-  data['data']['data']['organization']['AwsContainerVulnerabilityV2List'][
-    'edges'
-  ] = new_edges;
-  return data;
-}
-
-function returnResourceByQuery(queryBody: any): any {
-  const query = queryBody.query;
-  const variables = queryBody.variables;
-  if (query.includes('GithubDependabotVulnerabilityV2List')) {
-    return readTestResourceFile('github_response_page.json');
-  } else if (query.includes('AwsContainerVulnerabilityV2List')) {
-    const aws_v2_data = readTestResourceFile('aws_response_v2_page.json');
-    return paginatedValues(aws_v2_data, variables);
-  } else {
-    throw new Error('Unknown query');
+  if (url.includes('vulnerability-remediations')) {
+    return readTestResourceFile('vulnerability_remediations_response.json');
+  }
+  if (url.includes('vulnerable-assets')) {
+    return readTestResourceFile('vulnerable_assets_response.json');
   }
 }
 
-const mockAxiosInstance: Partial<AxiosInstance> = {
-  post: jest.fn((url, queryBody) => returnResourceByQuery(queryBody)),
-};
-
-axios.create = jest.fn(() => mockAxiosInstance as AxiosInstance);
-
-function unpackResourceDataByQueryName(queryName: string, data: any): any[] {
-  const edges = data['data']['data']['organization'][queryName]['edges'];
-  return edges.map((edge: any) => edge.node);
-}
-
-function getAxiosInstance(cfg): AxiosInstance {
-  const timeout = cfg.timeout ?? 60000;
+function getAxiosInstance(): AxiosInstance {
   const headers = {
     'content-type': 'application/json',
-    Authorization: `token ${cfg.token}`,
     Accept: '*/*',
   };
-  const api = axios.create({
-    timeout, // default is `0` (no timeout)
-    maxContentLength: Infinity, //default is 2000 bytes,
-    maxBodyLength: Infinity, //default is 2000 bytes,
+  return axios.create({
+    timeout: 60000,
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
     headers,
   });
-  return api;
 }
 
-function getVantaInstance(logger, cfg, limit): Vanta {
-  const axios_instance = getAxiosInstance(cfg);
-  return new Vanta(logger, axios_instance, limit, cfg.apiUrl, true);
+function setupVantaInstance(logger, cfg): void {
+  const mockAxiosInstance: Partial<AxiosInstance> = {
+    get: jest.fn((url, queryBody) => Promise.resolve(getResponseByPath(url))),
+  };
+  axios.create = jest.fn(() => mockAxiosInstance as AxiosInstance);
+  const axios_instance = getAxiosInstance();
+  Vanta.instance = jest.fn().mockImplementation(() => {
+    return new Vanta(axios_instance, 10, logger);
+  });
 }
 
 describe('index', () => {
@@ -94,6 +67,7 @@ describe('index', () => {
   );
 
   const sampleConfig = readTestResourceFile('sample_cfg.json');
+  const source = new sut.VantaSource(logger);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -110,47 +84,42 @@ describe('index', () => {
     );
   });
 
-  test('gitv2 single page', async () => {
-    const vanta = getVantaInstance(logger, sampleConfig, 100);
-    const queryType = 'gitv2';
-    const output = [];
-    const res = await vanta.vulns(queryType);
-    for await (const item of res) {
-      output.push(item);
-    }
-
-    const preExpected = readTestResourceFile('github_response_page.json');
-    const expected = unpackResourceDataByQueryName(
-      'GithubDependabotVulnerabilityV2List',
-      preExpected
-    );
-    await expect(output).toStrictEqual(expected);
+  test('check connection - invalid - missing credentials', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {},
+    });
   });
 
-  test('test all query types single page', async () => {
-    const vanta = getVantaInstance(logger, sampleConfig, 100);
-    const queryTypes = ['gitv2', 'awsv2'];
-    const output = [];
-    for (const queryType of queryTypes) {
-      const res = await vanta.vulns(queryType);
-      for await (const item of res) {
-        output.push(item);
-      }
-    }
-    const totalExpected = [];
-    const preExpected = readTestResourceFile('github_response_page.json');
-    const expected = unpackResourceDataByQueryName(
-      'GithubDependabotVulnerabilityV2List',
-      preExpected
-    );
-    totalExpected.push(...expected);
-    const preExpected2 = readTestResourceFile('aws_response_v2_page.json');
-    const expected2 = unpackResourceDataByQueryName(
-      'AwsContainerVulnerabilityV2List',
-      preExpected2
-    );
-    totalExpected.push(...expected2);
-    console.log(expected2.length);
-    await expect(output).toStrictEqual(totalExpected);
+  test('streams - json schema fields', () => {
+    sourceSchemaTest(source, sampleConfig);
+  });
+
+  test('streams - vulnerabilities', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: sampleConfig,
+      catalogOrPath: 'vulnerabilities_catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupVantaInstance(logger, sampleConfig);
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - vulnerability remediations', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: sampleConfig,
+      catalogOrPath: 'vulnerability_remediations_catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupVantaInstance(logger, sampleConfig);
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 });
