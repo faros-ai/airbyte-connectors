@@ -1,3 +1,4 @@
+import {omit} from 'lodash';
 import {getLocal} from 'mockttp';
 
 import {initMockttp, tempConfig} from '../testing-tools';
@@ -43,6 +44,7 @@ describe('faros_github', () => {
 
   afterEach(async () => {
     await mockttp.stop();
+    jest.restoreAllMocks();
   });
 
   test('process records from all streams', async () => {
@@ -50,7 +52,20 @@ describe('faros_github', () => {
       configPath,
       catalogPath: 'test/resources/faros_github/catalog.json',
       inputRecordsPath: 'faros_github/all-streams.log',
-      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      checkRecordsData: (records) => {
+        // Remove 'at' field from vcs_PullRequestFile__Deletion records since we
+        // cannot mock the date when destinationWriteTest runs the destination
+        // program, so we need to remove it from the snapshot
+        const cleanedRecords = records.map((record) => {
+          const key = Object.keys(record)[0];
+          if (key === 'vcs_PullRequestFile__Deletion') {
+            expect(record[key].at).toBeDefined();
+            return {[key]: omit(record[key], 'at')};
+          }
+          return record;
+        });
+        expect(cleanedRecords).toMatchSnapshot();
+      },
     });
   });
 });

@@ -7,7 +7,7 @@ import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
 import {FLUSH} from '../../common/types';
-import {FileCollector, RepoKey} from '../common/vcs';
+import {FileCollector, PullRequestKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -26,6 +26,11 @@ export class FarosPullRequests extends GitHubConverter {
   private readonly collectedBranches = new Map<string, BranchKey>();
   private readonly fileCollector = new FileCollector();
   private readonly collectedLabels = new Set<string>();
+  private readonly prFileAssoc = new Map<
+    string,
+    ReadonlyArray<DestinationRecord>
+  >();
+  private readonly prKeyMap = new Map<string, PullRequestKey>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -142,6 +147,21 @@ export class FarosPullRequests extends GitHubConverter {
       });
     }
 
+    const prKeyStr = `${prKey.repository.organization.uid}/${prKey.repository.uid}/${prKey.number}`;
+    this.prKeyMap.set(prKeyStr, prKey);
+    this.prFileAssoc.set(
+      prKeyStr,
+      pr.files.map((file) => ({
+        model: 'vcs_PullRequestFile',
+        record: {
+          pullRequest: prKey,
+          file: {uid: file.path, repository: repoKey},
+          additions: file.additions,
+          deletions: file.deletions,
+        },
+      }))
+    );
+
     return [
       {
         model: 'vcs_PullRequest',
@@ -183,24 +203,6 @@ export class FarosPullRequests extends GitHubConverter {
         record: {
           pullRequest: prKey,
           label: {name: label.name},
-        },
-      })),
-      {
-        model: 'vcs_PullRequestFile__Deletion',
-        record: {
-          where: {
-            pullRequest: prKey,
-          },
-        },
-      },
-      FLUSH,
-      ...pr.files.map((file) => ({
-        model: 'vcs_PullRequestFile',
-        record: {
-          pullRequest: prKey,
-          file: {uid: file.path, repository: repoKey},
-          additions: file.additions,
-          deletions: file.deletions,
         },
       })),
       ...pr.reviews.map((review) => ({
@@ -269,6 +271,7 @@ export class FarosPullRequests extends GitHubConverter {
       ...this.convertLabels(),
       ...this.convertUsers(),
       ...this.fileCollector.convertFiles(),
+      ...this.convertPRFileAssociations(),
     ];
   }
 
@@ -304,6 +307,22 @@ export class FarosPullRequests extends GitHubConverter {
         name: label,
       },
     }));
+  }
+
+  private convertPRFileAssociations(): DestinationRecord[] {
+    return [
+      ...Array.from(this.prFileAssoc.keys()).map((prKeyStr) => ({
+        model: 'vcs_PullRequestFile__Deletion',
+        record: {
+          at: Date.now(),
+          where: {
+            pullRequest: this.prKeyMap.get(prKeyStr),
+          },
+        },
+      })),
+      FLUSH,
+      ...Array.from(this.prFileAssoc.values()).flat(),
+    ];
   }
 }
 
