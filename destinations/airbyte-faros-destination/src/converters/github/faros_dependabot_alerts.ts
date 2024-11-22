@@ -3,6 +3,8 @@ import {DependabotAlert} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {pick} from 'lodash';
 
+import {Common} from '../common/common';
+import {Vulnerability} from '../common/sec';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
@@ -36,10 +38,7 @@ export class FarosDependabotAlerts extends GitHubConverter {
         model: 'sec_VulnerabilityIdentifier',
         record: {
           uid: i.value,
-          type: {
-            category: ['CVE', 'GHSA'].includes(i.type) ? i.type : 'Custom',
-            detail: i.type,
-          },
+          type: Vulnerability.identifierType(i.type),
         },
       })
     );
@@ -57,7 +56,9 @@ export class FarosDependabotAlerts extends GitHubConverter {
             alert.security_advisory.description
           ),
           vulnerabilityIds: vulnerabilityIdentifiers.map((vi) => vi.record.uid),
-          severity: GitHubCommon.vulnerabilitySeverity(alert),
+          severity: Vulnerability.ratingToScore(
+            alert.security_vulnerability?.severity
+          ),
           url: alert.html_url,
           publishedAt: Utils.toDate(alert.security_advisory.published_at),
           remediatedInVersions: firstPatchedVersion

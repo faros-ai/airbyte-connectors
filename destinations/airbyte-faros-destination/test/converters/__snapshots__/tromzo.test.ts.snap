@@ -16,12 +16,14 @@ Array [
   Object {
     "sec_Vulnerability": Object {
       "affectedVersions": null,
-      "discoveredAt": "2024-09-30T06:55:39.000Z",
       "discoveredBy": "codeql",
-      "publishedAt": "2024-10-16T14:54:31.977Z",
       "remediatedAt": "2024-10-17T09:48:43.405Z",
       "severity": 8.9,
       "source": "Tromzo",
+      "type": Object {
+        "category": "Custom",
+        "detail": "codeql",
+      },
       "uid": "fin_1",
       "vulnerabilityIds": null,
     },
@@ -53,12 +55,14 @@ Array [
   Object {
     "sec_Vulnerability": Object {
       "affectedVersions": null,
-      "discoveredAt": "2024-09-30T06:55:39.000Z",
       "discoveredBy": "codeql",
-      "publishedAt": "2024-10-16T14:54:31.758Z",
       "remediatedAt": null,
-      "severity": 8.9,
+      "severity": 3.9,
       "source": "Tromzo",
+      "type": Object {
+        "category": "Custom",
+        "detail": "codeql",
+      },
       "uid": "fin_2",
       "vulnerabilityIds": null,
     },
@@ -146,12 +150,14 @@ Array [
       "affectedVersions": Array [
         ">= 2.12|^3.0,< 3.0.0",
       ],
-      "discoveredAt": "2024-11-07T01:22:04.000Z",
       "discoveredBy": "github dependabot",
-      "publishedAt": "2024-11-08T01:04:57.941Z",
       "remediatedAt": "2024-11-13T00:39:07.521Z",
-      "severity": 8.9,
+      "severity": 10,
       "source": "Tromzo",
+      "type": Object {
+        "category": "Dependency",
+        "detail": "github dependabot",
+      },
       "uid": "fin_3",
       "vulnerabilityIds": Array [
         "CVE-2024-21538",
@@ -162,7 +168,7 @@ Array [
   Object {
     "vcs_RepositoryVulnerability": Object {
       "createdAt": "2024-11-07T01:22:04.000Z",
-      "dueAt": null,
+      "dueAt": "2024-11-14T01:22:04.000Z",
       "repository": Object {
         "name": "faros-community-edition",
         "organization": Object {

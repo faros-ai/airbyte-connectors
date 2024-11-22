@@ -10170,7 +10170,7 @@ N/A
       "remediatedInVersions": Array [
         "2.0.2",
       ],
-      "severity": 9,
+      "severity": 8.9,
       "source": "GitHub",
       "title": "Django allows remote attackers to obtain potentially sensitive information by leveraging data exposure from the confirm_login_allowed() method, as demonstrated by discovering whether a user account is inactive",
       "type": Object {
@@ -10271,7 +10271,7 @@ N/A
       "remediatedInVersions": Array [
         "2.8.19",
       ],
-      "severity": 6,
+      "severity": 6.9,
       "source": "GitHub",
       "title": "Insertion of Sensitive Information into Log File in ansible",
       "type": Object {
