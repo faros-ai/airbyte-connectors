@@ -38,7 +38,11 @@ export class Releases extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
+      this.logger
+    );
+    for (const project of azurePipeline.getInitializedProjects()) {
       yield {
         project,
       };
