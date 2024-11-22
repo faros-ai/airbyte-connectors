@@ -65,6 +65,10 @@ export class PullRequests extends AzureReposConverter {
         }
       : null;
 
+    const author = pullRequestItem.createdBy?.uniqueName
+      ? {uid: pullRequestItem.createdBy.uniqueName, source}
+      : undefined;
+
     res.push({
       model: 'vcs_PullRequest',
       record: {
@@ -77,13 +81,16 @@ export class PullRequests extends AzureReposConverter {
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
         mergedAt: Utils.toDate(pullRequestItem.closedDate),
         commentCount: pullRequestItem.threads.length,
-        author: {uid: pullRequestItem.createdBy.uniqueName, source},
+        author,
         mergeCommit,
         repository,
       },
     });
 
     for (const reviewer of pullRequestItem.reviewers ?? []) {
+      const reviewerKey = reviewer?.uniqueName
+        ? {uid: reviewer.uniqueName, source}
+        : undefined;
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
@@ -92,7 +99,7 @@ export class PullRequests extends AzureReposConverter {
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
-          reviewer: {uid: reviewer.uniqueName, source},
+          reviewer: reviewerKey,
           pullRequest,
         },
       });
