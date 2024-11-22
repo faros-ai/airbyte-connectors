@@ -30,7 +30,7 @@ export class Commits extends AzureReposConverter {
     };
 
     const author = commitItem.author?.email
-      ? {uid: commitItem.author?.email, source}
+      ? {uid: commitItem.author.email.toLowerCase(), source}
       : undefined;
 
     res.push({

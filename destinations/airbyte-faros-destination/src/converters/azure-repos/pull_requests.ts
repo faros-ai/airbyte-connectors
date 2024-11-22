@@ -66,7 +66,7 @@ export class PullRequests extends AzureReposConverter {
       : null;
 
     const author = pullRequestItem.createdBy?.uniqueName
-      ? {uid: pullRequestItem.createdBy.uniqueName, source}
+      ? {uid: pullRequestItem.createdBy.uniqueName.toLowerCase(), source}
       : undefined;
 
     res.push({
@@ -89,7 +89,7 @@ export class PullRequests extends AzureReposConverter {
 
     for (const reviewer of pullRequestItem.reviewers ?? []) {
       const reviewerKey = reviewer?.uniqueName
-        ? {uid: reviewer.uniqueName, source}
+        ? {uid: reviewer.uniqueName.toLowerCase(), source}
         : undefined;
       res.push({
         model: 'vcs_PullRequestReview',
