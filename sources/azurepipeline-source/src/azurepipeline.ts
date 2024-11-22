@@ -1,4 +1,4 @@
-import {AxiosInstance, AxiosRequestConfig,AxiosResponse} from 'axios';
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -157,6 +157,10 @@ export class AzurePipeline {
         ','
       )}]`
     );
+  }
+
+  getInitializedProjects(): string[] {
+    return this.projects;
   }
 
   async checkConnection(): Promise<void> {
