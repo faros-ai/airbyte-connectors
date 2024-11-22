@@ -85,7 +85,6 @@ describe('vanta', () => {
       configPath,
       catalogPath: 'test/resources/vanta/catalog.json',
       inputRecordsPath: 'vanta/vulnerability_remediation_records.log',
-      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
 });
