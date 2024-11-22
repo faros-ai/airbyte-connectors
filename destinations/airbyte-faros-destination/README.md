@@ -1,4 +1,3 @@
-# Hello World
 # Faros Destination for Airbyte
 
 Faros Destination is a universal destination to import data from any Airbyte source into Faros.
