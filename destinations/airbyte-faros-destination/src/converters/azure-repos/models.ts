@@ -138,7 +138,7 @@ export interface PullRequest {
   mergeId: string;
   lastMergeSourceCommit: MergeSourceCommit;
   lastMergeCommit: MergeSourceCommit;
-  reviewers: [PullRequestReviewer];
+  reviewers: PullRequestReviewer[];
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;
