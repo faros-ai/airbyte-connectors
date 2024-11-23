@@ -38,6 +38,11 @@ export class GraphQLWriter {
       );
       return false;
     } else if (Object.values(Operation).includes(operation as Operation)) {
+      if (operation === Operation.FLUSH) {
+        await this.graphQLClient.flush();
+        return true;
+      }
+
       const timestampedRecord: TimestampedRecord = {
         ...result.record,
         model: baseModel,
@@ -51,7 +56,9 @@ export class GraphQLWriter {
       // been processed yet.
       if (operation === Operation.DELETION && !result.record.at) {
         await this.writeTimestampedRecord(timestampedRecord);
-        await this.graphQLClient.flush();
+        if (result.record.flushRequired ?? true) {
+          await this.graphQLClient.flush();
+        }
       } else {
         this.timestampedRecords.push(timestampedRecord);
       }
