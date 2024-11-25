@@ -54,14 +54,14 @@ export abstract class AzurePipelineConverter extends Converter {
     return this.azurePipelineConfig(ctx)?.application_mapping ?? {};
   }
 
-  convertBuildState(state: string | undefined): {
+  convertBuildState(result: string | undefined): {
     category: string;
     detail: string;
   } {
-    if (!state) {
+    if (!result) {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
-    const detail = state.toLowerCase();
+    const detail = result.toLowerCase();
 
     // Read more on Azure pipeline build result:
     // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildresult
@@ -145,9 +145,8 @@ export abstract class AzurePipelineConverter extends Converter {
       case 'skipped':
         return {category: BuildStateCategory.Failed, detail};
       case 'succeeded':
-        return {category: BuildStateCategory.Success, detail};
       case 'succeededWithIssues':
-        return {category: BuildStateCategory.Queued, detail};
+        return {category: BuildStateCategory.Success, detail};
       default:
         return {category: BuildStateCategory.Custom, detail};
     }

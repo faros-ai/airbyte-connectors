@@ -213,14 +213,16 @@ export class AzurePipeline {
 
   async *getBuilds(
     project: string,
-    lastQueueTime?: string,
+    lastFinishTime?: string,
     logger?: AirbyteLogger
   ): AsyncGenerator<Build> {
-    const startTime = lastQueueTime ? new Date(lastQueueTime) : this.startDate;
+    const startTime = lastFinishTime
+      ? new Date(lastFinishTime)
+      : this.startDate;
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildqueryorder
     const params = {
-      queryOrder: 'queueTimeAscending',
+      queryOrder: 'finishTimeAscending',
       minTime: startTime.toISOString(),
       $top: this.pageSize,
     };
