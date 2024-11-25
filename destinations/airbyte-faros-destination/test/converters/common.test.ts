@@ -28,4 +28,12 @@ describe('common', () => {
       uid: 'SomeApp_SomePlatform',
     });
   });
+
+  test('isEmail', async () => {
+    expect(Common.isEmail('example@domain.com')).toBe(true);
+    expect(Common.isEmail('user.name+tag@sub.domain.co')).toBe(true); // true
+    expect(Common.isEmail('invalid-email')).toBe(false);
+    expect(Common.isEmail('@missinglocal.com')).toBe(false);
+    expect(Common.isEmail('user@.nodomain')).toBe(false);
+  });
 });

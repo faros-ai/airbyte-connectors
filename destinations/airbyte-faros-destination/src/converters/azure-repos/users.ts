@@ -51,6 +51,7 @@ export class Users extends AzureReposConverter {
         source,
       },
     });
+    this.uidsFromUsersStream.add(uid);
     return res;
   }
 }
