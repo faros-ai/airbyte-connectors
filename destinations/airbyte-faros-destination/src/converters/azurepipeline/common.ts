@@ -102,7 +102,9 @@ export abstract class AzurePipelineConverter extends Converter {
   }
 
   vcs_Repository(repo: Repository): any | undefined {
-    if (repo.type === 'TfsGit') {
+    const repoType = toLower(repo.type);
+
+    if (repoType === 'tfsgit') {
       const orgName = this.getOrganizationFromUrl(repo.url);
       const projectName = this.getProjectFromUrl(repo.url);
 
@@ -119,7 +121,7 @@ export abstract class AzurePipelineConverter extends Converter {
       };
     }
 
-    if (repo.type === 'GitHub') {
+    if (repoType === 'github') {
       const parts = repo.id.split('/');
       // Expecting repo.id to be in the format of <org>/<repo>
       // E.g., faros-ai/airbyte-connectors
@@ -131,7 +133,7 @@ export abstract class AzurePipelineConverter extends Converter {
         name: toLower(parts[1]),
         organization: {
           uid: toLower(parts[0]),
-          source: repo.type,
+          source: 'GitHub',
         },
       };
     }
