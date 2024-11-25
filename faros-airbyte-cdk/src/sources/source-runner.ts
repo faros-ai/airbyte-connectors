@@ -11,10 +11,10 @@ import {AirbyteConfig, AirbyteState} from '../protocol';
 import {ConnectorVersion, Runner} from '../runner';
 import {
   addSourceCommonProperties,
+  Data,
   PACKAGE_VERSION,
   redactConfig,
 } from '../utils';
-import {Data} from '../utils';
 import {AirbyteSource} from './source';
 import {maybeCompressState} from './source-base';
 import {AirbyteSourceLogger} from './source-logger';
