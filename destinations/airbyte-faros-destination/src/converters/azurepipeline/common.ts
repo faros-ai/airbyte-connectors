@@ -34,6 +34,9 @@ export abstract class AzurePipelineConverter extends Converter {
   getOrganizationFromUrl(url: string): string | undefined {
     try {
       const parsed = new URL(url);
+      if (parsed.hostname !== 'dev.azure.com') {
+        return undefined;
+      }
       const parts = parsed.pathname.split('/');
 
       if (parts.length < 2 || parts[1] === '') {
@@ -41,6 +44,24 @@ export abstract class AzurePipelineConverter extends Converter {
       }
 
       return parts[1];
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  getProjectFromUrl(url: string): string | undefined {
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname !== 'dev.azure.com') {
+        return undefined;
+      }
+      const parts = parsed.pathname.split('/');
+
+      if (parts.length < 3 || parts[2] === '') {
+        return undefined;
+      }
+
+      return parts[2];
     } catch (error) {
       return undefined;
     }
@@ -81,17 +102,13 @@ export abstract class AzurePipelineConverter extends Converter {
   }
 
   vcs_Repository(repo: Repository): any | undefined {
-    if (
-      repo.type === 'TfsGit' &&
-      repo.url?.startsWith('https://dev.azure.com')
-    ) {
-      const partsReversed = repo.url.split('/').reverse();
-      if (partsReversed.length < 4) {
+    if (repo.type === 'TfsGit') {
+      const orgName = this.getOrganizationFromUrl(repo.url);
+      const projectName = this.getProjectFromUrl(repo.url);
+
+      if (!orgName || !projectName) {
         return undefined;
       }
-
-      const projectName = partsReversed[2];
-      const orgName = partsReversed[3];
 
       return {
         name: `${decodeURIComponent(projectName)}_${repo.name}`,
