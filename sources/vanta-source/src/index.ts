@@ -42,8 +42,7 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
   async checkConnection(config: VantaConfig): Promise<[boolean, VError]> {
     const vanta = await Vanta.instance(config, this.logger);
     try {
-      const res = await vanta.checkConnection();
-      return res;
+      return await vanta.checkConnection();
     } catch (error) {
       return [false, new VError(error, 'Connection check failed')];
     }

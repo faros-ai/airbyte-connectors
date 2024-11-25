@@ -13,7 +13,11 @@ AirbyteConnectionStatusMessage {
 exports[`index streams - vulnerabilities 1`] = `
 [
   {
-    "assetType": "CODE_REPOSITORY",
+    "asset": {
+      "imageTags": [],
+      "name": "dolos",
+      "type": "CODE_REPOSITORY",
+    },
     "cvssSeverityScore": 9.8,
     "deactivateMetadata": {
       "deactivatedBy": "6053d6fc96bef488c3739822",
@@ -26,7 +30,6 @@ exports[`index streams - vulnerabilities 1`] = `
     "externalURL": "https://github.com/test-org/test-repo/security/dependabot/76",
     "firstDetectedDate": "2023-03-07T20:01:49.516Z",
     "id": "657191308e0674a0e8e62468",
-    "imageTags": [],
     "integrationId": "github",
     "isFixable": true,
     "lastDetectedDate": null,
@@ -52,7 +55,6 @@ exports[`index streams - vulnerabilities 1`] = `
     ],
     "relatedVulns": [],
     "remediateByDate": "2024-01-17T15:26:43.534Z",
-    "repoName": "dolos",
     "scanSource": "Not provided",
     "scannerScore": null,
     "severity": "CRITICAL",
@@ -61,14 +63,17 @@ exports[`index streams - vulnerabilities 1`] = `
     "vulnerabilityType": "COMMON",
   },
   {
-    "assetType": "CODE_REPOSITORY",
+    "asset": {
+      "imageTags": [],
+      "name": "dolos",
+      "type": "CODE_REPOSITORY",
+    },
     "cvssSeverityScore": 9.8,
     "deactivateMetadata": null,
     "description": "Webpack 5 before 5.76.0 does not avoid cross-realm object access. ImportParserPlugin.js mishandles the magic comment feature. An attacker who controls a property of an untrusted object can obtain access to the real global object.",
     "externalURL": "https://github.com/test-org/test-repo/security/dependabot/18",
     "firstDetectedDate": "2024-05-03T19:26:15.231Z",
     "id": "66353a575360cc947a8af658",
-    "imageTags": [],
     "integrationId": "github",
     "isFixable": true,
     "lastDetectedDate": null,
@@ -85,7 +90,6 @@ exports[`index streams - vulnerabilities 1`] = `
     ],
     "relatedVulns": [],
     "remediateByDate": "2024-06-02T19:26:20.454Z",
-    "repoName": "dolos",
     "scanSource": "Not provided",
     "scannerScore": null,
     "severity": "CRITICAL",
@@ -94,16 +98,19 @@ exports[`index streams - vulnerabilities 1`] = `
     "vulnerabilityType": "COMMON",
   },
   {
-    "assetType": "CONTAINER_REPOSITORY",
+    "asset": {
+      "imageTags": [
+        "0f7e60c1234567892e6bd131ec066026f5ed84",
+      ],
+      "name": "test-org/dolos",
+      "type": "CONTAINER_REPOSITORY",
+    },
     "cvssSeverityScore": 7.5,
     "deactivateMetadata": null,
     "description": "An unchecked return value in TLS handshake code could have caused a potentially exploitable crash. This vulnerability affects Firefox < 122, Firefox ESR < 115.9, and Thunderbird < 115.9.",
     "externalURL": "https://console.aws.amazon.com/inspector/v2/home?region=us-east-1#/findings?findingArn=arn%123456",
     "firstDetectedDate": "2024-04-13T09:52:49.659Z",
     "id": "661a55f156ebe8ef9f74e841",
-    "imageTags": [
-      "0f7e60c1234567892e6bd131ec066026f5ed84",
-    ],
     "integrationId": "aws",
     "isFixable": false,
     "lastDetectedDate": null,
@@ -114,7 +121,6 @@ exports[`index streams - vulnerabilities 1`] = `
     ],
     "relatedVulns": [],
     "remediateByDate": "2024-05-13T09:59:10.288Z",
-    "repoName": "test-org/dolos",
     "scanSource": "Not provided",
     "scannerScore": null,
     "severity": "HIGH",
@@ -128,13 +134,20 @@ exports[`index streams - vulnerabilities 1`] = `
 exports[`index streams - vulnerability remediations 1`] = `
 [
   {
+    "asset": {
+      "imageTags": [
+        "0f7e60c1234567892e6bd131ec066026f5ed84",
+      ],
+      "name": "test-org/dolos",
+      "type": "CONTAINER_REPOSITORY",
+    },
     "detectedDate": "2024-10-26T07:26:33.483Z",
     "id": "671c99a98f205f26605c10fc",
     "remediationDate": "2024-10-29T17:00:44.826Z",
     "severity": "MEDIUM",
     "slaDeadlineDate": "2024-12-25T07:26:33.416Z",
     "vulnerabilityId": "671c99a88f205f26605be227",
-    "vulnerableAssetId": "650e067d251f3b02f5e43a54",
+    "vulnerableAssetId": "64e9698a9fb4f7ed165bc471",
   },
 ]
 `;

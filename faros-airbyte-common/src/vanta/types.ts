@@ -25,9 +25,7 @@ export type Vulnerability = {
     deactivatedOnDate: string; // ISO date string
     deactivatedBy: string;
   } | null;
-  repoName: string;
-  imageTags: string[];
-  assetType: string;
+  asset?: VulnerableAsset;
 };
 
 export type VulnerabilityRemediation = {
@@ -38,4 +36,11 @@ export type VulnerabilityRemediation = {
   detectedDate: string; // ISO date string
   slaDeadlineDate: string; // ISO date string
   remediationDate: string; // ISO date string
+  asset?: VulnerableAsset;
+};
+
+export type VulnerableAsset = {
+  name: string;
+  imageTags: string[];
+  type: string;
 };

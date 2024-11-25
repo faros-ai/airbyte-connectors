@@ -4,6 +4,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   Vulnerability,
   VulnerabilityRemediation,
+  VulnerableAsset,
 } from 'faros-airbyte-common/vanta';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import VError from 'verror';
@@ -25,6 +26,8 @@ const DEFAULT_RETRY_DELAY = 1000;
  */
 export class Vanta {
   private static vanta: Vanta;
+  private readonly vulnerableAssets = new Map<string, any>();
+
   constructor(
     private readonly api: AxiosInstance,
     private readonly limit: number,
@@ -131,8 +134,7 @@ export class Vanta {
   async *getVulnerabilities(
     remediatedAfter: Date
   ): AsyncGenerator<Vulnerability> {
-    // Build asset map to get the associated repos and image tags for vulnerabilities.
-    const assetMap = await this.buildAssetMap();
+    const assetMap = await this.getVulnerableAssetsMap();
 
     let cursor = null;
     let hasNext = true;
@@ -144,12 +146,9 @@ export class Vanta {
       );
 
       for (const vulnerability of data) {
-        const asset = assetMap.get(vulnerability.targetId);
         yield {
           ...vulnerability,
-          repoName: asset?.name,
-          assetType: asset?.type,
-          imageTags: asset?.imageTags,
+          asset: assetMap.get(vulnerability.targetId),
         };
       }
       cursor = pageInfo.endCursor;
@@ -160,6 +159,8 @@ export class Vanta {
   async *getVulnerabilityRemediations(
     remediatedAfter: Date
   ): AsyncGenerator<VulnerabilityRemediation> {
+    const assetMap = await this.getVulnerableAssetsMap();
+
     let cursor = null;
     let hasNext = true;
 
@@ -170,7 +171,10 @@ export class Vanta {
       );
 
       for (const vulnerability of data) {
-        yield vulnerability;
+        yield {
+          ...vulnerability,
+          asset: assetMap.get(vulnerability.vulnerableAssetId),
+        };
       }
 
       cursor = pageInfo.endCursor;
@@ -223,9 +227,12 @@ export class Vanta {
     }
   }
 
-  // Fetch all assets and build a map of asset id to asset name and image tags to then link to each vulnerability.
-  private async buildAssetMap(): Promise<Map<string, any>> {
-    const assetMap = new Map<string, any>();
+  /** Fetches all vulnerable assets and builds a map of asset ID to asset data
+   *  for linking to vulnerabilities and remediations **/
+  private async getVulnerableAssetsMap(): Promise<
+    Map<string, VulnerableAsset>
+  > {
+    if (this.vulnerableAssets.size > 0) return this.vulnerableAssets;
     let cursor = null;
     let hasNext = true;
 
@@ -236,7 +243,7 @@ export class Vanta {
         const imageTags = asset.scanners.flatMap(
           (scanner: any) => scanner.imageTags ?? []
         );
-        assetMap.set(asset.id, {
+        this.vulnerableAssets.set(asset.id, {
           name: asset.name,
           type: asset.assetType,
           imageTags,
@@ -246,7 +253,7 @@ export class Vanta {
       cursor = pageInfo.endCursor;
       hasNext = pageInfo.hasNextPage;
     }
-    this.logger.debug(`Asset map size: ${assetMap.size}`);
-    return assetMap;
+
+    return this.vulnerableAssets;
   }
 }

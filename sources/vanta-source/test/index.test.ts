@@ -47,9 +47,9 @@ function getAxiosInstance(): AxiosInstance {
   });
 }
 
-function setupVantaInstance(logger, cfg): void {
+function setupVantaInstance(logger: AirbyteLogger): void {
   const mockAxiosInstance: Partial<AxiosInstance> = {
-    get: jest.fn((url, queryBody) => Promise.resolve(getResponseByPath(url))),
+    get: jest.fn((url) => Promise.resolve(getResponseByPath(url))),
   };
   axios.create = jest.fn(() => mockAxiosInstance as AxiosInstance);
   const axios_instance = getAxiosInstance();
@@ -101,7 +101,7 @@ describe('index', () => {
       configOrPath: sampleConfig,
       catalogOrPath: 'vulnerabilities_catalog.json',
       onBeforeReadResultConsumer: (res) => {
-        setupVantaInstance(logger, sampleConfig);
+        setupVantaInstance(logger);
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
@@ -115,7 +115,7 @@ describe('index', () => {
       configOrPath: sampleConfig,
       catalogOrPath: 'vulnerability_remediations_catalog.json',
       onBeforeReadResultConsumer: (res) => {
-        setupVantaInstance(logger, sampleConfig);
+        setupVantaInstance(logger);
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();

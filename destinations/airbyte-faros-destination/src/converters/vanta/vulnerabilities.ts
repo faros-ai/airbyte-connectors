@@ -18,12 +18,12 @@ export abstract class Vulnerabilities extends VantaConverter {
     'cicd_ArtifactVulnerability',
   ];
 
+  // TODO: move this to common.
   vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
   cicdArtifactQueryByCommitSha = getQueryFromName(
     'cicdArtifactQueryByCommitSha'
   );
   private readonly collectedVulnerabilities = new Set<Vulnerability>();
-  private readonly collectedIdentifiers = new Set<string>();
   private readonly collectedRepoNames = new Set<string>();
   private readonly collectedArtifactCommitShas = new Set<string>();
 
@@ -43,6 +43,9 @@ export abstract class Vulnerabilities extends VantaConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const records: DestinationRecord[] = [];
 
+    const identifierRecords = this.processVulnerabilityIdentifier(data, ctx);
+    records.push(...identifierRecords);
+
     // Creating the base sec_Vulnerability record
     const vulnRecord: DestinationRecord = {
       model: 'sec_Vulnerability',
@@ -59,63 +62,35 @@ export abstract class Vulnerabilities extends VantaConverter {
           : '0',
         url: data.externalURL,
         discoveredAt: Utils.toDate(data.firstDetectedDate),
-        vulnerabilityIds: data.relatedVulns,
+        vulnerabilityIds:
+          identifierRecords.length > 0 ? [identifierRecords[0].record.uid] : [],
       },
     };
     records.push(vulnRecord);
 
-    // Get catalog identifier either from vulnerability name or relatedVulns.
-    let identifier = data.name;
-    if (!this.isVulnerabilityCatalogIdentifier(identifier)) {
-      const identifiers = data.relatedVulns.filter(
-        this.isVulnerabilityCatalogIdentifier
-      );
-      if (identifiers.length == 0) {
-        ctx.logger.warn(
-          `No vulnerability catalog identifier found for vulnerability ${data.id}-${data.name}`
-        );
-        return records;
-      }
-      identifier = identifiers[0];
-    }
-
-    const category = this.getVulnerabilityCatalogCategory(identifier);
-    const identifierRelationshipRecord: DestinationRecord = {
-      model: 'sec_VulnerabilityIdentifierRelationship',
-      record: {
-        vulnerability: {uid: data.id, source: this.source},
-        identifier: {uid: identifier, type: {category, detail: category}},
-      },
-    };
-    records.push(identifierRelationshipRecord);
-
-    this.collectedIdentifiers.add(identifier);
     this.collectedVulnerabilities.add(data);
 
-    if (data.assetType === 'CODE_REPOSITORY') {
-      this.collectedRepoNames.add(data.repoName);
-    } else if (data.imageTags && data.imageTags.length > 0) {
-      const commitSha = this.getCommitSha(data.imageTags);
-      if (commitSha) this.collectedArtifactCommitShas.add(commitSha);
+    const vulnAsset = data.asset;
+    if (!vulnAsset) {
+      ctx.logger.warn(
+        `Vulnerability ${data.id}-${data.name} has no asset associated. VcsRepositoryVulnerability or CicdArtifactVulnerability will not be created.`
+      );
+      return records;
+    }
+    if (this.isVCSRepoVulnerability(vulnAsset)) {
+      this.collectedRepoNames.add(vulnAsset.name);
+    } else if (this.isCICDArtifactVulnerability(vulnAsset)) {
+      const commitSha = this.getCommitSha(vulnAsset.imageTags);
+      this.collectedArtifactCommitShas.add(commitSha);
     }
 
     return records;
-  }
-
-  private getCommitSha(imageTags: string[]): string | null {
-    for (const imageTag of imageTags) {
-      if (looksLikeGitCommitSha(imageTag)) {
-        return imageTag;
-      }
-    }
-    return null;
   }
 
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const records: DestinationRecord[] = [];
-    records.push(...this.convertIdentifiers());
     const vcsRepos = await this.getVCSRepositoriesFromNames(
       Array.from(this.collectedRepoNames),
       ctx
@@ -125,9 +100,9 @@ export abstract class Vulnerabilities extends VantaConverter {
       ctx
     );
     for (const vuln of this.collectedVulnerabilities) {
-      if (vuln.assetType === 'CODE_REPOSITORY') {
+      if (this.isVCSRepoVulnerability(vuln.asset)) {
         this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
-      } else if (vuln.imageTags && vuln.imageTags.length > 0) {
+      } else if (this.isCICDArtifactVulnerability(vuln.asset)) {
         this.convertArtifactVulnerability(vuln, ctx, cicdArtifacts, records);
       }
     }
@@ -140,7 +115,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     ctx: StreamContext,
     records: DestinationRecord[]
   ) {
-    const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.repoName);
+    const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.asset.name);
     if (!vcsRepo) {
       ctx.logger.warn(
         `Could not find VCS repository for vulnerability ${vuln.id}`
@@ -164,23 +139,43 @@ export abstract class Vulnerabilities extends VantaConverter {
     records.push(repoVulnerabilityRecord);
   }
 
-  private convertIdentifiers(): DestinationRecord[] {
-    const records: DestinationRecord[] = [];
-    for (const identifier of this.collectedIdentifiers) {
-      const identifierRecord: DestinationRecord = {
-        model: 'sec_VulnerabilityIdentifier',
-        record: {
-          uid: identifier,
-          type: {
-            category: this.getVulnerabilityCatalogCategory(identifier),
-            detail: identifier,
-          },
-          source: this.source,
-        },
-      };
-      records.push(identifierRecord);
+  private processVulnerabilityIdentifier(
+    vulnerability: Vulnerability,
+    ctx: StreamContext
+  ): DestinationRecord[] {
+    // Get catalog identifier either from vulnerability name or from relatedVulns.
+    let identifier = vulnerability.name;
+    if (!this.isVulnerabilityCatalogIdentifier(identifier)) {
+      const identifiers = vulnerability.relatedVulns.filter(
+        this.isVulnerabilityCatalogIdentifier
+      );
+      if (identifiers.length == 0) {
+        ctx.logger.warn(
+          `No vulnerability catalog identifier found for vulnerability ${vulnerability.id}-${vulnerability.name}`
+        );
+        return [];
+      }
+      identifier = identifiers[0];
     }
-    return records;
+    const category = this.getVulnerabilityCatalogCategory(identifier);
+    const identifierRecord = {
+      uid: identifier,
+      type: {category, detail: category},
+      source: this.source,
+    };
+    return [
+      {
+        model: 'sec_VulnerabilityIdentifier',
+        record: identifierRecord,
+      },
+      {
+        model: 'sec_VulnerabilityIdentifierRelationship',
+        record: {
+          vulnerability: {uid: vulnerability.id, source: this.source},
+          identifier: identifierRecord,
+        },
+      },
+    ];
   }
 
   private convertArtifactVulnerability(
@@ -189,7 +184,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     cicdArtifacts: CicdArtifactKey[],
     records: DestinationRecord[]
   ) {
-    const commitSha = this.getCommitSha(vuln.imageTags);
+    const commitSha = this.getCommitSha(vuln.asset.imageTags);
     if (!commitSha) {
       ctx.logger.warn(
         `Could not find commit sha in image tags for vulnerability ${vuln.id}`
@@ -222,6 +217,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     records.push(artifactVulnerabilityRecord);
   }
 
+  // TODO: move queries to common sec in faros-airbyte-common
   async getVCSRepositoriesFromNames(
     vcsRepoNames: string[],
     ctx: StreamContext
@@ -250,6 +246,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     return result?.cicd_Artifact;
   }
 
+  // TODO: use common function from faros-airbyte-common
   getVulnerabilityCatalogCategory(identifierId: string): string {
     if (identifierId.includes('CVE')) {
       return 'CVE';
