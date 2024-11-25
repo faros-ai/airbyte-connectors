@@ -86,7 +86,7 @@ export abstract class AzurePipelineConverter extends Converter {
       repo.url?.startsWith('https://dev.azure.com')
     ) {
       const partsReversed = repo.url.split('/').reverse();
-      if (partsReversed.length < 3) {
+      if (partsReversed.length < 4) {
         return undefined;
       }
 
