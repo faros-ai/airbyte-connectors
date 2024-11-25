@@ -81,25 +81,45 @@ export abstract class AzurePipelineConverter extends Converter {
   }
 
   vcs_Repository(repo: Repository): any | undefined {
-    // TODO: support other repo types
-    if (repo.type !== 'GitHub') {
-      return undefined;
+    if (
+      repo.type === 'TfsGit' &&
+      repo.url?.startsWith('https://dev.azure.com')
+    ) {
+      const partsReversed = repo.url.split('/').reverse();
+      if (partsReversed.length < 3) {
+        return undefined;
+      }
+
+      const projectName = partsReversed[2];
+      const orgName = partsReversed[3];
+
+      return {
+        name: `${decodeURIComponent(projectName)}_${repo.name}`,
+        organization: {
+          uid: orgName,
+          source: repo.type,
+        },
+      };
     }
 
-    const parts = repo.id.split('/');
-    // Expecting repo.id to be in the format of <org>/<repo>
-    // E.g., faros-ai/airbyte-connectors
-    if (parts.length < 2) {
-      return undefined;
+    if (repo.type === 'GitHub') {
+      const parts = repo.id.split('/');
+      // Expecting repo.id to be in the format of <org>/<repo>
+      // E.g., faros-ai/airbyte-connectors
+      if (parts.length < 2) {
+        return undefined;
+      }
+
+      return {
+        name: toLower(parts[1]),
+        organization: {
+          uid: toLower(parts[0]),
+          source: repo.type,
+        },
+      };
     }
 
-    return {
-      name: toLower(parts[1]),
-      organization: {
-        uid: toLower(parts[0]),
-        source: repo.type,
-      },
-    };
+    return undefined;
   }
 
   getRepoUrl(repo: Repository): string | undefined {
