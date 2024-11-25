@@ -76,7 +76,7 @@ describe('index', () => {
       .query({
         'api-version': '6.0',
         $top: 100,
-        queryOrder: 'queueTimeAscending',
+        queryOrder: 'finishTimeAscending',
         minTime: WATERMARK,
       })
       .reply(200, {value: buildsResource});
@@ -97,7 +97,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastQueueTime: WATERMARK}
+      {lastFinishTime: WATERMARK}
     );
 
     const builds = [];
