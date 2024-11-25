@@ -14,10 +14,10 @@ import {
   PACKAGE_VERSION,
   redactConfig,
 } from '../utils';
+import {Data} from '../utils';
 import {AirbyteSource} from './source';
 import {maybeCompressState} from './source-base';
 import {AirbyteSourceLogger} from './source-logger';
-import {State} from './state';
 
 export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
   constructor(
@@ -113,9 +113,9 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             const res = await this.source.onBeforeRead(
               config,
               catalog,
-              State.decompress(state)
+              Data.decompress(state)
             );
-            const clonedState = State.decompress(cloneDeep(res.state ?? {}));
+            const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
             this.logger.getState = () =>
               maybeCompressState(config, clonedState);
             const iter = this.source.read(

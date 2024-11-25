@@ -10,7 +10,7 @@ import {
   AirbyteState,
   AirbyteStateMessage,
 } from '.';
-import {State} from './sources/state';
+import {Data} from './utils';
 
 export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
@@ -83,7 +83,7 @@ export const sourceReadTest = async (
     checkRecordsData(records);
   }
   if (checkFinalState) {
-    checkFinalState(State.decompress(finalState));
+    checkFinalState(Data.decompress(finalState));
   }
 };
 
