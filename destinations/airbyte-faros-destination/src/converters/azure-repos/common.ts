@@ -16,6 +16,13 @@ export type ApplicationMapping = Record<
   {name: string; platform?: string}
 >;
 
+// Partial user objects from streams that aren't the Users stream
+export interface PartialUserRecord {
+  uid: string;
+  name: string;
+  email?: string;
+}
+
 /** Azurerepos converter base */
 export abstract class AzureReposConverter extends Converter {
   source = 'Azure-Repos';
@@ -26,6 +33,14 @@ export abstract class AzureReposConverter extends Converter {
 
   getOrganizationFromUrl(url: string): string {
     return url.split('/')[3];
+  }
+
+  // Records from Users stream have more populated fields than user objects from
+  // other streams, so prioritize upserting those over partial duplicates from
+  // other streams
+  private static readonly _uidsFromUsersStream: Set<string> = new Set();
+  public get uidsFromUsersStream(): Set<string> {
+    return AzureReposConverter._uidsFromUsersStream;
   }
 
   /**

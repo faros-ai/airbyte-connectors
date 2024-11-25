@@ -20,6 +20,10 @@ export class Users extends AirbyteStreamBase {
     return 'principalName';
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
   async *readRecords(): AsyncGenerator<User> {
     const azureRepo = await AzureRepos.make(this.config, this.logger);
     yield* azureRepo.getUsers();

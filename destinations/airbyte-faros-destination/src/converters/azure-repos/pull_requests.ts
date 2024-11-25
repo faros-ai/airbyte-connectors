@@ -1,15 +1,41 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord} from '../converter';
-import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
+import {
+  AzureReposConverter,
+  MAX_DESCRIPTION_LENGTH,
+  PartialUserRecord,
+} from './common';
 import {PullRequest} from './models';
 
+function getPartialUserRecord(obj: {
+  uniqueName: string;
+  displayName: string;
+}): PartialUserRecord {
+  if (Common.isEmail(obj.uniqueName)) {
+    const email = obj.uniqueName.toLowerCase();
+    return {
+      uid: email,
+      name: obj.displayName,
+      email,
+    };
+  }
+  return {
+    uid: obj.uniqueName,
+    name: obj.displayName,
+  };
+}
+
 export class PullRequests extends AzureReposConverter {
+  private partialUserRecords: Record<string, PartialUserRecord> = {};
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
+    'vcs_User',
   ];
 
   async convert(
@@ -38,6 +64,7 @@ export class PullRequests extends AzureReposConverter {
 
     for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
+        const author = getPartialUserRecord(comment.author);
         res.push({
           model: 'vcs_PullRequestComment',
           record: {
@@ -49,7 +76,7 @@ export class PullRequests extends AzureReposConverter {
             ),
             createdAt: Utils.toDate(comment.publishedDate),
             updatedAt: Utils.toDate(comment.lastUpdatedDate),
-            author: {uid: comment.author.uniqueName, source},
+            author: {uid: author.uid, source},
             pullRequest,
           },
         });
@@ -66,8 +93,11 @@ export class PullRequests extends AzureReposConverter {
       : null;
 
     const author = pullRequestItem.createdBy?.uniqueName
-      ? {uid: pullRequestItem.createdBy.uniqueName.toLowerCase(), source}
+      ? getPartialUserRecord(pullRequestItem.createdBy)
       : undefined;
+    if (author?.uid && !this.partialUserRecords[author.uid]) {
+      this.partialUserRecords[author.uid] = author;
+    }
 
     res.push({
       model: 'vcs_PullRequest',
@@ -88,9 +118,10 @@ export class PullRequests extends AzureReposConverter {
     });
 
     for (const reviewer of pullRequestItem.reviewers ?? []) {
-      const reviewerKey = reviewer?.uniqueName
-        ? {uid: reviewer.uniqueName.toLowerCase(), source}
+      const reviewerUser = reviewer?.uniqueName
+        ? getPartialUserRecord(reviewer)
         : undefined;
+
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
@@ -99,12 +130,31 @@ export class PullRequests extends AzureReposConverter {
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
           submittedAt: null,
-          reviewer: reviewerKey,
+          reviewer: reviewerUser ? {uid: reviewerUser.uid, source} : undefined,
           pullRequest,
         },
       });
+
+      if (reviewerUser?.uid && !this.partialUserRecords[reviewerUser.uid]) {
+        this.partialUserRecords[reviewerUser.uid] = reviewerUser;
+      }
     }
 
     return res;
+  }
+
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    const source = this.streamName.source;
+    const records: DestinationRecord[] = [];
+    for (const uid in this.partialUserRecords) {
+      if (this.uidsFromUsersStream.has(uid)) {
+        continue;
+      }
+      records.push({
+        model: 'vcs_User',
+        record: {...this.partialUserRecords[uid], source},
+      });
+    }
+    return records;
   }
 }
