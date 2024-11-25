@@ -33,7 +33,7 @@
       "axios-auth-refresh": "^3.3.6",
       "faros-airbyte-cdk": "0.0.1",
       "faros-airbyte-common": "0.0.1",
-      "faros-js-client": "0.5.1",
+      "faros-js-client": "^0.5.2",
       "luxon": "^3.4.4"
     },
     "jest": {
