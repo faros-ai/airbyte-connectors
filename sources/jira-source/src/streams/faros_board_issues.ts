@@ -1,5 +1,4 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {State} from 'faros-airbyte-cdk/lib/sources/state';
+import {Data, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueCompact} from 'faros-airbyte-common/jira';
 import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -90,7 +89,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
       this.logger.info('Updating board issue state in Faros');
       try {
         const body = {
-          state: State.compress(state).data,
+          state: Data.compress(state).data,
         };
         await this.farosClient.request(
           'PUT',
@@ -119,7 +118,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
           'GET',
           `/accounts/${this.config.faros_source_id}/state`
         );
-        return State.decompress({
+        return Data.decompress({
           data: res.state,
           format: 'base64/gzip',
         }) as BoardIssueTrackerState;

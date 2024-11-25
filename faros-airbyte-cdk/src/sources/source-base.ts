@@ -24,8 +24,8 @@ import {
   SyncMode,
 } from '../protocol';
 import {ConnectorVersion} from '../runner';
+import {Data} from '../utils';
 import {AirbyteSource} from './source';
-import {State} from './state';
 import {AirbyteStreamBase} from './streams/stream-base';
 
 type PartialAirbyteConfig = Pick<
@@ -517,5 +517,5 @@ export function maybeCompressState(
   config: AirbyteConfig,
   state: AirbyteState
 ): AirbyteState {
-  return config.compress_state === false ? state : State.compress(state);
+  return config.compress_state === false ? state : Data.compress(state);
 }
