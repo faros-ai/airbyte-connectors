@@ -42,11 +42,8 @@ export abstract class AzureReposConverter extends Converter {
   // Records from Users stream have more populated fields than user objects from
   // other streams, so prioritize upserting those over partial duplicates from
   // other streams
-  private static _uidsFromUsersStream: Set<string>;
+  private static readonly _uidsFromUsersStream: Set<string> = new Set();
   public get uidsFromUsersStream(): Set<string> {
-    if (!AzureReposConverter._uidsFromUsersStream) {
-      AzureReposConverter._uidsFromUsersStream = new Set();
-    }
     return AzureReposConverter._uidsFromUsersStream;
   }
 
