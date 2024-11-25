@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {
   AzureReposConverter,
-  isEmail,
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
@@ -14,7 +14,7 @@ function getPartialUserRecord(obj: {
   uniqueName: string;
   displayName: string;
 }): PartialUserRecord {
-  if (isEmail(obj.uniqueName)) {
+  if (Common.isEmail(obj.uniqueName)) {
     const email = obj.uniqueName.toLowerCase();
     return {
       uid: email,
