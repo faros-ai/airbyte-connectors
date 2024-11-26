@@ -169,7 +169,7 @@ export interface Commit {
   url: string;
   remoteUrl: string;
   repository: CommitRepository;
-  branch: Branch;
+  branch: string;
 }
 
 export interface CommitRepository {
