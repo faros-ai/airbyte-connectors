@@ -1,6 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 

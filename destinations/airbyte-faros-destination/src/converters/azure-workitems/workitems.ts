@@ -42,12 +42,13 @@ export class Workitems extends AzureWorkitemsConverter {
         model: 'tms_Task',
         record: {
           ...taskKey,
-          id: taskKey.uid,
           url: WorkItem._links?.html?.href || WorkItem.url,
           type: this.getTaskType(WorkItem.fields['System.WorkItemType']),
           name: WorkItem.fields['System.Title'],
           createdAt: Utils.toDate(WorkItem.fields['System.CreatedDate']),
-          parent: {uid: String(WorkItem.fields['System.Parent']), source},
+          parent: WorkItem.fields['System.Parent']
+            ? {uid: String(WorkItem.fields['System.Parent']), source}
+            : null,
           description: Utils.cleanAndTruncate(
             WorkItem.fields['System.Description']
           ),
