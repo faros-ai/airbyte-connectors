@@ -57,8 +57,8 @@ export class Commits extends AzureReposConverter {
           repository,
         },
         branch: {
-          name: commitItem.branch?.name,
-          uid: commitItem.branch?.name,
+          name: commitItem.branch,
+          uid: commitItem.branch,
           repository,
         },
       },

@@ -242,17 +242,22 @@ export class AzureRepos {
 
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
-        for (const branch of await this.listBranches(project, repository)) {
-          for await (const commit of this.listCommits(
-            project,
-            repository,
-            branch,
-            sinceDate > cutoffDate ? sinceDate : cutoffDate
-          )) {
-            commit.repository = repository as CommitRepository;
-            commit.branch = branch;
-            yield commit;
-          }
+        const branch = getQueryableDefaultBranch(repository.defaultBranch);
+        if (!branch) {
+          this.logger.error(
+            `No default branch found for repository ${repository.name}. Will not fetch any commits.`
+          );
+          continue;
+        }
+        for await (const commit of this.listCommits(
+          project,
+          repository,
+          branch,
+          sinceDate > cutoffDate ? sinceDate : cutoffDate
+        )) {
+          commit.repository = repository as CommitRepository;
+          commit.branch = branch;
+          yield commit;
         }
       }
     }
@@ -308,7 +313,7 @@ export class AzureRepos {
   private async *listCommits(
     project: string,
     repo: Repository,
-    branch: Branch,
+    branch: string,
     since?: DateTime
   ): AsyncGenerator<Commit> {
     for await (const commitRes of this.getPaginated<CommitResponse>(
@@ -316,7 +321,7 @@ export class AzureRepos {
       'searchCriteria.$top',
       'searchCriteria.$skip',
       {
-        'searchCriteria.itemVersion.version': branch.name,
+        'searchCriteria.itemVersion.version': branch,
         'searchCriteria.fromDate': since?.toISO(),
       },
       this.top
@@ -504,4 +509,17 @@ export class AzureRepos {
       throw wrapApiError(err, `Failed to get ${path}. `);
     }
   }
+}
+
+function getQueryableDefaultBranch(
+  defaultBranch?: string,
+  prefixToRemove = 'refs/heads/'
+): string | undefined {
+  if (!defaultBranch) {
+    return undefined;
+  }
+  if (defaultBranch.startsWith(prefixToRemove)) {
+    return defaultBranch.slice(prefixToRemove.length);
+  }
+  return defaultBranch;
 }
