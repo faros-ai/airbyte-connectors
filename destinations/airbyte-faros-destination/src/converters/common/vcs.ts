@@ -5,6 +5,12 @@ import {DestinationRecord} from '../converter';
 
 const NULL = '/dev/null';
 
+export interface VcsDiffStats {
+  linesAdded: number;
+  linesDeleted: number;
+  filesChanged: number;
+}
+
 export type OrgKey = {uid: string; source: string};
 export type RepoKey = {uid: string; name: string; organization: OrgKey};
 export type PullRequestKey = {

@@ -154,7 +154,7 @@ interface CommitAuthor {
   date: string;
 }
 
-interface CommitChange {
+export interface CommitChange {
   Add: number;
   Edit: number;
   Delete: number;

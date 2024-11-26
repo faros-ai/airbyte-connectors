@@ -3,7 +3,7 @@ import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
-import {Commit} from './models';
+import {Commit, CommitChange} from './models';
 
 export class Commits extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -64,6 +64,22 @@ export class Commits extends AzureReposConverter {
       },
     });
 
+    const totalChangeCount = getTotalChangeCount(commitItem.changeCounts);
+    if (totalChangeCount !== undefined) {
+      this._commitChangeCounts[commitItem.commitId] = totalChangeCount;
+    }
+
     return res;
   }
+}
+
+function getTotalChangeCount(changeCounts?: CommitChange): number | undefined {
+  if (!changeCounts) {
+    return undefined;
+  }
+  return (
+    (changeCounts.Add ?? 0) +
+    (changeCounts.Edit ?? 0) +
+    (changeCounts.Delete ?? 0)
+  );
 }
