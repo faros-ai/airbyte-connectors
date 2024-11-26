@@ -345,8 +345,8 @@ export class AzureRepos {
     project: string,
     repo: Repository
   ): Promise<Branch[]> {
+    const branches = [];
     try {
-      const branches = [];
       const branchRes = await this.get<BranchResponse>(
         `${project}/_apis/git/repositories/${repo.id}/stats/branches`
       );
@@ -359,12 +359,12 @@ export class AzureRepos {
           branches.push(branch);
         }
       }
-      return branches;
     } catch (err: any) {
       this.logger.error(
         `Failed to list branches for repository ${repo.name}: ${wrapApiError(err).message}`
       );
     }
+    return branches;
   }
 
   /**
@@ -378,12 +378,12 @@ export class AzureRepos {
     project: string,
     repo: Repository
   ): Promise<Tag[]> {
+    const tags = [];
     try {
       const tagRes = await this.get<TagResponse>(
         `${project}/_apis/git/repositories/${repo.id}/refs`,
         {filter: 'tags', peelTags: 'true'}
       );
-      const tags = [];
       for (const tag of tagRes?.data?.value ?? []) {
         // Per docs, annotated tags will populate the peeledObjectId property
         if (tag.peeledObjectId) {
@@ -395,12 +395,12 @@ export class AzureRepos {
           tags.push(tagItem);
         }
       }
-      return tags;
     } catch (err: any) {
       this.logger.error(
         `Failed to list tags for repository ${repo.name}: ${wrapApiError(err).message}`
       );
     }
+    return tags;
   }
 
   /**
