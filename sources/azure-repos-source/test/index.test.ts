@@ -98,7 +98,6 @@ describe('index', () => {
     const fnPullrequestsFunc = jest.fn();
     const repositoriesResource: any[] =
       readTestResourceFile('repositories.json');
-    const branchesResource: any[] = readTestResourceFile('branches.json');
     const commitsResource: any[] = readTestResourceFile('commits.json');
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
@@ -111,9 +110,6 @@ describe('index', () => {
             })
             .mockResolvedValueOnce({
               data: {value: repositoriesResource},
-            })
-            .mockResolvedValueOnce({
-              data: {value: branchesResource},
             })
             .mockResolvedValueOnce({data: {value: [commitsResource[0]]}})
             .mockResolvedValueOnce({data: {value: [commitsResource[1]]}}),
@@ -135,7 +131,7 @@ describe('index', () => {
     for await (const pullrequest of commitIter) {
       commits.push(pullrequest);
     }
-    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(6);
+    expect(fnPullrequestsFunc).toHaveBeenCalledTimes(4);
     expect(commits.map((p) => p.commitId)).toStrictEqual(
       commitsResource.map((c) => c.commitId)
     );
