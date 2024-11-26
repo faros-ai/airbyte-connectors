@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
@@ -21,25 +22,30 @@ export class Workitems extends AzureWorkitemsConverter {
         record: {
           uid: String(WorkItem.id),
           id: String(WorkItem.id),
-          url: WorkItem.url,
+          url: WorkItem._links?.html?.href || WorkItem.url,
           type: {category: String(WorkItem.fields['System.WorkItemType'])},
           name: WorkItem.fields['System.Title'],
-          createdAt: new Date(WorkItem.fields['System.CreatedDate']),
+          createdAt: Utils.toDate(WorkItem.fields['System.CreatedDate']),
           parent: {uid: String(WorkItem.fields['System.Parent']), source},
           description: WorkItem.fields['System.Description'],
+          // Todo - Map status correctly
           status: {category: WorkItem.fields['System.State']},
-          statusChangedAt: new Date(
+          statusChangedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
-          updatedAt: new Date(
-            WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
-          ),
+          updatedAt: Utils.toDate(WorkItem.fields['System.ChangedDate']),
           creator: {
             uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
             source,
           },
           sprint: {uid: String(WorkItem.fields['System.IterationId']), source},
           source,
+          // TODO - Add
+          // priority: Microsoft.VSTS.Common.Priority
+          // Microsoft.VSTS.Common.Severity
+          // Microsoft.VSTS.Common.ResolvedDate
+          // Microsoft.VSTS.Common.ResolvedReason
+          // Microsoft.VSTS.Scheduling.Effort
         },
       },
       {
@@ -54,6 +60,7 @@ export class Workitems extends AzureWorkitemsConverter {
           source,
         },
       },
+      // TODO - Add // sprintHistory
     ];
   }
 }

@@ -4,6 +4,9 @@ export interface WorkItemResponse {
 }
 
 export interface WorkItem {
+  _links: {
+    html: Href;
+  };
   fields: fields;
   id: string;
   rev: string;

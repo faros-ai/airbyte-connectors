@@ -3,11 +3,17 @@ export interface WorkItemResponse {
   value: WorkItem[];
 }
 
+export interface WorkItemUpdatesResponse {
+  count: number;
+  value: any[];
+}
+
 export interface WorkItem {
   fields: fields;
   id: string;
   rev: string;
   url: string;
+  updates: any[];
 }
 
 export interface System {

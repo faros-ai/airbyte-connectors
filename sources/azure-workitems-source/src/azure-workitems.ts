@@ -4,7 +4,12 @@ import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
-import {User, UserResponse, WorkItemResponse} from './models';
+import {
+  User,
+  UserResponse,
+  WorkItemResponse,
+  WorkItemUpdatesResponse,
+} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
@@ -38,6 +43,7 @@ export class AzureWorkitems {
       throw new VError('organization must not be an empty string');
     }
 
+    // TODO - Use projects instead
     if (!config.project) {
       throw new VError('project must not be an empty string');
     }
@@ -182,9 +188,38 @@ export class AzureWorkitems {
         `wit/workitems?ids=${c}&$expand=all`
       );
       for (const item of res?.data?.value ?? []) {
-        yield item;
+        const updates = await this.getWorkItemUpdates(item.id);
+        yield {...item, updates};
       }
     }
+  }
+
+  async getWorkItemUpdates(id: string): Promise<any> {
+    const pageSize = 100; // Number of items per page
+    let skip = 0;
+    const allUpdates: any[] = [];
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const url = `wit/workitems/${id}/updates?$top=${pageSize}&$skip=${skip}`;
+      const response = await this.get<WorkItemUpdatesResponse>(url);
+
+      const data = response?.data;
+
+      const updates = data?.value;
+      if (!Array.isArray(updates) || !updates.length) {
+        hasMoreResults = false;
+      } else {
+        allUpdates.push(...updates);
+        skip += pageSize;
+
+        if (allUpdates.length >= data?.count) {
+          hasMoreResults = false;
+        }
+      }
+    }
+
+    return {updates: allUpdates};
   }
 
   // TODO - Fetch all work items instead of only max 20000
