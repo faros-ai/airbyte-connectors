@@ -2,10 +2,10 @@
 
 exports[`zephyr process records from all streams 1`] = `
 Array [
-  "Processed 6 records",
-  "Processed records by stream: {\\\\\\"mytestsource__zephyr__test_cycles\\\\\\":2,\\\\\\"mytestsource__zephyr__test_executions\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 15 records",
-  "Would write records by model: {\\\\\\"qa_TestCase\\\\\\":4,\\\\\\"qa_TestCaseResult\\\\\\":4,\\\\\\"qa_TestSuite\\\\\\":2,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":4,\\\\\\"tms_TaskTestCaseResultAssociation\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 7 records",
+  "Processed records by stream: {\\\\\\"mytestsource__zephyr__test_cycles\\\\\\":2,\\\\\\"mytestsource__zephyr__test_executions\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 18 records",
+  "Would write records by model: {\\\\\\"qa_ReleaseVersion\\\\\\":2,\\\\\\"qa_TestCase\\\\\\":4,\\\\\\"qa_TestCaseResult\\\\\\":5,\\\\\\"qa_TestSuite\\\\\\":2,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":4,\\\\\\"tms_TaskTestCaseResultAssociation\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -33,6 +33,7 @@ Array [
   },
   Object {
     "qa_TestCaseResult": Object {
+      "releaseVersion": null,
       "source": "Zephyr",
       "startedAt": "2024-09-30T14:20:00.000Z",
       "status": Object {
@@ -62,6 +63,10 @@ Array [
   },
   Object {
     "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
       "source": "Zephyr",
       "startedAt": "2024-10-01T14:20:00.000Z",
       "status": Object {
@@ -78,6 +83,10 @@ Array [
   },
   Object {
     "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
       "source": "Zephyr",
       "startedAt": "2024-10-02T14:20:00.000Z",
       "status": Object {
@@ -94,6 +103,7 @@ Array [
   },
   Object {
     "qa_TestCaseResult": Object {
+      "releaseVersion": null,
       "source": "Zephyr",
       "startedAt": "2024-10-03T14:20:00.000Z",
       "status": Object {
@@ -106,6 +116,26 @@ Array [
         "uid": "TMS-103",
       },
       "uid": "4",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "1",
+      },
+      "source": "Zephyr",
+      "startedAt": null,
+      "status": Object {
+        "category": "Custom",
+        "detail": "UNEXECUTED",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-100",
+      },
+      "uid": "5",
     },
   },
   Object {
@@ -206,6 +236,20 @@ Array [
         "source": "Zephyr",
         "uid": "2",
       },
+    },
+  },
+  Object {
+    "qa_ReleaseVersion": Object {
+      "name": "version 2",
+      "source": "Zephyr",
+      "uid": "2",
+    },
+  },
+  Object {
+    "qa_ReleaseVersion": Object {
+      "name": "version 1",
+      "source": "Zephyr",
+      "uid": "1",
     },
   },
 ]

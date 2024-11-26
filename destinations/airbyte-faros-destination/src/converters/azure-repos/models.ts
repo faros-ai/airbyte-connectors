@@ -81,6 +81,8 @@ export interface PullRequestThread {
   status: string;
   threadContext?: string;
   comments: PullRequestThreadComment[];
+  properties?: Record<string, {$type: string; $value: any}>;
+  identities?: Record<string, Creator>;
 }
 
 interface MergeSourceCommit {
@@ -138,7 +140,7 @@ export interface PullRequest {
   mergeId: string;
   lastMergeSourceCommit: MergeSourceCommit;
   lastMergeCommit: MergeSourceCommit;
-  reviewers: [PullRequestReviewer];
+  reviewers: PullRequestReviewer[];
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;

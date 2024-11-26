@@ -12,6 +12,7 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly repositories?: ReadonlyArray<string>;
   readonly excluded_repositories?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly page_size?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;

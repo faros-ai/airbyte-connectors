@@ -115,7 +115,7 @@ export interface SprintIssue {
   readonly key: string;
   readonly points: number;
   readonly plannedPoints: number;
-  readonly status: string;
+  readonly status: Status;
   readonly classification: string;
   readonly addedDuringSprint?: boolean;
 }
@@ -133,6 +133,7 @@ export interface User extends Version2Models.User {
 export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
+  issueSync: boolean;
 }
 
 export interface ProjectVersion extends Version2Models.Version {

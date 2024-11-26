@@ -14,12 +14,6 @@
     },
     {
       "stream": {
-        "name": "mytestsource__github__faros_contributors_stats"
-      },
-      "destination_sync_mode": "overwrite"
-    },
-    {
-      "stream": {
         "name": "mytestsource__github__faros_organizations"
       },
       "destination_sync_mode": "overwrite"
@@ -105,6 +99,12 @@
     {
       "stream": {
         "name": "mytestsource__github__faros_issues"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_issue_comments"
       },
       "destination_sync_mode": "append"
     },

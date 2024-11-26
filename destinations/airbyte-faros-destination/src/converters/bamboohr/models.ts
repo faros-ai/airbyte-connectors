@@ -32,4 +32,5 @@ export interface User {
   hireDate?: string;
   terminationDate?: string;
   lastName?: string;
+  location?: string;
 }

@@ -133,6 +133,9 @@ export class CircleCI {
     }
   }
 
+  // There is no endpoint to get all projects, we have to use the /me endpoint.
+  // This returns followed projects.
+  // https://support.circleci.com/hc/en-us/articles/360047534371-Find-all-Organization-Projects-via-the-CircleCI-API
   async getAllProjectSlugs(): Promise<string[]> {
     // Using org slug, projects can be accessed with slug/repo_name (if not github or gitlab)
     // or circleci/org_id/project_id (if github or gitlab)

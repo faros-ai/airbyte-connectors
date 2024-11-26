@@ -2,6 +2,7 @@ import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
@@ -13,7 +14,7 @@ import fs from 'fs-extra';
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
 import {ProjectBoardFilter} from '../src/project-board-filter';
-import {RunMode} from '../src/streams/common';
+import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
@@ -769,6 +770,19 @@ describe('index', () => {
       catalog
     );
     expect(newCatalog).toMatchSnapshot();
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(source, config, CustomStreamNames);
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      config,
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
+    );
   });
 
   async function testStreamSlices(config: JiraConfig): Promise<void> {

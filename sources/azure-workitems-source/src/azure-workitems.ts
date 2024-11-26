@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
@@ -44,17 +45,23 @@ export class AzureWorkitems {
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
-    const httpClient = axios.create({
-      baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-      timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
-      maxContentLength: Infinity, //default is 2000 bytes
-      params: {
-        'api-version': version,
+
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
+        timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+        maxContentLength: Infinity, //default is 2000 bytes
+        params: {
+          'api-version': version,
+        },
+        headers: {
+          Authorization: `Basic ${accessToken}`,
+        },
       },
-      headers: {
-        Authorization: `Basic ${accessToken}`,
-      },
-    });
+      undefined,
+      3,
+      1000
+    );
 
     const graphClient = axios.create({
       baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
@@ -74,7 +81,7 @@ export class AzureWorkitems {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getStories();
+      const iter = this.getBoards();
       await iter.next();
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
@@ -112,10 +119,11 @@ export class AzureWorkitems {
   }
   private post<T = any, R = AxiosResponse<T>>(
     path: string,
-    data: any
+    data: any,
+    params?: any
   ): Promise<R | undefined> {
     return this.handleNotFound<T, R>(() =>
-      this.httpClient.post<T, R>(path, data)
+      this.httpClient.post<T, R>(path, data, {params})
     );
   }
 
@@ -179,6 +187,7 @@ export class AzureWorkitems {
     }
   }
 
+  // TODO - Fetch all work items instead of only max 20000
   async getIdsFromAWorkItemType(
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
@@ -186,9 +195,11 @@ export class AzureWorkitems {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
-        ' order by [id] asc',
+        ' AND [System.ChangedDate] >= @Today-180' +
+        ' ORDER BY [System.ChangedDate] DESC',
     };
-    const list = await this.post<any>('wit/wiql', data);
+    // Azure API has a limit of 20000 items per request.
+    const list = await this.post<any>('wit/wiql', data, {$top: 19999});
     const ids = [];
     for (let i = 0; i < list.data.workItems.length; i++) {
       ids.push(list.data.workItems[i].id);

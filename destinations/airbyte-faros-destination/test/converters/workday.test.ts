@@ -21,7 +21,7 @@ function updateCustomReportWithFields(
   k: string
 ): Customreports {
   const testFieldsInput: Record<string, Record<string, any>> = JSON.parse(
-    readTestResourceFile('workday/testFieldsInputs.json')
+    readTestResourceFile('workday/test_fields_inputs.json')
   );
   if (!(k in testFieldsInput)) {
     throw new Error(`Key ${k} missing from testFieldsInput`);
@@ -71,12 +71,12 @@ function getCustomReportandCtxGivenKey(
   return [customReportDestination, ctx];
 }
 
-function runCustomReportDestination(
+async function runCustomReportDestination(
   customReportDestination,
   ctx
-): [ReadonlyArray<DestinationRecord>, Record<string, string>] {
+): Promise<[ReadonlyArray<DestinationRecord>, Record<string, string>]> {
   customReportDestination.setOrgsToKeepAndIgnore(ctx);
-  return customReportDestination.generateFinalRecords(ctx);
+  return await customReportDestination.generateFinalRecords(ctx);
 }
 
 describe('workday', () => {
@@ -84,7 +84,9 @@ describe('workday', () => {
   const getTempConfig = async (
     orgs_to_keep,
     orgs_to_ignore,
-    keep_terminated_employees = false
+    keep_terminated_employees = false,
+    resolve_locations = false,
+    log_records = false
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
@@ -92,8 +94,14 @@ describe('workday', () => {
       edition: Edition.CLOUD,
       edition_configs: {},
       source_specific_configs: {
-        workday: {orgs_to_keep, orgs_to_ignore, keep_terminated_employees},
+        workday: {
+          orgs_to_keep,
+          orgs_to_ignore,
+          keep_terminated_employees,
+          resolve_locations,
+        },
       },
+      log_records,
     });
   };
 
@@ -106,11 +114,55 @@ describe('workday', () => {
   });
 
   test('process records from customreports v1 stream accept all', async () => {
-    const configPath = await getTempConfig(['A', 'B'], []);
+    const keep_terminated_employees = false;
+    const resolve_locations = false;
+    const log_records = true;
+    const configPath = await getTempConfig(
+      ['A', 'B'],
+      [],
+      keep_terminated_employees,
+      resolve_locations,
+      log_records
+    );
+
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
       inputRecordsPath: 'workday/stream_v1.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
+
+  test('process records from customreports v1 stream accept all - geocoded', async () => {
+    const keep_terminated_employees = false;
+    const resolve_locations = true;
+    const log_records = true;
+
+    const geocodeLookupResults = JSON.parse(
+      readTestResourceFile('workday/geocode_lookup.json')
+    );
+
+    await mockttp
+      .forPost('/geocoding/lookup')
+      .thenReply(200, JSON.stringify({locations: [geocodeLookupResults[0]]}));
+
+    await mockttp
+      .forPost('/geocoding/lookup')
+      .thenReply(200, JSON.stringify({locations: [geocodeLookupResults[1]]}));
+
+    const configPath = await getTempConfig(
+      ['A', 'B'],
+      [],
+      keep_terminated_employees,
+      resolve_locations,
+      log_records
+    );
+
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v1.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
 
@@ -140,6 +192,7 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_many_records_per_employee.log',
     });
   });
+
   test('Randomly generated records from customreports v4 stream with Terminated', async () => {
     const configPath = await getTempConfig([], [], true);
     await destinationWriteTest({
@@ -148,6 +201,7 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v4.log',
     });
   });
+
   test('process structured generated records from customreports v4 stream', async () => {
     const configPath = await getTempConfig([], []);
     await destinationWriteTest({
@@ -156,6 +210,7 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v4.log',
     });
   });
+
   test('Saved and Ignored structured generated records v4 stream', async () => {
     // Teams are:
     const configPath = await getTempConfig(
@@ -181,6 +236,7 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v4.log',
     });
   });
+
   test('Ignore improperly formatted records from customreports v6 stream', async () => {
     const configPath = await getTempConfig([], []);
     await destinationWriteTest({
@@ -189,25 +245,27 @@ describe('workday', () => {
       inputRecordsPath: 'workday/stream_v6.log',
     });
   });
-  test('check resulting org structure from "empty" input', () => {
+
+  test('check resulting org structure from "empty" input', async () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'empty'
     );
-    const [res, finalTeamToParent] = runCustomReportDestination(
+    const [res, finalTeamToParent] = await runCustomReportDestination(
       customReportDestination,
       ctx
     );
     expect(finalTeamToParent).toMatchSnapshot({all_teams: 'all_teams'});
     expect(JSON.stringify(res)).toMatch('[]');
   });
-  test('check resulting org structure from "basic works" input', () => {
+
+  test('check resulting org structure from "basic works" input', async () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'basic works'
     );
 
-    const [res, finalTeamToParent] = runCustomReportDestination(
+    const [res, finalTeamToParent] = await runCustomReportDestination(
       customReportDestination,
       ctx
     );
@@ -215,9 +273,10 @@ describe('workday', () => {
     expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
     expect(finalTeamToParent['B']).toMatch('A');
-    expect(res.length).toEqual(14);
+    expect(res.length).toEqual(12);
   });
-  test('check resulting org structure from "failing cycle 1" input', () => {
+
+  test('check resulting org structure from "failing cycle 1" input', async () => {
     const fail_on_cycles = true;
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
@@ -225,19 +284,20 @@ describe('workday', () => {
       fail_on_cycles
     );
 
-    expect(() => {
-      runCustomReportDestination(customReportDestination, ctx);
-    }).toThrow();
+    await expect(
+      runCustomReportDestination(customReportDestination, ctx)
+    ).rejects.toThrow();
   });
-  test('check resulting org structure from "failing cycle 1" ignore fail input', () => {
+
+  test('check resulting org structure from "failing cycle 1" ignore fail input', async () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
       'failing cycle 1'
     );
 
     //We expect it to not throw errors
-    expect(() => {
-      runCustomReportDestination(customReportDestination, ctx);
-    }).not.toThrow();
+    await expect(
+      runCustomReportDestination(customReportDestination, ctx)
+    ).resolves.toBeDefined();
   });
 });

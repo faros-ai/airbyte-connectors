@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "faros_contributors_stats"
+        "name": "faros_issue_comments"
       }
     }
   ]

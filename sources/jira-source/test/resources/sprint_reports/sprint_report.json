@@ -146,17 +146,7 @@
             "value": 20
           }
         },
-        "status": {
-          "id": "10002",
-          "name": "Done",
-          "description": "",
-          "iconUrl": "https://jira.atlassian.net/",
-          "statusCategory": {
-            "id": "3",
-            "key": "done",
-            "colorName": "green"
-          }
-        }
+        "statusId": "10002"
       }
     ],
     "issueKeysAddedDuringSprint": {"TEST-3": true, "TEST-6": true}

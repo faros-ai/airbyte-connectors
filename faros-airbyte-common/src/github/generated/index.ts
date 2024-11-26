@@ -8172,8 +8172,10 @@ export type PullRequestReviewsQuery = {
         nodes?: Array<{
           state: PullRequestReviewState;
           submittedAt?: string | null;
+          updatedAt: string;
           databaseId?: number | null;
           url: string;
+          body: string;
           author?:
             | {login: string; html_url: string; type: 'Bot'}
             | {
@@ -8272,7 +8274,10 @@ export type PullRequestsQuery = {
               type: 'User';
             }
           | null;
-        commits: {totalCount: number};
+        commits: {
+          totalCount: number;
+          nodes?: Array<{commit: {oid: string}} | null> | null;
+        };
         comments: {totalCount: number};
         mergeCommit?: {oid: string} | null;
         reviewEvents: {
@@ -8363,8 +8368,10 @@ export type PullRequestsQuery = {
           nodes?: Array<{
             state: PullRequestReviewState;
             submittedAt?: string | null;
+            updatedAt: string;
             databaseId?: number | null;
             url: string;
+            body: string;
             author?:
               | {login: string; html_url: string; type: 'Bot'}
               | {
@@ -8455,8 +8462,10 @@ export type RepoTagsQuery = {
 export type ReviewFieldsFragment = {
   state: PullRequestReviewState;
   submittedAt?: string | null;
+  updatedAt: string;
   databaseId?: number | null;
   url: string;
+  body: string;
   author?:
     | {login: string; html_url: string; type: 'Bot'}
     | {
@@ -8526,8 +8535,10 @@ export type ReviewsFragment = {
     nodes?: Array<{
       state: PullRequestReviewState;
       submittedAt?: string | null;
+      updatedAt: string;
       databaseId?: number | null;
       url: string;
+      body: string;
       author?:
         | {login: string; html_url: string; type: 'Bot'}
         | {

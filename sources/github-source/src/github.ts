@@ -1,3 +1,4 @@
+import {OctokitResponse, RequestError} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -5,14 +6,15 @@ import {
   Artifact,
   CodeScanningAlert,
   Commit,
-  ContributorStats,
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  CoverageReport,
   DependabotAlert,
   Issue,
+  IssueComment,
   Label,
   Organization,
   OutsideCollaborator,
@@ -74,7 +76,13 @@ import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
-import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
+import {
+  AuditLogTeamMember,
+  CopilotMetricsResponse,
+  CopilotUsageResponse,
+  GitHubConfig,
+  GraphQLErrorResponse,
+} from './types';
 
 export const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -83,6 +91,7 @@ export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
+export const DEFAULT_COPILOT_METRICS_GA = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -93,6 +102,8 @@ export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
+export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
+export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -112,11 +123,14 @@ export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
+  protected readonly copilotMetricsGA: boolean;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
   protected readonly pullRequestsPageSize: number;
   protected readonly backfill: boolean;
+  protected readonly fetchPullRequestDiffCoverage: boolean;
+  protected readonly pullRequestCutoffLagSeconds: number;
 
   constructor(
     config: GitHubConfig,
@@ -127,12 +141,18 @@ export abstract class GitHub {
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
+    this.copilotMetricsGA =
+      config.copilot_metrics_ga ?? DEFAULT_COPILOT_METRICS_GA;
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
+    this.fetchPullRequestDiffCoverage =
+      config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
+    this.pullRequestCutoffLagSeconds =
+      config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
   }
 
   static async instance(
@@ -241,6 +261,14 @@ export abstract class GitHub {
     if (this.backfill && !startCursor) {
       return;
     }
+    const adjustedStartDate = startDate
+      ? new Date(
+          Math.max(
+            startDate.getTime() - this.pullRequestCutoffLagSeconds * 1000,
+            0
+          )
+        )
+      : undefined;
     const query = this.buildPRQuery();
     let currentPageSize = this.pullRequestsPageSize;
     let currentCursor = startCursor;
@@ -267,14 +295,36 @@ export abstract class GitHub {
             ) {
               continue;
             }
-            if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+            if (
+              adjustedStartDate &&
+              Utils.toDate(pr.updatedAt) < adjustedStartDate
+            ) {
               return;
+            }
+            const labels = await this.extractPullRequestLabels(pr, org, repo);
+            const mergedByMergeQueue = labels.some(
+              (label) => label.name === 'merged-by-mq'
+            );
+            let coverage = null;
+            if (
+              this.fetchPullRequestDiffCoverage &&
+              (pr.mergeCommit || mergedByMergeQueue)
+            ) {
+              const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
+              if (lastCommitSha) {
+                coverage = await this.getDiffCoverage(
+                  org,
+                  repo,
+                  lastCommitSha,
+                  pr.number
+                );
+              }
             }
             yield {
               org,
               repo,
               ...pr,
-              labels: await this.extractPullRequestLabels(pr, org, repo),
+              labels,
               files: await this.extractPullRequestFiles(pr, org, repo),
               reviews: await this.extractPullRequestReviews(pr, org, repo),
               reviewRequests: await this.extractPullRequestReviewRequests(
@@ -282,6 +332,7 @@ export abstract class GitHub {
                 org,
                 repo
               ),
+              coverage,
             };
           }
           // increase page size for the next iteration in case it was decreased previously
@@ -336,6 +387,79 @@ export abstract class GitHub {
         }
       }
     }
+  }
+
+  private async getDiffCoverage(
+    org: string,
+    repo: string,
+    commitSha: string,
+    prNumber: number
+  ): Promise<CoverageReport | null> {
+    if (!this.fetchPullRequestDiffCoverage) {
+      return null;
+    }
+
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listCommitStatusesForRef,
+      {
+        owner: org,
+        repo,
+        ref: commitSha,
+        per_page: this.pageSize,
+      }
+    );
+
+    try {
+      let codeClimateResult = undefined;
+      let codeCovResult = undefined;
+      this.logger.debug(
+        `Attempting to parse code coverage for commit ${commitSha} in ${org}/${repo} for PR #${prNumber}`
+      );
+
+      const processStatus = (status: any) => {
+        const match = status.description.match(/(\d+(?:\.\d+)?)%/);
+
+        if (match) {
+          const coveragePercentage = parseFloat(match[1]);
+          this.logger.debug(
+            `Successfully parsed code coverage from ${status.context}`
+          );
+          return {
+            coveragePercentage: coveragePercentage,
+            createdAt: Utils.toDate(status.created_at),
+            commitSha,
+          };
+        } else {
+          this.logger.warn(
+            `Failed to parse ${status.context} status description: ${status.description}`
+          );
+          return undefined;
+        }
+      };
+
+      for await (const res of iter) {
+        for (const status of res.data) {
+          if (status?.context === 'codeclimate/diff-coverage') {
+            codeClimateResult = processStatus(status);
+          } else if (status?.context === 'codecov/patch') {
+            codeCovResult = processStatus(status);
+          }
+        }
+      }
+
+      if (codeCovResult) {
+        return codeCovResult;
+      } else if (codeClimateResult) {
+        return codeClimateResult;
+      }
+    } catch (err: any) {
+      if (err?.status == 403) {
+        throw new VError(err, 'unable to list commit statuses');
+      }
+      throw err;
+    }
+
+    return null;
   }
 
   private buildPRQuery(): string {
@@ -448,6 +572,9 @@ export abstract class GitHub {
         pull_number: number,
         per_page: this.pageSize,
         page: startingPage,
+        request: {
+          retryAdditionalError: (err: RequestError) => err.status === 422,
+        },
       }
     );
     const files: PullRequestFile[] = [];
@@ -555,6 +682,7 @@ export abstract class GitHub {
             'created_at',
             'updated_at',
             'pull_request_url',
+            'html_url',
           ]),
         };
       }
@@ -923,30 +1051,68 @@ export abstract class GitHub {
     );
   }
 
-  async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
+  async *getCopilotUsage(
+    org: string,
+    cutoffDate: number
+  ): AsyncGenerator<CopilotUsageSummary> {
+    let data: CopilotUsageResponse;
+    let useBetaAPI = false;
     try {
-      const res = await this.octokit(org).copilot.usageMetricsForOrg({
-        org,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      if (this.copilotMetricsGA) {
+        // try to use GA API first
+        try {
+          const res: OctokitResponse<CopilotMetricsResponse> =
+            await this.octokit(org).request(this.octokit(org).copilotMetrics, {
+              org,
+            });
+          data = transformCopilotMetricsResponse(res.data);
+        } catch (err: any) {
+          if (err.message) {
+            this.logger.warn(err.message);
+          }
+          this.logger.warn(
+            'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
+          );
+        }
+      }
+      if (!data) {
+        // try to use beta API as fallback (supposed to be available until EOY24)
+        const res = await this.octokit(org).copilot.usageMetricsForOrg({
+          org,
+        });
+        data = res.data;
+        useBetaAPI = true;
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
         return;
       }
-      for (const usage of res.data) {
+      const latestDay = Math.max(
+        0,
+        ...data.map((usage) => Utils.toDate(usage.day).getTime())
+      );
+      if (latestDay <= cutoffDate) {
+        this.logger.info(
+          `GitHub Copilot usage data for org ${org} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+        );
+        return;
+      }
+      for (const usage of data) {
         yield {
           org,
           team: null,
           ...usage,
         };
       }
-      yield* this.getCopilotUsageTeams(org);
+      yield* this.getCopilotUsageTeams(org, useBetaAPI);
     } catch (err: any) {
       this.handleCopilotError(err, org, 'usage');
     }
   }
 
   async *getCopilotUsageTeams(
-    org: string
+    org: string,
+    useBetaAPI: boolean
   ): AsyncGenerator<CopilotUsageSummary> {
     let teams: ReadonlyArray<Team>;
     try {
@@ -961,17 +1127,29 @@ export abstract class GitHub {
       throw err;
     }
     for (const team of teams) {
-      const res = await this.octokit(org).copilot.usageMetricsForTeam({
-        org,
-        team_slug: team.slug,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      let data: CopilotUsageResponse;
+      if (useBetaAPI) {
+        const res = await this.octokit(org).copilot.usageMetricsForTeam({
+          org,
+          team_slug: team.slug,
+        });
+        data = res.data;
+      } else {
+        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+          org
+        ).request(this.octokit(org).copilotMetricsForTeam, {
+          org,
+          team_slug: team.slug,
+        });
+        data = transformCopilotMetricsResponse(res.data);
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
           `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
         );
         continue;
       }
-      for (const usage of res.data) {
+      for (const usage of data) {
         yield {
           org,
           team: team.slug,
@@ -983,6 +1161,9 @@ export abstract class GitHub {
 
   private handleCopilotError(err: any, org: string, context: string) {
     if (err.status >= 400 && err.status < 500) {
+      if (err.message) {
+        this.logger.warn(err.message);
+      }
       this.logger.warn(
         `Failed to sync GitHub Copilot ${context} for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
       );
@@ -1175,49 +1356,6 @@ export abstract class GitHub {
     }
   }
 
-  async *getContributorsStats(
-    org: string,
-    repo: string
-  ): AsyncGenerator<ContributorStats> {
-    const params = {owner: org, repo};
-    let res = await this.octokit(org).repos.getContributorsStats(params);
-
-    // GitHub REST API may return a 202 status code when stats are being prepared
-    // https://docs.github.com/en/rest/metrics/statistics?apiVersion=2022-11-28#best-practices-for-caching
-    const delaySecs = 5;
-    const maxAttempts = 3;
-    let attempts = 0;
-
-    while (res?.status === 202 && attempts < maxAttempts) {
-      attempts++;
-      const delay = delaySecs * attempts;
-      this.logger.debug(
-        `Stats are being prepared for repo ${repo} in org ${org}. Trying again in ${delay} seconds.`
-      );
-      await Utils.sleep(delay * 1000);
-      res = await this.octokit(org).repos.getContributorsStats(params);
-    }
-
-    if (res?.status === 202) {
-      this.logger.info(
-        `Stats are currently unavailable for repo ${repo} in org ${org}. Will sync them next time.`
-      );
-      return;
-    }
-
-    const data = Array.isArray(res.data) ? res.data : [];
-    for (const stats of data) {
-      const user = stats?.author;
-      if (!user?.login) continue;
-      yield {
-        org,
-        repo,
-        user: pick(user, ['login', 'name', 'email', 'html_url', 'type']),
-        ...pick(stats, ['total', 'weeks']),
-      };
-    }
-  }
-
   async *getProjects(org: string): AsyncGenerator<Project> {
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
@@ -1297,6 +1435,56 @@ export abstract class GitHub {
           org,
           repo,
           ...issue,
+        };
+      }
+    }
+  }
+
+  async *getIssueComments(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<IssueComment> {
+    // query supports filtering by start date (since) but not by end date
+    // for backfill, we iterate in ascending order from the start date and stop when we reach the end date
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).issues.listCommentsForRepo,
+      {
+        owner: org,
+        repo: repo,
+        since: startDate?.toISOString(),
+        direction: this.backfill ? 'asc' : 'desc',
+        sort: 'updated',
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const comment of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(comment.updated_at) > endDate
+        ) {
+          return;
+        }
+        yield {
+          repository: `${org}/${repo}`,
+          user: pick(comment.user, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
+          ...pick(comment, [
+            'id',
+            'body',
+            'created_at',
+            'updated_at',
+            'issue_url',
+            'html_url',
+          ]),
         };
       }
     }
@@ -1455,7 +1643,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const workflow of res.data.workflows) {
+      for (const workflow of res.data) {
         yield {
           org,
           repo,
@@ -1487,7 +1675,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const workflowRun of res.data.workflow_runs) {
+      for (const workflowRun of res.data) {
         // skip runs that were updated before the start date / updated_at cutoff
         if (Utils.toDate(workflowRun.updated_at) < startDate) {
           continue;
@@ -1535,7 +1723,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const job of res.data.jobs) {
+      for (const job of res.data) {
         yield {
           org,
           repo,
@@ -1577,7 +1765,7 @@ export abstract class GitHub {
       }
     );
     for await (const res of iter) {
-      for (const artifact of res.data.artifacts) {
+      for (const artifact of res.data) {
         yield {
           org,
           repo,
@@ -1770,4 +1958,79 @@ function getLastCopilotTeamForUser(
     }
   }
   return lastCopilotTeamLeft;
+}
+
+function transformCopilotMetricsResponse(
+  data: CopilotMetricsResponse
+): CopilotUsageResponse {
+  return data.map((d) => {
+    const breakdown =
+      d.copilot_ide_code_completions?.editors.flatMap((e) => {
+        const languages: {
+          [language: string]: {
+            suggestions_count: number;
+            acceptances_count: number;
+            lines_suggested: number;
+            lines_accepted: number;
+            active_users: number;
+          };
+        } = {};
+        for (const m of e.models) {
+          for (const l of m.languages) {
+            const language = (languages[l.name] = languages[l.name] ?? {
+              suggestions_count: 0,
+              acceptances_count: 0,
+              lines_suggested: 0,
+              lines_accepted: 0,
+              active_users: 0,
+            });
+            language.suggestions_count += l.total_code_suggestions;
+            language.acceptances_count += l.total_code_acceptances;
+            language.lines_suggested += l.total_code_lines_suggested;
+            language.lines_accepted += l.total_code_lines_accepted;
+            language.active_users += l.total_engaged_users;
+          }
+        }
+        return Object.entries(languages).map(([k, v]) => ({
+          ...v,
+          language: k,
+          editor: e.name,
+        }));
+      }) ?? [];
+    let total_chats = 0,
+      total_chat_insertion_events = 0,
+      total_chat_copy_events = 0;
+    for (const e of d.copilot_ide_chat?.editors ?? []) {
+      for (const m of e.models) {
+        total_chats += m.total_chats;
+        total_chat_insertion_events += m.total_chat_insertion_events;
+        total_chat_copy_events += m.total_chat_copy_events;
+      }
+    }
+    return {
+      day: d.date,
+      total_suggestions_count: breakdown.reduce(
+        (acc, c) => acc + c.suggestions_count,
+        0
+      ),
+      total_acceptances_count: breakdown.reduce(
+        (acc, c) => acc + c.acceptances_count,
+        0
+      ),
+      total_lines_suggested: breakdown.reduce(
+        (acc, c) => acc + c.lines_suggested,
+        0
+      ),
+      total_lines_accepted: breakdown.reduce(
+        (acc, c) => acc + c.lines_accepted,
+        0
+      ),
+      total_active_users: d.total_active_users,
+      total_chats,
+      total_chat_insertion_events,
+      total_chat_copy_events,
+      total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
+      breakdown,
+    };
+  });
 }

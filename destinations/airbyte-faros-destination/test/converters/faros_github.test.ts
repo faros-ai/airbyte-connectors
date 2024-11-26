@@ -43,6 +43,7 @@ describe('faros_github', () => {
 
   afterEach(async () => {
     await mockttp.stop();
+    jest.restoreAllMocks();
   });
 
   test('process records from all streams', async () => {

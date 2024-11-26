@@ -155,129 +155,162 @@
           "Custom"
         ]
       },
-      "fetch_teams": {
+      "custom_streams": {
         "order": 9,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "faros_organizations",
+          "faros_repositories"
+        ]
+      },
+      "fetch_teams": {
+        "order": 10,
         "type": "boolean",
         "title": "Fetch teams",
         "description": "Fetch teams from organization to populate teams and team memberships.",
         "default": false
       },
       "fetch_pull_request_files": {
-        "order": 10,
+        "order": 11,
         "type": "boolean",
         "title": "Fetch Pull Request Files",
         "description": "Fetch Pull Requests associated files",
         "default": false
       },
       "fetch_pull_request_reviews": {
-        "order": 11,
+        "order": 12,
         "type": "boolean",
         "title": "Fetch Pull Request Reviews",
         "description": "Fetch Pull Requests associated reviews",
         "default": true
       },
       "copilot_licenses_dates_fix": {
-        "order": 12,
+        "order": 13,
         "type": "boolean",
         "title": "Copilot Licenses Dates Fix",
         "description": "Fix the licenses dates for Copilot seats when using team assignments (requires Audit Log API)",
         "default": true
       },
+      "copilot_metrics_ga": {
+        "order": 14,
+        "type": "boolean",
+        "title": "Copilot Metrics GA",
+        "description": "Use Copilot Metrics GA API instead of Copilot Usage Beta API",
+        "default": false
+      },
       "cutoff_days": {
-        "order": 13,
+        "order": 15,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "bucket_id": {
-        "order": 14,
+        "order": 16,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 15,
+        "order": 17,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "round_robin_bucket_execution": {
-        "order": 16,
+        "order": 18,
         "type": "boolean",
         "title": "Round Robin Bucket Execution",
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
       "api_url": {
-        "order": 17,
+        "order": 19,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 18,
+        "order": 20,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 19,
+        "order": 21,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "page_size": {
-        "order": 20,
+        "order": 22,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "pull_requests_page_size": {
-        "order": 21,
+        "order": 23,
         "type": "integer",
         "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
       "timeout": {
-        "order": 22,
+        "order": 24,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 23,
+        "order": 25,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 24,
+        "order": 26,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 25,
+        "order": 27,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 26,
+        "order": 28,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
+      },
+      "fetch_pull_request_diff_coverage": {
+        "type": "boolean",
+        "title": "Fetch Pull Request diff coverage", 
+        "default": false,
+        "order": 28
+      },
+      "pull_request_cutoff_lag_seconds": {
+        "title": "Pull Request Cutoff Lag (seconds)", 
+        "description": "Apply lag to the end cutoff saved in the state. PRs updated after this will be rewritten during the next sync.",
+        "type": "integer",
+        "default": 0,
+        "order": 29
       }
     }
   }

@@ -26,10 +26,13 @@ import {GitHubConfig} from './types';
 export type ExtendedOctokit = OctokitRest &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
+    copilotMetrics: string;
+    copilotMetricsForTeam: string;
   };
 const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
   timeout,
+  retryAdditionalConditions,
   retry,
   throttling
 );
@@ -65,9 +68,9 @@ export function makeOctokitClient(
       ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
     },
     log: {
-      info: logger.info.bind(logger),
-      warn: logger.warn.bind(logger),
-      error: logger.error.bind(logger),
+      info: logger.debug.bind(logger),
+      warn: logger.debug.bind(logger),
+      error: logger.debug.bind(logger),
       debug: logger.debug.bind(logger),
     },
   });
@@ -85,6 +88,8 @@ export function makeOctokitClient(
   return {
     ...kit,
     auditLogs: 'GET /orgs/{org}/audit-log',
+    copilotMetrics: 'GET /orgs/{org}/copilot/metrics',
+    copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/metrics',
   };
 }
 
@@ -185,6 +190,9 @@ function beforeRequestHook(
   }
 }
 
+// Fake HTTP status code used by manually thrown errors to trigger retries by the retry-plugin
+const RETRYABLE_STATUS_CODE = 1000;
+
 function timeout(octokit: OctokitCore, octokitOptions: any) {
   const timeoutMs = octokitOptions.timeout?.ms;
   if (timeoutMs > 0) {
@@ -204,10 +212,10 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
         ])) as OctokitResponse<any, number>;
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          // simulate 500 so that retry plugin retries the request
+          // simulate request error so that retry plugin retries the request
           throw new RequestError(
             `GitHub request timed-out after ${timeoutMs} ms`,
-            500,
+            RETRYABLE_STATUS_CODE,
             {
               request: options,
             }
@@ -219,5 +227,20 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
       }
     });
   }
+  return {};
+}
+
+function retryAdditionalConditions(octokit: OctokitCore) {
+  octokit.hook.error('request', async (error, options) => {
+    const retryAdditionalError = options.request.retryAdditionalError;
+    if (!retryAdditionalError?.(error)) {
+      throw error;
+    }
+
+    // simulate request error so that retry plugin retries the request
+    throw new RequestError(error.message, RETRYABLE_STATUS_CODE, {
+      request: options,
+    });
+  });
   return {};
 }

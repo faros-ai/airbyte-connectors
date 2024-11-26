@@ -8,7 +8,9 @@ import {
   AirbyteRecord,
   AirbyteSourceBase,
   AirbyteState,
+  AirbyteStateMessage,
 } from '.';
+import {Data} from './utils';
 
 export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
@@ -45,6 +47,7 @@ export interface SourceReadTestOptions {
     state?: AirbyteState;
   }) => void;
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
+  checkFinalState?: (state: Dictionary<any>) => void;
 }
 
 export const sourceReadTest = async (
@@ -57,6 +60,7 @@ export const sourceReadTest = async (
     stateOrPath = undefined,
     onBeforeReadResultConsumer = undefined,
     checkRecordsData = undefined,
+    checkFinalState = undefined,
   } = options;
   const config = resolveInput(configOrPath);
   const catalog = resolveInput(catalogOrPath);
@@ -67,13 +71,19 @@ export const sourceReadTest = async (
   }
   const generator = source.read(res.config, res.config, res.catalog, res.state);
   const records: Dictionary<any>[] = [];
+  let finalState: Dictionary<any>;
   for await (const message of generator) {
     if (message.type === AirbyteMessageType.RECORD) {
       records.push((message as AirbyteRecord).record.data);
+    } else if (message.type === AirbyteMessageType.STATE) {
+      finalState = (message as AirbyteStateMessage).state.data;
     }
   }
   if (checkRecordsData) {
     checkRecordsData(records);
+  }
+  if (checkFinalState) {
+    checkFinalState(Data.decompress(finalState));
   }
 };
 
@@ -124,3 +134,19 @@ function resolveInput<T>(inputOrPath: string | T): T {
     ? readTestResourceAsJSON(inputOrPath)
     : inputOrPath;
 }
+
+export const customStreamsTest = async (
+  source: AirbyteSourceBase<AirbyteConfig>,
+  config: AirbyteConfig,
+  allStreams: ReadonlyArray<string>,
+  selectedStreams?: ReadonlyArray<string>
+): Promise<void> => {
+  const {catalog} = await source.onBeforeRead(
+    {...config, run_mode: 'Custom', custom_streams: selectedStreams},
+    {streams: allStreams.map((name) => ({stream: {name}}))} as any
+  );
+  expect(catalog.streams).toHaveLength((selectedStreams ?? allStreams).length);
+  expect(catalog.streams.map((s) => s.stream.name)).toEqual(
+    expect.arrayContaining(selectedStreams ?? allStreams)
+  );
+};

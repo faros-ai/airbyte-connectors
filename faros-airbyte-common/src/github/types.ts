@@ -44,9 +44,16 @@ export type Repository = {
 export type PullRequestNode =
   PullRequestsQuery['repository']['pullRequests']['nodes'][0];
 
+export type CoverageReport = {
+  coveragePercentage: number;
+  createdAt: Date;
+  commitSha: string;
+};
+
 export type PullRequest = {
   org: string;
   repo: string;
+  coverage?: CoverageReport;
 } & Omit<PullRequestNode, 'labels' | 'files' | 'reviews' | 'reviewRequests'> & {
     labels: PullRequestNode['labels']['nodes'];
     files: PullRequestNode['files']['nodes'];
@@ -70,7 +77,7 @@ export type PullRequestComment = {
   >;
 } & Pick<
   PullRequestCommentNode,
-  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
+  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url' | 'html_url'
 >;
 
 export type PullRequestReview = PullRequestNode['reviews']['nodes'][0];
@@ -173,6 +180,21 @@ export type Issue = {
 
 export type IssueAssignment = Issue['assignments']['nodes'][0];
 
+type IssueCommentNode = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.issues.listCommentsForRepo
+>[0];
+
+export type IssueComment = {
+  repository: string;
+  user: Pick<
+    IssueCommentNode['user'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
+} & Pick<
+  IssueCommentNode,
+  'id' | 'body' | 'created_at' | 'updated_at' | 'issue_url' | 'html_url'
+>;
+
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
   | CopilotSeatEnded
@@ -222,25 +244,6 @@ export type CopilotUsageSummary = {
 >[0];
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
-
-export type ContributorStats = {
-  org: string;
-  repo: string;
-  user: {
-    login: string;
-    name?: string;
-    email?: string;
-    html_url: string;
-    type: string;
-  };
-  total: number;
-  weeks: {
-    w?: number;
-    a?: number;
-    d?: number;
-    c?: number;
-  }[];
-};
 
 export type CodeScanningAlert = {
   org: string;

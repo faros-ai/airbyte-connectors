@@ -1,0 +1,41 @@
+query getFindings($offset: Int, $first: Int, $q: String) {
+  findings(offset: $offset, first: $first, q: $q) {
+    edges {
+      node {
+        toolName
+        dbCreatedAt
+        dbUpdatedAt
+        scannerCreatedAt
+        scannerUpdatedAt
+        dueDate
+        dismissReason
+        dismissedAt
+        scannerDismissedAt
+        sourceFilename
+        sourcePath
+        vulnerableVersion
+        vulnerability {
+          severity
+          cve
+          ghsa
+          fixAvailable
+        }
+        status
+        scannerStatus
+        line
+        scannerConfidence
+        asset {
+          name
+          id
+          type
+          description
+        }
+        projects
+        key
+      }
+    }
+    pageInfo {
+      totalObjects
+    }
+  }
+}

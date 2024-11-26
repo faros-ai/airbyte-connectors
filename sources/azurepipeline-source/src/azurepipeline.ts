@@ -1,6 +1,7 @@
-import {AxiosInstance} from 'axios';
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {
@@ -34,6 +35,23 @@ export interface AzurePipelineConfig {
   readonly api_retry_delay?: number;
 }
 
+// todo move to azure common utility
+export interface ProjectResponse {
+  count: number;
+  value: Project[];
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  state: string;
+  revision: number;
+  visibility: string;
+  lastUpdateTime: string;
+}
+
 export class AzurePipeline {
   private static azurePipeline: AzurePipeline = null;
 
@@ -41,14 +59,16 @@ export class AzurePipeline {
     private readonly httpClient: AxiosInstance,
     private readonly httpVSRMClient: AxiosInstance,
     private readonly startDate: Date,
-    private readonly projects: ReadonlyArray<string>,
-    private readonly pageSize: number
+    private projects: string[],
+    private readonly pageSize: number,
+    private readonly maxRetries: number,
+    private readonly logger: AirbyteLogger
   ) {}
 
-  static instance(
+  static async instance(
     config: AzurePipelineConfig,
     logger?: AirbyteLogger
-  ): AzurePipeline {
+  ): Promise<AzurePipeline> {
     if (AzurePipeline.azurePipeline) return AzurePipeline.azurePipeline;
 
     if (!config.access_token) {
@@ -59,8 +79,8 @@ export class AzurePipeline {
       throw new VError('Please provide an organization');
     }
 
-    if (!config.projects || config.projects.length === 0) {
-      throw new VError('Please provide at least one project name');
+    if (config.projects?.length > 1 && config.projects?.includes('*')) {
+      throw new VError('Projects provided in addition to * keyword');
     }
 
     const cutoff_days = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
@@ -111,10 +131,36 @@ export class AzurePipeline {
       httpVSRMClient,
       startDate,
       config.projects,
-      config.page_size ?? DEFAULT_PAGE_SIZE
+      config.page_size ?? DEFAULT_PAGE_SIZE,
+      config.max_retries ?? DEFAULT_RETRIES,
+      logger
     );
 
+    await AzurePipeline.azurePipeline.initializeProjects();
+
     return AzurePipeline.azurePipeline;
+  }
+
+  private async initializeProjects(): Promise<void> {
+    if (!this.projects?.length || this.projects[0] === '*') {
+      this.projects = await this.listProjects();
+    }
+
+    if (!Array.isArray(this.projects) || !this.projects?.length) {
+      throw new VError(
+        'Projects were not provided and could not be initialized'
+      );
+    }
+
+    this.logger.info(
+      `Projects that will be synced: [${AzurePipeline.azurePipeline.projects.join(
+        ','
+      )}]`
+    );
+  }
+
+  getInitializedProjects(): string[] {
+    return this.projects;
   }
 
   async checkConnection(): Promise<void> {
@@ -167,14 +213,16 @@ export class AzurePipeline {
 
   async *getBuilds(
     project: string,
-    lastQueueTime?: string,
+    lastFinishTime?: string,
     logger?: AirbyteLogger
   ): AsyncGenerator<Build> {
-    const startTime = lastQueueTime ? new Date(lastQueueTime) : this.startDate;
+    const startTime = lastFinishTime
+      ? new Date(lastFinishTime)
+      : this.startDate;
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildqueryorder
     const params = {
-      queryOrder: 'queueTimeAscending',
+      queryOrder: 'finishTimeAscending',
       minTime: startTime.toISOString(),
       $top: this.pageSize,
     };
@@ -254,6 +302,93 @@ export class AzurePipeline {
         hasNext ? 'Fetching next releases page' : 'No more releases'
       );
       params['continuationToken'] = continuationToken;
+    }
+  }
+
+  // todo move to azure common utility
+  private async listProjects(): Promise<string[]> {
+    const projects: string[] = [];
+    for await (const projectRes of this.getPaginated<ProjectResponse>(
+      '_apis/projects',
+      '$top',
+      '$skip',
+      {},
+      this.pageSize
+    )) {
+      for (const project of projectRes?.data?.value ?? []) {
+        projects.push(project.name);
+      }
+    }
+    return projects;
+  }
+
+  private async *getPaginated<T extends {value: any[]}>(
+    path: string,
+    topParamName: string,
+    skipParamName: string,
+    params: Dictionary<any>,
+    top: number = this.pageSize
+  ): AsyncGenerator<AxiosResponse<T> | undefined> {
+    let resCount = 0;
+    let skip = 0;
+    let res: AxiosResponse<T> | undefined = undefined;
+    params[topParamName] = top;
+
+    do {
+      params[skipParamName] = skip;
+      res = await this.getHandleNotFound(path, {params});
+      if (res) yield res;
+      resCount = (res?.data?.value ?? []).length;
+      skip += resCount;
+    } while (resCount >= top);
+  }
+
+  private sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  // Read more: https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits?view=azure-devops#api-client-experience
+  private async maybeSleepOnResponse<T = any>(
+    path: string,
+    res?: AxiosResponse<T>
+  ): Promise<boolean> {
+    const retryAfterSecs = res?.headers?.['retry-after'];
+    if (retryAfterSecs) {
+      const retryRemaining = res?.headers?.['x-ratelimit-remaining'];
+      const retryRatelimit = res?.headers?.['x-ratelimit-limit'];
+      this.logger.warn(
+        `'Retry-After' response header is detected when requesting ${path}. ` +
+          `Waiting for ${retryAfterSecs} seconds before making any requests. ` +
+          `(TSTUs remaining: ${retryRemaining}, TSTUs total limit: ${retryRatelimit})`
+      );
+      await this.sleep(Number.parseInt(retryAfterSecs) * 1000);
+      return true;
+    }
+    return false;
+  }
+
+  private async getHandleNotFound<T = any, D = any>(
+    path: string,
+    conf?: AxiosRequestConfig<D>,
+    attempt = 1
+  ): Promise<AxiosResponse<T> | undefined> {
+    try {
+      const res = await this.httpClient.get<T, AxiosResponse<T>>(path, conf);
+      await this.maybeSleepOnResponse(path, res);
+      return res;
+    } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to ${path} was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.getHandleNotFound(path, conf, attempt + 1);
+      }
+      if (err?.response?.status === 404) {
+        return undefined;
+      }
+      throw wrapApiError(err, `Failed to get ${path}. `);
     }
   }
 }

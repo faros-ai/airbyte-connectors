@@ -18,7 +18,8 @@
     "test": "test"
   },
   "files": [
-    "lib/"
+    "lib/",
+    "resources/"
   ],
   "main": "./lib",
   "engines": {

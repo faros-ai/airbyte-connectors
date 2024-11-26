@@ -6,7 +6,8 @@ import {
 import {Utils} from 'faros-js-client';
 import {camelCase, isNil, last, omitBy, toLower, upperFirst} from 'lodash';
 
-import {FileCollector, RepoKey} from '../common/vcs';
+import {FLUSH} from '../../common/types';
+import {FileCollector, PullRequestKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter, PartialUser} from './common';
 
@@ -25,6 +26,11 @@ export class FarosPullRequests extends GitHubConverter {
   private readonly collectedBranches = new Map<string, BranchKey>();
   private readonly fileCollector = new FileCollector();
   private readonly collectedLabels = new Set<string>();
+  private readonly prFileAssoc = new Map<
+    string,
+    ReadonlyArray<DestinationRecord>
+  >();
+  private readonly prKeyMap = new Map<string, PullRequestKey>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -34,6 +40,7 @@ export class FarosPullRequests extends GitHubConverter {
     'vcs_PullRequestFile',
     'vcs_PullRequestLabel',
     'vcs_PullRequestReview',
+    'qa_CodeQuality',
   ];
 
   async convert(
@@ -41,6 +48,13 @@ export class FarosPullRequests extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const pr = record.record.data as PullRequest;
+
+    const prKey = GitHubCommon.pullRequestKey(
+      pr.number,
+      pr.org,
+      pr.repo,
+      this.streamName.source
+    );
 
     this.collectUser(pr.author);
 
@@ -81,8 +95,28 @@ export class FarosPullRequests extends GitHubConverter {
     });
 
     let reviewCommentCount = 0;
+    const reviewSubmissionComments: DestinationRecord[] = [];
     pr.reviews.forEach((review) => {
       reviewCommentCount += review.comments.totalCount;
+      if (review.body) {
+        reviewSubmissionComments.push({
+          model: 'vcs_PullRequestComment',
+          record: {
+            number: review.databaseId,
+            uid: review.databaseId.toString(),
+            comment: Utils.cleanAndTruncate(
+              review.body,
+              GitHubCommon.MAX_DESCRIPTION_LENGTH
+            ),
+            createdAt: Utils.toDate(review.submittedAt),
+            updatedAt: Utils.toDate(review.updatedAt),
+            author: review.author
+              ? {uid: review.author.login, source: this.streamName.source}
+              : null,
+            pullRequest: prKey,
+          },
+        });
+      }
       this.collectUser(review.author);
     });
 
@@ -90,11 +124,42 @@ export class FarosPullRequests extends GitHubConverter {
       pr.reviewRequests
     );
 
-    const prKey = GitHubCommon.pullRequestKey(
-      pr.number,
-      pr.org,
-      pr.repo,
-      this.streamName.source
+    const qa_CodeQuality: DestinationRecord[] = [];
+    if (pr.coverage) {
+      qa_CodeQuality.push({
+        model: 'qa_CodeQuality',
+        record: {
+          uid: pr.coverage.commitSha,
+          coverage: {
+            category: 'Coverage',
+            type: 'Percent',
+            name: 'Coverage',
+            value: pr.coverage.coveragePercentage,
+          },
+          createdAt: Utils.toDate(pr.coverage.createdAt),
+          pullRequest: prKey,
+          commit: {
+            sha: pr.coverage.commitSha,
+            repository: repoKey,
+          },
+          repository: repoKey,
+        },
+      });
+    }
+
+    const prKeyStr = `${prKey.repository.organization.uid}/${prKey.repository.uid}/${prKey.number}`;
+    this.prKeyMap.set(prKeyStr, prKey);
+    this.prFileAssoc.set(
+      prKeyStr,
+      pr.files.map((file) => ({
+        model: 'vcs_PullRequestFile',
+        record: {
+          pullRequest: prKey,
+          file: {uid: file.path, repository: repoKey},
+          additions: file.additions,
+          deletions: file.deletions,
+        },
+      }))
     );
 
     return [
@@ -111,7 +176,10 @@ export class FarosPullRequests extends GitHubConverter {
           mergedAt: Utils.toDate(pr.mergedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
-          commentCount: pr.comments.totalCount + reviewCommentCount,
+          commentCount:
+            pr.comments.totalCount +
+            reviewCommentCount +
+            reviewSubmissionComments.length,
           diffStats: {
             linesAdded: pr.additions,
             linesDeleted: pr.deletions,
@@ -137,15 +205,6 @@ export class FarosPullRequests extends GitHubConverter {
           label: {name: label.name},
         },
       })),
-      ...pr.files.map((file) => ({
-        model: 'vcs_PullRequestFile',
-        record: {
-          pullRequest: prKey,
-          file: {uid: file.path, repository: repoKey},
-          additions: file.additions,
-          deletions: file.deletions,
-        },
-      })),
       ...pr.reviews.map((review) => ({
         model: 'vcs_PullRequestReview',
         record: {
@@ -167,6 +226,8 @@ export class FarosPullRequests extends GitHubConverter {
           requestedReviewer: {uid: reviewer, source: this.streamName.source},
         },
       })),
+      ...reviewSubmissionComments,
+      ...qa_CodeQuality,
     ];
   }
 
@@ -210,6 +271,7 @@ export class FarosPullRequests extends GitHubConverter {
       ...this.convertLabels(),
       ...this.convertUsers(),
       ...this.fileCollector.convertFiles(),
+      ...this.convertPRFileAssociations(),
     ];
   }
 
@@ -245,6 +307,22 @@ export class FarosPullRequests extends GitHubConverter {
         name: label,
       },
     }));
+  }
+
+  private convertPRFileAssociations(): DestinationRecord[] {
+    return [
+      ...Array.from(this.prFileAssoc.keys()).map((prKeyStr) => ({
+        model: 'vcs_PullRequestFile__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            pullRequest: this.prKeyMap.get(prKeyStr),
+          },
+        },
+      })),
+      FLUSH,
+      ...Array.from(this.prFileAssoc.values()).flat(),
+    ];
   }
 }
 

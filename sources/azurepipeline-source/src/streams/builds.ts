@@ -10,7 +10,7 @@ import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
 import {Build} from '../models';
 
 interface BuildState {
-  lastQueueTime: string;
+  lastFinishTime: string;
 }
 
 type StreamSlice = {
@@ -32,10 +32,14 @@ export class Builds extends AirbyteStreamBase {
     return 'id';
   }
   get cursorField(): string | string[] {
-    return 'queueTime';
+    return 'finishTime';
   }
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
+      this.logger
+    );
+    for (const project of azurePipeline.getInitializedProjects()) {
       yield {
         project,
       };
@@ -47,14 +51,17 @@ export class Builds extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: BuildState
   ): AsyncGenerator<Build> {
-    const lastQueueTime =
+    const lastFinishTime =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastQueueTime
+        ? streamState?.lastFinishTime
         : undefined;
-    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
+      this.logger
+    );
     yield* azurePipeline.getBuilds(
       streamSlice.project,
-      lastQueueTime,
+      lastFinishTime,
       this.logger
     );
   }
@@ -62,12 +69,12 @@ export class Builds extends AirbyteStreamBase {
     currentStreamState: BuildState,
     latestRecord: Build
   ): BuildState {
-    const lastQueueTime: Date = new Date(latestRecord.queueTime);
+    const lastFinishTime: Date = new Date(latestRecord.finishTime);
     return {
-      lastQueueTime:
-        lastQueueTime >= new Date(currentStreamState?.lastQueueTime || 0)
-          ? latestRecord.queueTime
-          : currentStreamState.lastQueueTime,
+      lastFinishTime:
+        lastFinishTime >= new Date(currentStreamState?.lastFinishTime || 0)
+          ? latestRecord.finishTime
+          : currentStreamState.lastFinishTime,
     };
   }
 }

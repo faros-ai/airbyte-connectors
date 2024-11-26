@@ -11,7 +11,6 @@ import {DEFAULT_COPILOT_LICENSES_DATES_FIX, GitHub} from '../github';
 import {GitHubConfig} from '../types';
 import {
   OrgStreamSlice,
-  RepoStreamSlice,
   StreamBase,
   StreamState,
   StreamWithOrgSlices,
@@ -66,7 +65,7 @@ export class FarosCopilotSeats extends StreamWithOrgSlices {
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: CopilotSeatsStreamRecord,
-    slice: RepoStreamSlice
+    slice: OrgStreamSlice
   ): StreamState {
     if (!this.useCopilotTeamAssignmentsFix) {
       return {};

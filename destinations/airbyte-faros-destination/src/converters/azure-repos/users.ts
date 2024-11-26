@@ -32,23 +32,26 @@ export class Users extends AzureReposConverter {
       category: UserTypeCategory.User,
       detail: userItem.subjectKind,
     };
+    const uid = userItem.principalName.toLowerCase();
     res.push({
       model: 'vcs_Membership',
       record: {
         organization,
-        user: {uid: userItem.principalName, source},
+        user: {uid, source},
       },
     });
     res.push({
       model: 'vcs_User',
       record: {
-        uid: userItem.principalName,
+        uid,
         name: userItem.displayName,
+        email: userItem.mailAddress,
         type,
         htmlUrl: userItem.url,
         source,
       },
     });
+    this.uidsFromUsersStream.add(uid);
     return res;
   }
 }

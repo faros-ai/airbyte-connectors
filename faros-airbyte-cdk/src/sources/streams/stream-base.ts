@@ -219,6 +219,7 @@ export abstract class AirbyteStreamBase {
           typeof component === 'string' ? [component] : component
         );
       }
+      return wrappedKeys;
     }
   }
 }

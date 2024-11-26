@@ -8,6 +8,8 @@ import VError from 'verror';
 import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
 import {RunMode} from './streams/common';
 
+type BoardInclusion = {uid: string; issueSync: boolean};
+
 type FilterConfig = {
   projects?: Set<string>;
   excludedProjects?: Set<string>;
@@ -19,7 +21,7 @@ export class ProjectBoardFilter {
   private readonly filterConfig: FilterConfig;
   private readonly useFarosGraphBoardsSelection: boolean;
   private projects?: Set<string>;
-  private boards?: Set<string>;
+  private boards?: Map<string, BoardInclusion>;
   private loadedSelectedBoards: boolean = false;
 
   private static _instance: ProjectBoardFilter;
@@ -118,9 +120,9 @@ export class ProjectBoardFilter {
   }
 
   @Memoize()
-  async getBoards(): Promise<ReadonlyArray<string>> {
+  async getBoards(): Promise<ReadonlyArray<BoardInclusion>> {
     if (!this.boards) {
-      this.boards = new Set();
+      this.boards = new Map();
 
       const jira = await Jira.instance(this.config, this.logger);
 
@@ -136,26 +138,61 @@ export class ProjectBoardFilter {
         await this.getBoardsFromJira(jira);
       }
     }
-    return Array.from(this.boards);
+    return Array.from(this.boards.values());
   }
 
-  boardIsIncluded(board: string): boolean {
+  /**
+   * Determines how a board should be included in the sync.
+   * 1. When using Faros Graph, all boards are included for boards stream but
+   *    only those explicitly included in the Faros Graph are synced.
+   * 2. When not using Faros Graph, boards are included if they are in the
+   *    `boards` set or not in the `excludedBoards` set.
+   *
+   * @returns An object containing:
+   *   - included: Whether the board should be included in the sync.
+   *   - syncIssues: Whether the issues from this board should be synced.
+   */
+  async getBoardInclusion(board: string): Promise<{
+    included: boolean;
+    issueSync: boolean;
+  }> {
+    await this.loadSelectedBoards();
     const {boards, excludedBoards} = this.filterConfig;
+
+    if (this.useFarosGraphBoardsSelection) {
+      const included = true;
+
+      const issueSync =
+        (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
+      return {included, issueSync};
+    }
+
     if (boards?.size) {
-      return boards.has(board);
+      const included = boards.has(board);
+      return {included, issueSync: included};
     }
+
     if (excludedBoards?.size) {
-      return !excludedBoards.has(board);
+      const included = !excludedBoards.has(board);
+      return {included, issueSync: included};
     }
-    return true;
+    return {included: true, issueSync: true};
   }
 
+  /**
+   * Retrieves boards from Jira for all projects and populates the internal boards map.
+   * Only includes boards based on the inclusion criteria determined by getBoardInclusion.
+   *
+   * @param jira - The Jira instance used to fetch project boards.
+   * @returns A Promise that resolves when all boards have been processed.
+   */
   private async getBoardsFromJira(jira: Jira): Promise<void> {
     for (const project of this.projects) {
       for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
-        if (this.boardIsIncluded(boardId)) {
-          this.boards.add(boardId);
+        const {included, issueSync} = await this.getBoardInclusion(boardId);
+        if (included) {
+          this.boards.set(boardId, {uid: boardId, issueSync});
         }
       }
     }
@@ -169,8 +206,9 @@ export class ProjectBoardFilter {
     );
     for await (const project of projects) {
       for (const board of project.boardUids) {
-        if (this.boardIsIncluded(board)) {
-          this.boards.add(board);
+        const {included, issueSync} = await this.getBoardInclusion(board);
+        if (included) {
+          this.boards.set(board, {uid: board, issueSync});
         }
       }
     }

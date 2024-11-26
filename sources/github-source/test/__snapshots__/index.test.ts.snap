@@ -320,29 +320,6 @@ exports[`index streams - commits 2`] = `
 "
 `;
 
-exports[`index streams - contributors stats 1`] = `
-[
-  {
-    "org": "github",
-    "repo": "Hello-World",
-    "total": 135,
-    "user": {
-      "html_url": "https://github.com/octocat",
-      "login": "octocat",
-      "type": "User",
-    },
-    "weeks": [
-      {
-        "a": 6898,
-        "c": 10,
-        "d": 77,
-        "w": 1367712000,
-      },
-    ],
-  },
-]
-`;
-
 exports[`index streams - copilot seats (empty) 1`] = `
 [
   {
@@ -424,6 +401,115 @@ exports[`index streams - copilot seats without audit logs API 1`] = `
     "team": undefined,
     "teamJoinedAt": undefined,
     "user": "octokitten",
+  },
+]
+`;
+
+exports[`index streams - copilot usage with teams (GA API) 1`] = `
+[
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 246,
+        "active_users": 12,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 270,
+        "lines_suggested": 450,
+        "suggestions_count": 498,
+      },
+      {
+        "acceptances_count": 506,
+        "active_users": 14,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 540,
+        "lines_suggested": 1040,
+        "suggestions_count": 992,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": null,
+    "total_acceptances_count": 875,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_copy_events": 19,
+    "total_chat_insertion_events": 23,
+    "total_chats": 55,
+    "total_lines_accepted": 943,
+    "total_lines_suggested": 1787,
+    "total_suggestions_count": 1734,
+  },
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 246,
+        "active_users": 12,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 270,
+        "lines_suggested": 450,
+        "suggestions_count": 498,
+      },
+      {
+        "acceptances_count": 506,
+        "active_users": 14,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 540,
+        "lines_suggested": 1040,
+        "suggestions_count": 992,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": "justice-league",
+    "total_acceptances_count": 875,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_copy_events": 19,
+    "total_chat_insertion_events": 23,
+    "total_chats": 55,
+    "total_lines_accepted": 943,
+    "total_lines_suggested": 1787,
+    "total_suggestions_count": 1734,
   },
 ]
 `;
@@ -601,6 +687,73 @@ exports[`index streams - copilot usage with teams 1`] = `
 ]
 `;
 
+exports[`index streams - copilot usage with teams 2`] = `
+{
+  "faros_copilot_usage": {
+    "github": {
+      "cutoff": 1697414400000,
+    },
+  },
+}
+`;
+
+exports[`index streams - copilot usage without teams (GA API) 1`] = `
+[
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 246,
+        "active_users": 12,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 270,
+        "lines_suggested": 450,
+        "suggestions_count": 498,
+      },
+      {
+        "acceptances_count": 506,
+        "active_users": 14,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 540,
+        "lines_suggested": 1040,
+        "suggestions_count": 992,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "org": "github",
+    "team": null,
+    "total_acceptances_count": 875,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_copy_events": 19,
+    "total_chat_insertion_events": 23,
+    "total_chats": 55,
+    "total_lines_accepted": 943,
+    "total_lines_suggested": 1787,
+    "total_suggestions_count": 1734,
+  },
+]
+`;
+
 exports[`index streams - copilot usage without teams 1`] = `
 [
   {
@@ -688,6 +841,16 @@ exports[`index streams - copilot usage without teams 1`] = `
     "total_suggestions_count": 800,
   },
 ]
+`;
+
+exports[`index streams - copilot usage without teams 2`] = `
+{
+  "faros_copilot_usage": {
+    "github": {
+      "cutoff": 1697414400000,
+    },
+  },
+}
 `;
 
 exports[`index streams - dependabot alerts 1`] = `
@@ -910,6 +1073,25 @@ exports[`index streams - dependabot alerts 1`] = `
 ]
 `;
 
+exports[`index streams - issue comments 1`] = `
+[
+  {
+    "body": "Me too",
+    "created_at": "2011-04-14T16:00:49Z",
+    "html_url": "https://github.com/octocat/Hello-World/issues/1347#issuecomment-1",
+    "id": 1,
+    "issue_url": "https://api.github.com/repos/octocat/Hello-World/issues/1347",
+    "repository": "github/Hello-World",
+    "updated_at": "2011-04-14T16:00:49Z",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
+  },
+]
+`;
+
 exports[`index streams - issues 1`] = `
 [
   {
@@ -1124,6 +1306,7 @@ exports[`index streams - pull request comments 1`] = `
   {
     "body": "This is a test comment.",
     "created_at": "2024-07-18T17:04:03Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000001",
     "id": 1683209890,
     "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
     "repository": "github/Hello-World",
@@ -1137,6 +1320,7 @@ exports[`index streams - pull request comments 1`] = `
   {
     "body": "Another comment to test :)",
     "created_at": "2024-07-18T17:04:03Z",
+    "html_url": "https://github.com/rest/test/pull/1596#discussion_r1000000002",
     "id": 1683209891,
     "pull_request_url": "https://api.github.com/repos/test/dolos/pulls/1234",
     "repository": "github/Hello-World",
@@ -1184,8 +1368,16 @@ Add any other context about the changes here.
       "totalCount": 3,
     },
     "commits": {
+      "nodes": [
+        {
+          "commit": {
+            "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+          },
+        },
+      ],
       "totalCount": 13,
     },
+    "coverage": null,
     "createdAt": "2021-02-12T05:35:19Z",
     "deletions": 763,
     "files": [
@@ -1239,12 +1431,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "LGTM",
         "comments": {
           "totalCount": 1,
         },
         "databaseId": 2192199611,
         "state": "COMMENTED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
       },
       {
@@ -1254,12 +1448,14 @@ Add any other context about the changes here.
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199612,
         "state": "APPROVED",
         "submittedAt": "2021-03-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
       },
     ],
@@ -1300,6 +1496,7 @@ N/A
     "commits": {
       "totalCount": 2,
     },
+    "coverage": null,
     "createdAt": "2021-02-04T23:54:56Z",
     "deletions": 4787,
     "files": [
@@ -1368,6 +1565,7 @@ N/A
     "commits": {
       "totalCount": 9,
     },
+    "coverage": null,
     "createdAt": "2021-02-04T15:49:42Z",
     "deletions": 23,
     "files": [
@@ -1444,12 +1642,312 @@ N/A
           "name": null,
           "type": "User",
         },
+        "body": "",
         "comments": {
           "totalCount": 0,
         },
         "databaseId": 2192199689,
         "state": "APPROVED",
         "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-02-04T21:54:10Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
+      },
+    ],
+    "state": "MERGED",
+    "title": "Fix edge cases for deploy cycle breakdown",
+    "updatedAt": "2021-02-04T21:53:09Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/46",
+  },
+]
+`;
+
+exports[`index streams - pull requests diff coverage 1`] = `
+[
+  {
+    "additions": 1077,
+    "author": {
+      "html_url": "https://github.com/dolos",
+      "login": "dolos",
+      "name": "Dolos",
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "**Related issues**
+https://github.com/faros-ai/tickets/issues/120
+
+**Describe the proposed solution**
+Optional \`employee\` param changes DORA app behavior to return metrics rolled-up by owner.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context about the changes here.
+",
+    "changedFiles": 21,
+    "comments": {
+      "totalCount": 3,
+    },
+    "commits": {
+      "nodes": [
+        {
+          "commit": {
+            "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+          },
+        },
+      ],
+      "totalCount": 13,
+    },
+    "coverage": {
+      "commitSha": "b4c35c299ad22fe858569482a7696597ca038651",
+      "coveragePercentage": 97,
+      "createdAt": 2024-06-12T23:20:22.000Z,
+    },
+    "createdAt": "2021-02-12T05:35:19Z",
+    "deletions": 763,
+    "files": [],
+    "headRefName": "dora-employee-param",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "isDraft": false,
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+      {
+        "name": "typescript",
+      },
+    ],
+    "mergeCommit": {
+      "oid": "b4c35c299ad22fe858569482a7696597ca038651",
+    },
+    "mergedAt": "2021-02-16T17:15:27Z",
+    "number": 48,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+      },
+    ],
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "body": "LGTM",
+        "comments": {
+          "totalCount": 1,
+        },
+        "databaseId": 2192199611,
+        "state": "COMMENTED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
+      },
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "body": "",
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199612,
+        "state": "APPROVED",
+        "submittedAt": "2021-03-04T21:53:09Z",
+        "updatedAt": "2021-03-04T21:54:10Z",
+        "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
+      },
+    ],
+    "state": "MERGED",
+    "title": "DORA apps take optional employee uid param",
+    "updatedAt": "2021-02-16T17:15:29Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/48",
+  },
+  {
+    "additions": 0,
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": "nehanda",
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "**Related issues**
+Ensures we only expose the apps that can run on the latest Faros API 
+
+**Describe the proposed solution**
+Moving all apps that are not compatible with our new schema and/or do not have feed and model support yet. As we add more feeds re-add them after full testing.
+
+**Describe alternatives you've considered**
+N/A
+
+",
+    "changedFiles": 140,
+    "comments": {
+      "totalCount": 1,
+    },
+    "commits": {
+      "totalCount": 2,
+    },
+    "coverage": null,
+    "createdAt": "2021-02-04T23:54:56Z",
+    "deletions": 4787,
+    "files": [],
+    "headRefName": "nehanda/cleanup-apps",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "isDraft": false,
+    "labels": [],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 47,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [],
+    "reviews": [],
+    "state": "CLOSED",
+    "title": "Move apps with no feed support temporarily to internal",
+    "updatedAt": "2021-02-11T18:10:08Z",
+    "url": "https://github.com/faros-ai/faros-apps/pull/47",
+  },
+  {
+    "additions": 109,
+    "author": {
+      "html_url": "https://github.com/nehanda",
+      "login": "nehanda",
+      "name": null,
+      "type": "User",
+    },
+    "baseRefName": "main",
+    "baseRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "faros-ai",
+      },
+    },
+    "body": "Handle cases and add tests for when:
+1. Deployments have no associated builds
+2. Builds have no associated commits",
+    "changedFiles": 2,
+    "comments": {
+      "totalCount": 0,
+    },
+    "commits": {
+      "totalCount": 9,
+    },
+    "coverage": null,
+    "createdAt": "2021-02-04T15:49:42Z",
+    "deletions": 23,
+    "files": [],
+    "headRefName": "fix-edge-cases",
+    "headRepository": {
+      "name": "faros-apps",
+      "owner": {
+        "login": "dora",
+      },
+    },
+    "isDraft": false,
+    "labels": [
+      {
+        "name": "dependencies",
+      },
+    ],
+    "mergeCommit": {
+      "oid": "8fe76c0e99f7e00533181b3749735fcf9fdea206",
+    },
+    "mergedAt": "2021-02-04T21:53:00Z",
+    "number": 46,
+    "org": "github",
+    "repo": "Hello-World",
+    "reviewEvents": {
+      "nodes": [],
+    },
+    "reviewRequests": [
+      {
+        "requestedReviewer": {
+          "html_url": "https://github.com/user1",
+          "login": "user1",
+          "name": null,
+          "type": "User",
+        },
+      },
+      {
+        "requestedReviewer": {
+          "members": {
+            "nodes": [
+              {
+                "html_url": "https://github.com/user2",
+                "login": "user2",
+                "name": null,
+                "type": "User",
+              },
+              {
+                "html_url": "https://github.com/user3",
+                "login": "user3",
+                "name": null,
+                "type": "User",
+              },
+            ],
+          },
+          "type": "Team",
+        },
+      },
+    ],
+    "reviews": [
+      {
+        "author": {
+          "html_url": "https://github.com/nehanda",
+          "login": "nehanda",
+          "name": null,
+          "type": "User",
+        },
+        "body": "",
+        "comments": {
+          "totalCount": 0,
+        },
+        "databaseId": 2192199689,
+        "state": "APPROVED",
+        "submittedAt": "2021-02-04T21:53:09Z",
+        "updatedAt": "2021-02-04T21:54:10Z",
         "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
       },
     ],
@@ -1528,6 +2026,7 @@ exports[`index streams - repositories 1`] = `
     "org": "github",
     "private": false,
     "size": 108,
+    "syncRepoData": true,
     "topics": [
       "octocat",
       "atom",
@@ -1553,6 +2052,7 @@ exports[`index streams - repositories with bucketing 1`] = `
     "org": "github",
     "private": false,
     "size": 256,
+    "syncRepoData": true,
     "topics": [
       "github",
       "api",

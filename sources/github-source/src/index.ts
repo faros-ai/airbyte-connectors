@@ -19,14 +19,14 @@ import {
   DEFAULT_RUN_MODE,
   GitHub,
 } from './github';
-import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
 import {FarosCommits} from './streams/faros_commits';
-import {FarosContributorsStats} from './streams/faros_contributors_stats';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosDependabotAlerts} from './streams/faros_dependabot_alerts';
+import {FarosIssueComments} from './streams/faros_issue_comments';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosLabels} from './streams/faros_labels';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -88,11 +88,11 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosArtifacts(config, this.logger, farosClient),
       new FarosCodeScanningAlerts(config, this.logger, farosClient),
       new FarosCommits(config, this.logger, farosClient),
-      new FarosContributorsStats(config, this.logger, farosClient),
       new FarosCopilotSeats(config, this.logger, farosClient),
       new FarosCopilotUsage(config, this.logger, farosClient),
       new FarosDependabotAlerts(config, this.logger, farosClient),
       new FarosIssues(config, this.logger, farosClient),
+      new FarosIssueComments(config, this.logger, farosClient),
       new FarosLabels(config, this.logger, farosClient),
       new FarosOrganizations(config, this.logger, farosClient),
       new FarosOutsideCollaborators(config, this.logger, farosClient),
@@ -124,7 +124,12 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   }> {
     const streamNames = [
       ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
-    ];
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     if (config.fetch_teams ?? DEFAULT_FETCH_TEAMS) {
       streamNames.push(...TeamStreamNames);
     }

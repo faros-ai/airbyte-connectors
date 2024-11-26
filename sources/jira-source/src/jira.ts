@@ -1,7 +1,11 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
+import {
+  bucket,
+  normalizeString,
+  validateBucketingConfig,
+} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -63,6 +67,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
   readonly api_url?: string;
@@ -172,6 +177,7 @@ export class Jira {
     private readonly fieldNameById: Map<string, string>,
     private readonly additionalFieldsArrayLimit: number,
     private readonly statusByName: Map<string, Status>,
+    private readonly statusById: Map<string, Status>,
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
@@ -263,9 +269,16 @@ export class Jira {
     );
 
     const statusByName = new Map<string, Status>();
+    const statusById = new Map<string, Status>();
     for (const status of await api.v2.workflowStatuses.getStatuses()) {
       if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
+        statusByName.set(normalizeString(status.name), {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+      if (status.id && status.statusCategory?.name) {
+        statusById.set(status.id, {
           category: status.statusCategory.name,
           detail: status.name,
         });
@@ -286,6 +299,7 @@ export class Jira {
       cfg.additional_fields_array_limit ??
         DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
       statusByName,
+      statusById,
       isCloud,
       cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
       cfg.page_size ?? DEFAULT_PAGE_SIZE,
@@ -672,19 +686,6 @@ export class Jira {
     });
 
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
-  }
-  @Memoize()
-  async getStatuses(): Promise<Map<string, Status>> {
-    const statusByName = new Map<string, Status>();
-    for (const status of await this.api.v2.workflowStatuses.getStatuses()) {
-      if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
-          category: status.statusCategory.name,
-          detail: status.name,
-        });
-      }
-    }
-    return statusByName;
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
@@ -1196,10 +1197,13 @@ export class Jira {
   toSprintReportIssues(report: any): SprintIssue[] {
     const toSprintIssues = (issues: any, classification: string): any[] =>
       issues?.map((issue: any) => {
+        // Jira Server returns statusId in issue.statusId, while Jira Cloud returns it in issue.status.id
+        const statusId = issue.status?.id ?? issue.statusId;
+        const status = statusId ? this.statusById.get(statusId) : undefined;
         return {
           key: issue.key,
           classification,
-          status: issue.status.name,
+          status,
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
           ),

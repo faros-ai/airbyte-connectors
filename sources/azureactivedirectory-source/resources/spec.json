@@ -8,34 +8,46 @@
     "additionalProperties": true,
     "properties": {
       "client_id": {
+        "order": 0,
         "type": "string",
         "title": "clientID",
         "description": "Azure Active Directory Client ID",
         "airbyte_secret": true
       },
       "client_secret": {
+        "order": 1,
         "type": "string",
         "title": "client secret",
         "description": "Azure Active Directory Client Secret",
         "airbyte_secret": true
       },
       "tenant_id": {
+        "order": 2,
         "type": "string",
         "title": "tenantID",
         "description": "Azure Active Directory TenantID",
         "airbyte_secret": true
       },
       "auth_version": {
+        "order": 3,
         "type": "string",
         "title": "auth version",
         "description": "Azure Active Directory Auth Version",
         "default": "v2.0"
       },
       "version": {
+        "order": 4,
         "type": "string",
         "title": "graph version",
         "description": "Azure Active Directory Graph Version",
         "default": "v1.0"
+      },
+      "fetch_teams": {
+        "order": 5,
+        "type": "boolean",
+        "title": "Fetch teams",
+        "description": "Fetch teams from organization to populate teams and team memberships.",
+        "default": true
       }
     }
   }

@@ -18,7 +18,14 @@
           "changedFiles": 21,
           "createdAt": "2021-02-12T05:35:19Z",
           "commits": {
-            "totalCount": 13
+            "totalCount": 13,
+            "nodes": [
+              {
+                "commit": {
+                  "oid": "b4c35c299ad22fe858569482a7696597ca038651"
+                }
+              }
+            ]
           },
           "comments": {
             "totalCount": 3
@@ -67,8 +74,10 @@
                 },
                 "state": "COMMENTED",
                 "submittedAt": "2021-02-04T21:53:09Z",
+                "updatedAt": "2021-03-04T21:54:10Z",
                 "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199611",
                 "databaseId": 2192199611,
+                "body": "LGTM",
                 "comments": {
                   "totalCount": 1
                 }
@@ -82,8 +91,10 @@
                 },
                 "state": "APPROVED",
                 "submittedAt": "2021-03-04T21:53:09Z",
+                "updatedAt": "2021-03-04T21:54:10Z",
                 "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199612",
                 "databaseId": 2192199612,
+                "body": "",
                 "comments": {
                   "totalCount": 0
                 }
@@ -284,8 +295,10 @@
                 },
                 "state": "APPROVED",
                 "submittedAt": "2021-02-04T21:53:09Z",
+                "updatedAt": "2021-02-04T21:54:10Z",
                 "url": "https://github.com/test/dolos/pull/1234#pullrequestreview-2192199689",
                 "databaseId": 2192199689,
+                "body": "",
                 "comments": {
                   "totalCount": 0
                 }

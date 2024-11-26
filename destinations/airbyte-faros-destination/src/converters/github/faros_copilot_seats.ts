@@ -8,8 +8,9 @@ import {
 import {paginatedQueryV2, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
+import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
 
 interface UserToolKey {
   user: {uid: string; source: string};
@@ -22,6 +23,7 @@ export class FarosCopilotSeats extends GitHubConverter {
   private readonly endedSeatsByOrg = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'vcs_AssistantMetric',
     'vcs_OrganizationTool',
     'vcs_UserTool',
     'vcs_UserToolUsage',
@@ -75,13 +77,47 @@ export class FarosCopilotSeats extends GitHubConverter {
       },
     });
     if (activeSeat.last_activity_at) {
+      const lastActivityAt = Utils.toDate(activeSeat.last_activity_at);
+      const recordedAt = Utils.toDate(record.record.emitted_at);
       res.push({
         model: 'vcs_UserToolUsage',
         record: {
           userTool,
-          usedAt: Utils.toDate(activeSeat.last_activity_at),
+          usedAt: lastActivityAt,
+          recordedAt,
         },
       });
+      if (ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY) {
+        res.push({
+          model: 'vcs_AssistantMetric',
+          record: {
+            uid: GitHubCommon.digest(
+              [
+                GitHubTool.Copilot,
+                AssistantMetric.LastActivity,
+                recordedAt.toISOString(),
+                activeSeat.org,
+                activeSeat.user,
+              ].join('__')
+            ),
+            source: this.streamName.source,
+            startedAt: recordedAt,
+            endedAt: recordedAt,
+            type: {category: AssistantMetric.LastActivity},
+            valueType: 'Timestamp',
+            value: lastActivityAt.toISOString(),
+            organization: {
+              uid: org,
+              source: this.streamName.source,
+            },
+            user: {
+              uid: activeSeat.user,
+              source: this.streamName.source,
+            },
+            tool: {category: GitHubTool.Copilot},
+          },
+        });
+      }
     }
     return res;
   }

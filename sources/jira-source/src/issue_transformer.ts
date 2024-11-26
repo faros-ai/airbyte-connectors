@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {normalizeString} from 'faros-airbyte-common/common';
 import {
   Assignee,
   Dependency,
@@ -92,8 +93,19 @@ export class IssueTransformer {
     const statusChangelog: Array<[Status, Date]> = [];
 
     const pushStatusChange = (statusName: string, date: Date): void => {
-      const status = this.statusByName.get(statusName);
-      if (status) statusChangelog.push([status, date]);
+      const normalizedName = normalizeString(statusName);
+      const status = this.statusByName.get(normalizedName);
+      if (status) {
+        statusChangelog.push([status, date]);
+      } else {
+        this.logger?.warn(
+          `Status '${statusName}' not found in statuses, reverting to original status`
+        );
+        statusChangelog.push([
+          {category: statusName, detail: statusName},
+          date,
+        ]);
+      }
     };
 
     const statusChanges = IssueTransformer.fieldChangelog(changelog, 'status');
@@ -391,7 +403,9 @@ export class IssueTransformer {
 
     const created = Utils.toDate(item.fields.created);
     const assignee =
-      item.fields.assignee?.accountId || item.fields.assignee?.name;
+      item.fields.assignee?.accountId ||
+      item.fields.assignee?.key ||
+      item.fields.assignee?.name;
 
     const changelog: any[] = item.changelog?.histories || [];
     changelog.sort((e1, e2) => {
@@ -432,6 +446,11 @@ export class IssueTransformer {
       item.fields.issuetype?.name
     );
 
+    const creator =
+      item.fields.creator?.accountId ||
+      item.fields.creator?.key ||
+      item.fields.creator?.name;
+
     return {
       id: item.id,
       key: item.key,
@@ -443,7 +462,7 @@ export class IssueTransformer {
       priority: item.fields.priority?.name,
       project: item.fields.project?.key,
       labels: item.fields.labels ?? [],
-      creator: item.fields.creator?.accountId || item.fields.creator?.name,
+      creator,
       created,
       updated: Utils.toDate(item.fields.updated),
       statusChanged,

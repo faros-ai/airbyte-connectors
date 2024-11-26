@@ -4,11 +4,7 @@ import {Utils} from 'faros-js-client';
 import {isNil, pick} from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {JiraCommon, JiraConverter} from './common';
-
-const statusCategories: ReadonlyMap<string, string> = new Map(
-  ['Todo', 'InProgress', 'Done'].map((s) => [JiraCommon.normalize(s), s])
-);
+import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
 const typeCategories: ReadonlyMap<string, string> = new Map(
   ['Bug', 'Story', 'Task'].map((t) => [JiraCommon.normalize(t), t])
@@ -71,7 +67,9 @@ export class FarosIssues extends JiraConverter {
     for (const [status, changedAt] of issue.statusChangelog) {
       statusChangelog.push({
         status: {
-          category: statusCategories.get(JiraCommon.normalize(status.category)),
+          category: JiraStatusCategories.get(
+            JiraCommon.normalize(status.category)
+          ),
           detail: status.detail,
         },
         changedAt,
@@ -92,7 +90,7 @@ export class FarosIssues extends JiraConverter {
         detail: issue.type,
       },
       status: {
-        category: statusCategories.get(
+        category: JiraStatusCategories.get(
           JiraCommon.normalize(issue.status.category)
         ),
         detail: issue.status.detail,
@@ -244,7 +242,7 @@ export class FarosIssues extends JiraConverter {
         if (statusChangedAt <= keyChangedAt) {
           statusChangelog.push({
             status: {
-              category: statusCategories.get(
+              category: JiraStatusCategories.get(
                 JiraCommon.normalize(status.category)
               ),
               detail: status.detail,

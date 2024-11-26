@@ -14,6 +14,12 @@ export function setupGitHubInstance(
     githubConfig,
     {
       ...octokitMock,
+      request: (fn?: () => any) => {
+        if (!fn) {
+          throw new Error('Not mocked');
+        }
+        return fn();
+      },
       paginate: {
         iterator: (fnOrErr?: (() => any) | Error) => {
           if (!fnOrErr) {

@@ -29,6 +29,10 @@ export class Commits extends AzureReposConverter {
       organization,
     };
 
+    const author = commitItem.author?.email
+      ? {uid: commitItem.author.email.toLowerCase(), source}
+      : undefined;
+
     res.push({
       model: 'vcs_Commit',
       record: {
@@ -40,7 +44,7 @@ export class Commits extends AzureReposConverter {
         ),
         htmlUrl: commitItem.remoteUrl,
         createdAt: Utils.toDate(commitItem.committer?.date),
-        author: {uid: commitItem.author?.email, source},
+        author,
         repository,
       },
     });

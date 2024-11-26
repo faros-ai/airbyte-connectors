@@ -36,13 +36,11 @@ export class Builds extends AzurePipelineConverter {
     const status = this.convertBuildState(build.result);
     const res: DestinationRecord[] = [];
 
-    const number = Number(build.buildNumber.replace('.', ''));
     res.push({
       model: 'cicd_Build',
       record: {
         uid,
         name: build.buildNumber,
-        number,
         createdAt,
         startedAt,
         endedAt,

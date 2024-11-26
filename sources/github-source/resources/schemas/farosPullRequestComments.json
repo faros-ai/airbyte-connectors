@@ -34,6 +34,9 @@
     "pull_request_url": {
       "type": "string"
     },
+    "html_url": {
+      "type": "string"
+    },
     "created_at": {
       "type": "string",
       "format": "date-time"

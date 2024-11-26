@@ -130,7 +130,7 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      mockFarosOptions([])
+      mockFarosOptions({})
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
@@ -140,7 +140,7 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      mockFarosOptions(['2', '3'], 'Included')
+      mockFarosOptions({includedUids: ['2', '3']})
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
@@ -150,20 +150,36 @@ describe('ProjectBoardFilter', () => {
     const projectBoardFilter = new ProjectBoardFilter(
       {...config, use_faros_graph_boards_selection: true},
       logger,
-      mockFarosOptions(['2'], 'Excluded')
+      mockFarosOptions({excludedUids: ['2']})
+    );
+    const boards = await projectBoardFilter.getBoards();
+    expect(boards).toMatchSnapshot();
+  });
+
+  test('getBoards (FarosGraph) - some included - some excluded', async () => {
+    const projectBoardFilter = new ProjectBoardFilter(
+      {...config, use_faros_graph_boards_selection: true},
+      logger,
+      mockFarosOptions({includedUids: ['2'], excludedUids: ['3']})
     );
     const boards = await projectBoardFilter.getBoards();
     expect(boards).toMatchSnapshot();
   });
 });
 
-function mockFarosOptions(
-  uids: string[],
-  inclusionCategory?: 'Included' | 'Excluded'
-): any {
+function mockFarosOptions({
+  includedUids = [],
+  excludedUids = [],
+}: {
+  includedUids?: string[];
+  excludedUids?: string[];
+} = {}): any {
   return {
     nodeIterable: () =>
-      iterate(uids.map((uid) => taskBoardOptions(uid, inclusionCategory))),
+      iterate([
+        ...includedUids.map((uid) => taskBoardOptions(uid, 'Included')),
+        ...excludedUids.map((uid) => taskBoardOptions(uid, 'Excluded')),
+      ]),
   };
 }
 

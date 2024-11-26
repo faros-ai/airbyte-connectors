@@ -72,11 +72,11 @@ export const CustomStreamNames = [
   'faros_artifacts',
   'faros_code_scanning_alerts',
   'faros_commits',
-  'faros_contributors_stats',
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_dependabot_alerts',
   'faros_issues',
+  'faros_issue_comments',
   'faros_labels',
   'faros_organizations',
   'faros_outside_collaborators',
@@ -154,8 +154,13 @@ export abstract class StreamWithOrgSlices extends StreamBase {
 export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
-      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo: repo.name};
+      for (const {
+        repo,
+        syncRepoData,
+      } of await this.orgRepoFilter.getRepositories(org)) {
+        if (syncRepoData) {
+          yield {org, repo: repo.name};
+        }
       }
     }
   }
