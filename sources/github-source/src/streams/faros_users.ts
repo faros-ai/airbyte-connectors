@@ -14,8 +14,15 @@ export class FarosUsers extends StreamWithOrgSlices {
     return ['org', 'login'];
   }
 
+  // Although not actually an incremental stream, we run it in incremental mode
+  // to avoid deleting the users that are written by other incremental streams.
   get supportsIncremental(): boolean {
     return true;
+  }
+
+  // Not used, but necessary to pass Airbyte UI validation check
+  get cursorField(): string | string[] {
+    return 'html_url';
   }
 
   async *readRecords(
