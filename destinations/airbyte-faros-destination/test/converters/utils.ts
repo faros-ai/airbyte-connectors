@@ -17,6 +17,13 @@ export interface DestinationWriteTestOptions {
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
+export interface GenerateBasicTestSuiteOptions {
+  sourceName: string;
+  catalogPath?: string;
+  inputRecordsPath?: string;
+  checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
+}
+
 // Executes the destination write command in dry-run mode and optionally checks:
 // - The processed and written records count
 // - The records data
@@ -92,14 +99,18 @@ export function generateBasicTestSuite({
   sourceName,
   catalogPath = `test/resources/${sourceName}/catalog.json`,
   inputRecordsPath = `${sourceName}/all-streams.log`,
-}) {
+  checkRecordsData,
+}: GenerateBasicTestSuiteOptions): void {
   describe(`${sourceName} basic test`, () => {
     const mockttp = getLocal({debug: false, recordTraffic: false});
     let configPath;
 
     beforeEach(async () => {
       await initMockttp(mockttp);
-      configPath = await tempConfig({api_url: mockttp.url});
+      configPath = await tempConfig({
+        api_url: mockttp.url,
+        log_records: !!checkRecordsData,
+      });
     });
 
     afterEach(async () => {
@@ -111,6 +122,7 @@ export function generateBasicTestSuite({
         configPath,
         catalogPath,
         inputRecordsPath,
+        checkRecordsData,
       });
     });
   });
