@@ -8,7 +8,19 @@ import {
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
-import {PullRequest} from './models';
+import {
+  PullRequest,
+  PullRequestReviewState,
+  PullRequestReviewStateCategory,
+  PullRequestState,
+  PullRequestStateCategory,
+} from './models';
+
+interface ReviewThread {
+  reviewerUid: string;
+  vote: number;
+  publishedDate: Date;
+}
 
 function getPartialUserRecord(obj: {
   uniqueName: string;
@@ -28,8 +40,69 @@ function getPartialUserRecord(obj: {
   };
 }
 
+//https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-requests?view=azure-devops-rest-7.0#pullrequeststatus
+function convertPullRequestState(
+  status: string,
+  mergeCommitId?: string
+): PullRequestState {
+  switch (status) {
+    case 'completed':
+      return {
+        category: mergeCommitId
+          ? PullRequestStateCategory.Merged
+          : PullRequestStateCategory.Closed,
+        detail: status,
+      };
+    case 'active':
+      return {
+        category: mergeCommitId
+          ? PullRequestStateCategory.Merged
+          : PullRequestStateCategory.Open,
+        detail: status,
+      };
+    case 'notSet':
+      return {
+        category: PullRequestStateCategory.Open,
+        detail: status,
+      };
+    case 'abandoned':
+      return {
+        category: PullRequestStateCategory.Closed,
+        detail: status,
+      };
+    default:
+      return {
+        category: PullRequestStateCategory.Custom,
+        detail: status,
+      };
+  }
+}
+
+function convertPullRequestReviewState(vote: number): PullRequestReviewState {
+  if (vote > 5)
+    return {
+      category: PullRequestReviewStateCategory.Approved,
+      detail: `vote ${vote}`,
+    };
+  if (vote > 0)
+    return {
+      category: PullRequestReviewStateCategory.Commented,
+      detail: `vote ${vote}`,
+    };
+  if (vote > -5)
+    return {
+      category: PullRequestReviewStateCategory.Custom,
+      detail: `vote ${vote}`,
+    };
+  return {
+    category: PullRequestReviewStateCategory.Dismissed,
+    detail: `vote ${vote}`,
+  };
+}
+
 export class PullRequests extends AzureReposConverter {
   private partialUserRecords: Record<string, PartialUserRecord> = {};
+  private reviewThreads: ReviewThread[] = [];
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
@@ -62,6 +135,7 @@ export class PullRequests extends AzureReposConverter {
 
     const res: DestinationRecord[] = [];
 
+    this.reviewThreads.length = 0; // clear array
     for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
         const author = getPartialUserRecord(comment.author);
@@ -79,6 +153,18 @@ export class PullRequests extends AzureReposConverter {
             author: {uid: author.uid, source},
             pullRequest,
           },
+        });
+      }
+
+      const properties = thread.properties ?? {};
+      const vote = parseInt(properties['CodeReviewVoteResult']?.$value);
+      const voteIdentityRef = properties['CodeReviewVotedByIdentity']?.$value;
+      const voteIdentity = thread.identities?.[voteIdentityRef];
+      if (Number.isInteger(vote) && voteIdentity?.uniqueName) {
+        this.reviewThreads.push({
+          reviewerUid: voteIdentity.uniqueName,
+          vote,
+          publishedDate: Utils.toDate(thread.publishedDate),
         });
       }
     }
@@ -105,7 +191,7 @@ export class PullRequests extends AzureReposConverter {
         number: pullRequestItem.pullRequestId,
         uid: pullRequestItem.pullRequestId.toString(),
         title: pullRequestItem.title,
-        state: this.convertPullRequestState(pullRequestItem.status),
+        state: convertPullRequestState(pullRequestItem.status, mergeCommitId),
         htmlUrl: pullRequestItem.url,
         createdAt: Utils.toDate(pullRequestItem.creationDate),
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
@@ -122,14 +208,19 @@ export class PullRequests extends AzureReposConverter {
         ? getPartialUserRecord(reviewer)
         : undefined;
 
+      const reviewThread = this.reviewThreads.find(
+        (ts) =>
+          ts.reviewerUid === reviewer.uniqueName && ts.vote === reviewer.vote
+      );
+
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
           number: this.convertStringToNumber(reviewer.id),
           uid: reviewer.id,
           htmlUrl: reviewer.url,
-          state: this.convertPullRequestReviewState(reviewer.vote),
-          submittedAt: null,
+          state: convertPullRequestReviewState(reviewer.vote),
+          submittedAt: reviewThread?.publishedDate,
           reviewer: reviewerUser ? {uid: reviewerUser.uid, source} : undefined,
           pullRequest,
         },

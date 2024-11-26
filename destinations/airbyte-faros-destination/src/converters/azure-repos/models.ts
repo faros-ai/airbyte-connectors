@@ -81,6 +81,8 @@ export interface PullRequestThread {
   status: string;
   threadContext?: string;
   comments: PullRequestThreadComment[];
+  properties?: Record<string, {$type: string; $value: any}>;
+  identities?: Record<string, Creator>;
 }
 
 interface MergeSourceCommit {
