@@ -6,6 +6,11 @@ export interface ComputeApplication {
   uid: string;
 }
 
+export interface CategoryDetail {
+  category: string;
+  detail: string;
+}
+
 export class Common {
   static computeApplication(
     name: string,

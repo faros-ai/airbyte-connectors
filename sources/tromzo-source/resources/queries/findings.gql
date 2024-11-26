@@ -2,20 +2,15 @@ query getFindings($offset: Int, $first: Int, $q: String) {
   findings(offset: $offset, first: $first, q: $q) {
     edges {
       node {
-        repository {
-          id
-          uid
-        }
         toolName
         dbCreatedAt
         dbUpdatedAt
         scannerCreatedAt
         scannerUpdatedAt
-        businessRisk
+        dueDate
         dismissReason
         dismissedAt
         scannerDismissedAt
-        userDueDate
         sourceFilename
         sourcePath
         vulnerableVersion
@@ -27,24 +22,16 @@ query getFindings($offset: Int, $first: Int, $q: String) {
         }
         status
         scannerStatus
-        userUpdatedStatus
         line
-        jiraUrl
-        lastReviewed
         scannerConfidence
         asset {
           name
           id
-          uid
           type
           description
         }
         projects
         key
-
-        dbCreatedAt
-        dbUpdatedAt
-        scannerDismissedAt
       }
     }
     pageInfo {

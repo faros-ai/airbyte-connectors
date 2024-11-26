@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {CodeScanningAlert} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 
+import {Vulnerability} from '../common/sec';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
@@ -35,9 +36,11 @@ export class FarosCodeScanningAlerts extends GitHubConverter {
           uid,
           source: this.streamName.source,
           type: GitHubCommon.vulnerabilityType(alert, this.alertType),
-          title: alert.rule.name ?? alert.rule.id,
-          description: Utils.cleanAndTruncate(alert.rule.description),
-          severity: GitHubCommon.vulnerabilitySeverity(alert),
+          title: alert.rule?.name ?? alert.rule?.id,
+          description: Utils.cleanAndTruncate(alert.rule?.description),
+          severity: Vulnerability.ratingToScore(
+            alert.rule?.security_severity_level
+          ),
           url: alert.html_url,
         },
       },

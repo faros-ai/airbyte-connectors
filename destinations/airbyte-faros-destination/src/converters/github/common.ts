@@ -299,23 +299,6 @@ export class GitHubCommon {
     }
   }
 
-  // https://nvd.nist.gov/vuln-metrics/cvss
-  static vulnerabilitySeverity(alert: SecurityAlert) {
-    const level =
-      (alert as CodeScanningAlert).rule?.security_severity_level ??
-      (alert as DependabotAlert).security_vulnerability?.severity;
-    switch (level) {
-      case 'low':
-        return 3.0;
-      case 'medium':
-        return 6.0;
-      case 'high':
-        return 9.0;
-      case 'critical':
-        return 10.0;
-    }
-  }
-
   private static buildStatus(conclusion: string): {
     category: string;
     detail: string;
