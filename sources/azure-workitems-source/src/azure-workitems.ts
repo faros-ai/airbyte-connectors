@@ -195,7 +195,7 @@ export class AzureWorkitems {
     }
   }
 
-  async *getWorkitems(project: string): AsyncGenerator<WorkItem> {
+  async *getWorkitems(): AsyncGenerator<WorkItem> {
     const promises = WORK_ITEM_TYPES.map((n) =>
       this.getIdsFromAWorkItemType(n)
     );
@@ -218,7 +218,6 @@ export class AzureWorkitems {
         const assigneeRevisions = this.getAssigneeLog(revisions);
         yield {
           ...item,
-          project,
           fields: {
             ...item.fields,
             Faros: {
