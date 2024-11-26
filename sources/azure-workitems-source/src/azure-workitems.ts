@@ -4,11 +4,28 @@ import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
-import {User, UserResponse, WorkItemResponse} from './models';
+import {
+  User,
+  UserResponse,
+  WorkItem,
+  WorkItemResponse,
+  WorkItemUpdatesResponse,
+} from './models';
 const DEFAULT_API_VERSION = '7.0';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
+
+const WORK_ITEM_TYPES = [
+  "'Task'",
+  "'User Story'",
+  "'BUG'",
+  "'Feature'",
+  "'Epic'",
+  "'Issue'",
+  "'Product Backlog Item'",
+  "'Requirement'",
+];
 
 export interface AzureWorkitemsConfig {
   readonly access_token: string;
@@ -24,7 +41,8 @@ export class AzureWorkitems {
 
   constructor(
     private readonly httpClient: AxiosInstance,
-    private readonly graphClient: AxiosInstance
+    private readonly graphClient: AxiosInstance,
+    private readonly stateMapping: Map<string, Map<string, string>>
   ) {}
 
   static async instance(config: AzureWorkitemsConfig): Promise<AzureWorkitems> {
@@ -38,6 +56,7 @@ export class AzureWorkitems {
       throw new VError('organization must not be an empty string');
     }
 
+    // TODO - Use projects instead
     if (!config.project) {
       throw new VError('project must not be an empty string');
     }
@@ -72,9 +91,23 @@ export class AzureWorkitems {
       headers: {Authorization: `Basic ${accessToken}`},
     });
 
+    const stateMapping = new Map<string, Map<string, string>>();
+    for (const type of WORK_ITEM_TYPES) {
+      const cleanType = type.replace(/'/g, '');
+      const url = `wit/workitemtypes/${cleanType}/states`;
+      const res = await httpClient.get<any>(url);
+      const values = res.data?.value;
+      const typeCategories = new Map<string, string>();
+      for (const value of values) {
+        typeCategories.set(value.name, value.category);
+      }
+      stateMapping.set(cleanType, typeCategories);
+    }
+
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,
-      graphClient
+      graphClient,
+      stateMapping
     );
     return AzureWorkitems.azure_Workitems;
   }
@@ -162,17 +195,10 @@ export class AzureWorkitems {
     }
   }
 
-  async *getWorkitems(): AsyncGenerator<any> {
-    const promises = [
-      "'Task'",
-      "'User Story'",
-      "'BUG'",
-      "'Feature'",
-      "'Epic'",
-      "'Issue'",
-      "'Product Backlog Item'",
-      "'Requirement'",
-    ].map((n) => this.getIdsFromAWorkItemType(n));
+  async *getWorkitems(): AsyncGenerator<WorkItem> {
+    const promises = WORK_ITEM_TYPES.map((n) =>
+      this.getIdsFromAWorkItemType(n)
+    );
 
     const results = await Promise.all(promises);
     const ids: ReadonlyArray<string> = flatten(results);
@@ -182,9 +208,106 @@ export class AzureWorkitems {
         `wit/workitems?ids=${c}&$expand=all`
       );
       for (const item of res?.data?.value ?? []) {
-        yield item;
+        const {revisions} = await this.getWorkItemRevisions(item.id);
+        const type = item.fields['System.WorkItemType'];
+        const stateCategory = this.getStateCategory(
+          type,
+          item.fields['System.State']
+        );
+        const stateRevisions = this.getStateChangeLog(type, revisions);
+        const assigneeRevisions = this.getAssigneeLog(revisions);
+        yield {
+          ...item,
+          fields: {
+            ...item.fields,
+            Faros: {
+              WorkItemStateCategory: stateCategory,
+            },
+          },
+          revisions: {
+            states: stateRevisions,
+            assignees: assigneeRevisions,
+          },
+        };
       }
     }
+  }
+
+  async getWorkItemRevisions(id: string): Promise<any> {
+    const pageSize = 100; // Number of items per page
+    let skip = 0;
+    const allRevisions: any[] = [];
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const url = `wit/workitems/${id}/updates?$top=${pageSize}&$skip=${skip}`;
+      const response = await this.get<WorkItemUpdatesResponse>(url);
+
+      const data = response?.data;
+
+      const updates = data?.value;
+      if (!Array.isArray(updates) || !updates.length) {
+        hasMoreResults = false;
+      } else {
+        allRevisions.push(...updates);
+        skip += pageSize;
+
+        if (allRevisions.length >= data?.count) {
+          hasMoreResults = false;
+        }
+      }
+    }
+
+    return {revisions: allRevisions};
+  }
+
+  private getFieldChanges(
+    field: string,
+    updates: any[]
+  ): {value: any; changedDate: string}[] {
+    const changes = [];
+    for (const revision of updates ?? []) {
+      const fields = revision.fields;
+      if (!fields) {
+        continue;
+      }
+      if (fields[field]?.newValue) {
+        changes.push({
+          value: fields[field]?.newValue,
+          changedDate: fields['System.ChangedDate']?.newValue,
+        });
+      }
+    }
+    return changes;
+  }
+
+  private getStateChangeLog(type: string, updates: any): any[] {
+    const changes = this.getFieldChanges('System.State', updates);
+    return changes.map((change) => ({
+      state: this.getStateCategory(type, change.value),
+      changedDate: change.changedDate,
+    }));
+  }
+
+  private getStateCategory(
+    type: string,
+    state: string
+  ): {
+    name: string;
+    category: string;
+  } {
+    return {
+      name: state,
+      category: this.stateMapping.get(type)?.get(state) ?? state,
+    };
+  }
+
+  private getAssigneeLog(updates: any[]): any[] {
+    const changes = this.getFieldChanges('System.AssignedTo', updates);
+    return changes.map((change) => ({
+      assignee: change.value,
+      changedDate: change.changedDate,
+    }));
   }
 
   // TODO - Fetch all work items instead of only max 20000
