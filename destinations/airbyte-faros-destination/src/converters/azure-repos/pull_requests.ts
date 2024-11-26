@@ -8,7 +8,13 @@ import {
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
-import {PullRequest} from './models';
+import {
+  PullRequest,
+  PullRequestReviewState,
+  PullRequestReviewStateCategory,
+  PullRequestState,
+  PullRequestStateCategory,
+} from './models';
 
 interface ReviewThread {
   reviewerUid: string;
@@ -31,6 +37,66 @@ function getPartialUserRecord(obj: {
   return {
     uid: obj.uniqueName,
     name: obj.displayName,
+  };
+}
+
+//https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-requests?view=azure-devops-rest-7.0#pullrequeststatus
+function convertPullRequestState(
+  status: string,
+  mergeCommitId?: string
+): PullRequestState {
+  switch (status) {
+    case 'completed':
+      return {
+        category: mergeCommitId
+          ? PullRequestStateCategory.Merged
+          : PullRequestStateCategory.Closed,
+        detail: status,
+      };
+    case 'active':
+      return {
+        category: mergeCommitId
+          ? PullRequestStateCategory.Merged
+          : PullRequestStateCategory.Open,
+        detail: status,
+      };
+    case 'notSet':
+      return {
+        category: PullRequestStateCategory.Open,
+        detail: status,
+      };
+    case 'abandoned':
+      return {
+        category: PullRequestStateCategory.Closed,
+        detail: status,
+      };
+    default:
+      return {
+        category: PullRequestStateCategory.Custom,
+        detail: status,
+      };
+  }
+}
+
+function convertPullRequestReviewState(vote: number): PullRequestReviewState {
+  if (vote > 5)
+    return {
+      category: PullRequestReviewStateCategory.Approved,
+      detail: `vote ${vote}`,
+    };
+  if (vote > 0)
+    return {
+      category: PullRequestReviewStateCategory.Commented,
+      detail: `vote ${vote}`,
+    };
+  if (vote > -5)
+    return {
+      category: PullRequestReviewStateCategory.Custom,
+      detail: `vote ${vote}`,
+    };
+  return {
+    category: PullRequestReviewStateCategory.Dismissed,
+    detail: `vote ${vote}`,
   };
 }
 
@@ -125,7 +191,7 @@ export class PullRequests extends AzureReposConverter {
         number: pullRequestItem.pullRequestId,
         uid: pullRequestItem.pullRequestId.toString(),
         title: pullRequestItem.title,
-        state: this.convertPullRequestState(pullRequestItem.status),
+        state: convertPullRequestState(pullRequestItem.status, mergeCommitId),
         htmlUrl: pullRequestItem.url,
         createdAt: Utils.toDate(pullRequestItem.creationDate),
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
@@ -153,7 +219,7 @@ export class PullRequests extends AzureReposConverter {
           number: this.convertStringToNumber(reviewer.id),
           uid: reviewer.id,
           htmlUrl: reviewer.url,
-          state: this.convertPullRequestReviewState(reviewer.vote),
+          state: convertPullRequestReviewState(reviewer.vote),
           submittedAt: reviewThread?.publishedDate,
           reviewer: reviewerUser ? {uid: reviewerUser.uid, source} : undefined,
           pullRequest,
