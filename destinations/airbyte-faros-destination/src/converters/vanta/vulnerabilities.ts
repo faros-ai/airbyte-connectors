@@ -2,10 +2,14 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
+import {CicdArtifactKey} from '../../../lib/converters/vanta/types';
+import {
+  Vulnerability as VulnerabilityCommon,
+  VulnerabilityIdentifier,
+} from '../common/sec';
+import {RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VantaConverter} from './common';
-import {CicdArtifactKey, VcsRepoKey} from './types';
-import {getQueryFromName, looksLikeGitCommitSha} from './utils';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -18,11 +22,6 @@ export abstract class Vulnerabilities extends VantaConverter {
     'cicd_ArtifactVulnerability',
   ];
 
-  // TODO: move this to common.
-  vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
-  cicdArtifactQueryByCommitSha = getQueryFromName(
-    'cicdArtifactQueryByCommitSha'
-  );
   private readonly collectedVulnerabilities = new Set<Vulnerability>();
   private readonly collectedRepoNames = new Set<string>();
   private readonly collectedArtifactCommitShas = new Set<string>();
@@ -57,9 +56,7 @@ export abstract class Vulnerabilities extends VantaConverter {
           data.description,
           this.maxDescriptionLength(ctx)
         ),
-        severity: data.severity
-          ? this.severityMap[data.severity].toString()
-          : '0',
+        severity: this.getSeverityScore(data),
         url: data.externalURL,
         discoveredAt: Utils.toDate(data.firstDetectedDate),
         vulnerabilityIds:
@@ -91,14 +88,15 @@ export abstract class Vulnerabilities extends VantaConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const records: DestinationRecord[] = [];
-    const vcsRepos = await this.getVCSRepositoriesFromNames(
+    const vcsRepos = await VulnerabilityCommon.getVCSRepositoriesFromNames(
       Array.from(this.collectedRepoNames),
       ctx
     );
-    const cicdArtifacts = await this.getCICDArtifactsFromCommitShas(
-      Array.from(this.collectedArtifactCommitShas),
-      ctx
-    );
+    const cicdArtifacts =
+      await VulnerabilityCommon.getCICDArtifactsFromCommitShas(
+        Array.from(this.collectedArtifactCommitShas),
+        ctx
+      );
     for (const vuln of this.collectedVulnerabilities) {
       if (this.isVCSRepoVulnerability(vuln.asset)) {
         this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
@@ -110,7 +108,7 @@ export abstract class Vulnerabilities extends VantaConverter {
   }
 
   private convertRepositoryVulnerability(
-    vcsRepos: VcsRepoKey[],
+    vcsRepos: RepoKey[],
     vuln: Vulnerability,
     ctx: StreamContext,
     records: DestinationRecord[]
@@ -143,26 +141,40 @@ export abstract class Vulnerabilities extends VantaConverter {
     vulnerability: Vulnerability,
     ctx: StreamContext
   ): DestinationRecord[] {
-    // Get catalog identifier either from vulnerability name or from relatedVulns.
-    let identifier = vulnerability.name;
-    if (!this.isVulnerabilityCatalogIdentifier(identifier)) {
-      const identifiers = vulnerability.relatedVulns.filter(
-        this.isVulnerabilityCatalogIdentifier
-      );
-      if (identifiers.length == 0) {
-        ctx.logger.warn(
-          `No vulnerability catalog identifier found for vulnerability ${vulnerability.id}-${vulnerability.name}`
+    let identifierRecord: VulnerabilityIdentifier;
+    switch (vulnerability.vulnerabilityType) {
+      case 'COMMON': {
+        // Use name as identifier and extract catalog abbreviation
+        const type = VulnerabilityCommon.identifierType(
+          vulnerability.name.split('-')?.[0]
         );
-        return [];
+        identifierRecord = {
+          uid: vulnerability.name,
+          type,
+        };
+        break;
       }
-      identifier = identifiers[0];
+
+      case 'GROUPED':
+        // Use the first related vulnerability as identifier
+        if (
+          vulnerability.relatedVulns &&
+          vulnerability.relatedVulns.length > 0
+        ) {
+          const uid = vulnerability.relatedVulns[0];
+          identifierRecord = {
+            uid,
+            type: VulnerabilityCommon.identifierType(uid.split('-')?.[0]),
+          };
+        }
+        break;
     }
-    const category = this.getVulnerabilityCatalogCategory(identifier);
-    const identifierRecord = {
-      uid: identifier,
-      type: {category, detail: category},
-      source: this.source,
-    };
+    if (!identifierRecord) {
+      ctx.logger.warn(
+        `No vulnerability catalog identifier found for vulnerability ${vulnerability.id}-${vulnerability.name}`
+      );
+      return [];
+    }
     return [
       {
         model: 'sec_VulnerabilityIdentifier',
@@ -217,49 +229,17 @@ export abstract class Vulnerabilities extends VantaConverter {
     records.push(artifactVulnerabilityRecord);
   }
 
-  // TODO: move queries to common sec in faros-airbyte-common
-  async getVCSRepositoriesFromNames(
-    vcsRepoNames: string[],
-    ctx: StreamContext
-  ): Promise<VcsRepoKey[] | null> {
-    const result = await ctx.farosClient.gql(
-      ctx.graph,
-      this.vcsRepositoryQuery,
-      {
-        vcsRepoNames,
-      }
-    );
-    return result?.vcs_Repository;
-  }
-
-  async getCICDArtifactsFromCommitShas(
-    commitShas: string[],
-    ctx: StreamContext
-  ): Promise<CicdArtifactKey[] | null> {
-    const result = await ctx.farosClient.gql(
-      ctx.graph,
-      this.cicdArtifactQueryByCommitSha,
-      {
-        commitShas,
-      }
-    );
-    return result?.cicd_Artifact;
-  }
-
-  // TODO: use common function from faros-airbyte-common
-  getVulnerabilityCatalogCategory(identifierId: string): string {
-    if (identifierId.includes('CVE')) {
-      return 'CVE';
-    } else if (identifierId.includes('GHSA')) {
-      return 'GHSA';
-    }
-  }
-
-  isVulnerabilityCatalogIdentifier(identifierId: string): boolean {
-    return identifierId.includes('CVE') || identifierId.includes('GHSA');
-  }
-
   private maxDescriptionLength(ctx: StreamContext): number {
     return ctx.config.max_description_lenght || MAX_DESCRIPTION_LENGTH;
+  }
+
+  private getSeverityScore(vuln: Vulnerability): number {
+    if (vuln.cvssSeverityScore) {
+      return vuln.cvssSeverityScore;
+    }
+    if (vuln.severity) {
+      return VulnerabilityCommon.ratingToScore(vuln.severity);
+    }
+    return 0;
   }
 }

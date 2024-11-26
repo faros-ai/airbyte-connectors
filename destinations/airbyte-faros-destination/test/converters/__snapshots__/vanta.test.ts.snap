@@ -44,7 +44,7 @@ Array [
     "sec_Vulnerability": Object {
       "description": "Prototype pollution vulnerability in function parseQuery in parseQuery.js in webpack loader-utils prior to version 2.0.3 via the name variable in parseQuery.js.",
       "discoveredAt": "2023-03-07T20:01:49.516Z",
-      "severity": "10",
+      "severity": 9.8,
       "source": "Vanta",
       "title": "CVE-2022-37601",
       "uid": "657191308e0674a0e8e62468",
@@ -85,7 +85,7 @@ Array [
     "sec_Vulnerability": Object {
       "description": "Webpack 5 before 5.76.0 does not avoid cross-realm object access. ImportParserPlugin.js mishandles the magic comment feature. An attacker who controls a property of an untrusted object can obtain access to the real global object.",
       "discoveredAt": "2024-05-03T19:26:15.231Z",
-      "severity": "10",
+      "severity": 5.2,
       "source": "Vanta",
       "title": "CVE-2023-28154",
       "uid": "66353a575360cc947a8af658",
@@ -126,7 +126,7 @@ Array [
     "sec_Vulnerability": Object {
       "description": "An unchecked return value in TLS handshake code could have caused a potentially exploitable crash. This vulnerability affects Firefox < 122, Firefox ESR < 115.9, and Thunderbird < 115.9.",
       "discoveredAt": "2024-04-13T09:52:49.659Z",
-      "severity": "9",
+      "severity": 7.5,
       "source": "Vanta",
       "title": "CVE-2024-0743",
       "uid": "661a55f156ebe8ef9f74e841",
