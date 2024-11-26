@@ -75,29 +75,27 @@ export abstract class AzurePipelineConverter extends Converter {
     return this.azurePipelineConfig(ctx)?.application_mapping ?? {};
   }
 
-  convertBuildState(state: string | undefined): {
+  convertBuildState(result: string | undefined): {
     category: string;
     detail: string;
   } {
-    if (!state) {
+    if (!result) {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
-    const detail = state.toLowerCase();
-
     // Read more on Azure pipeline build result:
     // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildresult
-    switch (detail) {
+    switch (result) {
       case 'canceled':
-        return {category: BuildStateCategory.Canceled, detail};
+        return {category: BuildStateCategory.Canceled, detail: result};
       case 'failed':
-        return {category: BuildStateCategory.Failed, detail};
+        return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
       case 'partiallySucceeded':
-        return {category: BuildStateCategory.Success, detail};
+        return {category: BuildStateCategory.Success, detail: result};
       case 'running':
-        return {category: BuildStateCategory.Running, detail};
+        return {category: BuildStateCategory.Running, detail: result};
       default:
-        return {category: BuildStateCategory.Custom, detail};
+        return {category: BuildStateCategory.Custom, detail: result};
     }
   }
 
@@ -167,28 +165,26 @@ export abstract class AzurePipelineConverter extends Converter {
     return result;
   }
 
-  convertBuildStepState(state: string | undefined): {
+  convertBuildStepState(result: string | undefined): {
     category: string;
     detail: string;
   } {
-    if (!state) {
+    if (!result) {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
-    const detail = state.toLowerCase();
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get?view=azure-devops-rest-6.0#taskresult
-    switch (detail) {
+    switch (result) {
       case 'abandoned':
       case 'canceled':
-        return {category: BuildStateCategory.Canceled, detail};
+        return {category: BuildStateCategory.Canceled, detail: result};
       case 'failed':
       case 'skipped':
-        return {category: BuildStateCategory.Failed, detail};
+        return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
-        return {category: BuildStateCategory.Success, detail};
       case 'succeededWithIssues':
-        return {category: BuildStateCategory.Queued, detail};
+        return {category: BuildStateCategory.Success, detail: result};
       default:
-        return {category: BuildStateCategory.Custom, detail};
+        return {category: BuildStateCategory.Custom, detail: result};
     }
   }
 
