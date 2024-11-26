@@ -3,7 +3,12 @@ import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {WorkItem} from './models';
+import {
+  AssigneeChange,
+  CategoryDetail,
+  TaskStatusChange,
+  WorkItem,
+} from './models';
 
 export class Workitems extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -16,20 +21,37 @@ export class Workitems extends AzureWorkitemsConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const WorkItem = record.record.data as WorkItem;
+    const taskKey = {uid: String(WorkItem.id), source};
+
+    const statusChangelog = this.convertStateRevisions(
+      WorkItem.revisions.states
+    );
+    const assignees = this.convertAssigneeRevisions(
+      WorkItem.revisions.assignees
+    );
+    const {name: stateName, category: stateCategory} =
+      WorkItem.fields['Faros']['WorkItemStateCategory'];
+    const additionalFields = [
+      {
+        name: 'Severity',
+        value: WorkItem.fields['Microsoft.VSTS.Common.Severity'],
+      },
+    ];
     return [
       {
         model: 'tms_Task',
         record: {
-          uid: String(WorkItem.id),
-          id: String(WorkItem.id),
+          ...taskKey,
+          id: taskKey.uid,
           url: WorkItem._links?.html?.href || WorkItem.url,
-          type: {category: String(WorkItem.fields['System.WorkItemType'])},
+          type: this.getTaskType(WorkItem.fields['System.WorkItemType']),
           name: WorkItem.fields['System.Title'],
           createdAt: Utils.toDate(WorkItem.fields['System.CreatedDate']),
           parent: {uid: String(WorkItem.fields['System.Parent']), source},
-          description: WorkItem.fields['System.Description'],
-          // Todo - Map status correctly
-          status: {category: WorkItem.fields['System.State']},
+          description: Utils.cleanAndTruncate(
+            WorkItem.fields['System.Description']
+          ),
+          status: this.getStatusMapping(stateName, stateCategory),
           statusChangedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
@@ -39,28 +61,68 @@ export class Workitems extends AzureWorkitemsConverter {
             source,
           },
           sprint: {uid: String(WorkItem.fields['System.IterationId']), source},
-          source,
+          priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
+          resolvedAt: Utils.toDate(
+            WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']
+          ),
+          statusChangelog,
+          additionalFields,
           // TODO - Add
-          // priority: Microsoft.VSTS.Common.Priority
-          // Microsoft.VSTS.Common.Severity
-          // Microsoft.VSTS.Common.ResolvedDate
           // Microsoft.VSTS.Common.ResolvedReason
           // Microsoft.VSTS.Scheduling.Effort
         },
       },
-      {
+      ...assignees.map((assignee) => ({
         model: 'tms_TaskAssignment',
         record: {
-          task: {uid: String(WorkItem.id), source},
-          assignee: {
-            uid:
-              WorkItem.fields['System.AssignedTo']?.uniqueName || 'Unassigned',
-            source,
-          },
-          source,
+          task: taskKey,
+          assignee: {uid: assignee.assignee, source},
+          assignedAt: assignee.changedAt,
         },
-      },
+      })),
       // TODO - Add // sprintHistory
     ];
+  }
+
+  private getTaskType(type: string): CategoryDetail {
+    const mapping = {
+      task: 'Task',
+      bug: 'Bug',
+      'user story': 'Story',
+    };
+    return {
+      category: mapping[type.toLowerCase()] ?? 'Custom',
+      detail: type,
+    };
+  }
+
+  private getStatusMapping(name: string, category: string): CategoryDetail {
+    const statusMapping = {
+      Proposed: 'Todo',
+      InProgress: 'InProgress',
+      Resolved: 'Closed',
+      Removed: 'Closed',
+    };
+    return {
+      category: statusMapping[category] ?? 'Custom',
+      detail: name,
+    };
+  }
+
+  private convertAssigneeRevisions(assigneeRevisions: any[]): AssigneeChange[] {
+    return assigneeRevisions.map((revision) => ({
+      assignee: revision.assignee?.uniqueName,
+      changedAt: Utils.toDate(revision.changedDate),
+    }));
+  }
+
+  private convertStateRevisions(stateRevisions: any[]): TaskStatusChange[] {
+    return stateRevisions.map((revision) => ({
+      status: this.getStatusMapping(
+        revision.state.name,
+        revision.state.category
+      ),
+      changedAt: Utils.toDate(revision.changedDate),
+    }));
   }
 }
