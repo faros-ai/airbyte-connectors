@@ -197,7 +197,7 @@ export class PullRequests extends AzureReposConverter {
         updatedAt: Utils.toDate(pullRequestItem.creationDate),
         mergedAt: Utils.toDate(pullRequestItem.closedDate),
         commentCount: pullRequestItem.threads.length,
-        author,
+        author: author ? {uid: author.uid, source} : undefined,
         mergeCommit,
         repository,
       },
