@@ -10,6 +10,12 @@ import {
 } from './common';
 import {PullRequest} from './models';
 
+interface ReviewThread {
+  reviewerUid: string;
+  vote: number;
+  publishedDate: Date;
+}
+
 function getPartialUserRecord(obj: {
   uniqueName: string;
   displayName: string;
@@ -30,6 +36,7 @@ function getPartialUserRecord(obj: {
 
 export class PullRequests extends AzureReposConverter {
   private partialUserRecords: Record<string, PartialUserRecord> = {};
+  private reviewThreads: ReviewThread[] = [];
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
@@ -62,6 +69,7 @@ export class PullRequests extends AzureReposConverter {
 
     const res: DestinationRecord[] = [];
 
+    this.reviewThreads.length = 0; // clear array
     for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
         const author = getPartialUserRecord(comment.author);
@@ -79,6 +87,18 @@ export class PullRequests extends AzureReposConverter {
             author: {uid: author.uid, source},
             pullRequest,
           },
+        });
+      }
+
+      const properties = thread.properties ?? {};
+      const vote = parseInt(properties['CodeReviewVoteResult']?.$value);
+      const voteIdentityRef = properties['CodeReviewVotedByIdentity']?.$value;
+      const voteIdentity = thread.identities?.[voteIdentityRef];
+      if (Number.isInteger(vote) && voteIdentity?.uniqueName) {
+        this.reviewThreads.push({
+          reviewerUid: voteIdentity.uniqueName,
+          vote,
+          publishedDate: Utils.toDate(thread.publishedDate),
         });
       }
     }
@@ -122,6 +142,11 @@ export class PullRequests extends AzureReposConverter {
         ? getPartialUserRecord(reviewer)
         : undefined;
 
+      const reviewThread = this.reviewThreads.find(
+        (ts) =>
+          ts.reviewerUid === reviewer.uniqueName && ts.vote === reviewer.vote
+      );
+
       res.push({
         model: 'vcs_PullRequestReview',
         record: {
@@ -129,7 +154,7 @@ export class PullRequests extends AzureReposConverter {
           uid: reviewer.id,
           htmlUrl: reviewer.url,
           state: this.convertPullRequestReviewState(reviewer.vote),
-          submittedAt: null,
+          submittedAt: reviewThread?.publishedDate,
           reviewer: reviewerUser ? {uid: reviewerUser.uid, source} : undefined,
           pullRequest,
         },
