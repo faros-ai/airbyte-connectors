@@ -178,12 +178,6 @@ export interface PullRequest {
   supportsIterations: boolean;
   repository: PullRequestRepository;
   threads?: PullRequestThread[];
-  codeCoverage?: {
-    label: string;
-    covered: number;
-    total: number;
-    percentage: number;
-  }[];
 }
 
 export interface PullRequestResponse {
@@ -255,28 +249,4 @@ export interface User {
 export interface UserResponse {
   count: number;
   value: User[];
-}
-
-export interface BuildResponse {
-  value: Build[];
-}
-
-export interface Build {
-  id: number;
-  status: string;
-  result: string;
-}
-
-export interface CodeCoverageResponse {
-  value: CodeCoverage[];
-}
-
-export interface CodeCoverage {
-  coverageStats: CoverageStat[];
-}
-
-export interface CoverageStat {
-  label: string;
-  total: number;
-  covered: number;
 }

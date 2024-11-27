@@ -238,6 +238,36 @@ export class AzurePipeline {
       logger?.info(`Fetched ${res.data.count} builds`);
 
       for (const item of res.data.value) {
+        if (
+          item.reason === 'pullRequest' &&
+          item.status === 'completed' &&
+          item.result === 'succeeded'
+        ) {
+          logger?.debug(`Attempting to fetch coverage for build ${item.id}`);
+
+          const coverageRes = await this.httpClient.get<any>(
+            `${project}/_apis/test/codecoverage`,
+            {
+              params: {
+                buildId: item.id,
+              },
+            }
+          );
+
+          const coverageStats = [];
+          if (
+            coverageRes.status === 200 &&
+            coverageRes.data.coverageDetailedSummaryStatus ===
+              'codeCoverageSuccess'
+          ) {
+            logger?.debug(`Coverage found for build ${item.id}`);
+            for (const coverage of coverageRes.data.coverageData ?? []) {
+              coverageStats.push(...coverage.coverageStats);
+            }
+          }
+          item.coverageStats = coverageStats;
+        }
+
         const artifact = await this.httpClient.get<BuildArtifactResponse>(
           `${project}/_apis/build/builds/${item.id}/artifacts`
         );

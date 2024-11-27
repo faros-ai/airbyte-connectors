@@ -19,8 +19,6 @@ import {VError} from 'verror';
 
 import {
   Branch,
-  BuildResponse,
-  CodeCoverageResponse,
   Commit,
   CommitRepository,
   ProjectResponse,
@@ -430,55 +428,6 @@ export class AzureRepos {
         pullRequest.threads = [];
         const threads = threadResponse?.data?.value ?? [];
         pullRequest.threads.push(...threads);
-
-        // For completed PRs, fetch the associated build and code coverage
-        if (pullRequest.status === 'completed') {
-          try {
-            // Get the latest build for this PR
-            const buildRes = await this.get<BuildResponse>(
-              `${project}/_apis/build/builds`,
-              {
-                reasonFilter: 'pullRequest',
-                statusFilter: 'completed',
-                resultFilter: 'succeeded',
-                queryOrder: 'finishTimeDescending',
-                pullRequestId: pullRequest.pullRequestId,
-                $top: 1,
-              }
-            );
-            const builds = buildRes?.data?.value ?? [];
-            if (builds.length > 0) {
-              const build = builds[0];
-
-              // Get code coverage for the build
-              const coverageRes = await this.get<CodeCoverageResponse>(
-                `${project}/_apis/test/codecoverage`,
-                {
-                  buildId: build.id,
-                  flags: 7,
-                }
-              );
-              // Add code coverage data to the PR object
-              if (coverageRes?.data?.value?.length > 0) {
-                const coverage = coverageRes.data.value[0];
-                pullRequest.codeCoverage = coverage.coverageStats.map(
-                  (stat) => ({
-                    label: stat.label,
-                    covered: stat.covered,
-                    total: stat.total,
-                    percentage:
-                      stat.total > 0 ? (stat.covered / stat.total) * 100 : 0,
-                  })
-                );
-              }
-            }
-          } catch (err) {
-            this.logger.warn(
-              `Failed to fetch code coverage for PR ${pullRequest.pullRequestId}: ${err}`
-            );
-          }
-        }
-
         yield pullRequest;
       }
     }
