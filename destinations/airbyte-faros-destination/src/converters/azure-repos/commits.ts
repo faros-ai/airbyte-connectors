@@ -66,7 +66,7 @@ export class Commits extends AzureReposConverter {
 
     const totalChangeCount = getTotalChangeCount(commitItem.changeCounts);
     if (totalChangeCount !== undefined) {
-      this._commitChangeCounts[commitItem.commitId] = totalChangeCount;
+      this.commitChangeCounts[commitItem.commitId] = totalChangeCount;
     }
 
     return res;
