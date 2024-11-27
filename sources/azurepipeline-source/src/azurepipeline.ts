@@ -1,9 +1,5 @@
 import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry} from 'faros-js-client';
-import {Dictionary} from 'ts-essentials';
-import {VError} from 'verror';
-
 import {
   Build,
   BuildArtifactResponse,
@@ -13,7 +9,10 @@ import {
   PipelineResponse,
   Release,
   ReleaseResponse,
-} from './models';
+} from 'faros-airbyte-common/azurepipeline';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 const DEFAULT_API_VERSION = '6.0';
 const DEFAULT_CUTOFF_DAYS = 90;

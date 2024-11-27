@@ -4,11 +4,11 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azurepipeline';
 import fs from 'fs-extra';
 import nock from 'nock';
 
 import * as sut from '../src/index';
-import {Build} from '../src/models';
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

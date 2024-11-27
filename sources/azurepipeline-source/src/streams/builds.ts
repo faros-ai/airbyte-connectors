@@ -4,10 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azurepipeline';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-import {Build} from '../models';
 
 interface BuildState {
   lastFinishTime: string;

@@ -4,10 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Release} from 'faros-airbyte-common/azurepipeline';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-import {Release} from '../models';
 
 interface ReleaseState {
   lastCreatedOn: string;
