@@ -4,8 +4,8 @@ exports[`azurepipeline basic test process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__azurepipeline__builds\\\\\\":4,\\\\\\"mytestsource__azurepipeline__pipelines\\\\\\":2,\\\\\\"mytestsource__azurepipeline__releases\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 21 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 22 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"qa_CodeQuality\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -430,6 +430,62 @@ Array [
         "sha": "41b0bf840db30c017077535e8687126088eee5b7",
       },
       "source": "AzurePipeline",
+    },
+  },
+  Object {
+    "qa_CodeQuality": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "pipelines-java",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "ypc-faros",
+          },
+          "uid": "pipelines-java",
+        },
+        "sha": "41b0bf840db30c017077535e8687126088eee5b7",
+      },
+      "createdAt": "2023-05-31T14:22:53.426Z",
+      "lineCoverage": Object {
+        "category": "Coverage",
+        "name": "Line Coverage",
+        "type": "Percent",
+        "value": "84.40366972477065",
+      },
+      "linesToCover": Object {
+        "category": "Coverage",
+        "name": "Lines to Cover",
+        "type": "Int",
+        "value": "109",
+      },
+      "pullRequest": Object {
+        "number": 76393,
+        "repository": Object {
+          "name": "pipelines-java",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "ypc-faros",
+          },
+          "uid": "pipelines-java",
+        },
+        "uid": "76393",
+      },
+      "repository": Object {
+        "name": "pipelines-java",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "ypc-faros",
+        },
+        "uid": "pipelines-java",
+      },
+      "source": "AzurePipeline",
+      "uid": "41b0bf840db30c017077535e8687126088eee5b7",
+      "uncoveredLines": Object {
+        "category": "Coverage",
+        "name": "Uncovered Lines",
+        "type": "Int",
+        "value": "17",
+      },
     },
   },
   Object {
