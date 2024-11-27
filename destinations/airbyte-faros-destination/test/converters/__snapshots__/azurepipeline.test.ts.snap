@@ -323,7 +323,7 @@ Array [
             "source": "Azure-Repos",
             "uid": "Test-Org",
           },
-          "uid": "Test Project_undefined",
+          "uid": "Test Project:test",
         },
         "sha": "11f90c4879fd3469f9d0c188d5fbec764689788a",
       },
