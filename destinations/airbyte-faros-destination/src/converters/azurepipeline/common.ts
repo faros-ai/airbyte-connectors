@@ -111,7 +111,7 @@ export abstract class AzurePipelineConverter extends Converter {
       }
 
       return {
-        name: `${decodeURIComponent(projectName)}_${repo.name}`,
+        name: `${decodeURIComponent(projectName)}:${repo.name}`,
         organization: {
           uid: orgName,
           source: 'Azure-Repos',
