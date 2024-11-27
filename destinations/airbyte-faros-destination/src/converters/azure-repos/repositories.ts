@@ -6,6 +6,7 @@ import {OrgTypeCategory, Repository} from './models';
 
 export class Repositories extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'faros_Tag',
     'vcs_Organization',
     'vcs_Repository',
     'vcs_RepositoryTag',

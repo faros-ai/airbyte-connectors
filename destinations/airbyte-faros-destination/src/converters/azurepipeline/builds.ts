@@ -14,6 +14,7 @@ export class Builds extends AzurePipelineConverter {
     'cicd_BuildTag',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
+    'faros_Tag',
   ];
 
   private readonly seenRepositories = new Set<string>();
