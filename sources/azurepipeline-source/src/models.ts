@@ -229,6 +229,7 @@ export interface Build {
   triggeredByBuild: any;
   artifacts: BuildArtifact[];
   jobs: BuildTimeline[];
+  coverageStats: CoverageStats[];
 }
 
 export interface BuildResponse {
@@ -280,4 +281,32 @@ export interface Release {
 export interface ReleaseResponse {
   count: number;
   value: Release[];
+}
+
+interface CoverageStats {
+  label: string;
+  position: number;
+  total: number;
+  covered: number;
+  isDeltaAvailable: boolean;
+  delta: number;
+}
+
+interface CoverageData {
+  coverageStats: CoverageStats[];
+  buildPlatform: string;
+  buildFlavor: string;
+}
+
+interface CoverageBuild {
+  id: string;
+  url: string;
+}
+
+export interface CoverageResponse {
+  coverageData: CoverageData[];
+  build: CoverageBuild;
+  deltaBuild: any;
+  status: string;
+  coverageDetailedSummaryStatus: string;
 }

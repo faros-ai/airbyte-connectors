@@ -110,6 +110,57 @@ describe('index', () => {
     expect(builds).toStrictEqual(buildsResource);
   });
 
+  test('streams - builds with coverage', async () => {
+    const buildsResource: Build[] = readTestResourceFile(
+      'builds_eligible_for_coverage.json'
+    );
+    const mock = nock(apiUrl)
+      .get('/proj1/_apis/build/builds')
+      .query({
+        'api-version': '6.0',
+        $top: 100,
+        queryOrder: 'finishTimeAscending',
+        minTime: WATERMARK,
+      })
+      .reply(200, {value: buildsResource});
+
+    for (const build of buildsResource) {
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/artifacts`)
+        .query({'api-version': '6.0'})
+        .reply(200, {value: build.artifacts});
+
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/timeline`)
+        .query({'api-version': '6.0'})
+        .reply(200, {records: build.jobs});
+
+      mock
+        .get(`/proj1/_apis/test/codecoverage`)
+        .query({
+          'api-version': '6.0',
+          buildId: build.id,
+        })
+        .reply(200, readTestResourceFile('builds_coverage.json'));
+    }
+
+    const buildIter = buildsStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {project: 'proj1'},
+      {lastFinishTime: WATERMARK}
+    );
+
+    const builds = [];
+    for await (const build of buildIter) {
+      builds.push(build);
+    }
+
+    mock.done();
+
+    expect(builds).toMatchSnapshot();
+  });
+
   test('streams - releases', async () => {
     const releasesResource: any[] = readTestResourceFile('releases.json');
     const mock = nock(vsrmApiUrl)

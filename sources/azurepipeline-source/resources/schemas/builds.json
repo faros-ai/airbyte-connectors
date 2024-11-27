@@ -546,6 +546,32 @@
           }
         }
       }
+    },
+    "coverageStats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "position": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "covered": {
+            "type": "number"
+          },
+          "isDeltaAvailable": {
+            "type": "boolean"
+          },
+          "delta": {
+            "type": "number"
+          }
+        }
+      }
     }
   }
 }
