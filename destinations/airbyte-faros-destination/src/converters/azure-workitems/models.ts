@@ -136,3 +136,10 @@ export interface AssigneeChange {
   assignee: string;
   changedAt: Date;
 }
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  lastUpdateTime: string;
+}

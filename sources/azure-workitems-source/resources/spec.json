@@ -23,7 +23,8 @@
         "order": 1,
         "type": "array",
         "items": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "title": "Project IDs or project names",
         "description": "Azure Projects. If empty or '*' all available projects will be processed."

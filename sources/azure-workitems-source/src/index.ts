@@ -11,7 +11,7 @@ import {
 import VError from 'verror';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
-import {Boards, Iterations, Users} from './streams';
+import {Boards, Iterations, Projects, Users} from './streams';
 import {Workitems} from './streams/workitems';
 
 /** The main entry point. */
@@ -47,6 +47,7 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
   }
   streams(config: AzureWorkitemsConfig): AirbyteStreamBase[] {
     return [
+      new Projects(config, this.logger),
       new Workitems(config, this.logger),
       new Users(config, this.logger),
       new Iterations(config, this.logger),
@@ -62,22 +63,25 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    let configProjects: string[] = [];
+    let projects: string[] = [];
+    const {projects: configProjects, project} = config;
 
     // Warn if both config options are used
-    if (config.projects?.length && config.project) {
+    if (configProjects?.length && project) {
       this.logger.warn(
-        'Both projects and project provided, discarding project.'
+        'Both projects and project provided, project value will be ignored.'
       );
     }
-    if (config.projects?.length) {
-      configProjects = config.projects.includes('*')
-        ? []
-        : [...config.projects];
-    } else if (config.project) {
-      configProjects = [config.project];
+
+    if (configProjects?.length) {
+      const filteredProjects = [...configProjects]
+        .filter(Boolean)
+        .map((p) => p.trim());
+      projects = filteredProjects.includes('*') ? [] : filteredProjects;
+    } else if (project) {
+      projects = [project];
     }
 
-    return {config: {...config, projects: configProjects}, catalog, state};
+    return {config: {...config, projects}, catalog, state};
   }
 }

@@ -1,29 +1,30 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
 import {Iteration} from '../models';
+import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
 
-export class Iterations extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureWorkitemsConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Iterations extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/iterations.json');
   }
-  get primaryKey(): StreamKey {
-    return 'id';
-  }
 
-  async *readRecords(): AsyncGenerator<Iteration> {
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: ProjectStreamSlice
+  ): AsyncGenerator<Iteration> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger
     );
-    yield* azureWorkitem.getIterations();
+    const projectKey = streamSlice?.project;
+    yield* azureWorkitem.getIterations(projectKey);
   }
 }

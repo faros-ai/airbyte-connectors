@@ -81,7 +81,14 @@ export class Workitems extends AzureWorkitemsConverter {
           assignedAt: assignee.changedAt,
         },
       })),
-      // TODO - Add // sprintHistory
+      {
+        model: 'tms_TaskProjectRelationship',
+        record: {
+          task: taskKey,
+          project: {uid: String(WorkItem.project), source},
+        },
+      },
+      // TODO - Add sprintHistory
     ];
   }
 
@@ -101,8 +108,9 @@ export class Workitems extends AzureWorkitemsConverter {
     const statusMapping = {
       Proposed: 'Todo',
       InProgress: 'InProgress',
-      Resolved: 'Closed',
-      Removed: 'Closed',
+      Resolved: 'Done',
+      Completed: 'Done',
+      Removed: 'Done',
     };
     return {
       category: statusMapping[category] ?? 'Custom',

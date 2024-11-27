@@ -44,7 +44,6 @@ export class AzureWorkitems {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
-    private readonly stateMapping: Map<string, Map<string, string>>,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -93,23 +92,9 @@ export class AzureWorkitems {
       headers: {Authorization: `Basic ${accessToken}`},
     });
 
-    const stateMapping = new Map<string, Map<string, string>>();
-    for (const type of WORK_ITEM_TYPES) {
-      const cleanType = type.replace(/'/g, '');
-      const url = `wit/workitemtypes/${cleanType}/states`;
-      const res = await httpClient.get<any>(url);
-      const values = res.data?.value;
-      const typeCategories = new Map<string, string>();
-      for (const value of values) {
-        typeCategories.set(value.name, value.category);
-      }
-      stateMapping.set(cleanType, typeCategories);
-    }
-
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,
       graphClient,
-      stateMapping,
       logger
     );
     return AzureWorkitems.azure_Workitems;
@@ -117,7 +102,7 @@ export class AzureWorkitems {
 
   async checkConnection(): Promise<void> {
     try {
-      const iter = this.getBoards();
+      const iter = this.getUsers();
       await iter.next();
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
@@ -135,9 +120,12 @@ export class AzureWorkitems {
   }
 
   private get<T = any, R = AxiosResponse<T>>(
-    path: string
+    path: string,
+    config?: any
   ): Promise<R | undefined> {
-    return this.handleNotFound<T, R>(() => this.httpClient.get<T, R>(path));
+    return this.handleNotFound<T, R>(() =>
+      this.httpClient.get<T, R>(path, config)
+    );
   }
 
   private async handleNotFound<T = any, R = AxiosResponse<T>>(
@@ -198,9 +186,10 @@ export class AzureWorkitems {
     }
   }
 
-  async *getWorkitems(): AsyncGenerator<WorkItem> {
-    const promises = WORK_ITEM_TYPES.map((n) =>
-      this.getIdsFromAWorkItemType(n)
+  async *getWorkitems(project: string): AsyncGenerator<WorkItem> {
+    const stateCategories = await this.getStateCategories(project);
+    const promises = WORK_ITEM_TYPES.map((type) =>
+      this.getIdsFromAWorkItemType(project, type)
     );
 
     const results = await Promise.all(promises);
@@ -208,16 +197,17 @@ export class AzureWorkitems {
 
     for (const c of chunk(ids, MAX_BATCH_SIZE)) {
       const res = await this.get<WorkItemResponse>(
-        `wit/workitems?ids=${c}&$expand=all`
+        `${project}/_apis/wit/workitems?ids=${c}&$expand=all`
       );
       for (const item of res?.data?.value ?? []) {
-        const {revisions} = await this.getWorkItemRevisions(item.id);
-        const type = item.fields['System.WorkItemType'];
+        const {revisions} = await this.getWorkItemRevisions(project, item.id);
+        const states = stateCategories.get(item.fields['System.WorkItemType']);
         const stateCategory = this.getStateCategory(
-          type,
-          item.fields['System.State']
+          item.fields['System.State'],
+          states
         );
-        const stateRevisions = this.getStateChangeLog(type, revisions);
+
+        const stateRevisions = this.getStateChangeLog(states, revisions);
         const assigneeRevisions = this.getAssigneeLog(revisions);
         yield {
           ...item,
@@ -231,19 +221,20 @@ export class AzureWorkitems {
             states: stateRevisions,
             assignees: assigneeRevisions,
           },
+          project,
         };
       }
     }
   }
 
-  async getWorkItemRevisions(id: string): Promise<any> {
+  async getWorkItemRevisions(project: string, id: string): Promise<any> {
     const pageSize = 100; // Number of items per page
     let skip = 0;
     const allRevisions: any[] = [];
     let hasMoreResults = true;
 
     while (hasMoreResults) {
-      const url = `wit/workitems/${id}/updates?$top=${pageSize}&$skip=${skip}`;
+      const url = `${project}/_apis/wit/workitems/${id}/updates?$top=${pageSize}&$skip=${skip}`;
       const response = await this.get<WorkItemUpdatesResponse>(url);
 
       const data = response?.data;
@@ -284,24 +275,24 @@ export class AzureWorkitems {
     return changes;
   }
 
-  private getStateChangeLog(type: string, updates: any): any[] {
+  private getStateChangeLog(states: Map<string, string>, updates: any): any[] {
     const changes = this.getFieldChanges('System.State', updates);
     return changes.map((change) => ({
-      state: this.getStateCategory(type, change.value),
+      state: this.getStateCategory(change.value, states),
       changedDate: change.changedDate,
     }));
   }
 
   private getStateCategory(
-    type: string,
-    state: string
+    state: string,
+    states: Map<string, string>
   ): {
     name: string;
     category: string;
   } {
     return {
       name: state,
-      category: this.stateMapping.get(type)?.get(state) ?? state,
+      category: states?.get(state),
     };
   }
 
@@ -315,6 +306,7 @@ export class AzureWorkitems {
 
   // TODO - Fetch all work items instead of only max 20000
   async getIdsFromAWorkItemType(
+    project: string,
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
     const data = {
@@ -325,7 +317,9 @@ export class AzureWorkitems {
         ' ORDER BY [System.ChangedDate] DESC',
     };
     // Azure API has a limit of 20000 items per request.
-    const list = await this.post<any>('wit/wiql', data, {$top: 19999});
+    const list = await this.post<any>(`${project}/_apis/wit/wiql`, data, {
+      $top: 19999,
+    });
     const ids = [];
     for (let i = 0; i < list.data.workItems.length; i++) {
       ids.push(list.data.workItems[i].id);
@@ -346,8 +340,10 @@ export class AzureWorkitems {
     } while (continuationToken);
   }
 
-  async *getIterations(): AsyncGenerator<any> {
-    const res = await this.get<any>('work/teamsettings/iterations');
+  async *getIterations(projectKey: string): AsyncGenerator<any> {
+    const res = await this.get<any>(
+      `${projectKey}/_apis/work/teamsettings/iterations`
+    );
     let response;
     let response2;
     for (const item of res.data?.value ?? []) {
@@ -362,8 +358,8 @@ export class AzureWorkitems {
     }
   }
 
-  async *getBoards(): AsyncGenerator<any> {
-    const res = await this.get<any>('work/boards');
+  async *getBoards(project: string): AsyncGenerator<any> {
+    const res = await this.get<any>(`${project}/_apis/work/boards`);
     for (const item of res.data?.value ?? []) {
       yield item;
     }
@@ -372,10 +368,9 @@ export class AzureWorkitems {
   async getProjects(
     projects: ReadonlyArray<string>
   ): Promise<ReadonlyArray<Project>> {
-    const allProjects = [];
-
-    if (projects.length) {
-      for (const project of projects) {
+    if (projects?.length) {
+      const allProjects: Project[] = [];
+      for (const project of projects ?? []) {
         const res = await this.getProject(project);
         if (res) {
           allProjects.push(res);
@@ -385,17 +380,67 @@ export class AzureWorkitems {
       }
       return allProjects;
     }
+    return await this.getAllProjects();
+  }
 
-    const res = await this.get<any>('_apis/projects');
-    for (const item of res.data?.value ?? []) {
-      allProjects.push(item);
-    }
+  private async getProject(project: string): Promise<Project> {
+    const res = await this.get<any>(`_apis/projects/${project}`);
+    return res?.data;
+  }
+
+  private async getAllProjects(): Promise<Project[]> {
+    const allProjects: Project[] = [];
+    let continuationToken: string | undefined;
+
+    do {
+      const res = await this.get<any>('_apis/projects', {
+        params: {
+          continuationToken,
+          $top: 100, // Number of items per page
+        },
+      });
+
+      for (const item of res?.data?.value ?? []) {
+        allProjects.push(item);
+      }
+
+      // Get continuation token from response headers
+      continuationToken = res?.headers?.['X-MS-ContinuationToken'];
+    } while (continuationToken);
 
     return allProjects;
   }
 
-  async getProject(project: string): Promise<Project> {
-    const res = await this.get<any>(`_apis/projects/${project}`);
-    return res?.data;
+  private async getStateCategories(
+    project: string
+  ): Promise<Map<string, Map<string, string>>> {
+    const stateCategories = new Map<string, Map<string, string>>();
+    const knownCategories = [
+      'Proposed',
+      'InProgress',
+      'Resolved',
+      'Completed',
+      'Removed',
+    ];
+    await Promise.all(
+      WORK_ITEM_TYPES.map(async (type) => {
+        const cleanType = type.replace(/'/g, '');
+        const res = await this.get<any>(
+          `${project}/_apis/wit/workitemtypes/${cleanType}/states`
+        );
+        const values = res.data?.value;
+        const typeCategories = new Map<string, string>();
+        for (const value of values) {
+          typeCategories.set(value.name, value.category);
+          if (!knownCategories.includes(value.category)) {
+            this.logger.warn(
+              `Unknown state category: ${value.category} for type: ${cleanType} in project: ${project}`
+            );
+          }
+        }
+        stateCategories.set(cleanType, typeCategories);
+      })
+    );
+    return stateCategories;
   }
 }
