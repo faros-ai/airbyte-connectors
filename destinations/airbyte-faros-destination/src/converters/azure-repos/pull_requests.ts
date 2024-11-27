@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {Common} from '../common/common';
+import {VcsDiffStats} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {
   AzureReposConverter,
@@ -200,6 +201,7 @@ export class PullRequests extends AzureReposConverter {
         author: author ? {uid: author.uid, source} : undefined,
         mergeCommit,
         repository,
+        diffStats: this.getDiffStats(mergeCommitId),
       },
     });
 
@@ -247,5 +249,19 @@ export class PullRequests extends AzureReposConverter {
       });
     }
     return records;
+  }
+
+  getDiffStats(mergeCommitId?: string): VcsDiffStats | undefined {
+    if (
+      !mergeCommitId ||
+      this.commitChangeCounts[mergeCommitId] === undefined
+    ) {
+      return undefined;
+    }
+    return {
+      filesChanged: this.commitChangeCounts[mergeCommitId],
+      linesAdded: 0, // TODO: get this from file diff api
+      linesDeleted: 0,
+    };
   }
 }

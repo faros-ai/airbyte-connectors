@@ -1,0 +1,25 @@
+{
+  "coverageData": [
+    {
+      "coverageStats": [
+        {
+          "label": "Lines",
+          "position": 4,
+          "total": 708,
+          "covered": 446,
+          "isDeltaAvailable": false,
+          "delta": 0.0
+        }
+      ],
+      "buildPlatform": "",
+      "buildFlavor": ""
+    }
+  ],
+  "build": {
+    "id": "24",
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/24"
+  },
+  "deltaBuild": null,
+  "status": "finalized",
+  "coverageDetailedSummaryStatus": "codeCoverageSuccess"
+}

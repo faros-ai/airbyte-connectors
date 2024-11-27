@@ -14,12 +14,25 @@
         "airbyte_secret": true
       },
       "organization": {
+        "order": 0,
         "type": "string",
-        "title": "Azure Organization"
+        "title": "Organization",
+        "description": "Azure Organization"
+      },
+      "projects": {
+        "order": 1,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project IDs or project names",
+        "description": "Azure Projects. If empty or '*' all available projects will be processed."
       },
       "project": {
         "type": "string",
-        "title": "Azure Project"
+        "title": "Azure Project",
+        "deprecated": true,
+        "description": "Deprecated: Please use 'projects' array instead"
       },
       "graph_version": {
         "type": "string",

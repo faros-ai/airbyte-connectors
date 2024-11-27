@@ -37,6 +37,12 @@ export abstract class AzureReposConverter extends Converter {
     return AzureReposConverter._uidsFromUsersStream;
   }
 
+  // Store commit change counts to be used in pull requests stream
+  private static readonly _commitChangeCounts: Record<string, number> = {};
+  public get commitChangeCounts(): Record<string, number> {
+    return AzureReposConverter._commitChangeCounts;
+  }
+
   /**
    * Azure repos have an additional hierarchy called 'project'.
    * Repository names are not unique across projects so we must include

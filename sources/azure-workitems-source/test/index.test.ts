@@ -60,11 +60,15 @@ describe('index', () => {
 
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
-      return new AzureWorkitems(null, {
-        get: fnUsersFunc.mockResolvedValue({
-          data: {value: usersResource},
-        }),
-      } as any);
+      return new AzureWorkitems(
+        null,
+        {
+          get: fnUsersFunc.mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any,
+        new Map()
+      );
     });
     const source = new sut.AzureWorkitemsSource(logger);
     const streams = source.streams({} as any);
@@ -91,7 +95,8 @@ describe('index', () => {
             data: {value: iterationsResource},
           }),
         } as any,
-        null
+        null,
+        new Map()
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -119,7 +124,8 @@ describe('index', () => {
             data: {value: boardsResource},
           }),
         } as any,
-        null
+        null,
+        new Map()
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);

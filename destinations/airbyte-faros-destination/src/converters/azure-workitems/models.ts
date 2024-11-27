@@ -4,10 +4,18 @@ export interface WorkItemResponse {
 }
 
 export interface WorkItem {
+  _links: {
+    html: Href;
+  };
   fields: fields;
   id: string;
   rev: string;
   url: string;
+  revisions: {
+    states: any[];
+    assignees: any[];
+  };
+  project: string;
 }
 
 export interface System {
@@ -92,6 +100,9 @@ export interface fields {
     };
   };
   System: System;
+  Faros: {
+    WorkItemStateCategory: any;
+  };
 }
 export interface Iteration {
   attributes: {
@@ -108,4 +119,20 @@ export interface Board {
   id: string;
   name: string;
   url: string;
+}
+
+// TODO - Move to common models
+export interface CategoryDetail {
+  category: string;
+  detail: string;
+}
+
+export interface TaskStatusChange {
+  status: CategoryDetail;
+  changedAt: Date;
+}
+
+export interface AssigneeChange {
+  assignee: string;
+  changedAt: Date;
 }
