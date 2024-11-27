@@ -39,6 +39,7 @@ export interface RunResponse {
 }
 
 export interface Pipeline {
+  projectName: string;
   id: number;
   revision: number;
   name?: string;
@@ -50,7 +51,7 @@ export interface Pipeline {
 
 export interface PipelineResponse {
   count: number;
-  value: Pipeline[];
+  value: Omit<Pipeline, 'projectName'>[];
 }
 
 interface BuildLink {

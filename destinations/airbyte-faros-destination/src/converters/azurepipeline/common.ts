@@ -110,7 +110,7 @@ export abstract class AzurePipelineConverter extends Converter {
       if (!orgName || !projectName) {
         return undefined;
       }
-      const name = `${decodeURIComponent(projectName)}_${repo.name}`;
+      const name = `${decodeURIComponent(projectName)}:${repo.name}`;
       return {
         uid: name,
         name,

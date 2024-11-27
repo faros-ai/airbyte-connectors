@@ -198,7 +198,10 @@ export class AzurePipeline {
       logger?.info(`Fetched ${res.data.count} pipelines`);
 
       for (const pipeline of res.data.value) {
-        yield pipeline;
+        yield {
+          projectName: project,
+          ...pipeline,
+        };
       }
 
       continuationToken = res.headers[CONTINUATION_TOKEN_HEADER];

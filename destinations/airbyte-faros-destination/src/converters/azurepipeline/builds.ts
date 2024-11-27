@@ -76,7 +76,7 @@ export class Builds extends AzurePipelineConverter {
         );
       }
 
-      const cicdRepoUid = `${build.repository.type}_${build.repository.id}`;
+      const cicdRepoUid = `${build.repository.type}:${build.repository.id}`;
       const cicdRepoKey = {
         uid: cicdRepoUid,
         organization: {uid: organizationName, source},

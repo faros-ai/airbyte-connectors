@@ -52,7 +52,7 @@ export abstract class AzureReposConverter extends Converter {
    * @returns           The identifier for a repo unique across projects
    */
   getProjectRepo(repository: CommitRepository): string {
-    return `${repository?.project?.name}_${repository?.name}`;
+    return `${repository?.project?.name}:${repository?.name}`;
   }
 
   convertStringToNumber(str: string): number {

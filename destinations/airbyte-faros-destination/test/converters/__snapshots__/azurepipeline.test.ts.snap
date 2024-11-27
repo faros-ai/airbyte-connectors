@@ -22,7 +22,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "coonglinh.medee_dms",
+      "name": "devcube:coonglinh.medee_dms",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
@@ -34,7 +34,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "devcube",
+      "name": "devcube:devcube",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
@@ -75,7 +75,7 @@ Array [
         "uid": "huongkstn",
       },
       "source": "AzurePipeline",
-      "uid": "Bitbucket_coonglinh/medee_dms",
+      "uid": "Bitbucket:coonglinh/medee_dms",
       "url": null,
     },
   },
@@ -180,7 +180,7 @@ Array [
           "source": "AzurePipeline",
           "uid": "huongkstn",
         },
-        "uid": "Bitbucket_coonglinh/medee_dms",
+        "uid": "Bitbucket:coonglinh/medee_dms",
       },
       "source": "AzurePipeline",
       "tags": Array [],
@@ -208,7 +208,7 @@ Array [
           "source": "AzurePipeline",
           "uid": "huongkstn",
         },
-        "uid": "Bitbucket_coonglinh/medee_dms",
+        "uid": "Bitbucket:coonglinh/medee_dms",
       },
       "source": "AzurePipeline",
       "tags": Array [
@@ -318,7 +318,7 @@ Array [
       },
       "commit": Object {
         "repository": Object {
-          "name": "Test Project_undefined",
+          "name": "Test Project:test",
           "organization": Object {
             "source": "Azure-Repos",
             "uid": "Test-Org",
@@ -333,13 +333,13 @@ Array [
   Object {
     "cicd_Repository": Object {
       "description": null,
-      "name": null,
+      "name": "test",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
       },
       "source": "AzurePipeline",
-      "uid": "TfsGit_123",
+      "uid": "TfsGit:123",
       "url": "https://dev.azure.com/Test-Org/Test%20Project/_git/Repository.Test",
     },
   },
@@ -497,7 +497,7 @@ Array [
         "uid": "ypc1",
       },
       "source": "AzurePipeline",
-      "uid": "GitHub_ypc-faros/pipelines-java",
+      "uid": "GitHub:ypc-faros/pipelines-java",
       "url": null,
     },
   },
