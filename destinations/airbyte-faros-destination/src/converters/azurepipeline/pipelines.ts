@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/azurepipeline';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Pipeline} from './models';
 
 export class Pipelines extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

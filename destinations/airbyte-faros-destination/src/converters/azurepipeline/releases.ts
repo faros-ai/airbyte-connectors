@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Release} from 'faros-airbyte-common/azurepipeline';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Release} from './models';
 
 export class Releases extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
