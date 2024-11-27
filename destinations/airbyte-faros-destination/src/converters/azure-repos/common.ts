@@ -39,7 +39,7 @@ export abstract class AzureReposConverter extends Converter {
 
   // Store commit change counts to be used in pull requests stream
   private static readonly _commitChangeCounts: Record<string, number> = {};
-  public get _commitChangeCounts(): Record<string, number> {
+  public get commitChangeCounts(): Record<string, number> {
     return AzureReposConverter._commitChangeCounts;
   }
 

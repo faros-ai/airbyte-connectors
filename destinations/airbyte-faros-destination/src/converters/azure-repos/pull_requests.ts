@@ -254,12 +254,12 @@ export class PullRequests extends AzureReposConverter {
   getDiffStats(mergeCommitId?: string): VcsDiffStats | undefined {
     if (
       !mergeCommitId ||
-      this._commitChangeCounts[mergeCommitId] === undefined
+      this.commitChangeCounts[mergeCommitId] === undefined
     ) {
       return undefined;
     }
     return {
-      filesChanged: this._commitChangeCounts[mergeCommitId],
+      filesChanged: this.commitChangeCounts[mergeCommitId],
       linesAdded: 0, // TODO: get this from file diff api
       linesDeleted: 0,
     };
