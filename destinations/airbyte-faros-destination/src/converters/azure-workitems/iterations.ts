@@ -28,21 +28,18 @@ export class Iterations extends AzureWorkitemsConverter {
     ];
   }
 
-  private toState(state?: string): {
-    category: string;
-    detail: string;
-  } {
+  private toState(state?: string): string {
     if (!state) return null;
 
     switch (state.toLowerCase()) {
       case 'current':
-        return {category: 'Active', detail: state};
+        return 'Active';
       case 'past':
-        return {category: 'Closed', detail: state};
+        return 'Closed';
       case 'future':
-        return {category: 'Future', detail: state};
+        return 'Future';
       default:
-        return {category: 'Custom', detail: state};
+        return state;
     }
   }
 }

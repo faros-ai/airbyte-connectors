@@ -1,9 +1,11 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
@@ -33,7 +35,10 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     config: AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = await AzureWorkitems.instance(config);
+      const azureActiveDirectory = await AzureWorkitems.instance(
+        config,
+        this.logger
+      );
       await azureActiveDirectory.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -47,5 +52,32 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
       new Iterations(config, this.logger),
       new Boards(config, this.logger),
     ];
+  }
+  async onBeforeRead(
+    config: AzureWorkitemsConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: AzureWorkitemsConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    let configProjects: string[] = [];
+
+    // Warn if both config options are used
+    if (config.projects?.length && config.project) {
+      this.logger.warn(
+        'Both projects and project provided, discarding project.'
+      );
+    }
+    if (config.projects?.length) {
+      configProjects = config.projects.includes('*')
+        ? []
+        : [...config.projects];
+    } else if (config.project) {
+      configProjects = [config.project];
+    }
+
+    return {config: {...config, projects: configProjects}, catalog, state};
   }
 }

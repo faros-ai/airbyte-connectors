@@ -1,10 +1,11 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import {base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
 import {
+  Project,
   User,
   UserResponse,
   WorkItem,
@@ -31,6 +32,7 @@ export interface AzureWorkitemsConfig {
   readonly access_token: string;
   readonly organization: string;
   readonly project: string;
+  readonly projects: string[];
   readonly api_version?: string;
   readonly request_timeout?: number;
   readonly graph_version?: string;
@@ -42,10 +44,14 @@ export class AzureWorkitems {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
-    private readonly stateMapping: Map<string, Map<string, string>>
+    private readonly stateMapping: Map<string, Map<string, string>>,
+    private readonly logger: AirbyteLogger
   ) {}
 
-  static async instance(config: AzureWorkitemsConfig): Promise<AzureWorkitems> {
+  static async instance(
+    config: AzureWorkitemsConfig,
+    logger: AirbyteLogger
+  ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
     if (!config.access_token) {
@@ -56,18 +62,14 @@ export class AzureWorkitems {
       throw new VError('organization must not be an empty string');
     }
 
-    // TODO - Use projects instead
-    if (!config.project) {
-      throw new VError('project must not be an empty string');
-    }
-
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const version = config.api_version ?? DEFAULT_API_VERSION;
 
     const httpClient = makeAxiosInstanceWithRetry(
       {
-        baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
+        // baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
+        baseURL: `https://dev.azure.com/${config.organization}`,
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
@@ -107,7 +109,8 @@ export class AzureWorkitems {
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,
       graphClient,
-      stateMapping
+      stateMapping,
+      logger
     );
     return AzureWorkitems.azure_Workitems;
   }
@@ -364,5 +367,35 @@ export class AzureWorkitems {
     for (const item of res.data?.value ?? []) {
       yield item;
     }
+  }
+
+  async getProjects(
+    projects: ReadonlyArray<string>
+  ): Promise<ReadonlyArray<Project>> {
+    const allProjects = [];
+
+    if (projects.length) {
+      for (const project of projects) {
+        const res = await this.getProject(project);
+        if (res) {
+          allProjects.push(res);
+        } else {
+          this.logger.warn(`Project ${project} not found`);
+        }
+      }
+      return allProjects;
+    }
+
+    const res = await this.get<any>('_apis/projects');
+    for (const item of res.data?.value ?? []) {
+      allProjects.push(item);
+    }
+
+    return allProjects;
+  }
+
+  async getProject(project: string): Promise<Project> {
+    const res = await this.get<any>(`_apis/projects/${project}`);
+    return res?.data;
   }
 }

@@ -21,7 +21,10 @@ export class Boards extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Board> {
-    const azureWorkitem = await AzureWorkitems.instance(this.config);
-    yield* azureWorkitem.getBoards();
+    const azureWorkitems = await AzureWorkitems.instance(
+      this.config,
+      this.logger
+    );
+    yield* azureWorkitems.getBoards();
   }
 }
