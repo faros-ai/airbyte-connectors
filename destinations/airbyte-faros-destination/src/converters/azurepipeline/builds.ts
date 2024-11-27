@@ -57,6 +57,7 @@ export class Builds extends AzurePipelineConverter {
     if (build.sourceVersion && build.repository) {
       const vcsRepository = this.vcs_Repository(build.repository);
       const commitKey = {
+        uid: build.sourceVersion,
         sha: build.sourceVersion,
         repository: vcsRepository,
       };
