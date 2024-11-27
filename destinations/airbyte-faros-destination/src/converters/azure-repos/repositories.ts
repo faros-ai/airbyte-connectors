@@ -8,11 +8,13 @@ export class Repositories extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
     'vcs_Repository',
+    'vcs_RepositoryTag',
     'vcs_Branch',
     'vcs_Tag',
   ];
 
-  private seenOrganizations = new Set<string>();
+  private readonly seenOrganizations = new Set<string>();
+  private readonly seenProjects = new Set<string>();
 
   async convert(
     record: AirbyteRecord
@@ -53,6 +55,29 @@ export class Repositories extends AzureReposConverter {
         size: repositoryItem.size,
         mainBranch: repositoryItem.defaultBranch,
         htmlUrl: repositoryItem.webUrl,
+      },
+    });
+
+    const projectNameTagUid = `ADO_ProjectName_${repositoryItem.project.name}`;
+    const projectNameTagKey = {
+      uid: projectNameTagUid,
+    };
+    if (!this.seenProjects.has(projectNameTagUid)) {
+      this.seenProjects.add(projectNameTagUid);
+      res.push({
+        model: 'faros_Tag',
+        record: {
+          ...projectNameTagKey,
+          key: 'ProjectName',
+          value: repositoryItem.project.name,
+        },
+      });
+    }
+    res.push({
+      model: 'vcs_RepositoryTag',
+      record: {
+        repository,
+        tag: projectNameTagKey,
       },
     });
 

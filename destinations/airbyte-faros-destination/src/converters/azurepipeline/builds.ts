@@ -11,11 +11,13 @@ export class Builds extends AzurePipelineConverter {
     'cicd_ArtifactCommitAssociation',
     'cicd_Build',
     'cicd_BuildStep',
+    'cicd_BuildTag',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
   ];
 
-  private seenRepositories = new Set<string>();
+  private readonly seenRepositories = new Set<string>();
+  private readonly seenProjects = new Set<string>();
 
   async convert(
     record: AirbyteRecord
@@ -51,6 +53,29 @@ export class Builds extends AzurePipelineConverter {
         endedAt,
         status,
         url: build.url,
+      },
+    });
+
+    const projectNameTagUid = `ADO_ProjectName_${build.project.name}`;
+    const projectNameTagKey = {
+      uid: projectNameTagUid,
+    };
+    if (!this.seenProjects.has(projectNameTagUid)) {
+      this.seenProjects.add(projectNameTagUid);
+      res.push({
+        model: 'faros_Tag',
+        record: {
+          ...projectNameTagKey,
+          key: 'ProjectName',
+          value: build.project.name,
+        },
+      });
+    }
+    res.push({
+      model: 'cicd_BuildTag',
+      record: {
+        build: buildKey,
+        tag: projectNameTagKey,
       },
     });
 
