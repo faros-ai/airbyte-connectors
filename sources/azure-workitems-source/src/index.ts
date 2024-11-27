@@ -47,11 +47,11 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
   }
   streams(config: AzureWorkitemsConfig): AirbyteStreamBase[] {
     return [
-      new Projects(config, this.logger),
       new Workitems(config, this.logger),
       new Users(config, this.logger),
       new Iterations(config, this.logger),
       new Boards(config, this.logger),
+      new Projects(config, this.logger),
     ];
   }
   async onBeforeRead(

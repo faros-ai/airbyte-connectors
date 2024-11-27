@@ -1,7 +1,7 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
+import {AzureWorkitems} from '../azure-workitems';
 import {Project} from '../models';
 import {StreamBase} from './common';
 

@@ -1,12 +1,7 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
+import {AzureWorkitems} from '../azure-workitems';
 import {Iteration} from '../models';
 import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
 

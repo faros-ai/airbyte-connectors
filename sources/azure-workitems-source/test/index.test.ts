@@ -67,7 +67,7 @@ describe('index', () => {
             data: {value: usersResource},
           }),
         } as any,
-        new Map()
+        logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -96,7 +96,7 @@ describe('index', () => {
           }),
         } as any,
         null,
-        new Map()
+        logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -125,7 +125,7 @@ describe('index', () => {
           }),
         } as any,
         null,
-        new Map()
+        logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
