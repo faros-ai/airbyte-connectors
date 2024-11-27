@@ -85,7 +85,7 @@ export class Workitems extends AzureWorkitemsConverter {
         model: 'tms_TaskProjectRelationship',
         record: {
           task: taskKey,
-          project: {uid: String(WorkItem.project), source},
+          project: {uid: String(WorkItem.projectId), source},
         },
       },
       // TODO - Add sprintHistory

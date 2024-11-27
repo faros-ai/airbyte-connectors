@@ -3,7 +3,8 @@ import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
 
 export type ProjectStreamSlice = {
-  project: string;
+  name: string;
+  id: string;
 };
 
 export abstract class StreamBase extends AirbyteStreamBase {
@@ -27,7 +28,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
     );
     const projects = await azureWorkitems.getProjects(this.config.projects);
     for (const project of projects) {
-      yield {project: project.name};
+      yield {name: project.name, id: project.id};
     }
   }
 }

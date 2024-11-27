@@ -15,7 +15,7 @@ export interface WorkItem {
     states: any[];
     assignees: any[];
   };
-  project: string;
+  projectId: string;
 }
 
 export interface System {

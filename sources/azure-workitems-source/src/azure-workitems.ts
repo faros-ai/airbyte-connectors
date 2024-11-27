@@ -221,7 +221,7 @@ export class AzureWorkitems {
             states: stateRevisions,
             assignees: assigneeRevisions,
           },
-          project,
+          projectId: project,
         };
       }
     }

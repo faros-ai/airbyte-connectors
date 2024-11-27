@@ -24,7 +24,7 @@ export class Iterations extends StreamWithProjectSlices {
       this.config,
       this.logger
     );
-    const projectKey = streamSlice?.project;
-    yield* azureWorkitem.getIterations(projectKey);
+    const projectId = streamSlice?.id;
+    yield* azureWorkitem.getIterations(projectId);
   }
 }

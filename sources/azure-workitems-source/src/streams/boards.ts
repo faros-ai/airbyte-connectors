@@ -19,7 +19,7 @@ export class Boards extends StreamWithProjectSlices {
       this.config,
       this.logger
     );
-    const project = streamSlice?.project;
-    yield* azureWorkitems.getBoards(project);
+    const projectId = streamSlice?.id;
+    yield* azureWorkitems.getBoards(projectId);
   }
 }
