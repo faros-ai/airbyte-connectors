@@ -13,6 +13,7 @@ export class Builds extends AzurePipelineConverter {
     'cicd_BuildStep',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
+    'qa_CodeQuality',
   ];
 
   private seenRepositories = new Set<string>();
@@ -68,6 +69,7 @@ export class Builds extends AzurePipelineConverter {
             commit: commitKey,
           },
         });
+        res.push(...this.processCoverageStats(build));
       }
 
       const cicdRepoUid = `${build.repository.type}_${build.repository.id}`;
@@ -148,5 +150,9 @@ export class Builds extends AzurePipelineConverter {
     }
 
     return res;
+  }
+
+  private processCoverageStats(build: Build): DestinationRecord[] {
+    return [];
   }
 }
