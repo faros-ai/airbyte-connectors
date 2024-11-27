@@ -22,7 +22,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "coonglinh.medee_dms",
+      "name": "devcube/coonglinh.medee_dms",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
@@ -34,7 +34,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "devcube",
+      "name": "devcube/devcube",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",

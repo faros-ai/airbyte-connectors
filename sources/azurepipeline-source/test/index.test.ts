@@ -66,7 +66,9 @@ describe('index', () => {
 
     mock.done();
 
-    expect(pipelines).toStrictEqual(pipelinesResource);
+    expect(pipelines).toStrictEqual(
+      pipelinesResource.map((p) => ({projectName: 'proj1', ...p}))
+    );
   });
 
   test('streams - builds', async () => {
