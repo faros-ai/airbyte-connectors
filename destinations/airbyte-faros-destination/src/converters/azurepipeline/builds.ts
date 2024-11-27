@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Build, Tag} from 'faros-airbyte-common/azurepipeline';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Build, Tag} from './models';
 
 export class Builds extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

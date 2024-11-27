@@ -1,8 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
-
-import {Converter, StreamContext} from '../converter';
 import {
   BuildStateCategory,
   BuildTimeline,
@@ -12,7 +8,11 @@ import {
   JobState,
   Repository,
   Timestamps,
-} from './models';
+} from 'faros-airbyte-common/azurepipeline';
+import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
+
+import {Converter, StreamContext} from '../converter';
 
 export type ApplicationMapping = Record<
   string,
