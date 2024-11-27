@@ -3,14 +3,19 @@ import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Build} from './models';
+import {Build, Tag} from './models';
 
 export class Builds extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Artifact',
+    'cicd_ArtifactCommitAssociation',
     'cicd_Build',
     'cicd_BuildStep',
     'cicd_BuildCommitAssociation',
+    'cicd_Repository',
   ];
+
+  private seenRepositories = new Set<string>();
 
   async convert(
     record: AirbyteRecord
@@ -24,12 +29,12 @@ export class Builds extends AzurePipelineConverter {
       return [];
     }
 
-    const pipeline = {
+    const pipelineKey = {
       uid: String(build.definition?.id),
       organization: {uid: organizationName, source},
     };
 
-    const buildUid = {uid, pipeline};
+    const buildKey = {uid, pipeline: pipelineKey};
     const createdAt = Utils.toDate(build.queueTime);
     const startedAt = Utils.toDate(build.startTime);
     const endedAt = Utils.toDate(build.finishTime);
@@ -39,31 +44,82 @@ export class Builds extends AzurePipelineConverter {
     res.push({
       model: 'cicd_Build',
       record: {
-        uid,
+        ...buildKey,
         name: build.buildNumber,
         createdAt,
         startedAt,
         endedAt,
         status,
         url: build.url,
-        pipeline,
       },
     });
 
     if (build.sourceVersion && build.repository) {
-      const repository = this.vcs_Repository(build.repository);
-      if (repository) {
+      const vcsRepository = this.vcs_Repository(build.repository);
+      const commitKey = {
+        sha: build.sourceVersion,
+        repository: vcsRepository,
+      };
+      if (vcsRepository) {
         res.push({
           model: 'cicd_BuildCommitAssociation',
           record: {
-            build: {uid, pipeline},
-            commit: {
-              sha: build.sourceVersion,
-              uid: build.sourceVersion,
-              repository,
-            },
+            build: buildKey,
+            commit: commitKey,
           },
         });
+      }
+
+      const cicdRepoUid = `${build.repository.type}_${build.repository.id}`;
+      const cicdRepoKey = {
+        uid: cicdRepoUid,
+        organization: {uid: organizationName, source},
+      };
+      if (!this.seenRepositories.has(cicdRepoUid)) {
+        this.seenRepositories.add(cicdRepoUid);
+        res.push({
+          model: 'cicd_Repository',
+          record: {
+            ...cicdRepoKey,
+            name: build.repository.name,
+            description: null,
+            url: build.repository.url,
+          },
+        });
+      }
+
+      for (const artifact of build.artifacts) {
+        const tags: Tag[] = [];
+        for (const [key, value] of Object.entries(
+          artifact.resource.properties
+        )) {
+          tags.push({name: key, value: String(value)});
+        }
+        const artifactKey = {
+          uid: String(artifact.id),
+          repository: cicdRepoKey,
+        };
+        res.push({
+          model: 'cicd_Artifact',
+          record: {
+            ...artifactKey,
+            name: artifact.name,
+            url: artifact.resource.url,
+            type: artifact.resource.type,
+            createdAt: endedAt,
+            tags,
+            build: buildKey,
+          },
+        });
+        if (vcsRepository) {
+          res.push({
+            model: 'cicd_ArtifactCommitAssociation',
+            record: {
+              artifact: artifactKey,
+              commit: commitKey,
+            },
+          });
+        }
       }
     }
 
@@ -78,6 +134,7 @@ export class Builds extends AzurePipelineConverter {
         model: 'cicd_BuildStep',
         record: {
           uid: String(job.id),
+          build: buildKey,
           name: job.name,
           command: job.name,
           type: jobType,
@@ -86,7 +143,6 @@ export class Builds extends AzurePipelineConverter {
           endedAt: jobEndedAt,
           status: jobStatus,
           url: job.url,
-          build: buildUid,
         },
       });
     }
