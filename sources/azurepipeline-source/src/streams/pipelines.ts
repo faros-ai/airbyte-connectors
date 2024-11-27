@@ -4,10 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/azurepipeline';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-import {Pipeline} from '../models';
 
 type StreamSlice = {
   project: string;
