@@ -15,7 +15,7 @@ export interface WorkItem {
     states: any[];
     assignees: any[];
   };
-  project: string;
+  projectId: string;
 }
 
 export interface System {
@@ -135,4 +135,11 @@ export interface TaskStatusChange {
 export interface AssigneeChange {
   assignee: string;
   changedAt: Date;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  lastUpdateTime: string;
 }

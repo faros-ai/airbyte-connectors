@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Workitems Spec",
     "type": "object",
-    "required": ["access_token", "organization", "project"],
+    "required": ["access_token", "organization"],
     "additionalProperties": true,
     "properties": {
       "access_token": {
@@ -23,7 +23,8 @@
         "order": 1,
         "type": "array",
         "items": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "title": "Project IDs or project names",
         "description": "Azure Projects. If empty or '*' all available projects will be processed."
