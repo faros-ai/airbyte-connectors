@@ -82,6 +82,9 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
       projects = [project];
     }
 
-    return {config: {...config, projects}, catalog, state};
+    const additional_fields =
+      config.additional_fields?.filter(Boolean).map((f) => f.trim()) ?? [];
+
+    return {config: {...config, projects, additional_fields}, catalog, state};
   }
 }

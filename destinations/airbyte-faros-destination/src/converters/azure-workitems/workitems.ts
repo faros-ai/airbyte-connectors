@@ -31,12 +31,8 @@ export class Workitems extends AzureWorkitemsConverter {
     );
     const {name: stateName, category: stateCategory} =
       WorkItem.fields['Faros']['WorkItemStateCategory'];
-    const additionalFields = [
-      {
-        name: 'Severity',
-        value: WorkItem.fields['Microsoft.VSTS.Common.Severity'],
-      },
-    ];
+
+    const tags = this.getTags(WorkItem.fields['System.Tags']);
     return [
       {
         model: 'tms_Task',
@@ -88,8 +84,16 @@ export class Workitems extends AzureWorkitemsConverter {
           project: {uid: String(WorkItem.projectId), source},
         },
       },
+      ...tags.map((tag) => ({
+        model: 'tms_TaskTag',
+        record: {task: taskKey, label: {name: tag}},
+      })),
       // TODO - Add sprintHistory
     ];
+  }
+
+  private getTags(tags: string): string[] {
+    return tags.split(';').map((tag) => tag.trim());
   }
 
   private getTaskType(type: string): CategoryDetail {
