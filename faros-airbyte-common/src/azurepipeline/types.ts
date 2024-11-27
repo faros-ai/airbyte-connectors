@@ -285,7 +285,7 @@ export interface ReleaseResponse {
   value: Release[];
 }
 
-interface CoverageStats {
+export interface CoverageStats {
   label: string;
   position: number;
   total: number;

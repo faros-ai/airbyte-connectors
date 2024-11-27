@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Build, Tag} from 'faros-airbyte-common/azurepipeline';
+import {Build, CoverageStats, Tag} from 'faros-airbyte-common/azurepipeline';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {CommitKey, RepoKey} from '../common/vcs';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 
 export class Builds extends AzurePipelineConverter {
@@ -13,12 +14,14 @@ export class Builds extends AzurePipelineConverter {
     'cicd_BuildStep',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
+    'qa_CodeQuality',
   ];
 
   private seenRepositories = new Set<string>();
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const build = record.record.data as Build;
@@ -69,6 +72,9 @@ export class Builds extends AzurePipelineConverter {
             commit: commitKey,
           },
         });
+        res.push(
+          ...this.processCoverageStats(build, vcsRepository, commitKey, ctx)
+        );
       }
 
       const cicdRepoUid = `${build.repository.type}:${build.repository.id}`;
@@ -149,5 +155,74 @@ export class Builds extends AzurePipelineConverter {
     }
 
     return res;
+  }
+
+  private processCoverageStats(
+    build: Build,
+    repoKey: RepoKey,
+    commitKey: CommitKey,
+    ctx?: StreamContext
+  ): DestinationRecord[] {
+    if (!build.coverageStats?.length) {
+      return [];
+    }
+
+    const prKey = build.triggerInfo?.['pr.number']
+      ? {
+          uid: build.triggerInfo?.['pr.number'],
+          number: Number(build.triggerInfo?.['pr.number']),
+          repository: repoKey,
+        }
+      : undefined;
+
+    const res: DestinationRecord[] = [];
+    for (const coverage of build.coverageStats) {
+      const measures = this.getMeasures(coverage, ctx);
+      if (Object.keys(measures).length) {
+        res.push({
+          model: 'qa_CodeQuality',
+          record: {
+            ...measures,
+            uid: commitKey.sha,
+            createdAt: Utils.toDate(build.finishTime),
+            pullRequest: prKey,
+            commit: commitKey,
+            repository: repoKey,
+          },
+        });
+      }
+    }
+    return res;
+  }
+
+  private getMeasures(coverage: CoverageStats, ctx?: StreamContext): any {
+    switch (coverage.label) {
+      case 'Lines':
+        return {
+          linesToCover: {
+            category: 'Coverage',
+            name: 'Lines to Cover',
+            type: 'Int',
+            value: String(coverage.total),
+          },
+          uncoveredLines: {
+            category: 'Coverage',
+            name: 'Uncovered Lines',
+            type: 'Int',
+            value: String(coverage.total - coverage.covered),
+          },
+          lineCoverage: {
+            category: 'Coverage',
+            name: 'Line Coverage',
+            type: 'Percent',
+            value: String(
+              coverage.total ? (coverage.covered / coverage.total) * 100 : 0
+            ),
+          },
+        };
+      default:
+        ctx?.logger.warn(`Unsupported coverage label: ${coverage.label}`);
+        return {};
+    }
   }
 }

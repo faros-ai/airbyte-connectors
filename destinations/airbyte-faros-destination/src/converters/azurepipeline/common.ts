@@ -12,6 +12,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
+import {RepoKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
 
 export type ApplicationMapping = Record<
@@ -99,7 +100,7 @@ export abstract class AzurePipelineConverter extends Converter {
     }
   }
 
-  vcs_Repository(repo: Repository): any | undefined {
+  vcs_Repository(repo: Repository): RepoKey | undefined {
     const repoType = toLower(repo.type);
 
     if (repoType === 'tfsgit') {
@@ -109,9 +110,10 @@ export abstract class AzurePipelineConverter extends Converter {
       if (!orgName || !projectName) {
         return undefined;
       }
-
+      const name = `${decodeURIComponent(projectName)}:${repo.name}`;
       return {
-        name: `${decodeURIComponent(projectName)}:${repo.name}`,
+        uid: name,
+        name,
         organization: {
           uid: orgName,
           source: 'Azure-Repos',
@@ -126,9 +128,10 @@ export abstract class AzurePipelineConverter extends Converter {
       if (parts.length < 2) {
         return undefined;
       }
-
+      const name = toLower(parts[1]);
       return {
-        name: toLower(parts[1]),
+        uid: name,
+        name,
         organization: {
           uid: toLower(parts[0]),
           source: 'GitHub',
