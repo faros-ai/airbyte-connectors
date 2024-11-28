@@ -233,13 +233,13 @@ export abstract class Vulnerabilities extends VantaConverter {
     return ctx.config.max_description_lenght || MAX_DESCRIPTION_LENGTH;
   }
 
-  private getSeverityScore(vuln: Vulnerability): number {
+  private getSeverityScore(vuln: Vulnerability): number | null {
     if (vuln.cvssSeverityScore) {
       return vuln.cvssSeverityScore;
     }
     if (vuln.severity) {
       return VulnerabilityCommon.ratingToScore(vuln.severity);
     }
-    return 0;
+    return null;
   }
 }

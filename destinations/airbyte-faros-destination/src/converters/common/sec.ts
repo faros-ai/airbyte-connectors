@@ -31,8 +31,6 @@ export class Vulnerability {
         return 8.9;
       case 'critical':
         return 10.0;
-      default:
-        return 0;
     }
   }
 

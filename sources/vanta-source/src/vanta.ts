@@ -5,6 +5,7 @@ import {
   Vulnerability,
   VulnerabilityRemediation,
   VulnerableAsset,
+  VulnerableAssetSummary,
 } from 'faros-airbyte-common/vanta';
 import {makeAxiosInstanceWithRetry, wrapApiError} from 'faros-js-client';
 import VError from 'verror';
@@ -19,6 +20,7 @@ const DEFAULT_MAX_RETRIES = 8;
 export const DEFAULT_CUTOFF_DAYS = 90;
 
 const DEFAULT_RETRY_DELAY = 1000;
+const DEFAULT_GATEWAY_TIMEOUT_DELAY = 30000;
 
 /**
  * Vanta REST API client
@@ -26,7 +28,7 @@ const DEFAULT_RETRY_DELAY = 1000;
  */
 export class Vanta {
   private static vanta: Vanta;
-  private readonly vulnerableAssets = new Map<string, any>();
+  private readonly vulnerableAssets = new Map<string, VulnerableAssetSummary>();
 
   constructor(
     private readonly api: AxiosInstance,
@@ -40,31 +42,10 @@ export class Vanta {
   ): Promise<Vanta> {
     if (Vanta.vanta) return Vanta.vanta;
 
-    const delayLogic = (
-      error: AxiosError<unknown, any>,
-      retryNumber: number
-    ): number => {
-      const statusCode = error?.response?.status;
-      if (statusCode == 429) {
-        // Retrying using an exponential backoff as recommended in the API documentation:
-        // https://developer.vanta.com/docs/faq#:~:text=What%20should%20I%20do%20if%20I%20hit%20the%20rate%20limit%3F
-        const delay = DEFAULT_RETRY_DELAY * Math.pow(2, retryNumber);
-        logger.warn(
-          `Received 429 error from Vanta API, retrying in ${delay / 1000} seconds.`
-        );
-        return delay;
-      }
-      if (statusCode === 504) {
-        logger.warn(
-          'Got 504 from Vanta API, sleeping for 30 seconds, then retrying.'
-        );
-        return 30000;
-      }
-      logger.warn(
-        `Retrying in ${DEFAULT_RETRY_DELAY} milliseconds using default delay.`
-      );
-      return DEFAULT_RETRY_DELAY;
-    };
+    const delayLogic = this.createDelayLogic(
+      logger,
+      cfg.gateway_timeout_retry_delay ?? DEFAULT_GATEWAY_TIMEOUT_DELAY
+    );
 
     const api = makeAxiosInstanceWithRetry(
       {
@@ -95,6 +76,36 @@ export class Vanta {
 
     Vanta.vanta = new Vanta(api, cfg.page_size ?? DEFAULT_PAGE_LIMIT, logger);
     return Vanta.vanta;
+  }
+
+  static createDelayLogic(
+    logger: AirbyteLogger,
+    gatewayTimeoutDelay: number
+  ): (error: AxiosError<unknown, any>, retryNumber: number) => number {
+    return (error: AxiosError<unknown, any>, retryNumber: number): number => {
+      const statusCode = error?.response?.status;
+      if (statusCode === 429) {
+        // Retrying using an exponential backoff as recommended in the API documentation:
+        // https://developer.vanta.com/docs/faq#:~:text=What%20should%20I%20do%20if%20I%20hit%20the%20rate%20limit%3F
+        const delay = DEFAULT_RETRY_DELAY * Math.pow(2, retryNumber);
+        logger.warn(
+          `Received rate limit exceeded (429) error from Vanta API, retrying in ${
+            delay / 1000
+          } seconds.`
+        );
+        return delay;
+      }
+      if (statusCode === 504) {
+        logger.warn(
+          `Received gateway timeout (504), retrying in ${gatewayTimeoutDelay / 1000} seconds.`
+        );
+        return gatewayTimeoutDelay;
+      }
+      logger.warn(
+        `Retrying in ${DEFAULT_RETRY_DELAY} milliseconds using default delay.`
+      );
+      return DEFAULT_RETRY_DELAY;
+    };
   }
 
   static async getSessionToken(
@@ -132,27 +143,18 @@ export class Vanta {
     }
   }
   async *getVulnerabilities(
-    remediatedAfter: Date
+    slaDeadlineAfterDate: Date
   ): AsyncGenerator<Vulnerability> {
     const assetMap = await this.getVulnerableAssetsMap();
 
-    let cursor = null;
-    let hasNext = true;
-
-    while (hasNext) {
-      const {data, pageInfo} = await this.fetchVulnerabilities(
-        cursor,
-        remediatedAfter
-      );
-
-      for (const vulnerability of data) {
-        yield {
-          ...vulnerability,
-          asset: assetMap.get(vulnerability.targetId),
-        };
-      }
-      cursor = pageInfo.endCursor;
-      hasNext = pageInfo.hasNextPage;
+    for await (const vulnerability of this.paginate<Vulnerability>(
+      this.fetchVulnerabilities.bind(this),
+      slaDeadlineAfterDate
+    )) {
+      yield {
+        ...vulnerability,
+        asset: assetMap.get(vulnerability.targetId),
+      };
     }
   }
 
@@ -161,97 +163,121 @@ export class Vanta {
   ): AsyncGenerator<VulnerabilityRemediation> {
     const assetMap = await this.getVulnerableAssetsMap();
 
-    let cursor = null;
+    for await (const remediation of this.paginate<VulnerabilityRemediation>(
+      this.fetchVulnerabilityRemediations.bind(this),
+      remediatedAfter
+    )) {
+      yield {
+        ...remediation,
+        asset: assetMap.get(remediation.vulnerableAssetId),
+      };
+    }
+  }
+
+  private async *paginate<T>(
+    fetchFunction: (
+      cursor: string | null,
+      ...args: any[]
+    ) => Promise<{
+      data: T[];
+      pageInfo: {endCursor: string | null; hasNextPage: boolean};
+    }>,
+    ...args: any[]
+  ): AsyncGenerator<T> {
+    let cursor: string | null = null;
     let hasNext = true;
 
     while (hasNext) {
-      const {data, pageInfo} = await this.fetchVulnerabilityRemediations(
-        cursor,
-        remediatedAfter
-      );
+      const {data, pageInfo} = await fetchFunction(cursor, ...args);
 
-      for (const vulnerability of data) {
-        yield {
-          ...vulnerability,
-          asset: assetMap.get(vulnerability.vulnerableAssetId),
-        };
+      for (const item of data) {
+        yield item;
       }
 
       cursor = pageInfo.endCursor;
       hasNext = pageInfo.hasNextPage;
+    }
+  }
+
+  private async fetchData<T>(
+    endpoint: string,
+    cursor: string | null,
+    params: object,
+    errorMessage: string
+  ): Promise<{
+    data: T[];
+    pageInfo: {endCursor: string | null; hasNextPage: boolean};
+  }> {
+    const requestParams = {pageSize: this.limit, pageCursor: cursor, ...params};
+
+    try {
+      const response = await this.api.get(endpoint, {params: requestParams});
+      return response?.data?.results;
+    } catch (error: any) {
+      throw wrapApiError(error, errorMessage);
     }
   }
 
   private async fetchVulnerabilities(
     cursor: string | null,
     slaDeadlineAfterDate: Date
-  ): Promise<any> {
-    const params = {
-      pageSize: this.limit,
-      pageCursor: cursor,
-      slaDeadlineAfterDate,
-    };
-
-    try {
-      const response = await this.api.get('/v1/vulnerabilities', {params});
-      return response?.data?.results;
-    } catch (error: any) {
-      throw wrapApiError(error, 'Failed to fetch vulnerabilities');
-    }
+  ): Promise<{
+    data: Vulnerability[];
+    pageInfo: {endCursor: string | null; hasNextPage: boolean};
+  }> {
+    return this.fetchData<Vulnerability>(
+      '/v1/vulnerabilities',
+      cursor,
+      {slaDeadlineAfterDate},
+      'Failed to fetch vulnerabilities'
+    );
   }
 
   private async fetchVulnerabilityRemediations(
     cursor: string | null,
     remediatedAfter: Date
-  ): Promise<any> {
-    const params = {pageSize: this.limit, pageCursor: cursor, remediatedAfter};
-
-    try {
-      const response = await this.api.get('/v1/vulnerability-remediations', {
-        params,
-      });
-      return response?.data?.results;
-    } catch (error: any) {
-      throw wrapApiError(error, 'Failed to fetch vulnerability remediations');
-    }
+  ): Promise<{
+    data: VulnerabilityRemediation[];
+    pageInfo: {endCursor: string | null; hasNextPage: boolean};
+  }> {
+    return this.fetchData<VulnerabilityRemediation>(
+      '/v1/vulnerability-remediations',
+      cursor,
+      {remediatedAfter},
+      'Failed to fetch vulnerability remediations'
+    );
   }
 
-  private async fetchVulnerableAssets(cursor: string | null): Promise<any> {
-    const params = {pageSize: this.limit, pageCursor: cursor};
-
-    try {
-      const response = await this.api.get('/v1/vulnerable-assets', {params});
-      return response?.data?.results;
-    } catch (error: any) {
-      throw wrapApiError(error, 'Failed to fetch vulnerable assets');
-    }
+  private async fetchVulnerableAssets(cursor: string | null): Promise<{
+    data: VulnerableAsset[];
+    pageInfo: {endCursor: string | null; hasNextPage: boolean};
+  }> {
+    return this.fetchData<VulnerableAsset>(
+      '/v1/vulnerable-assets',
+      cursor,
+      {},
+      'Failed to fetch vulnerable assets'
+    );
   }
 
   /** Fetches all vulnerable assets and builds a map of asset ID to asset data
    *  for linking to vulnerabilities and remediations **/
   private async getVulnerableAssetsMap(): Promise<
-    Map<string, VulnerableAsset>
+    Map<string, VulnerableAssetSummary>
   > {
     if (this.vulnerableAssets.size > 0) return this.vulnerableAssets;
-    let cursor = null;
-    let hasNext = true;
 
-    while (hasNext) {
-      const {data, pageInfo} = await this.fetchVulnerableAssets(cursor);
-
-      for (const asset of data) {
-        const imageTags = asset.scanners.flatMap(
-          (scanner: any) => scanner.imageTags ?? []
-        );
-        this.vulnerableAssets.set(asset.id, {
-          name: asset.name,
-          type: asset.assetType,
-          imageTags,
-        });
-      }
-
-      cursor = pageInfo.endCursor;
-      hasNext = pageInfo.hasNextPage;
+    for await (const asset of this.paginate<VulnerableAsset>(
+      this.fetchVulnerableAssets.bind(this)
+    )) {
+      const imageTags = asset.scanners.flatMap(
+        (scanner: any) => scanner.imageTags ?? []
+      );
+      this.vulnerableAssets.set(asset.id, {
+        name: asset.name,
+        type: asset.assetType,
+        imageTags,
+      });
     }
 
     return this.vulnerableAssets;

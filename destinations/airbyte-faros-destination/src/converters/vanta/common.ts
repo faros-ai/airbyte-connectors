@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {VulnerableAsset} from 'faros-airbyte-common/lib/vanta';
+import {VulnerableAssetSummary} from 'faros-airbyte-common/lib/vanta';
 
 import {Converter} from '../converter';
 import {looksLikeGitCommitSha} from './utils';
@@ -12,21 +12,20 @@ export abstract class VantaConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected isVCSRepoVulnerability(vulnerableAsset: VulnerableAsset): boolean {
+  protected isVCSRepoVulnerability(
+    vulnerableAsset: VulnerableAssetSummary
+  ): boolean {
     return vulnerableAsset.type === 'CODE_REPOSITORY';
   }
 
   protected isCICDArtifactVulnerability(
-    vulnerableAsset: VulnerableAsset
+    vulnerableAsset: VulnerableAssetSummary
   ): boolean {
     return this.getCommitSha(vulnerableAsset.imageTags)?.length > 0;
   }
 
   protected getCommitSha(imageTags?: string[]): string | null {
-    if (!imageTags) {
-      return null;
-    }
-    for (const imageTag of imageTags) {
+    for (const imageTag of imageTags ?? []) {
       if (looksLikeGitCommitSha(imageTag)) {
         return imageTag;
       }

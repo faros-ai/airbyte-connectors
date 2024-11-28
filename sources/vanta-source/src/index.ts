@@ -20,6 +20,7 @@ export interface VantaConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly api_max_retries?: number;
   readonly api_timeout?: number;
+  readonly gateway_timeout_retry_delay?: number;
 }
 
 /** The main entry point. */

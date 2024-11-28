@@ -44,6 +44,12 @@
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to the Vanta API.",
         "default": 8
+      },
+      "gateway_timeout_retry_delay": {
+        "type": "number",
+        "title": "Gateway Timeout Retry Delay",
+        "description": "The time to wait before retrying a request that errored with a a gateway timeout (in milliseconds).",
+        "default": 30000
       }
     }
   }
