@@ -62,7 +62,7 @@
       "api_version": {
         "type": "string",
         "title": "API Version",
-        "default": "7.0"
+        "default": "7.1"
       }
     }
   }

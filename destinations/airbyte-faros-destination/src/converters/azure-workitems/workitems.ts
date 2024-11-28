@@ -178,7 +178,7 @@ export class Workitems extends AzureWorkitemsConverter {
 
     for (const [projectId, areaPaths] of this.collectedAreaPaths.entries()) {
       for (const areaPath of areaPaths) {
-        // Extract board name from Azure DevOps area path (format: "AreaLevel1\\AreaLevel2\\Area")
+        // Extract board name from Azure DevOps area path (format: "AreaLevel1\\AreaLevel2\\AreaLevel3")
         const pathParts = areaPath.split('\\');
         const boardName = pathParts.at(-1) ?? areaPath;
 
