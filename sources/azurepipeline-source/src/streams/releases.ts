@@ -1,16 +1,20 @@
 import {
   AirbyteLogger,
   AirbyteStreamBase,
+  calculateUpdatedStreamState,
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {Release} from 'faros-airbyte-common/azurepipeline';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
 
 interface ReleaseState {
-  lastCreatedOn: string;
+  readonly [p: string]: {
+    cutoff: string;
+  };
 }
 
 type StreamSlice = {
@@ -55,31 +59,27 @@ export class Releases extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: ReleaseState
   ): AsyncGenerator<Release> {
-    const lastCreatedOn =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCreatedOn
-        : undefined;
+    const project = streamSlice?.project;
+    const state = streamState?.[project];
+    const cutoff =
+      syncMode === SyncMode.INCREMENTAL ? state?.cutoff : undefined;
     const azurePipeline = await AzurePipeline.instance(
       this.config,
       this.logger
     );
-    yield* azurePipeline.getReleases(
-      streamSlice.project,
-      lastCreatedOn,
-      this.logger
-    );
+    yield* azurePipeline.getReleases(project, cutoff, this.logger);
   }
 
   getUpdatedState(
     currentStreamState: ReleaseState,
-    latestRecord: Release
+    latestRecord: Release,
+    slice: StreamSlice
   ): ReleaseState {
-    const lastCreatedOn: Date = new Date(latestRecord.createdOn);
-    return {
-      lastCreatedOn:
-        lastCreatedOn >= new Date(currentStreamState?.lastCreatedOn || 0)
-          ? latestRecord.createdOn
-          : currentStreamState.lastCreatedOn,
-    };
+    const latestRecordCutoff = Utils.toDate(latestRecord.createdOn);
+    return calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      slice.project
+    );
   }
 }
