@@ -5,6 +5,8 @@ import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
 import {
+  AdditionalField,
+  fields,
   Project,
   User,
   UserResponse,
@@ -12,7 +14,7 @@ import {
   WorkItemResponse,
   WorkItemUpdatesResponse,
 } from './models';
-const DEFAULT_API_VERSION = '7.0';
+const DEFAULT_API_VERSION = '7.1';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -33,6 +35,7 @@ export interface AzureWorkitemsConfig {
   readonly organization: string;
   readonly project: string;
   readonly projects: string[];
+  readonly additional_fields: string[];
   readonly api_version?: string;
   readonly request_timeout?: number;
   readonly graph_version?: string;
@@ -44,6 +47,7 @@ export class AzureWorkitems {
   constructor(
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
+    private readonly additionalFieldReferences: Map<string, string>,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -92,9 +96,35 @@ export class AzureWorkitems {
       headers: {Authorization: `Basic ${accessToken}`},
     });
 
+    const fieldNameReferences = new Map<string, string>();
+    const res = await httpClient.get<any>(`_apis/wit/fields`);
+    for (const item of res.data?.value ?? []) {
+      fieldNameReferences.set(item.name, item.referenceName);
+    }
+
+    const additionalFieldReferences = new Map<string, string>();
+    const additionalFields =
+      config.additional_fields?.filter(Boolean).map((f) => f.trim()) ?? [];
+
+    for (const field of additionalFields) {
+      const referenceName = fieldNameReferences.get(field);
+      if (referenceName) {
+        additionalFieldReferences.set(referenceName, field);
+      } else {
+        logger.warn(`Field ${field} not found, will not be included`);
+      }
+    }
+
+    logger.info(
+      `Additional field references: ${JSON.stringify(
+        Object.fromEntries(additionalFieldReferences)
+      )}`
+    );
+
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       httpClient,
       graphClient,
+      additionalFieldReferences,
       logger
     );
     return AzureWorkitems.azure_Workitems;
@@ -207,6 +237,7 @@ export class AzureWorkitems {
           states
         );
 
+        const additionalFields = this.extractAdditionalFields(item.fields);
         const stateRevisions = this.getStateChangeLog(states, revisions);
         const assigneeRevisions = this.getAssigneeLog(revisions);
         yield {
@@ -221,6 +252,7 @@ export class AzureWorkitems {
             states: stateRevisions,
             assignees: assigneeRevisions,
           },
+          additionalFields,
           projectId: project,
         };
       }
@@ -309,11 +341,13 @@ export class AzureWorkitems {
     project: string,
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
+    const quotedProject = `'${project}'`;
     const data = {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
-        ' AND [System.ChangedDate] >= @Today-180' +
+        ' AND [System.ChangedDate] >= @Today-180 AND [System.TeamProject] = ' +
+        quotedProject +
         ' ORDER BY [System.ChangedDate] DESC',
     };
     // Azure API has a limit of 20000 items per request.
@@ -442,5 +476,17 @@ export class AzureWorkitems {
       })
     );
     return stateCategories;
+  }
+
+  private extractAdditionalFields(
+    fields: fields
+  ): ReadonlyArray<AdditionalField> {
+    const additionalFields = [];
+    for (const [key, value] of this.additionalFieldReferences) {
+      if (fields[key]) {
+        additionalFields.push({name: value, value: fields[key]});
+      }
+    }
+    return additionalFields;
   }
 }

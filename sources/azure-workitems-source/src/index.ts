@@ -79,7 +79,7 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
         .map((p) => p.trim());
       projects = filteredProjects.includes('*') ? [] : filteredProjects;
     } else if (project) {
-      projects = [project];
+      projects = [project.trim()];
     }
 
     return {config: {...config, projects}, catalog, state};

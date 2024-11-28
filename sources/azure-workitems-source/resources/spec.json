@@ -35,6 +35,19 @@
         "deprecated": true,
         "description": "Deprecated: Please use 'projects' array instead"
       },
+      "additional_fields": {
+        "type": "array",
+        "title": "Additional Fields",
+        "items": {
+          "type": "string"
+        },
+        "description": "Fields to include on tasks.",
+        "examples": [
+          "Area Path",
+          "Acceptance Criteria",
+          "Accepted By"
+        ]
+      },
       "graph_version": {
         "type": "string",
         "title": "Graph API Version",
@@ -49,7 +62,7 @@
       "api_version": {
         "type": "string",
         "title": "API Version",
-        "default": "7.0"
+        "default": "7.1"
       }
     }
   }
