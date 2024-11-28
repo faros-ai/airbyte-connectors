@@ -224,12 +224,18 @@ export abstract class AirbyteStreamBase {
   }
 }
 
+export interface StreamState {
+  [key: string]: {
+    cutoff: number;
+  };
+}
+
 export function calculateUpdatedStreamState(
   latestRecordCutoff: Date,
-  currentStreamState: Dictionary<any>,
+  currentStreamState: StreamState,
   key: string,
   cutoffLagDays: number = 0
-): Dictionary<any> {
+): StreamState {
   if (isNil(latestRecordCutoff)) {
     return currentStreamState;
   }
