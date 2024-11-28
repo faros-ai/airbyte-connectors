@@ -99,7 +99,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {proj1: {cutoff: WATERMARK}}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const builds = [];
@@ -150,7 +150,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {proj1: {cutoff: WATERMARK}}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const builds = [];
@@ -179,7 +179,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {proj1: {cutoff: WATERMARK}}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const releases = [];
