@@ -103,7 +103,10 @@ export class AzureWorkitems {
     }
 
     const additionalFieldReferences = new Map<string, string>();
-    for (const field of config.additional_fields ?? []) {
+    const additionalFields =
+      config.additional_fields?.filter(Boolean).map((f) => f.trim()) ?? [];
+
+    for (const field of additionalFields) {
       const referenceName = fieldNameReferences.get(field);
       if (referenceName) {
         additionalFieldReferences.set(referenceName, field);
@@ -235,7 +238,6 @@ export class AzureWorkitems {
         );
 
         const additionalFields = this.extractAdditionalFields(item.fields);
-
         const stateRevisions = this.getStateChangeLog(states, revisions);
         const assigneeRevisions = this.getAssigneeLog(revisions);
         yield {
@@ -339,11 +341,13 @@ export class AzureWorkitems {
     project: string,
     workItemsType: string
   ): Promise<ReadonlyArray<string>> {
+    const quotedProject = `'${project}'`;
     const data = {
       query:
         'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
-        ' AND [System.ChangedDate] >= @Today-180' +
+        ' AND [System.ChangedDate] >= @Today-180 AND [System.TeamProject] = ' +
+        quotedProject +
         ' ORDER BY [System.ChangedDate] DESC',
     };
     // Azure API has a limit of 20000 items per request.
@@ -478,7 +482,7 @@ export class AzureWorkitems {
     fields: fields
   ): ReadonlyArray<AdditionalField> {
     const additionalFields = [];
-    for (const [key, value] of Object.entries(this.additionalFieldReferences)) {
+    for (const [key, value] of this.additionalFieldReferences) {
       if (fields[key]) {
         additionalFields.push({name: value, value: fields[key]});
       }

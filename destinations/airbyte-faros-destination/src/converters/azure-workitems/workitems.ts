@@ -11,9 +11,14 @@ import {
 } from './models';
 
 export class Workitems extends AzureWorkitemsConverter {
+  private readonly collectedAreaPaths = new Map<string, Set<string>>();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
     'tms_TaskAssignment',
+    'tms_TaskProjectRelationship',
+    'tms_TaskTag',
+    'tms_TaskBoard',
   ];
 
   async convert(
@@ -22,6 +27,11 @@ export class Workitems extends AzureWorkitemsConverter {
     const source = this.streamName.source;
     const WorkItem = record.record.data as WorkItem;
     const taskKey = {uid: String(WorkItem.id), source};
+
+    const areaPath = this.collectAreaPath(
+      WorkItem.fields['System.AreaPath'],
+      WorkItem.projectId
+    );
 
     const statusChangelog = this.convertStateRevisions(
       WorkItem.revisions.states
@@ -63,10 +73,10 @@ export class Workitems extends AzureWorkitemsConverter {
             WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']
           ),
           statusChangelog,
-          additionalFields,
-          // TODO - Add
-          // Microsoft.VSTS.Common.ResolvedReason
-          // Microsoft.VSTS.Scheduling.Effort
+          additionalFields: WorkItem.additionalFields,
+          resolutionStatus:
+            WorkItem.fields['Microsoft.VSTS.Common.ResolvedReason'],
+          points: WorkItem.fields['Microsoft.VSTS.Scheduling.StoryPoints'],
         },
       },
       ...assignees.map((assignee) => ({
@@ -88,12 +98,35 @@ export class Workitems extends AzureWorkitemsConverter {
         model: 'tms_TaskTag',
         record: {task: taskKey, label: {name: tag}},
       })),
+      ...(areaPath
+        ? [
+            {
+              model: 'tms_TaskBoardRelationship',
+              record: {
+                task: taskKey,
+                board: {uid: areaPath, source},
+              },
+            },
+          ]
+        : []),
       // TODO - Add sprintHistory
     ];
   }
 
-  private getTags(tags: string): string[] {
-    return tags.split(';').map((tag) => tag.trim());
+  private collectAreaPath(areaPath: string, projectId: string): string {
+    if (!areaPath || !projectId) {
+      return;
+    }
+
+    const projectAreaPaths =
+      this.collectedAreaPaths.get(projectId) ?? new Set<string>();
+    projectAreaPaths.add(areaPath.trim());
+    this.collectedAreaPaths.set(projectId, projectAreaPaths);
+    return areaPath.trim();
+  }
+
+  private getTags(tags?: string): string[] {
+    return tags?.split(';').map((tag) => tag.trim()) ?? [];
   }
 
   private getTaskType(type: string): CategoryDetail {
@@ -137,5 +170,43 @@ export class Workitems extends AzureWorkitemsConverter {
       ),
       changedAt: Utils.toDate(revision.changedDate),
     }));
+  }
+
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    const records: DestinationRecord[] = [];
+    const source = this.streamName.source;
+
+    for (const [projectId, areaPaths] of this.collectedAreaPaths.entries()) {
+      for (const areaPath of areaPaths) {
+        // Extract board name from Azure DevOps area path (format: "AreaLevel1\\AreaLevel2\\Area")
+        const pathParts = areaPath.split('\\');
+        const boardName = pathParts.at(-1) ?? areaPath;
+
+        const boardKey = {
+          uid: areaPath,
+          source,
+        };
+
+        // Create board record
+        records.push({
+          model: 'tms_TaskBoard',
+          record: {
+            ...boardKey,
+            name: boardName,
+          },
+        });
+
+        // Create board-project relationship record
+        records.push({
+          model: 'tms_TaskBoardProjectRelationship',
+          record: {
+            board: boardKey,
+            project: {uid: projectId, source},
+          },
+        });
+      }
+    }
+
+    return records;
   }
 }
