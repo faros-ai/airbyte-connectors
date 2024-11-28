@@ -1,7 +1,8 @@
 import {FileDiff} from 'faros-airbyte-common/common';
 import {uniq} from 'lodash';
 
-import {DestinationRecord} from '../converter';
+import {DestinationRecord, StreamContext} from '../converter';
+import {getQueryFromName} from '../vanta/utils';
 
 const NULL = '/dev/null';
 
@@ -135,4 +136,16 @@ export class FileCollector {
       record: file,
     }));
   }
+}
+
+const vcsRepositoryQuery = getQueryFromName('vcsRepositoryQuery');
+
+export async function getVCSRepositoriesFromNames(
+  vcsRepoNames: string[],
+  ctx: StreamContext
+): Promise<RepoKey[] | null> {
+  const result = await ctx.farosClient.gql(ctx.graph, vcsRepositoryQuery, {
+    vcsRepoNames,
+  });
+  return result?.vcs_Repository;
 }

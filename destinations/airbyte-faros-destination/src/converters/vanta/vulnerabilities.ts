@@ -3,11 +3,12 @@ import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
 import {CicdArtifactKey} from '../../../lib/converters/vanta/types';
+import {getCICDArtifactsFromCommitShas} from '../common/cicd';
 import {
   Vulnerability as VulnerabilityCommon,
   VulnerabilityIdentifier,
 } from '../common/sec';
-import {RepoKey} from '../common/vcs';
+import {getVCSRepositoriesFromNames, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VantaConverter} from './common';
 
@@ -88,15 +89,14 @@ export abstract class Vulnerabilities extends VantaConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const records: DestinationRecord[] = [];
-    const vcsRepos = await VulnerabilityCommon.getVCSRepositoriesFromNames(
+    const vcsRepos = await getVCSRepositoriesFromNames(
       Array.from(this.collectedRepoNames),
       ctx
     );
-    const cicdArtifacts =
-      await VulnerabilityCommon.getCICDArtifactsFromCommitShas(
-        Array.from(this.collectedArtifactCommitShas),
-        ctx
-      );
+    const cicdArtifacts = await getCICDArtifactsFromCommitShas(
+      Array.from(this.collectedArtifactCommitShas),
+      ctx
+    );
     for (const vuln of this.collectedVulnerabilities) {
       if (this.isVCSRepoVulnerability(vuln.asset)) {
         this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
