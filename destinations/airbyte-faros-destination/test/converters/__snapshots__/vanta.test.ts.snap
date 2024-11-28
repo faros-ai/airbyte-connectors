@@ -213,8 +213,8 @@ Array [
 
 exports[`vanta vulnerability remediations 1`] = `
 Array [
-  "Processed 2 records",
-  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerability_remediations\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerability_remediations\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 2 records",
   "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability__Update\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
