@@ -67,6 +67,7 @@ describe('index', () => {
             data: {value: usersResource},
           }),
         } as any,
+        new Map(),
         logger
       );
     });
@@ -96,6 +97,7 @@ describe('index', () => {
           }),
         } as any,
         null,
+        new Map(),
         logger
       );
     });
@@ -125,6 +127,7 @@ describe('index', () => {
           }),
         } as any,
         null,
+        new Map(),
         logger
       );
     });
