@@ -13,7 +13,7 @@ import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
 
 interface BuildState {
   readonly [p: string]: {
-    cutoff: string;
+    cutoff: number;
   };
 }
 
