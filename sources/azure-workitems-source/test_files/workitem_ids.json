@@ -1,0 +1,35 @@
+{
+  "queryType": "flat",
+  "asOf": "2014-12-29T20:49:34.617Z",
+  "columns": [
+    {
+      "referenceName": "System.Id",
+      "name": "ID",
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/fields/System.Id"
+    }
+  ],
+  "sortColumns": [
+    {
+      "field": {
+        "referenceName": "System.ChangedDate",
+        "name": "Changed Date",
+        "url": "https://dev.azure.com/fabrikam/_apis/wit/fields/System.ChangedDate"
+      },
+      "descending": true
+    }
+  ],
+  "workItems": [
+    {
+      "id": 300,
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300"
+    },
+    {
+      "id": 297,
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/299"
+    },
+    {
+      "id": 299,
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/298"
+    }
+  ]
+}

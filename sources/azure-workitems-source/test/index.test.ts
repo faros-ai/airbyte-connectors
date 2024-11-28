@@ -134,8 +134,8 @@ describe('index', () => {
     const source = new sut.AzureWorkitemsSource(logger);
     const streams = source.streams({} as any);
 
-    const usersStream = streams[3];
-    const boardIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const boardsStream = streams[3];
+    const boardIter = boardsStream.readRecords(SyncMode.FULL_REFRESH);
     const boards = [];
     for await (const board of boardIter) {
       boards.push(board);
@@ -143,5 +143,58 @@ describe('index', () => {
 
     expect(fnBoardsFunc).toHaveBeenCalledTimes(1);
     expect(boards).toStrictEqual(readTestResourceFile('boards.json'));
+  });
+
+  test('streams - workitems, use full_refresh sync mode', async () => {
+    const fnWorkitemsFunc = jest.fn().mockImplementation((url) => {
+      if (url.includes('states')) {
+        return {data: readTestResourceFile('workitem_states.json')};
+      } else if (url.includes('updates')) {
+        return {data: readTestResourceFile('workitem_updates.json')};
+      } else if (url.includes('workitems?ids')) {
+        return {data: readTestResourceFile('workitems.json')};
+      }
+      return {};
+    });
+    const fnIdsFunc = jest.fn();
+
+    const fieldReferences = new Map([
+      ['System.AreaPath', 'Area Path'],
+      ['Microsoft.VSTS.Scheduling.Effort', 'Effort'],
+      ['Microsoft.VSTS.Scheduling.RemainingWork', 'Remaining Work'],
+      ['Custom.TestName', 'Test Name'],
+    ]);
+    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
+      return new AzureWorkitems(
+        {
+          get: fnWorkitemsFunc,
+          post: fnIdsFunc
+            .mockResolvedValueOnce({
+              data: readTestResourceFile('workitem_ids.json'),
+            })
+            .mockResolvedValue({data: {}}),
+        } as any,
+        null,
+        fieldReferences,
+        logger
+      );
+    });
+    const source = new sut.AzureWorkitemsSource(logger);
+    const streams = source.streams({} as any);
+
+    const workitemsStream = streams[0];
+    const workitemsIter = workitemsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {name: 'test', id: '123'}
+    );
+    const workitems = [];
+    for await (const workitem of workitemsIter) {
+      workitems.push(workitem);
+    }
+
+    expect(fnWorkitemsFunc).toHaveBeenCalledTimes(12);
+    expect(fnIdsFunc).toHaveBeenCalledTimes(8);
+    expect(workitems).toMatchSnapshot();
   });
 });

@@ -19,7 +19,7 @@ export class Workitems extends StreamWithProjectSlices {
       this.config,
       this.logger
     );
-    const {name} = streamSlice;
-    yield* azureWorkitem.getWorkitems(name);
+    const {name, id} = streamSlice;
+    yield* azureWorkitem.getWorkitems(name, id);
   }
 }

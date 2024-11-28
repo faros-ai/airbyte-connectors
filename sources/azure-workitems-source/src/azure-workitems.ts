@@ -36,6 +36,7 @@ export interface AzureWorkitemsConfig {
   readonly project: string;
   readonly projects: string[];
   readonly additional_fields: string[];
+  readonly cutoff_days?: number;
   readonly api_version?: string;
   readonly request_timeout?: number;
   readonly graph_version?: string;
@@ -115,7 +116,7 @@ export class AzureWorkitems {
       }
     }
 
-    logger.info(
+    logger.debug(
       `Additional field references: ${JSON.stringify(
         Object.fromEntries(additionalFieldReferences)
       )}`
@@ -216,7 +217,10 @@ export class AzureWorkitems {
     }
   }
 
-  async *getWorkitems(project: string): AsyncGenerator<WorkItem> {
+  async *getWorkitems(
+    project: string,
+    projectId: string
+  ): AsyncGenerator<WorkItem> {
     const stateCategories = await this.getStateCategories(project);
     const promises = WORK_ITEM_TYPES.map((type) =>
       this.getIdsFromAWorkItemType(project, type)
@@ -253,7 +257,7 @@ export class AzureWorkitems {
             assignees: assigneeRevisions,
           },
           additionalFields,
-          projectId: project,
+          projectId,
         };
       }
     }
@@ -355,7 +359,7 @@ export class AzureWorkitems {
       $top: 19999,
     });
     const ids = [];
-    for (let i = 0; i < list.data.workItems.length; i++) {
+    for (let i = 0; i < list.data?.workItems?.length; i++) {
       ids.push(list.data.workItems[i].id);
     }
     return ids;

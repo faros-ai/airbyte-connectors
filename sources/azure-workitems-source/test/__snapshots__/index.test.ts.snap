@@ -1,0 +1,338 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index streams - workitems, use full_refresh sync mode 1`] = `
+[
+  {
+    "additionalFields": [
+      {
+        "name": "Area Path",
+        "value": "Fabrikam-Fiber-Git",
+      },
+      {
+        "name": "Effort",
+        "value": 8,
+      },
+    ],
+    "fields": {
+      "Faros": {
+        "WorkItemStateCategory": {
+          "category": "Proposed",
+          "name": "New",
+        },
+      },
+      "Microsoft.VSTS.Scheduling.Effort": 8,
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.ChangedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.ChangedDate": "2014-12-29T20:49:20.77Z",
+      "System.CreatedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.CreatedDate": "2014-12-29T20:49:20.77Z",
+      "System.Description": "Our authorization logic needs to allow for users with Microsoft accounts (formerly Live Ids) - http://msdn.microsoft.com/en-us/library/live/hh826547.aspx",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Reason": "New backlog item",
+      "System.State": "New",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Customer can sign in using their Microsoft Account",
+      "System.WorkItemType": "Product Backlog Item",
+      "WEF_6CB513B6E70E43499D9FC94E5BBFB784_Kanban.Column": "New",
+    },
+    "id": 297,
+    "projectId": "123",
+    "rev": 1,
+    "revisions": {
+      "assignees": [
+        {
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+              },
+            },
+            "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+            "displayName": "Jamal Hartnett",
+            "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "fabrikamfiber4@hotmail.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "changedDate": "2017-09-04T02:28:56.253Z",
+        },
+      ],
+      "states": [
+        {
+          "changedDate": "2017-09-04T02:08:16.6Z",
+          "state": {
+            "category": "Proposed",
+            "name": "New",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:18.75Z",
+          "state": {
+            "category": "InProgress",
+            "name": "Active",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:41.253Z",
+          "state": {
+            "category": "Resolved",
+            "name": "Resolved",
+          },
+        },
+      ],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/297",
+  },
+  {
+    "additionalFields": [
+      {
+        "name": "Area Path",
+        "value": "Fabrikam-Fiber-Git\\Website",
+      },
+      {
+        "name": "Remaining Work",
+        "value": 4,
+      },
+    ],
+    "fields": {
+      "Faros": {
+        "WorkItemStateCategory": {
+          "category": "Proposed",
+          "name": "To Do",
+        },
+      },
+      "Microsoft.VSTS.Scheduling.RemainingWork": 4,
+      "System.AreaPath": "Fabrikam-Fiber-Git\\Website",
+      "System.AssignedTo": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.ChangedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.ChangedDate": "2014-12-29T20:49:28.74Z",
+      "System.CreatedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.CreatedDate": "2014-12-29T20:49:21.617Z",
+      "System.Description": "Follow the code samples from MSDN",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Reason": "New task",
+      "System.State": "To Do",
+      "System.Tags": "Tag1; Tag2",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "JavaScript implementation for Microsoft Account",
+      "System.WorkItemType": "Task",
+    },
+    "id": 299,
+    "projectId": "123",
+    "rev": 7,
+    "revisions": {
+      "assignees": [
+        {
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+              },
+            },
+            "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+            "displayName": "Jamal Hartnett",
+            "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "fabrikamfiber4@hotmail.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "changedDate": "2017-09-04T02:28:56.253Z",
+        },
+      ],
+      "states": [
+        {
+          "changedDate": "2017-09-04T02:08:16.6Z",
+          "state": {
+            "category": "Proposed",
+            "name": "New",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:18.75Z",
+          "state": {
+            "category": "InProgress",
+            "name": "Active",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:41.253Z",
+          "state": {
+            "category": "Resolved",
+            "name": "Resolved",
+          },
+        },
+      ],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/299",
+  },
+  {
+    "additionalFields": [
+      {
+        "name": "Area Path",
+        "value": "Fabrikam-Fiber-Git",
+      },
+      {
+        "name": "Remaining Work",
+        "value": 3,
+      },
+      {
+        "name": "Test Name",
+        "value": "Zephyr",
+      },
+    ],
+    "fields": {
+      "Custom.TestName": "Zephyr",
+      "Faros": {
+        "WorkItemStateCategory": {
+          "category": "Proposed",
+          "name": "To Do",
+        },
+      },
+      "Microsoft.VSTS.Scheduling.RemainingWork": 3,
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.ChangedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.ChangedDate": "2014-12-29T20:49:22.103Z",
+      "System.CreatedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.CreatedDate": "2014-12-29T20:49:22.103Z",
+      "System.Description": "We need to ensure we have coverage to prevent regressions",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Reason": "New task",
+      "System.State": "To Do",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Unit Testing for MSA login",
+      "System.WorkItemType": "Task",
+    },
+    "id": 300,
+    "projectId": "123",
+    "rev": 1,
+    "revisions": {
+      "assignees": [
+        {
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+              },
+            },
+            "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+            "displayName": "Jamal Hartnett",
+            "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "fabrikamfiber4@hotmail.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "changedDate": "2017-09-04T02:28:56.253Z",
+        },
+      ],
+      "states": [
+        {
+          "changedDate": "2017-09-04T02:08:16.6Z",
+          "state": {
+            "category": "Proposed",
+            "name": "New",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:18.75Z",
+          "state": {
+            "category": "InProgress",
+            "name": "Active",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:41.253Z",
+          "state": {
+            "category": "Resolved",
+            "name": "Resolved",
+          },
+        },
+      ],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300",
+  },
+]
+`;
