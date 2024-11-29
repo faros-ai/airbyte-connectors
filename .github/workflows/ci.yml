@@ -83,18 +83,18 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Install Turborepo
-        run: npm install turbo --global
-
       # TODO: Start Turborepo cache server
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --no-fund
+        run: npm install
+
+      - name: Build
+        run: npm run build
 
       - name: Test
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: turbo test-cov
+        run: npm run test-cov
 
   test-packaging:
     if: ${{ github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch' }} # Only on PRs
@@ -116,16 +116,12 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
 
-      - name: Install Turborepo
-        run: npm install turbo --global
-
       # TODO: Start Turborepo cache server
-
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --no-fund
+        run: npm install
 
-      - name: Build packages
-        run: turbo build
+      - name: Build
+        run: npm run build
 
       - name: Test Airbyte CDK package
         run: |
