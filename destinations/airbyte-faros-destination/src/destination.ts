@@ -24,6 +24,7 @@ import {
   SyncMode,
   wrapApiError,
 } from 'faros-airbyte-cdk';
+import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
@@ -71,6 +72,11 @@ export interface HttpAgents {
 interface SyncErrors {
   src: {fatal: SyncMessage[]; nonFatal: SyncMessage[]; warnings: SyncMessage[]};
   dst: SyncMessage[];
+}
+
+// This is used to wrap the version string and allow us to pass the source version back via function calls.
+interface SourceVersion {
+  version?: string;
 }
 
 /** Faros destination implementation. */
@@ -503,6 +509,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       src: {fatal: [], nonFatal: [], warnings: []},
       dst: [],
     };
+    const sourceVersion: SourceVersion = {};
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
     try {
@@ -564,7 +571,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             ? {
                 getOrigin: (record: Dictionary<any>): string => {
                   if (!record.origin) {
-                    return origin;
+                    return streamContext.getOrigin();
                   }
                   if (!originRemapper) {
                     return record.origin;
@@ -572,7 +579,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   return originRemapper(record.origin);
                 },
               }
-            : {getOrigin: () => origin},
+            : streamContext,
           stats,
           this
         );
@@ -588,10 +595,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             syncErrors,
             writer,
             logFiles,
-            async () =>
+            async (isResetSync: boolean) =>
               await graphQLClient.resetData(
-                origin,
+                streamContext,
                 Array.from(streamContext.getModelsForReset()),
+                isResetSync,
                 this.edition === Edition.COMMUNITY
               ),
             async (msg: AirbyteSourceConfigMessage) => {
@@ -604,7 +612,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   msg.sourceMode
                 );
               }
-            }
+            },
+            sourceVersion
           )) {
             await graphQLClient.flush();
             yield stateMessage;
@@ -642,6 +651,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.dst
                 ),
                 warnings: syncErrors.src.warnings,
+                sourceVersion: sourceVersion.version,
+                destinationVersion: ConnectorVersion,
               }
             );
           }
@@ -699,8 +710,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
-    resetData?: () => Promise<void>,
-    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>
+    resetData?: (isResetSync: boolean) => Promise<void>,
+    updateLocalAccount?: (msg: AirbyteSourceConfigMessage) => Promise<void>,
+    sourceVersion?: SourceVersion
   ): AsyncGenerator<AirbyteStateMessage | undefined> {
     const recordsToBeProcessedLast: ((ctx: StreamContext) => Promise<void>)[] =
       [];
@@ -721,6 +733,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       let stateReset = false;
       let streamStatusReceived = false;
       const processedStreams: Set<string> = new Set();
+      const failedStreams: Set<string> = new Set();
       // Process input & write records
       for await (const line of input) {
         let stateMessage: AirbyteStateMessage = undefined;
@@ -744,32 +757,51 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   syncErrors.src.warnings.push(syncMessage);
                 }
               }
-              stateMessage = new AirbyteStateMessage(msg.state);
-              if (msg.streamStatus?.name) {
+              const streamName = msg.streamStatus?.name;
+              if (streamName) {
                 this.logger.info(
-                  `Received ${msg.streamStatus.status} status for ${msg.streamStatus.name} stream`
+                  `Received ${msg.streamStatus.status} status for ${streamName} stream`
                 );
                 if (msg.streamStatus.status === 'SUCCESS') {
-                  if (msg.streamStatus.recordsEmitted) {
-                    this.logger.info(
-                      `Marking ${msg.streamStatus.name} stream models for reset`
-                    );
-                    ctx.markStreamForReset(msg.streamStatus.name);
-                  } else {
+                  if (!msg.streamStatus.recordsEmitted) {
                     this.logger.warn(
-                      `No records emitted for ${msg.streamStatus.name} stream.` +
+                      `No records emitted for ${streamName} stream.` +
                         ' Will not reset non-incremental models.'
                     );
+                  } else if (failedStreams.has(streamName)) {
+                    this.logger.warn(
+                      `Error previously occurred for ${streamName} stream. Will not reset its models.`
+                    );
+                  } else {
+                    this.logger.info(
+                      `Marking ${streamName} stream models for reset`
+                    );
+                    ctx.markStreamForReset(streamName);
                   }
+                } else if (msg.streamStatus.status === 'ERROR') {
+                  // Both fatal and non-fatal stream errors will prevent model reset.
+                  failedStreams.add(streamName);
+                  this.logger.warn(
+                    `Will not reset ${streamName} stream models`
+                  );
                 }
                 streamStatusReceived = true;
               }
+              stateMessage = new AirbyteStateMessage(msg.state);
             } else if (isSourceConfigMessage(msg)) {
               if (msg.redactedConfig?.backfill) {
                 isBackfillSync = true;
               }
               sourceConfigReceived = true;
               await updateLocalAccount?.(msg);
+              sourceVersion.version = msg.sourceVersion;
+              ctx.setSourceConfig(msg.redactedConfig);
+              if (Array.isArray(msg.redactedConfig?.skip_reset_models)) {
+                msg.redactedConfig.skip_reset_models.forEach((model) => {
+                  this.logger.info(`Disabling model reset for ${model}`);
+                  ctx.disableResetForModel(model);
+                });
+              }
             } else if (isSourceLogsMessage(msg)) {
               this.logger.debug(`Received ${msg.logs.length} source logs`);
               logFiles?.writeSourceLogs(...msg.logs);
@@ -918,7 +950,26 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         if (!streamStatusReceived) {
           ctx.markAllStreamsForReset();
         }
-        await resetData?.();
+        await resetData?.(isResetSync);
+      }
+
+      if (isResetSync) {
+        if (config.faros_source_id && this.farosClient) {
+          this.logger.info(
+            `Resetting account state for ${config.faros_source_id}`
+          );
+          try {
+            await this.farosClient.request(
+              'DELETE',
+              `/accounts/${config.faros_source_id}/state`
+            );
+          } catch (e: any) {
+            const message = e.message ?? JSON.stringify(e);
+            this.logger.warn(
+              `Failed to reset account state for ${config.faros_source_id}: ${message}`
+            );
+          }
+        }
       }
 
       // Don't forget to close the writer
@@ -1127,8 +1178,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       onLoadError
     );
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
-      ? (this.jsonataConverter ?? converter)
-      : (converter ?? this.jsonataConverter);
+      ? this.jsonataConverter ?? converter
+      : converter ?? this.jsonataConverter;
   }
 
   private async writeRecord(

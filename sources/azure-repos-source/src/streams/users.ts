@@ -20,6 +20,18 @@ export class Users extends AirbyteStreamBase {
     return 'principalName';
   }
 
+  // Although not actually an incremental stream, we run it in incremental mode
+  // to avoid deleting the users that are written by the incremental
+  // pull_requests stream.
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
+  // Not used, but necessary to pass Airbyte UI validation check
+  get cursorField(): string | string[] {
+    return 'url';
+  }
+
   async *readRecords(): AsyncGenerator<User> {
     const azureRepo = await AzureRepos.make(this.config, this.logger);
     yield* azureRepo.getUsers();

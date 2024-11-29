@@ -28,6 +28,12 @@
             "Terminated",
             "On-Leave"
           ]
+        },
+        "resolve_locations": {
+          "type": "boolean",
+          "title": "Resolve Locations",
+          "description": "Resolve locations using the location field.",
+          "default": false
         }
       }
     }

@@ -1,16 +1,20 @@
 import {
   AirbyteLogger,
   AirbyteStreamBase,
+  calculateUpdatedStreamState,
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azurepipeline';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-import {Build} from '../models';
 
 interface BuildState {
-  lastQueueTime: string;
+  readonly [p: string]: {
+    cutoff: number;
+  };
 }
 
 type StreamSlice = {
@@ -28,46 +32,54 @@ export class Builds extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/builds.json');
   }
+
   get primaryKey(): StreamKey {
     return 'id';
   }
+
   get cursorField(): string | string[] {
-    return 'queueTime';
+    return 'finishTime';
   }
+
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
+      this.logger
+    );
+    for (const project of azurePipeline.getInitializedProjects()) {
       yield {
         project,
       };
     }
   }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: StreamSlice,
     streamState?: BuildState
   ): AsyncGenerator<Build> {
-    const lastQueueTime =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastQueueTime
-        : undefined;
-    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
-    yield* azurePipeline.getBuilds(
-      streamSlice.project,
-      lastQueueTime,
+    const project = streamSlice?.project;
+    const state = streamState?.[project];
+    const cutoff =
+      syncMode === SyncMode.INCREMENTAL ? state?.cutoff : undefined;
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
       this.logger
     );
+    yield* azurePipeline.getBuilds(project, cutoff, this.logger);
   }
+
   getUpdatedState(
     currentStreamState: BuildState,
-    latestRecord: Build
+    latestRecord: Build,
+    slice: StreamSlice
   ): BuildState {
-    const lastQueueTime: Date = new Date(latestRecord.queueTime);
-    return {
-      lastQueueTime:
-        lastQueueTime >= new Date(currentStreamState?.lastQueueTime || 0)
-          ? latestRecord.queueTime
-          : currentStreamState.lastQueueTime,
-    };
+    const latestRecordCutoff = Utils.toDate(latestRecord.finishTime);
+    return calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      slice.project
+    );
   }
 }

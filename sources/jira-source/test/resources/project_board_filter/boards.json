@@ -4,7 +4,7 @@
     "name": "Board 1",
     "type": "scrum",
     "location": {
-      "projectKey": "TEST"
+      "projectKey": "TEST-1"
     }
   },
   {
@@ -12,7 +12,7 @@
     "name": "Board 2",
     "type": "scrum",
     "location": {
-      "projectKey": "TEST"
+      "projectKey": "TEST-2"
     }
   },
   {
@@ -20,7 +20,7 @@
     "name": "Board 3",
     "type": "kanban",
     "location": {
-      "projectKey": "TEST"
+      "projectKey": "TEST-3"
     }
   }
 ]

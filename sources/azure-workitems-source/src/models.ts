@@ -3,11 +3,27 @@ export interface WorkItemResponse {
   value: WorkItem[];
 }
 
+export interface WorkItemUpdatesResponse {
+  count: number;
+  value: any[];
+}
+
 export interface WorkItem {
   fields: fields;
   id: string;
   rev: string;
   url: string;
+  revisions: {
+    states: any[];
+    assignees: any[];
+  };
+  additionalFields: ReadonlyArray<AdditionalField>;
+  projectId: string;
+}
+
+export interface AdditionalField {
+  name: string;
+  value: string;
 }
 
 export interface System {
@@ -81,6 +97,9 @@ export interface fields {
     };
   };
   System: System;
+  Faros: {
+    WorkItemStateCategory: any;
+  };
 }
 
 export interface Iteration {
@@ -99,4 +118,11 @@ export interface Board {
   id: string;
   name: string;
   url: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  lastUpdateTime: string;
 }

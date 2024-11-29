@@ -243,8 +243,23 @@ exports[`index stream - issues 1`] = `
       "category": "To Do",
       "detail": "Selected for Development",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:41:00.089Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+      [
+        {
+          "category": "Selected for Development",
+          "detail": "Selected for Development",
+        },
+        2024-07-04T12:41:00.089Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Sub-task",
@@ -287,8 +302,16 @@ exports[`index stream - issues 1`] = `
       "category": "To Do",
       "detail": "Backlog",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:40:59.251Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Story",
@@ -341,8 +364,23 @@ exports[`index stream - issues 1`] = `
       "category": "To Do",
       "detail": "To Do",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-03-08T17:52:41.851Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "QA",
+          "detail": "QA",
+        },
+        2021-09-16T22:42:13.869Z,
+      ],
+      [
+        {
+          "category": "To Do",
+          "detail": "To Do",
+        },
+        2024-03-08T17:52:41.851Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Test issue 3",
     "type": "Story",
@@ -392,8 +430,23 @@ exports[`index stream - issues 1`] = `
       "category": "To Do",
       "detail": "Selected for Development",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:41:00.089Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+      [
+        {
+          "category": "Selected for Development",
+          "detail": "Selected for Development",
+        },
+        2024-07-04T12:41:00.089Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Story",
@@ -534,8 +587,23 @@ exports[`index stream - issues to sync additional fields 1`] = `
       "category": "To Do",
       "detail": "Selected for Development",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:41:00.089Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+      [
+        {
+          "category": "Selected for Development",
+          "detail": "Selected for Development",
+        },
+        2024-07-04T12:41:00.089Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Sub-task",
@@ -578,8 +646,16 @@ exports[`index stream - issues to sync additional fields 1`] = `
       "category": "To Do",
       "detail": "Backlog",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:40:59.251Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Story",
@@ -632,8 +708,23 @@ exports[`index stream - issues to sync additional fields 1`] = `
       "category": "To Do",
       "detail": "To Do",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-03-08T17:52:41.851Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "QA",
+          "detail": "QA",
+        },
+        2021-09-16T22:42:13.869Z,
+      ],
+      [
+        {
+          "category": "To Do",
+          "detail": "To Do",
+        },
+        2024-03-08T17:52:41.851Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Test issue 3",
     "type": "Story",
@@ -683,8 +774,23 @@ exports[`index stream - issues to sync additional fields 1`] = `
       "category": "To Do",
       "detail": "Selected for Development",
     },
-    "statusChanged": undefined,
-    "statusChangelog": [],
+    "statusChanged": 2024-07-04T12:41:00.089Z,
+    "statusChangelog": [
+      [
+        {
+          "category": "To Do",
+          "detail": "Backlog",
+        },
+        2024-07-04T12:40:59.251Z,
+      ],
+      [
+        {
+          "category": "Selected for Development",
+          "detail": "Selected for Development",
+        },
+        2024-07-04T12:41:00.089Z,
+      ],
+    ],
     "subtasks": [],
     "summary": "Jira test issue",
     "type": "Story",
@@ -708,10 +814,7 @@ exports[`index stream with project slices using bucket 1 1`] = `
 exports[`index stream with project slices using bucket 2 1`] = `
 [
   {
-    "project": "TEST",
-  },
-  {
-    "project": "TEST3",
+    "project": "TEST2",
   },
 ]
 `;
@@ -765,6 +868,7 @@ exports[`index streams - board_issues using board ids 1`] = `
 exports[`index streams - boards 1`] = `
 [
   {
+    "issueSync": false,
     "name": "Tasks without a board in project TEST",
     "projectKey": "TEST",
     "type": "Custom",
@@ -772,6 +876,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 1,
+    "issueSync": true,
     "name": "Board 1",
     "projectKey": "TEST",
     "type": "scrum",
@@ -779,6 +884,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 2,
+    "issueSync": true,
     "name": "Board 2",
     "projectKey": "TEST",
     "type": "scrum",
@@ -786,6 +892,7 @@ exports[`index streams - boards 1`] = `
   },
   {
     "id": 3,
+    "issueSync": true,
     "name": "Board 3",
     "projectKey": "TEST",
     "type": "kanban",
@@ -973,7 +1080,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-1",
         "plannedPoints": 5,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -981,7 +1091,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-2",
         "plannedPoints": 4,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -989,7 +1102,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-5",
         "plannedPoints": 15,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -997,7 +1113,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-3",
         "plannedPoints": 15,
         "points": 10,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1005,7 +1124,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-4",
         "plannedPoints": 15,
         "points": 15,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1013,7 +1135,10 @@ exports[`index streams - sprint_reports 1`] = `
         "key": "TEST-6",
         "plannedPoints": 20,
         "points": 20,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
     ],
     "sprintId": 1,
@@ -1033,7 +1158,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-1",
         "plannedPoints": 5,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1041,7 +1169,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-2",
         "plannedPoints": 4,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1049,7 +1180,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-5",
         "plannedPoints": 15,
         "points": 5,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1057,7 +1191,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-3",
         "plannedPoints": 15,
         "points": 10,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": undefined,
@@ -1065,7 +1202,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-4",
         "plannedPoints": 15,
         "points": 15,
-        "status": "In Progress",
+        "status": {
+          "category": "In Progress",
+          "detail": "In Progress",
+        },
       },
       {
         "addedDuringSprint": true,
@@ -1073,7 +1213,10 @@ exports[`index streams - sprint_reports with run mode WebhookSupplement using Fa
         "key": "TEST-6",
         "plannedPoints": 20,
         "points": 20,
-        "status": "Done",
+        "status": {
+          "category": "Done",
+          "detail": "Done",
+        },
       },
     ],
     "sprintId": 1,

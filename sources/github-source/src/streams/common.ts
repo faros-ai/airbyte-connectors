@@ -3,7 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {OrgRepoFilter} from '../org-repo-filter';
@@ -50,7 +50,6 @@ export const CopilotEvaluationStreamNames = [
 
 export const MinimumStreamNames = [
   'faros_commits',
-  'faros_labels',
   'faros_organizations',
   'faros_pull_requests',
   'faros_repositories',
@@ -61,7 +60,6 @@ export const FullStreamNames = [
   'faros_commits',
   'faros_copilot_seats',
   'faros_copilot_usage',
-  'faros_labels',
   'faros_organizations',
   'faros_pull_requests',
   'faros_pull_request_comments',
@@ -71,13 +69,14 @@ export const FullStreamNames = [
 
 // fill as streams are developed
 export const CustomStreamNames = [
+  'faros_artifacts',
   'faros_code_scanning_alerts',
   'faros_commits',
-  'faros_contributors_stats',
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_dependabot_alerts',
   'faros_issues',
+  'faros_issue_comments',
   'faros_labels',
   'faros_organizations',
   'faros_outside_collaborators',
@@ -90,6 +89,9 @@ export const CustomStreamNames = [
   'faros_secret_scanning_alerts',
   'faros_tags',
   'faros_users',
+  'faros_workflows',
+  'faros_workflow_jobs',
+  'faros_workflow_runs',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
@@ -106,10 +108,11 @@ export abstract class StreamBase extends AirbyteStreamBase {
   readonly orgRepoFilter: OrgRepoFilter;
   constructor(
     protected readonly config: GitHubConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
-    this.orgRepoFilter = new OrgRepoFilter(config, logger);
+    this.orgRepoFilter = OrgRepoFilter.instance(config, logger, farosClient);
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {
@@ -151,8 +154,13 @@ export abstract class StreamWithOrgSlices extends StreamBase {
 export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
-      for (const repo of await this.orgRepoFilter.getRepositories(org)) {
-        yield {org, repo: repo.name};
+      for (const {
+        repo,
+        syncRepoData,
+      } of await this.orgRepoFilter.getRepositories(org)) {
+        if (syncRepoData) {
+          yield {org, repo: repo.name};
+        }
       }
     }
   }

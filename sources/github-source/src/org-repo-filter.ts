@@ -1,28 +1,53 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {collectReposByOrg} from 'faros-airbyte-common/common';
+import {collectReposByOrg, getFarosOptions} from 'faros-airbyte-common/common';
 import {Repository} from 'faros-airbyte-common/github';
+import {FarosClient} from 'faros-js-client';
+import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {GitHub} from './github';
+import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
 import {GitHubConfig} from './types';
+
+type RepoInclusion = {
+  repo: Repository;
+  syncRepoData: boolean;
+};
 
 type FilterConfig = {
   organizations?: Set<string>;
   excludedOrganizations?: Set<string>;
-  reposByOrg: Map<string, Set<string>>;
-  excludedReposByOrg: Map<string, Set<string>>;
+  reposByOrg?: Map<string, Set<string>>;
+  excludedReposByOrg?: Map<string, Set<string>>;
 };
 
 export class OrgRepoFilter {
   private readonly filterConfig: FilterConfig;
+  private readonly useFarosGraphReposSelection: boolean;
   private organizations?: Set<string>;
-  private reposByOrg: Map<string, Map<string, Repository>> = new Map();
+  private reposByOrg: Map<string, Map<string, RepoInclusion>> = new Map();
+  private loadedSelectedRepos: boolean = false;
+
+  private static _instance: OrgRepoFilter;
+  static instance(
+    config: GitHubConfig,
+    logger: AirbyteLogger,
+    farosClient?: FarosClient
+  ): OrgRepoFilter {
+    if (!this._instance) {
+      this._instance = new OrgRepoFilter(config, logger, farosClient);
+    }
+    return this._instance;
+  }
 
   constructor(
     private readonly config: GitHubConfig,
-    private readonly logger: AirbyteLogger
+    private readonly logger: AirbyteLogger,
+    private readonly farosClient?: FarosClient
   ) {
+    this.useFarosGraphReposSelection =
+      config.use_faros_graph_repos_selection ?? false;
+
     const {organizations, repositories, excluded_repositories} = this.config;
     let {excluded_organizations} = this.config;
 
@@ -33,20 +58,24 @@ export class OrgRepoFilter {
       excluded_organizations = undefined;
     }
 
-    const reposByOrg = new Map<string, Set<string>>();
-    if (repositories?.length) {
-      collectReposByOrg(reposByOrg, repositories);
-    }
-    const excludedReposByOrg = new Map<string, Set<string>>();
-    if (excluded_repositories?.length) {
-      collectReposByOrg(excludedReposByOrg, excluded_repositories);
-    }
-    for (const org of reposByOrg.keys()) {
-      if (excludedReposByOrg.has(org)) {
-        this.logger.warn(
-          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+    let reposByOrg: Map<string, Set<string>>;
+    let excludedReposByOrg: Map<string, Set<string>>;
+    if (!this.useFarosGraphReposSelection) {
+      ({reposByOrg, excludedReposByOrg} = this.getSelectedReposByOrg(
+        repositories,
+        excluded_repositories
+      ));
+      this.loadedSelectedRepos = true;
+    } else {
+      if (!this.hasFarosClient()) {
+        throw new VError(
+          'Faros credentials are required when using Faros Graph for boards selection'
         );
-        excludedReposByOrg.delete(org);
+      }
+      if (repositories?.length || excluded_repositories?.length) {
+        logger.warn(
+          'Using Faros Graph for repositories selection but repositories and/or excluded_repositories are specified, both will be ignored.'
+        );
       }
     }
 
@@ -71,19 +100,24 @@ export class OrgRepoFilter {
       }
       if (!this.filterConfig.organizations) {
         visibleOrgs.forEach((org) => {
-          if (!this.filterConfig.excludedOrganizations?.has(org)) {
-            organizations.add(org);
+          const lowerOrg = toLower(org);
+          if (!this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
+            organizations.add(lowerOrg);
           }
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
+          const lowerOrg = toLower(org);
           // fine-grained tokens return an empty list for visible orgs,
           // so we only run the check if the list is not empty
-          if (visibleOrgs.length && !visibleOrgs.some((o) => o === org)) {
-            this.logger.warn(`Skipping not found organization ${org}`);
+          if (
+            visibleOrgs.length &&
+            !visibleOrgs.some((o) => toLower(o) === lowerOrg)
+          ) {
+            this.logger.warn(`Skipping not found organization ${lowerOrg}`);
             return;
           }
-          organizations.add(org);
+          organizations.add(lowerOrg);
         });
       }
       this.organizations = organizations;
@@ -92,44 +126,128 @@ export class OrgRepoFilter {
   }
 
   @Memoize()
-  async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
-    if (!this.reposByOrg.has(org)) {
-      const repos = new Map<string, Repository>();
+  async getRepositories(org: string): Promise<ReadonlyArray<RepoInclusion>> {
+    const lowerOrg = toLower(org);
+
+    // Ensure included / excluded repositories are loaded
+    await this.loadSelectedRepos();
+
+    if (!this.reposByOrg.has(lowerOrg)) {
+      const repos = new Map<string, RepoInclusion>();
       const github = await GitHub.instance(this.config, this.logger);
-      const visibleRepos = await github.getRepositories(org);
+      const visibleRepos = await github.getRepositories(lowerOrg);
       if (!visibleRepos.length) {
         this.logger.warn(
-          `No visible repositories found for organization ${org}`
+          `No visible repositories found for organization ${lowerOrg}`
         );
       }
-      if (!this.filterConfig.reposByOrg.has(org)) {
-        visibleRepos.forEach((repo) => {
-          if (!this.filterConfig.excludedReposByOrg.get(org)?.has(repo.name)) {
-            repos.set(repo.name, repo);
-          }
-        });
-      } else {
-        this.filterConfig.reposByOrg.get(org).forEach((repoName) => {
-          const repo = visibleRepos.find((r) => r.name === repoName);
-          if (!repo) {
-            this.logger.warn(
-              `Skipping not found repository ${org}/${repoName}`
-            );
-            return;
-          }
-          repos.set(repo.name, repo);
-        });
+      for (const repo of visibleRepos) {
+        const lowerRepoName = toLower(repo.name);
+        const {included, syncRepoData} = await this.getRepoInclusion(
+          lowerOrg,
+          lowerRepoName
+        );
+        if (included) {
+          repos.set(lowerRepoName, {repo, syncRepoData});
+        }
       }
-      this.reposByOrg.set(org, repos);
+      this.reposByOrg.set(lowerOrg, repos);
     }
-    return Array.from(this.reposByOrg.get(org).values());
+    return Array.from(this.reposByOrg.get(lowerOrg).values());
+  }
+
+  async getRepoInclusion(
+    org: string,
+    repo: string
+  ): Promise<{
+    included: boolean;
+    syncRepoData: boolean;
+  }> {
+    await this.loadSelectedRepos();
+    const {reposByOrg, excludedReposByOrg} = this.filterConfig;
+    const repos = reposByOrg.get(org);
+    const excludedRepos = excludedReposByOrg.get(org);
+
+    if (this.useFarosGraphReposSelection) {
+      const included = true;
+
+      const syncRepoData =
+        (!repos?.size || repos.has(repo)) && !excludedRepos?.has(repo);
+      return {included, syncRepoData};
+    }
+
+    if (repos?.size) {
+      const included = repos.has(repo);
+      return {included, syncRepoData: included};
+    }
+
+    if (excludedRepos?.size) {
+      const included = !excludedRepos.has(repo);
+      return {included, syncRepoData: included};
+    }
+    return {included: true, syncRepoData: true};
   }
 
   getRepository(org: string, name: string): Repository {
-    const repo = this.reposByOrg.get(org)?.get(name);
+    const lowerOrg = toLower(org);
+    const lowerRepoName = toLower(name);
+    const {repo} = this.reposByOrg.get(lowerOrg)?.get(lowerRepoName) ?? {};
     if (!repo) {
-      throw new VError('Repository not found: %s/%s', org, name);
+      throw new VError('Repository not found: %s/%s', lowerOrg, lowerRepoName);
     }
     return repo;
+  }
+
+  private async loadSelectedRepos(): Promise<void> {
+    if (this.loadedSelectedRepos) {
+      return;
+    }
+    if (this.useFarosGraphReposSelection) {
+      const farosOptions = await getFarosOptions(
+        'repository',
+        'GitHub',
+        this.farosClient,
+        this.config.graph ?? DEFAULT_FAROS_GRAPH
+      );
+      const {included: repositories, excluded: excludedRepositories} =
+        farosOptions;
+      const {reposByOrg, excludedReposByOrg} = this.getSelectedReposByOrg(
+        Array.from(repositories),
+        Array.from(excludedRepositories)
+      );
+      this.filterConfig.reposByOrg = reposByOrg;
+      this.filterConfig.excludedReposByOrg = excludedReposByOrg;
+    }
+    this.loadedSelectedRepos = true;
+  }
+
+  private getSelectedReposByOrg(
+    repositories: ReadonlyArray<string>,
+    excludedRepositories: ReadonlyArray<string>
+  ): {
+    reposByOrg: Map<string, Set<string>>;
+    excludedReposByOrg: Map<string, Set<string>>;
+  } {
+    const reposByOrg = new Map<string, Set<string>>();
+    const excludedReposByOrg = new Map<string, Set<string>>();
+    if (repositories?.length) {
+      collectReposByOrg(reposByOrg, repositories);
+    }
+    if (excludedRepositories?.length) {
+      collectReposByOrg(excludedReposByOrg, excludedRepositories);
+    }
+    for (const org of reposByOrg.keys()) {
+      if (excludedReposByOrg.has(org)) {
+        this.logger.warn(
+          `Both repositories and excluded_repositories are specified for organization ${org}, excluded_repositories for organization ${org} will be ignored.`
+        );
+        excludedReposByOrg.delete(org);
+      }
+    }
+    return {reposByOrg, excludedReposByOrg};
+  }
+
+  private hasFarosClient(): boolean {
+    return Boolean(this.farosClient);
   }
 }

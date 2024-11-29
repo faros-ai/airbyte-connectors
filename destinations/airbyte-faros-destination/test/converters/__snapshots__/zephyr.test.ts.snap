@@ -1,0 +1,256 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`zephyr process records from all streams 1`] = `
+Array [
+  "Processed 7 records",
+  "Processed records by stream: {\\\\\\"mytestsource__zephyr__test_cycles\\\\\\":2,\\\\\\"mytestsource__zephyr__test_executions\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 18 records",
+  "Would write records by model: {\\\\\\"qa_ReleaseVersion\\\\\\":2,\\\\\\"qa_TestCase\\\\\\":4,\\\\\\"qa_TestCaseResult\\\\\\":5,\\\\\\"qa_TestSuite\\\\\\":2,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":4,\\\\\\"tms_TaskTestCaseResultAssociation\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`zephyr process records from all streams 2`] = `
+Array [
+  Object {
+    "qa_TestSuite": Object {
+      "description": "test cycle description",
+      "name": "Test Cycle 1",
+      "source": "Zephyr",
+      "tags": null,
+      "uid": "1",
+    },
+  },
+  Object {
+    "qa_TestSuite": Object {
+      "description": "second test cycle description",
+      "name": "Test Cycle 2",
+      "source": "Zephyr",
+      "tags": null,
+      "uid": "2",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": null,
+      "source": "Zephyr",
+      "startedAt": "2024-09-30T14:20:00.000Z",
+      "status": Object {
+        "category": "Failure",
+        "detail": "FAIL",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-100",
+      },
+      "uid": "1",
+    },
+  },
+  Object {
+    "tms_TaskTestCaseResultAssociation": Object {
+      "defect": Object {
+        "source": "Jira",
+        "uid": "TMS-1",
+      },
+      "source": "Zephyr",
+      "testCaseResult": Object {
+        "source": "Zephyr",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
+      "source": "Zephyr",
+      "startedAt": "2024-10-01T14:20:00.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "PASS",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-101",
+      },
+      "uid": "2",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
+      "source": "Zephyr",
+      "startedAt": "2024-10-02T14:20:00.000Z",
+      "status": Object {
+        "category": "Unknown",
+        "detail": "NA",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-102",
+      },
+      "uid": "3",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": null,
+      "source": "Zephyr",
+      "startedAt": "2024-10-03T14:20:00.000Z",
+      "status": Object {
+        "category": "Custom",
+        "detail": "RETEST",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-103",
+      },
+      "uid": "4",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "releaseVersion": Object {
+        "source": "Zephyr",
+        "uid": "1",
+      },
+      "source": "Zephyr",
+      "startedAt": null,
+      "status": Object {
+        "category": "Custom",
+        "detail": "UNEXECUTED",
+      },
+      "tags": null,
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-100",
+      },
+      "uid": "5",
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "Something happens",
+      "name": "Something happens",
+      "source": "Zephyr",
+      "task": Object {
+        "source": "Jira",
+        "uid": "TMS-100",
+      },
+      "uid": "TMS-100",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "Zephyr",
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-100",
+      },
+      "testSuite": Object {
+        "source": "Zephyr",
+        "uid": "1",
+      },
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "Another test execution description",
+      "name": "Another test execution",
+      "source": "Zephyr",
+      "task": Object {
+        "source": "Jira",
+        "uid": "TMS-101",
+      },
+      "uid": "TMS-101",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "Zephyr",
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-101",
+      },
+      "testSuite": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "Third test execution description",
+      "name": "Third test execution",
+      "source": "Zephyr",
+      "task": Object {
+        "source": "Jira",
+        "uid": "TMS-102",
+      },
+      "uid": "TMS-102",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "Zephyr",
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-102",
+      },
+      "testSuite": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "Fourth test execution description",
+      "name": "Fourth test execution",
+      "source": "Zephyr",
+      "task": Object {
+        "source": "Jira",
+        "uid": "TMS-103",
+      },
+      "uid": "TMS-103",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "Zephyr",
+      "testCase": Object {
+        "source": "Zephyr",
+        "uid": "TMS-103",
+      },
+      "testSuite": Object {
+        "source": "Zephyr",
+        "uid": "2",
+      },
+    },
+  },
+  Object {
+    "qa_ReleaseVersion": Object {
+      "name": "version 2",
+      "source": "Zephyr",
+      "uid": "2",
+    },
+  },
+  Object {
+    "qa_ReleaseVersion": Object {
+      "name": "version 1",
+      "source": "Zephyr",
+      "uid": "1",
+    },
+  },
+]
+`;

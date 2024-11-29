@@ -30,15 +30,19 @@ export class FarosBoards extends StreamWithProjectSlices {
       name: `Tasks without a board in project ${projectKey}`,
       projectKey,
       type: 'Custom',
+      issueSync: false,
     };
 
-    for (const board of await jira.getBoards(projectKey)) {
+    for (const board of await jira.getProjectBoards(projectKey)) {
       const boardId = toString(board.id);
-      if (this.projectBoardFilter.boardIsIncluded(boardId)) {
+      const {included, issueSync} =
+        await this.projectBoardFilter.getBoardInclusion(boardId);
+      if (included) {
         yield {
           ...pick(board, ['id', 'name', 'type']),
           uid: boardId,
           projectKey,
+          issueSync,
         };
       }
     }

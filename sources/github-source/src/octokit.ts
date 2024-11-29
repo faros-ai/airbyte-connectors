@@ -1,8 +1,11 @@
 import {createAppAuth} from '@octokit/auth-app';
+import {Octokit as OctokitCore} from '@octokit/core';
 import {paginateGraphql} from '@octokit/plugin-paginate-graphql';
 import {retry} from '@octokit/plugin-retry';
 import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
-import {Octokit} from '@octokit/rest';
+import {RequestError} from '@octokit/request-error';
+import {Octokit as OctokitRest} from '@octokit/rest';
+import {EndpointDefaults, OctokitResponse} from '@octokit/types';
 import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getOperationAST, parse} from 'graphql';
@@ -13,19 +16,23 @@ import template from 'url-template';
 import VError from 'verror';
 
 import {
-  DEFAULT_API_URL,
   DEFAULT_CONCURRENCY,
+  DEFAULT_GITHUB_API_URL,
   DEFAULT_REJECT_UNAUTHORIZED,
   DEFAULT_TIMEOUT_MS,
 } from './github';
 import {GitHubConfig} from './types';
 
-export type ExtendedOctokit = Octokit &
+export type ExtendedOctokit = OctokitRest &
   ReturnType<typeof paginateGraphql> & {
     auditLogs: string;
+    copilotMetrics: string;
+    copilotMetricsForTeam: string;
   };
-const ExtendedOctokitConstructor = Octokit.plugin(
+const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
+  timeout,
+  retryAdditionalConditions,
   retry,
   throttling
 );
@@ -37,7 +44,7 @@ export function makeOctokitClient(
   maxRetries = 3
 ): ExtendedOctokit {
   const throttle = getThrottle(cfg, logger, maxRetries);
-  const baseUrl = cfg.url ?? DEFAULT_API_URL;
+  const baseUrl = cfg.url ?? DEFAULT_GITHUB_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
   const request = {
@@ -47,7 +54,6 @@ export function makeOctokitClient(
           cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
       }),
     }),
-    timeout: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
   };
 
   const auth = getOctokitAuth(cfg, installationId);
@@ -58,7 +64,15 @@ export function makeOctokitClient(
     baseUrl,
     request,
     throttle,
-    log: logger,
+    timeout: {
+      ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
+    },
+    log: {
+      info: logger.debug.bind(logger),
+      warn: logger.debug.bind(logger),
+      error: logger.debug.bind(logger),
+      debug: logger.debug.bind(logger),
+    },
   });
 
   kit.hook.before('request', (request) => {
@@ -74,6 +88,8 @@ export function makeOctokitClient(
   return {
     ...kit,
     auditLogs: 'GET /orgs/{org}/audit-log',
+    copilotMetrics: 'GET /orgs/{org}/copilot/metrics',
+    copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/metrics',
   };
 }
 
@@ -133,7 +149,10 @@ function rateLimitHandler(
   logger: AirbyteLogger,
   maxRetries: number
 ) {
-  return (after: number, opts: any): boolean | undefined => {
+  return (
+    after: number,
+    opts: Required<EndpointDefaults>
+  ): boolean | undefined => {
     logger.warn(
       `${event} detected for ${opts.method} ${opts.url}. Retry count: ${opts.request.retryCount}, after: ${after}`
     );
@@ -144,7 +163,10 @@ function rateLimitHandler(
   };
 }
 
-function beforeRequestHook(request: any, logger: AirbyteLogger): void {
+function beforeRequestHook(
+  request: Required<EndpointDefaults>,
+  logger: AirbyteLogger
+): void {
   if (logger.level === AirbyteLogLevel.DEBUG) {
     let url = request.url;
     if (url.includes('{')) {
@@ -166,4 +188,59 @@ function beforeRequestHook(request: any, logger: AirbyteLogger): void {
 
     logger.debug(`Request : ${request.method} ${url} ${query}`);
   }
+}
+
+// Fake HTTP status code used by manually thrown errors to trigger retries by the retry-plugin
+const RETRYABLE_STATUS_CODE = 1000;
+
+function timeout(octokit: OctokitCore, octokitOptions: any) {
+  const timeoutMs = octokitOptions.timeout?.ms;
+  if (timeoutMs > 0) {
+    octokit.hook.wrap('request', async (request, options) => {
+      const controller = new AbortController();
+      options.request.signal = controller.signal;
+      let timeoutId: NodeJS.Timeout;
+      const timeout = new Promise(() => {
+        timeoutId = setTimeout(() => {
+          controller.abort(); // aborts request after timeout
+        }, timeoutMs);
+      });
+      try {
+        return (await Promise.race([
+          request(options),
+          timeout,
+        ])) as OctokitResponse<any, number>;
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          // simulate request error so that retry plugin retries the request
+          throw new RequestError(
+            `GitHub request timed-out after ${timeoutMs} ms`,
+            RETRYABLE_STATUS_CODE,
+            {
+              request: options,
+            }
+          );
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    });
+  }
+  return {};
+}
+
+function retryAdditionalConditions(octokit: OctokitCore) {
+  octokit.hook.error('request', async (error, options) => {
+    const retryAdditionalError = options.request.retryAdditionalError;
+    if (!retryAdditionalError?.(error)) {
+      throw error;
+    }
+
+    // simulate request error so that retry plugin retries the request
+    throw new RequestError(error.message, RETRYABLE_STATUS_CODE, {
+      request: options,
+    });
+  });
+  return {};
 }

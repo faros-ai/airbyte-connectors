@@ -1,5 +1,11 @@
+import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/github';
+import {
+  CodeScanningAlert,
+  DependabotAlert,
+  SecretScanningAlert,
+  User,
+} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
@@ -12,6 +18,22 @@ export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 export type GitHubConfig = {
   sync_repo_issues?: boolean;
 };
+
+export enum AssistantMetric {
+  SuggestionsDiscarded = 'SuggestionsDiscarded',
+  SuggestionsAccepted = 'SuggestionsAccepted',
+  LinesDiscarded = 'LinesDiscarded',
+  LinesAccepted = 'LinesAccepted',
+  ActiveUsers = 'ActiveUsers',
+  ChatConversations = 'ChatConversations',
+  ChatInsertionEvents = 'ChatInsertionEvents',
+  ChatCopyEvents = 'ChatCopyEvents',
+  ChatActiveUsers = 'ChatActiveUsers',
+  LastActivity = 'LastActivity',
+}
+
+type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
+type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 
 /** Common functions shares across GitHub converters */
 export class GitHubCommon {
@@ -161,11 +183,7 @@ export class GitHubCommon {
     if (orgRepo.length != 2) return undefined;
 
     const [organization, repositoryName] = orgRepo;
-    return {
-      name: toLower(repositoryName),
-      uid: toLower(repositoryName),
-      organization: {uid: toLower(organization), source},
-    };
+    return GitHubCommon.repoKey(organization, repositoryName, source);
   }
 
   static parsePRnumber(pull_request_url: string): number {
@@ -219,6 +237,68 @@ export class GitHubCommon {
     };
   }
 
+  static vulnerabilityUid(
+    org: string,
+    repo: string,
+    alertType: SecurityAlertType,
+    number: number
+  ): string {
+    return toLower(`${org}/${repo}/${alertType}/${number}`);
+  }
+
+  static vulnerabilityType(
+    alert: SecurityAlert,
+    alertType: SecurityAlertType
+  ): {category: string; detail: string} {
+    switch (alertType) {
+      case 'code-scanning':
+        if (
+          !isEmpty((alert as CodeScanningAlert).rule.security_severity_level)
+        ) {
+          return {
+            category: 'Security',
+            detail: 'security code-scanning alert',
+          };
+        } else {
+          return {
+            category: 'CodingError',
+            detail: 'non-security code-scanning alert',
+          };
+        }
+      case 'dependabot':
+        return {
+          category: 'Dependency',
+          detail: 'dependabot alert',
+        };
+      case 'secret-scanning':
+        return {
+          category: 'SecretLeak',
+          detail: 'secret-scanning alert',
+        };
+    }
+  }
+
+  static vulnerabilityStatus(alert: SecurityAlert) {
+    const state = alert.state;
+    switch (state) {
+      case 'open':
+        return {category: 'Open', detail: state};
+      case 'dismissed':
+        return {
+          category: 'Ignored',
+          detail: alert.dismissed_reason ?? state,
+        };
+      case 'auto_dismissed':
+        return {category: 'Ignored', detail: state};
+      case 'fixed':
+        return {category: 'Resolved', detail: state};
+      case 'resolved':
+        return {category: 'Resolved', detail: alert.resolution ?? state};
+      default:
+        return {category: 'Custom', detail: state};
+    }
+  }
+
   private static buildStatus(conclusion: string): {
     category: string;
     detail: string;
@@ -235,6 +315,10 @@ export class GitHubCommon {
       default:
         return {category: 'Custom', detail: conclusionLower};
     }
+  }
+
+  static digest(input: string): string {
+    return createHash('sha256').update(input).digest('hex');
   }
 }
 

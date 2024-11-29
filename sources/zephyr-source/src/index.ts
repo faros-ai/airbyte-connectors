@@ -8,7 +8,6 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {TestCases} from './streams/test_cases';
 import {TestCycles} from './streams/test_cycles';
 import {TestExecutions} from './streams/test_executions';
 import {ZephyrConfig} from './types';
@@ -43,7 +42,6 @@ export class ZephyrScaleSource extends AirbyteSourceBase<ZephyrConfig> {
   streams(config: ZephyrConfig): AirbyteStreamBase[] {
     return [
       new TestCycles(config, this.logger),
-      new TestCases(config, this.logger),
       new TestExecutions(config, this.logger),
     ];
   }

@@ -12,6 +12,7 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly repositories?: ReadonlyArray<string>;
   readonly excluded_repositories?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly page_size?: number;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
@@ -22,4 +23,5 @@ export interface BitbucketConfig extends AirbyteConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
+  readonly requestedStreams?: Set<string>;
 }

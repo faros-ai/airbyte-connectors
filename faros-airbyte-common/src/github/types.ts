@@ -44,9 +44,16 @@ export type Repository = {
 export type PullRequestNode =
   PullRequestsQuery['repository']['pullRequests']['nodes'][0];
 
+export type CoverageReport = {
+  coveragePercentage: number;
+  createdAt: Date;
+  commitSha: string;
+};
+
 export type PullRequest = {
   org: string;
   repo: string;
+  coverage?: CoverageReport;
 } & Omit<PullRequestNode, 'labels' | 'files' | 'reviews' | 'reviewRequests'> & {
     labels: PullRequestNode['labels']['nodes'];
     files: PullRequestNode['files']['nodes'];
@@ -70,7 +77,7 @@ export type PullRequestComment = {
   >;
 } & Pick<
   PullRequestCommentNode,
-  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url'
+  'id' | 'body' | 'created_at' | 'updated_at' | 'pull_request_url' | 'html_url'
 >;
 
 export type PullRequestReview = PullRequestNode['reviews']['nodes'][0];
@@ -173,6 +180,21 @@ export type Issue = {
 
 export type IssueAssignment = Issue['assignments']['nodes'][0];
 
+type IssueCommentNode = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.issues.listCommentsForRepo
+>[0];
+
+export type IssueComment = {
+  repository: string;
+  user: Pick<
+    IssueCommentNode['user'],
+    'login' | 'name' | 'email' | 'html_url' | 'type'
+  >;
+} & Pick<
+  IssueCommentNode,
+  'id' | 'body' | 'created_at' | 'updated_at' | 'issue_url' | 'html_url'
+>;
+
 export type CopilotSeatsStreamRecord =
   | CopilotSeat
   | CopilotSeatEnded
@@ -223,25 +245,6 @@ export type CopilotUsageSummary = {
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
 
-export type ContributorStats = {
-  org: string;
-  repo: string;
-  user: {
-    login: string;
-    name?: string;
-    email?: string;
-    html_url: string;
-    type: string;
-  };
-  total: number;
-  weeks: {
-    w?: number;
-    a?: number;
-    d?: number;
-    c?: number;
-  }[];
-};
-
 export type CodeScanningAlert = {
   org: string;
   repo: string;
@@ -278,3 +281,81 @@ export type SecretScanningAlert = {
     resolved_by: string | null;
     push_protection_bypassed_by: string | null;
   };
+
+export type Workflow = {
+  org: string;
+  repo: string;
+} & GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.actions.listRepoWorkflows
+>['workflows'][0];
+
+export type WorkflowRun = {
+  org: string;
+  repo: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listWorkflowRunsForRepo
+  >['workflow_runs'][0],
+  | 'id'
+  | 'name'
+  | 'head_branch'
+  | 'head_sha'
+  | 'path'
+  | 'run_number'
+  | 'event'
+  | 'display_title'
+  | 'status'
+  | 'conclusion'
+  | 'workflow_id'
+  | 'url'
+  | 'html_url'
+  | 'created_at'
+  | 'updated_at'
+  | 'run_attempt'
+  | 'run_started_at'
+>;
+
+export type WorkflowJob = {
+  org: string;
+  repo: string;
+  workflow_id: number;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listJobsForWorkflowRun
+  >['jobs'][0],
+  | 'run_id'
+  | 'id'
+  | 'workflow_name'
+  | 'head_branch'
+  | 'run_attempt'
+  | 'head_sha'
+  | 'url'
+  | 'html_url'
+  | 'status'
+  | 'conclusion'
+  | 'created_at'
+  | 'started_at'
+  | 'completed_at'
+  | 'name'
+  | 'labels'
+>;
+
+export type Artifact = {
+  org: string;
+  repo: string;
+  workflow_id: number;
+  run_id: number;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.actions.listWorkflowRunArtifacts
+  >['artifacts'][0],
+  | 'id'
+  | 'name'
+  | 'size_in_bytes'
+  | 'url'
+  | 'archive_download_url'
+  | 'expired'
+  | 'created_at'
+  | 'expires_at'
+  | 'updated_at'
+>;

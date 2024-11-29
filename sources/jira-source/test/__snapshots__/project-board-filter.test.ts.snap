@@ -1,36 +1,151 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectBoardFilter getBoardsFromFaros - all boards - empty list 1`] = `
+exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - nothing excluded 1`] = `
 [
-  "1",
-  "2",
-  "3",
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
 ]
 `;
 
-exports[`ProjectBoardFilter getBoardsFromFaros - all boards - no list 1`] = `
+exports[`ProjectBoardFilter getBoards (FarosGraph) - nothing included - some excluded 1`] = `
 [
-  "1",
-  "2",
-  "3",
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": false,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
 ]
 `;
 
-exports[`ProjectBoardFilter getBoardsFromFaros - specific boards excluded 1`] = `
+exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - nothing excluded 1`] = `
 [
-  "1",
-  "3",
+  {
+    "issueSync": false,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
 ]
 `;
 
-exports[`ProjectBoardFilter getBoardsFromFaros - specific boards included 1`] = `
+exports[`ProjectBoardFilter getBoards (FarosGraph) - some included - some excluded 1`] = `
 [
-  "2",
-  "3",
+  {
+    "issueSync": false,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": false,
+    "uid": "3",
+  },
 ]
 `;
 
-exports[`ProjectBoardFilter getProjectsFromFaros - all projects - empty projects list 1`] = `
+exports[`ProjectBoardFilter getBoards - all boards - empty list 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
+]
+`;
+
+exports[`ProjectBoardFilter getBoards - all boards - no list 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
+]
+`;
+
+exports[`ProjectBoardFilter getBoards - all boards - project list 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
+]
+`;
+
+exports[`ProjectBoardFilter getBoards - specific boards excluded 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "1",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
+]
+`;
+
+exports[`ProjectBoardFilter getBoards - specific boards included 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "2",
+  },
+  {
+    "issueSync": true,
+    "uid": "3",
+  },
+]
+`;
+
+exports[`ProjectBoardFilter getProjects - all projects - empty list 1`] = `
 [
   "TEST-1",
   "TEST-2",
@@ -38,7 +153,7 @@ exports[`ProjectBoardFilter getProjectsFromFaros - all projects - empty projects
 ]
 `;
 
-exports[`ProjectBoardFilter getProjectsFromFaros - all projects - no projects list 1`] = `
+exports[`ProjectBoardFilter getProjects - all projects - no list 1`] = `
 [
   "TEST-1",
   "TEST-2",
@@ -46,14 +161,14 @@ exports[`ProjectBoardFilter getProjectsFromFaros - all projects - no projects li
 ]
 `;
 
-exports[`ProjectBoardFilter getProjectsFromFaros - specific projects excluded 1`] = `
+exports[`ProjectBoardFilter getProjects - specific projects excluded 1`] = `
 [
   "TEST-2",
   "TEST-3",
 ]
 `;
 
-exports[`ProjectBoardFilter getProjectsFromFaros - specific projects included 1`] = `
+exports[`ProjectBoardFilter getProjects - specific projects included 1`] = `
 [
   "TEST-1",
   "TEST-2",

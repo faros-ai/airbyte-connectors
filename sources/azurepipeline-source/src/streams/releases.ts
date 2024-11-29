@@ -1,16 +1,20 @@
 import {
   AirbyteLogger,
   AirbyteStreamBase,
+  calculateUpdatedStreamState,
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Release} from 'faros-airbyte-common/azurepipeline';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-import {Release} from '../models';
 
 interface ReleaseState {
-  lastCreatedOn: string;
+  readonly [p: string]: {
+    cutoff: number;
+  };
 }
 
 type StreamSlice = {
@@ -38,7 +42,11 @@ export class Releases extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const project of this.config.projects) {
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
+      this.logger
+    );
+    for (const project of azurePipeline.getInitializedProjects()) {
       yield {
         project,
       };
@@ -51,28 +59,27 @@ export class Releases extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: ReleaseState
   ): AsyncGenerator<Release> {
-    const lastCreatedOn =
-      syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastCreatedOn
-        : undefined;
-    const azurePipeline = AzurePipeline.instance(this.config, this.logger);
-    yield* azurePipeline.getReleases(
-      streamSlice.project,
-      lastCreatedOn,
+    const project = streamSlice?.project;
+    const state = streamState?.[project];
+    const cutoff =
+      syncMode === SyncMode.INCREMENTAL ? state?.cutoff : undefined;
+    const azurePipeline = await AzurePipeline.instance(
+      this.config,
       this.logger
     );
+    yield* azurePipeline.getReleases(project, cutoff, this.logger);
   }
 
   getUpdatedState(
     currentStreamState: ReleaseState,
-    latestRecord: Release
+    latestRecord: Release,
+    slice: StreamSlice
   ): ReleaseState {
-    const lastCreatedOn: Date = new Date(latestRecord.createdOn);
-    return {
-      lastCreatedOn:
-        lastCreatedOn >= new Date(currentStreamState?.lastCreatedOn || 0)
-          ? latestRecord.createdOn
-          : currentStreamState.lastCreatedOn,
-    };
+    const latestRecordCutoff = Utils.toDate(latestRecord.createdOn);
+    return calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      slice.project
+    );
   }
 }

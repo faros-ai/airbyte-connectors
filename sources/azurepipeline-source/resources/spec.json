@@ -6,8 +6,7 @@
     "type": "object",
     "required": [
       "access_token",
-      "organization",
-      "projects"
+      "organization"
     ],
     "additionalProperties": true,
     "properties": {
@@ -24,7 +23,7 @@
           "type": "string"
         },
         "title": "Project IDs or project names",
-        "description": "Azure Projects"
+        "description": "Azure Projects. If empty or '*' all available projects will be processed."
       },
       "access_token": {
         "order": 2,

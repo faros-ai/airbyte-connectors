@@ -19,6 +19,14 @@ export class FarosSprintReports extends JiraConverter {
     const results: DestinationRecord[] = [];
     const source = this.streamName.source;
     for (const issue of sprintReport.issues || []) {
+      const status = issue.status
+        ? {
+            category: JiraStatusCategories.get(
+              JiraCommon.normalize(issue.status.category)
+            ),
+            detail: issue.status.detail,
+          }
+        : undefined;
       results.push({
         model: 'tms_SprintReport',
         record: {
@@ -30,12 +38,7 @@ export class FarosSprintReports extends JiraConverter {
           points: issue.points,
           plannedPoints: issue.plannedPoints,
           classification: {category: issue.classification},
-          status: {
-            category: JiraStatusCategories.get(
-              JiraCommon.normalize(issue.status)
-            ),
-            detail: issue.status,
-          },
+          status,
           addedDuringSprint: issue.addedDuringSprint,
         },
       });

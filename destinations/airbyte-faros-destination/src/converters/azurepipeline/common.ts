@@ -1,8 +1,4 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
-
-import {Converter, StreamContext} from '../converter';
 import {
   BuildStateCategory,
   BuildTimeline,
@@ -12,7 +8,12 @@ import {
   JobState,
   Repository,
   Timestamps,
-} from './models';
+} from 'faros-airbyte-common/azurepipeline';
+import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
+
+import {RepoKey} from '../common/vcs';
+import {Converter, StreamContext} from '../converter';
 
 export type ApplicationMapping = Record<
   string,
@@ -34,6 +35,9 @@ export abstract class AzurePipelineConverter extends Converter {
   getOrganizationFromUrl(url: string): string | undefined {
     try {
       const parsed = new URL(url);
+      if (parsed.hostname !== 'dev.azure.com') {
+        return undefined;
+      }
       const parts = parsed.pathname.split('/');
 
       if (parts.length < 2 || parts[1] === '') {
@@ -41,6 +45,24 @@ export abstract class AzurePipelineConverter extends Converter {
       }
 
       return parts[1];
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  getProjectFromUrl(url: string): string | undefined {
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname !== 'dev.azure.com') {
+        return undefined;
+      }
+      const parts = parsed.pathname.split('/');
+
+      if (parts.length < 3 || parts[2] === '') {
+        return undefined;
+      }
+
+      return parts[2];
     } catch (error) {
       return undefined;
     }
@@ -54,52 +76,70 @@ export abstract class AzurePipelineConverter extends Converter {
     return this.azurePipelineConfig(ctx)?.application_mapping ?? {};
   }
 
-  convertBuildState(state: string | undefined): {
+  convertBuildState(result: string | undefined): {
     category: string;
     detail: string;
   } {
-    if (!state) {
+    if (!result) {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
-    const detail = state.toLowerCase();
-
     // Read more on Azure pipeline build result:
     // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildresult
-    switch (detail) {
+    switch (result) {
       case 'canceled':
-        return {category: BuildStateCategory.Canceled, detail};
+        return {category: BuildStateCategory.Canceled, detail: result};
       case 'failed':
-        return {category: BuildStateCategory.Failed, detail};
+        return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
       case 'partiallySucceeded':
-        return {category: BuildStateCategory.Success, detail};
+        return {category: BuildStateCategory.Success, detail: result};
       case 'running':
-        return {category: BuildStateCategory.Running, detail};
+        return {category: BuildStateCategory.Running, detail: result};
       default:
-        return {category: BuildStateCategory.Custom, detail};
+        return {category: BuildStateCategory.Custom, detail: result};
     }
   }
 
-  vcs_Repository(repo: Repository): any | undefined {
-    // TODO: support other repo types
-    if (repo.type !== 'GitHub') {
-      return undefined;
+  vcs_Repository(repo: Repository): RepoKey | undefined {
+    const repoType = toLower(repo.type);
+
+    if (repoType === 'tfsgit') {
+      const orgName = this.getOrganizationFromUrl(repo.url);
+      const projectName = this.getProjectFromUrl(repo.url);
+
+      if (!orgName || !projectName) {
+        return undefined;
+      }
+      const name = `${decodeURIComponent(projectName)}:${repo.name}`;
+      return {
+        uid: name,
+        name,
+        organization: {
+          uid: orgName,
+          source: 'Azure-Repos',
+        },
+      };
     }
 
-    const parts = repo.id.split('/');
-    // Expecting repo.id to be in the format of <org>/<repo>
-    // E.g., faros-ai/airbyte-connectors
-    if (parts.length < 2) {
-      return undefined;
+    if (repoType === 'github') {
+      const parts = repo.id.split('/');
+      // Expecting repo.id to be in the format of <org>/<repo>
+      // E.g., faros-ai/airbyte-connectors
+      if (parts.length < 2) {
+        return undefined;
+      }
+      const name = toLower(parts[1]);
+      return {
+        uid: name,
+        name,
+        organization: {
+          uid: toLower(parts[0]),
+          source: 'GitHub',
+        },
+      };
     }
 
-    return {
-      name: toLower(parts[1]),
-      organization: {
-        uid: toLower(parts[0]),
-        source: repo.type,
-      },
-    };
+    return undefined;
   }
 
   getRepoUrl(repo: Repository): string | undefined {
@@ -128,28 +168,26 @@ export abstract class AzurePipelineConverter extends Converter {
     return result;
   }
 
-  convertBuildStepState(state: string | undefined): {
+  convertBuildStepState(result: string | undefined): {
     category: string;
     detail: string;
   } {
-    if (!state) {
+    if (!result) {
       return {category: BuildStateCategory.Unknown, detail: 'undefined'};
     }
-    const detail = state.toLowerCase();
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get?view=azure-devops-rest-6.0#taskresult
-    switch (detail) {
+    switch (result) {
       case 'abandoned':
       case 'canceled':
-        return {category: BuildStateCategory.Canceled, detail};
+        return {category: BuildStateCategory.Canceled, detail: result};
       case 'failed':
       case 'skipped':
-        return {category: BuildStateCategory.Failed, detail};
+        return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
-        return {category: BuildStateCategory.Success, detail};
       case 'succeededWithIssues':
-        return {category: BuildStateCategory.Queued, detail};
+        return {category: BuildStateCategory.Success, detail: result};
       default:
-        return {category: BuildStateCategory.Custom, detail};
+        return {category: BuildStateCategory.Custom, detail: result};
     }
   }
 

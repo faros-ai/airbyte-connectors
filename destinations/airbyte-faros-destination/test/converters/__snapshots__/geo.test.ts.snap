@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LocationCollector caches and returns previously seen locations 1`] = `
+Array [
+  Object {
+    "model": "geo_Address",
+    "record": Object {
+      "fullAddress": "New York, NY",
+      "uid": "New York, NY",
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "New York, NY",
+      },
+      "coordinates": null,
+      "raw": "New York, NY",
+      "uid": "New York, NY",
+    },
+  },
+]
+`;
+
+exports[`LocationCollector caches and returns uncoded locations 1`] = `
+Array [
+  Object {
+    "model": "geo_Address",
+    "record": Object {
+      "fullAddress": "New York, NY",
+      "uid": "New York, NY",
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "New York, NY",
+      },
+      "coordinates": null,
+      "raw": "New York, NY",
+      "uid": "New York, NY",
+    },
+  },
+]
+`;
+
+exports[`LocationCollector deduplicates identical addresses and coordinates 1`] = `
+Array [
+  Object {
+    "model": "geo_Address",
+    "record": Object {
+      "city": "Brooklyn",
+      "country": "United States",
+      "countryCode": "US",
+      "fullAddress": "Brooklyn, NY, USA",
+      "state": "New York",
+      "stateCode": "NY",
+      "uid": "ChIJCSF8lBZEwokRhngABHRcdoI",
+    },
+  },
+  Object {
+    "model": "geo_Coordinates",
+    "record": Object {
+      "lat": 40.6781784,
+      "lon": -73.9441579,
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "ChIJCSF8lBZEwokRhngABHRcdoI",
+      },
+      "coordinates": Object {
+        "lat": 40.6781784,
+        "lon": -73.9441579,
+      },
+      "raw": "Brooklyn, New York",
+      "uid": "Brooklyn, New York",
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "ChIJCSF8lBZEwokRhngABHRcdoI",
+      },
+      "coordinates": Object {
+        "lat": 40.6781784,
+        "lon": -73.9441579,
+      },
+      "raw": "Brooklyn, New York, NY, USA",
+      "uid": "Brooklyn, New York, NY, USA",
+    },
+  },
+]
+`;
+
+exports[`LocationCollector geocodes locations with FarosClient 1`] = `
+Array [
+  Object {
+    "model": "geo_Address",
+    "record": Object {
+      "city": "Brooklyn",
+      "country": "United States",
+      "countryCode": "US",
+      "fullAddress": "Brooklyn, NY, USA",
+      "state": "New York",
+      "stateCode": "NY",
+      "uid": "ChIJCSF8lBZEwokRhngABHRcdoI",
+    },
+  },
+  Object {
+    "model": "geo_Coordinates",
+    "record": Object {
+      "lat": 40.6781784,
+      "lon": -73.9441579,
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "ChIJCSF8lBZEwokRhngABHRcdoI",
+      },
+      "coordinates": Object {
+        "lat": 40.6781784,
+        "lon": -73.9441579,
+      },
+      "raw": "Brooklyn, New York",
+      "uid": "Brooklyn, New York",
+    },
+  },
+]
+`;
+
+exports[`LocationCollector handles invalid geocoding response with uncoded location 1`] = `
+Array [
+  Object {
+    "model": "geo_Address",
+    "record": Object {
+      "fullAddress": "San Francisco, CA",
+      "uid": "San Francisco, CA",
+    },
+  },
+  Object {
+    "model": "geo_Location",
+    "record": Object {
+      "address": Object {
+        "uid": "San Francisco, CA",
+      },
+      "coordinates": null,
+      "raw": "San Francisco, CA",
+      "uid": "San Francisco, CA",
+    },
+  },
+]
+`;

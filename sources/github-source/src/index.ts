@@ -8,22 +8,25 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange} from 'faros-airbyte-common/common';
+import {calculateDateRange, nextBucketId} from 'faros-airbyte-common/common';
+import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
 import {
   DEFAULT_CUTOFF_DAYS,
+  DEFAULT_FAROS_API_URL,
   DEFAULT_FETCH_TEAMS,
   DEFAULT_RUN_MODE,
   GitHub,
 } from './github';
-import {RunModeStreams, TeamStreamNames} from './streams/common';
+import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
 import {FarosCommits} from './streams/faros_commits';
-import {FarosContributorsStats} from './streams/faros_contributors_stats';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosDependabotAlerts} from './streams/faros_dependabot_alerts';
+import {FarosIssueComments} from './streams/faros_issue_comments';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosLabels} from './streams/faros_labels';
 import {FarosOrganizations} from './streams/faros_organizations';
@@ -39,6 +42,9 @@ import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
 import {FarosUsers} from './streams/faros_users';
+import {FarosWorkflowJobs} from './streams/faros_workflow_jobs';
+import {FarosWorkflowRuns} from './streams/faros_workflow_runs';
+import {FarosWorkflows} from './streams/faros_workflows';
 import {GitHubConfig} from './types';
 
 export function mainCommand(): Command {
@@ -66,29 +72,44 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return [true, undefined];
   }
 
+  makeFarosClient(config: GitHubConfig): FarosClient {
+    return new FarosClient({
+      url: config.api_url ?? DEFAULT_FAROS_API_URL,
+      apiKey: config.api_key,
+    });
+  }
+
   streams(config: GitHubConfig): AirbyteStreamBase[] {
+    let farosClient;
+    if (config.api_key) {
+      farosClient = this.makeFarosClient(config);
+    }
     return [
-      new FarosCodeScanningAlerts(config, this.logger),
-      new FarosCommits(config, this.logger),
-      new FarosContributorsStats(config, this.logger),
-      new FarosCopilotSeats(config, this.logger),
-      new FarosCopilotUsage(config, this.logger),
-      new FarosDependabotAlerts(config, this.logger),
-      new FarosIssues(config, this.logger),
-      new FarosLabels(config, this.logger),
-      new FarosOrganizations(config, this.logger),
-      new FarosOutsideCollaborators(config, this.logger),
-      new FarosProjects(config, this.logger),
-      new FarosPullRequests(config, this.logger),
-      new FarosPullRequestComments(config, this.logger),
-      new FarosReleases(config, this.logger),
-      new FarosRepositories(config, this.logger),
-      new FarosSamlSsoUsers(config, this.logger),
-      new FarosSecretScanningAlerts(config, this.logger),
-      new FarosTags(config, this.logger),
-      new FarosTeams(config, this.logger),
-      new FarosTeamMemberships(config, this.logger),
-      new FarosUsers(config, this.logger),
+      new FarosArtifacts(config, this.logger, farosClient),
+      new FarosCodeScanningAlerts(config, this.logger, farosClient),
+      new FarosCommits(config, this.logger, farosClient),
+      new FarosCopilotSeats(config, this.logger, farosClient),
+      new FarosCopilotUsage(config, this.logger, farosClient),
+      new FarosDependabotAlerts(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
+      new FarosIssueComments(config, this.logger, farosClient),
+      new FarosLabels(config, this.logger, farosClient),
+      new FarosOrganizations(config, this.logger, farosClient),
+      new FarosOutsideCollaborators(config, this.logger, farosClient),
+      new FarosProjects(config, this.logger, farosClient),
+      new FarosPullRequests(config, this.logger, farosClient),
+      new FarosPullRequestComments(config, this.logger, farosClient),
+      new FarosReleases(config, this.logger, farosClient),
+      new FarosRepositories(config, this.logger, farosClient),
+      new FarosSamlSsoUsers(config, this.logger, farosClient),
+      new FarosSecretScanningAlerts(config, this.logger, farosClient),
+      new FarosTags(config, this.logger, farosClient),
+      new FarosTeams(config, this.logger, farosClient),
+      new FarosTeamMemberships(config, this.logger, farosClient),
+      new FarosUsers(config, this.logger, farosClient),
+      new FarosWorkflows(config, this.logger, farosClient),
+      new FarosWorkflowJobs(config, this.logger, farosClient),
+      new FarosWorkflowRuns(config, this.logger, farosClient),
     ];
   }
 
@@ -103,7 +124,12 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   }> {
     const streamNames = [
       ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
-    ];
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     if (config.fetch_teams ?? DEFAULT_FETCH_TEAMS) {
       streamNames.push(...TeamStreamNames);
     }
@@ -117,6 +143,28 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
       logger: this.logger.info.bind(this.logger),
     });
+
+    if (config.round_robin_bucket_execution) {
+      const next = nextBucketId(config, state);
+      this.logger.info(
+        `Using round robin bucket execution. Bucket id: ${next}`
+      );
+      return {
+        config: {
+          ...config,
+          startDate,
+          endDate,
+          bucket_id: next,
+        },
+        catalog: {streams},
+        state: {
+          ...state,
+          __bucket_execution_state: {
+            last_executed_bucket_id: next,
+          },
+        },
+      };
+    }
 
     return {
       config: {

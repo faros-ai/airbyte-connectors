@@ -34,6 +34,7 @@
     "axios": "^1.7.4",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "faros-js-client": "^0.5.2",
     "nock": "^13.1.0",
     "verror": "^1.10.1"

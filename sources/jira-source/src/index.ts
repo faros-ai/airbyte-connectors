@@ -70,17 +70,48 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosIssuePullRequests(config, this.logger, farosClient),
       new FarosSprintReports(config, this.logger, farosClient),
       new FarosBoardIssues(config, this.logger, farosClient),
-      new FarosSprints(config, this.logger),
-      new FarosUsers(config, this.logger),
-      new FarosProjects(config, this.logger),
-      new FarosIssues(config, this.logger),
-      new FarosBoards(config, this.logger),
-      new FarosProjectVersions(config, this.logger),
-      new FarosProjectVersionIssues(config, this.logger),
-      new FarosTeams(config, this.logger),
-      new FarosTeamMemberships(config, this.logger),
+      new FarosSprints(config, this.logger, farosClient),
+      new FarosUsers(config, this.logger, farosClient),
+      new FarosProjects(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
+      new FarosBoards(config, this.logger, farosClient),
+      new FarosProjectVersions(config, this.logger, farosClient),
+      new FarosProjectVersionIssues(config, this.logger, farosClient),
+      new FarosTeams(config, this.logger, farosClient),
+      new FarosTeamMemberships(config, this.logger, farosClient),
       new FarosIssueAdditionalFields(config, this.logger, farosClient),
     ];
+  }
+
+  override async onBeforeRun(config: JiraConfig): Promise<JiraConfig> {
+    // In general, we want to skip resets if using the tracker.
+    // However, for the first run with the tracker we need to reset to ensure
+    // the resulting state is in sync with the graph.  If we have a state, we
+    // assume the state and graph are in sync and skip the reset.
+    if (
+      config.use_faros_board_issue_tracker &&
+      config.faros_source_id &&
+      config.api_key
+    ) {
+      const farosClient = this.makeFarosClient(config);
+      try {
+        const res: any = await farosClient.request(
+          'GET',
+          `/accounts/${config.faros_source_id}/state`
+        );
+        return {
+          ...config,
+          ...(res.state && {
+            skip_reset_models: ['tms_TaskBoardRelationship'],
+          }),
+        };
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to check existence of board issue state in Faros: ${e?.message}`
+        );
+      }
+    }
+    return config;
   }
 
   async onBeforeRead(
@@ -92,7 +123,14 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
-    const streamNames = [...RunModeStreams[config.run_mode ?? RunMode.Full]];
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? RunMode.Full],
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
     }
@@ -110,29 +148,12 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    let {excluded_projects, excluded_boards} = config;
-    if (config.projects?.length && excluded_projects?.length) {
-      this.logger.warn(
-        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
-      );
-      excluded_projects = undefined;
-    }
-
-    if (config.boards?.length && excluded_boards?.length) {
-      this.logger.warn(
-        'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
-      );
-      excluded_boards = undefined;
-    }
-
     return {
       config: {
         ...config,
         requestedStreams,
         startDate,
         endDate,
-        excluded_projects,
-        excluded_boards,
       },
       catalog: {streams},
       state,

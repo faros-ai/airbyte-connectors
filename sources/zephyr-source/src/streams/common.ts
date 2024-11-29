@@ -1,15 +1,9 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
-import {DateTime} from 'luxon';
+import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 
 import {ZephyrConfig} from '../types';
 
 export type StreamSlice = {
-  project: string;
+  project: Record<string, string>;
 };
 
 export type ProjectState = {
@@ -17,7 +11,8 @@ export type ProjectState = {
 };
 
 export abstract class ZephyrStreamBase extends AirbyteStreamBase {
-  protected readonly projects: ReadonlyArray<string>;
+  // projects is an array of objects with key, versions, cycles,... properties
+  protected readonly projects: ReadonlyArray<any>;
   constructor(
     protected readonly config: ZephyrConfig,
     protected readonly logger: AirbyteLogger

@@ -10,32 +10,37 @@ export function setupGitHubInstance(
 ) {
   const githubConfig: GitHubConfig =
     config ?? readTestResourceAsJSON('config.json');
-  GitHub.instance = jest.fn().mockImplementation(() => {
-    return new GitHubToken(
-      githubConfig,
-      {
-        ...octokitMock,
-        paginate: {
-          iterator: (fnOrErr?: (() => any) | Error) => {
-            if (!fnOrErr) {
-              throw new Error('Not mocked');
-            }
-            if (fnOrErr instanceof Error) {
-              return iterate(fnOrErr);
-            }
-            return iterate([{data: fnOrErr()}]);
-          },
-        },
-        orgs: {
-          ...octokitMock.orgs,
-          listForAuthenticatedUser:
-            octokitMock.orgs?.listForAuthenticatedUser ??
-            jest.fn().mockReturnValue([{login: 'github'}]),
+  const instance = new GitHubToken(
+    githubConfig,
+    {
+      ...octokitMock,
+      request: (fn?: () => any) => {
+        if (!fn) {
+          throw new Error('Not mocked');
+        }
+        return fn();
+      },
+      paginate: {
+        iterator: (fnOrErr?: (() => any) | Error) => {
+          if (!fnOrErr) {
+            throw new Error('Not mocked');
+          }
+          if (fnOrErr instanceof Error) {
+            return iterate(fnOrErr);
+          }
+          return iterate([{data: fnOrErr()}]);
         },
       },
-      logger
-    );
-  });
+      orgs: {
+        ...octokitMock.orgs,
+        listForAuthenticatedUser:
+          octokitMock.orgs?.listForAuthenticatedUser ??
+          jest.fn().mockReturnValue([{login: 'github'}]),
+      },
+    },
+    logger
+  );
+  GitHub.instance = jest.fn().mockImplementation(() => instance);
 }
 
 export const graphqlMockedImplementation = (queryName: string, res: any) => {

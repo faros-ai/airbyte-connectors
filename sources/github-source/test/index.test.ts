@@ -2,6 +2,7 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
@@ -12,6 +13,8 @@ import {merge} from 'lodash';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
+import {OrgRepoFilter} from '../src/org-repo-filter';
+import {CustomStreamNames} from '../src/streams/common';
 import {
   ErrorWithStatus,
   graphqlMockedImplementation,
@@ -35,6 +38,7 @@ describe('index', () => {
   afterEach(() => {
     jest.resetAllMocks();
     (GitHub as any).github = undefined;
+    (OrgRepoFilter as any)._instance = undefined;
   });
 
   test('spec', async () => {
@@ -157,6 +161,37 @@ describe('index', () => {
     });
   });
 
+  test('streams - copilot seats with audit logs API but licenses dates fix disabled', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_licenses_dates_fix: false,
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotSeatsMockedImplementation(
+              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+            ),
+            getTeamAddMemberAuditLogsMockedImplementation(
+              readTestResourceAsJSON(
+                'copilot_seats/team_add_member_audit_logs.json'
+              )
+            )
+          ),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - copilot seats (empty)', async () => {
     await sourceReadTest({
       source,
@@ -197,6 +232,9 @@ describe('index', () => {
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
     });
   });
 
@@ -205,6 +243,11 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'copilot_usage/catalog.json',
+      stateOrPath: {
+        faros_copilot_usage: {
+          github: {cutoff: new Date('2023-10-15').getTime()},
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
@@ -223,6 +266,102 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage without teams (GA API)', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_ga: true,
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getTeamsMockedImplementation(
+              new ErrorWithStatus(400, 'API not available')
+            )
+          ),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage with teams (GA API)', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_ga: true,
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getCopilotUsageForTeamGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            )
+          ),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - copilot usage with teams already up-to-date', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'copilot_usage/catalog.json',
+      stateOrPath: {
+        faros_copilot_usage: {
+          github: {cutoff: new Date('2023-10-16').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getCopilotUsageForOrgMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            ),
+            getTeamsMockedImplementation(
+              readTestResourceAsJSON('teams/teams.json')
+            ),
+            getCopilotUsageForTeamMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(0);
       },
     });
   });
@@ -302,6 +441,39 @@ describe('index', () => {
             )
           ),
           logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull requests diff coverage', async () => {
+    const config = readTestResourceAsJSON(
+      'pull_requests/pull_requests_diff_coverage/config.json'
+    );
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getPullRequestsMockedImplementation(
+              readTestResourceAsJSON('pull_requests/pull_requests.json')
+            ),
+            getListCommitStatusesForRefMockedImplementation(
+              readTestResourceAsJSON(
+                'pull_requests/pull_requests_diff_coverage/listCommitStatuses.json'
+              )
+            )
+          ),
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -463,6 +635,10 @@ describe('index', () => {
   });
 
   test('streams - commits', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest.fn().mockResolvedValue(commits),
+    };
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
@@ -473,9 +649,7 @@ describe('index', () => {
             getRepositoriesMockedImplementation(
               readTestResourceAsJSON('repositories/repositories.json')
             ),
-            getCommitsMockedImplementation(
-              readTestResourceAsJSON('commits/commits.json')
-            )
+            commitsMock
           ),
           logger
         );
@@ -484,6 +658,97 @@ describe('index', () => {
         expect(records).toMatchSnapshot();
       },
     });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
+    const commitFields: string = commitsMock.graphql.mock.calls
+      .at(-1)[0]
+      .replace(/query commits.*/s, '');
+    expect(commitFields).toMatchSnapshot();
+  });
+
+  test('streams - commits - changedFiles unavailable', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest
+        .fn()
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              extensions: {
+                code: 'undefinedField',
+              },
+            },
+          ],
+        })
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              message: 'The changedFiles count for this commit is unavailable',
+            },
+          ],
+        })
+        .mockResolvedValueOnce(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.length).toBeGreaterThan(0);
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(3);
+    const commitFields: string = commitsMock.graphql.mock.calls
+      .at(-1)[0]
+      .replace(/query commits.*/s, '');
+    expect(commitFields).toMatchSnapshot();
+  });
+
+  test('streams - commits - additions unavailable', async () => {
+    const commits = readTestResourceAsJSON('commits/commits.json');
+    const commitsMock = {
+      graphql: jest
+        .fn()
+        .mockResolvedValueOnce(commits)
+        .mockRejectedValueOnce({
+          errors: [
+            {
+              message: 'The additions count for this commit is unavailable',
+            },
+          ],
+        })
+        .mockResolvedValueOnce(commits),
+    };
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'commits/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            commitsMock
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.length).toBe(0);
+      },
+    });
+    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
   });
 
   test('streams - tags', async () => {
@@ -536,32 +801,6 @@ describe('index', () => {
     });
   });
 
-  test('streams - contributors stats', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: 'config.json',
-      catalogOrPath: 'contributors_stats/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getRepositoriesMockedImplementation(
-              readTestResourceAsJSON('repositories/repositories.json')
-            ),
-            getContributorsStatsMockedImplementation(
-              readTestResourceAsJSON(
-                'contributors_stats/contributors_stats.json'
-              )
-            )
-          ),
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
   test('streams - projects', async () => {
     await sourceReadTest({
       source,
@@ -602,6 +841,30 @@ describe('index', () => {
             ),
             getIssuesMockedImplementation(
               readTestResourceAsJSON('issues/issues.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - issue comments', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'issue_comments/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getIssueCommentsMockedImplementation(
+              readTestResourceAsJSON('issue_comments/issue_comments.json')
             )
           ),
           logger
@@ -688,6 +951,137 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - workflows', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflows/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowsMockedImplementation(
+              readTestResourceAsJSON('workflows/workflows.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - workflow runs', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflow_runs/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - workflow jobs', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'workflow_jobs/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            ),
+            getWorkflowJobsMockedImplementation(
+              readTestResourceAsJSON('workflow_jobs/workflow_jobs.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.slice(1)).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - artifacts', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'artifacts/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getWorkflowRunsMockedImplementation(
+              readTestResourceAsJSON('workflow_runs/workflow_runs.json')
+            ),
+            getArtifactsMockedImplementation(
+              readTestResourceAsJSON('artifacts/artifacts.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records.slice(1)).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames
+    );
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
+    );
+  });
+
+  test('round robin bucket execution', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    const catalog = readTestResourceAsJSON('users/catalog.json');
+    const {config: newConfig, state: newState} = await source.onBeforeRead(
+      {...config, round_robin_bucket_execution: true, bucket_total: 3},
+      catalog,
+      {__bucket_execution_state: {last_executed_bucket_id: 1}}
+    );
+    expect(newConfig.bucket_id).toBe(2);
+    expect(newState).toMatchSnapshot();
+  });
 });
 
 const getCopilotSeatsMockedImplementation = (res: any) => ({
@@ -710,6 +1104,14 @@ const getCopilotUsageForTeamMockedImplementation = (res: any) => ({
   copilot: {
     usageMetricsForTeam: jest.fn().mockReturnValue({data: res}),
   },
+});
+
+const getCopilotUsageForOrgGAMockedImplementation = (res: any) => ({
+  copilotMetrics: jest.fn().mockReturnValue({data: res}),
+});
+
+const getCopilotUsageForTeamGAMockedImplementation = (res: any) => ({
+  copilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
 });
 
 const getOrganizationMockedImplementation = (res: any) => ({
@@ -781,14 +1183,17 @@ const getProjectsClassicMockedImplementation = (res: any) => ({
   },
 });
 
-const getCommitsMockedImplementation = (res: any) =>
-  graphqlMockedImplementation('commits', res);
-
 const getRepositoryTagsMockedImplementation = (res: any) =>
   graphqlMockedImplementation('repoTags', res);
 
 const getIssuesMockedImplementation = (res: any) =>
   graphqlMockedImplementation('issues', res);
+
+const getIssueCommentsMockedImplementation = (res: any) => ({
+  issues: {
+    listCommentsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
 
 const getCodeScanningAlertsMockedImplementation = (res: any) => ({
   codeScanning: {
@@ -805,5 +1210,35 @@ const getDependabotAlertsMockedImplementation = (res: any) => ({
 const getSecretScanningAlertsMockedImplementation = (res: any) => ({
   secretScanning: {
     listAlertsForRepo: jest.fn().mockReturnValue(res),
+  },
+});
+
+const getWorkflowsMockedImplementation = (res: any) => ({
+  actions: {
+    listRepoWorkflows: jest.fn().mockReturnValue(res.workflows),
+  },
+});
+
+const getWorkflowRunsMockedImplementation = (res: any) => ({
+  actions: {
+    listWorkflowRunsForRepo: jest.fn().mockReturnValue(res.workflow_runs),
+  },
+});
+
+const getWorkflowJobsMockedImplementation = (res: any) => ({
+  actions: {
+    listJobsForWorkflowRun: jest.fn().mockReturnValue(res.jobs),
+  },
+});
+
+const getArtifactsMockedImplementation = (res: any) => ({
+  actions: {
+    listWorkflowRunArtifacts: jest.fn().mockReturnValue(res.artifacts),
+  },
+});
+
+const getListCommitStatusesForRefMockedImplementation = (res: any) => ({
+  repos: {
+    listCommitStatusesForRef: jest.fn().mockReturnValue(res),
   },
 });

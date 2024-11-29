@@ -1,7 +1,11 @@
 import axios, {AxiosInstance} from 'axios';
 import {setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
-import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
+import {
+  bucket,
+  normalizeString,
+  validateBucketingConfig,
+} from 'faros-airbyte-common/common';
 import {
   FarosProject,
   Issue,
@@ -51,9 +55,11 @@ export interface JiraConfig extends AirbyteConfig {
   readonly reject_unauthorized?: boolean;
   readonly concurrency_limit?: number;
   readonly max_retries?: number;
+  readonly retry_delay?: number;
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
+  readonly use_faros_graph_boards_selection?: boolean;
   readonly projects?: ReadonlyArray<string>;
   readonly excluded_projects?: ReadonlyArray<string>;
   readonly boards?: ReadonlyArray<string>;
@@ -61,6 +67,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly cutoff_lag_days?: number;
   readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
   readonly api_url?: string;
@@ -68,6 +75,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly graph?: string;
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
+  readonly use_faros_board_issue_tracker?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;
@@ -135,8 +143,9 @@ const DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT = 50;
 const DEFAULT_REJECT_UNAUTHORIZED = true;
 const DEFAULT_CONCURRENCY_LIMIT = 5;
 const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_RETRY_DELAY = 5_000;
 const DEFAULT_PAGE_SIZE = 250;
-const DEFAULT_TIMEOUT = 120000; // 2 minutes
+const DEFAULT_TIMEOUT = 120_000; // 2 minutes
 const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
@@ -168,6 +177,7 @@ export class Jira {
     private readonly fieldNameById: Map<string, string>,
     private readonly additionalFieldsArrayLimit: number,
     private readonly statusByName: Map<string, Status>,
+    private readonly statusById: Map<string, Status>,
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
@@ -226,7 +236,9 @@ export class Jira {
         // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
         paramsSerializer: {indexes: null},
       },
+      isCloud,
       maxRetries: cfg.max_retries ?? DEFAULT_MAX_RETRIES,
+      retryDelay: cfg.retry_delay ?? DEFAULT_RETRY_DELAY,
       logger: logger,
     });
 
@@ -257,9 +269,16 @@ export class Jira {
     );
 
     const statusByName = new Map<string, Status>();
+    const statusById = new Map<string, Status>();
     for (const status of await api.v2.workflowStatuses.getStatuses()) {
       if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
+        statusByName.set(normalizeString(status.name), {
+          category: status.statusCategory.name,
+          detail: status.name,
+        });
+      }
+      if (status.id && status.statusCategory?.name) {
+        statusById.set(status.id, {
           category: status.statusCategory.name,
           detail: status.name,
         });
@@ -280,6 +299,7 @@ export class Jira {
       cfg.additional_fields_array_limit ??
         DEFAULT_ADDITIONAL_FIELDS_ARRAY_LIMIT,
       statusByName,
+      statusById,
       isCloud,
       cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
       cfg.page_size ?? DEFAULT_PAGE_SIZE,
@@ -667,19 +687,6 @@ export class Jira {
 
     return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
   }
-  @Memoize()
-  async getStatuses(): Promise<Map<string, Status>> {
-    const statusByName = new Map<string, Status>();
-    for (const status of await this.api.v2.workflowStatuses.getStatuses()) {
-      if (status.name && status.statusCategory?.name) {
-        statusByName.set(status.name, {
-          category: status.statusCategory.name,
-          detail: status.name,
-        });
-      }
-    }
-    return statusByName;
-  }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
     // For keys and ids we can fetch upto 1000 issues at a time
@@ -860,8 +867,37 @@ export class Jira {
     return this.requestedStreams?.has('faros_issues');
   }
 
+  // Project boards are one of the following:
+  // - located in the project (location.projectKey === projectKey)
+  // - relevant to the project (returned when using projectKeyOrId for get all board)
   @Memoize()
-  async getBoards(
+  async getProjectBoards(
+    projectKey: string
+  ): Promise<ReadonlyArray<AgileModels.Board>> {
+    const boardMap = new Map<number, AgileModels.Board>();
+
+    // Get all boards located in the project
+    const allBoards = await this.getRelevantBoards();
+    allBoards.forEach((board) => {
+      if (board.location?.projectKey === projectKey) {
+        boardMap.set(board.id, board);
+      }
+    });
+
+    // Get boards relevant to the project
+    const projectBoards = await this.getRelevantBoards(projectKey);
+    for (const board of projectBoards) {
+      boardMap.set(board.id, board);
+    }
+
+    return Array.from(boardMap.values());
+  }
+
+  // Get all if projectKey is not provided, otherwise, get boards relevant to the project.
+  // See comment for projectKeyOrId query param for get all boards API call below.
+  // https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/#api-rest-agile-1-0-board-get
+  @Memoize()
+  private async getRelevantBoards(
     projectKey?: string
   ): Promise<ReadonlyArray<AgileModels.Board>> {
     const boards: AgileModels.Board[] = [];
@@ -1161,10 +1197,13 @@ export class Jira {
   toSprintReportIssues(report: any): SprintIssue[] {
     const toSprintIssues = (issues: any, classification: string): any[] =>
       issues?.map((issue: any) => {
+        // Jira Server returns statusId in issue.statusId, while Jira Cloud returns it in issue.status.id
+        const statusId = issue.status?.id ?? issue.statusId;
+        const status = statusId ? this.statusById.get(statusId) : undefined;
         return {
           key: issue.key,
           classification,
-          status: issue.status.name,
+          status,
           points: toFloat(
             issue.currentEstimateStatistic?.statFieldValue?.value
           ),

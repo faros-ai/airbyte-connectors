@@ -981,7 +981,12 @@ describe('graphql-client write batch upsert', () => {
       3
     );
     await client.loadSchema();
-    await client.resetData('foo', ['vcs_Organization'], false);
+    await client.resetData(
+      {getOrigin: () => 'foo'},
+      ['vcs_Organization'],
+      false,
+      false
+    );
     expect(queries).toEqual(responses.length);
   });
 });

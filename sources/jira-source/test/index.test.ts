@@ -2,6 +2,7 @@ import {
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
@@ -10,10 +11,11 @@ import {
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 
-import {FarosIssuePullRequests} from '../lib/streams/faros_issue_pull_requests';
 import * as sut from '../src/index';
-import {JiraConfig} from '../src/jira';
-import {RunMode} from '../src/streams/common';
+import {Jira, JiraConfig} from '../src/jira';
+import {ProjectBoardFilter} from '../src/project-board-filter';
+import {CustomStreamNames, RunMode} from '../src/streams/common';
+import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
 function readResourceFile(fileName: string): any {
@@ -22,6 +24,9 @@ function readResourceFile(fileName: string): any {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.resetAllMocks();
+  (Jira as any).jira = undefined;
+  (ProjectBoardFilter as any)._instance = undefined;
 });
 
 describe('index', () => {
@@ -110,7 +115,10 @@ describe('index', () => {
           .mockResolvedValue(readTestResourceAsJSON('common/board.json')),
         getAllSprints: paginate(readTestResourceAsJSON('sprints/sprints.json')),
         getAllBoards: paginate(
-          readTestResourceAsJSON('common/boards_unique.json')
+          readTestResourceAsJSON('common/boards_unique.json'),
+          'values',
+          1,
+          true
         ),
       },
     },
@@ -229,7 +237,10 @@ describe('index', () => {
                     )
                   ),
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -279,7 +290,10 @@ describe('index', () => {
                   readTestResourceAsJSON('sprints/sprints.json')
                 ),
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -330,7 +344,10 @@ describe('index', () => {
                   ),
                 getAllSprints: getAllSprintsfn,
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json')
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -542,7 +559,10 @@ describe('index', () => {
             agile: {
               board: {
                 getAllBoards: paginate(
-                  readTestResourceAsJSON('boards/boards.json')
+                  readTestResourceAsJSON('boards/boards.json'),
+                  'values',
+                  1,
+                  true
                 ),
               },
             },
@@ -752,25 +772,26 @@ describe('index', () => {
     expect(newCatalog).toMatchSnapshot();
   });
 
-  test('onBeforeRead with projects and excluded_projects defined should remove excluded_projects from config', async () => {
-    const catalog = readTestResourceAsJSON('common/catalog.json');
-    const {config: processedConfig} = await source.onBeforeRead(
-      {...config, projects: ['TEST'], excluded_projects: ['TEST2']},
-      catalog
-    );
-    expect(processedConfig.excluded_projects).toBeUndefined();
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(source, config, CustomStreamNames);
   });
 
-  test('onBeforeRead with boards and excluded_boards defined should remove excluded_boards from config', async () => {
-    const catalog = readTestResourceAsJSON('common/catalog.json');
-    const {config: processedConfig} = await source.onBeforeRead(
-      {...config, boards: ['1'], excluded_boards: ['2']},
-      catalog
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      config,
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
     );
-    expect(processedConfig.excluded_boards).toBeUndefined();
   });
 
   async function testStreamSlices(config: JiraConfig): Promise<void> {
+    const searchProjects = paginate(
+      readTestResourceAsJSON('projects/projects.json'),
+      'values',
+      50
+    );
+    setupJiraInstance({v2: {projects: {searchProjects}}}, true, config, logger);
     const stream = new FarosIssuePullRequests(config, logger);
     const slices = stream.streamSlices();
     // collect slices in an array and match with snapshot

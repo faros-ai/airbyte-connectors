@@ -293,7 +293,7 @@
         "hierarchyLevel": 0
       },
       "creator": {
-        "accountId": "88a7f7f45b7d3b111232",
+        "key": "88a7f7f45b7d3b111232",
         "emailAddress": "user@mail.com",
         "displayName": "John Doe",
         "active": true,

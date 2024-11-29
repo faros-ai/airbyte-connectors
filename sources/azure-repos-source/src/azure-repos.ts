@@ -242,17 +242,22 @@ export class AzureRepos {
 
     for (const project of this.projects) {
       for (const repository of await this.listRepositories(project)) {
-        for (const branch of await this.listBranches(project, repository)) {
-          for await (const commit of this.listCommits(
-            project,
-            repository,
-            branch,
-            sinceDate > cutoffDate ? sinceDate : cutoffDate
-          )) {
-            commit.repository = repository as CommitRepository;
-            commit.branch = branch;
-            yield commit;
-          }
+        const branch = getQueryableDefaultBranch(repository.defaultBranch);
+        if (!branch) {
+          this.logger.error(
+            `No default branch found for repository ${repository.name}. Will not fetch any commits.`
+          );
+          continue;
+        }
+        for await (const commit of this.listCommits(
+          project,
+          repository,
+          branch,
+          sinceDate > cutoffDate ? sinceDate : cutoffDate
+        )) {
+          commit.repository = repository as CommitRepository;
+          commit.branch = branch;
+          yield commit;
         }
       }
     }
@@ -308,7 +313,7 @@ export class AzureRepos {
   private async *listCommits(
     project: string,
     repo: Repository,
-    branch: Branch,
+    branch: string,
     since?: DateTime
   ): AsyncGenerator<Commit> {
     for await (const commitRes of this.getPaginated<CommitResponse>(
@@ -316,7 +321,7 @@ export class AzureRepos {
       'searchCriteria.$top',
       'searchCriteria.$skip',
       {
-        'searchCriteria.itemVersion.version': branch.name,
+        'searchCriteria.itemVersion.version': branch,
         'searchCriteria.fromDate': since?.toISO(),
       },
       this.top
@@ -341,17 +346,23 @@ export class AzureRepos {
     repo: Repository
   ): Promise<Branch[]> {
     const branches = [];
-    const branchRes = await this.get<BranchResponse>(
-      `${project}/_apis/git/repositories/${repo.id}/stats/branches`
-    );
-    for (const branch of branchRes?.data?.value ?? []) {
-      if (!this.branchPattern.test(branch.name)) {
-        this.logger.info(
-          `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
-        );
-      } else {
-        branches.push(branch);
+    try {
+      const branchRes = await this.get<BranchResponse>(
+        `${project}/_apis/git/repositories/${repo.id}/stats/branches`
+      );
+      for (const branch of branchRes?.data?.value ?? []) {
+        if (!this.branchPattern.test(branch.name)) {
+          this.logger.info(
+            `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
+          );
+        } else {
+          branches.push(branch);
+        }
       }
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to list branches for repository ${repo.name}: ${wrapApiError(err).message}`
+      );
     }
     return branches;
   }
@@ -367,21 +378,27 @@ export class AzureRepos {
     project: string,
     repo: Repository
   ): Promise<Tag[]> {
-    const tagRes = await this.get<TagResponse>(
-      `${project}/_apis/git/repositories/${repo.id}/refs`,
-      {filter: 'tags', peelTags: 'true'}
-    );
     const tags = [];
-    for (const tag of tagRes?.data?.value ?? []) {
-      // Per docs, annotated tags will populate the peeledObjectId property
-      if (tag.peeledObjectId) {
-        const tagItem: Tag = tag;
-        const tagCommitRes = await this.get<TagCommit>(
-          `${project}/_apis/git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
-        );
-        tagItem.commit = tagCommitRes?.data ?? null;
-        tags.push(tagItem);
+    try {
+      const tagRes = await this.get<TagResponse>(
+        `${project}/_apis/git/repositories/${repo.id}/refs`,
+        {filter: 'tags', peelTags: 'true'}
+      );
+      for (const tag of tagRes?.data?.value ?? []) {
+        // Per docs, annotated tags will populate the peeledObjectId property
+        if (tag.peeledObjectId) {
+          const tagItem: Tag = tag;
+          const tagCommitRes = await this.get<TagCommit>(
+            `${project}/_apis/git/repositories/${repo.id}/annotatedtags/${tag.objectId}`
+          );
+          tagItem.commit = tagCommitRes?.data ?? null;
+          tags.push(tagItem);
+        }
       }
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to list tags for repository ${repo.name}: ${wrapApiError(err).message}`
+      );
     }
     return tags;
   }
@@ -504,4 +521,17 @@ export class AzureRepos {
       throw wrapApiError(err, `Failed to get ${path}. `);
     }
   }
+}
+
+function getQueryableDefaultBranch(
+  defaultBranch?: string,
+  prefixToRemove = 'refs/heads/'
+): string | undefined {
+  if (!defaultBranch) {
+    return undefined;
+  }
+  if (defaultBranch.startsWith(prefixToRemove)) {
+    return defaultBranch.slice(prefixToRemove.length);
+  }
+  return defaultBranch;
 }

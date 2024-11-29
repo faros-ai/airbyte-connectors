@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
 
+import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -15,16 +15,17 @@ export class FarosRepositories extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const repo = record.record.data as Repository;
-    return [
+    const repo = record.record.data as Repository & {syncRepoData: boolean};
+    const repoKey = GitHubCommon.repoKey(
+      repo.org,
+      repo.name,
+      this.streamName.source
+    );
+    const res: DestinationRecord[] = [
       {
         model: 'vcs_Repository',
         record: {
-          name: toLower(repo.name),
-          organization: {
-            uid: toLower(repo.org),
-            source: this.streamName.source,
-          },
+          ...repoKey,
           fullName: repo.full_name,
           private: repo.private,
           description: Utils.cleanAndTruncate(repo.description),
@@ -39,5 +40,18 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
+    if (
+      repo.syncRepoData &&
+      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
+    ) {
+      res.push({
+        model: 'faros_VcsRepositoryOptions',
+        record: {
+          repository: repoKey,
+          inclusion: {category: 'Included'},
+        },
+      });
+    }
+    return res;
   }
 }

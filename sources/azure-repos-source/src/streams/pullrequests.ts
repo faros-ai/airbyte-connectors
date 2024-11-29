@@ -17,6 +17,12 @@ export class PullRequests extends AirbyteStreamBase {
     super(logger);
   }
 
+  // Run commits stream first to get the changeCounts for populating
+  // vcs_PullRequest.diffStats
+  get dependencies(): string[] {
+    return ['commits'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pullrequests.json');
   }

@@ -173,7 +173,7 @@ export interface PullRequest {
   mergeId: string;
   lastMergeSourceCommit: MergeSourceCommit;
   lastMergeCommit: MergeSourceCommit;
-  reviewers: [PullRequestReviewer];
+  reviewers: PullRequestReviewer[];
   url: string;
   supportsIterations: boolean;
   repository: PullRequestRepository;
@@ -213,7 +213,7 @@ export interface Commit {
   url: string;
   remoteUrl: string;
   repository?: CommitRepository;
-  branch?: Branch;
+  branch?: string;
 }
 
 export interface CommitResponse {

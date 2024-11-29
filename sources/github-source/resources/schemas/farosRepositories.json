@@ -45,6 +45,9 @@
     },
     "archived": {
       "type": "boolean"
+    },
+    "syncRepoData": {
+      "type": "boolean"
     }
   }
 }

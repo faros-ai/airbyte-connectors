@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__azure-repos__repositories"
+        "name": "mytestsource__azure-repos__commits"
       },
       "destination_sync_mode": "overwrite"
     },
@@ -14,13 +14,13 @@
     },
     {
       "stream": {
-        "name": "mytestsource__azure-repos__users"
+        "name": "mytestsource__azure-repos__repositories"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__azure-repos__commits"
+        "name": "mytestsource__azure-repos__users"
       },
       "destination_sync_mode": "overwrite"
     }

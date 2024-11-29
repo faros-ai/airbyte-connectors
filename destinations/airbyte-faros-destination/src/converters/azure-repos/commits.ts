@@ -3,7 +3,7 @@ import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
-import {Commit} from './models';
+import {Commit, CommitChange} from './models';
 
 export class Commits extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -29,6 +29,10 @@ export class Commits extends AzureReposConverter {
       organization,
     };
 
+    const author = commitItem.author?.email
+      ? {uid: commitItem.author.email.toLowerCase(), source}
+      : undefined;
+
     res.push({
       model: 'vcs_Commit',
       record: {
@@ -40,7 +44,7 @@ export class Commits extends AzureReposConverter {
         ),
         htmlUrl: commitItem.remoteUrl,
         createdAt: Utils.toDate(commitItem.committer?.date),
-        author: {uid: commitItem.author?.email, source},
+        author,
         repository,
       },
     });
@@ -53,13 +57,29 @@ export class Commits extends AzureReposConverter {
           repository,
         },
         branch: {
-          name: commitItem.branch?.name,
-          uid: commitItem.branch?.name,
+          name: commitItem.branch,
+          uid: commitItem.branch,
           repository,
         },
       },
     });
 
+    const totalChangeCount = getTotalChangeCount(commitItem.changeCounts);
+    if (totalChangeCount !== undefined) {
+      this.commitChangeCounts[commitItem.commitId] = totalChangeCount;
+    }
+
     return res;
   }
+}
+
+function getTotalChangeCount(changeCounts?: CommitChange): number | undefined {
+  if (!changeCounts) {
+    return undefined;
+  }
+  return (
+    (changeCounts.Add ?? 0) +
+    (changeCounts.Edit ?? 0) +
+    (changeCounts.Delete ?? 0)
+  );
 }

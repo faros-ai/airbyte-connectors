@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {Status} from 'faros-airbyte-common/jira';
 
 import {Jira, JiraConfig} from '../../src/jira';
 
@@ -8,6 +9,20 @@ export function setupJiraInstance(
   sourceConfig: JiraConfig,
   logger: AirbyteLogger
 ): void {
+  const statusByName = new Map<string, Status>();
+  statusByName.set('backlog', {category: 'To Do', detail: 'Backlog'});
+  statusByName.set('inprogress', {
+    category: 'In Progress',
+    detail: 'In Progress',
+  });
+
+  const statusById = new Map<string, Status>();
+  statusById.set('10001', {category: 'To Do', detail: 'Backlog'});
+  statusById.set('10002', {category: 'Done', detail: 'Done'});
+  statusById.set('10004', {
+    category: 'In Progress',
+    detail: 'In Progress',
+  });
   Jira.instance = jest.fn().mockImplementation(() => {
     return new Jira(
       'https://jira.com',
@@ -24,7 +39,8 @@ export function setupJiraInstance(
         ['customfield_10020', 'Sprint'],
       ]),
       50,
-      new Map(),
+      statusByName,
+      statusById,
       isCloud,
       5,
       100,
@@ -62,4 +78,15 @@ export function paginate<V>(
     });
   } while (count < items.length);
   return fn;
+}
+
+export async function* iterate<T>(
+  arrOrErr: ReadonlyArray<T> | Error
+): AsyncIterableIterator<T> {
+  if (arrOrErr instanceof Error) {
+    throw arrOrErr;
+  }
+  for (const x of arrOrErr) {
+    yield x;
+  }
 }

@@ -2,6 +2,7 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  customStreamsTest,
   readTestResourceAsJSON,
   sourceReadTest,
   sourceSchemaTest,
@@ -11,6 +12,7 @@ import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';
 import * as sut from '../src/index';
+import {CustomStreamNames} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
@@ -47,7 +49,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
 
@@ -73,7 +76,8 @@ describe('index', () => {
         1,
         1,
         5,
-        logger
+        logger,
+        new Set()
       );
     });
     await expect(source.checkConnection({} as any)).resolves.toStrictEqual([
@@ -131,6 +135,7 @@ describe('index', () => {
             workspaces: getWorkspacesMockedImplementation(),
           },
           logger,
+          new Set(),
           config
         );
       },
@@ -186,13 +191,7 @@ describe('index', () => {
                 },
               }),
             },
-            workspaces: {
-              getWorkspaces: jest.fn().mockResolvedValue({
-                data: {
-                  values: [readTestResourceAsJSON('workspaces/workspace.json')],
-                },
-              }),
-            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
           },
           logger
         );
@@ -234,6 +233,160 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - tags', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'tags/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              ...getRepositoriesMockedImplementation(),
+              listTags: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON('tags/tags.json'),
+                },
+              }),
+            },
+            workspaces: getSingleWorkspaceMockedImplementation(),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull_requests_with_activities', async () => {
+    const configPaths = [
+      'pull_requests_with_activities/config_run_mode_minimum.json',
+      'pull_requests_with_activities/config_run_mode_full.json',
+    ];
+    for (const configPath of configPaths) {
+      await sourceReadTest({
+        source,
+        configOrPath: configPath,
+        catalogOrPath: 'pull_requests_with_activities/catalog.json',
+        onBeforeReadResultConsumer: () => {
+          setupBitbucketInstance(
+            {
+              repositories: {
+                list: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'repositories/repository.json'
+                    ),
+                  },
+                }),
+                listPullRequests: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/pull_requests.json'
+                    ),
+                  },
+                }),
+                listPullRequestActivities: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/activities.json'
+                    ),
+                  },
+                }),
+              },
+              pullrequests: {
+                getDiffStat: jest.fn().mockResolvedValue({
+                  data: {
+                    values: readTestResourceAsJSON(
+                      'pull_requests_with_activities/diff_stat.json'
+                    ),
+                  },
+                }),
+              },
+              workspaces: getWorkspacesMockedImplementation(),
+            },
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    }
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames
+    );
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      readTestResourceAsJSON('config.json'),
+      CustomStreamNames,
+      CustomStreamNames.slice(0, 3)
+    );
+  });
+
+  test('pr merge commit sha resolution', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath:
+        'pr_merge_commit_sha_resolution/config_run_mode_minimum.json',
+      catalogOrPath: 'pr_merge_commit_sha_resolution/catalog.json',
+      onBeforeReadResultConsumer: () => {
+        setupBitbucketInstance(
+          {
+            repositories: {
+              list: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'repositories/repository.json'
+                  ),
+                },
+              }),
+              listPullRequests: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/pull_requests.json'
+                  ),
+                },
+              }),
+              listCommits: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pr_merge_commit_sha_resolution/commits.json'
+                  ),
+                },
+              }),
+            },
+            pullrequests: {
+              getDiffStat: jest.fn().mockResolvedValue({
+                data: {
+                  values: readTestResourceAsJSON(
+                    'pull_requests_with_activities/diff_stat.json'
+                  ),
+                },
+              }),
+            },
+            workspaces: getWorkspacesMockedImplementation(),
+          },
+          logger,
+          new Set(['pull_requests_with_activities', 'commits'])
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });
 
 function getWorkspacesMockedImplementation() {
@@ -241,6 +394,16 @@ function getWorkspacesMockedImplementation() {
     getWorkspaces: jest.fn().mockResolvedValue({
       data: {
         values: readTestResourceAsJSON('workspaces/workspaces.json'),
+      },
+    }),
+  };
+}
+
+function getSingleWorkspaceMockedImplementation() {
+  return {
+    getWorkspaces: jest.fn().mockResolvedValue({
+      data: {
+        values: [readTestResourceAsJSON('workspaces/workspace.json')],
       },
     }),
   };

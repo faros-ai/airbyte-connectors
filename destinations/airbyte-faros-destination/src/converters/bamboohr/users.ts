@@ -2,6 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {intersection, uniq} from 'lodash';
 
+import {LocationCollector} from '../common/geo';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {BambooHRConverter} from './common';
 import {User} from './models';
@@ -9,8 +10,11 @@ import {User} from './models';
 const ROOT_TEAM_UID = 'all_teams';
 
 export class Users extends BambooHRConverter {
+  private locationCollector: LocationCollector;
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'geo_Address',
+    'geo_Coordinates',
     'geo_Location',
     'identity_Identity',
     'org_Department',
@@ -23,10 +27,23 @@ export class Users extends BambooHRConverter {
   private managers = new Map<string, string>();
   private employeeNamesById = new Map<string, string>();
 
+  private initialize(ctx: StreamContext) {
+    if (this.locationCollector) {
+      return;
+    }
+
+    this.locationCollector = new LocationCollector(
+      ctx?.config?.source_specific_configs?.bamboohr?.resolve_locations,
+      ctx.farosClient
+    );
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
+
     const inactiveEmploymentHistoryStatus =
       this.inactiveEmploymentHistoryStatus(ctx);
     const source = this.streamName.source;
@@ -84,31 +101,12 @@ export class Users extends BambooHRConverter {
       },
     });
 
-    const fullAddress = [user.city, user.stateCode ?? user.state, user.country]
+    const fullAddress = [user.city, user.stateCode || user.state, user.country]
       .filter((a) => a)
       .join(', ');
-    const location = fullAddress ? {uid: fullAddress} : undefined;
-
-    if (fullAddress) {
-      res.push({
-        model: 'geo_Address',
-        record: {
-          uid: fullAddress,
-          fullAddress,
-          city: user.city,
-          state: user.state,
-          stateCode: user.stateCode,
-          country: user.country,
-        },
-      });
-      const geo_Location = {
-        uid: fullAddress,
-        name: fullAddress,
-        raw: fullAddress,
-        address: {uid: fullAddress},
-      };
-      res.push({model: 'geo_Location', record: geo_Location});
-    }
+    const location = await this.locationCollector.collect(
+      fullAddress || user.location
+    );
 
     let inactive = false;
     if (inactiveEmploymentHistoryStatus?.length) {
@@ -182,6 +180,6 @@ export class Users extends BambooHRConverter {
       }
     }
 
-    return res;
+    return [...res, ...this.locationCollector.convertLocations()];
   }
 }

@@ -1,5 +1,9 @@
 import {createHmac} from 'crypto';
+import {FarosClient, paginatedQueryV2} from 'faros-js-client';
+import fs from 'fs';
+import {toLower} from 'lodash';
 import {DateTime} from 'luxon';
+import path from 'path';
 import {VError} from 'verror';
 
 // TODO: Try https://www.npmjs.com/package/diff
@@ -29,6 +33,21 @@ export function validateBucketingConfig(
   if (bucketId < 1 || bucketId > bucketTotal) {
     throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
   }
+}
+
+export function nextBucketId(
+  config: {bucket_total?: number},
+  state?: {__bucket_execution_state?: {last_executed_bucket_id?: number}}
+): number {
+  const bucketTotal = config.bucket_total ?? 1;
+  const lastExecutedBucketId =
+    state?.__bucket_execution_state?.last_executed_bucket_id ?? bucketTotal;
+
+  return (lastExecutedBucketId % bucketTotal) + 1;
+}
+
+export function normalizeString(str: string): string {
+  return str.replace(/\s/g, '').toLowerCase();
 }
 
 export function calculateDateRange(options: {
@@ -86,9 +105,101 @@ export function collectReposByOrg(
         `Bad repository provided: ${repo}. Must match org/repo format, e.g apache/kafka`
       );
     }
-    if (!reposByOrg.has(org)) {
-      reposByOrg.set(org, new Set());
+    const lowerOrg = toLower(org);
+    const lowerRepoName = toLower(name);
+    if (!reposByOrg.has(lowerOrg)) {
+      reposByOrg.set(lowerOrg, new Set());
     }
-    reposByOrg.get(org).add(name);
+    reposByOrg.get(lowerOrg).add(lowerRepoName);
   }
 }
+
+const readFarosOptionsQuery = (fileName: string) =>
+  fs.readFileSync(
+    path.join(
+      __dirname,
+      '..',
+      '..',
+      'resources',
+      'common',
+      'queries',
+      fileName
+    ),
+    'utf8'
+  );
+
+const TMS_TASK_BOARD_OPTIONS_QUERY = readFarosOptionsQuery(
+  'faros-tms-task-board-options.gql'
+);
+
+const VCS_REPOSITORY_OPTIONS_QUERY = readFarosOptionsQuery(
+  'faros-vcs-repository-options.gql'
+);
+
+export async function getFarosOptions(
+  optionsType: 'board' | 'repository',
+  source: string,
+  farosClient: FarosClient,
+  graph: string
+): Promise<{
+  included: Set<string>;
+  excluded: Set<string>;
+}> {
+  const included = new Set<string>();
+  const excluded = new Set<string>();
+  let query: string;
+  switch (optionsType) {
+    case 'board':
+      query = TMS_TASK_BOARD_OPTIONS_QUERY;
+      break;
+    case 'repository':
+      query = VCS_REPOSITORY_OPTIONS_QUERY;
+      break;
+    default:
+      throw new Error(`Unknown Faros options type: ${optionsType}`);
+  }
+  const iter = farosClient.nodeIterable(
+    graph,
+    query,
+    1000,
+    paginatedQueryV2,
+    new Map(
+      Object.entries({
+        source,
+      })
+    )
+  );
+  for await (const options of iter) {
+    const key = getFarosOptionsItemKey(optionsType, options);
+    if (!key) continue;
+    if (options.inclusionCategory === 'Included') {
+      included.add(key);
+    } else if (options.inclusionCategory === 'Excluded') {
+      excluded.add(key);
+    }
+  }
+  return {included, excluded};
+}
+
+const getFarosOptionsItemKey = (
+  optionsType: 'board' | 'repository',
+  options: any
+): string => {
+  switch (optionsType) {
+    case 'board': {
+      const board = options.board?.uid;
+      if (!board) {
+        return;
+      }
+      return board;
+    }
+    case 'repository': {
+      const repo = options.repository?.name;
+      const org = options.repository?.organization?.uid;
+      if (!repo || !org) {
+        return;
+      }
+      return `${org}/${repo}`;
+    }
+  }
+};

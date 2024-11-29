@@ -23,8 +23,9 @@ import {
   isStateMessage,
   SyncMode,
 } from '../protocol';
+import {ConnectorVersion} from '../runner';
+import {Data} from '../utils';
 import {AirbyteSource} from './source';
-import {State} from './state';
 import {AirbyteStreamBase} from './streams/stream-base';
 
 type PartialAirbyteConfig = Pick<
@@ -144,7 +145,8 @@ export abstract class AirbyteSourceBase<
       {data: maybeCompressState(config, state)},
       redactedConfig,
       this.type,
-      this.mode(config)
+      this.mode(config),
+      ConnectorVersion
     );
 
     // TODO: assert all streams exist in the connector
@@ -204,7 +206,8 @@ export abstract class AirbyteSourceBase<
             if (isSourceStatusMessage(message)) {
               yield new AirbyteSourceStatusMessage(
                 {data: msgState},
-                message.sourceStatus
+                message.sourceStatus,
+                message.streamStatus
               );
             } else {
               yield new AirbyteStateMessage({data: msgState});
@@ -353,6 +356,7 @@ export abstract class AirbyteSourceBase<
     );
     const failedSlices = [];
     let streamRecordCounter = 0;
+    await streamInstance.onBeforeRead();
     for await (const slice of slices) {
       if (slice) {
         this.logger.info(
@@ -448,6 +452,7 @@ export abstract class AirbyteSourceBase<
         }
       }
     }
+    await streamInstance.onAfterRead();
     if (failedSlices.length > 0) {
       throw new VError(
         `Encountered an error while processing ${streamName} stream slice(s): ${JSON.stringify(
@@ -512,5 +517,5 @@ export function maybeCompressState(
   config: AirbyteConfig,
   state: AirbyteState
 ): AirbyteState {
-  return config.compress_state === false ? state : State.compress(state);
+  return config.compress_state === false ? state : Data.compress(state);
 }

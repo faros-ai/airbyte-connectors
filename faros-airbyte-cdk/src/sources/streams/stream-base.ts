@@ -189,6 +189,16 @@ export abstract class AirbyteStreamBase {
     return currentStreamState ?? {};
   }
 
+  /**
+   * Override to perform any action before reading slices.
+   */
+  async onBeforeRead(): Promise<void> {}
+
+  /**
+   * Override to perform any action after reading all slices.
+   */
+  async onAfterRead(): Promise<void> {}
+
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   /**
@@ -209,16 +219,23 @@ export abstract class AirbyteStreamBase {
           typeof component === 'string' ? [component] : component
         );
       }
+      return wrappedKeys;
     }
   }
 }
 
+export interface StreamState {
+  [key: string]: {
+    cutoff: number;
+  };
+}
+
 export function calculateUpdatedStreamState(
   latestRecordCutoff: Date,
-  currentStreamState: Dictionary<any>,
+  currentStreamState: StreamState,
   key: string,
   cutoffLagDays: number = 0
-): Dictionary<any> {
+): StreamState {
   if (isNil(latestRecordCutoff)) {
     return currentStreamState;
   }

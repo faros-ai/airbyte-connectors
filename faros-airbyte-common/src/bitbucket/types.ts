@@ -139,12 +139,6 @@ export interface DeploymentsState {
   readonly status?: {readonly type: string; readonly name: string};
 }
 
-export interface DiffStat {
-  readonly linesAdded: number;
-  readonly linesDeleted: number;
-  readonly filesChanged: number;
-}
-
 export interface Environment {
   readonly name: string;
   readonly environmentLockEnabled: boolean;
@@ -170,56 +164,6 @@ export interface Environment {
     readonly name: string;
     readonly rank: number;
   };
-}
-
-export interface Issue {
-  readonly priority: string;
-  readonly kind: string;
-  readonly title: string;
-  readonly state: string;
-  readonly createdOn: string;
-  readonly updatedOn: string;
-  readonly type: string;
-  readonly votes: number;
-  readonly watches: number;
-  readonly id: number;
-  readonly component: any;
-  readonly version: any;
-  readonly editedOn: any;
-  readonly milestone: any;
-  readonly repository: {
-    readonly type: string;
-    readonly name: string;
-    readonly fullName: string;
-    readonly uuid: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly links: {
-    readonly attachmentsUrl: string;
-    readonly watchUrl: string;
-    readonly commentsUrl: string;
-    readonly htmlUrl: string;
-    readonly voteUrl: string;
-  };
-  readonly reporter: {
-    readonly displayName: string;
-    readonly uuid: string;
-    readonly type: string;
-    readonly nickname: string;
-    readonly accountId: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
-  };
-  readonly content: {
-    readonly raw: string;
-    readonly markup: string;
-    readonly html: string;
-    readonly type: string;
-  };
-  assignee: User;
 }
 
 export interface User {
@@ -347,6 +291,12 @@ export interface PipelineStepState {
   };
 }
 
+export interface PullRequestOrActivity {
+  readonly type: 'PullRequest' | 'PullRequestActivity';
+  readonly pullRequest?: PullRequest;
+  readonly activity?: PRActivity;
+}
+
 export interface PullRequest {
   readonly description: string;
   readonly title: string;
@@ -359,7 +309,7 @@ export interface PullRequest {
   readonly id: number;
   readonly commentCount: number;
   readonly taskCount: number;
-  readonly diffStat?: DiffStat;
+  readonly diffStats?: ReadonlyArray<PRDiffStat>;
   readonly calculatedActivity?: CalculatedActivity;
   readonly links: {
     readonly declineUrl: string;
@@ -424,10 +374,6 @@ export interface PullRequest {
   readonly author: User;
   readonly mergeCommit: null | {
     readonly hash: string;
-    readonly type: string;
-    readonly links: {
-      readonly htmlUrl: string;
-    };
   };
   readonly closedBy: null | User;
 }
@@ -543,15 +489,16 @@ export interface PRActivity {
 
 export interface PRDiffStat {
   readonly status: string;
-  readonly old: any;
   readonly linesRemoved: number;
   readonly linesAdded: number;
-  readonly type: string;
+  readonly old: {
+    readonly path: string;
+    readonly escapedPath: string;
+  } | null;
   readonly new: {
     readonly path: string;
     readonly escapedPath: string;
-    readonly type: string;
-  };
+  } | null;
 }
 
 export interface Repository {
@@ -566,7 +513,17 @@ export interface Repository {
   createdOn: string;
   updatedOn: string;
   mainBranch: string;
-  hasIssues: boolean;
+}
+
+export interface Tag {
+  name: string;
+  message: string;
+  target: {
+    hash: string;
+  };
+  repository: {
+    fullName: string;
+  };
 }
 
 export interface WorkspaceUser {

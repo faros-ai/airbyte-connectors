@@ -31,6 +31,8 @@ export interface AccountSync {
   warnings?: SyncMessage[];
   errors?: SyncMessage[]; // can be non-empty and status = 'success', a.k.a. "partial success"
   metrics?: Dictionary<any>;
+  sourceVersion?: string;
+  destinationVersion?: string;
 }
 
 export type UpdateAccountSyncProps = Omit<
@@ -147,6 +149,8 @@ class FarosSyncClient extends FarosClient {
           warnings: props.warnings?.map(cleanSyncMessage) ?? [],
           errors: props.errors?.map(cleanSyncMessage) ?? [],
           metrics: props.metrics ?? {},
+          sourceVersion: props.sourceVersion,
+          destinationVersion: props.destinationVersion,
         }),
         `Failed to update sync ${syncId} for account ${accountId}`
       )

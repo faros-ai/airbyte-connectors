@@ -1,0 +1,19 @@
+[
+  {
+    "type": "diffstat",
+    "lines_added": 2,
+    "lines_removed": 0,
+    "status": "added",
+    "old": null,
+    "new": {
+      "path": "hello.ts",
+      "type": "commit_file",
+      "escaped_path": "hello.ts",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/anonymized-workspace/anonymized-repo/src/anonymized-commit-hash/hello.ts"
+        }
+      }
+    }
+  }
+]

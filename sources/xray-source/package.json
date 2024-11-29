@@ -33,9 +33,9 @@
     "axios-auth-refresh": "^3.3.6",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "faros-js-client": "0.5.1",
+    "faros-js-client": "^0.5.2",
     "luxon": "^3.4.4",
-    "typescript-memoize": "^1.1.1"
+    "typescript-memoize": "^1.1.0"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

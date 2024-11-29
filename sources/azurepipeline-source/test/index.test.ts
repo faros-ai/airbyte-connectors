@@ -4,11 +4,11 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azurepipeline';
 import fs from 'fs-extra';
 import nock from 'nock';
 
 import * as sut from '../src/index';
-import {Build} from '../src/models';
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -66,7 +66,9 @@ describe('index', () => {
 
     mock.done();
 
-    expect(pipelines).toStrictEqual(pipelinesResource);
+    expect(pipelines).toStrictEqual(
+      pipelinesResource.map((p) => ({projectName: 'proj1', ...p}))
+    );
   });
 
   test('streams - builds', async () => {
@@ -76,7 +78,7 @@ describe('index', () => {
       .query({
         'api-version': '6.0',
         $top: 100,
-        queryOrder: 'queueTimeAscending',
+        queryOrder: 'finishTimeAscending',
         minTime: WATERMARK,
       })
       .reply(200, {value: buildsResource});
@@ -97,7 +99,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastQueueTime: WATERMARK}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const builds = [];
@@ -108,6 +110,57 @@ describe('index', () => {
     mock.done();
 
     expect(builds).toStrictEqual(buildsResource);
+  });
+
+  test('streams - builds with coverage', async () => {
+    const buildsResource: Build[] = readTestResourceFile(
+      'builds_eligible_for_coverage.json'
+    );
+    const mock = nock(apiUrl)
+      .get('/proj1/_apis/build/builds')
+      .query({
+        'api-version': '6.0',
+        $top: 100,
+        queryOrder: 'finishTimeAscending',
+        minTime: WATERMARK,
+      })
+      .reply(200, {value: buildsResource});
+
+    for (const build of buildsResource) {
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/artifacts`)
+        .query({'api-version': '6.0'})
+        .reply(200, {value: build.artifacts});
+
+      mock
+        .get(`/proj1/_apis/build/builds/${build.id}/timeline`)
+        .query({'api-version': '6.0'})
+        .reply(200, {records: build.jobs});
+
+      mock
+        .get(`/proj1/_apis/test/codecoverage`)
+        .query({
+          'api-version': '6.0',
+          buildId: build.id,
+        })
+        .reply(200, readTestResourceFile('builds_coverage.json'));
+    }
+
+    const buildIter = buildsStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {project: 'proj1'},
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
+    );
+
+    const builds = [];
+    for await (const build of buildIter) {
+      builds.push(build);
+    }
+
+    mock.done();
+
+    expect(builds).toMatchSnapshot();
   });
 
   test('streams - releases', async () => {
@@ -126,7 +179,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastCreatedOn: WATERMARK}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const releases = [];

@@ -108,7 +108,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
     protected readonly farosClient?: FarosClient
   ) {
     super(logger);
-    this.projectBoardFilter = new ProjectBoardFilter(
+    this.projectBoardFilter = ProjectBoardFilter.instance(
       config,
       logger,
       farosClient
@@ -144,10 +144,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
     );
   }
 
-  protected supportsFarosClient(): boolean {
-    return (
-      this.config.run_mode === RunMode.WebhookSupplement && !!this.farosClient
-    );
+  protected isWebhookSupplementMode(): boolean {
+    return this.config.run_mode === RunMode.WebhookSupplement;
+  }
+
+  protected hasFarosClient(): boolean {
+    return Boolean(this.farosClient);
   }
 }
 
@@ -162,7 +164,9 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     for (const board of await this.projectBoardFilter.getBoards()) {
-      yield {board};
+      if (board.issueSync) {
+        yield {board: board.uid};
+      }
     }
   }
 }

@@ -1,9 +1,10 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Data, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {IssueCompact} from 'faros-airbyte-common/jira';
 import {wrapApiError} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira} from '../jira';
+import {BoardIssueTracker, BoardIssueTrackerState} from './board_issue_tracker';
 import {
   BoardIssuesState,
   BoardStreamSlice,
@@ -11,6 +12,7 @@ import {
 } from './common';
 
 export class FarosBoardIssues extends StreamWithBoardSlices {
+  private boardIssueTrackerState: BoardIssueTrackerState | undefined;
   get dependencies(): ReadonlyArray<string> {
     return ['faros_boards'];
   }
@@ -31,6 +33,7 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
   ): AsyncGenerator<IssueCompact> {
     const jira = await Jira.instance(this.config, this.logger);
     const boardId = streamSlice.board;
+    const tracker = new BoardIssueTracker(this.boardIssueTrackerState, boardId);
     const boardConfig = await jira.getBoardConfiguration(boardId);
     const boardJql = await jira.getBoardJQL(boardConfig.filter.id);
     // Only fetch board issues updated since start of date range and not all issues on the board.
@@ -43,10 +46,13 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     this.logger.debug(`Fetching issues for board ${boardId} using JQL ${jql}`);
     try {
       for await (const issue of jira.getIssuesKeys(jql)) {
-        yield {
+        const maybe = {
           key: issue,
           boardId,
         };
+        if (tracker.isNewIssue(maybe)) {
+          yield maybe;
+        }
       }
     } catch (err: any) {
       // https://github.com/MrRefactoring/jira.js/blob/master/src/clients/baseClient.ts#L138
@@ -58,6 +64,71 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
         `Failed to sync board ${boardConfig.name} with id ${boardId} due to invalid filter. Skipping.`
       );
     }
+    for (const issue of tracker.deletedIssues()) {
+      yield issue;
+    }
+    this.boardIssueTrackerState = tracker.getState();
+  }
+
+  override async onBeforeRead(): Promise<void> {
+    this.boardIssueTrackerState = await this.loadBoardIssueTrackerState();
+  }
+
+  override async onAfterRead(): Promise<void> {
+    await this.updateBoardIssueTrackerState(this.boardIssueTrackerState);
+  }
+
+  private async updateBoardIssueTrackerState(
+    state: BoardIssueTrackerState
+  ): Promise<void> {
+    if (
+      this.config.use_faros_board_issue_tracker &&
+      this.farosClient &&
+      this.config.faros_source_id
+    ) {
+      this.logger.info('Updating board issue state in Faros');
+      try {
+        const body = {
+          state: Data.compress(state).data,
+        };
+        await this.farosClient.request(
+          'PUT',
+          `/accounts/${this.config.faros_source_id}/state`,
+          body
+        );
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to update board issue state in Faros: ${e?.message}`
+        );
+      }
+    }
+  }
+
+  private async loadBoardIssueTrackerState(): Promise<
+    BoardIssueTrackerState | undefined
+  > {
+    if (
+      this.config.use_faros_board_issue_tracker &&
+      this.farosClient &&
+      this.config.faros_source_id
+    ) {
+      this.logger.info('Loading board issue state from Faros');
+      try {
+        const res: any = await this.farosClient.request(
+          'GET',
+          `/accounts/${this.config.faros_source_id}/state`
+        );
+        return Data.decompress({
+          data: res.state,
+          format: 'base64/gzip',
+        }) as BoardIssueTrackerState;
+      } catch (e: any) {
+        this.logger.warn(
+          `Unable to load board issue state from Faros: ${e?.message}`
+        );
+      }
+    }
+    return undefined;
   }
 
   getUpdatedState(currentStreamState: BoardIssuesState): BoardIssuesState {

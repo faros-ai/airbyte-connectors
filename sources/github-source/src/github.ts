@@ -1,17 +1,20 @@
+import {OctokitResponse, RequestError} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   AppInstallation,
+  Artifact,
   CodeScanningAlert,
   Commit,
-  ContributorStats,
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsEmpty,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
+  CoverageReport,
   DependabotAlert,
   Issue,
+  IssueComment,
   Label,
   Organization,
   OutsideCollaborator,
@@ -32,6 +35,9 @@ import {
   Team,
   TeamMembership,
   User,
+  Workflow,
+  WorkflowJob,
+  WorkflowRun,
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
@@ -47,8 +53,6 @@ import {
   RepoTagsQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
-  COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
-  COMMITS_CHANGED_FILES_QUERY,
   COMMITS_QUERY,
   FILES_FRAGMENT,
   ISSUES_QUERY,
@@ -66,28 +70,40 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, pick, toString} from 'lodash';
+import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {RunMode} from './streams/common';
-import {AuditLogTeamMember, GitHubConfig, GraphQLErrorResponse} from './types';
+import {RunMode, StreamBase} from './streams/common';
+import {
+  AuditLogTeamMember,
+  CopilotMetricsResponse,
+  CopilotUsageResponse,
+  GitHubConfig,
+  GraphQLErrorResponse,
+} from './types';
 
-export const DEFAULT_API_URL = 'https://api.github.com';
+export const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
+export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
+export const DEFAULT_COPILOT_METRICS_GA = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
+export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
+export const DEFAULT_FAROS_GRAPH = 'default';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
+export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
+export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -100,16 +116,21 @@ type TeamMemberTimestamps = {
 
 type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 
+// https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
+const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
+
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
+  protected readonly copilotMetricsGA: boolean;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
   protected readonly pullRequestsPageSize: number;
-  protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
+  protected readonly fetchPullRequestDiffCoverage: boolean;
+  protected readonly pullRequestCutoffLagSeconds: number;
 
   constructor(
     config: GitHubConfig,
@@ -120,13 +141,18 @@ export abstract class GitHub {
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
+    this.copilotMetricsGA =
+      config.copilot_metrics_ga ?? DEFAULT_COPILOT_METRICS_GA;
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
-    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
+    this.fetchPullRequestDiffCoverage =
+      config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
+    this.pullRequestCutoffLagSeconds =
+      config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
   }
 
   static async instance(
@@ -235,6 +261,14 @@ export abstract class GitHub {
     if (this.backfill && !startCursor) {
       return;
     }
+    const adjustedStartDate = startDate
+      ? new Date(
+          Math.max(
+            startDate.getTime() - this.pullRequestCutoffLagSeconds * 1000,
+            0
+          )
+        )
+      : undefined;
     const query = this.buildPRQuery();
     let currentPageSize = this.pullRequestsPageSize;
     let currentCursor = startCursor;
@@ -251,10 +285,7 @@ export abstract class GitHub {
         currentCursor,
       });
       try {
-        for await (const res of this.wrapIterable(
-          iter,
-          this.timeout.bind(this)
-        )) {
+        for await (const res of iter) {
           querySuccess = true;
           for (const pr of res.repository.pullRequests.nodes) {
             if (
@@ -264,14 +295,36 @@ export abstract class GitHub {
             ) {
               continue;
             }
-            if (startDate && Utils.toDate(pr.updatedAt) < startDate) {
+            if (
+              adjustedStartDate &&
+              Utils.toDate(pr.updatedAt) < adjustedStartDate
+            ) {
               return;
+            }
+            const labels = await this.extractPullRequestLabels(pr, org, repo);
+            const mergedByMergeQueue = labels.some(
+              (label) => label.name === 'merged-by-mq'
+            );
+            let coverage = null;
+            if (
+              this.fetchPullRequestDiffCoverage &&
+              (pr.mergeCommit || mergedByMergeQueue)
+            ) {
+              const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
+              if (lastCommitSha) {
+                coverage = await this.getDiffCoverage(
+                  org,
+                  repo,
+                  lastCommitSha,
+                  pr.number
+                );
+              }
             }
             yield {
               org,
               repo,
               ...pr,
-              labels: await this.extractPullRequestLabels(pr, org, repo),
+              labels,
               files: await this.extractPullRequestFiles(pr, org, repo),
               reviews: await this.extractPullRequestReviews(pr, org, repo),
               reviewRequests: await this.extractPullRequestReviewRequests(
@@ -279,6 +332,7 @@ export abstract class GitHub {
                 org,
                 repo
               ),
+              coverage,
             };
           }
           // increase page size for the next iteration in case it was decreased previously
@@ -326,13 +380,86 @@ export abstract class GitHub {
         page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const pr of res.repository.pullRequests.nodes) {
         if (Utils.toDate(pr.updatedAt) < endDate) {
           return res.repository.pullRequests.pageInfo.startCursor;
         }
       }
     }
+  }
+
+  private async getDiffCoverage(
+    org: string,
+    repo: string,
+    commitSha: string,
+    prNumber: number
+  ): Promise<CoverageReport | null> {
+    if (!this.fetchPullRequestDiffCoverage) {
+      return null;
+    }
+
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).repos.listCommitStatusesForRef,
+      {
+        owner: org,
+        repo,
+        ref: commitSha,
+        per_page: this.pageSize,
+      }
+    );
+
+    try {
+      let codeClimateResult = undefined;
+      let codeCovResult = undefined;
+      this.logger.debug(
+        `Attempting to parse code coverage for commit ${commitSha} in ${org}/${repo} for PR #${prNumber}`
+      );
+
+      const processStatus = (status: any) => {
+        const match = status.description.match(/(\d+(?:\.\d+)?)%/);
+
+        if (match) {
+          const coveragePercentage = parseFloat(match[1]);
+          this.logger.debug(
+            `Successfully parsed code coverage from ${status.context}`
+          );
+          return {
+            coveragePercentage: coveragePercentage,
+            createdAt: Utils.toDate(status.created_at),
+            commitSha,
+          };
+        } else {
+          this.logger.warn(
+            `Failed to parse ${status.context} status description: ${status.description}`
+          );
+          return undefined;
+        }
+      };
+
+      for await (const res of iter) {
+        for (const status of res.data) {
+          if (status?.context === 'codeclimate/diff-coverage') {
+            codeClimateResult = processStatus(status);
+          } else if (status?.context === 'codecov/patch') {
+            codeCovResult = processStatus(status);
+          }
+        }
+      }
+
+      if (codeCovResult) {
+        return codeCovResult;
+      } else if (codeClimateResult) {
+        return codeClimateResult;
+      }
+    } catch (err: any) {
+      if (err?.status == 403) {
+        throw new VError(err, 'unable to list commit statuses');
+      }
+      throw err;
+    }
+
+    return null;
   }
 
   private buildPRQuery(): string {
@@ -374,9 +501,9 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestLabel[]> {
-    const {hasNextPage} = pr.labels.pageInfo;
-    if (!hasNextPage) {
-      return pr.labels.nodes;
+    const {nodes, pageInfo} = pr.labels || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
     return this.getPullRequestLabels(
       org,
@@ -403,7 +530,7 @@ export abstract class GitHub {
       }
     );
     const labels: PullRequestLabel[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const label of res.data) {
         labels.push(pick(label, ['name']));
       }
@@ -419,9 +546,9 @@ export abstract class GitHub {
     if (!this.fetchPullRequestFiles) {
       return [];
     }
-    const {hasNextPage} = pr.files.pageInfo;
-    if (!hasNextPage) {
-      return pr.files.nodes;
+    const {nodes, pageInfo} = pr.files || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
     return this.getPullRequestFiles(
       org,
@@ -445,10 +572,13 @@ export abstract class GitHub {
         pull_number: number,
         per_page: this.pageSize,
         page: startingPage,
+        request: {
+          retryAdditionalError: (err: RequestError) => err.status === 422,
+        },
       }
     );
     const files: PullRequestFile[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const file of res.data) {
         files.push({
           additions: file.additions,
@@ -468,16 +598,16 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {hasNextPage, endCursor} = pr.reviews.pageInfo;
-    if (!hasNextPage) {
-      return pr.reviews.nodes;
+    const {nodes, pageInfo} = pr.reviews || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
-    const reviews: PullRequestReview[] = [...pr.reviews.nodes];
+    const reviews: PullRequestReview[] = nodes ? [...nodes] : [];
     const remainingReviews = await this.getPullRequestReviews(
       org,
       repo,
       pr.number,
-      endCursor
+      pageInfo?.endCursor
     );
     return reviews.concat(remainingReviews);
   }
@@ -501,7 +631,7 @@ export abstract class GitHub {
       }
     );
     const reviews: PullRequestReview[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const review of res.repository.pullRequest.reviews.nodes) {
         reviews.push(review);
       }
@@ -528,7 +658,7 @@ export abstract class GitHub {
         per_page: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const comment of res.data) {
         if (
           this.backfill &&
@@ -552,6 +682,7 @@ export abstract class GitHub {
             'created_at',
             'updated_at',
             'pull_request_url',
+            'html_url',
           ]),
         };
       }
@@ -567,7 +698,7 @@ export abstract class GitHub {
         page_size: this.pageSize,
       }
     );
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const label of res.repository.labels.nodes) {
         yield {
           org,
@@ -586,18 +717,16 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {hasNextPage, endCursor} = pr.reviewRequests.pageInfo;
-    if (!hasNextPage) {
-      return pr.reviewRequests.nodes;
+    const {nodes, pageInfo} = pr.reviewRequests || {};
+    if (nodes && pageInfo && !pageInfo.hasNextPage) {
+      return nodes;
     }
-    const reviewRequests: PullRequestReviewRequest[] = [
-      ...pr.reviewRequests.nodes,
-    ];
+    const reviewRequests: PullRequestReviewRequest[] = nodes ? [...nodes] : [];
     const remainingReviewRequests = await this.getPullRequestReviewRequests(
       org,
       repo,
       pr.number,
-      endCursor
+      pageInfo?.endCursor
     );
     return reviewRequests.concat(remainingReviewRequests);
   }
@@ -616,12 +745,12 @@ export abstract class GitHub {
         owner: org,
         repo,
         pull_number: number,
-        per_page: this.pageSize,
+        nested_page_size: this.pageSize,
         cursor: startCursor,
       }
     );
     const reviewRequests: PullRequestReviewRequest[] = [];
-    for await (const res of this.wrapIterable(iter, this.timeout.bind(this))) {
+    for await (const res of iter) {
       for (const review of res.repository.pullRequest.reviewRequests.nodes) {
         reviewRequests.push(review);
       }
@@ -645,46 +774,8 @@ export abstract class GitHub {
       since: startDate?.toISOString(),
       ...(this.backfill && {until: endDate?.toISOString()}),
     };
-    // Check if the client has changedFilesIfAvailable field available
-    const hasChangedFilesIfAvailable =
-      await this.hasChangedFilesIfAvailable(queryParameters);
-    const query = hasChangedFilesIfAvailable
-      ? COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY
-      : COMMITS_CHANGED_FILES_QUERY;
-    // Do a first query to check if the repository has commits history
-    const historyCheckResult = await this.octokit(org).graphql<CommitsQuery>(
-      query,
-      {
-        ...queryParameters,
-        page_size: 1,
-      }
-    );
-    if (!historyCheckResult.repository?.ref?.target?.['history']) {
-      this.logger.warn(`No commit history found. Skipping ${org}/${repo}`);
-      return;
-    }
-
-    // The `changedFiles` field used in COMMITS_CHANGED_FILES_QUERY,
-    // has the following warning on the latest cloud schema:
-    // "We recommend using the `changedFilesIfAvailable` field instead of
-    // `changedFiles`, as `changedFiles` will cause your request to return an error
-    // if GitHub is unable to calculate the number of changed files"
-    // https://docs.github.com/en/graphql/reference/objects#commit:~:text=information%20you%20want.-,changedFiles,-(Int)
-    try {
-      yield* this.queryCommits(org, repo, branch, query, queryParameters);
-    } catch (err: any) {
-      this.logger.warn(
-        `Failed to fetch commits with changed files.
-         Retrying fetching commits for repo ${repo} without changed files.`
-      );
-      yield* this.queryCommits(
-        org,
-        repo,
-        branch,
-        COMMITS_QUERY,
-        queryParameters
-      );
-    }
+    const query = await this.getCommitsQuery(queryParameters);
+    yield* this.queryCommits(org, repo, branch, query, queryParameters);
   }
 
   private async *queryCommits(
@@ -694,12 +785,37 @@ export abstract class GitHub {
     query: string,
     queryParameters: any
   ): AsyncGenerator<Commit> {
-    const iter = this.octokit(org).graphql.paginate.iterator<CommitsQuery>(
-      query,
-      queryParameters
-    );
-    for await (const res of iter) {
-      for (const commit of res.repository.ref.target['history'].nodes) {
+    // Need to handle pagination manually because graphql paginate plugin throws error
+    // if paginated field is not found in the response
+    let res: CommitsQuery;
+    let hasNextPage: boolean;
+    let cursor: string | null = null;
+    do {
+      try {
+        res = await this.octokit(org).graphql<CommitsQuery>(query, {
+          ...queryParameters,
+          cursor,
+        });
+      } catch (err: any) {
+        res = await this.handleCommitsQueryError(
+          org,
+          repo,
+          query,
+          queryParameters,
+          cursor,
+          err
+        );
+      }
+      if (res?.repository?.ref?.target?.type !== 'Commit') {
+        // check to make ts happy
+        return;
+      }
+      const history = res.repository.ref.target.history;
+      if (!history) {
+        this.logger.warn(`No commit history found for ${org}/${repo}`);
+        return;
+      }
+      for (const commit of history.nodes) {
         yield {
           org,
           repo,
@@ -707,35 +823,68 @@ export abstract class GitHub {
           ...commit,
         };
       }
-    }
+      hasNextPage = history.pageInfo.hasNextPage;
+      cursor = history.pageInfo.endCursor;
+    } while (hasNextPage && cursor);
   }
 
-  private async hasChangedFilesIfAvailable(
-    queryParameters: any
-  ): Promise<boolean> {
-    try {
-      await this.timeout<Commit>(
-        this.octokit(queryParameters.owner).graphql(
-          COMMITS_CHANGED_FILES_IF_AVAILABLE_QUERY,
-          {
-            ...queryParameters,
-            page_size: 1,
-          }
-        )
+  // checks if the error is caused by querying an unavailable
+  // field and retry the query removing it / skip without failing
+  private async handleCommitsQueryError(
+    org: string,
+    repo: string,
+    query: string,
+    queryParameters: any,
+    cursor: string | null,
+    err: any
+  ): Promise<CommitsQuery | null> {
+    const errorMessages = err?.errors?.map((e: any) => e.message);
+    if (!errorMessages || errorMessages.length != 1) {
+      throw err;
+    }
+    if (/changedFiles/.test(errorMessages[0])) {
+      const newQuery = query.replace(/changedFiles\s+/, '');
+      this.logger.warn(
+        `Failed to fetch commits with changedFiles for repo ${org}/${repo} (cursor: ${cursor}). Retrying without changedFiles.`
       );
+      return this.octokit(org).graphql<CommitsQuery>(newQuery, {
+        ...queryParameters,
+        cursor,
+      });
+    } else if (/additions|deletions/.test(errorMessages[0])) {
+      this.logger.warn(
+        `Failed to fetch commits with additions/deletions for repo ${org}/${repo} (cursor: ${cursor}). Skipping.`
+      );
+      return null;
+    }
+    throw err;
+  }
+
+  // memoize since one call is enough to check if the field is available
+  @Memoize(() => null)
+  private async getCommitsQuery(queryParameters: any): Promise<string> {
+    // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
+    // See: https://docs.github.com/en/graphql/reference/objects#commit
+    const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
+      .replace(/additions\s+/, '')
+      .replace(/deletions\s+/, '');
+    try {
+      await this.octokit(queryParameters.owner).graphql(query, {
+        ...queryParameters,
+        page_size: 1,
+      });
     } catch (err: any) {
       const errorCode = err?.errors?.[0]?.extensions?.code;
-      // Check if the error was caused by querying undefined changedFilesIfAvailable field to continue execution with
-      // a query that uses changedFiles (legacy field)
+      // Check if the error was caused by querying undefined changedFilesIfAvailable field
       if (errorCode === 'undefinedField') {
         this.logger.warn(
-          `Failed to fetch commits using query with changedFilesIfAvailable.
-          Retrying fetching commits for repo ${queryParameters.repo} using changedFiles.`
+          `GQL schema Commit object doesn't contain field changedFilesIfAvailable. Will query for changedFiles instead.`
         );
-        return false;
+        return COMMITS_QUERY.replace(/changedFilesIfAvailable\s+/, '');
       }
+      throw err;
     }
-    return true;
+    return COMMITS_QUERY.replace(/changedFiles\s+/, '');
   }
 
   async *getOrganizationMembers(org: string): AsyncGenerator<User> {
@@ -748,7 +897,6 @@ export abstract class GitHub {
     );
     for await (const res of this.wrapIterable(
       iter,
-      this.timeout.bind(this),
       this.acceptPartialResponseWrapper(`org users for ${org}`)
     )) {
       for (const member of res.organization.membersWithRole.nodes) {
@@ -816,7 +964,8 @@ export abstract class GitHub {
 
   async *getCopilotSeats(
     org: string,
-    cutoffDate: Date
+    cutoffDate: Date,
+    useCopilotTeamAssignmentsFix: boolean
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
     const assignedTeams: CopilotAssignedTeams = {};
@@ -838,7 +987,7 @@ export abstract class GitHub {
           let teamJoinedAt: Date;
           let startedAt = Utils.toDate(seat.created_at);
           assignedUsers.add(userAssignee);
-          if (teamAssignee) {
+          if (teamAssignee && useCopilotTeamAssignmentsFix) {
             if (!assignedTeams[teamAssignee]) {
               assignedTeams[teamAssignee] = pick(seat, ['created_at']);
             }
@@ -902,30 +1051,68 @@ export abstract class GitHub {
     );
   }
 
-  async *getCopilotUsage(org: string): AsyncGenerator<CopilotUsageSummary> {
+  async *getCopilotUsage(
+    org: string,
+    cutoffDate: number
+  ): AsyncGenerator<CopilotUsageSummary> {
+    let data: CopilotUsageResponse;
+    let useBetaAPI = false;
     try {
-      const res = await this.octokit(org).copilot.usageMetricsForOrg({
-        org,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      if (this.copilotMetricsGA) {
+        // try to use GA API first
+        try {
+          const res: OctokitResponse<CopilotMetricsResponse> =
+            await this.octokit(org).request(this.octokit(org).copilotMetrics, {
+              org,
+            });
+          data = transformCopilotMetricsResponse(res.data);
+        } catch (err: any) {
+          if (err.message) {
+            this.logger.warn(err.message);
+          }
+          this.logger.warn(
+            'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
+          );
+        }
+      }
+      if (!data) {
+        // try to use beta API as fallback (supposed to be available until EOY24)
+        const res = await this.octokit(org).copilot.usageMetricsForOrg({
+          org,
+        });
+        data = res.data;
+        useBetaAPI = true;
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
         return;
       }
-      for (const usage of res.data) {
+      const latestDay = Math.max(
+        0,
+        ...data.map((usage) => Utils.toDate(usage.day).getTime())
+      );
+      if (latestDay <= cutoffDate) {
+        this.logger.info(
+          `GitHub Copilot usage data for org ${org} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+        );
+        return;
+      }
+      for (const usage of data) {
         yield {
           org,
           team: null,
           ...usage,
         };
       }
-      yield* this.getCopilotUsageTeams(org);
+      yield* this.getCopilotUsageTeams(org, useBetaAPI);
     } catch (err: any) {
       this.handleCopilotError(err, org, 'usage');
     }
   }
 
   async *getCopilotUsageTeams(
-    org: string
+    org: string,
+    useBetaAPI: boolean
   ): AsyncGenerator<CopilotUsageSummary> {
     let teams: ReadonlyArray<Team>;
     try {
@@ -940,17 +1127,29 @@ export abstract class GitHub {
       throw err;
     }
     for (const team of teams) {
-      const res = await this.octokit(org).copilot.usageMetricsForTeam({
-        org,
-        team_slug: team.slug,
-      });
-      if (isNil(res.data) || isEmpty(res.data)) {
+      let data: CopilotUsageResponse;
+      if (useBetaAPI) {
+        const res = await this.octokit(org).copilot.usageMetricsForTeam({
+          org,
+          team_slug: team.slug,
+        });
+        data = res.data;
+      } else {
+        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+          org
+        ).request(this.octokit(org).copilotMetricsForTeam, {
+          org,
+          team_slug: team.slug,
+        });
+        data = transformCopilotMetricsResponse(res.data);
+      }
+      if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
           `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
         );
         continue;
       }
-      for (const usage of res.data) {
+      for (const usage of data) {
         yield {
           org,
           team: team.slug,
@@ -962,6 +1161,9 @@ export abstract class GitHub {
 
   private handleCopilotError(err: any, org: string, context: string) {
     if (err.status >= 400 && err.status < 500) {
+      if (err.message) {
+        this.logger.warn(err.message);
+      }
       this.logger.warn(
         `Failed to sync GitHub Copilot ${context} for org ${org}. Ensure GitHub Copilot is enabled for the organization and/or the authentication token/app has the right permissions.`
       );
@@ -1154,49 +1356,6 @@ export abstract class GitHub {
     }
   }
 
-  async *getContributorsStats(
-    org: string,
-    repo: string
-  ): AsyncGenerator<ContributorStats> {
-    const params = {owner: org, repo};
-    let res = await this.octokit(org).repos.getContributorsStats(params);
-
-    // GitHub REST API may return a 202 status code when stats are being prepared
-    // https://docs.github.com/en/rest/metrics/statistics?apiVersion=2022-11-28#best-practices-for-caching
-    const delaySecs = 5;
-    const maxAttempts = 3;
-    let attempts = 0;
-
-    while (res?.status === 202 && attempts < maxAttempts) {
-      attempts++;
-      const delay = delaySecs * attempts;
-      this.logger.debug(
-        `Stats are being prepared for repo ${repo} in org ${org}. Trying again in ${delay} seconds.`
-      );
-      await Utils.sleep(delay * 1000);
-      res = await this.octokit(org).repos.getContributorsStats(params);
-    }
-
-    if (res?.status === 202) {
-      this.logger.info(
-        `Stats are currently unavailable for repo ${repo} in org ${org}. Will sync them next time.`
-      );
-      return;
-    }
-
-    const data = Array.isArray(res.data) ? res.data : [];
-    for (const stats of data) {
-      const user = stats?.author;
-      if (!user?.login) continue;
-      yield {
-        org,
-        repo,
-        user: pick(user, ['login', 'name', 'email', 'html_url', 'type']),
-        ...pick(stats, ['total', 'weeks']),
-      };
-    }
-  }
-
   async *getProjects(org: string): AsyncGenerator<Project> {
     const iter = this.octokit(org).graphql.paginate.iterator<ProjectsQuery>(
       PROJECTS_QUERY,
@@ -1281,6 +1440,56 @@ export abstract class GitHub {
     }
   }
 
+  async *getIssueComments(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<IssueComment> {
+    // query supports filtering by start date (since) but not by end date
+    // for backfill, we iterate in ascending order from the start date and stop when we reach the end date
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).issues.listCommentsForRepo,
+      {
+        owner: org,
+        repo: repo,
+        since: startDate?.toISOString(),
+        direction: this.backfill ? 'asc' : 'desc',
+        sort: 'updated',
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const comment of res.data) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(comment.updated_at) > endDate
+        ) {
+          return;
+        }
+        yield {
+          repository: `${org}/${repo}`,
+          user: pick(comment.user, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
+          ...pick(comment, [
+            'id',
+            'body',
+            'created_at',
+            'updated_at',
+            'issue_url',
+            'html_url',
+          ]),
+        };
+      }
+    }
+  }
+
   async *getCodeScanningAlerts(
     org: string,
     repo: string,
@@ -1319,13 +1528,7 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('must be enabled for this repository')) {
-        this.logger.debug(
-          `Code scanning alerts disabled for org ${org} - ${repo}`
-        );
-        return;
-      }
-      throw err;
+      this.handleSecurityAlertError(err, org, repo, 'code scanning');
     }
   }
 
@@ -1367,13 +1570,7 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('disabled for this repository')) {
-        this.logger.debug(
-          `Dependabot alerts disabled for org ${org} - ${repo}`
-        );
-        return;
-      }
-      throw err;
+      this.handleSecurityAlertError(err, org, repo, 'dependabot');
     }
   }
 
@@ -1417,13 +1614,176 @@ export abstract class GitHub {
         }
       }
     } catch (err: any) {
-      if (err.message?.includes('disabled on this repository')) {
-        this.logger.debug(
-          `Dependabot alerts disabled for org ${org} - ${repo}`
-        );
-        return;
+      this.handleSecurityAlertError(err, org, repo, 'secret scanning');
+    }
+  }
+
+  private handleSecurityAlertError(
+    err: any,
+    org: string,
+    repo: string,
+    context: string
+  ) {
+    if (err.status >= 400 && err.status < 500) {
+      this.logger.debug(
+        `Couldn't fetch ${context} alerts for repo ${org}/${repo}. Status: ${err.status}. Message: ${err.message}`
+      );
+      return;
+    }
+    throw err;
+  }
+
+  async *getWorkflows(org: string, repo: string): AsyncGenerator<Workflow> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listRepoWorkflows,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
       }
-      throw err;
+    );
+    for await (const res of iter) {
+      for (const workflow of res.data) {
+        yield {
+          org,
+          repo,
+          ...workflow,
+        };
+      }
+    }
+  }
+
+  @Memoize((org: string, repo: string) => StreamBase.orgRepoKey(org, repo))
+  async getWorkflowRuns(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<ReadonlyArray<WorkflowRun>> {
+    const workflowRuns: WorkflowRun[] = [];
+    // workflow runs have a maximum duration to be updated, and we can just filter by created_at
+    const createdSince = startDate
+      ? Utils.toDate(startDate.getTime() - MAX_WORKFLOW_RUN_DURATION_MS)
+      : null;
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listWorkflowRunsForRepo,
+      {
+        owner: org,
+        repo,
+        per_page: this.pageSize,
+        created: `${createdSince?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+      }
+    );
+    for await (const res of iter) {
+      for (const workflowRun of res.data) {
+        // skip runs that were updated before the start date / updated_at cutoff
+        if (Utils.toDate(workflowRun.updated_at) < startDate) {
+          continue;
+        }
+        workflowRuns.push({
+          org,
+          repo,
+          ...pick(workflowRun, [
+            'id',
+            'name',
+            'head_branch',
+            'head_sha',
+            'path',
+            'run_number',
+            'event',
+            'display_title',
+            'status',
+            'conclusion',
+            'workflow_id',
+            'url',
+            'html_url',
+            'created_at',
+            'updated_at',
+            'run_attempt',
+            'run_started_at',
+          ]),
+        });
+      }
+    }
+    return workflowRuns;
+  }
+
+  async *getWorkflowRunJobs(
+    org: string,
+    repo: string,
+    workflowRun: WorkflowRun
+  ): AsyncGenerator<WorkflowJob> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listJobsForWorkflowRun,
+      {
+        owner: org,
+        repo,
+        run_id: workflowRun.id,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const job of res.data) {
+        yield {
+          org,
+          repo,
+          workflow_id: workflowRun.workflow_id, // workflow_id is not available in job object
+          ...pick(job, [
+            'run_id',
+            'id',
+            'workflow_name',
+            'head_branch',
+            'run_attempt',
+            'head_sha',
+            'url',
+            'html_url',
+            'status',
+            'conclusion',
+            'created_at',
+            'started_at',
+            'completed_at',
+            'name',
+            'labels',
+          ]),
+        };
+      }
+    }
+  }
+
+  async *getWorkflowRunArtifacts(
+    org: string,
+    repo: string,
+    workflowRun: WorkflowRun
+  ): AsyncGenerator<Artifact> {
+    const iter = this.octokit(org).paginate.iterator(
+      this.octokit(org).actions.listWorkflowRunArtifacts,
+      {
+        owner: org,
+        repo,
+        run_id: workflowRun.id,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const artifact of res.data) {
+        yield {
+          org,
+          repo,
+          workflow_id: workflowRun.workflow_id, // workflow_id is not available in artifact object
+          run_id: workflowRun.id,
+          ...pick(artifact, [
+            'id',
+            'name',
+            'size_in_bytes',
+            'url',
+            'archive_download_url',
+            'expired',
+            'created_at',
+            'expires_at',
+            'updated_at',
+          ]),
+        };
+      }
     }
   }
 
@@ -1457,22 +1817,6 @@ export abstract class GitHub {
   ): (promise: Promise<T>) => Promise<T> {
     return (promise: Promise<T>) =>
       this.acceptPartialResponse(dataType, promise);
-  }
-
-  private async timeout<T>(promise: Promise<T>): Promise<T> {
-    let timeoutId: NodeJS.Timeout;
-    const timeout: Promise<T> = new Promise((_, reject) => {
-      timeoutId = setTimeout(
-        () => reject(new Error(`Promise timed out after ${this.timeoutMs} ms`)),
-        this.timeoutMs
-      );
-    });
-
-    try {
-      return await Promise.race([promise, timeout]);
-    } finally {
-      clearTimeout(timeoutId);
-    }
   }
 
   private wrapIterable<T>(
@@ -1544,14 +1888,13 @@ export class GitHubApp extends GitHub {
     const installations = await github.getAppInstallations();
     for (const installation of installations) {
       if (installation.target_type !== 'Organization') continue;
+      const orgLogin = toLower(installation.account.login);
       if (installation.suspended_at) {
-        logger.warn(
-          `Skipping suspended app installation for org ${installation.account.login}`
-        );
+        logger.warn(`Skipping suspended app installation for org ${orgLogin}`);
         continue;
       }
       const octokit = makeOctokitClient(cfg, installation.id, logger);
-      github.octokitByInstallationOrg.set(installation.account.login, octokit);
+      github.octokitByInstallationOrg.set(orgLogin, octokit);
     }
     return github;
   }
@@ -1615,4 +1958,79 @@ function getLastCopilotTeamForUser(
     }
   }
   return lastCopilotTeamLeft;
+}
+
+function transformCopilotMetricsResponse(
+  data: CopilotMetricsResponse
+): CopilotUsageResponse {
+  return data.map((d) => {
+    const breakdown =
+      d.copilot_ide_code_completions?.editors.flatMap((e) => {
+        const languages: {
+          [language: string]: {
+            suggestions_count: number;
+            acceptances_count: number;
+            lines_suggested: number;
+            lines_accepted: number;
+            active_users: number;
+          };
+        } = {};
+        for (const m of e.models) {
+          for (const l of m.languages) {
+            const language = (languages[l.name] = languages[l.name] ?? {
+              suggestions_count: 0,
+              acceptances_count: 0,
+              lines_suggested: 0,
+              lines_accepted: 0,
+              active_users: 0,
+            });
+            language.suggestions_count += l.total_code_suggestions;
+            language.acceptances_count += l.total_code_acceptances;
+            language.lines_suggested += l.total_code_lines_suggested;
+            language.lines_accepted += l.total_code_lines_accepted;
+            language.active_users += l.total_engaged_users;
+          }
+        }
+        return Object.entries(languages).map(([k, v]) => ({
+          ...v,
+          language: k,
+          editor: e.name,
+        }));
+      }) ?? [];
+    let total_chats = 0,
+      total_chat_insertion_events = 0,
+      total_chat_copy_events = 0;
+    for (const e of d.copilot_ide_chat?.editors ?? []) {
+      for (const m of e.models) {
+        total_chats += m.total_chats;
+        total_chat_insertion_events += m.total_chat_insertion_events;
+        total_chat_copy_events += m.total_chat_copy_events;
+      }
+    }
+    return {
+      day: d.date,
+      total_suggestions_count: breakdown.reduce(
+        (acc, c) => acc + c.suggestions_count,
+        0
+      ),
+      total_acceptances_count: breakdown.reduce(
+        (acc, c) => acc + c.acceptances_count,
+        0
+      ),
+      total_lines_suggested: breakdown.reduce(
+        (acc, c) => acc + c.lines_suggested,
+        0
+      ),
+      total_lines_accepted: breakdown.reduce(
+        (acc, c) => acc + c.lines_accepted,
+        0
+      ),
+      total_active_users: d.total_active_users,
+      total_chats,
+      total_chat_insertion_events,
+      total_chat_copy_events,
+      total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
+      breakdown,
+    };
+  });
 }

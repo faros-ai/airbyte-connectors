@@ -42,6 +42,7 @@ describe('index', () => {
     BitbucketServer.instance = jest.fn().mockImplementation(() => {
       return new BitbucketServer(
         {api: {getUsers: jest.fn().mockResolvedValue({})}} as any,
+        {} as any,
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800'),
@@ -78,6 +79,7 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
+        {} as any,
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800'),
@@ -116,6 +118,7 @@ describe('index', () => {
           },
           hasNextPage: jest.fn(),
         } as any,
+        {} as any,
         100,
         logger,
         new Date('2010-03-27T14:03:51-0800'),

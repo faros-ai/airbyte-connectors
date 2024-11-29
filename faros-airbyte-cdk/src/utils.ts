@@ -3,6 +3,9 @@ import fs from 'fs';
 import traverse from 'json-schema-traverse';
 import _, {cloneDeep} from 'lodash';
 import path from 'path';
+import {Dictionary} from 'ts-essentials';
+import VError from 'verror';
+import zlib from 'zlib';
 
 import {AirbyteConfig, AirbyteSpec} from './protocol';
 
@@ -177,6 +180,12 @@ const SOURCE_COMMON_PROPERTIES = {
     description: 'Enable debug mode',
     default: false,
   },
+  faros_source_id: {
+    order: 1003,
+    type: 'string',
+    title: 'The source ID',
+    description: 'The ID of the source (aka account)',
+  },
 };
 
 export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {
@@ -189,4 +198,32 @@ export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {
   };
 
   return updatedSpec;
+}
+
+export interface CompressedData {
+  format: string;
+  data: string;
+}
+
+export class Data {
+  static compress(data: Dictionary<any, string>): CompressedData {
+    const zipped = zlib.gzipSync(JSON.stringify(data)).toString('base64');
+    return {format: 'base64/gzip', data: zipped};
+  }
+
+  static decompress(
+    data?: Dictionary<any>
+  ): Dictionary<any> | null | undefined {
+    if (data?.format && data?.data) {
+      switch (data.format) {
+        case 'base64/gzip': {
+          const unzipped = zlib.gunzipSync(Buffer.from(data.data, 'base64'));
+          return JSON.parse(unzipped.toString());
+        }
+        default:
+          throw new VError('Unsupported data format: %s', data.format);
+      }
+    }
+    return data;
+  }
 }
