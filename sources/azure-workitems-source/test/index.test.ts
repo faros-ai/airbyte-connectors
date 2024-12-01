@@ -193,8 +193,8 @@ describe('index', () => {
       workitems.push(workitem);
     }
 
-    expect(fnWorkitemsFunc).toHaveBeenCalledTimes(12);
-    expect(fnIdsFunc).toHaveBeenCalledTimes(8);
+    expect(fnWorkitemsFunc).toHaveBeenCalledTimes(15);
+    expect(fnIdsFunc).toHaveBeenCalledTimes(11);
     expect(workitems).toMatchSnapshot();
   });
 });

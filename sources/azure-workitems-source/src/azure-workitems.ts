@@ -19,15 +19,20 @@ const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 
+// Curated list of work item types from Azure DevOps
+// https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-item-types/list?view=azure-devops-rest-7.0&tabs=HTTP#uri-parameters
 const WORK_ITEM_TYPES = [
   "'Task'",
   "'User Story'",
-  "'BUG'",
+  "'Bug'",
   "'Feature'",
   "'Epic'",
   "'Issue'",
   "'Product Backlog Item'",
   "'Requirement'",
+  "'Test Case'",
+  "'Test Plan'",
+  "'Test Suite'",
 ];
 
 export interface AzureWorkitemsConfig {
@@ -222,6 +227,7 @@ export class AzureWorkitems {
     projectId: string
   ): AsyncGenerator<WorkItem> {
     const stateCategories = await this.getStateCategories(project);
+
     const promises = WORK_ITEM_TYPES.map((type) =>
       this.getIdsFromAWorkItemType(project, type)
     );
@@ -326,9 +332,13 @@ export class AzureWorkitems {
     name: string;
     category: string;
   } {
+    const category = states?.get(state);
+    if (!category) {
+      this.logger.warn(`Unknown state category: ${state}`);
+    }
     return {
       name: state,
-      category: states?.get(state),
+      category,
     };
   }
 
