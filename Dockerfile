@@ -9,20 +9,12 @@ COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 
-# Update packages and install build dependencies
 RUN apk -U upgrade && \
-    apk add --no-cache --virtual .gyp python3 py3-setuptools make g++
+    apk add --no-cache --virtual .gyp python3 py3-setuptools make g++ && \
+    npm ci --no-audit --no-fund --ignore-scripts && \
+    npm run build && \
+    apk del .gyp
 
-# Install dependencies using npm workspaces
-RUN npm ci --no-audit --no-fund --ignore-scripts
-
-# Build the packages using Turborepo
-RUN npm run build
-
-# Remove build dependencies
-RUN apk del .gyp
-
-# Copy the docker directory
 COPY ./docker ./docker
 
 ARG version
