@@ -68,15 +68,6 @@ To run unit tests locally, from the Github connector directory run:
 ```
 npm test
 ```
-
-## Dependency Management
-
-We use [lerna](https://lerna.js.org/) to manage dependencies that are shared by
-all connectors in this repository. Dependencies specific to this connector
-should go in the connector's `package.json`. Dependencies shared by all
-connectors, such as linting/formatting tools, should go in the root
-`package.json`.
-
 ### GitHub Required Permissions per Stream
 
 ( * ) Permissions marked as required are always read-only.\
