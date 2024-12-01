@@ -14,7 +14,7 @@ RUN apk -U upgrade && \
     apk add --no-cache --virtual .gyp python3 py3-setuptools make g++
 
 # Install dependencies using npm workspaces
-RUN npm ci
+RUN npm ci --no-audit --no-fund --ignore-scripts
 
 # Build the packages using Turborepo
 RUN npm run build
