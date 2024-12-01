@@ -1,5 +1,6 @@
 {
   "username": "test",
   "password": "secret",
-  "run_mode": "Minimum"
+  "run_mode": "Minimum",
+  "start_date": "2024-09-01"
 }
