@@ -15,10 +15,12 @@ export class Workitems extends AzureWorkitemsConverter {
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Task',
+    'tms_TaskBoardRelationship',
     'tms_TaskAssignment',
     'tms_TaskProjectRelationship',
     'tms_TaskTag',
     'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
   ];
 
   async convert(
@@ -67,7 +69,9 @@ export class Workitems extends AzureWorkitemsConverter {
             uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
             source,
           },
-          sprint: {uid: String(WorkItem.fields['System.IterationId']), source},
+          sprint: WorkItem.fields['System.IterationId']
+            ? {uid: String(WorkItem.fields['System.IterationId']), source}
+            : null,
           priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
           resolvedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']

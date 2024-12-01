@@ -111,7 +111,7 @@ describe('index', () => {
       iterations.push(iteration);
     }
 
-    expect(fnIterationsFunc).toHaveBeenCalledTimes(3);
+    expect(fnIterationsFunc).toHaveBeenCalledTimes(5);
     expect(iterations).toStrictEqual(readTestResourceFile('iterations.json'));
   });
 
