@@ -2,18 +2,27 @@ FROM node:18-alpine
 
 WORKDIR /home/node/airbyte
 
-COPY lerna.json .tsconfig.json package.json package-lock.json ./
+COPY turbo.json .tsconfig.json package.json package-lock.json ./
 RUN sed -i "/jest\|mockttp/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
 COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 
-RUN apk -U upgrade
-RUN apk add --no-cache --virtual .gyp python3 py3-setuptools make g++ \
-    && npm install -g npm lerna @lerna/legacy-package-management tsc
-RUN lerna bootstrap --hoist
+# Update packages and install build dependencies
+RUN apk -U upgrade && \
+    apk add --no-cache --virtual .gyp python3 py3-setuptools make g++
 
+# Install dependencies using npm workspaces
+RUN npm ci
+
+# Build the packages using Turborepo
+RUN npm run build
+
+# Remove build dependencies
+RUN apk del .gyp
+
+# Copy the docker directory
 COPY ./docker ./docker
 
 ARG version
