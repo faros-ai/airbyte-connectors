@@ -25,6 +25,11 @@ export abstract class Vulnerabilities extends VantaConverter {
   private readonly collectedVulnerabilities = new Set<Vulnerability>();
   private readonly collectedRepoNames = new Set<string>();
   private readonly collectedArtifactCommitShas = new Set<string>();
+  private readonly vulnerabilitiesWithoutAsset = new Set<string>();
+  private readonly vulnerabilitiesWithoutRepo = new Set<string>();
+  private readonly vulnerabilitiesWithoutArtifact = new Set<string>();
+  private readonly vulnerabilitiesWithoutCommitSha = new Set<string>();
+  private readonly vulnerabilitiesWithoutIdentifier = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -69,9 +74,7 @@ export abstract class Vulnerabilities extends VantaConverter {
 
     const vulnAsset = data.asset;
     if (!vulnAsset) {
-      ctx.logger.warn(
-        `Vulnerability ${data.id}-${data.name} has no asset associated. VcsRepositoryVulnerability or CicdArtifactVulnerability will not be created.`
-      );
+      this.vulnerabilitiesWithoutAsset.add(data.id);
       return records;
     }
     if (this.isVCSRepoVulnerability(vulnAsset)) {
@@ -103,6 +106,32 @@ export abstract class Vulnerabilities extends VantaConverter {
         this.convertArtifactVulnerability(vuln, ctx, cicdArtifacts, records);
       }
     }
+    // Log warnings for different cases of missing data
+    this.logVulnerabilityWarnings(
+      ctx,
+      this.vulnerabilitiesWithoutAsset,
+      'Vulnerabilities without an asset associated (no vcs_RepositoryVulnerability/cicd_ArtifactVulnerability created)'
+    );
+    this.logVulnerabilityWarnings(
+      ctx,
+      this.vulnerabilitiesWithoutRepo,
+      'Vulnerabilities with no repository found'
+    );
+    this.logVulnerabilityWarnings(
+      ctx,
+      this.vulnerabilitiesWithoutArtifact,
+      'Vulnerabilities with no artifact found'
+    );
+    this.logVulnerabilityWarnings(
+      ctx,
+      this.vulnerabilitiesWithoutCommitSha,
+      'Vulnerabilities with no commit sha found in image tags'
+    );
+    this.logVulnerabilityWarnings(
+      ctx,
+      this.vulnerabilitiesWithoutIdentifier,
+      'Vulnerabilities with no catalog identifier found'
+    );
     return records;
   }
 
@@ -114,9 +143,7 @@ export abstract class Vulnerabilities extends VantaConverter {
   ) {
     const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.asset.name);
     if (!vcsRepo) {
-      ctx.logger.warn(
-        `Could not find VCS repository for vulnerability ${vuln.id}`
-      );
+      this.vulnerabilitiesWithoutRepo.add(`${vuln.id}-${vuln.asset.name}`);
       return;
     }
     const repoVulnerabilityRecord: DestinationRecord = {
@@ -169,8 +196,8 @@ export abstract class Vulnerabilities extends VantaConverter {
         break;
     }
     if (!identifierRecord) {
-      ctx.logger.warn(
-        `No vulnerability catalog identifier found for vulnerability ${vulnerability.id}-${vulnerability.name}`
+      this.vulnerabilitiesWithoutIdentifier.add(
+        `${vulnerability.id}-${vulnerability.name}`
       );
       return [];
     }
@@ -197,18 +224,14 @@ export abstract class Vulnerabilities extends VantaConverter {
   ) {
     const commitSha = this.getCommitSha(vuln.asset.imageTags);
     if (!commitSha) {
-      ctx.logger.warn(
-        `Could not find commit sha in image tags for vulnerability ${vuln.id}`
-      );
+      this.vulnerabilitiesWithoutCommitSha.add(vuln.id);
       return;
     }
     const cicdArtifact = cicdArtifacts?.find(
       (artifact) => artifact.uid === commitSha
     );
     if (!cicdArtifact) {
-      ctx.logger.warn(
-        `Could not find CICD artifact for vulnerability ${vuln.id} and commit sha ${commitSha}`
-      );
+      this.vulnerabilitiesWithoutArtifact.add(`${vuln.id}-${commitSha}`);
       return;
     }
     const artifactVulnerabilityRecord: DestinationRecord = {

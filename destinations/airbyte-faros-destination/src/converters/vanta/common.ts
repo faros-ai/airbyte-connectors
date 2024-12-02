@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {VulnerableAssetSummary} from 'faros-airbyte-common/lib/vanta';
 
-import {Converter} from '../converter';
+import {Converter, StreamContext} from '../converter';
 import {looksLikeGitCommitSha} from './utils';
 
 export abstract class VantaConverter extends Converter {
@@ -31,5 +31,15 @@ export abstract class VantaConverter extends Converter {
       }
     }
     return null;
+  }
+
+  protected logVulnerabilityWarnings(
+    ctx: StreamContext,
+    vulnerabilities: Set<string>,
+    message: string
+  ): void {
+    if (vulnerabilities.size > 0) {
+      ctx.logger.warn(`${message}: ${Array.from(vulnerabilities).join(', ')}`);
+    }
   }
 }
