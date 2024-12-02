@@ -83,13 +83,18 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: Install Turborepo
+        run: npm install turbo --global
+
+      # TODO: Start Turborepo cache server
+
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Test
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: lerna run test-cov
+        run: turbo test-cov
 
   test-packaging:
     if: ${{ github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch' }} # Only on PRs
@@ -111,8 +116,16 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
 
+      - name: Install Turborepo
+        run: npm install turbo --global
+
+      # TODO: Start Turborepo cache server
+
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build packages
+        run: turbo build
 
       - name: Test Airbyte CDK package
         run: |

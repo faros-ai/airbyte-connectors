@@ -39,7 +39,7 @@ jobs:
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Publish Airbyte CDK package
         run: |
