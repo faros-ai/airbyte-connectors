@@ -5,7 +5,7 @@ import {GitHubConverter} from './common';
 import {FarosTeams} from './faros_teams';
 
 export class FarosEnterpriseTeams extends GitHubConverter {
-  private alias = new FarosTeams();
+  private readonly alias = new FarosTeams();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> =
     this.alias.destinationModels;

@@ -9,7 +9,7 @@ import {GitHubCommon, GitHubConverter} from './common';
 import {FarosCopilotUsage} from './faros_copilot_usage';
 
 export class FarosEnterpriseCopilotUsage extends GitHubConverter {
-  private alias = new FarosCopilotUsage();
+  private readonly alias = new FarosCopilotUsage();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> =
     this.alias.destinationModels;
