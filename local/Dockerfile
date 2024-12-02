@@ -9,7 +9,7 @@ COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
 COPY ./destinations ./destinations
 
-RUN npm install turbo --global
+RUN npm install turbo --global --ignore-scripts
 RUN npm run build -- --filter faros-airbyte-cdk
 RUN npm run build -- --filter faros-airbyte-common
 
