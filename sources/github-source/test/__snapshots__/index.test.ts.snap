@@ -1073,6 +1073,175 @@ exports[`index streams - dependabot alerts 1`] = `
 ]
 `;
 
+exports[`index streams - enterprise copilot seats (empty) 1`] = `
+[
+  {
+    "empty": true,
+    "enterprise": "github",
+  },
+]
+`;
+
+exports[`index streams - enterprise copilot seats 1`] = `
+[
+  {
+    "enterprise": "github",
+    "last_activity_at": "2021-10-14T00:53:32-06:00",
+    "pending_cancellation_date": null,
+    "user": "octocat",
+  },
+  {
+    "enterprise": "github",
+    "last_activity_at": "2021-10-13T00:53:32-06:00",
+    "pending_cancellation_date": "2021-11-01",
+    "user": "octokitten",
+  },
+]
+`;
+
+exports[`index streams - enterprise copilot usage 1`] = `
+[
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 246,
+        "active_users": 12,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 270,
+        "lines_suggested": 450,
+        "suggestions_count": 498,
+      },
+      {
+        "acceptances_count": 506,
+        "active_users": 14,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 540,
+        "lines_suggested": 1040,
+        "suggestions_count": 992,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "enterprise": "github",
+    "team": null,
+    "total_acceptances_count": 875,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_copy_events": 19,
+    "total_chat_insertion_events": 23,
+    "total_chats": 55,
+    "total_lines_accepted": 943,
+    "total_lines_suggested": 1787,
+    "total_suggestions_count": 1734,
+  },
+  {
+    "breakdown": [
+      {
+        "acceptances_count": 246,
+        "active_users": 12,
+        "editor": "vscode",
+        "language": "python",
+        "lines_accepted": 270,
+        "lines_suggested": 450,
+        "suggestions_count": 498,
+      },
+      {
+        "acceptances_count": 506,
+        "active_users": 14,
+        "editor": "vscode",
+        "language": "ruby",
+        "lines_accepted": 540,
+        "lines_suggested": 1040,
+        "suggestions_count": 992,
+      },
+      {
+        "acceptances_count": 56,
+        "active_users": 3,
+        "editor": "neovim",
+        "language": "typescript",
+        "lines_accepted": 61,
+        "lines_suggested": 143,
+        "suggestions_count": 112,
+      },
+      {
+        "acceptances_count": 67,
+        "active_users": 4,
+        "editor": "neovim",
+        "language": "go",
+        "lines_accepted": 72,
+        "lines_suggested": 154,
+        "suggestions_count": 132,
+      },
+    ],
+    "day": "2024-06-24",
+    "enterprise": "github",
+    "team": "justice-league",
+    "total_acceptances_count": 875,
+    "total_active_chat_users": 13,
+    "total_active_users": 24,
+    "total_chat_copy_events": 19,
+    "total_chat_insertion_events": 23,
+    "total_chats": 55,
+    "total_lines_accepted": 943,
+    "total_lines_suggested": 1787,
+    "total_suggestions_count": 1734,
+  },
+]
+`;
+
+exports[`index streams - enterprise team memberships 1`] = `
+[
+  {
+    "enterprise": "github",
+    "team": "justice-league",
+    "user": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
+  },
+]
+`;
+
+exports[`index streams - enterprise teams 1`] = `
+[
+  {
+    "enterprise": "github",
+    "name": "Justice League",
+    "slug": "justice-league",
+  },
+]
+`;
+
+exports[`index streams - enterprises 1`] = `
+[
+  {
+    "name": "GitHub",
+    "slug": "github",
+    "url": "https://github.com/enterprises/github",
+  },
+]
+`;
+
 exports[`index streams - issue comments 1`] = `
 [
   {
