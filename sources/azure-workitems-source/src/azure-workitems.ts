@@ -334,7 +334,7 @@ export class AzureWorkitems {
   } {
     const category = states?.get(state);
     if (!category) {
-      this.logger.warn(`Unknown state category: ${state}`);
+      this.logger.warn(`Unknown category for state: ${state}`);
     }
     return {
       name: state,
