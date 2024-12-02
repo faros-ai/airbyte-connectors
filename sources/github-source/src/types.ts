@@ -1,6 +1,5 @@
 import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
-import VError from 'verror';
 
 import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
@@ -136,11 +135,3 @@ export type CopilotMetricsResponse = {
     }[];
   } | null;
 }[];
-
-export class EnterpriseNotAvailableError extends VError {
-  constructor() {
-    super(
-      'Enterprise data is only available when authenticating with personal access token'
-    );
-  }
-}

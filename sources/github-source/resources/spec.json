@@ -144,7 +144,7 @@
       "enterprises": {
         "order": 8,
         "title": "Enterprises list",
-        "description": "List of Enterprises from which to fetch data (enterprise teams and copilot seats / metrics). Only available using authentication with personal access token.",
+        "description": "List of Enterprises from which to fetch data (only when enterprise streams enabled). Only available using authentication with personal access token.",
         "type": "array",
         "items": {
           "type": "string"
@@ -161,6 +161,7 @@
         "type": "string",
         "default": "Full",
         "enum": [
+          "EnterpriseCopilotOnly",
           "CopilotEvaluationApp",
           "CopilotEvaluation",
           "Minimum",

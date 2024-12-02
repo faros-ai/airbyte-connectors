@@ -92,7 +92,6 @@ import {
   AuditLogTeamMember,
   CopilotMetricsResponse,
   CopilotUsageResponse,
-  EnterpriseNotAvailableError,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -144,6 +143,7 @@ export abstract class GitHub {
   protected readonly backfill: boolean;
   protected readonly fetchPullRequestDiffCoverage: boolean;
   protected readonly pullRequestCutoffLagSeconds: number;
+  protected readonly useEnterpriseAPIs: boolean;
 
   constructor(
     config: GitHubConfig,
@@ -166,6 +166,7 @@ export abstract class GitHub {
       config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
     this.pullRequestCutoffLagSeconds =
       config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
+    this.useEnterpriseAPIs = config.enterprises?.length > 0;
   }
 
   static async instance(
@@ -190,41 +191,6 @@ export abstract class GitHub {
   abstract octokit(org: string): ExtendedOctokit;
 
   abstract getOrganizationsIterator(): AsyncGenerator<string>;
-
-  getEnterprise(enterprise: string): Promise<Enterprise> {
-    throw new EnterpriseNotAvailableError();
-  }
-
-  getEnterpriseTeams(
-    enterprise: string
-  ): Promise<ReadonlyArray<EnterpriseTeam>> {
-    throw new EnterpriseNotAvailableError();
-  }
-
-  getEnterpriseTeamMemberships(
-    enterprise: string
-  ): AsyncGenerator<EnterpriseTeamMembership> {
-    throw new EnterpriseNotAvailableError();
-  }
-
-  getEnterpriseCopilotSeats(
-    enterprise: string
-  ): AsyncGenerator<EnterpriseCopilotSeatsStreamRecord> {
-    throw new EnterpriseNotAvailableError();
-  }
-
-  getEnterpriseCopilotUsage(
-    enterprise: string,
-    cutoffDate: number
-  ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
-    throw new EnterpriseNotAvailableError();
-  }
-
-  getEnterpriseCopilotUsageTeams(
-    enterprise: string
-  ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
-    throw new EnterpriseNotAvailableError();
-  }
 
   isRepoInBucket(org: string, repo: string): boolean {
     const data = `${org}/${repo}`;
@@ -1835,92 +1801,6 @@ export abstract class GitHub {
     }
   }
 
-  // GitHub GraphQL API may return partial data with a non 2xx status when
-  // a particular record in a result list is not found (null) for some reason
-  private async acceptPartialResponse<T>(
-    dataType: string,
-    promise: Promise<T>
-  ): Promise<T> {
-    try {
-      return await promise;
-    } catch (err: any) {
-      const resp = err as GraphQLErrorResponse<T>;
-      if (
-        resp?.response?.data &&
-        !resp?.response?.errors?.find((e) => e.type !== 'NOT_FOUND')
-      ) {
-        this.logger.warn(
-          `Received a partial response while fetching ${dataType} - ${JSON.stringify(
-            {errors: resp.response.errors}
-          )}`
-        );
-        return resp.response.data;
-      }
-      throw err;
-    }
-  }
-
-  private acceptPartialResponseWrapper<T>(
-    dataType: string
-  ): (promise: Promise<T>) => Promise<T> {
-    return (promise: Promise<T>) =>
-      this.acceptPartialResponse(dataType, promise);
-  }
-
-  private wrapIterable<T>(
-    iter: AsyncIterable<T>,
-    ...wrappers: ((
-      p: Promise<IteratorResult<T>>
-    ) => Promise<IteratorResult<T>>)[]
-  ): AsyncIterable<T> {
-    const iterator = iter[Symbol.asyncIterator]();
-    return {
-      [Symbol.asyncIterator]: () => ({
-        next: (): Promise<IteratorResult<T>> => {
-          let p = iterator.next();
-          for (const wrapper of wrappers) {
-            p = wrapper(p);
-          }
-          return p;
-        },
-      }),
-    };
-  }
-}
-
-export class GitHubToken extends GitHub {
-  static async instance(
-    cfg: GitHubConfig,
-    logger: AirbyteLogger
-  ): Promise<GitHub> {
-    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
-    const github = new GitHubToken(cfg, baseOctokit, logger);
-    await github.checkConnection();
-    return github;
-  }
-
-  octokit(): ExtendedOctokit {
-    return this.baseOctokit;
-  }
-
-  async checkConnection(): Promise<void> {
-    await this.baseOctokit.users.getAuthenticated();
-  }
-
-  async *getOrganizationsIterator(): AsyncGenerator<string> {
-    const iter = this.baseOctokit.paginate.iterator(
-      this.baseOctokit.orgs.listForAuthenticatedUser,
-      {
-        per_page: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
-      for (const org of res.data) {
-        yield org.login;
-      }
-    }
-  }
-
   async getEnterprise(enterprise: string): Promise<Enterprise> {
     const res = await this.baseOctokit.graphql<EnterpriseQuery>(
       ENTERPRISE_QUERY,
@@ -2080,6 +1960,92 @@ export class GitHubToken extends GitHub {
       }
     }
   }
+
+  // GitHub GraphQL API may return partial data with a non 2xx status when
+  // a particular record in a result list is not found (null) for some reason
+  private async acceptPartialResponse<T>(
+    dataType: string,
+    promise: Promise<T>
+  ): Promise<T> {
+    try {
+      return await promise;
+    } catch (err: any) {
+      const resp = err as GraphQLErrorResponse<T>;
+      if (
+        resp?.response?.data &&
+        !resp?.response?.errors?.find((e) => e.type !== 'NOT_FOUND')
+      ) {
+        this.logger.warn(
+          `Received a partial response while fetching ${dataType} - ${JSON.stringify(
+            {errors: resp.response.errors}
+          )}`
+        );
+        return resp.response.data;
+      }
+      throw err;
+    }
+  }
+
+  private acceptPartialResponseWrapper<T>(
+    dataType: string
+  ): (promise: Promise<T>) => Promise<T> {
+    return (promise: Promise<T>) =>
+      this.acceptPartialResponse(dataType, promise);
+  }
+
+  private wrapIterable<T>(
+    iter: AsyncIterable<T>,
+    ...wrappers: ((
+      p: Promise<IteratorResult<T>>
+    ) => Promise<IteratorResult<T>>)[]
+  ): AsyncIterable<T> {
+    const iterator = iter[Symbol.asyncIterator]();
+    return {
+      [Symbol.asyncIterator]: () => ({
+        next: (): Promise<IteratorResult<T>> => {
+          let p = iterator.next();
+          for (const wrapper of wrappers) {
+            p = wrapper(p);
+          }
+          return p;
+        },
+      }),
+    };
+  }
+}
+
+export class GitHubToken extends GitHub {
+  static async instance(
+    cfg: GitHubConfig,
+    logger: AirbyteLogger
+  ): Promise<GitHub> {
+    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
+    const github = new GitHubToken(cfg, baseOctokit, logger);
+    await github.checkConnection();
+    return github;
+  }
+
+  octokit(): ExtendedOctokit {
+    return this.baseOctokit;
+  }
+
+  async checkConnection(): Promise<void> {
+    await this.baseOctokit.users.getAuthenticated();
+  }
+
+  async *getOrganizationsIterator(): AsyncGenerator<string> {
+    const iter = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.orgs.listForAuthenticatedUser,
+      {
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const org of res.data) {
+        yield org.login;
+      }
+    }
+  }
 }
 
 export class GitHubApp extends GitHub {
@@ -2115,6 +2081,11 @@ export class GitHubApp extends GitHub {
   }
 
   async checkConnection(): Promise<void> {
+    if (this.useEnterpriseAPIs) {
+      throw new VError(
+        'Enterprise data is only available when authenticating with personal access token'
+      );
+    }
     await this.baseOctokit.apps.getAuthenticated();
   }
 
