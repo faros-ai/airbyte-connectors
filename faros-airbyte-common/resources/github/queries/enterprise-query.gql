@@ -3,5 +3,6 @@ query enterprise($slug: String!) {
     slug
     name
     url
+    createdAt
   }
 }

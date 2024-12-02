@@ -7903,7 +7903,12 @@ export type EnterpriseQueryVariables = Exact<{
 }>;
 
 export type EnterpriseQuery = {
-  enterprise?: {slug: string; name: string; url: string} | null;
+  enterprise?: {
+    slug: string;
+    name: string;
+    url: string;
+    createdAt: string;
+  } | null;
 };
 
 export type FilesFragment = {

@@ -6,6 +6,7 @@ acceptance_tests_logs/
 .vscode/
 .idea/
 .turbo/
+.nx/
 
 .DS_Store
 acceptance-test-*.log
