@@ -2,8 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
-import {CicdArtifactKey} from '../../../lib/converters/vanta/types';
-import {getCICDArtifactsFromCommitShas} from '../common/cicd';
+import {getCICDArtifactsFromCommitShas, ArtifactKey} from '../common/cicd';
 import {
   Vulnerability as VulnerabilityCommon,
   VulnerabilityIdentifier,
@@ -193,7 +192,7 @@ export abstract class Vulnerabilities extends VantaConverter {
   private convertArtifactVulnerability(
     vuln: Vulnerability,
     ctx: StreamContext,
-    cicdArtifacts: CicdArtifactKey[],
+    cicdArtifacts: ArtifactKey[],
     records: DestinationRecord[]
   ) {
     const commitSha = this.getCommitSha(vuln.asset.imageTags);
