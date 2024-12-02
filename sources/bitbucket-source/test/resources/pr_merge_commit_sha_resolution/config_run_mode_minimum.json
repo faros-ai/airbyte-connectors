@@ -1,5 +1,6 @@
 {
   "username": "test",
   "password": "secret",
-  "run_mode": "Minimum"
+  "run_mode": "Minimum",
+  "cutoff_days": 9999
 }

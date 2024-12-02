@@ -146,7 +146,7 @@ describe('index', () => {
   });
 
   test('streams - workitems, use full_refresh sync mode', async () => {
-    const fnWorkitemsFunc = jest.fn().mockImplementation((url) => {
+    const getFunc = jest.fn().mockImplementation((url) => {
       if (url.includes('states')) {
         return {data: readTestResourceFile('workitem_states.json')};
       } else if (url.includes('updates')) {
@@ -156,7 +156,7 @@ describe('index', () => {
       }
       return {};
     });
-    const fnIdsFunc = jest.fn();
+    const workitemIdsFunc = jest.fn();
 
     const fieldReferences = new Map([
       ['System.AreaPath', 'Area Path'],
@@ -167,8 +167,8 @@ describe('index', () => {
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
         {
-          get: fnWorkitemsFunc,
-          post: fnIdsFunc
+          get: getFunc,
+          post: workitemIdsFunc
             .mockResolvedValueOnce({
               data: readTestResourceFile('workitem_ids.json'),
             })
@@ -193,8 +193,8 @@ describe('index', () => {
       workitems.push(workitem);
     }
 
-    expect(fnWorkitemsFunc).toHaveBeenCalledTimes(12);
-    expect(fnIdsFunc).toHaveBeenCalledTimes(8);
+    expect(getFunc).toHaveBeenCalledTimes(15);
+    expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
     expect(workitems).toMatchSnapshot();
   });
 });
