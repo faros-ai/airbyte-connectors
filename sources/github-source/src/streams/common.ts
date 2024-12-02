@@ -18,6 +18,10 @@ export type RepoStreamSlice = {
   repo: string;
 };
 
+export type EnterpriseStreamSlice = {
+  enterprise: string;
+};
+
 export type StreamState = {
   readonly [orgRepoKey: string]: {
     cutoff: number;
@@ -25,12 +29,21 @@ export type StreamState = {
 };
 
 export enum RunMode {
+  EnterpriseCopilotOnly = 'EnterpriseCopilotOnly',
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
   Full = 'Full',
   Custom = 'Custom',
 }
+
+export const EnterpriseCopilotOnlyStreamNames = [
+  'faros_enterprises',
+  'faros_enterprise_copilot_seats',
+  'faros_enterprise_copilot_usage',
+  'faros_enterprise_teams',
+  'faros_enterprise_team_memberships',
+];
 
 export const CopilotEvaluationAppStreamNames = [
   'faros_copilot_seats',
@@ -75,6 +88,11 @@ export const CustomStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_dependabot_alerts',
+  'faros_enterprises',
+  'faros_enterprise_copilot_seats',
+  'faros_enterprise_copilot_usage',
+  'faros_enterprise_teams',
+  'faros_enterprise_team_memberships',
   'faros_issues',
   'faros_issue_comments',
   'faros_labels',
@@ -96,7 +114,10 @@ export const CustomStreamNames = [
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
 
-export const RunModeStreams = {
+export const RunModeStreams: {
+  [key in RunMode]: string[];
+} = {
+  [RunMode.EnterpriseCopilotOnly]: EnterpriseCopilotOnlyStreamNames,
   [RunMode.CopilotEvaluationApp]: CopilotEvaluationAppStreamNames,
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
@@ -141,6 +162,10 @@ export abstract class StreamBase extends AirbyteStreamBase {
   static orgRepoKey(org: string, repo: string): string {
     return toLower(`${org}/${repo}`);
   }
+
+  static enterpriseKey(enterprise: string): string {
+    return toLower(`${enterprise}`);
+  }
 }
 
 export abstract class StreamWithOrgSlices extends StreamBase {
@@ -162,6 +187,14 @@ export abstract class StreamWithRepoSlices extends StreamBase {
           yield {org, repo: repo.name};
         }
       }
+    }
+  }
+}
+
+export abstract class StreamWithEnterpriseSlices extends StreamBase {
+  async *streamSlices(): AsyncGenerator<EnterpriseStreamSlice> {
+    for (const enterprise of this.config.enterprises ?? []) {
+      yield {enterprise};
     }
   }
 }

@@ -36,7 +36,7 @@ describe('index', () => {
   const source = new sut.GitHubSource(logger);
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     (GitHub as any).github = undefined;
     (OrgRepoFilter as any)._instance = undefined;
   });
@@ -68,6 +68,16 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
+  test('check connection - enterprise not available using app', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('check_connection/app_valid.json'),
+        enterprises: ['github'],
+      },
     });
   });
 
@@ -1054,6 +1064,178 @@ describe('index', () => {
     });
   });
 
+  const enterpriseConfig = {
+    ...readTestResourceAsJSON('config.json'),
+    enterprises: ['github'],
+  };
+
+  test('streams - enterprises', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprises/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseMockedImplementation(
+            readTestResourceAsJSON('enterprises/enterprise.json')
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise teams', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_teams/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseTeamsMockedImplementation(
+            readTestResourceAsJSON('enterprise_teams/enterprise_teams.json')
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise team memberships', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_team_memberships/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getEnterpriseTeamsMockedImplementation(
+              readTestResourceAsJSON('enterprise_teams/enterprise_teams.json')
+            ),
+            getEnterpriseTeamMembershipsMockedImplementation(
+              readTestResourceAsJSON('team_memberships/team_memberships.json')
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot seats (empty)', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseCopilotSeatsMockedImplementation(
+            readTestResourceAsJSON('copilot_seats/copilot_seats_empty.json')
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot seats', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_seats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getEnterpriseCopilotSeatsMockedImplementation(
+              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot usage', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getEnterpriseCopilotMetricsMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getEnterpriseTeamsMockedImplementation(
+              readTestResourceAsJSON('enterprise_teams/enterprise_teams.json')
+            ),
+            getEnterpriseCopilotMetricsForTeamMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot usage with teams already up-to-date', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_usage/catalog.json',
+      stateOrPath: {
+        faros_enterprise_copilot_usage: {
+          github: {cutoff: new Date('2024-06-24').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getEnterpriseCopilotMetricsMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            ),
+            getEnterpriseTeamsMockedImplementation(
+              readTestResourceAsJSON('enterprise_teams/enterprise_teams.json')
+            ),
+            getEnterpriseCopilotMetricsForTeamMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(0);
+      },
+    });
+  });
+
   test('onBeforeRead with run_mode Custom streams without filtering', async () => {
     await customStreamsTest(
       source,
@@ -1241,4 +1423,27 @@ const getListCommitStatusesForRefMockedImplementation = (res: any) => ({
   repos: {
     listCommitStatusesForRef: jest.fn().mockReturnValue(res),
   },
+});
+
+const getEnterpriseMockedImplementation = (res: any) =>
+  graphqlMockedImplementation('enterprise', res);
+
+const getEnterpriseTeamsMockedImplementation = (res: any) => ({
+  enterpriseTeams: jest.fn().mockReturnValue(res),
+});
+
+const getEnterpriseTeamMembershipsMockedImplementation = (res: any) => ({
+  enterpriseTeamMembers: jest.fn().mockReturnValue(res),
+});
+
+const getEnterpriseCopilotSeatsMockedImplementation = (res: any) => ({
+  enterpriseCopilotSeats: jest.fn().mockReturnValue(res),
+});
+
+const getEnterpriseCopilotMetricsMockedImplementation = (res: any) => ({
+  enterpriseCopilotMetrics: jest.fn().mockReturnValue({data: res}),
+});
+
+const getEnterpriseCopilotMetricsForTeamMockedImplementation = (res: any) => ({
+  enterpriseCopilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
 });

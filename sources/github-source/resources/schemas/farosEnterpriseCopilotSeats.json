@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "enterprise": {
+      "type": "string"
+    },
+    "empty": {
+      "type": "boolean"
+    },
+    "user": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pending_cancellation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "last_activity_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
