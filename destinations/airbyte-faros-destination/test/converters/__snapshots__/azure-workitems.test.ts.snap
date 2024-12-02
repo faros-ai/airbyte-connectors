@@ -4,8 +4,8 @@ exports[`azure-workitems process records from all streams 1`] = `
 Array [
   "Processed 10 records",
   "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":2,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":2,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 26 records",
-  "Would write records by model: {\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 33 records",
+  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":3,\\\\\\"tms_SprintHistory\\\\\\":3,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -80,11 +80,10 @@ Array [
     },
   },
   Object {
-    "tms_TaskAssignment": Object {
-      "assignedAt": "2017-09-04T02:28:56.253Z",
-      "assignee": Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
         "source": "Azure-Workitems",
-        "uid": "fabrikamfiber4@hotmail.com",
+        "uid": "123",
       },
       "source": "Azure-Workitems",
       "task": Object {
@@ -94,10 +93,11 @@ Array [
     },
   },
   Object {
-    "tms_TaskProjectRelationship": Object {
-      "project": Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T02:28:56.253Z",
+      "assignee": Object {
         "source": "Azure-Workitems",
-        "uid": "123",
+        "uid": "fabrikamfiber4@hotmail.com",
       },
       "source": "Azure-Workitems",
       "task": Object {
@@ -117,6 +117,24 @@ Array [
         "source": "Azure-Workitems",
         "uid": "297",
       },
+    },
+  },
+  Object {
+    "tms_Epic": Object {
+      "createdAt": "2014-12-29T20:49:20.770Z",
+      "description": "Our authorization logic needs to allow for users with Microsoft accounts (formerly Live Ids) - http://msdn.microsoft.com/en-us/library/live/hh826547.aspx",
+      "name": "Customer can sign in using their Microsoft Account",
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+      "status": Object {
+        "category": "Todo",
+        "detail": "New",
+      },
+      "uid": "297",
+      "updatedAt": "2014-12-29T20:49:20.770Z",
     },
   },
   Object {
@@ -186,6 +204,19 @@ Array [
     },
   },
   Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
     "tms_TaskAssignment": Object {
       "assignedAt": "2017-09-04T02:28:56.253Z",
       "assignee": Object {
@@ -205,19 +236,6 @@ Array [
       "assignee": Object {
         "source": "Azure-Workitems",
         "uid": "abrimop@gmail.com",
-      },
-      "source": "Azure-Workitems",
-      "task": Object {
-        "source": "Azure-Workitems",
-        "uid": "299",
-      },
-    },
-  },
-  Object {
-    "tms_TaskProjectRelationship": Object {
-      "project": Object {
-        "source": "Azure-Workitems",
-        "uid": "123",
       },
       "source": "Azure-Workitems",
       "task": Object {
@@ -260,6 +278,62 @@ Array [
       "task": Object {
         "source": "Azure-Workitems",
         "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2017-09-04T02:08:16.600Z",
+      "removedAt": "2017-09-04T02:36:18.750Z",
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 3,
+      },
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 3,
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2017-09-04T02:36:18.750Z",
+      "removedAt": null,
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 4,
+      },
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 4,
       },
     },
   },
@@ -327,11 +401,10 @@ Array [
     },
   },
   Object {
-    "tms_TaskAssignment": Object {
-      "assignedAt": "2017-09-04T02:28:56.253Z",
-      "assignee": Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
         "source": "Azure-Workitems",
-        "uid": "fabrikamfiber4@hotmail.com",
+        "uid": "123",
       },
       "source": "Azure-Workitems",
       "task": Object {
@@ -341,10 +414,11 @@ Array [
     },
   },
   Object {
-    "tms_TaskProjectRelationship": Object {
-      "project": Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T02:28:56.253Z",
+      "assignee": Object {
         "source": "Azure-Workitems",
-        "uid": "123",
+        "uid": "fabrikamfiber4@hotmail.com",
       },
       "source": "Azure-Workitems",
       "task": Object {
@@ -363,6 +437,34 @@ Array [
       "task": Object {
         "source": "Azure-Workitems",
         "uid": "300",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2017-09-04T02:08:16.600Z",
+      "removedAt": null,
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 3,
+      },
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": 3,
       },
     },
   },

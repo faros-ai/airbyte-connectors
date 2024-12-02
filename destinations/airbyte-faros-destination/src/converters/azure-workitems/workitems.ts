@@ -4,8 +4,9 @@ import {Utils} from 'faros-js-client';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {
-  AssigneeChange,
   CategoryDetail,
+  fields,
+  TaskKey,
   TaskStatusChange,
   WorkItem,
 } from './models';
@@ -14,37 +15,55 @@ export class Workitems extends AzureWorkitemsConverter {
   private readonly collectedAreaPaths = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Epic',
+    'tms_SprintBoardRelationship',
+    'tms_SprintHistory',
     'tms_Task',
-    'tms_TaskBoardRelationship',
     'tms_TaskAssignment',
-    'tms_TaskProjectRelationship',
-    'tms_TaskTag',
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
+    'tms_TaskBoardRelationship',
+    'tms_TaskProjectRelationship',
+    'tms_TaskTag',
   ];
 
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
+    const source = this.source;
     const WorkItem = record.record.data as WorkItem;
     const taskKey = {uid: String(WorkItem.id), source};
 
     const areaPath = this.collectAreaPath(
+      taskKey,
       WorkItem.fields['System.AreaPath'],
       WorkItem.projectId
     );
-
+    const taskBoard = this.convertAreaPath(taskKey, areaPath);
     const statusChangelog = this.convertStateRevisions(
       WorkItem.revisions.states
     );
     const assignees = this.convertAssigneeRevisions(
+      taskKey,
       WorkItem.revisions.assignees
     );
-    const {name: stateName, category: stateCategory} =
-      WorkItem.fields['Faros']['WorkItemStateCategory'];
+    const sprintHistory = this.convertIterationRevisions(
+      taskKey,
+      WorkItem.revisions.iterations,
+      areaPath
+    );
 
-    const tags = this.getTags(WorkItem.fields['System.Tags']);
+    const tags = this.getTags(taskKey, WorkItem.fields['System.Tags']);
+    const status = this.getStatusMapping(
+      WorkItem.fields['Faros']['WorkItemStateCategory']
+    );
+
+    const epic = this.getEpic(
+      taskKey,
+      WorkItem.fields,
+      status,
+      WorkItem.projectId
+    );
     return [
       {
         model: 'tms_Task',
@@ -60,7 +79,7 @@ export class Workitems extends AzureWorkitemsConverter {
           description: Utils.cleanAndTruncate(
             WorkItem.fields['System.Description']
           ),
-          status: this.getStatusMapping(stateName, stateCategory),
+          status,
           statusChangedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
@@ -83,14 +102,6 @@ export class Workitems extends AzureWorkitemsConverter {
           points: WorkItem.fields['Microsoft.VSTS.Scheduling.StoryPoints'],
         },
       },
-      ...assignees.map((assignee) => ({
-        model: 'tms_TaskAssignment',
-        record: {
-          task: taskKey,
-          assignee: {uid: assignee.assignee, source},
-          assignedAt: assignee.changedAt,
-        },
-      })),
       {
         model: 'tms_TaskProjectRelationship',
         record: {
@@ -98,39 +109,70 @@ export class Workitems extends AzureWorkitemsConverter {
           project: {uid: String(WorkItem.projectId), source},
         },
       },
-      ...tags.map((tag) => ({
-        model: 'tms_TaskTag',
-        record: {task: taskKey, label: {name: tag}},
-      })),
-      ...(areaPath
-        ? [
-            {
-              model: 'tms_TaskBoardRelationship',
-              record: {
-                task: taskKey,
-                board: {uid: areaPath, source},
-              },
-            },
-          ]
-        : []),
-      // TODO - Add sprintHistory
+      ...assignees,
+      ...tags,
+      ...taskBoard,
+      ...sprintHistory,
+      ...epic,
     ];
   }
 
-  private collectAreaPath(areaPath: string, projectId: string): string {
+  private convertAreaPath(
+    task: TaskKey,
+    areaPath?: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!areaPath) {
+      return [];
+    }
+
+    return [
+      {
+        model: 'tms_TaskBoardRelationship',
+        record: {
+          task,
+          board: {uid: areaPath, source: this.source},
+        },
+      },
+    ];
+  }
+
+  private collectAreaPath(
+    task: TaskKey,
+    areaPath: string,
+    projectId: string
+  ): string {
     if (!areaPath || !projectId) {
       return;
     }
 
     const projectAreaPaths =
       this.collectedAreaPaths.get(projectId) ?? new Set<string>();
-    projectAreaPaths.add(areaPath.trim());
+
+    const trimmedPath = areaPath.trim();
+    projectAreaPaths.add(trimmedPath);
     this.collectedAreaPaths.set(projectId, projectAreaPaths);
-    return areaPath.trim();
+
+    return trimmedPath;
   }
 
-  private getTags(tags?: string): string[] {
-    return tags?.split(';').map((tag) => tag.trim()) ?? [];
+  private getTags(
+    task: TaskKey,
+    tags?: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!tags?.trim()) {
+      return [];
+    }
+
+    return tags
+      .split(';')
+      .filter(Boolean)
+      .map((tag) => ({
+        model: 'tms_TaskTag',
+        record: {
+          task,
+          label: {name: tag.trim()},
+        },
+      }));
   }
 
   private getTaskType(type: string): CategoryDetail {
@@ -145,7 +187,10 @@ export class Workitems extends AzureWorkitemsConverter {
     };
   }
 
-  private getStatusMapping(name: string, category: string): CategoryDetail {
+  private getStatusMapping(state: {
+    name: string;
+    category: string;
+  }): CategoryDetail {
     const statusMapping = {
       Proposed: 'Todo',
       InProgress: 'InProgress',
@@ -153,27 +198,95 @@ export class Workitems extends AzureWorkitemsConverter {
       Completed: 'Done',
       Removed: 'Done',
     };
+
+    const {name, category} = state;
     return {
       category: statusMapping[category] ?? 'Custom',
       detail: name,
     };
   }
 
-  private convertAssigneeRevisions(assigneeRevisions: any[]): AssigneeChange[] {
+  private convertAssigneeRevisions(
+    task: TaskKey,
+    assigneeRevisions: any[]
+  ): ReadonlyArray<DestinationRecord> {
     return assigneeRevisions.map((revision) => ({
-      assignee: revision.assignee?.uniqueName,
-      changedAt: Utils.toDate(revision.changedDate),
+      model: 'tms_TaskAssignment',
+      record: {
+        task,
+        assignee: {uid: revision.assignee?.uniqueName, source: this.source},
+        assignedAt: Utils.toDate(revision.changedDate),
+      },
     }));
   }
 
   private convertStateRevisions(stateRevisions: any[]): TaskStatusChange[] {
     return stateRevisions.map((revision) => ({
-      status: this.getStatusMapping(
-        revision.state.name,
-        revision.state.category
-      ),
+      status: this.getStatusMapping(revision.state),
       changedAt: Utils.toDate(revision.changedDate),
     }));
+  }
+
+  private convertIterationRevisions(
+    task: TaskKey,
+    iterations: any[],
+    areaPath: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!iterations?.length) {
+      return [];
+    }
+
+    return iterations.flatMap((revision) => {
+      const records: DestinationRecord[] = [
+        {
+          model: 'tms_SprintHistory',
+          record: {
+            task,
+            sprint: {uid: revision.iteration, source: this.source},
+            addedAt: Utils.toDate(revision.addedAt),
+            removedAt: Utils.toDate(revision.removedAt),
+          },
+        },
+      ];
+
+      if (areaPath) {
+        records.push({
+          model: 'tms_SprintBoardRelationship',
+          record: {
+            sprint: {uid: revision.iteration, source: this.source},
+            board: {uid: areaPath, source: this.source},
+          },
+        });
+      }
+
+      return records;
+    });
+  }
+
+  private getEpic(
+    key: {uid: string; source: string},
+    fields: fields,
+    status: CategoryDetail,
+    projectId: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (fields['System.WorkItemType'] !== 'Epic') {
+      return [];
+    }
+
+    return [
+      {
+        model: 'tms_Epic',
+        record: {
+          ...key,
+          name: fields['System.Title'],
+          description: Utils.cleanAndTruncate(fields['System.Description']),
+          createdAt: Utils.toDate(fields['System.CreatedDate']),
+          updatedAt: Utils.toDate(fields['System.ChangedDate']),
+          status,
+          project: {uid: String(projectId), source: this.streamName.source},
+        },
+      },
+    ];
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
