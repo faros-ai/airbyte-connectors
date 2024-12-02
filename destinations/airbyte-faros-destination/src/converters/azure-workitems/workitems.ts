@@ -35,7 +35,6 @@ export class Workitems extends AzureWorkitemsConverter {
     const taskKey = {uid: String(WorkItem.id), source};
 
     const areaPath = this.collectAreaPath(
-      taskKey,
       WorkItem.fields['System.AreaPath'],
       WorkItem.projectId
     );
@@ -137,7 +136,6 @@ export class Workitems extends AzureWorkitemsConverter {
   }
 
   private collectAreaPath(
-    task: TaskKey,
     areaPath: string,
     projectId: string
   ): string {

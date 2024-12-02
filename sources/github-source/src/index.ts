@@ -26,6 +26,11 @@ import {FarosCommits} from './streams/faros_commits';
 import {FarosCopilotSeats} from './streams/faros_copilot_seats';
 import {FarosCopilotUsage} from './streams/faros_copilot_usage';
 import {FarosDependabotAlerts} from './streams/faros_dependabot_alerts';
+import {FarosEnterpriseCopilotSeats} from './streams/faros_enterprise_copilot_seats';
+import {FarosEnterpriseCopilotUsage} from './streams/faros_enterprise_copilot_usage';
+import {FarosEnterpriseTeamMemberships} from './streams/faros_enterprise_team_memberships';
+import {FarosEnterpriseTeams} from './streams/faros_enterprise_teams';
+import {FarosEnterprises} from './streams/faros_enterprises';
 import {FarosIssueComments} from './streams/faros_issue_comments';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosLabels} from './streams/faros_labels';
@@ -91,6 +96,11 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosCopilotSeats(config, this.logger, farosClient),
       new FarosCopilotUsage(config, this.logger, farosClient),
       new FarosDependabotAlerts(config, this.logger, farosClient),
+      new FarosEnterprises(config, this.logger, farosClient),
+      new FarosEnterpriseCopilotSeats(config, this.logger, farosClient),
+      new FarosEnterpriseCopilotUsage(config, this.logger, farosClient),
+      new FarosEnterpriseTeams(config, this.logger, farosClient),
+      new FarosEnterpriseTeamMemberships(config, this.logger, farosClient),
       new FarosIssues(config, this.logger, farosClient),
       new FarosIssueComments(config, this.logger, farosClient),
       new FarosLabels(config, this.logger, farosClient),

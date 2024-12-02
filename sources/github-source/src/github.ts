@@ -13,6 +13,15 @@ import {
   CopilotUsageSummary,
   CoverageReport,
   DependabotAlert,
+  Enterprise,
+  EnterpriseCopilotSeat,
+  EnterpriseCopilotSeatsEmpty,
+  EnterpriseCopilotSeatsResponse,
+  EnterpriseCopilotUsageSummary,
+  EnterpriseTeam,
+  EnterpriseTeamMembership,
+  EnterpriseTeamMembershipsResponse,
+  EnterpriseTeamsResponse,
   Issue,
   IssueComment,
   Label,
@@ -41,6 +50,7 @@ import {
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
+  EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
   ListMembersQuery,
@@ -54,6 +64,7 @@ import {
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_QUERY,
+  ENTERPRISE_QUERY,
   FILES_FRAGMENT,
   ISSUES_QUERY,
   LABELS_FRAGMENT,
@@ -69,6 +80,7 @@ import {
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
+import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -131,6 +143,7 @@ export abstract class GitHub {
   protected readonly backfill: boolean;
   protected readonly fetchPullRequestDiffCoverage: boolean;
   protected readonly pullRequestCutoffLagSeconds: number;
+  protected readonly useEnterpriseAPIs: boolean;
 
   constructor(
     config: GitHubConfig,
@@ -153,6 +166,7 @@ export abstract class GitHub {
       config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
     this.pullRequestCutoffLagSeconds =
       config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
+    this.useEnterpriseAPIs = config.enterprises?.length > 0;
   }
 
   static async instance(
@@ -1787,6 +1801,166 @@ export abstract class GitHub {
     }
   }
 
+  async getEnterprise(enterprise: string): Promise<Enterprise> {
+    const res = await this.baseOctokit.graphql<EnterpriseQuery>(
+      ENTERPRISE_QUERY,
+      {slug: enterprise}
+    );
+    return res.enterprise;
+  }
+
+  @Memoize()
+  async getEnterpriseTeams(
+    enterprise: string
+  ): Promise<ReadonlyArray<EnterpriseTeam>> {
+    const teams: EnterpriseTeam[] = [];
+    const iter = this.baseOctokit.paginate.iterator<EnterpriseTeamsResponse[0]>(
+      this.baseOctokit.enterpriseTeams,
+      {
+        enterprise,
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of iter) {
+      for (const team of res.data) {
+        teams.push({
+          enterprise,
+          ...pick(team, ['slug', 'name']),
+        });
+      }
+    }
+    return teams;
+  }
+
+  async *getEnterpriseTeamMemberships(
+    enterprise: string
+  ): AsyncGenerator<EnterpriseTeamMembership> {
+    for (const team of await this.getEnterpriseTeams(enterprise)) {
+      const iter = this.baseOctokit.paginate.iterator<
+        EnterpriseTeamMembershipsResponse[0]
+      >(this.baseOctokit.enterpriseTeamMembers, {
+        enterprise,
+        team_slug: team.slug,
+        per_page: this.pageSize,
+      });
+      for await (const res of iter) {
+        for (const member of res.data) {
+          if (member.login) {
+            yield {
+              enterprise,
+              team: team.slug,
+              user: pick(member, [
+                'login',
+                'name',
+                'email',
+                'html_url',
+                'type',
+              ]),
+            };
+          }
+        }
+      }
+    }
+  }
+
+  async *getEnterpriseCopilotSeats(
+    enterprise: string
+  ): AsyncGenerator<EnterpriseCopilotSeatsStreamRecord> {
+    let seatsFound: boolean = false;
+    const iter: AsyncIterableIterator<{data: EnterpriseCopilotSeatsResponse}> =
+      this.baseOctokit.paginate.iterator<any>(
+        this.baseOctokit.enterpriseCopilotSeats,
+        {
+          enterprise,
+          per_page: this.pageSize,
+        }
+      );
+    for await (const res of iter) {
+      for (const seat of res.data.seats) {
+        seatsFound = true;
+        yield {
+          enterprise,
+          user: seat.assignee.login as string,
+          ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
+        } as EnterpriseCopilotSeat;
+      }
+    }
+    if (!seatsFound) {
+      yield {
+        empty: true,
+        enterprise,
+      } as EnterpriseCopilotSeatsEmpty;
+    }
+  }
+
+  async *getEnterpriseCopilotUsage(
+    enterprise: string,
+    cutoffDate: number
+  ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
+    const res: OctokitResponse<CopilotMetricsResponse> =
+      await this.baseOctokit.request(
+        this.baseOctokit.enterpriseCopilotMetrics,
+        {
+          enterprise,
+        }
+      );
+    const data = transformCopilotMetricsResponse(res.data);
+    if (isNil(data) || isEmpty(data)) {
+      this.logger.warn(
+        `No GitHub Copilot usage found for enterprise ${enterprise}.`
+      );
+      return;
+    }
+    const latestDay = Math.max(
+      0,
+      ...data.map((usage) => Utils.toDate(usage.day).getTime())
+    );
+    if (latestDay <= cutoffDate) {
+      this.logger.info(
+        `GitHub Copilot usage data for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+      );
+      return;
+    }
+    for (const usage of data) {
+      yield {
+        enterprise,
+        team: null,
+        ...usage,
+      };
+    }
+    yield* this.getEnterpriseCopilotUsageTeams(enterprise);
+  }
+
+  async *getEnterpriseCopilotUsageTeams(
+    enterprise: string
+  ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
+    const teams = await this.getEnterpriseTeams(enterprise);
+    for (const team of teams) {
+      const res: OctokitResponse<CopilotMetricsResponse> =
+        await this.baseOctokit.request(
+          this.baseOctokit.enterpriseCopilotMetricsForTeam,
+          {
+            enterprise,
+            team_slug: team.slug,
+          }
+        );
+      const data = transformCopilotMetricsResponse(res.data);
+      if (isNil(data) || isEmpty(data)) {
+        this.logger.warn(
+          `No GitHub Copilot usage found for enterprise ${enterprise} - team ${team.slug}.`
+        );
+        continue;
+      }
+      for (const usage of data) {
+        yield {
+          enterprise,
+          team: team.slug,
+          ...usage,
+        };
+      }
+    }
+  }
+
   // GitHub GraphQL API may return partial data with a non 2xx status when
   // a particular record in a result list is not found (null) for some reason
   private async acceptPartialResponse<T>(
@@ -1907,6 +2081,11 @@ export class GitHubApp extends GitHub {
   }
 
   async checkConnection(): Promise<void> {
+    if (this.useEnterpriseAPIs) {
+      throw new VError(
+        'Enterprise data is only available when authenticating with personal access token'
+      );
+    }
     await this.baseOctokit.apps.getAuthenticated();
   }
 

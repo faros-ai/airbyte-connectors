@@ -13,6 +13,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly excluded_organizations?: ReadonlyArray<string>;
   readonly repositories?: ReadonlyArray<string>;
   readonly excluded_repositories?: ReadonlyArray<string>;
+  readonly enterprises?: ReadonlyArray<string>;
   readonly run_mode?: RunMode;
   readonly custom_streams?: ReadonlyArray<string>;
   readonly fetch_teams?: boolean;

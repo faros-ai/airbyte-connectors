@@ -7898,6 +7898,14 @@ export type CommitsQuery = {
   } | null;
 };
 
+export type EnterpriseQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+export type EnterpriseQuery = {
+  enterprise?: {slug: string; name: string; url: string} | null;
+};
+
 export type FilesFragment = {
   files?: {
     pageInfo: {hasNextPage: boolean; endCursor?: string | null};

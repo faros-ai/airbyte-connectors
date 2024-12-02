@@ -28,6 +28,11 @@ export type ExtendedOctokit = OctokitRest &
     auditLogs: string;
     copilotMetrics: string;
     copilotMetricsForTeam: string;
+    enterpriseCopilotSeats: string;
+    enterpriseCopilotMetrics: string;
+    enterpriseCopilotMetricsForTeam: string;
+    enterpriseTeams: string;
+    enterpriseTeamMembers: string;
   };
 const ExtendedOctokitConstructor = OctokitRest.plugin(
   paginateGraphql,
@@ -90,6 +95,14 @@ export function makeOctokitClient(
     auditLogs: 'GET /orgs/{org}/audit-log',
     copilotMetrics: 'GET /orgs/{org}/copilot/metrics',
     copilotMetricsForTeam: 'GET /orgs/{org}/team/{team_slug}/copilot/metrics',
+    enterpriseCopilotSeats:
+      'GET /enterprises/{enterprise}/copilot/billing/seats',
+    enterpriseCopilotMetrics: 'GET /enterprises/{enterprise}/copilot/metrics',
+    enterpriseCopilotMetricsForTeam:
+      'GET /enterprises/{enterprise}/team/{team_slug}/copilot/metrics',
+    enterpriseTeams: 'GET /enterprises/{enterprise}/teams',
+    enterpriseTeamMembers:
+      'GET /enterprises/{enterprise}/teams/{team_slug}/memberships',
   };
 }
 
