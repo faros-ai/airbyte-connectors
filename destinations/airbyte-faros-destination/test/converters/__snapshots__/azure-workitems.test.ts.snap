@@ -1,0 +1,477 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`azure-workitems process records from all streams 1`] = `
+Array [
+  "Processed 10 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":2,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":2,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 26 records",
+  "Would write records by model: {\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`azure-workitems process records from all streams 2`] = `
+Array [
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [
+        Object {
+          "name": "Area Path",
+          "value": "Fabrikam-Fiber-Git",
+        },
+        Object {
+          "name": "Effort",
+          "value": 8,
+        },
+      ],
+      "createdAt": "2014-12-29T20:49:20.770Z",
+      "creator": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "description": "Our authorization logic needs to allow for users with Microsoft accounts (formerly Live Ids) - http://msdn.microsoft.com/en-us/library/live/hh826547.aspx",
+      "name": "Customer can sign in using their Microsoft Account",
+      "parent": null,
+      "points": 3,
+      "priority": "1",
+      "resolutionStatus": null,
+      "resolvedAt": null,
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "1",
+      },
+      "status": Object {
+        "category": "Todo",
+        "detail": "New",
+      },
+      "statusChangedAt": "2017-09-04T02:36:41.253Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2017-09-04T02:08:16.600Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "New",
+          },
+        },
+        Object {
+          "changedAt": "2017-09-04T02:36:18.750Z",
+          "status": Object {
+            "category": "InProgress",
+            "detail": "Active",
+          },
+        },
+        Object {
+          "changedAt": "2017-09-04T02:36:41.253Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "Resolved",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Custom",
+        "detail": "Epic",
+      },
+      "uid": "297",
+      "updatedAt": "2014-12-29T20:49:20.770Z",
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/297",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T02:28:56.253Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [
+        Object {
+          "name": "Area Path",
+          "value": "Fabrikam-Fiber-Git\\\\Website",
+        },
+        Object {
+          "name": "Remaining Work",
+          "value": 4,
+        },
+      ],
+      "createdAt": "2014-12-29T20:49:21.617Z",
+      "creator": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "description": "Follow the code samples from MSDN",
+      "name": "JavaScript implementation for Microsoft Account",
+      "parent": Object {
+        "source": "Azure-Workitems",
+        "uid": "127",
+      },
+      "points": null,
+      "priority": "undefined",
+      "resolutionStatus": "User fixed",
+      "resolvedAt": "2017-09-09T01:36:41.253Z",
+      "source": "Azure-Workitems",
+      "sprint": null,
+      "status": Object {
+        "category": "Todo",
+        "detail": "To Do",
+      },
+      "statusChangedAt": "2017-09-09T01:36:41.253Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2017-09-04T02:08:16.600Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "New",
+          },
+        },
+        Object {
+          "changedAt": "2017-09-04T02:36:18.750Z",
+          "status": Object {
+            "category": "InProgress",
+            "detail": "Active",
+          },
+        },
+        Object {
+          "changedAt": "2017-09-04T02:36:41.253Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "Resolved",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Task",
+        "detail": "Task",
+      },
+      "uid": "299",
+      "updatedAt": "2014-12-29T20:49:28.740Z",
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/299",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T02:28:56.253Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-05T00:00:00.000Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "abrimop@gmail.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "Tag1",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "Tag2",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "299",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [
+        Object {
+          "name": "Area Path",
+          "value": "Fabrikam-Fiber-Git",
+        },
+        Object {
+          "name": "Remaining Work",
+          "value": 3,
+        },
+        Object {
+          "name": "Test Name",
+          "value": "Zephyr",
+        },
+      ],
+      "createdAt": "2014-12-29T20:49:22.103Z",
+      "creator": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "description": "We need to ensure we have coverage to prevent regressions",
+      "name": "Unit Testing for MSA login",
+      "parent": null,
+      "points": 8,
+      "priority": "9",
+      "resolutionStatus": null,
+      "resolvedAt": null,
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "2",
+      },
+      "status": Object {
+        "category": "Done",
+        "detail": "Work Completed",
+      },
+      "statusChangedAt": null,
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2017-09-04T02:08:16.600Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "New",
+          },
+        },
+        Object {
+          "changedAt": "2017-09-04T02:36:41.253Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "Resolved",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Story",
+        "detail": "User Story",
+      },
+      "uid": "300",
+      "updatedAt": "2014-12-29T20:49:22.103Z",
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T02:28:56.253Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "fabrikamfiber4@hotmail.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": null,
+      "endedAt": null,
+      "name": "Sprint 2",
+      "openedAt": null,
+      "source": "Azure-Workitems",
+      "startedAt": null,
+      "state": "Future",
+      "uid": "a589a806-bf11-4d4f-a031-c19813331553",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2024-01-31T00:00:00.000Z",
+      "endedAt": "2024-01-31T00:00:00.000Z",
+      "name": "Sprint 1",
+      "openedAt": "2024-01-01T00:00:00.000Z",
+      "source": "Azure-Workitems",
+      "startedAt": "2024-01-01T00:00:00.000Z",
+      "state": "Closed",
+      "uid": "a589a806-bf11-4d4f-a031-c19813331553",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Team Foundation Version Control projects.",
+      "name": "Fabrikam-Fiber-TFVC",
+      "source": "Azure-Workitems",
+      "uid": "eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+      "updatedAt": "2024-06-24T14:29:16.360Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Git projects",
+      "name": "Fabrikam-Fiber-Git",
+      "source": "Azure-Workitems",
+      "uid": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": null,
+      "name": "TestGit",
+      "source": "Azure-Workitems",
+      "uid": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+      "updatedAt": null,
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "jamal.hartnett@fabrikam.com",
+      "name": "Jamal Hartnett",
+      "source": "Azure-Workitems",
+      "uid": "jamal.hartnett@fabrikam.com",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "christie.church@fabrikam.com",
+      "name": "Christie Church",
+      "source": "Azure-Workitems",
+      "uid": "christie.church@fabrikam.com",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Fabrikam-Fiber-Git",
+      "source": "Azure-Workitems",
+      "uid": "Fabrikam-Fiber-Git",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git",
+      },
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Website",
+      "source": "Azure-Workitems",
+      "uid": "Fabrikam-Fiber-Git\\\\Website",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "project": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+      "source": "Azure-Workitems",
+    },
+  },
+]
+`;

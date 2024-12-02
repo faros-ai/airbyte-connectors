@@ -2,5 +2,5 @@
   "username": "test",
   "password": "secret",
   "run_mode": "Minimum",
-  "start_date": "2024-09-01"
+  "cutoff_days": 9999
 }
