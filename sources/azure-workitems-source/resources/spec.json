@@ -4,7 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Workitems Spec",
     "type": "object",
-    "required": ["access_token", "organization", "project"],
+    "required": ["access_token", "organization"],
     "additionalProperties": true,
     "properties": {
       "access_token": {
@@ -23,7 +23,8 @@
         "order": 1,
         "type": "array",
         "items": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "title": "Project IDs or project names",
         "description": "Azure Projects. If empty or '*' all available projects will be processed."
@@ -33,6 +34,25 @@
         "title": "Azure Project",
         "deprecated": true,
         "description": "Deprecated: Please use 'projects' array instead"
+      },
+      "additional_fields": {
+        "type": "array",
+        "title": "Additional Fields",
+        "items": {
+          "type": "string"
+        },
+        "description": "Fields to include on tasks.",
+        "examples": [
+          "Area Path",
+          "Acceptance Criteria",
+          "Accepted By"
+        ]
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "The threshold after which data should be synced.",
+        "default": 90
       },
       "graph_version": {
         "type": "string",
@@ -48,7 +68,7 @@
       "api_version": {
         "type": "string",
         "title": "API Version",
-        "default": "7.0"
+        "default": "7.1"
       }
     }
   }

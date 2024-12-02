@@ -26,6 +26,7 @@
     "node": ">=18"
   },
   "exports": {
+    "./azurepipeline": "./lib/azurepipeline/index.js",
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./clickup": "./lib/clickup/index.js",
@@ -39,6 +40,9 @@
   },
   "typesVersions": {
     "*": {
+      "azurepipeline": [
+        "./lib/azurepipeline/index.d.ts"
+      ],
       "bitbucket": [
         "./lib/bitbucket/index.d.ts"
       ],

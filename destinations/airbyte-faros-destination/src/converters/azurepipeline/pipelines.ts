@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/azurepipeline';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {Pipeline} from './models';
 
 export class Pipelines extends AzurePipelineConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -43,7 +43,7 @@ export class Pipelines extends AzurePipelineConverter {
       model: 'cicd_Pipeline',
       record: {
         uid: String(pipeline.id),
-        name: pipeline.name,
+        name: `${pipeline.projectName}:${pipeline.name}`,
         url: pipeline.url,
         organization,
       },

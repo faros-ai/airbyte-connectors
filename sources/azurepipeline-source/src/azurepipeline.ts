@@ -1,9 +1,5 @@
 import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry} from 'faros-js-client';
-import {Dictionary} from 'ts-essentials';
-import {VError} from 'verror';
-
 import {
   Build,
   BuildArtifactResponse,
@@ -13,7 +9,10 @@ import {
   PipelineResponse,
   Release,
   ReleaseResponse,
-} from './models';
+} from 'faros-airbyte-common/azurepipeline';
+import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
+import {Dictionary} from 'ts-essentials';
+import {VError} from 'verror';
 
 const DEFAULT_API_VERSION = '6.0';
 const DEFAULT_CUTOFF_DAYS = 90;
@@ -199,7 +198,10 @@ export class AzurePipeline {
       logger?.info(`Fetched ${res.data.count} pipelines`);
 
       for (const pipeline of res.data.value) {
-        yield pipeline;
+        yield {
+          projectName: project,
+          ...pipeline,
+        };
       }
 
       continuationToken = res.headers[CONTINUATION_TOKEN_HEADER];
@@ -213,11 +215,11 @@ export class AzurePipeline {
 
   async *getBuilds(
     project: string,
-    lastFinishTime?: string,
+    lastFinishTime?: number,
     logger?: AirbyteLogger
   ): AsyncGenerator<Build> {
     const startTime = lastFinishTime
-      ? new Date(lastFinishTime)
+      ? Utils.toDate(lastFinishTime)
       : this.startDate;
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-6.0#buildqueryorder
@@ -300,10 +302,12 @@ export class AzurePipeline {
 
   async *getReleases(
     project: string,
-    lastCreatedOn?: string,
+    lastCreatedOn?: number,
     logger?: AirbyteLogger
   ): AsyncGenerator<Release> {
-    const startTime = lastCreatedOn ? new Date(lastCreatedOn) : this.startDate;
+    const startTime = lastCreatedOn
+      ? Utils.toDate(lastCreatedOn)
+      : this.startDate;
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/release/releases/list?view=azure-devops-rest-6.0
     //https://docs.microsoft.com/en-us/rest/api/azure/devops/release/releases/list?view=azure-devops-rest-6.0#releasequeryorder
     const params = {

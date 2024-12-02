@@ -4,11 +4,11 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azurepipeline';
 import fs from 'fs-extra';
 import nock from 'nock';
 
 import * as sut from '../src/index';
-import {Build} from '../src/models';
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -66,7 +66,9 @@ describe('index', () => {
 
     mock.done();
 
-    expect(pipelines).toStrictEqual(pipelinesResource);
+    expect(pipelines).toStrictEqual(
+      pipelinesResource.map((p) => ({projectName: 'proj1', ...p}))
+    );
   });
 
   test('streams - builds', async () => {
@@ -97,7 +99,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastFinishTime: WATERMARK}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const builds = [];
@@ -148,7 +150,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastFinishTime: WATERMARK}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const builds = [];
@@ -177,7 +179,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {project: 'proj1'},
-      {lastCreatedOn: WATERMARK}
+      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
     );
 
     const releases = [];

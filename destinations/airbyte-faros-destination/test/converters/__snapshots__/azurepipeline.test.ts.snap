@@ -4,8 +4,8 @@ exports[`azurepipeline basic test process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__azurepipeline__builds\\\\\\":4,\\\\\\"mytestsource__azurepipeline__pipelines\\\\\\":2,\\\\\\"mytestsource__azurepipeline__releases\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 21 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 22 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"qa_CodeQuality\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -22,7 +22,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "coonglinh.medee_dms",
+      "name": "devcube:coonglinh.medee_dms",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
@@ -34,7 +34,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
-      "name": "devcube",
+      "name": "devcube:devcube",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
@@ -75,7 +75,7 @@ Array [
         "uid": "huongkstn",
       },
       "source": "AzurePipeline",
-      "uid": "Bitbucket_coonglinh/medee_dms",
+      "uid": "Bitbucket:coonglinh/medee_dms",
       "url": null,
     },
   },
@@ -180,7 +180,7 @@ Array [
           "source": "AzurePipeline",
           "uid": "huongkstn",
         },
-        "uid": "Bitbucket_coonglinh/medee_dms",
+        "uid": "Bitbucket:coonglinh/medee_dms",
       },
       "source": "AzurePipeline",
       "tags": Array [],
@@ -208,7 +208,7 @@ Array [
           "source": "AzurePipeline",
           "uid": "huongkstn",
         },
-        "uid": "Bitbucket_coonglinh/medee_dms",
+        "uid": "Bitbucket:coonglinh/medee_dms",
       },
       "source": "AzurePipeline",
       "tags": Array [
@@ -318,13 +318,15 @@ Array [
       },
       "commit": Object {
         "repository": Object {
-          "name": "Test Project_undefined",
+          "name": "Test Project:test",
           "organization": Object {
             "source": "Azure-Repos",
             "uid": "Test-Org",
           },
+          "uid": "Test Project:test",
         },
         "sha": "11f90c4879fd3469f9d0c188d5fbec764689788a",
+        "uid": "11f90c4879fd3469f9d0c188d5fbec764689788a",
       },
       "source": "AzurePipeline",
     },
@@ -332,13 +334,13 @@ Array [
   Object {
     "cicd_Repository": Object {
       "description": null,
-      "name": null,
+      "name": "test",
       "organization": Object {
         "source": "AzurePipeline",
         "uid": "huongkstn",
       },
       "source": "AzurePipeline",
-      "uid": "TfsGit_123",
+      "uid": "TfsGit:123",
       "url": "https://dev.azure.com/Test-Org/Test%20Project/_git/Repository.Test",
     },
   },
@@ -424,10 +426,69 @@ Array [
             "source": "GitHub",
             "uid": "ypc-faros",
           },
+          "uid": "pipelines-java",
         },
         "sha": "41b0bf840db30c017077535e8687126088eee5b7",
+        "uid": "41b0bf840db30c017077535e8687126088eee5b7",
       },
       "source": "AzurePipeline",
+    },
+  },
+  Object {
+    "qa_CodeQuality": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "pipelines-java",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "ypc-faros",
+          },
+          "uid": "pipelines-java",
+        },
+        "sha": "41b0bf840db30c017077535e8687126088eee5b7",
+        "uid": "41b0bf840db30c017077535e8687126088eee5b7",
+      },
+      "createdAt": "2023-05-31T14:22:53.426Z",
+      "lineCoverage": Object {
+        "category": "Coverage",
+        "name": "Line Coverage",
+        "type": "Percent",
+        "value": "84.40366972477065",
+      },
+      "linesToCover": Object {
+        "category": "Coverage",
+        "name": "Lines to Cover",
+        "type": "Int",
+        "value": "109",
+      },
+      "pullRequest": Object {
+        "number": 76393,
+        "repository": Object {
+          "name": "pipelines-java",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "ypc-faros",
+          },
+          "uid": "pipelines-java",
+        },
+        "uid": "76393",
+      },
+      "repository": Object {
+        "name": "pipelines-java",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "ypc-faros",
+        },
+        "uid": "pipelines-java",
+      },
+      "source": "AzurePipeline",
+      "uid": "41b0bf840db30c017077535e8687126088eee5b7",
+      "uncoveredLines": Object {
+        "category": "Coverage",
+        "name": "Uncovered Lines",
+        "type": "Int",
+        "value": "17",
+      },
     },
   },
   Object {
@@ -439,7 +500,7 @@ Array [
         "uid": "ypc1",
       },
       "source": "AzurePipeline",
-      "uid": "GitHub_ypc-faros/pipelines-java",
+      "uid": "GitHub:ypc-faros/pipelines-java",
       "url": null,
     },
   },

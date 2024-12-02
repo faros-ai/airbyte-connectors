@@ -39,17 +39,19 @@ export interface RunResponse {
 }
 
 export interface Pipeline {
+  projectName: string;
   id: number;
   revision: number;
   name?: string;
   url?: string;
   folder?: string;
   _links: PipelineLink;
+  runs: Run[];
 }
 
 export interface PipelineResponse {
   count: number;
-  value: Pipeline[];
+  value: Omit<Pipeline, 'projectName'>[];
 }
 
 interface BuildLink {
@@ -124,7 +126,7 @@ interface BuildLog {
   url: string;
 }
 
-interface Repository {
+export interface Repository {
   id: string;
   type: string;
   name: string;
@@ -160,7 +162,7 @@ interface BuildTimelineIssue {
   message: string;
 }
 
-interface BuildTimeline {
+export interface BuildTimeline {
   previousAttempts: any[];
   id: string;
   parentId: string;
@@ -283,7 +285,7 @@ export interface ReleaseResponse {
   value: Release[];
 }
 
-interface CoverageStats {
+export interface CoverageStats {
   label: string;
   position: number;
   total: number;
@@ -309,4 +311,78 @@ export interface CoverageResponse {
   deltaBuild: any;
   status: string;
   coverageDetailedSummaryStatus: string;
+}
+
+export interface Tag {
+  readonly name: string;
+  readonly value: string;
+}
+
+export enum RepoSource {
+  BITBUCKET = 'Bitbucket',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  VCS = 'VCS',
+}
+
+export enum BuildStateCategory {
+  Unknown = 'Unknown',
+  Canceled = 'Canceled',
+  Failed = 'Failed',
+  Success = 'Success',
+  Running = 'Running',
+  Queued = 'Queued',
+  Custom = 'Custom',
+}
+
+export enum JobCategory {
+  Custom = 'Custom',
+  Script = 'Script',
+  Manual = 'Manual',
+}
+
+export interface Repo {
+  readonly provider: Provider;
+  readonly url: string;
+}
+
+export interface RepoExtract {
+  readonly org: string;
+  readonly name: string;
+}
+
+export interface Provider {
+  readonly name: RepoSource;
+}
+export interface Timestamps {
+  createdAt?: Date;
+  startedAt?: Date;
+  endedAt?: Date;
+}
+
+export interface JobState {
+  category: string;
+  detail: string;
+}
+
+export enum UserTypeCategory {
+  BOT = 'Bot',
+  ORGANIZATION = 'Organization',
+  USER = 'User',
+  CUSTOM = 'Custom',
+}
+
+export enum DeploymentStatusCategory {
+  Canceled = 'Canceled',
+  Custom = 'Custom',
+  Failed = 'Failed',
+  Queued = 'Queued',
+  Running = 'Running',
+  RolledBack = 'RolledBack',
+  Success = 'Success',
+}
+
+export interface DeploymentStatus {
+  category: DeploymentStatusCategory;
+  detail: string;
 }

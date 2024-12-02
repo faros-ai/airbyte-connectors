@@ -19,6 +19,7 @@ export type PullRequestKey = {
   uid: string;
   repository: RepoKey;
 };
+export type CommitKey = {sha: string; repository: RepoKey};
 export type UserKey = {uid: string; source: string};
 
 export type FileKey = {

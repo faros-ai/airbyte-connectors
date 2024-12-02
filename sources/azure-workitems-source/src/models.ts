@@ -17,6 +17,13 @@ export interface WorkItem {
     states: any[];
     assignees: any[];
   };
+  additionalFields: ReadonlyArray<AdditionalField>;
+  projectId: string;
+}
+
+export interface AdditionalField {
+  name: string;
+  value: string;
 }
 
 export interface System {

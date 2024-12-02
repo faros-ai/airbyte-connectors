@@ -1,0 +1,35 @@
+{
+  "count": 6,
+  "value": [
+    {
+      "name": "New",
+      "color": "b2b2b2",
+      "category": "Proposed"
+    },
+    {
+      "name": "To Do",
+      "color": "b2b2b2",
+      "category": "Proposed"
+    },
+    {
+      "name": "Active",
+      "color": "007acc",
+      "category": "InProgress"
+    },
+    {
+      "name": "CustomState",
+      "color": "5688E0",
+      "category": "InProgress"
+    },
+    {
+      "name": "Resolved",
+      "color": "ff9d00",
+      "category": "Resolved"
+    },
+    {
+      "name": "Closed",
+      "color": "339933",
+      "category": "Completed"
+    }
+  ]
+}

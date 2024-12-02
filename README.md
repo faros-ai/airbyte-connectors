@@ -48,20 +48,25 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 
 1. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating)
 2. Install Node.js `nvm install 18 && nvm use 18`
-3. Install `lerna` by running `npm install -g lerna`
-4. Run `npm i` to install dependencies for all projects (`npm run clean` to clean all)
-5. Run `npm run build` to build all projects (for a single project add scope, e.g `npm run build -- --scope airbyte-faros-destination`)
-6. Run `npm run test` to test all projects (for a single project add scope, e.g `npm run test -- --scope airbyte-faros-destination`)
-7. Run `npm run lint` to apply linter on all projects (for a single project add scope, e.g `npm run lint -- --scope airbyte-faros-destination`)
+3. Install [`Turborepo`](https://turbo.build/repo) by running `npm install turbo --global`
+4. Run `npm i` to install dependencies for all projects (`turbo clean` to clean all)
+5. Run `turbo build` to build all projects (for a single project add scope, e.g `turbo build --filter=airbyte-faros-destination`)
+6. Run `turbo test` to test all projects (for a single project add scope, e.g `turbo test --filter=airbyte-faros-destination`)
+7. Run `turbo lint` to apply linter on all projects (for a single project add scope, e.g `turbo lint --filter=airbyte-faros-destination`)
 
 👉 Follow our guide on how to develop a new source [here](https://github.com/faros-ai/airbyte-connectors/tree/main/sources#developing-an-airbyte-source).
 
-## Other Useful Commands
+Read more about `Turborepo` [here](https://turbo.build/repo).
 
-1. Audit fix `npm audit fix`
-2. Clean your project `npm run clean`
+## Dependency Management
 
-Read more about `lerna` [here](https://github.com/lerna/lerna).
+To manage dependencies in this project, you can use the following commands:
+
+1. **Install Dependencies**: Run `npm install` to install all the necessary dependencies for the project.
+2. **Update Dependencies**: Use `npm update` to update all the dependencies to their latest versions.
+3. **Check for Vulnerabilities**: Run `npm audit` to check for any vulnerabilities in the dependencies.
+4. **Fix Vulnerabilities**: Use `npm audit fix` to automatically fix any vulnerabilities that can be resolved.
+5. **Clean Dependencies**: Run `npm prune` to remove any extraneous packages that are not listed in `package.json`.
 
 # Build Docker Images
 

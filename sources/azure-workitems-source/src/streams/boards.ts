@@ -1,27 +1,25 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
+import {AzureWorkitems} from '../azure-workitems';
 import {Board} from '../models';
+import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
 
-export class Boards extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureWorkitemsConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Boards extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/board.json');
   }
 
-  get primaryKey(): StreamKey {
-    return 'id';
-  }
-
-  async *readRecords(): AsyncGenerator<Board> {
-    const azureWorkitem = await AzureWorkitems.instance(this.config);
-    yield* azureWorkitem.getBoards();
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: ProjectStreamSlice
+  ): AsyncGenerator<Board> {
+    const azureWorkitems = await AzureWorkitems.instance(
+      this.config,
+      this.logger
+    );
+    const projectId = streamSlice?.id;
+    yield* azureWorkitems.getBoards(projectId);
   }
 }

@@ -78,18 +78,29 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Cache Turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-    
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
 
+      - name: Install Turborepo
+        run: npm install turbo --global
+
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Test
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: lerna run test-cov
+        run: turbo test-cov
 
   test-packaging:
     if: ${{ github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch' }} # Only on PRs
@@ -111,8 +122,22 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
 
+      - name: Cache Turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install Turborepo
+        run: npm install turbo --global
+
       - name: Install dependencies
-        run: npm install -g lerna @lerna/legacy-package-management && lerna bootstrap --hoist
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build packages
+        run: turbo build
 
       - name: Test Airbyte CDK package
         run: |

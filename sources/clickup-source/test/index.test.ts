@@ -173,7 +173,7 @@ describe('index', () => {
       return {
         data: {
           lists: expected.lists.filter(
-            (l) => l.archived === conf.params.archived ?? false
+            (l) => l.archived === (conf.params.archived ?? false)
           ),
         },
       };

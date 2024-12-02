@@ -15,7 +15,13 @@ export interface WorkItem {
     states: any[];
     assignees: any[];
   };
-  project: string;
+  additionalFields: ReadonlyArray<AdditionalField>;
+  projectId: string;
+}
+
+export interface AdditionalField {
+  name: string;
+  value: string;
 }
 
 export interface System {
@@ -135,4 +141,11 @@ export interface TaskStatusChange {
 export interface AssigneeChange {
   assignee: string;
   changedAt: Date;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  lastUpdateTime: string;
 }

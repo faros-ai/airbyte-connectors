@@ -10,3 +10,985 @@ Array [
   "Errored 0 records",
 ]
 `;
+
+exports[`azure-repos basic test process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-09T18:11:15.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/AnotherRepo/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Added README.md",
+      "repository": Object {
+        "name": "test3:AnotherRepo",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:AnotherRepo",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test3:AnotherRepo",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:AnotherRepo",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test3:AnotherRepo",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:AnotherRepo",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-09T18:51:06.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/test/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Added README.md",
+      "repository": Object {
+        "name": "test3:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:test",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test3:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:test",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test3:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-09T18:42:48.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/test3/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Added README.md",
+      "repository": Object {
+        "name": "test3:test3",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:test3",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test3:test3",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:test3",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test3:test3",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test3:test3",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-06T21:03:21.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test2/_git/test2/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Added README.md",
+      "repository": Object {
+        "name": "test2:test2",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test2:test2",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test2:test2",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test2:test2",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test2:test2",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test2:test2",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-07T01:20:33.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test/_git/test/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Merged PR 2: Updated AnotherFile.md",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-05T18:05:31.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test/_git/test/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Merged PR 1: Test PR 1",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "createdAt": "2023-01-05T17:50:02.000Z",
+      "htmlUrl": "https://dev.azure.com/test/test/_git/test/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "message": "Added README.md",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source": "Azure-Repos",
+      "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "source": "Azure-Repos",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Comment 1",
+      "createdAt": "2023-01-07T01:20:16.083Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-07T01:20:16.083Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Comment 2",
+      "createdAt": "2023-01-07T01:20:19.407Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-07T01:20:19.407Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "",
+      },
+      "comment": "Test Tester joined as a reviewer",
+      "createdAt": "2023-01-07T01:20:26.537Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-07T01:20:26.537Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Test Tester voted 10",
+      "createdAt": "2023-01-07T01:20:26.543Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-07T01:20:26.543Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Test Tester updated the pull request status to Completed",
+      "createdAt": "2023-01-07T01:20:34.537Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-07T01:20:34.537Z",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "commentCount": 5,
+      "createdAt": "2023-01-07T01:20:10.168Z",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 0,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000000/_apis/git/repositories/00000000-0000-0000-0000-000000000000/pullRequests/2",
+      "mergeCommit": Object {
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "mergedAt": "2023-01-07T01:20:34.356Z",
+      "number": 2,
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "state": Object {
+        "category": "Merged",
+        "detail": "completed",
+      },
+      "title": "Updated AnotherFile.md",
+      "uid": "2",
+      "updatedAt": "2023-01-07T01:20:10.168Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://spsprodcus5.vssps.visualstudio.com/A00000000-0000-0000-0000-000000000000/_apis/Identities/00000000-0000-0000-0000-000000000000",
+      "number": 0,
+      "pullRequest": Object {
+        "number": 2,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "2",
+      },
+      "reviewer": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "source": "Azure-Repos",
+      "state": Object {
+        "category": "Approved",
+        "detail": "vote 10",
+      },
+      "submittedAt": "2023-01-07T01:20:26.543Z",
+      "uid": "00000000-0000-0000-0000-000000000000",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "",
+      },
+      "comment": "Test Tester joined as a reviewer",
+      "createdAt": "2023-01-05T18:04:56.873Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "1",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-05T18:04:56.873Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Test Tester voted 10",
+      "createdAt": "2023-01-05T18:04:56.877Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "1",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-05T18:04:56.877Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "comment": "Test Tester updated the pull request status to Completed",
+      "createdAt": "2023-01-05T18:05:32.003Z",
+      "number": 1,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "1",
+      },
+      "source": "Azure-Repos",
+      "uid": "1",
+      "updatedAt": "2023-01-05T18:05:32.003Z",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "commentCount": 3,
+      "createdAt": "2023-01-05T18:04:45.699Z",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 0,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000000/_apis/git/repositories/00000000-0000-0000-0000-000000000000/pullRequests/1",
+      "mergeCommit": Object {
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      "mergedAt": "2023-01-05T18:05:31.840Z",
+      "number": 1,
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "state": Object {
+        "category": "Merged",
+        "detail": "completed",
+      },
+      "title": "Test PR 1",
+      "uid": "1",
+      "updatedAt": "2023-01-05T18:04:45.699Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://spsprodcus5.vssps.visualstudio.com/A00000000-0000-0000-0000-000000000000/_apis/Identities/00000000-0000-0000-0000-000000000000",
+      "number": 0,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "1",
+      },
+      "reviewer": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "source": "Azure-Repos",
+      "state": Object {
+        "category": "Approved",
+        "detail": "vote 10",
+      },
+      "submittedAt": "2023-01-05T18:04:56.877Z",
+      "uid": "00000000-0000-0000-0000-000000000000",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": "https://spsprodcus5.vssps.visualstudio.com/A00000000-0000-0000-0000-000000000000/_apis/Identities/00000000-0000-0000-0000-000000000000",
+      "number": 0,
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "1",
+      },
+      "reviewer": Object {
+        "source": "Azure-Repos",
+        "uid": "externaltest@gmail.com",
+      },
+      "source": "Azure-Repos",
+      "state": Object {
+        "category": "Approved",
+        "detail": "vote 10",
+      },
+      "submittedAt": null,
+      "uid": "00000000-0000-0000-0000-000000000000",
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "description": "test",
+      "htmlUrl": "https://dev.azure.com/test",
+      "name": "test",
+      "source": "Azure-Repos",
+      "type": Object {
+        "category": "Organization",
+        "organizationName": "test",
+      },
+      "uid": "test",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "AnotherRepo",
+      "fullName": "AnotherRepo",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/AnotherRepo",
+      "mainBranch": "refs/heads/main",
+      "name": "test3:AnotherRepo",
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "private": true,
+      "size": 727,
+      "source": "Azure-Repos",
+      "uid": "test3:AnotherRepo",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test3:AnotherRepo",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:AnotherRepo",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "test",
+      "fullName": "test",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/test",
+      "mainBranch": "refs/heads/main",
+      "name": "test3:test",
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "private": true,
+      "size": 728,
+      "source": "Azure-Repos",
+      "uid": "test3:test",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test3:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "test3",
+      "fullName": "test3",
+      "htmlUrl": "https://dev.azure.com/test/test3/_git/test3",
+      "mainBranch": "refs/heads/main",
+      "name": "test3:test3",
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "private": true,
+      "size": 728,
+      "source": "Azure-Repos",
+      "uid": "test3:test3",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test3:test3",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test3:test3",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "test2",
+      "fullName": "test2",
+      "htmlUrl": "https://dev.azure.com/test/test2/_git/test2",
+      "mainBranch": "refs/heads/main",
+      "name": "test2:test2",
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "private": true,
+      "size": 727,
+      "source": "Azure-Repos",
+      "uid": "test2:test2",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test2:test2",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test2:test2",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "test",
+      "fullName": "test",
+      "htmlUrl": "https://dev.azure.com/test/test/_git/test",
+      "mainBranch": "refs/heads/main",
+      "name": "test:test",
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "private": true,
+      "size": 1419,
+      "source": "Azure-Repos",
+      "uid": "test:test",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "source": "Azure-Repos",
+      "user": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "test@gmail.com",
+      "htmlUrl": "https://vssps.dev.azure.com/test/_apis/Graph/Users/aad.0",
+      "name": "Test Tester",
+      "source": "Azure-Repos",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "test@gmail.com",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "source": "Azure-Repos",
+      "user": Object {
+        "source": "Azure-Repos",
+        "uid": "test2@gmail.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "test@gmail.com",
+      "htmlUrl": "https://vssps.dev.azure.com/test/_apis/Graph/Users/aad.0",
+      "name": "Test Tester",
+      "source": "Azure-Repos",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "test2@gmail.com",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "externaltest@gmail.com",
+      "name": "External Test Tester",
+      "source": "Azure-Repos",
+      "uid": "externaltest@gmail.com",
+    },
+  },
+]
+`;
