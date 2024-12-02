@@ -56,12 +56,17 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 
 👉 Follow our guide on how to develop a new source [here](https://github.com/faros-ai/airbyte-connectors/tree/main/sources#developing-an-airbyte-source).
 
-## Other Useful Commands
-
-1. Audit fix `npm audit fix`
-2. Clean your project `npm run clean`
-
 Read more about `Turborepo` [here](https://turbo.build/repo).
+
+## Dependency Management
+
+To manage dependencies in this project, you can use the following commands:
+
+1. **Install Dependencies**: Run `npm install` to install all the necessary dependencies for the project.
+2. **Update Dependencies**: Use `npm update` to update all the dependencies to their latest versions.
+3. **Check for Vulnerabilities**: Run `npm audit` to check for any vulnerabilities in the dependencies.
+4. **Fix Vulnerabilities**: Use `npm audit fix` to automatically fix any vulnerabilities that can be resolved.
+5. **Clean Dependencies**: Run `npm prune` to remove any extraneous packages that are not listed in `package.json`.
 
 # Build Docker Images
 
