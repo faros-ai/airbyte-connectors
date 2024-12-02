@@ -36,7 +36,7 @@ describe('index', () => {
   const source = new sut.GitHubSource(logger);
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     (GitHub as any).github = undefined;
     (OrgRepoFilter as any)._instance = undefined;
   });
@@ -68,6 +68,16 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
+  test('check connection - enterprise not available using app', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('check_connection/app_valid.json'),
+        enterprises: ['github'],
+      },
     });
   });
 

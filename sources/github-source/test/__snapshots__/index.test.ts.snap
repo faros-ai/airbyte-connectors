@@ -29,6 +29,16 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index check connection - enterprise not available using app 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Enterprise data is only available when authenticating with personal access token",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
 exports[`index check connection - invalid bucketing config - non positive integer 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
