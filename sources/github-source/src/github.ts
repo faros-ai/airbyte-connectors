@@ -1881,7 +1881,12 @@ export abstract class GitHub {
         yield {
           enterprise,
           user: seat.assignee.login as string,
-          ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
+          ...pick(seat, [
+            'created_at',
+            'updated_at',
+            'pending_cancellation_date',
+            'last_activity_at',
+          ]),
         } as EnterpriseCopilotSeat;
       }
     }

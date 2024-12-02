@@ -2,6 +2,7 @@
   "enterprise": {
     "slug": "github",
     "name": "GitHub",
-    "url": "https://github.com/enterprises/github"
+    "url": "https://github.com/enterprises/github",
+    "createdAt": "2024-11-28T18:49:10Z"
   }
 }
