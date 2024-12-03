@@ -240,7 +240,7 @@ export class Workitems extends AzureWorkitemsConverter {
           model: 'tms_SprintHistory',
           record: {
             task,
-            sprint: {uid: revision.iteration, source: this.source},
+            sprint: {uid: String(revision.iteration), source: this.source},
             addedAt: Utils.toDate(revision.addedAt),
             removedAt: Utils.toDate(revision.removedAt),
           },
