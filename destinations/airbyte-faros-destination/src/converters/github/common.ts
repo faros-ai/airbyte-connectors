@@ -320,6 +320,10 @@ export class GitHubCommon {
   static digest(input: string): string {
     return createHash('sha256').update(input).digest('hex');
   }
+
+  static enterpriseUid(enterpriseSlug: string): string {
+    return `enterprise:${enterpriseSlug}`;
+  }
 }
 
 /** Github converter base */

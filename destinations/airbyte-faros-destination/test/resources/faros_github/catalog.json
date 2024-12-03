@@ -149,6 +149,36 @@
         "name": "mytestsource__github__faros_artifacts"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_enterprises"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_enterprise_copilot_seats"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_enterprise_copilot_usage"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_enterprise_teams"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_enterprise_team_memberships"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

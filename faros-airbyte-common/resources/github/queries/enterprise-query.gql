@@ -1,0 +1,8 @@
+query enterprise($slug: String!) {
+  enterprise(slug: $slug) {
+    slug
+    name
+    url
+    createdAt
+  }
+}

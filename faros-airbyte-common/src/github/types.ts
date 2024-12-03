@@ -3,6 +3,7 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 import {
   CommitsQuery,
+  EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
   ListMembersQuery,
@@ -359,3 +360,64 @@ export type Artifact = {
   | 'expires_at'
   | 'updated_at'
 >;
+
+export type Enterprise = EnterpriseQuery['enterprise'];
+
+// https://docs.github.com/en/enterprise-cloud@latest/early-access/admin/articles/rest-api-endpoints-for-enterprise-teams#response-schemas
+export type EnterpriseTeamsResponse = {
+  slug: string;
+  name: string;
+}[];
+
+// https://docs.github.com/en/enterprise-cloud@latest/early-access/admin/articles/rest-api-endpoints-for-enterprise-teams#response-schemas
+export type EnterpriseTeamMembershipsResponse = {
+  login: string;
+  name: string;
+  email: string;
+  html_url: string;
+  type: string;
+}[];
+
+// https://docs.github.com/en/rest/copilot/copilot-user-management?apiVersion=2022-11-28#list-all-copilot-seat-assignments-for-an-enterprise
+// since it's the same schema as organization version we reuse the one from octokit
+export type EnterpriseCopilotSeatsResponse =
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.copilot.listCopilotSeats
+  >;
+
+export type EnterpriseTeam = {
+  enterprise: string;
+} & EnterpriseTeamsResponse[0];
+
+export type EnterpriseTeamMembership = {
+  enterprise: string;
+  team: string;
+  user: EnterpriseTeamMembershipsResponse[0];
+};
+
+export type EnterpriseCopilotSeatsStreamRecord =
+  | EnterpriseCopilotSeat
+  | EnterpriseCopilotSeatsEmpty;
+
+export type EnterpriseCopilotSeat = {
+  empty?: never;
+  enterprise: string;
+  user: string;
+} & Pick<
+  GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.copilot.listCopilotSeats
+  >['seats'][0],
+  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
+>;
+
+export type EnterpriseCopilotSeatsEmpty = {
+  empty: true;
+  enterprise: string;
+};
+
+export type EnterpriseCopilotUsageSummary = {
+  enterprise: string;
+  team: string | null;
+} & GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.copilot.usageMetricsForOrg
+>[0];

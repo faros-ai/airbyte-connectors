@@ -3,6 +3,7 @@ import {Issue} from 'faros-airbyte-common/jira';
 import {Utils} from 'faros-js-client';
 import {isNil, pick} from 'lodash';
 
+import {FLUSH} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {JiraCommon, JiraConverter, JiraStatusCategories} from './common';
 
@@ -40,12 +41,16 @@ export class FarosIssues extends JiraConverter {
   ];
 
   labels: Set<string> = new Set();
+  taskDependencies: DestinationRecord[] = [];
+  seenIssues: Set<string> = new Set();
 
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data as Issue;
+    this.seenIssues.add(issue.key);
+
     const source = this.streamName.source;
     const results: DestinationRecord[] = [];
 
@@ -164,7 +169,7 @@ export class FarosIssues extends JiraConverter {
       const fulfillingType = fulfillingTypeCategories.get(
         JiraCommon.normalize(dependency.outward)
       );
-      results.push({
+      this.taskDependencies.push({
         model: 'tms_TaskDependency',
         record: {
           dependentTask: {uid: issue.key, source},
@@ -210,6 +215,28 @@ export class FarosIssues extends JiraConverter {
 
     const ancestors = this.updateAncestors(issue);
     return [...results, ...ancestors];
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.convertDependencies();
+  }
+
+  private convertDependencies(): DestinationRecord[] {
+    return [
+      ...Array.from(this.seenIssues.keys()).map((issueKeyStr) => ({
+        model: 'tms_TaskDependency__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            dependentTask: {uid: issueKeyStr, source: this.source},
+          },
+        },
+      })),
+      FLUSH,
+      ...this.taskDependencies,
+    ];
   }
 
   private toDependentType(name: string): string | undefined {
