@@ -288,7 +288,7 @@ Array [
       "source": "Azure-Workitems",
       "sprint": Object {
         "source": "Azure-Workitems",
-        "uid": 3,
+        "uid": "3",
       },
       "task": Object {
         "source": "Azure-Workitems",
@@ -316,7 +316,7 @@ Array [
       "source": "Azure-Workitems",
       "sprint": Object {
         "source": "Azure-Workitems",
-        "uid": 4,
+        "uid": "4",
       },
       "task": Object {
         "source": "Azure-Workitems",
@@ -447,7 +447,7 @@ Array [
       "source": "Azure-Workitems",
       "sprint": Object {
         "source": "Azure-Workitems",
-        "uid": 3,
+        "uid": "3",
       },
       "task": Object {
         "source": "Azure-Workitems",
