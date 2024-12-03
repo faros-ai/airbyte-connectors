@@ -251,7 +251,7 @@ export class Workitems extends AzureWorkitemsConverter {
         records.push({
           model: 'tms_SprintBoardRelationship',
           record: {
-            sprint: {uid: revision.iteration, source: this.source},
+            sprint: {uid: String(revision.iteration), source: this.source},
             board: {uid: areaPath, source: this.source},
           },
         });
