@@ -2149,7 +2149,7 @@ function transformCopilotMetricsResponse(
 ): CopilotUsageResponse {
   return data.map((d) => {
     const breakdown =
-      d.copilot_ide_code_completions?.editors.flatMap((e) => {
+      d.copilot_ide_code_completions?.editors?.flatMap((e) => {
         const languages: {
           [language: string]: {
             suggestions_count: number;
