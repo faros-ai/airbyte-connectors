@@ -53,6 +53,7 @@
   },
   "overrides": {
     "axios": "^1.7.4",
+    "cross-spawn": "^7.0.6",
     "degenerator": "^5.0.0",
     "protobufjs": "^7.2.6",
     "semver": "^7.5.4",
