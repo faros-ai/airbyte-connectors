@@ -248,8 +248,9 @@ export class AzureWorkitems {
         );
 
         const additionalFields = this.extractAdditionalFields(item.fields);
-        const stateRevisions = this.getStateChangeLog(states, revisions);
-        const assigneeRevisions = this.getAssigneeLog(revisions);
+        const stateRevisions = this.getStateRevisions(states, revisions);
+        const assigneeRevisions = this.getAssigneeRevisions(revisions);
+        const iterationRevisions = this.getIterationRevisions(revisions);
         yield {
           ...item,
           fields: {
@@ -261,6 +262,7 @@ export class AzureWorkitems {
           revisions: {
             states: stateRevisions,
             assignees: assigneeRevisions,
+            iterations: iterationRevisions,
           },
           additionalFields,
           projectId,
@@ -317,11 +319,21 @@ export class AzureWorkitems {
     return changes;
   }
 
-  private getStateChangeLog(states: Map<string, string>, updates: any): any[] {
+  private getStateRevisions(states: Map<string, string>, updates: any): any[] {
     const changes = this.getFieldChanges('System.State', updates);
     return changes.map((change) => ({
       state: this.getStateCategory(change.value, states),
       changedDate: change.changedDate,
+    }));
+  }
+
+  private getIterationRevisions(updates: any[]): any[] {
+    const changes = this.getFieldChanges('System.IterationId', updates);
+    return changes.map((change, index) => ({
+      iteration: change.value,
+      addedAt: change.changedDate,
+      removedAt:
+        index < changes.length - 1 ? changes[index + 1].changedDate : null,
     }));
   }
 
@@ -334,7 +346,7 @@ export class AzureWorkitems {
   } {
     const category = states?.get(state);
     if (!category) {
-      this.logger.warn(`Unknown category for state: ${state}`);
+      this.logger.debug(`Unknown category for state: ${state}`);
     }
     return {
       name: state,
@@ -342,7 +354,7 @@ export class AzureWorkitems {
     };
   }
 
-  private getAssigneeLog(updates: any[]): any[] {
+  private getAssigneeRevisions(updates: any[]): any[] {
     const changes = this.getFieldChanges('System.AssignedTo', updates);
     return changes.map((change) => ({
       assignee: change.value,

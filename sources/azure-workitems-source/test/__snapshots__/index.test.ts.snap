@@ -81,6 +81,18 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
           "changedDate": "2017-09-04T02:28:56.253Z",
         },
       ],
+      "iterations": [
+        {
+          "addedAt": "2017-09-04T02:08:16.6Z",
+          "iteration": 3,
+          "removedAt": "2017-09-04T02:36:18.75Z",
+        },
+        {
+          "addedAt": "2017-09-04T02:36:18.75Z",
+          "iteration": 4,
+          "removedAt": null,
+        },
+      ],
       "states": [
         {
           "changedDate": "2017-09-04T02:08:16.6Z",
@@ -199,6 +211,18 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
           "changedDate": "2017-09-04T02:28:56.253Z",
         },
       ],
+      "iterations": [
+        {
+          "addedAt": "2017-09-04T02:08:16.6Z",
+          "iteration": 3,
+          "removedAt": "2017-09-04T02:36:18.75Z",
+        },
+        {
+          "addedAt": "2017-09-04T02:36:18.75Z",
+          "iteration": 4,
+          "removedAt": null,
+        },
+      ],
       "states": [
         {
           "changedDate": "2017-09-04T02:08:16.6Z",
@@ -306,6 +330,18 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
             "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
           },
           "changedDate": "2017-09-04T02:28:56.253Z",
+        },
+      ],
+      "iterations": [
+        {
+          "addedAt": "2017-09-04T02:08:16.6Z",
+          "iteration": 3,
+          "removedAt": "2017-09-04T02:36:18.75Z",
+        },
+        {
+          "addedAt": "2017-09-04T02:36:18.75Z",
+          "iteration": 4,
+          "removedAt": null,
         },
       ],
       "states": [
