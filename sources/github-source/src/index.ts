@@ -8,7 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange, nextBucketId} from 'faros-airbyte-common/common';
+import {
+  applyRoundRobinBucketing,
+  calculateDateRange,
+} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
@@ -154,36 +157,19 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    if (config.round_robin_bucket_execution) {
-      const next = nextBucketId(config, state);
-      this.logger.info(
-        `Using round robin bucket execution. Bucket id: ${next}`
-      );
-      return {
-        config: {
-          ...config,
-          startDate,
-          endDate,
-          bucket_id: next,
-        },
-        catalog: {streams},
-        state: {
-          ...state,
-          __bucket_execution_state: {
-            last_executed_bucket_id: next,
-          },
-        },
-      };
-    }
-
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
     return {
       config: {
-        ...config,
+        ...newConfig,
         startDate,
         endDate,
-      },
+      } as GitHubConfig,
       catalog: {streams},
-      state,
+      state: newState,
     };
   }
 }

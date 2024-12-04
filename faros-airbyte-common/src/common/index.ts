@@ -5,7 +5,12 @@ import {DateTime} from 'luxon';
 import path from 'path';
 import {VError} from 'verror';
 
-export {bucket, validateBucketingConfig, nextBucketId} from './bucketing';
+export {
+  bucket,
+  validateBucketingConfig,
+  nextBucketId,
+  applyRoundRobinBucketing,
+} from './bucketing';
 
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
