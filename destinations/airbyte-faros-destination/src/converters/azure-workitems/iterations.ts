@@ -12,17 +12,24 @@ export class Iterations extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const Iteration = record.record.data as Iteration;
+    const state = this.toState(Iteration.attributes.timeFrame);
     return [
       {
         model: 'tms_Sprint',
         record: {
           uid: String(Iteration.id),
           name: Iteration.name,
-          state: this.toState(Iteration.attributes.timeFrame),
+          state,
           startedAt: Utils.toDate(Iteration.attributes.startDate),
-          openedAt: Utils.toDate(Iteration.attributes.startDate),
+          openedAt:
+            state !== 'Future'
+              ? Utils.toDate(Iteration.attributes.startDate)
+              : null,
           endedAt: Utils.toDate(Iteration.attributes.finishDate),
-          closedAt: Utils.toDate(Iteration.attributes.finishDate),
+          closedAt:
+            state === 'Closed'
+              ? Utils.toDate(Iteration.attributes.finishDate)
+              : null,
         },
       },
     ];

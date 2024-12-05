@@ -14,6 +14,73 @@ Array [
 exports[`azure-workitems process records from all streams 2`] = `
 Array [
   Object {
+    "tms_Sprint": Object {
+      "closedAt": null,
+      "endedAt": null,
+      "name": "Sprint 2",
+      "openedAt": null,
+      "source": "Azure-Workitems",
+      "startedAt": "2024-02-01T00:00:00.000Z",
+      "state": "Future",
+      "uid": "3",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2024-01-31T00:00:00.000Z",
+      "endedAt": "2024-01-31T00:00:00.000Z",
+      "name": "Sprint 1",
+      "openedAt": "2024-01-01T00:00:00.000Z",
+      "source": "Azure-Workitems",
+      "startedAt": "2024-01-01T00:00:00.000Z",
+      "state": "Closed",
+      "uid": "4",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Team Foundation Version Control projects.",
+      "name": "Fabrikam-Fiber-TFVC",
+      "source": "Azure-Workitems",
+      "uid": "eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+      "updatedAt": "2024-06-24T14:29:16.360Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Git projects",
+      "name": "Fabrikam-Fiber-Git",
+      "source": "Azure-Workitems",
+      "uid": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": null,
+      "name": "TestGit",
+      "source": "Azure-Workitems",
+      "uid": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+      "updatedAt": null,
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "jamal.hartnett@fabrikam.com",
+      "name": "Jamal Hartnett",
+      "source": "Azure-Workitems",
+      "uid": "jamal.hartnett@fabrikam.com",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "christie.church@fabrikam.com",
+      "name": "Christie Church",
+      "source": "Azure-Workitems",
+      "uid": "christie.church@fabrikam.com",
+    },
+  },
+  Object {
     "tms_Task": Object {
       "additionalFields": Array [
         Object {
@@ -38,10 +105,7 @@ Array [
       "resolutionStatus": null,
       "resolvedAt": null,
       "source": "Azure-Workitems",
-      "sprint": Object {
-        "source": "Azure-Workitems",
-        "uid": "1",
-      },
+      "sprint": null,
       "status": Object {
         "category": "Todo",
         "detail": "New",
@@ -165,7 +229,10 @@ Array [
       "resolutionStatus": "User fixed",
       "resolvedAt": "2017-09-09T01:36:41.253Z",
       "source": "Azure-Workitems",
-      "sprint": null,
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "4",
+      },
       "status": Object {
         "category": "Todo",
         "detail": "To Do",
@@ -297,19 +364,6 @@ Array [
     },
   },
   Object {
-    "tms_SprintBoardRelationship": Object {
-      "board": Object {
-        "source": "Azure-Workitems",
-        "uid": "Fabrikam-Fiber-Git\\\\Website",
-      },
-      "source": "Azure-Workitems",
-      "sprint": Object {
-        "source": "Azure-Workitems",
-        "uid": "3",
-      },
-    },
-  },
-  Object {
     "tms_SprintHistory": Object {
       "addedAt": "2017-09-04T02:36:18.750Z",
       "removedAt": null,
@@ -321,19 +375,6 @@ Array [
       "task": Object {
         "source": "Azure-Workitems",
         "uid": "299",
-      },
-    },
-  },
-  Object {
-    "tms_SprintBoardRelationship": Object {
-      "board": Object {
-        "source": "Azure-Workitems",
-        "uid": "Fabrikam-Fiber-Git\\\\Website",
-      },
-      "source": "Azure-Workitems",
-      "sprint": Object {
-        "source": "Azure-Workitems",
-        "uid": "4",
       },
     },
   },
@@ -368,7 +409,7 @@ Array [
       "source": "Azure-Workitems",
       "sprint": Object {
         "source": "Azure-Workitems",
-        "uid": "2",
+        "uid": "3",
       },
       "status": Object {
         "category": "Done",
@@ -456,86 +497,6 @@ Array [
     },
   },
   Object {
-    "tms_SprintBoardRelationship": Object {
-      "board": Object {
-        "source": "Azure-Workitems",
-        "uid": "Fabrikam-Fiber-Git",
-      },
-      "source": "Azure-Workitems",
-      "sprint": Object {
-        "source": "Azure-Workitems",
-        "uid": "3",
-      },
-    },
-  },
-  Object {
-    "tms_Sprint": Object {
-      "closedAt": null,
-      "endedAt": null,
-      "name": "Sprint 2",
-      "openedAt": null,
-      "source": "Azure-Workitems",
-      "startedAt": null,
-      "state": "Future",
-      "uid": "a589a806-bf11-4d4f-a031-c19813331553",
-    },
-  },
-  Object {
-    "tms_Sprint": Object {
-      "closedAt": "2024-01-31T00:00:00.000Z",
-      "endedAt": "2024-01-31T00:00:00.000Z",
-      "name": "Sprint 1",
-      "openedAt": "2024-01-01T00:00:00.000Z",
-      "source": "Azure-Workitems",
-      "startedAt": "2024-01-01T00:00:00.000Z",
-      "state": "Closed",
-      "uid": "a589a806-bf11-4d4f-a031-c19813331553",
-    },
-  },
-  Object {
-    "tms_Project": Object {
-      "description": "Team Foundation Version Control projects.",
-      "name": "Fabrikam-Fiber-TFVC",
-      "source": "Azure-Workitems",
-      "uid": "eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
-      "updatedAt": "2024-06-24T14:29:16.360Z",
-    },
-  },
-  Object {
-    "tms_Project": Object {
-      "description": "Git projects",
-      "name": "Fabrikam-Fiber-Git",
-      "source": "Azure-Workitems",
-      "uid": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
-      "updatedAt": "2024-01-01T00:00:00.000Z",
-    },
-  },
-  Object {
-    "tms_Project": Object {
-      "description": null,
-      "name": "TestGit",
-      "source": "Azure-Workitems",
-      "uid": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
-      "updatedAt": null,
-    },
-  },
-  Object {
-    "tms_User": Object {
-      "emailAddress": "jamal.hartnett@fabrikam.com",
-      "name": "Jamal Hartnett",
-      "source": "Azure-Workitems",
-      "uid": "jamal.hartnett@fabrikam.com",
-    },
-  },
-  Object {
-    "tms_User": Object {
-      "emailAddress": "christie.church@fabrikam.com",
-      "name": "Christie Church",
-      "source": "Azure-Workitems",
-      "uid": "christie.church@fabrikam.com",
-    },
-  },
-  Object {
     "tms_TaskBoard": Object {
       "name": "Fabrikam-Fiber-Git",
       "source": "Azure-Workitems",
@@ -573,6 +534,45 @@ Array [
         "uid": "123",
       },
       "source": "Azure-Workitems",
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "3",
+      },
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git\\\\Website",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "4",
+      },
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Azure-Workitems",
+        "uid": "Fabrikam-Fiber-Git",
+      },
+      "source": "Azure-Workitems",
+      "sprint": Object {
+        "source": "Azure-Workitems",
+        "uid": "3",
+      },
     },
   },
 ]
