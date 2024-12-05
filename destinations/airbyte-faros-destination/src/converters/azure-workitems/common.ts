@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {Converter} from '../converter';
+import {Converter, StreamName} from '../converter';
 
 /** AzureWorkitems converter base */
 export abstract class AzureWorkitemsConverter extends Converter {
@@ -10,3 +10,5 @@ export abstract class AzureWorkitemsConverter extends Converter {
     return record?.record?.data?.id;
   }
 }
+
+export const IterationsStream = new StreamName('azure-workitems', 'iterations');

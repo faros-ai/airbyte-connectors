@@ -1,8 +1,13 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
-import {AzureWorkitemsConverter} from './common';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {AzureWorkitemsConverter, IterationsStream} from './common';
 import {
   CategoryDetail,
   fields,
@@ -12,7 +17,12 @@ import {
 } from './models';
 
 export class Workitems extends AzureWorkitemsConverter {
-  private readonly collectedAreaPaths = new Map<string, Set<string>>();
+  private readonly projectAreaPaths = new Map<string, Set<string>>();
+  private readonly areaPathIterations = new Map<string, Set<string>>();
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [IterationsStream];
+  }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Epic',
@@ -28,7 +38,8 @@ export class Workitems extends AzureWorkitemsConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
     const WorkItem = record.record.data as WorkItem;
@@ -49,7 +60,8 @@ export class Workitems extends AzureWorkitemsConverter {
     const sprintHistory = this.convertIterationRevisions(
       taskKey,
       WorkItem.revisions.iterations,
-      areaPath
+      areaPath,
+      ctx
     );
 
     const tags = this.getTags(taskKey, WorkItem.fields['System.Tags']);
@@ -63,6 +75,8 @@ export class Workitems extends AzureWorkitemsConverter {
       status,
       WorkItem.projectId
     );
+
+    const sprint = this.getSprint(WorkItem.fields['System.IterationId'], ctx);
     return [
       {
         model: 'tms_Task',
@@ -87,9 +101,7 @@ export class Workitems extends AzureWorkitemsConverter {
             uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
             source,
           },
-          sprint: WorkItem.fields['System.IterationId']
-            ? {uid: String(WorkItem.fields['System.IterationId']), source}
-            : null,
+          sprint,
           priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
           resolvedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']
@@ -115,6 +127,14 @@ export class Workitems extends AzureWorkitemsConverter {
       ...epic,
     ];
   }
+  private getSprint(
+    iterationId: string,
+    ctx: StreamContext
+  ): {uid: string; source: string} | null {
+    return iterationId && ctx.get(IterationsStream.asString, iterationId)
+      ? {uid: String(iterationId), source: this.source}
+      : null;
+  }
 
   private convertAreaPath(
     task: TaskKey,
@@ -135,20 +155,17 @@ export class Workitems extends AzureWorkitemsConverter {
     ];
   }
 
-  private collectAreaPath(
-    areaPath: string,
-    projectId: string
-  ): string {
+  private collectAreaPath(areaPath: string, projectId: string): string {
     if (!areaPath || !projectId) {
       return;
     }
 
     const projectAreaPaths =
-      this.collectedAreaPaths.get(projectId) ?? new Set<string>();
+      this.projectAreaPaths.get(projectId) ?? new Set<string>();
 
     const trimmedPath = areaPath.trim();
     projectAreaPaths.add(trimmedPath);
-    this.collectedAreaPaths.set(projectId, projectAreaPaths);
+    this.projectAreaPaths.set(projectId, projectAreaPaths);
 
     return trimmedPath;
   }
@@ -228,19 +245,26 @@ export class Workitems extends AzureWorkitemsConverter {
   private convertIterationRevisions(
     task: TaskKey,
     iterations: any[],
-    areaPath: string
+    areaPath: string,
+    ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
     if (!iterations?.length) {
       return [];
     }
 
     return iterations.flatMap((revision) => {
+      // Ensure iteration is from IterationsStream
+      // https://learn.microsoft.com/en-us/rest/api/azure/devops/work/iterations/list?view=azure-devops-rest-7.1&tabs=HTTP
+      const iteration = ctx.get(IterationsStream.asString, revision.iteration);
+      if (!iteration) return [];
+
+      const sprint = {uid: String(revision.iteration), source: this.source};
       const records: DestinationRecord[] = [
         {
           model: 'tms_SprintHistory',
           record: {
             task,
-            sprint: {uid: String(revision.iteration), source: this.source},
+            sprint,
             addedAt: Utils.toDate(revision.addedAt),
             removedAt: Utils.toDate(revision.removedAt),
           },
@@ -248,13 +272,10 @@ export class Workitems extends AzureWorkitemsConverter {
       ];
 
       if (areaPath) {
-        records.push({
-          model: 'tms_SprintBoardRelationship',
-          record: {
-            sprint: {uid: String(revision.iteration), source: this.source},
-            board: {uid: areaPath, source: this.source},
-          },
-        });
+        const iterationSet =
+          this.areaPathIterations.get(areaPath) ?? new Set<string>();
+        iterationSet.add(String(revision.iteration));
+        this.areaPathIterations.set(areaPath, iterationSet);
       }
 
       return records;
@@ -288,10 +309,17 @@ export class Workitems extends AzureWorkitemsConverter {
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    return [
+      ...this.processProjectAreaPaths(),
+      ...this.processAreaPathIterations(),
+    ];
+  }
+
+  private processProjectAreaPaths(): DestinationRecord[] {
     const records: DestinationRecord[] = [];
     const source = this.streamName.source;
 
-    for (const [projectId, areaPaths] of this.collectedAreaPaths.entries()) {
+    for (const [projectId, areaPaths] of this.projectAreaPaths.entries()) {
       for (const areaPath of areaPaths) {
         // Extract board name from Azure DevOps area path (format: "AreaLevel1\\AreaLevel2\\AreaLevel3")
         const pathParts = areaPath.split('\\');
@@ -323,5 +351,18 @@ export class Workitems extends AzureWorkitemsConverter {
     }
 
     return records;
+  }
+
+  private processAreaPathIterations(): DestinationRecord[] {
+    return Array.from(this.areaPathIterations.entries()).flatMap(
+      ([areaPath, iterations]) =>
+        Array.from(iterations).map((iterationUid) => ({
+          model: 'tms_SprintBoardRelationship',
+          record: {
+            sprint: {uid: String(iterationUid), source: this.source},
+            board: {uid: areaPath, source: this.source},
+          },
+        }))
+    );
   }
 }
