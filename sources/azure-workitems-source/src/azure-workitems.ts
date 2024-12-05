@@ -401,20 +401,49 @@ export class AzureWorkitems {
   }
 
   async *getIterations(projectKey: string): AsyncGenerator<any> {
-    const res = await this.get<any>(
-      `${projectKey}/_apis/work/teamsettings/iterations`
+    const {data: iteration} = await this.get<any>(
+      `${projectKey}/_apis/wit/classificationnodes/Iterations`
     );
-    let response;
-    let response2;
-    for (const item of res.data?.value ?? []) {
-      response = await this.httpClient.get(item?.url);
-      response2 = await this.httpClient.get(
-        response?.data?._links?.classificationNode.href
-      );
-      if (typeof response2?.data?.id !== 'undefined') {
-        item.id = response2.data?.id;
+
+    if (!iteration) {
+      return;
+    }
+
+    yield {
+      id: iteration.id,
+      identifier: iteration.identifier,
+      name: iteration.name,
+      path: iteration.path,
+      attributes: iteration.attributes,
+      projectKey,
+    };
+
+    yield* this.iterateNodes(projectKey, iteration.id);
+  }
+
+  private async *iterateNodes(projectKey: string, nodeId: string): AsyncGenerator<any> {
+    const res = await this.get<any>(
+      `${projectKey}/_apis/wit/classificationnodes/iterations/${nodeId}?$depth=1`
+    );
+
+    if (!res?.data) {
+      return;
+    }
+
+    const node = res.data;
+    yield {
+      id: node.id,
+      identifier: node.identifier,
+      name: node.name,
+      path: node.path,
+      attributes: node.attributes,
+      projectKey,
+    };
+
+    if (node.children) {
+      for (const child of node.children) {
+        yield* this.iterateNodes(projectKey, child.id);
       }
-      yield item;
     }
   }
 
