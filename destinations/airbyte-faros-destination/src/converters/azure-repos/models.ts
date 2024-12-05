@@ -88,6 +88,8 @@ export interface PullRequestThread {
 interface MergeSourceCommit {
   commitId: string;
   url: string;
+  author?: CommitAuthor;
+  committer?: CommitAuthor;
 }
 
 export interface PullRequestRepository {

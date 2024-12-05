@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 52 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 708 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":94,\\\\\\"faros_MetricDefinition\\\\\\":11,\\\\\\"faros_MetricValue\\\\\\":94,\\\\\\"faros_MetricValueTag\\\\\\":261,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":3,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":92,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":1,\\\\\\"vcs_TeamMembership\\\\\\":1,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":5,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 60 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 997 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":140,\\\\\\"faros_MetricDefinition\\\\\\":22,\\\\\\"faros_MetricValue\\\\\\":140,\\\\\\"faros_MetricValueTag\\\\\\":390,\\\\\\"faros_Tag\\\\\\":12,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":3,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":136,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":20,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":7,\\\\\\"vcs_UserToolUsage\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -10387,6 +10387,4373 @@ N/A
       "source": "GitHub",
       "uid": "11",
       "url": "https://api.github.com/repos/octo-org/octo-docs/actions/artifacts/11",
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "createdAt": "2024-11-28T18:49:10.000Z",
+      "htmlUrl": "https://github.com/enterprises/github",
+      "name": "GitHub",
+      "source": "GitHub",
+      "type": Object {
+        "category": "Custom",
+        "detail": "Enterprise",
+      },
+      "uid": "enterprise:github",
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": null,
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2021-08-03T18:00:00-06:00",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-12-02T20:42:22.727Z",
+      "source": "GitHub",
+      "usedAt": "2021-10-14T06:53:32.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "enterprise:github",
+        },
+        "tool": Object {
+          "category": "GitHubCopilot",
+        },
+        "user": Object {
+          "source": "GitHub",
+          "uid": "octocat",
+        },
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-12-02T20:42:22.727Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2024-12-02T20:42:22.727Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LastActivity",
+      },
+      "uid": "d47d4be442643d598c8337c27c1f23d54fd92d0dc7e2bd5f03f1452a12a214ec",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "2021-10-14T06:53:32.000Z",
+      "valueType": "Timestamp",
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": "2021-11-01T00:00:00.000Z",
+      "inactive": false,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2021-09-23T18:00:00-06:00",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-12-02T20:42:22.727Z",
+      "source": "GitHub",
+      "usedAt": "2021-10-13T06:53:32.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "enterprise:github",
+        },
+        "tool": Object {
+          "category": "GitHubCopilot",
+        },
+        "user": Object {
+          "source": "GitHub",
+          "uid": "octokitten",
+        },
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-12-02T20:42:22.727Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2024-12-02T20:42:22.727Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LastActivity",
+      },
+      "uid": "dd4aca5dfaa27d68ccd8bfbe0a86ee0e1dba4fe698c2b977a39333e4d63da826",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octokitten",
+      },
+      "value": "2021-10-13T06:53:32.000Z",
+      "valueType": "Timestamp",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotOrg",
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github",
+      "value": "enterprise:github",
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailySuggestionReferenceCount_Discard",
+      "source": "GitHub",
+      "uid": "DailySuggestionReferenceCount_Discard",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailySuggestionReferenceCount_Accept",
+      "source": "GitHub",
+      "uid": "DailySuggestionReferenceCount_Accept",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyGeneratedLineCount_Discard",
+      "source": "GitHub",
+      "uid": "DailyGeneratedLineCount_Discard",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyGeneratedLineCount_Accept",
+      "source": "GitHub",
+      "uid": "DailyGeneratedLineCount_Accept",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyActiveUserTrend",
+      "source": "GitHub",
+      "uid": "DailyActiveUserTrend",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyChatAcceptanceCount",
+      "source": "GitHub",
+      "uid": "DailyChatAcceptanceCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyChatTurnCount",
+      "source": "GitHub",
+      "uid": "DailyChatTurnCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyActiveChatUserTrend",
+      "source": "GitHub",
+      "uid": "DailyActiveChatUserTrend",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyChatCount",
+      "source": "GitHub",
+      "uid": "DailyChatCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyChatInsertionCount",
+      "source": "GitHub",
+      "uid": "DailyChatInsertionCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "DailyChatCopyCount",
+      "source": "GitHub",
+      "uid": "DailyChatCopyCount",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": null,
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "d82c48cac9bc61750e40892a859a4cb926d99e0d31dd0d104ba8a5130ec4e07e",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      "value": "50",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "71b1c7098b20878199637ee45766fab0a8cf0cbeb4b8a2da01b9479f2d51081f",
+      "value": "50",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotLanguage",
+      "source": "GitHub",
+      "uid": "copilotLanguage__python",
+      "value": "python",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotEditor",
+      "source": "GitHub",
+      "uid": "copilotEditor__vscode",
+      "value": "vscode",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      "value": "100",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "5edf696baaed9d7aef78a3a788df30cac8733b251668d1c857f95e7e1e9d7a9f",
+      "value": "100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotEditor",
+      "source": "GitHub",
+      "uid": "copilotEditor__jetbrains",
+      "value": "jetbrains",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      "value": "50",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "edc89e722593b95e6fe084fff6735ed88d4d94d570d487b2588c4589364876bf",
+      "value": "50",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotLanguage",
+      "source": "GitHub",
+      "uid": "copilotLanguage__ruby",
+      "value": "ruby",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-2023-10-15",
+      "value": "800",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "cb31b4516b5c2a5495a51486ca4d9fe38bd203d08bdc2abd5aa597f833f50627",
+      "value": "800",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      "value": "250",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "2c8a26b5d68b0214fc9be072c6f9bd1925d3a9fa7f292f07231df935d146c150",
+      "value": "250",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "c2e38c594dd1f8846dbb51e71cf7d7aed47ba8ce31827f949da1c0b6e0032e7b",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      "value": "350",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "c58a0d8fcd359d1930da79cbb0342535daee28125820f0e3ea3036e0962d078e",
+      "value": "350",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-2023-10-15",
+      "value": "600",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "e09cab4f0e90a83edf0182d20a2c61a06f30644038f0eeffd02bac2324688f28",
+      "value": "600",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "ebb9ed1b1ff682391f7f8ce92f8106ad188aaaaf295dd8adf9aed0537475b54a",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      "value": "100",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "fb7b2f8bc781d49a2385ac9cd363524d12877816262f90aee994a7ac0fc27c28",
+      "value": "100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      "value": "300",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "8105803b07d5b85f62cfbd704c8a6cb34506e64157fe5c30ca88e4b837a0b2f4",
+      "value": "300",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-2023-10-15",
+      "value": "1200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "ad893d93087885781e089f261b3502cabb7991c8035e79c23af18f84e76571af",
+      "value": "1200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      "value": "700",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "f34189ef7736603e240fa474a3a69f7fefe554593aaf32b07d59f393cf6e85fc",
+      "value": "700",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      "value": "300",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "ce79f9efb5beffcb5d398ab9802095d6be0e3e888bf6ad4db0d00e9524e3a141",
+      "value": "300",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "211fca1884cedc534328de957ef5525661994f2605ba170247be1468009c1a89",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-2023-10-15",
+      "value": "10",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "fa450fc159ef773c128e7bf7dc5d65c3c1db3e1480a057d4f7e4842cb4f06811",
+      "value": "10",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      "value": "5",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "b9f30a2de8527821ba7dacc5fd3c6b919c161b636c0cdcb8740ac65721adf636",
+      "value": "5",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      "value": "2",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "23b16129c264a56b99991d670edd5099f42ef6fdd40e40547f73b307c4f3c103",
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      "value": "3",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "90be223077e45515d6db9fc972e188ed7fa1e50f5b571989ae1e8c11be9638d3",
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyChatAcceptanceCount",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyChatAcceptanceCount-2023-10-15",
+      "value": "32",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatAcceptanceCount",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyChatAcceptanceCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatAcceptanceCount",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyChatAcceptanceCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyChatTurnCount",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyChatTurnCount-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatTurnCount",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyChatTurnCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatTurnCount",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyChatTurnCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveChatUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotOrg__enterprise:github-DailyActiveChatUserTrend-2023-10-15",
+      "value": "4",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ChatActiveUsers",
+      },
+      "uid": "1407b6cff4e20089414c10e31bb4fe328e2fdc14e09a32bc24a94c3398ad88a3",
+      "value": "4",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveChatUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveChatUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveChatUserTrend",
+        },
+        "uid": "copilotOrg__enterprise:github-DailyActiveChatUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "copilotTeam",
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league",
+      "value": "justice-league",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "c3f127b7b514c0b41d56dfc59a9a6dfd00a393fba0771a152f6816e9ce4b7f4e",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      "value": "50",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "afa0c349bc19df25ba396e702cfd7f59e43713704ba49acb0fbd362967abc4a5",
+      "value": "50",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      "value": "100",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "dc8d4710277769e309503e7d573a5946c1da7106802097fff69541352796fd5a",
+      "value": "100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      "value": "50",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "d2d8f08b1c5330fe8e8aa1722f84dc309cbd583d2baff15bedda65ef2da34a50",
+      "value": "50",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-15",
+      "value": "800",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "4e5e380ff2bb1a7615a4ded05c70c919c3e62e77bac1fd07a95595476e9cab81",
+      "value": "800",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      "value": "250",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "80cad0d759db9b9519a40d6d6f1f816ba8686c574ab88728c7089dc3cd6276be",
+      "value": "250",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "8a6b5bff3f5b84a3e36b0242326bc774527719f4d68cfdb0f6a53b2edd7e1160",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailySuggestionReferenceCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      "value": "350",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "be8f041432039f91be22452e577d86f29b09dfeb254fee274ada190322b5bcb6",
+      "value": "350",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailySuggestionReferenceCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailySuggestionReferenceCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-2023-10-15",
+      "value": "600",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "4f4afdbc1d56dd46f91c0ca6e0313bcba42e3acb8957db7313ee8c84ac4c1289",
+      "value": "600",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "a6cbe2816ba7ec26859817ed629f28f82eb36d136d81abd9b9fe223ce3c21324",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      "value": "100",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "cb42fbbf7cf267dcb91e9c64f800e5a83665577ee337822c3a512658f81faa83",
+      "value": "100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Discard",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      "value": "300",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesDiscarded",
+      },
+      "uid": "fe2db47c3316ae26879a6cd01cc3bcf681128615948dfd57dc67fa126b853c97",
+      "value": "300",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Discard",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Discard-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-2023-10-15",
+      "value": "1200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "6e910fb919d6c4dbe955bc1975f644b9b528f4c20321c850142300d49a5e5924",
+      "value": "1200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      "value": "700",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "0afb23a5134f998f29db25990da6f492daa972d4b722066097620ce78852dca3",
+      "value": "700",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      "value": "300",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "2e81fe5df50bdfe6fd31e3e4882239e65ad1951f10920bb3077c4234eb162b62",
+      "value": "300",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyGeneratedLineCount_Accept",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "959ddbe944b30fa0da8f6bccb643d1d53f33331e12a70581d24323fa1b96ad0c",
+      "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyGeneratedLineCount_Accept",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyGeneratedLineCount_Accept-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-2023-10-15",
+      "value": "10",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "de9a430e9283d4a64eb60b9a628b655f772c3ef5f150f656fc90d58eaa6df864",
+      "value": "10",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      "value": "5",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "5b3aa3219e3093928ac972e2064d5f99b2339f90f9a7548f65ff8d151d079803",
+      "value": "5",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      "value": "2",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "jetbrains",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "python",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "825e58d18212e236953b69bb08c7dddfc983fc75f44a2381a07c67efb239a9f9",
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__python",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__jetbrains",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-python-jetbrains-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      "value": "3",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": "ruby",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "47bb3ac0d4cc4cf31702e4c0c777698d3caeb536ad6b402ba3b6533f004447cd",
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotLanguage__ruby",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotEditor__vscode",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveUserTrend-ruby-vscode-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyChatAcceptanceCount",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyChatAcceptanceCount-2023-10-15",
+      "value": "32",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatAcceptanceCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatAcceptanceCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatAcceptanceCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatAcceptanceCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatAcceptanceCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatAcceptanceCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyChatTurnCount",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyChatTurnCount-2023-10-15",
+      "value": "200",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatTurnCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatTurnCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatTurnCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatTurnCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyChatTurnCount",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyChatTurnCount-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-10-15T00:00:00.000Z",
+      "definition": Object {
+        "uid": "DailyActiveChatUserTrend",
+      },
+      "source": "GitHub",
+      "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveChatUserTrend-2023-10-15",
+      "value": "4",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": null,
+      "endedAt": "2023-10-16T00:00:00.000Z",
+      "language": null,
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-15T00:00:00.000Z",
+      "team": Object {
+        "uid": "justice-league",
+      },
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ChatActiveUsers",
+      },
+      "uid": "d5ae2c33c3e744c8027b01903da0267af5757fec708325411a874d5ee50c8845",
+      "value": "4",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotOrg__enterprise:github",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveChatUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveChatUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "copilotTeam__enterprise:github/justice-league",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveChatUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveChatUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationMetric": Object {
+      "application": Object {
+        "name": "copilot",
+        "platform": "",
+        "uid": "copilot",
+      },
+      "source": "GitHub",
+      "value": Object {
+        "definition": Object {
+          "uid": "DailyActiveChatUserTrend",
+        },
+        "uid": "copilotTeam__enterprise:github/justice-league-DailyActiveChatUserTrend-2023-10-15",
+      },
+    },
+  },
+  Object {
+    "vcs_Team": Object {
+      "description": null,
+      "lead": null,
+      "name": "Justice League",
+      "parentTeam": Object {
+        "uid": "all_teams",
+      },
+      "source": "GitHub",
+      "uid": "justice-league",
+    },
+  },
+  Object {
+    "vcs_TeamMembership": Object {
+      "member": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "source": "GitHub",
+      "team": Object {
+        "uid": "justice-league",
+      },
     },
   },
   Object {

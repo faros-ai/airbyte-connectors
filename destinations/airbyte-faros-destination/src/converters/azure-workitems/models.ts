@@ -14,6 +14,7 @@ export interface WorkItem {
   revisions: {
     states: any[];
     assignees: any[];
+    iterations: any[];
   };
   additionalFields: ReadonlyArray<AdditionalField>;
   projectId: string;
@@ -133,13 +134,13 @@ export interface CategoryDetail {
   detail: string;
 }
 
-export interface TaskStatusChange {
-  status: CategoryDetail;
-  changedAt: Date;
+export interface TaskKey {
+  uid: string;
+  source: string;
 }
 
-export interface AssigneeChange {
-  assignee: string;
+export interface TaskStatusChange {
+  status: CategoryDetail;
   changedAt: Date;
 }
 

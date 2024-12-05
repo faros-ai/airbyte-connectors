@@ -16,6 +16,7 @@ export interface WorkItem {
   revisions: {
     states: any[];
     assignees: any[];
+    iterations: any[];
   };
   additionalFields: ReadonlyArray<AdditionalField>;
   projectId: string;

@@ -136,6 +136,7 @@ export class PullRequests extends AzureReposConverter {
 
     const res: DestinationRecord[] = [];
 
+    let maxThreadLastUpdatedDate: Date | undefined;
     this.reviewThreads.length = 0; // clear array
     for (const thread of pullRequestItem.threads ?? []) {
       for (const comment of thread.comments) {
@@ -168,6 +169,16 @@ export class PullRequests extends AzureReposConverter {
           publishedDate: Utils.toDate(thread.publishedDate),
         });
       }
+
+      if (thread.lastUpdatedDate) {
+        const lastUpdatedDate = Utils.toDate(thread.lastUpdatedDate);
+        if (
+          !maxThreadLastUpdatedDate ||
+          lastUpdatedDate > maxThreadLastUpdatedDate
+        ) {
+          maxThreadLastUpdatedDate = lastUpdatedDate;
+        }
+      }
     }
 
     const mergeCommitId = pullRequestItem.lastMergeCommit?.commitId;
@@ -178,6 +189,10 @@ export class PullRequests extends AzureReposConverter {
           uid: mergeCommitId,
         }
       : null;
+    const mergedAtRawDate =
+      pullRequestItem.lastMergeCommit?.committer?.date ||
+      pullRequestItem.lastMergeCommit?.author?.date ||
+      pullRequestItem.closedDate;
 
     const author = pullRequestItem.createdBy?.uniqueName
       ? getPartialUserRecord(pullRequestItem.createdBy)
@@ -186,23 +201,28 @@ export class PullRequests extends AzureReposConverter {
       this.partialUserRecords[author.uid] = author;
     }
 
+    const prRecord = {
+      number: pullRequestItem.pullRequestId,
+      uid: pullRequestItem.pullRequestId.toString(),
+      title: pullRequestItem.title,
+      state: convertPullRequestState(pullRequestItem.status, mergeCommitId),
+      htmlUrl: pullRequestItem.url,
+      createdAt: Utils.toDate(pullRequestItem.creationDate),
+      updatedAt:
+        maxThreadLastUpdatedDate ?? Utils.toDate(pullRequestItem.creationDate),
+      mergedAt: mergeCommitId ? Utils.toDate(mergedAtRawDate) : undefined,
+      commentCount: pullRequestItem.threads.length,
+      author: author ? {uid: author.uid, source} : undefined,
+      mergeCommit,
+      repository,
+    };
+    const diffStats = this.getDiffStats(mergeCommitId);
+    if (diffStats) {
+      prRecord['diffStats'] = diffStats;
+    }
     res.push({
       model: 'vcs_PullRequest',
-      record: {
-        number: pullRequestItem.pullRequestId,
-        uid: pullRequestItem.pullRequestId.toString(),
-        title: pullRequestItem.title,
-        state: convertPullRequestState(pullRequestItem.status, mergeCommitId),
-        htmlUrl: pullRequestItem.url,
-        createdAt: Utils.toDate(pullRequestItem.creationDate),
-        updatedAt: Utils.toDate(pullRequestItem.creationDate),
-        mergedAt: Utils.toDate(pullRequestItem.closedDate),
-        commentCount: pullRequestItem.threads.length,
-        author: author ? {uid: author.uid, source} : undefined,
-        mergeCommit,
-        repository,
-        diffStats: this.getDiffStats(mergeCommitId),
-      },
+      record: prRecord,
     });
 
     for (const reviewer of pullRequestItem.reviewers ?? []) {
