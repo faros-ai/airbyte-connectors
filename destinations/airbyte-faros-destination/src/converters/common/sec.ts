@@ -1,5 +1,10 @@
 import {CategoryDetail} from './common';
 
+export interface VulnerabilityIdentifier {
+  uid: string;
+  type: CategoryDetail;
+}
+
 export class Vulnerability {
   // Mapping Qualitative Severity Ratings to CVSS v4.0 Severity Scores
   // using the upper bound of each rating

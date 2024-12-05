@@ -1,6 +1,5 @@
 import {getLocal, Mockttp} from 'mockttp';
 
-import {looksLikeGitCommitSha} from '../../src/converters/vanta/utils';
 import {
   initMockttp,
   readTestResourceAsJSON,
@@ -21,10 +20,7 @@ function getQueryResponse(
   let query_name = split_query[1];
   query_name = query_name.split('(')[0];
   if (
-    [
-      'cicdArtifactVulnerabilityQuery',
-      'vcsRepositoryVulnerabilityQuery',
-    ].includes(query_name)
+    ['cicdArtifactQueryByCommitSha', 'vcsRepositoryQuery'].includes(query_name)
   ) {
     return {
       data: mockQueryToResponse[query_name],
@@ -41,11 +37,6 @@ function getQueryResponse(
 }
 
 describe('vanta', () => {
-  // Logic to test:
-  // 1. Check Duplicate UIDs across AWS vulns
-  // 2. Check Github Commit Sha Regex
-  // 3. Check all faros endpoint requests
-
   const mockttp = getLocal({debug: false, recordTraffic: false});
 
   beforeEach(async () => {
@@ -68,77 +59,32 @@ describe('vanta', () => {
     await mockttp.stop();
   });
 
-  const getTempConfig = async (
-    mockttp: Mockttp,
-    updateExisting: boolean = false
-  ): Promise<string> => {
+  const getTempConfig = async (mockttp: Mockttp): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
+      log_records: true,
       source_specific_configs: {
-        vanta: {
-          updateExistingVulnerabilities: updateExisting,
-        },
+        vanta: {},
       },
     });
   };
 
-  test('test entries', async () => {
-    // We need to ensure that if there are several vulns associated with a single
-    // artifact, we output all of them, and not just one vuln per artifact.
-    // This data is included in the streams_regular.log file.
+  test('vulnerabilities', async () => {
     const configPath = await getTempConfig(mockttp);
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/vanta/catalog.json',
-      inputRecordsPath: 'vanta/streams_regular.log',
+      inputRecordsPath: 'vanta/vulnerability_records.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
 
-  test('test getting update records', async () => {
-    const configPath = await getTempConfig(mockttp, true);
-    await destinationWriteTest({
-      configPath,
-      catalogPath: 'test/resources/vanta/catalog.json',
-      inputRecordsPath: 'vanta/streams_regular.log',
-    });
-  });
-
-  test('test entries with duplicate UIDs', async () => {
+  test('vulnerability remediations', async () => {
     const configPath = await getTempConfig(mockttp);
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/vanta/catalog.json',
-      inputRecordsPath: 'vanta/streams_duplicate_UIDs.log',
+      inputRecordsPath: 'vanta/vulnerability_remediation_records.log',
     });
-  });
-
-  test('test getting update records', async () => {
-    const configPath = await getTempConfig(mockttp, true);
-    await destinationWriteTest({
-      configPath,
-      catalogPath: 'test/resources/vanta/catalog.json',
-      inputRecordsPath: 'vanta/streams_duplicate_UIDs.log',
-    });
-  });
-
-  test('github commit sha', async () => {
-    // hex string of length 40
-    const sample_commit_sha = 'a123456789012345678901234567890123456789';
-
-    // Examples of strings, some of which are valid and some are not
-    const inp = [
-      sample_commit_sha,
-      sample_commit_sha + 'a',
-      sample_commit_sha.slice(0, 39),
-      'f'.repeat(40),
-      // g is outside the alloted hex symbols
-      'g'.repeat(40),
-    ];
-    const out = [true, false, false, true, false];
-    const res = [];
-    for (const s of inp) {
-      res.push(looksLikeGitCommitSha(s));
-    }
-    expect(res).toEqual(out);
   });
 });

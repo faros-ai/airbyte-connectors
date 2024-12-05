@@ -10,15 +10,17 @@ import {
 import VError from 'verror';
 
 import {Vulnerabilities} from './streams';
+import {VulnerabilityRemediations} from './streams/vulnerability_remediations';
 import {Vanta} from './vanta';
 
 export interface VantaConfig extends AirbyteConfig {
-  readonly apiUrl: string;
-  readonly queryTypes: string[];
-  readonly token: string;
-  readonly skipConnectionCheck?: boolean;
-  readonly limit?: number;
-  readonly timeout?: number;
+  readonly client_id: string;
+  readonly client_secret: string;
+  readonly page_size?: number;
+  readonly cutoff_days?: number;
+  readonly api_max_retries?: number;
+  readonly api_timeout?: number;
+  readonly gateway_timeout_retry_delay?: number;
 }
 
 /** The main entry point. */
@@ -39,19 +41,18 @@ export class VantaSource extends AirbyteSourceBase<VantaConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
   async checkConnection(config: VantaConfig): Promise<[boolean, VError]> {
-    if (config.skipConnectionCheck) {
-      return [true, undefined];
-    }
     const vanta = await Vanta.instance(config, this.logger);
     try {
-      const res = await vanta.checkConnection();
-      return res;
+      return await vanta.checkConnection();
     } catch (error) {
       return [false, new VError(error, 'Connection check failed')];
     }
   }
 
   streams(config: VantaConfig): AirbyteStreamBase[] {
-    return [new Vulnerabilities(config, this.logger)];
+    return [
+      new Vulnerabilities(config, this.logger),
+      new VulnerabilityRemediations(config, this.logger),
+    ];
   }
 }

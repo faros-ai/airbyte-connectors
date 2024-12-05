@@ -4,30 +4,22 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Vanta Spec",
     "type": "object",
-    "required": ["token", "queryTypes"],
+    "required": ["client_id", "client_secret"],
     "additionalProperties": true,
     "properties": {
-      "token": {
+      "client_id": {
         "type": "string",
-        "title": "API Token",
-        "const": "token"
+        "title": "API Client Id",
+        "description": "Vanta Client Id",
+        "airbyte_secret": true
       },
-      "queryTypes": {
-        "type": "array",
-        "title": "Query Types",
-        "items": {
-          "type": "string",
-          "enum": ["gitv2", "awsv2"]
-        },
-        "default": ["gitv2", "awsv2"]
-      },
-      "apiUrl": {
+      "client_secret": {
         "type": "string",
-        "title": "Vanta GraphQL API URL",
-        "description": "Vanta GraphQL API, e.g. ",
-        "default": "https://api.vanta.com/graphql"
+        "title": "API Client Secret",
+        "description": "Vanta Client Secret",
+        "airbyte_secret": true
       },
-      "limit": {
+      "page_size": {
         "type": "number",
         "title": "Page Limit",
         "minimum": 1,
@@ -35,16 +27,29 @@
         "default": 100,
         "description": "The maximum number of objects in a single response."
       },
-      "timeout": {
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "api_timeout": {
         "type": "number",
         "title": "Request Timeout",
         "default": 60000,
         "description": "The time allowed for a request to timeout (in milliseconds)."
       },
-      "skipConnectionCheck": {
-        "type": "boolean",
-        "title": "Skip Connection Check",
-        "default": false
+      "api_max_retries": {
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Vanta API.",
+        "default": 8
+      },
+      "gateway_timeout_retry_delay": {
+        "type": "number",
+        "title": "Gateway Timeout Retry Delay",
+        "description": "The time to wait before retrying a request that errored with a a gateway timeout (in milliseconds).",
+        "default": 30000
       }
     }
   }

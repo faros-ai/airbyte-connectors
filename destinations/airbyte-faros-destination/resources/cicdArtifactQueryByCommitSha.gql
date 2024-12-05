@@ -1,5 +1,5 @@
-query cicdArtifactQueryByCommitSha($commitShas: [String], $limit: Int) {
-  cicd_Artifact(where: {uid: {_in: $commitShas}}, limit: $limit, distinct_on: uid) {
+query cicdArtifactQueryByCommitSha($commitShas: [String]) {
+  cicd_Artifact(where: {uid: {_in: $commitShas}}, distinct_on: uid) {
     uid
     repository {
       organization {

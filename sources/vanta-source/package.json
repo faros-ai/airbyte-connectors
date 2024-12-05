@@ -31,8 +31,11 @@
   },
   "dependencies": {
     "axios": "^1.7.4",
+    "axios-auth-refresh": "^3.3.6",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
+    "faros-js-client": "^0.5.6",
+    "faros-airbyte-common": "*",
     "jsonwebtoken": "^9.0.0",
     "verror": "^1.10.1"
   },

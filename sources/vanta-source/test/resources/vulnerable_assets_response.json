@@ -1,0 +1,66 @@
+{
+  "data": {
+    "results": {
+      "pageInfo": {
+        "endCursor": "eyJyZW1lZGlhdGVCeSI6eyIkZGF0ZSI6IjIwMjQtMDYtMDJUMTk6MjY6MjAuNzQ4WiJ9LCJfaWQiOnsiJG9pZCI6IjY2MzUzYTU3NTM2MGNjOTQ3YThhZjk1OSJ9fQ==",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "eyJyZW1lZGlhdGVCeSI6eyIkZGF0ZSI6IjIwMjQtMDEtMTdUMTU6MjY6NDMuNTM0WiJ9LCJfaWQiOnsiJG9pZCI6IjY1NzE5MTMwOGUwNjc0YTBlOGU2MjQ2OCJ9fQ=="
+      },
+      "data": [
+        {
+          "id": "64e9698a9fb4f7ed165bc471",
+          "name": "test-org/dolos",
+          "assetType": "CONTAINER_REPOSITORY",
+          "hasBeenScanned": true,
+          "imageScanTag": null,
+          "scanners": [
+            {
+              "integrationId": "aws",
+              "imageDigest": "sha256:b4ba739302d96202481a12345678912345677876fbaea6cf1531e78b9e5be4286",
+              "imagePushedAtDate": "2024-11-11T17:39:13.831Z",
+              "imageTags": [
+                "0f7e60c1234567892e6bd131ec066026f5ed84"
+              ],
+              "assetTags": [],
+              "parentAccountOrOrganization": "674713269178: us-east-1",
+              "biosUuid": null,
+              "ipv4s": null,
+              "ipv6s": null,
+              "macAddresses": null,
+              "hostnames": null,
+              "fqdns": null,
+              "operatingSystems": null,
+              "targetId": "arn:aws:ecr:us-east-2:123456:repository/test-org/dolos"
+            }
+          ]
+        },
+        {
+          "id": "650e067c251f3b02f5e438fc",
+          "name": "dolos",
+          "assetType": "CODE_REPOSITORY",
+          "hasBeenScanned": true,
+          "imageScanTag": null,
+          "scanners": [
+            {
+              "integrationId": "github",
+              "imageDigest": null,
+              "imagePushedAtDate": null,
+              "imageTags": null,
+              "assetTags": null,
+              "parentAccountOrOrganization": "test-org",
+              "biosUuid": null,
+              "ipv4s": null,
+              "ipv6s": null,
+              "macAddresses": null,
+              "hostnames": null,
+              "fqdns": null,
+              "operatingSystems": null,
+              "targetId": "212213551"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

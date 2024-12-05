@@ -1,5 +1,0 @@
-{
-  "apiUrl": "https://testurl.com/graphql",
-  "token": "1234",
-  "queryTypes": ["gitv2", "awsv2"]
-}
