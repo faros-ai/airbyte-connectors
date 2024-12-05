@@ -8,6 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {applyRoundRobinBucketing} from 'faros-airbyte-common/common';
 import GlobToRegExp from 'glob-to-regexp';
 import {toLower} from 'lodash';
 import VError from 'verror';
@@ -105,7 +106,13 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       `Will sync ${config.project_slugs.length} project slugs: ${config.project_slugs}`
     );
 
-    return {config, catalog, state};
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+
+    return {config: newConfig as CircleCIConfig, catalog, state: newState};
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {

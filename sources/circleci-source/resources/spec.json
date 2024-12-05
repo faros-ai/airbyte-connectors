@@ -4,40 +4,49 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "CircleCI Spec",
     "type": "object",
-    "required": ["token", "project_slugs"],
+    "required": [
+      "token",
+      "project_slugs"
+    ],
     "additionalProperties": true,
     "properties": {
       "token": {
+        "order": 1,
         "type": "string",
         "title": "token",
         "description": "CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token",
         "airbyte_secret": true
       },
       "url": {
+        "order": 2,
         "type": "string",
         "title": "API URL",
         "default": "https://circleci.com/api/v2",
         "description": "CircleCI API URL"
       },
       "reject_unauthorized": {
+        "order": 3,
         "type": "boolean",
         "title": "Enforce Authorized Requests",
         "default": true,
         "description": "Enable certificate validation for the CircleCI server"
       },
       "request_timeout": {
+        "order": 4,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to CircleCI complete (0 - no timeout).",
         "default": 120000
       },
       "max_retries": {
+        "order": 5,
         "type": "integer",
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to CircleCI API",
         "default": 3
       },
       "project_slugs": {
+        "order": 6,
         "type": "array",
         "items": {
           "type": "string"
@@ -52,6 +61,7 @@
         ]
       },
       "project_block_list": {
+        "order": 7,
         "type": "array",
         "items": {
           "type": "string"
@@ -66,34 +76,60 @@
         ]
       },
       "pull_blocklist_from_graph": {
+        "order": 8,
         "type": "boolean",
         "title": "Pull Projects Blocklist from Faros Graph",
         "default": false,
         "description": "Should pull projects blocklist from Faros"
       },
-      "cutoff_days": {
-        "type": "integer",
-        "title": "Cutoff Days",
-        "default": 90,
-        "description": "Only fetch data updated after cutoff"
-      },
       "faros_api_url": {
+        "order": 9,
         "type": "string",
         "title": "Faros API URL",
         "default": "https://prod.api.faros.ai",
         "description": "Faros API URL"
       },
       "faros_api_key": {
+        "order": 10,
         "type": "string",
         "title": "Faros API Key",
         "description": "Faros API Key",
         "airbyte_secret": true
       },
       "faros_graph_name": {
+        "order": 11,
         "type": "string",
         "title": "Faros Graph",
         "description": "Faros Graph Name",
         "default": "default"
+      },
+      "bucket_id": {
+        "order": 12,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of projects to pull. Use it when distributing the load between multiple sources.",
+        "default": 1
+      },
+      "bucket_total": {
+        "order": 13,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute projects across. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "round_robin_bucket_execution": {
+        "order": 14,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "cutoff_days": {
+        "order": 15,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
       }
     }
   }
