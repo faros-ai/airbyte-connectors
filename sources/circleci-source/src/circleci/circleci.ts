@@ -39,10 +39,10 @@ export interface CircleCIConfig {
 
 export class CircleCI {
   private static circleCI: CircleCI = undefined;
-  private cutoffDays: number;
-  private maxRetries: number;
-  private bucketId: number;
-  private bucketTotal: number;
+  private readonly cutoffDays: number;
+  private readonly maxRetries: number;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
 
   constructor(
     config: CircleCIConfig,
