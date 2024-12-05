@@ -2,11 +2,11 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {TestMetadata} from '../circleci/types';
-import {CircleCIStreamBase, StreamSlice} from './common';
+import {StreamSlice, StreamWithProjectSlices} from './common';
 
 type TestsState = Dictionary<{lastUpdatedAt?: string}>;
 
-export class Tests extends CircleCIStreamBase {
+export class Tests extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/tests.json');
   }
