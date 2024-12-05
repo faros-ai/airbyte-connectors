@@ -83,11 +83,12 @@ export class Vanta {
     gatewayTimeoutDelay: number
   ): (error: AxiosError<unknown, any>, retryNumber: number) => number {
     return (error: AxiosError<unknown, any>, retryNumber: number): number => {
+      logger.warn(`createDelayLogic called with retryNumber: ${retryNumber}`);
       const statusCode = error?.response?.status;
       if (statusCode === 429) {
         // Retrying using an exponential backoff as recommended in the API documentation:
         // https://developer.vanta.com/docs/faq#:~:text=What%20should%20I%20do%20if%20I%20hit%20the%20rate%20limit%3F
-        const delay = DEFAULT_RETRY_DELAY * Math.pow(2, retryNumber);
+        const delay = DEFAULT_RETRY_DELAY * Math.pow(2, retryNumber || 0);
         logger.warn(
           `Received rate limit exceeded (429) error from Vanta API, retrying in ${
             delay / 1000
