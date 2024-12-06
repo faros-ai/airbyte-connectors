@@ -429,8 +429,13 @@ export class AzureRepos {
       }
     )) {
       for (const pullRequest of pullRequestRes?.data?.value ?? []) {
-        const closedDate = DateTime.fromISO(pullRequest.closedDate);
-        if (pullRequest.status === 'completed' && closedDate <= since) {
+        const prDate = DateTime.fromISO(
+          pullRequest.closedDate ||
+            pullRequest.lastMergeCommit?.committer?.date ||
+            pullRequest.lastMergeCommit?.author?.date ||
+            pullRequest.creationDate
+        );
+        if (prDate <= since) {
           continue;
         }
 

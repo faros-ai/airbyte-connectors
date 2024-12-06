@@ -94,6 +94,14 @@ describe('index', () => {
     ]);
   });
 
+  function daysSinceEpoch() {
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const now = new Date().getTime();
+    const epoch = new Date(0).getTime();
+    const diffInMilliseconds = now - epoch;
+    return Math.floor(diffInMilliseconds / millisecondsPerDay);
+  }
+
   test('streams - commits, use full_refresh sync mode', async () => {
     const fnPullrequestsFunc = jest.fn();
     const repositoriesResource: any[] =
@@ -118,7 +126,7 @@ describe('index', () => {
         1,
         logger,
         ['test'],
-        1,
+        daysSinceEpoch(),
         ALL_BRANCHES_RE
       );
     });
@@ -173,7 +181,7 @@ describe('index', () => {
         1,
         logger,
         ['test'],
-        1,
+        daysSinceEpoch(),
         ALL_BRANCHES_RE
       );
     });
