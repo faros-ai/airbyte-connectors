@@ -1,33 +1,33 @@
 {
-    "id": 3,
-    "identifier": "395a6b4f-6488-41ee-a06a-1514405ab6f0",
-    "name": "Release 1",
-    "structureType": "iteration",
-    "hasChildren": true,
-    "path": "\\fabrikam\\Release 1",
-    "children": [
-      {
-        "id": 34,
-        "identifier": "63d12e9d-37fd-48af-80a5-b93095705806",
-        "name": "Sprint 4",
-        "structureType": "iteration",
-        "hasChildren": false,
-        "path": "\\fabrikam\\Release 1\\Sprint 4",
-        "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%204"
+  "id": 3,
+  "identifier": "395a6b4f-6488-41ee-a06a-1514405ab6f0",
+  "name": "Release 1",
+  "structureType": "iteration",
+  "hasChildren": true,
+  "path": "\\fabrikam\\Release 1",
+  "children": [
+    {
+      "id": 34,
+      "identifier": "63d12e9d-37fd-48af-80a5-b93095705806",
+      "name": "Sprint 4",
+      "structureType": "iteration",
+      "hasChildren": false,
+      "path": "\\fabrikam\\Release 1\\Sprint 4",
+      "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%204"
+    },
+    {
+      "id": 32,
+      "identifier": "c9206006-4362-4b16-9205-1b94d32a6fb2",
+      "name": "Sprint 2",
+      "structureType": "iteration",
+      "hasChildren": false,
+      "path": "\\fabrikam\\Release 1\\Sprint 2",
+      "attributes": {
+        "startDate": "2024-08-17T00:00:00Z",
+        "finishDate": "2024-09-07T00:00:00Z"
       },
-      {
-        "id": 32,
-        "identifier": "c9206006-4362-4b16-9205-1b94d32a6fb2",
-        "name": "Sprint 2",
-        "structureType": "iteration",
-        "hasChildren": false,
-        "path": "\\fabrikam\\Release 1\\Sprint 2",
-        "attributes": {
-          "startDate": "2024-08-17T00:00:00Z",
-          "finishDate": "2024-09-07T00:00:00Z"
-        },
-        "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%202"
-      }
-    ],
-    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201"
-  }
+      "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%202"
+    }
+  ],
+  "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201"
+}
