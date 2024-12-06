@@ -1,5 +1,72 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index streams - iterations, use full_refresh sync mode 1`] = `
+[
+  {
+    "attributes": undefined,
+    "hasChildren": true,
+    "id": 1,
+    "identifier": "dd643523-4d15-4106-a6a4-e70d39a09446",
+    "name": "Final Iteration",
+    "path": "\\fabrikam",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations",
+  },
+  {
+    "attributes": {
+      "finishDate": "2024-12-31T00:00:00Z",
+      "startDate": "2024-12-01T00:00:00Z",
+    },
+    "hasChildren": false,
+    "id": 2,
+    "identifier": "6b5153a0-76f7-4aad-bd60-7dbfe3c2947d",
+    "name": "Release 3",
+    "path": "\\fabrikam\\Release 3",
+    "structureType": "iteration",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%203",
+  },
+  {
+    "hasChildren": true,
+    "id": 3,
+    "identifier": "395a6b4f-6488-41ee-a06a-1514405ab6f0",
+    "name": "Release 1",
+    "path": "\\fabrikam\\Release 1",
+    "structureType": "iteration",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201",
+  },
+  {
+    "hasChildren": false,
+    "id": 34,
+    "identifier": "63d12e9d-37fd-48af-80a5-b93095705806",
+    "name": "Sprint 4",
+    "path": "\\fabrikam\\Release 1\\Sprint 4",
+    "structureType": "iteration",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%204",
+  },
+  {
+    "attributes": {
+      "finishDate": "2024-09-07T00:00:00Z",
+      "startDate": "2024-08-17T00:00:00Z",
+    },
+    "hasChildren": false,
+    "id": 32,
+    "identifier": "c9206006-4362-4b16-9205-1b94d32a6fb2",
+    "name": "Sprint 2",
+    "path": "\\fabrikam\\Release 1\\Sprint 2",
+    "structureType": "iteration",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201/Sprint%202",
+  },
+  {
+    "hasChildren": false,
+    "id": 4,
+    "identifier": "8c80c27e-8afb-4315-9057-686a1b862ed5",
+    "name": "Release 2",
+    "path": "\\fabrikam\\Release 2",
+    "structureType": "iteration",
+    "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%202",
+  },
+]
+`;
+
 exports[`index streams - workitems, use full_refresh sync mode 1`] = `
 [
   {

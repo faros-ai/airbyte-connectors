@@ -400,21 +400,54 @@ export class AzureWorkitems {
     } while (continuationToken);
   }
 
-  async *getIterations(projectKey: string): AsyncGenerator<any> {
-    const res = await this.get<any>(
-      `${projectKey}/_apis/work/teamsettings/iterations`
-    );
-    let response;
-    let response2;
-    for (const item of res.data?.value ?? []) {
-      response = await this.httpClient.get(item?.url);
-      response2 = await this.httpClient.get(
-        response?.data?._links?.classificationNode.href
-      );
-      if (typeof response2?.data?.id !== 'undefined') {
-        item.id = response2.data?.id;
+  /**
+   * Retrieves all iterations for a given project in Azure DevOps using
+   * iteration hierarchy recursively. Using this instead of teamsettings/iterations
+   * since the latter only returns iterations explicitly assigned to a team.
+   */
+  async *getIterations(projectId: string): AsyncGenerator<any> {
+    const {data: iteration} = await this.get<any>(
+      `${projectId}/_apis/wit/classificationnodes/Iterations`,
+      {
+        params: {$depth: 1},
       }
-      yield item;
+    );
+
+    if (!iteration) {
+      return;
+    }
+
+    // Yield root iteration
+    yield {
+      id: iteration.id,
+      identifier: iteration.identifier,
+      name: iteration.name,
+      path: iteration.path,
+      attributes: iteration.attributes,
+      hasChildren: iteration.hasChildren,
+      url: iteration.url,
+    };
+
+    // Process children recursively
+    yield* this.processIterationChildren(iteration);
+  }
+
+  private async *processIterationChildren(node: any): AsyncGenerator<any> {
+    if (!node.children) {
+      return;
+    }
+
+    for (const child of node.children) {
+      yield child;
+
+      if (child.hasChildren) {
+        const res = await this.get<any>(child.url, {
+          params: {$depth: 1},
+        });
+        if (res?.data) {
+          yield* this.processIterationChildren(res.data);
+        }
+      }
     }
   }
 

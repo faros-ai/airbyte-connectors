@@ -1,0 +1,47 @@
+{
+  "id": 1,
+  "identifier": "dd643523-4d15-4106-a6a4-e70d39a09446",
+  "name": "Final Iteration",
+  "structureType": "iteration",
+  "hasChildren": true,
+  "path": "\\fabrikam",
+  "children": [
+    {
+      "id": 2,
+      "identifier": "6b5153a0-76f7-4aad-bd60-7dbfe3c2947d",
+      "name": "Release 3",
+      "structureType": "iteration",
+      "hasChildren": false,
+      "path": "\\fabrikam\\Release 3",
+      "attributes": {
+        "startDate": "2024-12-01T00:00:00Z",
+        "finishDate": "2024-12-31T00:00:00Z"
+      },
+      "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%203"
+    },
+    {
+      "id": 3,
+      "identifier": "395a6b4f-6488-41ee-a06a-1514405ab6f0",
+      "name": "Release 1",
+      "structureType": "iteration",
+      "hasChildren": true,
+      "path": "\\fabrikam\\Release 1",
+      "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%201"
+    },
+    {
+      "id": 4,
+      "identifier": "8c80c27e-8afb-4315-9057-686a1b862ed5",
+      "name": "Release 2",
+      "structureType": "iteration",
+      "hasChildren": false,
+      "path": "\\fabrikam\\Release 2",
+      "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations/Release%202"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations"
+    }
+  },
+  "url": "https://dev.azure.com/fabrikam/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c/_apis/wit/classificationNodes/Iterations"
+}

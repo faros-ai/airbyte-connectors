@@ -1,13 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
-import {AzureWorkitemsConverter, IterationsStream} from './common';
+import {DestinationModel, DestinationRecord} from '../converter';
+import {AzureWorkitemsConverter} from './common';
 import {
   CategoryDetail,
   fields,
@@ -19,10 +14,6 @@ import {
 export class Workitems extends AzureWorkitemsConverter {
   private readonly projectAreaPaths = new Map<string, Set<string>>();
   private readonly areaPathIterations = new Map<string, Set<string>>();
-
-  override get dependencies(): ReadonlyArray<StreamName> {
-    return [IterationsStream];
-  }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Epic',
@@ -38,8 +29,7 @@ export class Workitems extends AzureWorkitemsConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
     const WorkItem = record.record.data as WorkItem;
@@ -60,8 +50,7 @@ export class Workitems extends AzureWorkitemsConverter {
     const sprintHistory = this.convertIterationRevisions(
       taskKey,
       WorkItem.revisions.iterations,
-      areaPath,
-      ctx
+      areaPath
     );
 
     const tags = this.getTags(taskKey, WorkItem.fields['System.Tags']);
@@ -76,7 +65,6 @@ export class Workitems extends AzureWorkitemsConverter {
       WorkItem.projectId
     );
 
-    const sprint = this.getSprint(WorkItem.fields['System.IterationId'], ctx);
     return [
       {
         model: 'tms_Task',
@@ -101,7 +89,9 @@ export class Workitems extends AzureWorkitemsConverter {
             uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
             source,
           },
-          sprint,
+          sprint: WorkItem.fields['System.IterationId']
+            ? {uid: String(WorkItem.fields['System.IterationId']), source}
+            : null,
           priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
           resolvedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']
@@ -126,14 +116,6 @@ export class Workitems extends AzureWorkitemsConverter {
       ...sprintHistory,
       ...epic,
     ];
-  }
-  private getSprint(
-    iterationId: string,
-    ctx: StreamContext
-  ): {uid: string; source: string} | null {
-    return iterationId && ctx.get(IterationsStream.asString, iterationId)
-      ? {uid: String(iterationId), source: this.source}
-      : null;
   }
 
   private convertAreaPath(
@@ -245,19 +227,13 @@ export class Workitems extends AzureWorkitemsConverter {
   private convertIterationRevisions(
     task: TaskKey,
     iterations: any[],
-    areaPath: string,
-    ctx: StreamContext
+    areaPath: string
   ): ReadonlyArray<DestinationRecord> {
     if (!iterations?.length) {
       return [];
     }
 
     return iterations.flatMap((revision) => {
-      // Ensure iteration is from IterationsStream
-      // https://learn.microsoft.com/en-us/rest/api/azure/devops/work/iterations/list?view=azure-devops-rest-7.1&tabs=HTTP
-      const iteration = ctx.get(IterationsStream.asString, revision.iteration);
-      if (!iteration) return [];
-
       const sprint = {uid: String(revision.iteration), source: this.source};
       const records: DestinationRecord[] = [
         {
