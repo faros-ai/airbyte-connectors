@@ -586,19 +586,25 @@ export abstract class GitHub {
         pull_number: number,
         per_page: this.pageSize,
         page: startingPage,
-        request: {
-          retryAdditionalError: (err: RequestError) => err.status === 422,
-        },
       }
     );
     const files: PullRequestFile[] = [];
-    for await (const res of iter) {
-      for (const file of res.data) {
-        files.push({
-          additions: file.additions,
-          deletions: file.deletions,
-          path: file.filename,
-        });
+    try {
+      for await (const res of iter) {
+        for (const file of res.data) {
+          files.push({
+            additions: file.additions,
+            deletions: file.deletions,
+            path: file.filename,
+          });
+        }
+      }
+    } catch (err: any) {
+      if (err.status === 422) {
+        this.logger.warn(
+          `Couldn't fetch PR files for repo ${org}/${repo}. Status: ${err.status}. Message: ${err.message}`
+        );
+        return [];
       }
     }
     return files;
