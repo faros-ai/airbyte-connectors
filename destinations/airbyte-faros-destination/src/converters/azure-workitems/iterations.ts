@@ -22,10 +22,10 @@ export class Iterations extends AzureWorkitemsConverter {
       : null;
     // Set the openedAt and closedAt dates to the end of the day
     const openedAt = startedAt
-      ? DateTime.fromJSDate(startedAt).endOf('day').toJSDate()
+      ? DateTime.fromJSDate(startedAt).setZone('UTC').endOf('day').toJSDate()
       : null;
     const closedAt = endedAt
-      ? DateTime.fromJSDate(endedAt).endOf('day').toJSDate()
+      ? DateTime.fromJSDate(endedAt).setZone('UTC').endOf('day').toJSDate()
       : null;
     return [
       {

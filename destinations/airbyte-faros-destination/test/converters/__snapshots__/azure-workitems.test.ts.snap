@@ -453,7 +453,7 @@ Array [
       "description": "Fabrikam-Fiber\\\\Release 1\\\\Sprint 2",
       "endedAt": null,
       "name": "Sprint 2",
-      "openedAt": "2024-02-01T04:59:59.999Z",
+      "openedAt": "2024-02-01T23:59:59.999Z",
       "source": "Azure-Workitems",
       "startedAt": "2024-02-01T00:00:00.000Z",
       "state": null,
@@ -462,11 +462,11 @@ Array [
   },
   Object {
     "tms_Sprint": Object {
-      "closedAt": "2024-01-31T04:59:59.999Z",
+      "closedAt": "2024-01-31T23:59:59.999Z",
       "description": "Fabrikam-Fiber\\\\Release 1\\\\Sprint 1",
       "endedAt": "2024-01-31T00:00:00.000Z",
       "name": "Sprint 1",
-      "openedAt": "2024-01-01T04:59:59.999Z",
+      "openedAt": "2024-01-01T23:59:59.999Z",
       "source": "Azure-Workitems",
       "startedAt": "2024-01-01T00:00:00.000Z",
       "state": "Closed",
