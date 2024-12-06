@@ -47,7 +47,7 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "transform": {
-      "\\.[jt]sx?$": [
+      "\\.ts?$": [
         "ts-jest",
         {
           "tsconfig": "test/tsconfig.json"
