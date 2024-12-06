@@ -1,4 +1,4 @@
-import {OctokitResponse, RequestError} from '@octokit/types';
+import {OctokitResponse} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
