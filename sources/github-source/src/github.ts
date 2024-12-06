@@ -1,4 +1,4 @@
-import {OctokitResponse, RequestError} from '@octokit/types';
+import {OctokitResponse} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -586,19 +586,25 @@ export abstract class GitHub {
         pull_number: number,
         per_page: this.pageSize,
         page: startingPage,
-        request: {
-          retryAdditionalError: (err: RequestError) => err.status === 422,
-        },
       }
     );
     const files: PullRequestFile[] = [];
-    for await (const res of iter) {
-      for (const file of res.data) {
-        files.push({
-          additions: file.additions,
-          deletions: file.deletions,
-          path: file.filename,
-        });
+    try {
+      for await (const res of iter) {
+        for (const file of res.data) {
+          files.push({
+            additions: file.additions,
+            deletions: file.deletions,
+            path: file.filename,
+          });
+        }
+      }
+    } catch (err: any) {
+      if (err.status === 422) {
+        this.logger.warn(
+          `Couldn't fetch files for PR ${org}/${repo}/${number}. Status: ${err.status}. Message: ${err.message}`
+        );
+        return [];
       }
     }
     return files;
