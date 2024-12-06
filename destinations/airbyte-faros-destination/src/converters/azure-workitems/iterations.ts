@@ -21,12 +21,9 @@ export class Iterations extends AzureWorkitemsConverter {
       ? Utils.toDate(Iteration.attributes.finishDate)
       : null;
     // Set the openedAt and closedAt dates to the end of the day
-    const openedAt = startedAt
-      ? DateTime.fromJSDate(startedAt).setZone('UTC').endOf('day').toJSDate()
-      : null;
-    const closedAt = endedAt
-      ? DateTime.fromJSDate(endedAt).setZone('UTC').endOf('day').toJSDate()
-      : null;
+    const openedAt = this.toEndOfDay(startedAt);
+    const closedAt = this.toEndOfDay(endedAt);
+
     return [
       {
         model: 'tms_Sprint',
@@ -58,5 +55,11 @@ export class Iterations extends AzureWorkitemsConverter {
       default:
         return state;
     }
+  }
+
+  private toEndOfDay(date?: Date): Date {
+    return date
+      ? DateTime.fromJSDate(date).setZone('UTC').endOf('day').toJSDate()
+      : null;
   }
 }

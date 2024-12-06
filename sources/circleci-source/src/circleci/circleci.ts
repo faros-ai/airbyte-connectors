@@ -5,6 +5,7 @@ import axios, {
   AxiosResponse,
 } from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import https from 'https';
 import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -16,7 +17,8 @@ const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_REQUEST_TIMEOUT = 120000;
-
+export const DEFAULT_BUCKET_ID = 1;
+export const DEFAULT_BUCKET_TOTAL = 1;
 export interface CircleCIConfig {
   readonly token: string;
   readonly url?: string;
@@ -30,21 +32,34 @@ export interface CircleCIConfig {
   readonly cutoff_days?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly bucket_id?: number;
+  readonly bucket_total?: number;
+  readonly round_robin_bucket_execution?: boolean;
 }
 
 export class CircleCI {
   private static circleCI: CircleCI = undefined;
+  private readonly cutoffDays: number;
+  private readonly maxRetries: number;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
 
   constructor(
+    config: CircleCIConfig,
     private readonly logger: AirbyteLogger,
-    readonly v1: AxiosInstance,
-    readonly v2: AxiosInstance,
-    readonly cutoffDays: number,
-    private readonly maxRetries: number
-  ) {}
+    private readonly v1: AxiosInstance,
+    private readonly v2: AxiosInstance
+  ) {
+    this.cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+    this.maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
+    this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
+  }
 
   static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
     if (CircleCI.circleCI) return CircleCI.circleCI;
+
+    validateBucketingConfig(config.bucket_id, config.bucket_total);
 
     if (!config.token) {
       throw new VError('No token provided');
@@ -70,17 +85,16 @@ export class CircleCI {
       }
     }
 
-    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     const axios_v1_instance = this.getAxiosInstance(config, logger, 'v1.1');
     const axios_v2_instance = this.getAxiosInstance(config, logger, 'v2');
 
     CircleCI.circleCI = new CircleCI(
+      config,
       logger,
       axios_v1_instance,
-      axios_v2_instance,
-      cutoffDays,
-      config.max_retries ?? DEFAULT_MAX_RETRIES
+      axios_v2_instance
     );
+
     return CircleCI.circleCI;
   }
 
@@ -387,6 +401,13 @@ export class CircleCI {
           },
         }),
       (item: any) => item
+    );
+  }
+
+  isProjectInBucket(project: string): boolean {
+    return (
+      bucket('farosai/airbyte-circleci-source', project, this.bucketTotal) ===
+      this.bucketId
     );
   }
 }

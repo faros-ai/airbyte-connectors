@@ -34,6 +34,7 @@
     "axios": "^1.7.4",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "faros-js-client": "^0.5.2",
     "glob-to-regexp": "0.4.1",
     "typescript-memoize": "^1.1.0",
@@ -49,7 +50,7 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "transform": {
-      "\\.[jt]sx?$": [
+      "\\.ts?$": [
         "ts-jest",
         {
           "tsconfig": "test/tsconfig.json"

@@ -2,11 +2,11 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {Pipeline} from '../circleci/types';
-import {CircleCIStreamBase, StreamSlice} from './common';
+import {StreamSlice, StreamWithProjectSlices} from './common';
 
 type PipelineState = Dictionary<{lastUpdatedAt?: string}>;
 
-export class Pipelines extends CircleCIStreamBase {
+export class Pipelines extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
   }
@@ -17,12 +17,6 @@ export class Pipelines extends CircleCIStreamBase {
 
   get cursorField(): string[] {
     return ['computedProperties', 'updatedAt'];
-  }
-
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectSlug of this.cfg.project_slugs) {
-      yield {projectSlug};
-    }
   }
 
   async *readRecords(
