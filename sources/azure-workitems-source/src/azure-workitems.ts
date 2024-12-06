@@ -400,49 +400,53 @@ export class AzureWorkitems {
     } while (continuationToken);
   }
 
-  async *getIterations(projectKey: string): AsyncGenerator<any> {
+  /**
+   * Retrieves all iterations for a given project in Azure DevOps using
+   * iteration hierarchy recursively. Using this instead of teamsettings/iterations
+   * since the latter only returns iterations explicitly assigned to a team.
+   */
+  async *getIterations(projectId: string): AsyncGenerator<any> {
     const {data: iteration} = await this.get<any>(
-      `${projectKey}/_apis/wit/classificationnodes/Iterations`
+      `${projectId}/_apis/wit/classificationnodes/Iterations`,
+      {
+        params: {$depth: 1},
+      }
     );
 
     if (!iteration) {
       return;
     }
 
+    // Yield root iteration
     yield {
       id: iteration.id,
       identifier: iteration.identifier,
       name: iteration.name,
       path: iteration.path,
       attributes: iteration.attributes,
-      projectKey,
+      hasChildren: iteration.hasChildren,
+      url: iteration.url,
     };
 
-    yield* this.iterateNodes(projectKey, iteration.id);
+    // Process children recursively
+    yield* this.processIterationChildren(iteration);
   }
 
-  private async *iterateNodes(projectKey: string, nodeId: string): AsyncGenerator<any> {
-    const res = await this.get<any>(
-      `${projectKey}/_apis/wit/classificationnodes/iterations/${nodeId}?$depth=1`
-    );
-
-    if (!res?.data) {
+  private async *processIterationChildren(node: any): AsyncGenerator<any> {
+    if (!node.children) {
       return;
     }
 
-    const node = res.data;
-    yield {
-      id: node.id,
-      identifier: node.identifier,
-      name: node.name,
-      path: node.path,
-      attributes: node.attributes,
-      projectKey,
-    };
+    for (const child of node.children) {
+      yield child;
 
-    if (node.children) {
-      for (const child of node.children) {
-        yield* this.iterateNodes(projectKey, child.id);
+      if (child.hasChildren) {
+        const res = await this.get<any>(child.url, {
+          params: {$depth: 1},
+        });
+        if (res?.data) {
+          yield* this.processIterationChildren(res.data);
+        }
       }
     }
   }

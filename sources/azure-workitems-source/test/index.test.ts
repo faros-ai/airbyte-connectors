@@ -86,15 +86,19 @@ describe('index', () => {
   });
 
   test('streams - iterations, use full_refresh sync mode', async () => {
-    const fnIterationsFunc = jest.fn();
+    const fnIterationsFunc = jest.fn().mockImplementation((url) => {
+      if (url.endsWith('classificationnodes/Iterations')) {
+        return {data: readTestResourceFile('iterations_root.json')};
+      } else if (url.endsWith('classificationNodes/Iterations/Release%201')) {
+        return {data: readTestResourceFile('iterations_node_3.json')};
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    });
 
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
-      const iterationsResource: any[] = readTestResourceFile('iterations.json');
       return new AzureWorkitems(
         {
-          get: fnIterationsFunc.mockResolvedValue({
-            data: {value: iterationsResource},
-          }),
+          get: fnIterationsFunc,
         } as any,
         null,
         new Map(),
@@ -111,8 +115,8 @@ describe('index', () => {
       iterations.push(iteration);
     }
 
-    expect(fnIterationsFunc).toHaveBeenCalledTimes(5);
-    expect(iterations).toStrictEqual(readTestResourceFile('iterations.json'));
+    expect(fnIterationsFunc).toHaveBeenCalledTimes(2);
+    expect(iterations).toMatchSnapshot();
   });
 
   test('streams - boards, use full_refresh sync mode', async () => {

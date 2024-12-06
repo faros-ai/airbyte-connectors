@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {DateTime} from 'luxon';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
@@ -12,24 +13,33 @@ export class Iterations extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const Iteration = record.record.data as Iteration;
-    const state = this.toState(Iteration.attributes.timeFrame);
+    const startedAt = Iteration.attributes?.startDate
+      ? Utils.toDate(Iteration.attributes.startDate)
+      : null;
+
+    const endedAt = Iteration.attributes?.finishDate
+      ? Utils.toDate(Iteration.attributes.finishDate)
+      : null;
+    // Set the openedAt and closedAt dates to the end of the day
+    const openedAt = startedAt
+      ? DateTime.fromJSDate(startedAt).endOf('day').toJSDate()
+      : null;
+    const closedAt = endedAt
+      ? DateTime.fromJSDate(endedAt).endOf('day').toJSDate()
+      : null;
     return [
       {
         model: 'tms_Sprint',
         record: {
           uid: String(Iteration.id),
           name: Iteration.name,
-          state,
-          startedAt: Utils.toDate(Iteration.attributes.startDate),
-          openedAt:
-            state !== 'Future'
-              ? Utils.toDate(Iteration.attributes.startDate)
-              : null,
-          endedAt: Utils.toDate(Iteration.attributes.finishDate),
-          closedAt:
-            state === 'Closed'
-              ? Utils.toDate(Iteration.attributes.finishDate)
-              : null,
+          description: Utils.cleanAndTruncate(Iteration.path),
+          state: this.toState(Iteration.attributes?.timeFrame),
+          startedAt,
+          openedAt,
+          endedAt,
+          closedAt,
+          source: this.source,
         },
       },
     ];
