@@ -602,7 +602,7 @@ export abstract class GitHub {
     } catch (err: any) {
       if (err.status === 422) {
         this.logger.warn(
-          `Couldn't fetch PR files for repo ${org}/${repo}. Status: ${err.status}. Message: ${err.message}`
+          `Couldn't fetch files for PR ${org}/${repo}/${number}. Status: ${err.status}. Message: ${err.message}`
         );
         return [];
       }
