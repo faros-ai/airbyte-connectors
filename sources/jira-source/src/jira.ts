@@ -114,7 +114,7 @@ const prRegex = new RegExp(
     'stateCount=(?<count>[0-9]+)})'
 );
 
-const jiraCloudRegex = /^https:\/\/(.*).atlassian.net/g;
+const jiraCloudRegex = /^https:\/\/(.*)\.atlassian\.net/g;
 const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
