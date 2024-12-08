@@ -440,6 +440,13 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
@@ -474,6 +481,13 @@ describe('index', () => {
         round_robin_bucket_execution: true,
       },
       catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
