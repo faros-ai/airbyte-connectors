@@ -440,6 +440,13 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
@@ -455,6 +462,47 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull requests backfill with bucketing and round robin execution only affects bucketing state', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...config,
+        bucket_id: 1,
+        bucket_total: 3,
+        backfill: true,
+        round_robin_bucket_execution: true,
+      },
+      catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getPullRequestsMockedImplementation(
+              readTestResourceAsJSON('pull_requests/pull_requests.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
       },
     });
   });

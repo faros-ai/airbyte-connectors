@@ -1845,6 +1845,29 @@ N/A
 ]
 `;
 
+exports[`index streams - pull requests 2`] = `
+{
+  "faros_pull_requests": {
+    "github/hello-world": {
+      "cutoff": 1613495729000,
+    },
+  },
+}
+`;
+
+exports[`index streams - pull requests backfill with bucketing and round robin execution only affects bucketing state 1`] = `
+{
+  "__bucket_execution_state": {
+    "last_executed_bucket_id": 1,
+  },
+  "faros_pull_requests": {
+    "github/hello-world": {
+      "cutoff": 123,
+    },
+  },
+}
+`;
+
 exports[`index streams - pull requests diff coverage 1`] = `
 [
   {
