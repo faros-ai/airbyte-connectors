@@ -5,6 +5,7 @@ import {CategoryDetail} from '../common/common';
 import {Vulnerability} from '../common/sec';
 import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon} from '../github/common';
+import {toNumber} from 'lodash';
 export class Findings extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_ArtifactVulnerability',
@@ -34,6 +35,7 @@ export class Findings extends Converter {
     );
     const results = Array.from(identifiers.values()).flat();
     const vulnerabilityIds = Array.from(identifiers.keys());
+    const severity = this.convertSeverity(vulnerability);
 
     // Create main vulnerability record
     results.push({
@@ -41,7 +43,7 @@ export class Findings extends Converter {
       record: {
         ...vulnerabilityKey,
         vulnerabilityIds: vulnerabilityIds.length ? vulnerabilityIds : null,
-        severity: Vulnerability.ratingToScore(vulnerability?.severity),
+        severity,
         discoveredBy: finding.toolName,
         remediatedAt: Utils.toDate(finding.scannerDismissedAt),
         type: this.convertType(finding.toolName),
@@ -51,6 +53,8 @@ export class Findings extends Converter {
       },
     });
 
+
+    // TODO - Process cicd_ArtifactVulnerability
     if (finding?.asset?.type?.toLowerCase() === 'code repository') {
       results.push(
         this.processRepositoryVulnerability(finding, vulnerabilityKey)
@@ -111,7 +115,7 @@ export class Findings extends Converter {
         vulnerability: vulnerabilityKey,
         repository: GitHubCommon.parseRepositoryKey(
           finding?.asset?.name,
-          'GitHub' // TODO - Figure out what source to use
+          finding?.asset?.service
         ),
         dueAt: Utils.toDate(finding.dueDate),
         createdAt: Utils.toDate(finding.scannerCreatedAt),
@@ -124,10 +128,16 @@ export class Findings extends Converter {
   private convertStatus(status: string): CategoryDetail {
     if (!status) return null;
 
+    // open, closed, in process, false positive, resolved, triaged, duplicate, risk accepted
     const statusMap: Record<string, string> = {
+      closed: 'Abandoned',
+      duplicate: 'Ignored',
+      'false positive': 'Ignored',
+      'in process': 'Open',
       open: 'Open',
       resolved: 'Resolved',
-      closed: 'Ignored',
+      'risk accepted': 'Ignored',
+      triaged: 'Open',
     };
 
     const category = statusMap[status.toLowerCase()] ?? 'Custom';
@@ -139,7 +149,19 @@ export class Findings extends Converter {
 
     if (toolName.toLowerCase() === 'github dependabot') {
       return {category: 'Dependency', detail: toolName};
+    } else if (toolName.toLowerCase() === 'github secret scanning') {
+      return {category: 'SecretLeak', detail: toolName};
     }
     return {category: 'Custom', detail: toolName};
+  }
+
+  private convertSeverity(vulnerability: any): number | null {
+    if (!vulnerability?.score && !vulnerability?.severity) {
+      return null;
+    }
+    const score = toNumber(vulnerability.score);
+    return isFinite(score)
+      ? score
+      : Vulnerability.ratingToScore(vulnerability.severity);
   }
 }

@@ -2,21 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "repository": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "uid": {
-          "type": "string"
-        }
-      }
-    },
     "toolName": {
-      "type": "string"
-    },
-    "dbCreatedAt": {
       "type": "string"
     },
     "dbUpdatedAt": {
@@ -25,22 +11,16 @@
     "scannerCreatedAt": {
       "type": "string"
     },
-    "scannerUpdatedAt": {
-      "type": "string"
-    },
-    "businessRisk": {
-      "type": "string"
+    "dueDate": {
+      "type": ["string", "null"]
     },
     "dismissReason": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "dismissedAt": {
       "type": "string"
     },
     "scannerDismissedAt": {
-      "type": "string"
-    },
-    "userDueDate": {
       "type": "string"
     },
     "sourceFilename": {
@@ -56,13 +36,16 @@
       "type": "object",
       "properties": {
         "severity": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "cve": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "ghsa": {
-          "type": "string"
+          "type": ["string", "null"]
+        },
+        "score": {
+          "type": ["number", "null"]
         },
         "fixAvailable": {
           "type": "boolean"
@@ -75,20 +58,8 @@
     "scannerStatus": {
       "type": "string"
     },
-    "userUpdatedStatus": {
-      "type": "string"
-    },
     "line": {
-      "type": "number"
-    },
-    "jiraUrl": {
-      "type": "string"
-    },
-    "lastReviewed": {
-      "type": "string"
-    },
-    "scannerConfidence": {
-      "type": "string"
+      "type": ["number", "null"]
     },
     "asset": {
       "type": "object",
@@ -99,22 +70,23 @@
         "id": {
           "type": "string"
         },
-        "uid": {
-          "type": "string"
-        },
         "type": {
           "type": "string"
         },
         "description": {
-          "type": "string"
+          "type": ["string", "null"]
+        },
+        "service": {
+          "type": ["string", "null"]
         }
       }
     },
     "projects": {
-      "type": "object"
+      "type": ["string", "null"]
     },
     "key": {
       "type": "string"
     }
-  }
+  },
+  "required": ["toolName", "key"]
 }
