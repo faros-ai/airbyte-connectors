@@ -8,6 +8,9 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
   ];
 
