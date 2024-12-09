@@ -997,6 +997,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       isFarosSource,
       sourceSucceeded,
     } = syncInfo;
+    if (isBackfillSync) {
+      this.logger.info(
+        'Running a backfill sync. Skipping reset of non-incremental models.'
+      );
+      return false;
+    }
     if (streamStatusReceived) {
       if (syncErrors.dst.length) {
         this.logger.warn(
@@ -1025,12 +1031,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (isResetSync) {
       this.logger.info('Running a reset sync. Resetting all models.');
       return true;
-    }
-    if (isBackfillSync) {
-      this.logger.info(
-        'Running a backfill sync. Skipping reset of non-incremental models.'
-      );
-      return false;
     }
     if (sourceSucceeded) {
       this.logger.info('Source succeeded. Resetting non-incremental models.');
