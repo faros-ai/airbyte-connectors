@@ -18,7 +18,7 @@ Array [
       "affectedVersions": null,
       "discoveredBy": "codeql",
       "remediatedAt": "2024-10-17T09:48:43.405Z",
-      "severity": 8.9,
+      "severity": 9.5,
       "source": "Tromzo",
       "type": Object {
         "category": "Custom",
@@ -43,7 +43,7 @@ Array [
       "resolvedAt": "2024-10-17T09:48:43.405Z",
       "source": "Tromzo",
       "status": Object {
-        "category": "Ignored",
+        "category": "Abandoned",
         "detail": "closed",
       },
       "vulnerability": Object {
@@ -74,7 +74,7 @@ Array [
       "repository": Object {
         "name": "airbyte-connectors",
         "organization": Object {
-          "source": "GitHub",
+          "source": "Bitbucket",
           "uid": "faros-ai",
         },
         "uid": "airbyte-connectors",

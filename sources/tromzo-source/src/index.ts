@@ -1,9 +1,11 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
@@ -11,6 +13,9 @@ import VError from 'verror';
 import {Findings} from './streams/findings';
 import {Tromzo} from './tromzo';
 import {TromzoConfig} from './types';
+import {calculateDateRange} from 'faros-airbyte-common/common';
+
+export const DEFAULT_CUTOFF_DAYS = 90;
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -40,5 +45,31 @@ export class TromzoSource extends AirbyteSourceBase<TromzoConfig> {
 
   streams(config: TromzoConfig): AirbyteStreamBase[] {
     return [new Findings(config, this.logger)];
+  }
+  async onBeforeRead(
+    config: TromzoConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: TromzoConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const {startDate, endDate} = calculateDateRange({
+      start_date: config.start_date,
+      end_date: config.end_date,
+      cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+      logger: this.logger.info.bind(this.logger),
+    });
+
+    return {
+      config: {
+        ...config,
+        startDate,
+        endDate,
+      } as TromzoConfig,
+      catalog,
+      state,
+    };
   }
 }

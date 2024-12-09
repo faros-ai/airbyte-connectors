@@ -1,29 +1,28 @@
-export interface TromzoConfig {
-  api_key: string;
-  organization: string;
-  tools: ReadonlyArray<string>;
-  api_timeout?: number;
-  api_page_size?: number;
-  api_max_retries?: number;
+import {AirbyteConfig} from 'faros-airbyte-cdk';
+
+export interface TromzoConfig extends AirbyteConfig {
+  readonly api_key: string;
+  readonly organization: string;
+  readonly tools: ReadonlyArray<string>;
+  readonly cutoff_days?: number;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  readonly api_timeout?: number;
+  readonly api_page_size?: number;
+  readonly api_max_retries?: number;
+  // startDate and endDate are calculated from start_date, end_date, and cutoff_days
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export interface Finding {
-  // Is this needed?
-  id: string;
-  repository?: {
-    id?: string;
-    uid?: string;
-  };
   toolName?: string;
-  dbCreatedAt?: string;
   dbUpdatedAt?: string;
   scannerCreatedAt?: string;
-  scannerUpdatedAt?: string;
-  businessRisk?: string;
+  dueDate?: string;
   dismissReason?: string;
   dismissedAt?: string;
   scannerDismissedAt?: string;
-  userDueDate?: string;
   sourceFilename?: string;
   sourcePath?: string;
   vulnerableVersion?: string;
@@ -31,22 +30,19 @@ export interface Finding {
     severity?: string;
     cve?: string;
     ghsa?: string;
+    score?: number;
     fixAvailable?: boolean;
   };
   status?: string;
   scannerStatus?: string;
-  userUpdatedStatus?: string;
   line?: number;
-  jiraUrl?: string;
-  lastReviewed?: string;
-  scannerConfidence?: string;
   asset?: {
     name?: string;
     id?: string;
-    uid?: string;
     type?: string;
     description?: string;
+    service?: string;
   };
-  projects?: any; // Type needs to be specified based on actual data structure
+  projects?: any;
   key?: string;
 }

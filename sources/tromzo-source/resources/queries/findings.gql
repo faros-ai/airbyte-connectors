@@ -3,10 +3,8 @@ query getFindings($offset: Int, $first: Int, $q: String) {
     edges {
       node {
         toolName
-        dbCreatedAt
         dbUpdatedAt
         scannerCreatedAt
-        scannerUpdatedAt
         dueDate
         dismissReason
         dismissedAt
@@ -18,17 +16,18 @@ query getFindings($offset: Int, $first: Int, $q: String) {
           severity
           cve
           ghsa
+          score
           fixAvailable
         }
         status
         scannerStatus
         line
-        scannerConfidence
         asset {
           name
           id
           type
           description
+          service
         }
         projects
         key

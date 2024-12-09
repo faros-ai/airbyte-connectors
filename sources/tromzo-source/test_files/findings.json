@@ -4,125 +4,74 @@
       "edges": [
         {
           "node": {
-            "asset": {
-              "description": "",
-              "id": "ast_1",
-              "name": "faros-ai/airbyte-connectors",
-              "type": "Code repository",
-              "uid": "ast_1"
-            },
-            "businessRisk": "",
-            "dbCreatedAt": "2024-10-16T14:54:31.977163+00:00",
+            "toolName": "codeql",
             "dbUpdatedAt": "2024-10-17T09:48:43.407288+00:00",
+            "scannerCreatedAt": "2024-09-30T06:55:39+00:00",
+            "dueDate": "2024-10-30T06:55:39+00:00",
             "dismissReason": "",
             "dismissedAt": "2024-10-17T09:48:43.405061+00:00",
-            "jiraUrl": "",
-            "key": "fin_1",
-            "lastReviewed": null,
-            "line": 117,
-            "projects": "[\"connectors\"]",
-            "repository": null,
-            "scannerConfidence": null,
-            "scannerCreatedAt": "2024-09-30T06:55:39+00:00",
             "scannerDismissedAt": "2024-10-17T09:48:43.405055+00:00",
-            "scannerStatus": "closed",
-            "scannerUpdatedAt": null,
             "sourceFilename": "jira.ts",
             "sourcePath": "https://github.com/faros-ai/airbyte-connectors/blob/main/sources/jira-source/src/jira.ts",
-            "status": "closed",
-            "toolName": "codeql",
-            "userDueDate": null,
-            "userUpdatedStatus": false,
+            "vulnerableVersion": "",
             "vulnerability": {
+              "severity": "high",
               "cve": "",
-              "fixAvailable": true,
               "ghsa": "",
-              "severity": "high"
+              "score": 9.0,
+              "fixAvailable": true
             },
-            "vulnerableVersion": ""
-          }
-        },
-        {
-          "node": {
+            "status": "closed",
+            "scannerStatus": "closed",
+            "line": 117,
             "asset": {
-              "description": "",
-              "id": "ast_1",
               "name": "faros-ai/airbyte-connectors",
+              "id": "ast_1",
               "type": "Code repository",
-              "uid": "ast_1"
+              "description": "",
+              "service": "GitHub"
             },
-            "businessRisk": "",
-            "dbCreatedAt": "2024-10-16T14:54:31.758757+00:00",
-            "dbUpdatedAt": "2024-10-17T09:48:43.356229+00:00",
-            "dismissReason": "",
-            "dismissedAt": "2024-10-17T09:48:43.353421+00:00",
-            "jiraUrl": "",
-            "key": "fin_2",
-            "lastReviewed": null,
-            "line": 118,
             "projects": "[\"connectors\"]",
-            "repository": null,
-            "scannerConfidence": null,
-            "scannerCreatedAt": "2024-09-30T06:55:39+00:00",
-            "scannerDismissedAt": "2024-10-17T09:48:43.353415+00:00",
-            "scannerStatus": "closed",
-            "scannerUpdatedAt": null,
-            "sourceFilename": "jira.ts",
-            "sourcePath": "https://github.com/faros-ai/airbyte-connectors/blob/main/sources/jira-source/src/jira.ts",
-            "status": "closed",
-            "toolName": "codeql",
-            "userDueDate": null,
-            "userUpdatedStatus": false,
-            "vulnerability": {
-              "cve": "",
-              "fixAvailable": true,
-              "ghsa": "",
-              "severity": "high"
-            },
-            "vulnerableVersion": ""
+            "key": "fin_1"
           }
         },
         {
           "node": {
-            "asset": {
-              "description": "BI, API and Automation layer for your Engineering Operations data",
-              "id": "ast_2",
-              "name": "faros-ai/faros-community-edition",
-              "type": "Code repository",
-              "uid": "ast_2"
-            },
-            "businessRisk": "",
-            "dbCreatedAt": "2024-11-08T01:04:57.941460+00:00",
+            "toolName": "github dependabot",
             "dbUpdatedAt": "2024-11-13T00:39:07.533502+00:00",
-            "dismissReason": "Missing in Dependabot alerts",
-            "dismissedAt": "2024-11-13T00:39:07.521057+00:00",
-            "jiraUrl": "",
-            "key": "fin_3",
-            "lastReviewed": null,
-            "line": null,
-            "projects": "[\"CE\"]",
-            "repository": null,
-            "scannerConfidence": null,
             "scannerCreatedAt": "2024-11-07T01:22:04+00:00",
-            "scannerDismissedAt": "2024-11-13T00:39:07.521045+00:00",
-            "scannerStatus": "closed",
-            "scannerUpdatedAt": null,
+            "dueDate": "2024-11-14T01:22:04+00:00",
+            "dismissReason": "",
+            "dismissedAt": "2024-11-13T00:39:07.533502+00:00",
+            "scannerDismissedAt": "2024-11-13T00:39:07.533502+00:00",
             "sourceFilename": "package-lock.json",
             "sourcePath": "https://github.com/faros-ai/faros-community-edition/blob/main/docker-extension/ui/package-lock.json",
-            "status": "closed",
-            "toolName": "github dependabot",
-            "userDueDate": null,
-            "userUpdatedStatus": false,
+            "vulnerableVersion": ">= 2.12|^3.0,< 3.0.0",
             "vulnerability": {
+              "severity": "high",
               "cve": "CVE-2024-21538",
-              "fixAvailable": true,
               "ghsa": "GHSA-3xgq-45jj-v275",
-              "severity": "high"
+              "score": 9.5,
+              "fixAvailable": false
             },
-            "vulnerableVersion": ">= 2.12|^3.0,< 3.0.0"
+            "status": "closed",
+            "scannerStatus": "closed",
+            "line": 118,
+            "asset": {
+              "name": "faros-ai/faros-community-edition",
+              "id": "ast_2",
+              "type": "Code repository",
+              "description": "",
+              "service": "GitHub"
+            },
+            "projects": "[\"community-edition\"]",
+            "key": "fin_2"
           }
         }
-      ]
+      ],
+      "pageInfo": {
+        "totalObjects": 2
+      }
     }
   }
 }
