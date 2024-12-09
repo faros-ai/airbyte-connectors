@@ -160,7 +160,7 @@ export class Findings extends Converter {
       return null;
     }
     const score = toNumber(vulnerability.score);
-    return isFinite(score)
+    return isFinite(score) && score !== 0
       ? score
       : Vulnerability.ratingToScore(vulnerability.severity);
   }

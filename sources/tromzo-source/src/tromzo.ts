@@ -69,7 +69,7 @@ export class Tromzo {
       // Tromzo doesn't support db_updated_at for github services, so will fetch all findings
       toolName.toLowerCase().startsWith('github')
         ? `tool_name in ("${toolName}")`
-        : `tool_name in ("${toolName}") AND db_updated_at >= "${startDate.toISOString()}"`;
+        : `tool_name in ("${toolName}") and db_updated_at >= "${startDate.toISOString()}"`;
 
     do {
       const variables = {

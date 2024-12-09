@@ -28,11 +28,11 @@ export class Findings extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'id';
+    return 'key';
   }
 
   get cursorField(): string | string[] {
-    return 'updated_at';
+    return 'dbUpdatedAt';
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
@@ -48,14 +48,15 @@ export class Findings extends AirbyteStreamBase {
     streamState?: Dictionary<any>
   ): AsyncGenerator<Finding> {
     const tromzo = await Tromzo.instance(this.config, this.logger);
+    const toolName = streamSlice.tool;
 
     const cutoff =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.[streamSlice.tool]?.cutoff
+        ? streamState?.[toolName]?.cutoff
         : undefined;
     const [startDate] = this.getUpdateRange(cutoff);
 
-    for await (const finding of tromzo.findings(streamSlice.tool, startDate)) {
+    for await (const finding of tromzo.findings(toolName, startDate)) {
       yield finding;
     }
   }
@@ -68,7 +69,7 @@ export class Findings extends AirbyteStreamBase {
     const latestRecordCutoff = Utils.toDate(latestRecord.dbUpdatedAt);
 
     const currentState = Utils.toDate(
-      currentStreamState?.[streamSlice.tool]?.cutoff ?? 0
+      currentStreamState?.[streamSlice.tool]?.cutoff
     );
     const cutoff =
       latestRecordCutoff > currentState ? latestRecordCutoff : currentState;

@@ -73,7 +73,7 @@ describe('streams', () => {
     await testStream('codeql', {
       offset: 0,
       first: 100,
-      q: `tool_name in ("codeql") AND db_updated_at >= "2024-01-01T00:00:00.000Z"`,
+      q: `tool_name in ("codeql") and db_updated_at >= "2024-01-01T00:00:00.000Z"`,
     });
   });
 
@@ -83,7 +83,7 @@ describe('streams', () => {
       {
         offset: 0,
         first: 100,
-        q: `tool_name in ("codeql") AND db_updated_at >= "2024-10-13T00:00:00.000Z"`,
+        q: `tool_name in ("codeql") and db_updated_at >= "2024-10-13T00:00:00.000Z"`,
       },
       SyncMode.INCREMENTAL
     );
