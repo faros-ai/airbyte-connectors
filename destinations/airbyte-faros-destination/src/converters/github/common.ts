@@ -136,7 +136,7 @@ export class GitHubCommon {
     description: string | null,
     createdAt: string | null | undefined,
     updatedAt: string | null | undefined,
-    isCommunity: boolean = true
+    writeInclusion: boolean = false
   ): DestinationRecord[] {
     const res: DestinationRecord[] = [
       {
@@ -167,7 +167,7 @@ export class GitHubCommon {
         },
       },
     ];
-    if (!isCommunity) {
+    if (writeInclusion) {
       res.push({
         model: 'faros_TmsTaskBoardOptions',
         record: {

@@ -8,6 +8,9 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
   ];
 
@@ -42,7 +45,8 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
-    if (repo.tmsEnabled) {
+    const writeInclusion = repo.syncRepoData && !isCommunity;
+    if (repo.syncRepoData && repo.tmsEnabled) {
       const projectUid = `${repoKey.organization.uid}/${repoKey.name}`;
       res.push(
         ...GitHubCommon.tms_ProjectBoard_with_TaskBoard(
@@ -54,14 +58,11 @@ export class FarosRepositories extends GitHubConverter {
           repo.description,
           repo.created_at,
           repo.updated_at,
-          isCommunity
+          writeInclusion
         )
       );
     }
-    if (
-      repo.syncRepoData &&
-      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
-    ) {
+    if (writeInclusion) {
       res.push({
         model: 'faros_VcsRepositoryOptions',
         record: {
