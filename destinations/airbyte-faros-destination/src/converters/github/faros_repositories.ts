@@ -43,13 +43,14 @@ export class FarosRepositories extends GitHubConverter {
       },
     ];
     if (this.tmsEnabled(ctx)) {
+      const projectUid = `${repoKey.organization.uid}/${repoKey.name}`;
       res.push(
         ...GitHubCommon.tms_ProjectBoard_with_TaskBoard(
           {
-            uid: `${repoKey.organization.uid}/${repoKey.name}`,
+            uid: projectUid,
             source: this.streamName.source,
           },
-          repo.name,
+          projectUid,
           repo.description,
           repo.created_at,
           repo.updated_at,
