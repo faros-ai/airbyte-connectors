@@ -136,7 +136,7 @@ export class GitHubCommon {
     description: string | null,
     createdAt: string | null | undefined,
     updatedAt: string | null | undefined,
-    isCommunity: boolean = false
+    isCommunity: boolean = true
   ): DestinationRecord[] {
     const res: DestinationRecord[] = [
       {
