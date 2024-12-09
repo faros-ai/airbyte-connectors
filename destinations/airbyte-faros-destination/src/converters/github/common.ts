@@ -35,7 +35,6 @@ type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
-  static readonly DEFAULT_SYNC_REPO_ISSUES = false;
 
   static vcs_User_with_Membership(
     user: Dictionary<any>,
