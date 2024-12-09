@@ -8,7 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange} from 'faros-airbyte-common/common';
+import {
+  applyRoundRobinBucketing,
+  calculateDateRange,
+} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
@@ -148,15 +151,21 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+
     return {
       config: {
-        ...config,
+        ...newConfig,
         requestedStreams,
         startDate,
         endDate,
-      },
+      } as JiraConfig,
       catalog: {streams},
-      state,
+      state: newState,
     };
   }
 
