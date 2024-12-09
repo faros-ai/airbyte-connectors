@@ -84,10 +84,11 @@ export class Vanta {
   ): (error: AxiosError<unknown, any>, retryNumber: number) => number {
     return (error: AxiosError<unknown, any>, retryNumber: number): number => {
       const statusCode = error?.response?.status;
+      const retries = retryNumber ? retryNumber - 1 : 0;
       if (statusCode === 429) {
         // Retrying using an exponential backoff as recommended in the API documentation, starting at 60 seconds.
         // https://developer.vanta.com/docs/faq#:~:text=What%20should%20I%20do%20if%20I%20hit%20the%20rate%20limit%3F
-        const delay = 60 * DEFAULT_RETRY_DELAY * Math.pow(2, (retryNumber - 1) || 0);
+        const delay = 60 * DEFAULT_RETRY_DELAY * Math.pow(2, retries);
         logger.warn(
           `Received rate limit exceeded (429) error from Vanta API, retrying in ${
             delay / 1000
@@ -98,7 +99,7 @@ export class Vanta {
 
       if (statusCode === 500) {
         // Retrying using an exponential backoff, starting at 60 seconds.
-        const delay = 60 * DEFAULT_RETRY_DELAY * Math.pow(2, (retryNumber - 1) || 0);
+        const delay = 60 * DEFAULT_RETRY_DELAY * Math.pow(2, retries);
         logger.warn(
           `Received internal server error (500), retrying in ${
             delay / 1000

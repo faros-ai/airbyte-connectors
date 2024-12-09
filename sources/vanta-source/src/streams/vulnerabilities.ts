@@ -1,6 +1,5 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
-import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Vanta} from '../vanta';
@@ -30,7 +29,10 @@ export class Vulnerabilities extends StreamBase {
     currentStreamState: StreamState,
     latestRecord: Vulnerability
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord.remediateByDate);
+    // Use the current date as the cutoff to ensure the next sync starts from this point onward.
+    // This approach avoids gaps in syncs, as new vulnerabilities added after the last sync
+    // (but with earlier SLA deadlines) are not missed.
+    const latestRecordCutoff = new Date();
     return this.getUpdatedStreamState(latestRecordCutoff, currentStreamState);
   }
 }
