@@ -46,6 +46,9 @@
     "archived": {
       "type": "boolean"
     },
+    "tmsEnabled": {
+      "type": "boolean"
+    },
     "syncRepoData": {
       "type": "boolean"
     }

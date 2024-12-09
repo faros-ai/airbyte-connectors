@@ -11,13 +11,9 @@ import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {PullRequestKey, RepoKey} from '../common/vcs';
-import {Converter, DestinationRecord, StreamContext} from '../converter';
+import {Converter, DestinationRecord} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
-
-export type GitHubConfig = {
-  sync_repo_issues?: boolean;
-};
 
 export enum AssistantMetric {
   SuggestionsDiscarded = 'SuggestionsDiscarded',
@@ -39,7 +35,6 @@ type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 export class GitHubCommon {
   // Max length for free-form description text fields such as issue body
   static readonly MAX_DESCRIPTION_LENGTH = 1000;
-  static readonly DEFAULT_SYNC_REPO_ISSUES = false;
 
   static vcs_User_with_Membership(
     user: Dictionary<any>,
@@ -140,9 +135,10 @@ export class GitHubCommon {
     name: string,
     description: string | null,
     createdAt: string | null | undefined,
-    updatedAt: string | null | undefined
+    updatedAt: string | null | undefined,
+    isCommunity: boolean = true
   ): DestinationRecord[] {
-    return [
+    const res: DestinationRecord[] = [
       {
         model: 'tms_Project',
         record: {
@@ -171,6 +167,16 @@ export class GitHubCommon {
         },
       },
     ];
+    if (!isCommunity) {
+      res.push({
+        model: 'faros_TmsTaskBoardOptions',
+        record: {
+          board: projectKey,
+          inclusion: {category: 'Included'},
+        },
+      });
+    }
+    return res;
   }
 
   static parseRepositoryKey(
@@ -335,17 +341,6 @@ export abstract class GitHubConverter extends Converter {
   /** All Github records should have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  protected githubConfig(ctx: StreamContext): GitHubConfig {
-    return ctx.config.source_specific_configs?.github ?? {};
-  }
-
-  protected syncRepoIssues(ctx: StreamContext): boolean {
-    return (
-      this.githubConfig(ctx).sync_repo_issues ??
-      GitHubCommon.DEFAULT_SYNC_REPO_ISSUES
-    );
   }
 
   protected collectUser(user: PartialUser) {
