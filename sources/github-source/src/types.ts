@@ -41,6 +41,7 @@ export interface GitHubConfig extends AirbyteConfig {
   endDate?: Date;
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;
+  tmsEnabled?: boolean;
 }
 
 type GitHubToken = {

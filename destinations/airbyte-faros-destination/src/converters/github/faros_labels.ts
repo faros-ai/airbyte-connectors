@@ -24,7 +24,7 @@ export class FarosLabels extends GitHubConverter {
       },
     ];
     // If we are syncing repo issues and writing TMS models we also write all the TMS labels.
-    if (this.syncRepoIssues(ctx)) {
+    if (this.tmsEnabled(ctx)) {
       records.push({
         model: 'tms_Label',
         record: {

@@ -120,6 +120,10 @@ export class StreamContext implements OriginProvider {
     this.sourceConfig = redactedConfig;
   }
 
+  getSourceConfig(): AirbyteConfig {
+    return this.sourceConfig;
+  }
+
   private readonly recordsByStreamName: Dictionary<Dictionary<AirbyteRecord>> =
     Object.create(null);
 

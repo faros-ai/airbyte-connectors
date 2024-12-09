@@ -15,10 +15,6 @@ import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 
-export type GitHubConfig = {
-  sync_repo_issues?: boolean;
-};
-
 export enum AssistantMetric {
   SuggestionsDiscarded = 'SuggestionsDiscarded',
   SuggestionsAccepted = 'SuggestionsAccepted',
@@ -140,9 +136,10 @@ export class GitHubCommon {
     name: string,
     description: string | null,
     createdAt: string | null | undefined,
-    updatedAt: string | null | undefined
+    updatedAt: string | null | undefined,
+    isCommunity: boolean = false
   ): DestinationRecord[] {
-    return [
+    const res: DestinationRecord[] = [
       {
         model: 'tms_Project',
         record: {
@@ -171,6 +168,16 @@ export class GitHubCommon {
         },
       },
     ];
+    if (isCommunity) {
+      res.push({
+        model: 'faros_TmsTaskBoardOptions',
+        record: {
+          board: projectKey,
+          inclusion: {category: 'Included'},
+        },
+      });
+    }
+    return res;
   }
 
   static parseRepositoryKey(
@@ -337,15 +344,8 @@ export abstract class GitHubConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected githubConfig(ctx: StreamContext): GitHubConfig {
-    return ctx.config.source_specific_configs?.github ?? {};
-  }
-
-  protected syncRepoIssues(ctx: StreamContext): boolean {
-    return (
-      this.githubConfig(ctx).sync_repo_issues ??
-      GitHubCommon.DEFAULT_SYNC_REPO_ISSUES
-    );
+  protected tmsEnabled(ctx: StreamContext): boolean {
+    return ctx.getSourceConfig()?.tmsEnabled;
   }
 
   protected collectUser(user: PartialUser) {

@@ -15,6 +15,8 @@ export class FarosRepositories extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const isCommunity =
+      ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
     const repo = record.record.data as Repository & {syncRepoData: boolean};
     const repoKey = GitHubCommon.repoKey(
       repo.org,
@@ -40,6 +42,21 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
+    if (this.tmsEnabled(ctx)) {
+      res.push(
+        ...GitHubCommon.tms_ProjectBoard_with_TaskBoard(
+          {
+            uid: `${repoKey.organization.uid}/${repoKey.name}`,
+            source: this.streamName.source,
+          },
+          repo.name,
+          repo.description,
+          repo.created_at,
+          repo.updated_at,
+          isCommunity
+        )
+      );
+    }
     if (
       repo.syncRepoData &&
       ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
