@@ -70,6 +70,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly custom_streams?: ReadonlyArray<string>;
   readonly bucket_id?: number;
   readonly bucket_total?: number;
+  readonly round_robin_bucket_execution?: boolean;
   readonly api_url?: string;
   readonly api_key?: string;
   readonly graph?: string;
