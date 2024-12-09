@@ -167,7 +167,7 @@ export class GitHubCommon {
         },
       },
     ];
-    if (isCommunity) {
+    if (!isCommunity) {
       res.push({
         model: 'faros_TmsTaskBoardOptions',
         record: {
