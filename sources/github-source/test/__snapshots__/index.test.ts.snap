@@ -1378,16 +1378,19 @@ exports[`index streams - labels 1`] = `
     "name": "dependencies",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
   {
     "name": "typescript",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
   {
     "name": "python",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
 ]
 `;
@@ -2234,6 +2237,7 @@ exports[`index streams - repositories 1`] = `
     "private": false,
     "size": 108,
     "syncRepoData": true,
+    "tmsEnabled": false,
     "topics": [
       "octocat",
       "atom",
@@ -2260,6 +2264,7 @@ exports[`index streams - repositories with bucketing 1`] = `
     "private": false,
     "size": 256,
     "syncRepoData": true,
+    "tmsEnabled": false,
     "topics": [
       "github",
       "api",

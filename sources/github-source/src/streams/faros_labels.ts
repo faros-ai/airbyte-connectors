@@ -22,6 +22,11 @@ export class FarosLabels extends StreamWithRepoSlices {
     const org = streamSlice?.org;
     const repo = streamSlice?.repo;
     const github = await GitHub.instance(this.config, this.logger);
-    yield* github.getLabels(org, repo);
+    for await (const label of github.getLabels(org, repo)) {
+      yield {
+        ...label,
+        tmsEnabled: this.config.tmsEnabled,
+      };
+    }
   }
 }

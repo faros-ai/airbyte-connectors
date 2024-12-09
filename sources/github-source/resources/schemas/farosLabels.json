@@ -10,6 +10,9 @@
     },
     "name": {
       "type": "string"
+    },
+    "tmsEnabled": {
+      "type": "boolean"
     }
   }
 }

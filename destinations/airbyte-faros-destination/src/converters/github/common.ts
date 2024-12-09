@@ -343,10 +343,6 @@ export abstract class GitHubConverter extends Converter {
     return record?.record?.data?.id;
   }
 
-  protected tmsEnabled(ctx: StreamContext): boolean {
-    return ctx.getSourceConfig()?.tmsEnabled;
-  }
-
   protected collectUser(user: PartialUser) {
     if (!user?.login) return;
     if (!this.collectedUsers.has(user.login)) {
