@@ -11,7 +11,7 @@ import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {PullRequestKey, RepoKey} from '../common/vcs';
-import {Converter, DestinationRecord, StreamContext} from '../converter';
+import {Converter, DestinationRecord} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 
