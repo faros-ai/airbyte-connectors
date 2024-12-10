@@ -66,6 +66,10 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return 'github';
   }
 
+  mode(config: GitHubConfig): string | undefined {
+    return !config.url ? 'cloud' : 'server';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
