@@ -44,6 +44,13 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     return 'jira';
   }
 
+  mode(config: JiraConfig): string | undefined {
+    if (!config.url) {
+      return undefined;
+    }
+    return config.url.endsWith('.atlassian.net') ? 'cloud' : 'server';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
