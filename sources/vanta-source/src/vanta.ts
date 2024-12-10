@@ -248,7 +248,7 @@ export class Vanta {
 
   private async fetchVulnerabilityRemediations(
     cursor: string | null,
-    remediatedAfter: Date
+    remediatedAfterDate: Date
   ): Promise<{
     data: VulnerabilityRemediation[];
     pageInfo: {endCursor: string | null; hasNextPage: boolean};
@@ -256,7 +256,7 @@ export class Vanta {
     return this.fetchData<VulnerabilityRemediation>(
       '/v1/vulnerability-remediations',
       cursor,
-      {remediatedAfter},
+      {remediatedAfterDate},
       'Failed to fetch vulnerability remediations'
     );
   }
