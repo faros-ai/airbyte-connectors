@@ -15,7 +15,13 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {DEFAULT_API_URL, DEFAULT_CUTOFF_DAYS, Jira, JiraConfig} from './jira';
+import {
+  DEFAULT_API_URL,
+  DEFAULT_CUTOFF_DAYS,
+  Jira,
+  JIRA_CLOUD_REGEX,
+  JiraConfig,
+} from './jira';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
@@ -42,6 +48,13 @@ export function mainCommand(): Command {
 export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   get type(): string {
     return 'jira';
+  }
+
+  mode(config: JiraConfig): string | undefined {
+    if (!config.url) {
+      return undefined;
+    }
+    return config.url.match(JIRA_CLOUD_REGEX) != null ? 'cloud' : 'server';
   }
 
   async spec(): Promise<AirbyteSpec> {

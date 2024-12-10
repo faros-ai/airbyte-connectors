@@ -115,7 +115,7 @@ const prRegex = new RegExp(
     'stateCount=(?<count>[0-9]+)})'
 );
 
-const jiraCloudRegex = /^https:\/\/(.*)\.atlassian\.net/g;
+export const JIRA_CLOUD_REGEX = /^https:\/\/(.*)\.atlassian\.net/g;
 const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
@@ -208,7 +208,7 @@ export class Jira {
       throw new VError('Please provide a Jira URL');
     }
 
-    const isCloud = cfg.url.match(jiraCloudRegex) != null;
+    const isCloud = cfg.url.match(JIRA_CLOUD_REGEX) != null;
     const jiraType = isCloud ? 'Cloud' : 'Server/DC';
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
 
