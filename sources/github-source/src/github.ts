@@ -172,8 +172,7 @@ export abstract class GitHub {
 
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger,
-    farosClient?: FarosClient
+    logger: AirbyteLogger
   ): Promise<GitHub> {
     if (GitHub.github) {
       return GitHub.github;
@@ -184,16 +183,6 @@ export abstract class GitHub {
       cfg.authentication.type === 'token'
         ? await GitHubToken.instance(cfg, logger)
         : await GitHubApp.instance(cfg, logger);
-
-    if (cfg.run_mode !== RunMode.EnterpriseCopilotOnly) {
-      const orgRepoFilter = OrgRepoFilter.instance(cfg, logger, farosClient);
-      const orgsToFetch = await orgRepoFilter.getOrganizations();
-      if (orgsToFetch.length === 0) {
-        throw new VError(
-          'No visible organizations remain after applying inclusion and exclusion filters'
-        );
-      }
-    }
 
     GitHub.github = github;
     return github;
