@@ -17,6 +17,7 @@ import {
   EnterpriseCopilotSeat,
   EnterpriseCopilotSeatsEmpty,
   EnterpriseCopilotSeatsResponse,
+  EnterpriseCopilotSeatsStreamRecord,
   EnterpriseCopilotUsageSummary,
   EnterpriseTeam,
   EnterpriseTeamMembership,
@@ -80,7 +81,6 @@ import {
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
-import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
