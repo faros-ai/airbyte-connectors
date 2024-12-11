@@ -81,13 +81,12 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
-import {FarosClient, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
-import {OrgRepoFilter} from './org-repo-filter';
 import {RunMode, StreamBase} from './streams/common';
 import {
   AuditLogTeamMember,
