@@ -71,14 +71,20 @@ export class Findings extends AirbyteStreamBase {
     const currentState = Utils.toDate(
       currentStreamState?.[streamSlice.tool]?.cutoff
     );
-    const cutoff =
-      latestRecordCutoff > currentState ? latestRecordCutoff : currentState;
-    return {
-      ...currentStreamState,
-      [streamSlice.tool]: {
-        cutoff: cutoff.getTime(),
-      },
-    };
+    if (!latestRecordCutoff) {
+      return currentStreamState;
+    }
+
+    if (currentState && latestRecordCutoff.getTime() > currentState.getTime()) {
+      return {
+        ...currentStreamState,
+        [streamSlice.tool]: {
+          cutoff: latestRecordCutoff.getTime(),
+        },
+      };
+    }
+
+    return currentStreamState;
   }
 
   private getUpdateRange(cutoff?: number): [Date, Date] {
