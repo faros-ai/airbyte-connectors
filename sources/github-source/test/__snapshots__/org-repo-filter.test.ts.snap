@@ -146,21 +146,21 @@ exports[`OrgRepoFilter getRepositories (FarosGraph) - nothing included - some ex
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
 ]
 `;
@@ -214,21 +214,21 @@ exports[`OrgRepoFilter getRepositories (FarosGraph) - some included - nothing ex
       "name": "repo-1",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-2",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
   {
     "repo": {
       "name": "repo-3",
       "org": "org-3",
     },
-    "syncRepoData": true,
+    "syncRepoData": false,
   },
 ]
 `;

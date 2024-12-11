@@ -169,11 +169,15 @@ export class OrgRepoFilter {
     const excludedRepos = excludedReposByOrg.get(org);
 
     if (this.useFarosGraphReposSelection) {
-      const included = true;
-
+      // if no inclusions / exclusions found (for all organizations) sync all repos
+      const noFiltersForAll = !reposByOrg.size && !excludedReposByOrg.size;
+      const noFilters = !repos?.size && !excludedRepos?.size;
       const syncRepoData =
-        (!repos?.size || repos.has(repo)) && !excludedRepos?.has(repo);
-      return {included, syncRepoData};
+        noFiltersForAll ||
+        (!noFilters &&
+          (!repos?.size || repos.has(repo)) &&
+          !excludedRepos?.has(repo));
+      return {included: true, syncRepoData};
     }
 
     if (repos?.size) {
