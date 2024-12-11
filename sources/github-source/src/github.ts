@@ -185,7 +185,7 @@ export abstract class GitHub {
         ? await GitHubToken.instance(cfg, logger)
         : await GitHubApp.instance(cfg, logger);
 
-    if (cfg.run_mode !== 'EnterpriseCopilotOnly') {
+    if (cfg.run_mode !== RunMode.EnterpriseCopilotOnly) {
       const orgRepoFilter = OrgRepoFilter.instance(cfg, logger, farosClient);
       const orgsToFetch = await orgRepoFilter.getOrganizations();
       if (orgsToFetch.length === 0) {
