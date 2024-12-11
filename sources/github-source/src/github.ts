@@ -2085,7 +2085,7 @@ export class GitHubToken extends GitHub {
       this.baseOctokit.repos.listForAuthenticatedUser,
       {
         per_page: this.pageSize,
-        type: 'all',
+        type: 'member',
       }
     );
     for await (const res of reposIter) {
