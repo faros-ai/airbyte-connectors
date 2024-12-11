@@ -185,13 +185,16 @@ export abstract class GitHub {
         ? await GitHubToken.instance(cfg, logger)
         : await GitHubApp.instance(cfg, logger);
 
-    const orgRepoFilter = OrgRepoFilter.instance(cfg, logger, farosClient);
-    const orgsToFetch = await orgRepoFilter.getOrganizations();
-    if (orgsToFetch.length === 0) {
-      throw new VError(
-        'No visible organizations remain after applying inclusion and exclusion filters'
-      );
+    if (cfg.run_mode !== 'EnterpriseCopilotOnly') {
+      const orgRepoFilter = OrgRepoFilter.instance(cfg, logger, farosClient);
+      const orgsToFetch = await orgRepoFilter.getOrganizations();
+      if (orgsToFetch.length === 0) {
+        throw new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        );
+      }
     }
+
     GitHub.github = github;
     return github;
   }
