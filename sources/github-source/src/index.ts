@@ -89,7 +89,10 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return [true, undefined];
   }
 
-  makeFarosClient(config: GitHubConfig): FarosClient {
+  makeFarosClient(config: GitHubConfig): FarosClient | undefined {
+    if (!config.api_key) {
+      return undefined;
+    }
     return new FarosClient({
       url: config.api_url ?? DEFAULT_FAROS_API_URL,
       apiKey: config.api_key,
@@ -97,10 +100,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   }
 
   streams(config: GitHubConfig): AirbyteStreamBase[] {
-    let farosClient;
-    if (config.api_key) {
-      farosClient = this.makeFarosClient(config);
-    }
+    const farosClient = this.makeFarosClient(config);
     return [
       new FarosArtifacts(config, this.logger, farosClient),
       new FarosCodeScanningAlerts(config, this.logger, farosClient),
