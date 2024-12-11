@@ -12,7 +12,7 @@ describe('OrgRepoFilter', () => {
   const logger = new AirbyteLogger(AirbyteLogLevel.DEBUG);
   const config: GitHubConfig = readTestResourceAsJSON('config.json');
 
-  beforeAll(() => {
+  beforeEach(() => {
     setupGitHubInstance(
       {
         orgs: {
@@ -76,6 +76,27 @@ describe('OrgRepoFilter', () => {
       },
       logger
     );
+    const organizations = await orgRepoFilter.getOrganizations();
+    expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - fine-grained token - no list', async () => {
+    setupGitHubInstance(
+      {
+        orgs: {
+          listForAuthenticatedUser: jest.fn().mockReturnValue([]),
+        },
+        repos: {
+          listForAuthenticatedUser: jest.fn().mockReturnValue([
+            {name: 'repo-1', owner: {login: 'Org-1', type: 'Organization'}},
+            {name: 'repo-2', owner: {login: 'Org-2', type: 'Organization'}},
+            {name: 'repo-3', owner: {login: 'Org-3', type: 'User'}},
+          ]),
+        },
+      },
+      logger
+    );
+    const orgRepoFilter = new OrgRepoFilter(config, logger);
     const organizations = await orgRepoFilter.getOrganizations();
     expect(organizations).toMatchSnapshot();
   });

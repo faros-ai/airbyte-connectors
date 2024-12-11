@@ -16,6 +16,13 @@ exports[`OrgRepoFilter getOrganizations - all - no list 1`] = `
 ]
 `;
 
+exports[`OrgRepoFilter getOrganizations - fine-grained token - no list 1`] = `
+[
+  "org-1",
+  "org-2",
+]
+`;
+
 exports[`OrgRepoFilter getOrganizations - specific organizations excluded 1`] = `
 [
   "org-3",

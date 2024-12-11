@@ -53,6 +53,9 @@ describe('index', () => {
     jest
       .spyOn(GitHubApp.prototype as any, 'getAppInstallations')
       .mockResolvedValue([]);
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockResolvedValue(['Org-1']);
   }
 
   test('check connection - token valid', async () => {
@@ -68,6 +71,17 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
+  test('check connection - no organizations', async () => {
+    checkConnectionMock();
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockResolvedValue([]);
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/token_valid.json',
     });
   });
 

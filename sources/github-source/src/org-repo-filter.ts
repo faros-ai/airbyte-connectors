@@ -101,19 +101,16 @@ export class OrgRepoFilter {
       if (!this.filterConfig.organizations) {
         visibleOrgs.forEach((org) => {
           const lowerOrg = toLower(org);
-          if (!this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
-            organizations.add(lowerOrg);
+          if (this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
+            this.logger.info(`Skipping excluded organization ${lowerOrg}`);
+            return;
           }
+          organizations.add(lowerOrg);
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
           const lowerOrg = toLower(org);
-          // fine-grained tokens return an empty list for visible orgs,
-          // so we only run the check if the list is not empty
-          if (
-            visibleOrgs.length &&
-            !visibleOrgs.some((o) => toLower(o) === lowerOrg)
-          ) {
+          if (!visibleOrgs.some((o) => toLower(o) === lowerOrg)) {
             this.logger.warn(`Skipping not found organization ${lowerOrg}`);
             return;
           }

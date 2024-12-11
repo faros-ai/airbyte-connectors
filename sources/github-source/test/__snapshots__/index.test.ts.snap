@@ -59,6 +59,16 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index check connection - no organizations 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "No visible organizations remain after applying inclusion and exclusion filters",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {

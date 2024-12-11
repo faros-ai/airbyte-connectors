@@ -73,7 +73,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   async checkConnection(config: GitHubConfig): Promise<[boolean, VError]> {
     try {
-      await GitHub.instance(config, this.logger);
+      await GitHub.instance(config, this.logger, this.makeFarosClient(config));
     } catch (err: any) {
       return [false, err];
     }

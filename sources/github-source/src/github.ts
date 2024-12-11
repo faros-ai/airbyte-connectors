@@ -81,12 +81,13 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
-import {Utils} from 'faros-js-client';
+import {FarosClient, Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
+import {OrgRepoFilter} from './org-repo-filter';
 import {RunMode, StreamBase} from './streams/common';
 import {
   AuditLogTeamMember,
@@ -171,7 +172,8 @@ export abstract class GitHub {
 
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    farosClient?: FarosClient
   ): Promise<GitHub> {
     if (GitHub.github) {
       return GitHub.github;
@@ -182,6 +184,14 @@ export abstract class GitHub {
       cfg.authentication.type === 'token'
         ? await GitHubToken.instance(cfg, logger)
         : await GitHubApp.instance(cfg, logger);
+
+    const orgRepoFilter = OrgRepoFilter.instance(cfg, logger, farosClient);
+    const orgsToFetch = await orgRepoFilter.getOrganizations();
+    if (orgsToFetch.length === 0) {
+      throw new VError(
+        'No visible organizations remain after applying inclusion and exclusion filters'
+      );
+    }
     GitHub.github = github;
     return github;
   }
@@ -2051,9 +2061,38 @@ export class GitHubToken extends GitHub {
         per_page: this.pageSize,
       }
     );
+
+    let empty = true;
     for await (const res of iter) {
       for (const org of res.data) {
+        empty = false;
         yield org.login;
+      }
+    }
+
+    if (!empty) {
+      return;
+    }
+
+    // Fine-grained tokens return an empty list for visible orgs,
+    // so if we get to this point, we're possibly using a fine-grained token.
+    // In order to determine which orgs are visible, check visible repos and track their orgs
+    const seenOrgs = new Set<string>();
+    const reposIter = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.repos.listForAuthenticatedUser,
+      {
+        per_page: this.pageSize,
+        type: 'all',
+      }
+    );
+    for await (const res of reposIter) {
+      for (const repo of res.data) {
+        if (repo.owner?.type === 'Organization') {
+          if (!seenOrgs.has(repo.owner.login)) {
+            seenOrgs.add(repo.owner.login);
+            yield repo.owner.login;
+          }
+        }
       }
     }
   }
