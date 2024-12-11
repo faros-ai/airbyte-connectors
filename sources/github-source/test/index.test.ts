@@ -10,6 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {merge} from 'lodash';
+import VError from 'verror';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
@@ -78,7 +79,11 @@ describe('index', () => {
     checkConnectionMock();
     jest
       .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
-      .mockResolvedValue([]);
+      .mockRejectedValue(
+        new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        )
+      );
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/token_valid.json',

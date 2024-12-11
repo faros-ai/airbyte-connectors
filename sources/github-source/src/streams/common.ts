@@ -5,7 +5,6 @@ import {
 } from 'faros-airbyte-cdk';
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
-import VError from 'verror';
 
 import {OrgRepoFilter} from '../org-repo-filter';
 import {GitHubConfig} from '../types';
@@ -171,14 +170,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithOrgSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
-    const orgsToFetch = await this.orgRepoFilter.getOrganizations();
-    if (orgsToFetch.length === 0) {
-      throw new VError(
-        'No visible organizations remain after applying inclusion and exclusion filters'
-      );
-    }
-
-    for (const org of orgsToFetch) {
+    for (const org of await this.orgRepoFilter.getOrganizations()) {
       yield {org};
     }
   }

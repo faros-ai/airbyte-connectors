@@ -22,6 +22,7 @@ import {
   DEFAULT_RUN_MODE,
   GitHub,
 } from './github';
+import {OrgRepoFilter} from './org-repo-filter';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
@@ -74,15 +75,11 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   async checkConnection(config: GitHubConfig): Promise<[boolean, VError]> {
     try {
       await GitHub.instance(config, this.logger);
-      if (config.run_mode !== RunMode.EnterpriseCopilotOnly) {
-        await new FarosOrganizations(
-          config,
-          this.logger,
-          this.makeFarosClient(config)
-        )
-          .streamSlices()
-          .next();
-      }
+      await OrgRepoFilter.instance(
+        config,
+        this.logger,
+        this.makeFarosClient(config)
+      ).getOrganizations();
     } catch (err: any) {
       return [false, err];
     }

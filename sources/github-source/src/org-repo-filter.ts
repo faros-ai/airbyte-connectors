@@ -7,6 +7,7 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
+import {RunMode} from './streams/common';
 import {GitHubConfig} from './types';
 
 type RepoInclusion = {
@@ -119,6 +120,15 @@ export class OrgRepoFilter {
       }
       this.organizations = organizations;
     }
+
+    if (this.config.run_mode !== RunMode.EnterpriseCopilotOnly) {
+      if (this.organizations.size === 0) {
+        throw new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        );
+      }
+    }
+
     return Array.from(this.organizations);
   }
 

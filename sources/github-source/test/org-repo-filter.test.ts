@@ -5,6 +5,7 @@ import {
 } from 'faros-airbyte-cdk';
 
 import {OrgRepoFilter} from '../src/org-repo-filter';
+import {RunMode} from '../src/streams/common';
 import {GitHubConfig} from '../src/types';
 import {iterate, setupGitHubInstance} from './utils';
 
@@ -78,6 +79,40 @@ describe('OrgRepoFilter', () => {
     );
     const organizations = await orgRepoFilter.getOrganizations();
     expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - no visible orgs after filtering', async () => {
+    let orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        excluded_organizations: ['org-1', 'org-2', 'org-3'],
+      },
+      logger
+    );
+    await expect(orgRepoFilter.getOrganizations()).rejects.toThrow(
+      'No visible organizations remain after applying inclusion and exclusion filters'
+    );
+
+    orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        organizations: ['xyz'],
+      },
+      logger
+    );
+    await expect(orgRepoFilter.getOrganizations()).rejects.toThrow(
+      'No visible organizations remain after applying inclusion and exclusion filters'
+    );
+
+    orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        organizations: ['xyz'],
+        run_mode: RunMode.EnterpriseCopilotOnly,
+      },
+      logger
+    );
+    expect(await orgRepoFilter.getOrganizations()).toEqual([]);
   });
 
   test('getOrganizations - fine-grained token - no list', async () => {
