@@ -19,6 +19,15 @@ export class FarosProjectVersionIssues extends ProjectStreamSliceWithStaticCutof
     return ['key'];
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
+  // Not used, but necessary to pass Airbyte UI validation check
+  get cursorField(): string | string[] {
+    return 'versionId';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],

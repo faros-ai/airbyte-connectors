@@ -25,6 +25,15 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
     return ['key', 'boardId'];
   }
 
+  get supportsIncremental(): boolean {
+    return true;
+  }
+
+  // Not used, but necessary to pass Airbyte UI validation check
+  get cursorField(): string | string[] {
+    return 'boardId';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
