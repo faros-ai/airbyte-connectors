@@ -10,6 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {merge} from 'lodash';
+import VError from 'verror';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
@@ -53,6 +54,9 @@ describe('index', () => {
     jest
       .spyOn(GitHubApp.prototype as any, 'getAppInstallations')
       .mockResolvedValue([]);
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockResolvedValue(['Org-1']);
   }
 
   test('check connection - token valid', async () => {
@@ -68,6 +72,21 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
+  test('check connection - no organizations', async () => {
+    checkConnectionMock();
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockRejectedValue(
+        new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        )
+      );
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/token_valid.json',
     });
   });
 
