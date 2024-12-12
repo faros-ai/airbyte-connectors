@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import parseLinkHeader from 'parse-link-header';
