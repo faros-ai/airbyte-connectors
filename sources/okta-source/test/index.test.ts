@@ -9,12 +9,6 @@ import fs from 'fs-extra';
 import * as sut from '../src/index';
 import {Okta} from '../src/okta';
 
-describe('index', () => {
-  test('ok?', async () => {
-    expect('OK').toEqual('OK');
-  });
-});
-
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
