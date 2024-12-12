@@ -43,7 +43,7 @@ export class Users extends OktaConverter {
       profile.department ??
       null;
 
-    if (!this.seenDepartments.has(department)) {
+    if (department && !this.seenDepartments.has(department)) {
       this.seenDepartments.add(department);
       res.push({
         model: 'org_Department',
