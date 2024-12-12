@@ -31,6 +31,9 @@ export class Okta {
   ): Promise<Okta> {
     if (Okta.okta) return Okta.okta;
 
+    if (!config.domain_name) {
+      throw new VError('Please provide a domain name');
+    }
     if (!config.token) {
       throw new VError('Please provide a token');
     }
