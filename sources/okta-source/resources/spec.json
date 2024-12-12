@@ -4,26 +4,48 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Okta Spec",
     "type": "object",
-    "required": ["token", "domain_name"],
+    "required": [
+      "token",
+      "domain_name"
+    ],
     "additionalProperties": true,
     "properties": {
       "domain_name": {
+        "order": 0,
         "type": "string",
         "title": "Domain name",
         "description": "Domain name (org name part of your Okta URL)",
-        "examples": ["dev-12345678"]
+        "examples": [
+          "dev-12345678"
+        ]
       },
       "token": {
+        "order": 1,
         "type": "string",
         "title": "Okta Token",
         "description": "Access Token for Okta API authentication",
         "airbyte_secret": true
       },
       "version": {
+        "order": 2,
         "type": "string",
         "title": "API Version",
         "description": "Okta API Version",
         "default": "v1"
+      },
+      "api_timeout": {
+        "order": 3,
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to the Okta API. 0 means no timeout.",
+        "default": 0
+      },
+      "max_retries": {
+        "order": 4,
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Okta API.",
+        "default": 3
       }
     }
   }

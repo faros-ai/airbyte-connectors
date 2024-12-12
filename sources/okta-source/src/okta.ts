@@ -1,16 +1,20 @@
 import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import parseLinkHeader from 'parse-link-header';
 import {VError} from 'verror';
 
 import {Group, User, UserOfGroup} from './models';
 
 const DEFAULT_VERSION = 'v1';
-
+const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
+const DEFAULT_RETRIES = 3;
 export interface OktaConfig {
   readonly token: string;
   readonly domain_name: string;
   readonly version?: string;
+  readonly api_timeout?: number;
+  readonly max_retries?: number;
 }
 
 export class Okta {
@@ -28,19 +32,23 @@ export class Okta {
     if (Okta.okta) return Okta.okta;
 
     if (!config.token) {
-      throw new VError('token must not be an empty string');
+      throw new VError('Please provide a token');
     }
     const version = config.version ?? DEFAULT_VERSION;
-    const httpClient = axios.create({
-      baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
-      timeout: 60000, // default is `0` (no timeout)
-      // Okta responses can be are very large hence the infinity
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      headers: {
-        Authorization: `SSWS ${config.token}`,
+    const httpClient = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `https://${config.domain_name}.okta.com/api/${version}/`,
+        timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: {
+          Authorization: `SSWS ${config.token}`,
+        },
       },
-    });
+      logger?.asPino(),
+      config.max_retries ?? DEFAULT_RETRIES,
+      10000
+    );
 
     Okta.okta = new Okta(httpClient, logger);
     return Okta.okta;
