@@ -154,7 +154,11 @@ export class AirbyteLog implements AirbyteMessage {
     message: string,
     stack_trace?: string
   ): AirbyteLog {
-    return new AirbyteLog({level, message, stack_trace});
+    return new AirbyteLog({
+      level,
+      message: message.replace(/\n/g, '  '),
+      stack_trace,
+    });
   }
 }
 
