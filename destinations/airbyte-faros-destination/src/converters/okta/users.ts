@@ -38,18 +38,18 @@ export class Users extends OktaConverter {
       ([k, v]) => k
     ).map(([k, v]) => v);
 
-    const department =
+    const departmentUid =
       (departments.length > 0 ? departments[0] : null) ??
       profile.department ??
       null;
 
-    if (department && !this.seenDepartments.has(department)) {
-      this.seenDepartments.add(department);
+    if (departmentUid && !this.seenDepartments.has(departmentUid)) {
+      this.seenDepartments.add(departmentUid);
       res.push({
         model: 'org_Department',
         record: {
-          uid: department,
-          name: department,
+          uid: departmentUid,
+          name: departmentUid,
           description: null,
         },
       });
@@ -78,7 +78,7 @@ export class Users extends OktaConverter {
           level: null,
           joinedAt,
           terminatedAt: null,
-          department: {uid: department},
+          department: departmentUid ? {uid: departmentUid} : null,
           identity: {uid, source},
           manager: profile.manager ? {uid: profile.manager, source} : null,
           reportingChain: null, // TODO: compute reporting chain
