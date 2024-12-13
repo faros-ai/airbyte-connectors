@@ -1,12 +1,23 @@
-import {SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteLogger, SyncMode} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
-import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
+import {VantaConfig} from '../index';
 import {Vanta} from '../vanta';
 import {StreamBase, StreamState} from './common';
 
 export class Vulnerabilities extends StreamBase {
+  private readonly syncStartDate: Date;
+
+  constructor(
+    protected readonly cfg: VantaConfig,
+    protected readonly logger: AirbyteLogger
+  ) {
+    super(cfg, logger);
+    // Save the current date when the stream is instantiated to use as the cutoff for the next sync
+    this.syncStartDate = new Date();
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/vulnerabilities.json');
   }
@@ -30,7 +41,9 @@ export class Vulnerabilities extends StreamBase {
     currentStreamState: StreamState,
     latestRecord: Vulnerability
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord.remediateByDate);
-    return this.getUpdatedStreamState(latestRecordCutoff, currentStreamState);
+    // Use the syncStartDate (saved in the constructor) as the cutoff for the next sync
+    // This approach avoids gaps in syncs, as new vulnerabilities added after the last sync
+    // (but with earlier SLA deadlines) are not missed.
+    return this.getUpdatedStreamState(this.syncStartDate, currentStreamState);
   }
 }

@@ -39,7 +39,7 @@ export abstract class VantaConverter extends Converter {
     message: string
   ): void {
     if (vulnerabilities.size > 0) {
-      ctx.logger.warn(`${message}: ${Array.from(vulnerabilities).join(', ')}`);
+      ctx.logger.warn(`${message} - Count: ${vulnerabilities.size}`);
     }
   }
 }

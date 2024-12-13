@@ -22,6 +22,7 @@ import {
   DEFAULT_RUN_MODE,
   GitHub,
 } from './github';
+import {OrgRepoFilter} from './org-repo-filter';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
 import {FarosArtifacts} from './streams/faros_artifacts';
 import {FarosCodeScanningAlerts} from './streams/faros_code_scanning_alerts';
@@ -66,6 +67,10 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
     return 'github';
   }
 
+  mode(config: GitHubConfig): string | undefined {
+    return !config.url ? 'cloud' : 'server';
+  }
+
   async spec(): Promise<AirbyteSpec> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
@@ -74,13 +79,21 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   async checkConnection(config: GitHubConfig): Promise<[boolean, VError]> {
     try {
       await GitHub.instance(config, this.logger);
+      await OrgRepoFilter.instance(
+        config,
+        this.logger,
+        this.makeFarosClient(config)
+      ).getOrganizations();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
 
-  makeFarosClient(config: GitHubConfig): FarosClient {
+  makeFarosClient(config: GitHubConfig): FarosClient | undefined {
+    if (!config.api_key) {
+      return undefined;
+    }
     return new FarosClient({
       url: config.api_url ?? DEFAULT_FAROS_API_URL,
       apiKey: config.api_key,
@@ -88,10 +101,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
   }
 
   streams(config: GitHubConfig): AirbyteStreamBase[] {
-    let farosClient;
-    if (config.api_key) {
-      farosClient = this.makeFarosClient(config);
-    }
+    const farosClient = this.makeFarosClient(config);
     return [
       new FarosArtifacts(config, this.logger, farosClient),
       new FarosCodeScanningAlerts(config, this.logger, farosClient),
@@ -167,6 +177,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
         ...newConfig,
         startDate,
         endDate,
+        tmsEnabled: streams.map((s) => s.stream.name).includes('faros_issues'),
       } as GitHubConfig,
       catalog: {streams},
       state: newState,

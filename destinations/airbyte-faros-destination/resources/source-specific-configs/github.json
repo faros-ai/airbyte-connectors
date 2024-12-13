@@ -9,12 +9,6 @@
         "source_type": {
           "type": "string",
           "const": "GitHub"
-        },
-        "sync_repo_issues": {
-          "type": "boolean",
-          "title": "Sync Repository Issues",
-          "description": "Sync issues from repositories to write TMS models.",
-          "default": false
         }
       }
     }

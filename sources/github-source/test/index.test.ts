@@ -10,6 +10,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {merge} from 'lodash';
+import VError from 'verror';
 
 import {GitHub, GitHubApp, GitHubToken} from '../src/github';
 import * as sut from '../src/index';
@@ -53,6 +54,9 @@ describe('index', () => {
     jest
       .spyOn(GitHubApp.prototype as any, 'getAppInstallations')
       .mockResolvedValue([]);
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockResolvedValue(['Org-1']);
   }
 
   test('check connection - token valid', async () => {
@@ -68,6 +72,21 @@ describe('index', () => {
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/app_valid.json',
+    });
+  });
+
+  test('check connection - no organizations', async () => {
+    checkConnectionMock();
+    jest
+      .spyOn(OrgRepoFilter.prototype, 'getOrganizations')
+      .mockRejectedValue(
+        new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        )
+      );
+    await sourceCheckTest({
+      source,
+      configOrPath: 'check_connection/token_valid.json',
     });
   });
 
@@ -440,6 +459,13 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
@@ -455,6 +481,47 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pull requests backfill with bucketing and round robin execution only affects bucketing state', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...config,
+        bucket_id: 1,
+        bucket_total: 3,
+        backfill: true,
+        round_robin_bucket_execution: true,
+      },
+      catalogOrPath: 'pull_requests/catalog.json',
+      stateOrPath: {
+        faros_pull_requests: {
+          'github/hello-world': {
+            cutoff: 123,
+          },
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getPullRequestsMockedImplementation(
+              readTestResourceAsJSON('pull_requests/pull_requests.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
       },
     });
   });

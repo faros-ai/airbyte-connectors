@@ -7,6 +7,7 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {DEFAULT_FAROS_GRAPH, GitHub} from './github';
+import {RunMode} from './streams/common';
 import {GitHubConfig} from './types';
 
 type RepoInclusion = {
@@ -101,19 +102,16 @@ export class OrgRepoFilter {
       if (!this.filterConfig.organizations) {
         visibleOrgs.forEach((org) => {
           const lowerOrg = toLower(org);
-          if (!this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
-            organizations.add(lowerOrg);
+          if (this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
+            this.logger.info(`Skipping excluded organization ${lowerOrg}`);
+            return;
           }
+          organizations.add(lowerOrg);
         });
       } else {
         this.filterConfig.organizations.forEach((org) => {
           const lowerOrg = toLower(org);
-          // fine-grained tokens return an empty list for visible orgs,
-          // so we only run the check if the list is not empty
-          if (
-            visibleOrgs.length &&
-            !visibleOrgs.some((o) => toLower(o) === lowerOrg)
-          ) {
+          if (!visibleOrgs.some((o) => toLower(o) === lowerOrg)) {
             this.logger.warn(`Skipping not found organization ${lowerOrg}`);
             return;
           }
@@ -122,6 +120,15 @@ export class OrgRepoFilter {
       }
       this.organizations = organizations;
     }
+
+    if (this.config.run_mode !== RunMode.EnterpriseCopilotOnly) {
+      if (this.organizations.size === 0) {
+        throw new VError(
+          'No visible organizations remain after applying inclusion and exclusion filters'
+        );
+      }
+    }
+
     return Array.from(this.organizations);
   }
 

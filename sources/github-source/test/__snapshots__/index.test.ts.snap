@@ -59,6 +59,16 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index check connection - no organizations 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "No visible organizations remain after applying inclusion and exclusion filters",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
@@ -1378,16 +1388,19 @@ exports[`index streams - labels 1`] = `
     "name": "dependencies",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
   {
     "name": "typescript",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
   {
     "name": "python",
     "org": "github",
     "repo": "Hello-World",
+    "tmsEnabled": false,
   },
 ]
 `;
@@ -1845,6 +1858,29 @@ N/A
 ]
 `;
 
+exports[`index streams - pull requests 2`] = `
+{
+  "faros_pull_requests": {
+    "github/hello-world": {
+      "cutoff": 1613495729000,
+    },
+  },
+}
+`;
+
+exports[`index streams - pull requests backfill with bucketing and round robin execution only affects bucketing state 1`] = `
+{
+  "__bucket_execution_state": {
+    "last_executed_bucket_id": 1,
+  },
+  "faros_pull_requests": {
+    "github/hello-world": {
+      "cutoff": 123,
+    },
+  },
+}
+`;
+
 exports[`index streams - pull requests diff coverage 1`] = `
 [
   {
@@ -2211,6 +2247,7 @@ exports[`index streams - repositories 1`] = `
     "private": false,
     "size": 108,
     "syncRepoData": true,
+    "tmsEnabled": false,
     "topics": [
       "octocat",
       "atom",
@@ -2237,6 +2274,7 @@ exports[`index streams - repositories with bucketing 1`] = `
     "private": false,
     "size": 256,
     "syncRepoData": true,
+    "tmsEnabled": false,
     "topics": [
       "github",
       "api",

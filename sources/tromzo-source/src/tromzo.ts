@@ -59,17 +59,23 @@ export class Tromzo {
     );
   }
 
-  async *findings(tool: string): AsyncGenerator<Finding> {
+  async *findings(toolName: string, startDate: Date): AsyncGenerator<Finding> {
     const query = Tromzo.readQueryFile('findings.gql');
     let offset = 0;
     let count = 0;
     let totalObjects = 0;
 
+    const q =
+      // Tromzo doesn't support db_updated_at for github services, so will fetch all findings
+      toolName.toLowerCase().startsWith('github')
+        ? `tool_name in ("${toolName}")`
+        : `tool_name in ("${toolName}") and db_updated_at >= "${startDate.toISOString()}"`;
+
     do {
       const variables = {
         offset,
         first: this.limit,
-        q: `tool_name in ("${tool}")`,
+        q,
       };
       let response;
 

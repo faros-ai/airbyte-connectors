@@ -885,7 +885,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           }
         });
 
-        if (stateMessage && !isBackfillSync) {
+        if (stateMessage) {
           yield stateMessage;
         }
       }
@@ -997,6 +997,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       isFarosSource,
       sourceSucceeded,
     } = syncInfo;
+    if (isBackfillSync) {
+      this.logger.info(
+        'Running a backfill sync. Skipping reset of non-incremental models.'
+      );
+      return false;
+    }
     if (streamStatusReceived) {
       if (syncErrors.dst.length) {
         this.logger.warn(
@@ -1025,12 +1031,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (isResetSync) {
       this.logger.info('Running a reset sync. Resetting all models.');
       return true;
-    }
-    if (isBackfillSync) {
-      this.logger.info(
-        'Running a backfill sync. Skipping reset of non-incremental models.'
-      );
-      return false;
     }
     if (sourceSucceeded) {
       this.logger.info('Source succeeded. Resetting non-incremental models.');
@@ -1178,8 +1178,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       onLoadError
     );
     return this.jsonataMode === JSONataApplyMode.OVERRIDE
-      ? this.jsonataConverter ?? converter
-      : converter ?? this.jsonataConverter;
+      ? (this.jsonataConverter ?? converter)
+      : (converter ?? this.jsonataConverter);
   }
 
   private async writeRecord(

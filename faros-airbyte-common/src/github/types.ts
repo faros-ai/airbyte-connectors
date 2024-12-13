@@ -26,6 +26,8 @@ export type Organization = Pick<
 
 export type Repository = {
   org: string;
+  tmsEnabled?: boolean;
+  syncRepoData?: boolean;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
   | 'name'
@@ -89,6 +91,7 @@ export type PullRequestReviewRequest =
 export type Label = {
   org: string;
   repo: string;
+  tmsEnabled?: boolean;
 } & LabelsQuery['repository']['labels']['nodes'][0];
 
 type CommitsQueryCommitNode = NonNullable<

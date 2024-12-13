@@ -8,6 +8,9 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
   ];
 
@@ -15,7 +18,9 @@ export class FarosRepositories extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const repo = record.record.data as Repository & {syncRepoData: boolean};
+    const isCommunity =
+      ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
+    const repo = record.record.data as Repository;
     const repoKey = GitHubCommon.repoKey(
       repo.org,
       repo.name,
@@ -40,10 +45,24 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
-    if (
-      repo.syncRepoData &&
-      ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
-    ) {
+    const writeInclusion = repo.syncRepoData && !isCommunity;
+    if (repo.syncRepoData && repo.tmsEnabled) {
+      const projectUid = `${repoKey.organization.uid}/${repoKey.name}`;
+      res.push(
+        ...GitHubCommon.tms_ProjectBoard_with_TaskBoard(
+          {
+            uid: projectUid,
+            source: this.streamName.source,
+          },
+          projectUid,
+          repo.description,
+          repo.created_at,
+          repo.updated_at,
+          writeInclusion
+        )
+      );
+    }
+    if (writeInclusion) {
       res.push({
         model: 'faros_VcsRepositoryOptions',
         record: {
