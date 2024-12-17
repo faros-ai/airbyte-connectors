@@ -20,6 +20,7 @@ import {
   minimizeSpec,
   parseAirbyteMessage,
   SpecLoader,
+  SYNC_MESSAGE_TABLE,
   SyncMessage,
   SyncMode,
   wrapApiError,
@@ -28,7 +29,7 @@ import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
-import {difference, isEmpty, keyBy, pickBy, sortBy, uniq} from 'lodash';
+import {difference, isEmpty, keyBy, pickBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
@@ -729,6 +730,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     try {
       let isBackfillSync = false;
       let sourceConfigReceived = false;
+      let sourceModeOrType: string;
       let sourceSucceeded = false;
       let stateReset = false;
       let streamStatusReceived = false;
@@ -768,6 +770,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                       `No records emitted for ${streamName} stream.` +
                         ' Will not reset non-incremental models.'
                     );
+                    syncErrors.src.warnings.push(
+                      SYNC_MESSAGE_TABLE.NO_RECORDS_FOR_STREAM(
+                        streamName,
+                        sourceModeOrType || 'source'
+                      )
+                    );
                   } else if (failedStreams.has(streamName)) {
                     this.logger.warn(
                       `Error previously occurred for ${streamName} stream. Will not reset its models.`
@@ -793,6 +801,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 isBackfillSync = true;
               }
               sourceConfigReceived = true;
+              sourceModeOrType =
+                msg.sourceType === 'faros-feeds'
+                  ? msg.sourceMode
+                  : msg.sourceType;
               await updateLocalAccount?.(msg);
               sourceVersion.version = msg.sourceVersion;
               ctx.setSourceConfig(msg.redactedConfig);
