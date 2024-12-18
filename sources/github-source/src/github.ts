@@ -133,13 +133,6 @@ type CopilotAssignedTeams = {[team: string]: {created_at: string}};
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
-const COMMITS_WITHOUT_DIFF_STATS_QUERY = COMMITS_QUERY.replace(
-  /changedFiles\s+/,
-  ''
-)
-  .replace(/additions\s+/, '')
-  .replace(/deletions\s+/, '');
-
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
@@ -866,7 +859,7 @@ export abstract class GitHub {
             this.logger.warn(
               `Failed to query commits with diff stats for repo ${org}/${repo} (cursor: ${currentCursor}). Retrying without diff stats.`
             );
-            currentQuery = COMMITS_WITHOUT_DIFF_STATS_QUERY;
+            currentQuery = removeDiffStatsFromCommitsQuery(currentQuery);
             continue;
           }
           // if page size is already 1, there's nothing else to try
@@ -886,18 +879,17 @@ export abstract class GitHub {
 
   // memoize since one call is enough to check if the field is available
   @Memoize(() => null)
-  private async getCommitsQuery(queryParameters: any): Promise<string> {
+  private async getCommitsQuery(
+    queryParameters: CommitsQueryVariables
+  ): Promise<string> {
     // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
     // See: https://docs.github.com/en/graphql/reference/objects#commit
+    const query = removeDiffStatsFromCommitsQuery(COMMITS_QUERY); // test only keeping changedFilesIfAvailable field
     try {
-      // test only keeping changedFilesIfAvailable field
-      await this.octokit(queryParameters.owner).graphql(
-        COMMITS_WITHOUT_DIFF_STATS_QUERY,
-        {
-          ...queryParameters,
-          page_size: 1,
-        }
-      );
+      await this.octokit(queryParameters.owner).graphql(query, {
+        ...queryParameters,
+        page_size: 1,
+      });
     } catch (err: any) {
       const errorCode = err?.errors?.[0]?.extensions?.code;
       // Check if the error was caused by querying undefined changedFilesIfAvailable field
@@ -2257,4 +2249,11 @@ function transformCopilotMetricsResponse(
       breakdown,
     };
   });
+}
+
+function removeDiffStatsFromCommitsQuery(query: string): string {
+  return query
+    .replace(/changedFiles\s+/, '')
+    .replace(/additions\s+/, '')
+    .replace(/deletions\s+/, '');
 }
