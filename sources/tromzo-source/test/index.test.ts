@@ -90,13 +90,6 @@ describe('index', () => {
   });
 
   async function testStreamSlices(config: TromzoConfig): Promise<void> {
-    // const searchProjects = paginate(
-    //   readTestResourceAsJSON('projects/projects.json'),
-    //   'values',
-    //   50
-    // );
-    // setupJiraInstance({v2: {projects: {searchProjects}}}, true, config, logger);
-
     Tromzo.instance = jest.fn().mockImplementation(() => {
       return new Tromzo(
         {
@@ -112,7 +105,6 @@ describe('index', () => {
     });
     const stream = new Findings(config, logger);
     const slices = stream.streamSlices();
-    // collect slices in an array and match with snapshot
     const sliceArray = [];
     for await (const slice of slices) {
       sliceArray.push(slice);
