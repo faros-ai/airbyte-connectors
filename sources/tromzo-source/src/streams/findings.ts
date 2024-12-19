@@ -5,11 +5,11 @@ import {
   StreamState,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Tromzo} from '../tromzo';
 import {Finding, TromzoConfig} from '../types';
-import {Utils} from 'faros-js-client';
 
 type StreamSlice = {
   tool: string;
@@ -36,7 +36,25 @@ export class Findings extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const tool of this.config.tools ?? []) {
+    const tromzo = await Tromzo.instance(this.config, this.logger);
+    const availableTools = await tromzo.tools();
+    this.logger.info(`Available tools: ${availableTools.join(', ')}`);
+
+    if (!this.config.tools?.length) {
+      // If no tools configured, yield all available tools
+      for (const tool of availableTools) {
+        yield {tool};
+      }
+      return;
+    }
+
+    for (const tool of this.config.tools) {
+      if (!availableTools.includes(tool)) {
+        this.logger.warn(
+          `Configured tool "${tool}" not found in available tools`
+        );
+        continue;
+      }
       yield {tool};
     }
   }

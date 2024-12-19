@@ -45,14 +45,12 @@ export class Findings extends Converter {
         vulnerabilityIds: vulnerabilityIds.length ? vulnerabilityIds : null,
         severity,
         discoveredBy: finding.toolName,
-        remediatedAt: Utils.toDate(finding.scannerDismissedAt),
         type: this.convertType(finding.toolName),
         affectedVersions: finding.vulnerableVersion
           ? [finding.vulnerableVersion]
           : null,
       },
     });
-
 
     // TODO - Process cicd_ArtifactVulnerability
     if (finding?.asset?.type?.toLowerCase() === 'code repository') {
@@ -119,7 +117,9 @@ export class Findings extends Converter {
         ),
         dueAt: Utils.toDate(finding.dueDate),
         createdAt: Utils.toDate(finding.scannerCreatedAt),
-        resolvedAt: Utils.toDate(finding.scannerDismissedAt),
+        resolvedAt: Utils.toDate(
+          finding.scannerDismissedAt ?? finding.dismissedAt
+        ),
         status: this.convertStatus(finding.status),
       },
     };

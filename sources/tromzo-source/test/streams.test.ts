@@ -3,11 +3,11 @@ import {
   AirbyteSourceLogger,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Tromzo} from '../src/tromzo';
-import {Utils} from 'faros-js-client';
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index findings with empty tools 1`] = `
+[
+  {
+    "tool": "codeql",
+  },
+  {
+    "tool": "github dependabot",
+  },
+]
+`;
+
+exports[`index findings with invalid tool 1`] = `[]`;
+
+exports[`index findings with no tools defined 1`] = `
+[
+  {
+    "tool": "codeql",
+  },
+  {
+    "tool": "github dependabot",
+  },
+]
+`;
+
+exports[`index findings with tools defined 1`] = `
+[
+  {
+    "tool": "codeql",
+  },
+]
+`;

@@ -17,7 +17,6 @@ Array [
     "sec_Vulnerability": Object {
       "affectedVersions": null,
       "discoveredBy": "codeql",
-      "remediatedAt": "2024-10-17T09:48:43.405Z",
       "severity": 9.5,
       "source": "Tromzo",
       "type": Object {
@@ -56,7 +55,6 @@ Array [
     "sec_Vulnerability": Object {
       "affectedVersions": null,
       "discoveredBy": "codeql",
-      "remediatedAt": null,
       "severity": 3.9,
       "source": "Tromzo",
       "type": Object {
@@ -151,7 +149,6 @@ Array [
         ">= 2.12|^3.0,< 3.0.0",
       ],
       "discoveredBy": "github dependabot",
-      "remediatedAt": "2024-11-13T00:39:07.521Z",
       "severity": 10,
       "source": "Tromzo",
       "type": Object {

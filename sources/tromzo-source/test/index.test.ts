@@ -7,6 +7,9 @@ import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
+import {Findings} from '../src/streams/findings';
+import {Tromzo} from '../src/tromzo';
+import {TromzoConfig} from '../src/types';
 
 function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
@@ -51,10 +54,77 @@ describe('index', () => {
   });
 
   test('check connection - valid credentials', async () => {
+    Tromzo.instance = jest.fn().mockImplementation(() => {
+      return new Tromzo(
+        {
+          post: jest.fn().mockResolvedValue({
+            data: {data: {findings: {toolNames: ['codeql']}}},
+          }),
+        } as any,
+        100,
+        logger
+      );
+    });
     const source = new sut.TromzoSource(logger);
     await expect(source.checkConnection(config)).resolves.toStrictEqual([
       true,
       undefined,
     ]);
+  });
+
+  test('check connection - invalid credentials', async () => {
+    Tromzo.instance = jest.fn().mockImplementation(() => {
+      return new Tromzo(
+        {
+          post: jest.fn().mockRejectedValue(new VError('Invalid API key')),
+        } as any,
+        100,
+        logger
+      );
+    });
+    const source = new sut.TromzoSource(logger);
+    await expect(source.checkConnection(config)).resolves.toStrictEqual([
+      false,
+      new VError('Failed to fetch tools from Tromzo: Invalid API key'),
+    ]);
+  });
+
+  async function testStreamSlices(config: TromzoConfig): Promise<void> {
+    Tromzo.instance = jest.fn().mockImplementation(() => {
+      return new Tromzo(
+        {
+          post: jest.fn().mockResolvedValue({
+            data: {
+              data: {findings: {toolNames: ['codeql', 'github dependabot']}},
+            },
+          }),
+        } as any,
+        100,
+        logger
+      );
+    });
+    const stream = new Findings(config, logger);
+    const slices = stream.streamSlices();
+    const sliceArray = [];
+    for await (const slice of slices) {
+      sliceArray.push(slice);
+    }
+    expect(sliceArray).toMatchSnapshot();
+  }
+
+  test('findings with tools defined', async () => {
+    await testStreamSlices(config);
+  });
+
+  test('findings with no tools defined', async () => {
+    await testStreamSlices({...config, tools: undefined});
+  });
+
+  test('findings with empty tools', async () => {
+    await testStreamSlices({...config, tools: []});
+  });
+
+  test('findings with invalid tool', async () => {
+    await testStreamSlices({...config, tools: ['invalid']});
   });
 });
