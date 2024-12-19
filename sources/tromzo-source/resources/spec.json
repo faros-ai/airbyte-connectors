@@ -24,11 +24,10 @@
         "order": 3,
         "type": "array",
         "title": "Tools",
-        "description": "The tools to get findings for",
+        "description": "The tools to get findings for. If empty, all tools will be fetched.",
         "items": {
           "type": "string"
         },
-        "minItems": 1,
         "examples": ["codeql", "github dependabot"]
       },
       "cutoff_days": {

@@ -53,7 +53,6 @@ export class Findings extends Converter {
       },
     });
 
-
     // TODO - Process cicd_ArtifactVulnerability
     if (finding?.asset?.type?.toLowerCase() === 'code repository') {
       results.push(
@@ -119,7 +118,9 @@ export class Findings extends Converter {
         ),
         dueAt: Utils.toDate(finding.dueDate),
         createdAt: Utils.toDate(finding.scannerCreatedAt),
-        resolvedAt: Utils.toDate(finding.scannerDismissedAt),
+        resolvedAt: Utils.toDate(
+          finding.scannerDismissedAt ?? finding.dismissedAt
+        ),
         status: this.convertStatus(finding.status),
       },
     };

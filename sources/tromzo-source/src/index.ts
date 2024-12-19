@@ -8,12 +8,12 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Findings} from './streams/findings';
 import {Tromzo} from './tromzo';
 import {TromzoConfig} from './types';
-import {calculateDateRange} from 'faros-airbyte-common/common';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 

@@ -3,12 +3,13 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import fs from 'fs';
 import path from 'path';
+import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {Finding, TromzoConfig} from './types';
 
 export class Tromzo {
-  private static tromzo: Tromzo;
+  private static readonly tromzo: Tromzo;
   constructor(
     private readonly api: AxiosInstance,
     private readonly limit: number = 100,
@@ -49,7 +50,7 @@ export class Tromzo {
   }
 
   async checkConnection(): Promise<void> {
-    return;
+    await this.tools();
   }
 
   private static readQueryFile(fileName: string): string {
@@ -59,6 +60,21 @@ export class Tromzo {
     );
   }
 
+  @Memoize()
+  async tools(): Promise<string[]> {
+    const query = Tromzo.readQueryFile('tool-names.gql');
+    try {
+      const response = await this.api.post('', {query});
+      const tools = response.data?.data?.findings?.toolNames;
+      if (!tools?.length) {
+        throw new VError('No configured tools found');
+      }
+      return tools;
+    } catch (err) {
+      throw new VError(err, 'Failed to fetch tools from Tromzo');
+    }
+  }
+
   async *findings(toolName: string, startDate: Date): AsyncGenerator<Finding> {
     const query = Tromzo.readQueryFile('findings.gql');
     let offset = 0;
@@ -66,7 +82,7 @@ export class Tromzo {
     let totalObjects = 0;
 
     const q =
-      // Tromzo doesn't support db_updated_at for github services, so will fetch all findings
+      // Tromzo doesn't support db_updated_at for GitHub services, so will fetch all findings
       toolName.toLowerCase().startsWith('github')
         ? `tool_name in ("${toolName}")`
         : `tool_name in ("${toolName}") and db_updated_at >= "${startDate.toISOString()}"`;
