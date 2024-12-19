@@ -45,7 +45,6 @@ export class Findings extends Converter {
         vulnerabilityIds: vulnerabilityIds.length ? vulnerabilityIds : null,
         severity,
         discoveredBy: finding.toolName,
-        remediatedAt: Utils.toDate(finding.scannerDismissedAt),
         type: this.convertType(finding.toolName),
         affectedVersions: finding.vulnerableVersion
           ? [finding.vulnerableVersion]
