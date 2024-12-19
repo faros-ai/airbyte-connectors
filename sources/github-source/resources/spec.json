@@ -273,58 +273,65 @@
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
-      "pull_requests_page_size": {
+      "commits_page_size": {
         "order": 24,
+        "type": "integer",
+        "title": "Commits Page Size",
+        "description": "Maximum number of items in a paginated response for commits",
+        "default": 100
+      },
+      "pull_requests_page_size": {
+        "order": 25,
         "type": "integer",
         "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
       "timeout": {
-        "order": 25,
+        "order": 26,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 26,
+        "order": 27,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 27,
+        "order": 28,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 28,
+        "order": 29,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 29,
+        "order": 30,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
       },
       "fetch_pull_request_diff_coverage": {
         "type": "boolean",
-        "title": "Fetch Pull Request diff coverage", 
+        "title": "Fetch Pull Request diff coverage",
         "default": false,
-        "order": 30
+        "order": 31
       },
       "pull_request_cutoff_lag_seconds": {
-        "title": "Pull Request Cutoff Lag (seconds)", 
+        "title": "Pull Request Cutoff Lag (seconds)",
         "description": "Apply lag to the end cutoff saved in the state. PRs updated after this will be rewritten during the next sync.",
         "type": "integer",
         "default": 0,
-        "order": 31
+        "order": 32
       }
     }
   }

@@ -29,6 +29,7 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly api_key?: string;
   readonly graph?: string;
   readonly page_size?: number;
+  readonly commits_page_size?: number;
   readonly pull_requests_page_size?: number;
   readonly timeout?: number;
   readonly concurrency_limit?: number;
