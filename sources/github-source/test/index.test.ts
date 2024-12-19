@@ -742,56 +742,7 @@ describe('index', () => {
     expect(commitFields).toMatchSnapshot();
   });
 
-  test('streams - commits - changedFiles unavailable', async () => {
-    const commits = readTestResourceAsJSON('commits/commits.json');
-    const commitsMock = {
-      graphql: jest
-        .fn()
-        .mockRejectedValueOnce({
-          errors: [
-            {
-              extensions: {
-                code: 'undefinedField',
-              },
-            },
-          ],
-        })
-        .mockRejectedValueOnce({
-          errors: [
-            {
-              message: 'The changedFiles count for this commit is unavailable',
-            },
-          ],
-        })
-        .mockResolvedValueOnce(commits),
-    };
-    await sourceReadTest({
-      source,
-      configOrPath: 'config.json',
-      catalogOrPath: 'commits/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getRepositoriesMockedImplementation(
-              readTestResourceAsJSON('repositories/repositories.json')
-            ),
-            commitsMock
-          ),
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records.length).toBeGreaterThan(0);
-      },
-    });
-    expect(commitsMock.graphql.mock.calls).toHaveLength(3);
-    const commitFields: string = commitsMock.graphql.mock.calls
-      .at(-1)[0]
-      .replace(/query commits.*/s, '');
-    expect(commitFields).toMatchSnapshot();
-  });
-
-  test('streams - commits - additions unavailable', async () => {
+  test('streams - commits - additions unavailable and page size 1', async () => {
     const commits = readTestResourceAsJSON('commits/commits.json');
     const commitsMock = {
       graphql: jest
@@ -806,9 +757,13 @@ describe('index', () => {
         })
         .mockResolvedValueOnce(commits),
     };
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      commits_page_size: 1,
+    };
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: config,
       catalogOrPath: 'commits/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -818,14 +773,19 @@ describe('index', () => {
             ),
             commitsMock
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
-        expect(records.length).toBe(0);
+        expect(records.length).toBeGreaterThan(0);
       },
     });
-    expect(commitsMock.graphql.mock.calls).toHaveLength(2);
+    expect(commitsMock.graphql.mock.calls).toHaveLength(3);
+    const commitFields: string = commitsMock.graphql.mock.calls
+      .at(-1)[0]
+      .replace(/query commits.*/s, '');
+    expect(commitFields).toMatchSnapshot();
   });
 
   test('streams - tags', async () => {

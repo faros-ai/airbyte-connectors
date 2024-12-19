@@ -238,7 +238,7 @@ exports[`index streams - code scanning alerts 1`] = `
 ]
 `;
 
-exports[`index streams - commits - changedFiles unavailable 1`] = `
+exports[`index streams - commits - additions unavailable and page size 1 1`] = `
 "fragment commitFields on Commit {
   oid
   message
@@ -256,9 +256,8 @@ exports[`index streams - commits - changedFiles unavailable 1`] = `
   committer {
     date
   }
-  additions
-  deletions
-}
+  changedFilesIfAvailable
+  }
 "
 `;
 

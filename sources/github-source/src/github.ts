@@ -50,6 +50,7 @@ import {
 } from 'faros-airbyte-common/github';
 import {
   CommitsQuery,
+  CommitsQueryVariables,
   EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
@@ -110,6 +111,7 @@ export const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_FAROS_GRAPH = 'default';
 export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_COMMIT_PAGE_SIZE = 100;
 export const DEFAULT_PR_PAGE_SIZE = 25;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
@@ -139,6 +141,7 @@ export abstract class GitHub {
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
+  protected readonly commitsPageSize: number;
   protected readonly pullRequestsPageSize: number;
   protected readonly backfill: boolean;
   protected readonly fetchPullRequestDiffCoverage: boolean;
@@ -159,6 +162,7 @@ export abstract class GitHub {
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    this.commitsPageSize = config.commits_page_size ?? DEFAULT_COMMIT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
@@ -290,75 +294,71 @@ export abstract class GitHub {
     let hasNextPage = true;
     let querySuccess = false;
     while (hasNextPage) {
-      const iter = this.octokit(
-        org
-      ).graphql.paginate.iterator<PullRequestsQuery>(query, {
-        owner: org,
-        repo,
-        page_size: currentPageSize,
-        nested_page_size: this.pageSize,
-        currentCursor,
-      });
       try {
-        for await (const res of iter) {
-          querySuccess = true;
-          for (const pr of res.repository.pullRequests.nodes) {
-            if (
-              this.backfill &&
-              endDate &&
-              Utils.toDate(pr.updatedAt) > endDate
-            ) {
-              continue;
-            }
-            if (
-              adjustedStartDate &&
-              Utils.toDate(pr.updatedAt) < adjustedStartDate
-            ) {
-              return;
-            }
-            const labels = await this.extractPullRequestLabels(pr, org, repo);
-            const mergedByMergeQueue = labels.some(
-              (label) => label.name === 'merged-by-mq'
-            );
-            let coverage = null;
-            if (
-              this.fetchPullRequestDiffCoverage &&
-              (pr.mergeCommit || mergedByMergeQueue)
-            ) {
-              const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
-              if (lastCommitSha) {
-                coverage = await this.getDiffCoverage(
-                  org,
-                  repo,
-                  lastCommitSha,
-                  pr.number
-                );
-              }
-            }
-            yield {
-              org,
-              repo,
-              ...pr,
-              labels,
-              files: await this.extractPullRequestFiles(pr, org, repo),
-              reviews: await this.extractPullRequestReviews(pr, org, repo),
-              reviewRequests: await this.extractPullRequestReviewRequests(
-                pr,
-                org,
-                repo
-              ),
-              coverage,
-            };
+        const res = await this.octokit(org).graphql<PullRequestsQuery>(query, {
+          owner: org,
+          repo,
+          page_size: currentPageSize,
+          nested_page_size: this.pageSize,
+          cursor: currentCursor,
+        });
+        querySuccess = true;
+        for (const pr of res.repository.pullRequests.nodes) {
+          if (
+            this.backfill &&
+            endDate &&
+            Utils.toDate(pr.updatedAt) > endDate
+          ) {
+            continue;
           }
-          // increase page size for the next iteration in case it was decreased previously
-          currentPageSize = Math.min(
-            currentPageSize * 2,
-            this.pullRequestsPageSize
+          if (
+            adjustedStartDate &&
+            Utils.toDate(pr.updatedAt) < adjustedStartDate
+          ) {
+            return;
+          }
+          const labels = await this.extractPullRequestLabels(pr, org, repo);
+          const mergedByMergeQueue = labels.some(
+            (label) => label.name === 'merged-by-mq'
           );
-          currentCursor = res.repository.pullRequests.pageInfo.endCursor;
-          hasNextPage = res.repository.pullRequests.pageInfo.hasNextPage;
-          querySuccess = false;
+          let coverage = null;
+          if (
+            this.fetchPullRequestDiffCoverage &&
+            (pr.mergeCommit || mergedByMergeQueue)
+          ) {
+            const lastCommitSha = pr.commits.nodes?.[0]?.commit?.oid;
+            if (lastCommitSha) {
+              coverage = await this.getDiffCoverage(
+                org,
+                repo,
+                lastCommitSha,
+                pr.number
+              );
+            }
+          }
+          yield {
+            org,
+            repo,
+            ...pr,
+            labels,
+            files: await this.extractPullRequestFiles(pr, org, repo),
+            reviews: await this.extractPullRequestReviews(pr, org, repo),
+            reviewRequests: await this.extractPullRequestReviewRequests(
+              pr,
+              org,
+              repo
+            ),
+            coverage,
+          };
         }
+        // increase page size for the next iteration in case it was decreased previously
+        currentPageSize = Math.min(
+          currentPageSize * 2,
+          this.pullRequestsPageSize
+        );
+        currentCursor = res.repository.pullRequests.pageInfo.endCursor;
+        hasNextPage = res.repository.pullRequests.pageInfo.hasNextPage;
+        querySuccess = false;
       } catch (error: any) {
         if (querySuccess) {
           // if query succeeded, the error is not related to the query itself
@@ -367,12 +367,15 @@ export abstract class GitHub {
         if (currentPageSize === 1) {
           // if page size is already 1, there's nothing else to try
           this.logger.warn(
-            `Failed to query PRs with page size 1 on repo ${org}/${repo}`
+            `Failed to query pull requests with page size 1 on repo ${org}/${repo}`
           );
           throw error;
         }
         // decrease page size and try again
         currentPageSize = Math.max(Math.floor(currentPageSize / 2), 1);
+        this.logger.debug(
+          `Failed to query pull requests for repo ${org}/${repo} (cursor: ${currentCursor}). Retrying with page size ${currentPageSize}.`
+        );
       }
     }
   }
@@ -791,7 +794,6 @@ export abstract class GitHub {
       owner: org,
       repo,
       branch,
-      page_size: this.pageSize,
       since: startDate?.toISOString(),
       ...(this.backfill && {until: endDate?.toISOString()}),
     };
@@ -804,91 +806,85 @@ export abstract class GitHub {
     repo: string,
     branch: string,
     query: string,
-    queryParameters: any
+    queryParameters: CommitsQueryVariables
   ): AsyncGenerator<Commit> {
-    // Need to handle pagination manually because graphql paginate plugin throws error
-    // if paginated field is not found in the response
     let res: CommitsQuery;
-    let hasNextPage: boolean;
-    let cursor: string | null = null;
-    do {
+    let currentQuery = query;
+    let currentPageSize = this.commitsPageSize;
+    let currentCursor: string = undefined;
+    let hasNextPage = true;
+    let querySuccess = false;
+    while (hasNextPage) {
       try {
-        res = await this.octokit(org).graphql<CommitsQuery>(query, {
+        res = await this.octokit(org).graphql<CommitsQuery>(currentQuery, {
           ...queryParameters,
-          cursor,
+          page_size: currentPageSize,
+          cursor: currentCursor,
         });
-      } catch (err: any) {
-        res = await this.handleCommitsQueryError(
-          org,
-          repo,
-          query,
-          queryParameters,
-          cursor,
-          err
+        querySuccess = true;
+        if (res?.repository?.ref?.target?.type !== 'Commit') {
+          // check to make ts happy
+          return;
+        }
+        const history = res.repository.ref.target.history;
+        if (!history) {
+          this.logger.debug(`No commit history found for ${org}/${repo}`);
+          return;
+        }
+        for (const commit of history.nodes) {
+          yield {
+            org,
+            repo,
+            branch,
+            ...commit,
+          };
+        }
+        currentQuery = query;
+        // increase page size for the next iteration in case it was decreased previously
+        currentPageSize = Math.min(currentPageSize * 2, this.commitsPageSize);
+        currentCursor = history.pageInfo.endCursor;
+        hasNextPage = history.pageInfo.hasNextPage;
+        querySuccess = false;
+      } catch (error: any) {
+        if (querySuccess) {
+          // if query succeeded, the error is not related to the root query itself
+          throw error;
+        }
+        if (currentPageSize === 1) {
+          const errorMessages = error?.errors?.map((e: any) => e.message);
+          if (!errorMessages || errorMessages.length != 1) {
+            throw error;
+          }
+          if (/changedFiles|additions|deletions/.test(errorMessages[0])) {
+            this.logger.warn(
+              `Failed to query commits with diff stats for repo ${org}/${repo} (cursor: ${currentCursor}). Retrying without diff stats.`
+            );
+            currentQuery = removeDiffStatsFromCommitsQuery(currentQuery);
+            continue;
+          }
+          // if page size is already 1, there's nothing else to try
+          this.logger.warn(
+            `Failed to query commits with page size 1 on repo ${org}/${repo}`
+          );
+          throw error;
+        }
+        // decrease page size and try again
+        currentPageSize = Math.max(Math.floor(currentPageSize / 2), 1);
+        this.logger.debug(
+          `Failed to query commits for repo ${org}/${repo} (cursor: ${currentCursor}). Retrying with page size ${currentPageSize}.`
         );
       }
-      if (res?.repository?.ref?.target?.type !== 'Commit') {
-        // check to make ts happy
-        return;
-      }
-      const history = res.repository.ref.target.history;
-      if (!history) {
-        this.logger.warn(`No commit history found for ${org}/${repo}`);
-        return;
-      }
-      for (const commit of history.nodes) {
-        yield {
-          org,
-          repo,
-          branch,
-          ...commit,
-        };
-      }
-      hasNextPage = history.pageInfo.hasNextPage;
-      cursor = history.pageInfo.endCursor;
-    } while (hasNextPage && cursor);
-  }
-
-  // checks if the error is caused by querying an unavailable
-  // field and retry the query removing it / skip without failing
-  private async handleCommitsQueryError(
-    org: string,
-    repo: string,
-    query: string,
-    queryParameters: any,
-    cursor: string | null,
-    err: any
-  ): Promise<CommitsQuery | null> {
-    const errorMessages = err?.errors?.map((e: any) => e.message);
-    if (!errorMessages || errorMessages.length != 1) {
-      throw err;
     }
-    if (/changedFiles/.test(errorMessages[0])) {
-      const newQuery = query.replace(/changedFiles\s+/, '');
-      this.logger.warn(
-        `Failed to fetch commits with changedFiles for repo ${org}/${repo} (cursor: ${cursor}). Retrying without changedFiles.`
-      );
-      return this.octokit(org).graphql<CommitsQuery>(newQuery, {
-        ...queryParameters,
-        cursor,
-      });
-    } else if (/additions|deletions/.test(errorMessages[0])) {
-      this.logger.warn(
-        `Failed to fetch commits with additions/deletions for repo ${org}/${repo} (cursor: ${cursor}). Skipping.`
-      );
-      return null;
-    }
-    throw err;
   }
 
   // memoize since one call is enough to check if the field is available
   @Memoize(() => null)
-  private async getCommitsQuery(queryParameters: any): Promise<string> {
+  private async getCommitsQuery(
+    queryParameters: CommitsQueryVariables
+  ): Promise<string> {
     // Check if the server has changedFilesIfAvailable field available (versions < 3.8)
     // See: https://docs.github.com/en/graphql/reference/objects#commit
-    const query = COMMITS_QUERY.replace(/changedFiles\s+/, '') // test only keeping changedFilesIfAvailable field
-      .replace(/additions\s+/, '')
-      .replace(/deletions\s+/, '');
+    const query = removeDiffStatsFromCommitsQuery(COMMITS_QUERY); // test only keeping changedFilesIfAvailable field
     try {
       await this.octokit(queryParameters.owner).graphql(query, {
         ...queryParameters,
@@ -2253,4 +2249,11 @@ function transformCopilotMetricsResponse(
       breakdown,
     };
   });
+}
+
+function removeDiffStatsFromCommitsQuery(query: string): string {
+  return query
+    .replace(/changedFiles\s+/, '')
+    .replace(/additions\s+/, '')
+    .replace(/deletions\s+/, '');
 }
