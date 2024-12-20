@@ -30,6 +30,7 @@ interface Profile {
   email?: string;
   userType?: string;
   startDate?: string;
+  [key: string]: any;
 }
 
 interface Email {

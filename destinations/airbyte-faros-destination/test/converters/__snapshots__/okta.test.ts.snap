@@ -1,12 +1,93 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`okta basic test process records from all streams 1`] = `
+exports[`okta process records from all streams 1`] = `
 Array [
-  "Processed 3 records",
-  "Processed records by stream: {\\\\\\"mytestsource__okta__groups\\\\\\":2,\\\\\\"mytestsource__okta__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 7 records",
-  "Would write records by model: {\\\\\\"identity_Identity\\\\\\":1,\\\\\\"org_Department\\\\\\":1,\\\\\\"org_Employee\\\\\\":1,\\\\\\"org_Team\\\\\\":2,\\\\\\"org_TeamMembership\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__okta__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 6 records",
+  "Would write records by model: {\\\\\\"geo_Address\\\\\\":1,\\\\\\"geo_Location\\\\\\":1,\\\\\\"identity_Identity\\\\\\":1,\\\\\\"org_Employee\\\\\\":1,\\\\\\"org_Team\\\\\\":1,\\\\\\"org_TeamMembership\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
+]
+`;
+
+exports[`okta process records from all streams 2`] = `
+Array [
+  Object {
+    "org_Team": Object {
+      "lead": Object {
+        "uid": "0000000004",
+      },
+      "name": "Operations",
+      "parentTeam": Object {
+        "uid": "all_teams",
+      },
+      "source": "Okta",
+      "uid": "420",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": Object {
+        "category": "Custom",
+        "detail": "Regular",
+      },
+      "identity": Object {
+        "uid": "0000000001",
+      },
+      "inactive": false,
+      "joinedAt": "2021-02-15",
+      "location": Object {
+        "uid": "Remote, CA",
+      },
+      "manager": Object {
+        "uid": "0000000004",
+      },
+      "source": "Okta",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "0000000001",
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "john.doe@company.com",
+      ],
+      "fullName": "John Doe",
+      "primaryEmail": "john.doe@company.com",
+      "source": "Okta",
+      "uid": "0000000001",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "0000000001",
+      },
+      "source": "Okta",
+      "team": Object {
+        "uid": "420",
+      },
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "fullAddress": "Remote, CA",
+      "source": "Okta",
+      "uid": "Remote, CA",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "Remote, CA",
+      },
+      "coordinates": null,
+      "raw": "Remote, CA",
+      "source": "Okta",
+      "uid": "Remote, CA",
+    },
+  },
 ]
 `;

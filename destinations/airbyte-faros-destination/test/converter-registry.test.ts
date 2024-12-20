@@ -154,8 +154,6 @@ describe('converter registry', () => {
 
   test('loads a converter with underscore instead of dash', async () => {
     const streamNames = [
-      new StreamName('okta-faros', 'groups'),
-      new StreamName('okta_faros', 'groups'),
       new StreamName('aws-cloudwatch-metrics', 'metrics'),
       new StreamName('aws_cloudwatch_metrics', 'metrics'),
     ];
