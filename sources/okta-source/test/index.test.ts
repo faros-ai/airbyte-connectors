@@ -80,27 +80,4 @@ describe('index', () => {
     }
     expect(items).toStrictEqual(users);
   });
-
-  test('streams - groups, use full_refresh sync mode', async () => {
-    const groups = readTestResourceFile('groups.json');
-    Okta.instance = jest.fn().mockImplementation(() => {
-      return new Okta(
-        {get: jest.fn().mockResolvedValue({data: groups})} as any,
-        logger
-      );
-    });
-
-    const source = new sut.OktaSource(logger);
-    const streams = source.streams({
-      token: '',
-      domain_name: '',
-    });
-    const stream = streams[1];
-    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of itemIter) {
-      items.push(item);
-    }
-    expect(items).toStrictEqual(groups);
-  });
 });
