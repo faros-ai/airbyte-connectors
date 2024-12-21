@@ -66,6 +66,9 @@
         "octopus": {
           "$ref": "octopus.json"
         },
+        "okta": {
+          "$ref": "okta.json"
+        },
         "opsgenie": {
           "$ref": "opsgenie.json"
         },

@@ -1,93 +1,98 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
-import {sortBy} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {Customreports} from '../workday/customreports';
+import {EmployeeRecord} from '../workday/models';
 import {OktaConverter} from './common';
 import {User} from './models';
 
-export class Users extends OktaConverter {
-  readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'identity_Identity',
-    'org_Department',
-    'org_Employee',
-  ];
+type ColumnNameMapping = {
+  start_date_column_name?: string;
+  full_name_column_name?: string;
+  first_name_column_name?: string;
+  last_name_column_name?: string;
+  employee_id_column_name?: string;
+  manager_name_column_name?: string;
+  manager_id_column_name?: string;
+  team_id_column_name?: string;
+  team_name_column_name?: string;
+  termination_date_column_name?: string;
+  location_column_name?: string;
+  email_column_name?: string;
+  employee_type_column_name?: string;
+};
 
-  private seenDepartments = new Set<string>();
+export interface OktaConfig {
+  column_names_mapping?: ColumnNameMapping;
+}
+
+export class Users extends OktaConverter {
+  private workdayConverter = new Customreports();
+  private _config: OktaConfig = undefined;
+
+  private initialize(ctx: StreamContext): void {
+    this._config =
+      this._config ?? ctx.config.source_specific_configs?.okta ?? {};
+  }
+
+  readonly destinationModels: ReadonlyArray<DestinationModel> =
+    this.workdayConverter.destinationModels;
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
-    const user = record.record.data as User;
-    const profile = user.profile;
-    const uid = user.id;
-    const res: DestinationRecord[] = [];
+    this.initialize(ctx);
+    const rec = record.record.data as User;
+    const profile = rec.profile;
 
-    const fullName = [profile.firstName, profile.middleName, profile.lastName]
-      .filter((x) => x)
-      .join(' ');
+    const startDate =
+      profile[this._config.column_names_mapping.start_date_column_name];
+    const fullName =
+      profile[this._config.column_names_mapping.full_name_column_name];
+    const firstName =
+      profile[this._config.column_names_mapping.first_name_column_name];
+    const lastName =
+      profile[this._config.column_names_mapping.last_name_column_name];
+    const employeeId =
+      profile[this._config.column_names_mapping.employee_id_column_name];
+    const managerName =
+      profile[this._config.column_names_mapping.manager_name_column_name];
+    const managerId =
+      profile[this._config.column_names_mapping.manager_id_column_name];
+    const teamId =
+      profile[this._config.column_names_mapping.team_id_column_name];
+    const teamName =
+      profile[this._config.column_names_mapping.team_name_column_name];
+    const terminationDate =
+      profile[this._config.column_names_mapping.termination_date_column_name];
+    const location =
+      profile[this._config.column_names_mapping.location_column_name];
+    const email = profile[this._config.column_names_mapping.email_column_name];
+    const employeeType =
+      profile[this._config.column_names_mapping.employee_type_column_name];
 
-    const joinedAt =
-      Utils.toDate(profile.startDate) ?? Utils.toDate(user.created) ?? null;
+    const asWorkdayRecord: EmployeeRecord = {
+      Start_Date: startDate,
+      Full_Name: fullName ?? `${firstName} ${lastName}`,
+      Employee_ID: employeeId,
+      Manager_Name: managerName,
+      Manager_ID: managerId,
+      Team_ID: teamId,
+      Team_Name: teamName,
+      Termination_Date: terminationDate,
+      Location: location,
+      Email: email,
+      Employee_Type: employeeType,
+    };
 
-    const departments = sortBy(
-      Object.entries(profile).filter(([k, v]) =>
-        k.toLowerCase().includes('department')
-      ),
-      ([k, v]) => k
-    ).map(([k, v]) => v);
+    record.record.data = asWorkdayRecord;
+    return this.workdayConverter.convert(record, ctx);
+  }
 
-    const departmentUid =
-      (departments.length > 0 ? departments[0] : null) ??
-      profile.department ??
-      null;
-
-    if (departmentUid && !this.seenDepartments.has(departmentUid)) {
-      this.seenDepartments.add(departmentUid);
-      res.push({
-        model: 'org_Department',
-        record: {
-          uid: departmentUid,
-          name: departmentUid,
-          description: null,
-        },
-      });
-    }
-
-    res.push(
-      {
-        model: 'identity_Identity',
-        record: {
-          uid,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          fullName,
-          photoUrl: null,
-          primaryEmail: profile.email,
-          emails: [profile.email],
-          createdAt: null,
-          updatedAt: null,
-        },
-      },
-      {
-        model: 'org_Employee',
-        record: {
-          uid,
-          title: profile.title,
-          level: null,
-          joinedAt,
-          terminatedAt: null,
-          department: departmentUid ? {uid: departmentUid} : null,
-          identity: {uid, source},
-          manager: profile.manager ? {uid: profile.manager, source} : null,
-          reportingChain: null, // TODO: compute reporting chain
-          location: null, // TODO: lookup location
-          source,
-        },
-      }
-    );
-
-    return res;
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.workdayConverter.onProcessingComplete(ctx);
   }
 }

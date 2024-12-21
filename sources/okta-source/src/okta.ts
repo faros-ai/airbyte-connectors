@@ -4,7 +4,7 @@ import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import parseLinkHeader from 'parse-link-header';
 import {VError} from 'verror';
 
-import {Group, User, UserOfGroup} from './models';
+import {User} from './models';
 
 const DEFAULT_VERSION = 'v1';
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
@@ -96,21 +96,6 @@ export class Okta {
     const filter = 'status eq "ACTIVE"';
     for await (const user of this.paginate<User>('users', {limit, filter})) {
       yield user;
-    }
-  }
-
-  async *getGroups(limit = 500): AsyncGenerator<Group> {
-    const filter = 'status eq "ACTIVE"';
-    for await (const group of this.paginate<Group>('groups', {limit, filter})) {
-      const usersOfGroup: string[] = [];
-      for await (const user of this.paginate<UserOfGroup>(
-        `groups/${group.id}/users`,
-        {limit}
-      )) {
-        usersOfGroup.push(user.id);
-      }
-      group.usersOfGroup = usersOfGroup;
-      yield group;
     }
   }
 }

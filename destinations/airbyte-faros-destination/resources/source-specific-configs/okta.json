@@ -1,0 +1,116 @@
+{
+  "title": "Okta",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "Configuration",
+      "type": "object",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Okta",
+          "order": 0
+        },
+        "column_names_mapping": {
+          "order": 1,
+          "title": "Column Names Mapping",
+          "description": "Mapping of column names in Okta profile to employee fields",
+          "type": "object",
+          "properties": {
+            "start_date_column_name": {
+              "title": "Start Date Column Name",
+              "description": "Column name for employee start date",
+              "type": "string",
+              "default": "startDate",
+              "order": 0
+            },
+            "full_name_column_name": {
+              "title": "Full Name Column Name",
+              "description": "Column name for employee full name",
+              "type": "string",
+              "default": "displayName",
+              "order": 1
+            },
+            "first_name_column_name": {
+              "title": "First Name Column Name",
+              "description": "Column name for employee first name",
+              "type": "string",
+              "default": "firstName",
+              "order": 2
+            },
+            "last_name_column_name": {
+              "title": "Last Name Column Name",
+              "description": "Column name for employee last name",
+              "type": "string",
+              "default": "lastName",
+              "order": 3
+            },
+            "employee_id_column_name": {
+              "title": "Employee ID Column Name",
+              "description": "Column name for employee ID",
+              "type": "string",
+              "default": "employeeNumber",
+              "order": 4
+            },
+            "manager_name_column_name": {
+              "title": "Manager Name Column Name",
+              "description": "Column name for manager name",
+              "type": "string",
+              "default": "manager",
+              "order": 5
+            },
+            "manager_id_column_name": {
+              "title": "Manager ID Column Name",
+              "description": "Column name for manager ID",
+              "type": "string",
+              "default": "managerId",
+              "order": 6
+            },
+            "team_id_column_name": {
+              "title": "Team ID Column Name",
+              "description": "Column name for team ID",
+              "type": "string",
+              "default": "departmentId",
+              "order": 7
+            },
+            "team_name_column_name": {
+              "title": "Team Name Column Name",
+              "description": "Column name for team name",
+              "type": "string",
+              "default": "department",
+              "order": 8
+            },
+            "termination_date_column_name": {
+              "title": "Termination Date Column Name",
+              "description": "Column name for termination date",
+              "type": "string",
+              "default": "endDate",
+              "order": 9
+            },
+            "location_column_name": {
+              "title": "Location Column Name",
+              "description": "Column name for location",
+              "type": "string",
+              "default": "location",
+              "order": 10
+            },
+            "email_column_name": {
+              "title": "Email Column Name",
+              "description": "Column name for email",
+              "type": "string",
+              "default": "email",
+              "order": 11
+            },
+            "employee_type_column_name": {
+              "title": "Employee Type Column Name",
+              "description": "Column name for employee type",
+              "type": "string",
+              "default": "employeeType",
+              "order": 12
+            }
+          }
+        }
+      }
+    }
+  ]
+}
