@@ -33,6 +33,7 @@ import {difference, isEmpty, keyBy, pickBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
+import traverse from 'traverse';
 import {Dictionary} from 'ts-essentials';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
@@ -1227,11 +1228,22 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (typeof result.record !== 'object')
         throw new VError('Invalid result: record is not an object');
 
-      // Set or append suffix to the source
-      const baseSource = result.record['source'] || converter.streamName.source;
-      result.record['source'] = this.farosSourceQualifier
-        ? `${baseSource}_${this.farosSourceQualifier}`
-        : baseSource;
+      // Set or append suffix to all source fields recursively, only if we have a qualifier
+      if (this.farosSourceQualifier) {
+        const qualifier = this.farosSourceQualifier;
+        traverse(result.record).forEach(function (field) {
+          if (this.key === 'source' && typeof field === 'string') {
+            this.update(`${field}_${qualifier}`);
+          }
+        });
+      }
+
+      // Always set the source of main record if no source exists
+      if (!result.record['source']) {
+        result.record['source'] = this.farosSourceQualifier
+          ? `${converter.streamName.source}_${this.farosSourceQualifier}`
+          : converter.streamName.source;
+      }
 
       // Exclude record fields if necessary
       const exclusions = this.excludeFieldsByModel[result.model];
