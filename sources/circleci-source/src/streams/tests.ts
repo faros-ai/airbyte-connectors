@@ -19,12 +19,6 @@ export class Tests extends StreamWithProjectSlices {
     return ['job_stopped_at'];
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    for (const projectSlug of this.cfg.project_slugs) {
-      yield {projectSlug};
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
