@@ -225,13 +225,9 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
         ])) as OctokitResponse<any, number>;
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          // simulate request error so that retry plugin retries the request
-          throw new RequestError(
+          throw retryableError(
             `GitHub request timed-out after ${timeoutMs} ms`,
-            RETRYABLE_STATUS_CODE,
-            {
-              request: options,
-            }
+            options
           );
         }
         throw err;
@@ -244,16 +240,37 @@ function timeout(octokit: OctokitCore, octokitOptions: any) {
 }
 
 function retryAdditionalConditions(octokit: OctokitCore) {
+  octokit.hook.wrap('request', async (request, options) => {
+    const response = await request(options);
+    if (options.url.endsWith('/graphql')) {
+      // sometimes graphql returns 200 with no data instead of 5xx after server timeout
+      if (!response.data) {
+        throw retryableError(
+          'GitHub GraphQL returned response with no data',
+          options
+        );
+      }
+    }
+    return response;
+  });
+
   octokit.hook.error('request', async (error, options) => {
     const retryAdditionalError = options.request.retryAdditionalError;
     if (!retryAdditionalError?.(error)) {
       throw error;
     }
-
-    // simulate request error so that retry plugin retries the request
-    throw new RequestError(error.message, RETRYABLE_STATUS_CODE, {
-      request: options,
-    });
+    throw retryableError(error.message, options);
   });
+
   return {};
+}
+
+function retryableError(
+  message: string,
+  options: Required<EndpointDefaults>
+): RequestError {
+  // simulate request error so that retry plugin retries the request
+  return new RequestError(message, RETRYABLE_STATUS_CODE, {
+    request: options,
+  });
 }
