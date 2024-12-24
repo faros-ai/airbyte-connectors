@@ -393,6 +393,83 @@ Array [
 ]
 `;
 
+exports[`faros_jira faros_sprint_board with qualifier 1`] = `
+Array [
+  "Processed 2 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_boards\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 5 records",
+  "Would write records by model: {\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":1,\\\\\\"tms_SprintBoardRelationship\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_jira faros_sprint_board with qualifier 2`] = `
+Array [
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "PLAYG board",
+      "source": "Jira_TeamB-Jira",
+      "type": Object {
+        "category": "Scrum",
+        "detail": "scrum",
+      },
+      "uid": "21",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Jira_TeamB-Jira",
+        "uid": "21",
+      },
+      "project": Object {
+        "source": "Jira_TeamB-Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira_TeamB-Jira",
+    },
+  },
+  Object {
+    "faros_TmsTaskBoardOptions": Object {
+      "board": Object {
+        "source": "Jira_TeamB-Jira",
+        "uid": "21",
+      },
+      "inclusion": Object {
+        "category": "Included",
+      },
+      "source": "Jira_TeamB-Jira",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": null,
+      "endedAt": null,
+      "name": "PLAYG Sprint 20",
+      "openedAt": null,
+      "source": "Jira_TeamB-Jira",
+      "startedAt": null,
+      "state": "Future",
+      "uid": "55",
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira_TeamB-Jira",
+        "uid": "49",
+      },
+      "source": "Jira_TeamB-Jira",
+      "sprint": Object {
+        "source": "Jira_TeamB-Jira",
+        "uid": "55",
+      },
+    },
+  },
+]
+`;
+
 exports[`faros_jira process records from all streams 1`] = `
 Array [
   "Processed 17 records",
