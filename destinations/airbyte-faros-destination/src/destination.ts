@@ -97,7 +97,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     private redactor: RecordRedactor = undefined,
     private graphQLClient: GraphQLClient = undefined,
     private analytics: Analytics = undefined,
-    private segmentUserId: string = undefined
+    private segmentUserId: string = undefined,
+    private farosSourceQualifier: string = undefined
   ) {
     super();
   }
@@ -354,6 +355,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } else {
       this.excludeFieldsByModel = {};
     }
+
+    this.farosSourceQualifier = config.faros_source_qualifier;
 
     if (config.redact_fields_map) {
       this.redactFieldsByModel =
@@ -1224,10 +1227,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (typeof result.record !== 'object')
         throw new VError('Invalid result: record is not an object');
 
-      // Set the source if missing
-      if (!result.record['source']) {
-        result.record['source'] = converter.streamName.source;
-      }
+      // Set or append suffix to the source
+      const baseSource = result.record['source'] || converter.streamName.source;
+      result.record['source'] = this.farosSourceQualifier
+        ? `${baseSource}_${this.farosSourceQualifier}`
+        : baseSource;
+
       // Exclude record fields if necessary
       const exclusions = this.excludeFieldsByModel[result.model];
       if (exclusions?.length > 0) {
