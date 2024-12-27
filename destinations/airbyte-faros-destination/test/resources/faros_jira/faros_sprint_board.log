@@ -1,2 +1,0 @@
-{"record":{"stream":"mytestsource__jira__faros_boards","emitted_at":1716402912152,"data":{"id":21,"name":"PLAYG board","type":"scrum","uid":"21","projectKey":"PLAYG","issueSync":true}},"type":"RECORD"}
-{"record":{"stream":"mytestsource__jira__faros_sprints","emitted_at":1716907719877,"data":{"id":55,"originBoardId":24,"name":"PLAYG Sprint 20","state":"future","startDate":null,"endDate":null,"completeDate":null,"activatedDate":null,"boardId":49}},"type":"RECORD"}

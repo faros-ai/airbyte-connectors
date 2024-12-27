@@ -37,7 +37,7 @@ describe('faros_jira', () => {
     });
   });
 
-  test('all streams with qualifier', async () => {
+  test('process records from all streams with qualifier', async () => {
     const boardsConfigPath = await tempConfig({
       api_url: mockttp.url,
       log_records: true,

@@ -41,8 +41,8 @@ export interface JiraConfig {
 }
 
 export abstract class JiraConverter extends Converter {
-  private readonly baseSourceName = 'Jira';
-  source = undefined;
+  private qualifiedSourceName = false;
+  source = 'Jira';
 
   /** All Jira records should have id property */
   id(record: AirbyteRecord): any {
@@ -53,14 +53,16 @@ export abstract class JiraConverter extends Converter {
     return ctx.config.source_specific_configs?.jira ?? {};
   }
 
+  /**
+   * If the source is not qualified, we need to add the qualifier to the source name
+   */
   protected initializeSource(ctx: StreamContext): string {
-    if (this.source) {
+    if (this.qualifiedSourceName) {
       return this.source;
     }
     const qualifier = this.jiraConfig(ctx).source_qualifier;
-    this.source = qualifier
-      ? `${this.baseSourceName}_${qualifier}`
-      : this.baseSourceName;
+    this.source = qualifier ? `${this.source}_${qualifier}` : this.source;
+    this.qualifiedSourceName = true;
     return this.source;
   }
 

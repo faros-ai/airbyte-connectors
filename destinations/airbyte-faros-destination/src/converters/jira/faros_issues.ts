@@ -213,7 +213,7 @@ export class FarosIssues extends JiraConverter {
       });
     }
 
-    const ancestors = this.updateAncestors(issue, source);
+    const ancestors = this.updateAncestors(issue);
     return [...results, ...ancestors];
   }
 
@@ -252,10 +252,7 @@ export class FarosIssues extends JiraConverter {
    * project it used to be located in. These versions no longer exist in Jira,
    * but may exist in the graph due to past syncs.
    */
-  private updateAncestors(
-    issue: Issue,
-    source: string
-  ): ReadonlyArray<DestinationRecord> {
+  private updateAncestors(issue: Issue): ReadonlyArray<DestinationRecord> {
     if (!issue.keyChangelog.length) {
       return [];
     }
@@ -285,7 +282,7 @@ export class FarosIssues extends JiraConverter {
       results.push({
         model: 'tms_Task__Update',
         record: {
-          where: {uid: ancestorKey, source},
+          where: {uid: ancestorKey, source: this.source},
           mask: ['status', 'statusChangelog', 'statusChangedAt', 'updatedAt'],
           patch: {
             status: updatedStatus,
