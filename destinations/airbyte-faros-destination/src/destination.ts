@@ -692,6 +692,17 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     } finally {
       // Log collected statistics
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
+
+      // Log warnings
+      if (syncErrors.src.warnings.length) {
+        this.logger.warn(
+          `Encountered ${syncErrors.src.warnings.length} source warning(s)`
+        );
+        for (const warning of syncErrors.src.warnings) {
+          this.logger.warn(`Warning: ${warning.summary}`);
+        }
+      }
+
       if (logFiles) {
         const logs = await logFiles.sortedLogs(this.logger);
         if (account?.local && sync?.syncId && logs) {
