@@ -13,7 +13,7 @@ export class FarosProjectVersionIssues extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     return [
       {
         model: 'tms_TaskReleaseRelationship',

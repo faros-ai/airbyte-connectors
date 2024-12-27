@@ -37,10 +37,12 @@ export interface JiraConfig {
   exclude_fields?: string[];
   use_board_ownership?: boolean;
   truncate_limit?: number;
+  source_qualifier?: string;
 }
 
 export abstract class JiraConverter extends Converter {
-  source = 'Jira';
+  private readonly baseSourceName = 'Jira';
+  source = undefined;
 
   /** All Jira records should have id property */
   id(record: AirbyteRecord): any {
@@ -49,6 +51,17 @@ export abstract class JiraConverter extends Converter {
 
   protected jiraConfig(ctx: StreamContext): JiraConfig {
     return ctx.config.source_specific_configs?.jira ?? {};
+  }
+
+  protected initializeSource(ctx: StreamContext): string {
+    if (this.source) {
+      return this.source;
+    }
+    const qualifier = this.jiraConfig(ctx).source_qualifier;
+    this.source = qualifier
+      ? `${this.baseSourceName}_${qualifier}`
+      : this.baseSourceName;
+    return this.source;
   }
 
   protected additionalFieldsArrayLimit(ctx: StreamContext): number {

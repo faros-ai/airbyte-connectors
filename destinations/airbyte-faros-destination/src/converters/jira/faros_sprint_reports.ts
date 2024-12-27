@@ -17,7 +17,7 @@ export class FarosSprintReports extends JiraConverter {
     const sprintUid = toString(sprintReport.sprintId);
     const boardUid = toString(sprintReport.boardId);
     const results: DestinationRecord[] = [];
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     for (const issue of sprintReport.issues || []) {
       const status = issue.status
         ? {

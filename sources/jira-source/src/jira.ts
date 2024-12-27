@@ -81,6 +81,7 @@ export interface JiraConfig extends AirbyteConfig {
   readonly organization_id?: string;
   readonly start_date?: string;
   readonly end_date?: string;
+  readonly source_qualifier?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
@@ -188,7 +189,8 @@ export class Jira {
     private readonly useUsersPrefixSearch?: boolean,
     private readonly requestedStreams?: Set<string>,
     private readonly useSprintsReverseSearch?: boolean,
-    private readonly organizationId?: string
+    private readonly organizationId?: string,
+    private readonly sourceQualifier?: string
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -310,7 +312,8 @@ export class Jira {
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
       cfg.requestedStreams,
       cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH,
-      cfg.organization_id
+      cfg.organization_id,
+      cfg.source_qualifier
     );
     return Jira.jira;
   }
@@ -645,10 +648,13 @@ export class Jira {
     farosClient: FarosClient,
     graph: string
   ): AsyncIterableIterator<Version2Models.Project> {
+    const source = this.sourceQualifier
+      ? `Jira_${this.sourceQualifier}`
+      : 'Jira';
     const projects = this.iterate(
       async (startAt) => {
         const data = await farosClient.gql(graph, PROJECT_QUERY, {
-          source: 'Jira',
+          source,
           offset: startAt,
           pageSize: this.maxPageSize,
         });

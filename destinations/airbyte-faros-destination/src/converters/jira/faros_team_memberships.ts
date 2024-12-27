@@ -13,14 +13,15 @@ export class FarosTeamMemberships extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const teamMembership = record.record.data;
+    const source = this.initializeSource(ctx);
     return [
       {
         model: 'tms_TeamMembership',
         record: {
-          team: {uid: teamMembership.teamId, source: this.streamName.source},
+          team: {uid: teamMembership.teamId, source},
           member: {
             uid: teamMembership.memberId,
-            source: this.streamName.source,
+            source,
           },
         },
       },

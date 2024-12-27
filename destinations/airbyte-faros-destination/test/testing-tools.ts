@@ -47,7 +47,6 @@ export interface TempConfigOptions {
   readonly replace_origin_map?: Dictionary<any>;
   readonly exclude_fields_map?: Dictionary<any>;
   readonly log_records?: boolean;
-  readonly faros_source_qualifier?: string;
 }
 
 /**
@@ -70,7 +69,6 @@ export function getConf(options: TempConfigOptions): any {
     replace_origin_map = {},
     exclude_fields_map = {},
     log_records = false,
-    faros_source_qualifier = undefined,
   } = options;
 
   const edition_configs_defaults =
@@ -106,7 +104,6 @@ export function getConf(options: TempConfigOptions): any {
     exclude_fields_map: JSON.stringify(exclude_fields_map),
     faros_source_id: TEST_SOURCE_ID,
     log_records,
-    faros_source_qualifier,
   };
 
   return conf;

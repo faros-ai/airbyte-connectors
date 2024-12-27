@@ -430,7 +430,7 @@ export class Issues extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const results: DestinationRecord[] = [];
 
     if (!this.fieldIdsByName) {

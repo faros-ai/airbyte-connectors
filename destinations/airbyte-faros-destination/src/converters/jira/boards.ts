@@ -16,7 +16,7 @@ export class Boards extends JiraConverter {
     if (!this.useBoardOwnership(ctx)) return [];
     const board = record.record.data;
     const uid = board.id.toString();
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     return [
       {
         model: 'tms_TaskBoard',

@@ -51,7 +51,7 @@ export class FarosIssues extends JiraConverter {
     const issue = record.record.data as Issue;
     this.seenIssues.add(issue.key);
 
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const results: DestinationRecord[] = [];
 
     if (issue.updateAdditionalFields) {
@@ -142,7 +142,7 @@ export class FarosIssues extends JiraConverter {
             'status',
             'source',
           ]),
-          project: {uid: issue.project, source: this.source},
+          project: {uid: issue.project, source},
         },
       });
     }
@@ -213,13 +213,11 @@ export class FarosIssues extends JiraConverter {
       });
     }
 
-    const ancestors = this.updateAncestors(issue);
+    const ancestors = this.updateAncestors(issue, source);
     return [...results, ...ancestors];
   }
 
-  async onProcessingComplete(
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
     return this.convertDependencies();
   }
 
@@ -254,7 +252,10 @@ export class FarosIssues extends JiraConverter {
    * project it used to be located in. These versions no longer exist in Jira,
    * but may exist in the graph due to past syncs.
    */
-  private updateAncestors(issue: Issue): ReadonlyArray<DestinationRecord> {
+  private updateAncestors(
+    issue: Issue,
+    source: string
+  ): ReadonlyArray<DestinationRecord> {
     if (!issue.keyChangelog.length) {
       return [];
     }
@@ -284,7 +285,7 @@ export class FarosIssues extends JiraConverter {
       results.push({
         model: 'tms_Task__Update',
         record: {
-          where: {uid: ancestorKey, source: this.source},
+          where: {uid: ancestorKey, source},
           mask: ['status', 'statusChangelog', 'statusChangedAt', 'updatedAt'],
           patch: {
             status: updatedStatus,

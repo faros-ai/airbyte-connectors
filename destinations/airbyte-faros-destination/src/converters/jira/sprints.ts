@@ -82,6 +82,7 @@ export class Sprints extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprint = record.record.data;
+    const source = this.initializeSource(ctx);
     if (!this.pointsFieldIdsByName) {
       this.pointsFieldIdsByName = Sprints.getFieldIdsByName(ctx);
     }
@@ -107,7 +108,7 @@ export class Sprints extends JiraConverter {
           completedPoints,
           startedAt: Utils.toDate(sprint.startDate),
           endedAt: Utils.toDate(sprint.endDate),
-          source: this.streamName.source,
+          source,
         },
       },
     ];

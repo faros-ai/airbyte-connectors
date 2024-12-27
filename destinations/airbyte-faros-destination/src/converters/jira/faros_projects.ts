@@ -12,7 +12,7 @@ export class FarosProjects extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     return [
       {
         model: 'tms_Project',

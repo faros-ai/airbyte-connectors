@@ -287,6 +287,15 @@
         "title": "Use Board Issue Tracker",
         "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs. Requires faros_source_id to be configured.",
         "default": false
+      },
+      "source_qualifier": {
+        "order": 37,
+        "type": "string",
+        "title": "Source Qualifier",
+        "description": "The qualifier to append as a suffix to the Jira source name to ensure uniqueness among entities with similar IDs when syncing multiple Jira instances, while preserving their original IDs, e.g. for Boards and Sprints.",
+        "examples": [
+          "Instance2"
+        ]
       }
     }
   }

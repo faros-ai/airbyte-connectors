@@ -15,7 +15,7 @@ export class FarosSprints extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const sprint = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const uid = toString(sprint.id);
     return [
       {

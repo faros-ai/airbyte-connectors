@@ -27,7 +27,7 @@ export class Users extends JiraConverter {
           uid,
           name: user.displayName,
           emailAddress: user.emailAddress,
-          source: this.streamName.source,
+          source: this.initializeSource(ctx),
           inactive: user.active != null && !user.active,
         },
       },

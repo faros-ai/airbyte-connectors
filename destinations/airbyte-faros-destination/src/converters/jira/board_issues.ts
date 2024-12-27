@@ -14,7 +14,7 @@ export class BoardIssues extends JiraConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     if (!this.useBoardOwnership(ctx)) return [];
     const issue = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const relation = {
       task: {uid: issue.key, source},
       board: {uid: String(issue.boardId), source},

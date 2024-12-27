@@ -27,7 +27,7 @@ export class ProjectVersions extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const projectVersion = record.record.data as ProjectVersion;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const results: DestinationRecord[] = [
       {
         model: 'tms_Release',
