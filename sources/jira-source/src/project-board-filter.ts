@@ -219,9 +219,12 @@ export class ProjectBoardFilter {
       return;
     }
     if (this.useFarosGraphBoardsSelection) {
+      const source = this.config.source_qualifier
+        ? `Jira_${this.config.source_qualifier}`
+        : 'Jira';
       const farosOptions = await getFarosOptions(
         'board',
-        'Jira',
+        source,
         this.farosClient,
         this.config.graph ?? DEFAULT_GRAPH
       );
