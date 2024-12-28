@@ -817,7 +817,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   ? msg.sourceMode
                   : msg.sourceType;
               await updateLocalAccount?.(msg);
-              sourceVersion.version = msg.sourceVersion;
+              if (sourceVersion) sourceVersion.version = msg.sourceVersion;
               ctx.setSourceConfig(msg.redactedConfig);
               if (Array.isArray(msg.redactedConfig?.skip_reset_models)) {
                 msg.redactedConfig.skip_reset_models.forEach((model) => {
