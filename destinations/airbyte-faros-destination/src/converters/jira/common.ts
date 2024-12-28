@@ -37,9 +37,11 @@ export interface JiraConfig {
   exclude_fields?: string[];
   use_board_ownership?: boolean;
   truncate_limit?: number;
+  source_qualifier?: string;
 }
 
 export abstract class JiraConverter extends Converter {
+  private qualifiedSourceName = false;
   source = 'Jira';
 
   /** All Jira records should have id property */
@@ -49,6 +51,19 @@ export abstract class JiraConverter extends Converter {
 
   protected jiraConfig(ctx: StreamContext): JiraConfig {
     return ctx.config.source_specific_configs?.jira ?? {};
+  }
+
+  /**
+   * If the source is not qualified, we need to add the qualifier to the source name
+   */
+  protected initializeSource(ctx: StreamContext): string {
+    if (this.qualifiedSourceName) {
+      return this.source;
+    }
+    const qualifier = this.jiraConfig(ctx).source_qualifier;
+    this.source = qualifier ? `${this.source}_${qualifier}` : this.source;
+    this.qualifiedSourceName = true;
+    return this.source;
   }
 
   protected additionalFieldsArrayLimit(ctx: StreamContext): number {

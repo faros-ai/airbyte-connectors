@@ -14,6 +14,7 @@ export class FarosUsers extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initializeSource(ctx);
     return this.alias.convert(record, ctx);
   }
 }

@@ -20,7 +20,7 @@ export class FarosTeams extends JiraConverter {
           name: team.displayName,
           parentTeam: {uid: allTeamsUid},
           teamChain: [team.id, allTeamsUid],
-          source: this.streamName.source,
+          source: this.initializeSource(ctx),
         },
       },
     ];

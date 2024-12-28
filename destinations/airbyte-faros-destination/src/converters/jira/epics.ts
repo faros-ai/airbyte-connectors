@@ -14,7 +14,7 @@ export class Epics extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const epic = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const status = epic.fields.status ?? {};
     let description = null;
     if (typeof epic.fields.description === 'string') {

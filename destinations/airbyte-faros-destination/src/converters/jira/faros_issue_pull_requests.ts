@@ -14,7 +14,7 @@ export class FarosIssuePullRequests extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const pullRequest = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     return [
       {
         model: 'tms_TaskPullRequestAssociation',

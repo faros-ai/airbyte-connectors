@@ -36,4 +36,23 @@ describe('faros_jira', () => {
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
+
+  test('process records from all streams with qualifier', async () => {
+    const boardsConfigPath = await tempConfig({
+      api_url: mockttp.url,
+      log_records: true,
+      source_specific_configs: {
+        jira: {
+          source_qualifier: 'Instance2',
+        },
+      },
+    });
+
+    await destinationWriteTest({
+      configPath: boardsConfigPath,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/all-streams.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
 });

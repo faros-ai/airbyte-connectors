@@ -1,11 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {toNumber} from 'lodash';
 
 import {CategoryDetail} from '../common/common';
 import {Vulnerability} from '../common/sec';
 import {Converter, DestinationModel, DestinationRecord} from '../converter';
 import {GitHubCommon} from '../github/common';
-import {toNumber} from 'lodash';
 export class Findings extends Converter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'cicd_ArtifactVulnerability',

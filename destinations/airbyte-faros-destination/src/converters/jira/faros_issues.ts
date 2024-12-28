@@ -51,7 +51,7 @@ export class FarosIssues extends JiraConverter {
     const issue = record.record.data as Issue;
     this.seenIssues.add(issue.key);
 
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const results: DestinationRecord[] = [];
 
     if (issue.updateAdditionalFields) {
@@ -142,7 +142,7 @@ export class FarosIssues extends JiraConverter {
             'status',
             'source',
           ]),
-          project: {uid: issue.project, source: this.source},
+          project: {uid: issue.project, source},
         },
       });
     }
@@ -217,9 +217,7 @@ export class FarosIssues extends JiraConverter {
     return [...results, ...ancestors];
   }
 
-  async onProcessingComplete(
-    ctx: StreamContext
-  ): Promise<ReadonlyArray<DestinationRecord>> {
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
     return this.convertDependencies();
   }
 

@@ -20,7 +20,7 @@ export class FarosBoards extends JiraConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const board = record.record.data;
     const uid = board.uid;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const results: DestinationRecord[] = [
       {
         model: 'tms_TaskBoard',

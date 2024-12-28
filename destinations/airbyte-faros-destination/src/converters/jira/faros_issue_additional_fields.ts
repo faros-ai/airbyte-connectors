@@ -11,6 +11,7 @@ export class FarosIssueAdditionalFields extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initializeSource(ctx);
     const issue = record.record.data as IssueCompact;
     return [this.convertAdditionalFieldsIssue(issue)];
   }

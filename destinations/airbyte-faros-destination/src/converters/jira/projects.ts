@@ -15,7 +15,7 @@ export class Projects extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data;
-    const source = this.streamName.source;
+    const source = this.initializeSource(ctx);
     const uid = project.key;
     const results: DestinationRecord[] = [];
     results.push({
