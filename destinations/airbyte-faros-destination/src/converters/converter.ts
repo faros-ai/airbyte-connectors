@@ -116,6 +116,10 @@ export class StreamContext implements OriginProvider {
     return this.origin;
   }
 
+  getSourceConfig(): AirbyteConfig {
+    return this.sourceConfig;
+  }
+
   setSourceConfig(redactedConfig: AirbyteConfig) {
     this.sourceConfig = redactedConfig;
   }

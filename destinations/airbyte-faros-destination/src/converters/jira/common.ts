@@ -60,7 +60,8 @@ export abstract class JiraConverter extends Converter {
     if (this.qualifiedSourceName) {
       return this.source;
     }
-    const qualifier = this.jiraConfig(ctx).source_qualifier;
+    const sourceConfig = ctx.getSourceConfig();
+    const qualifier = sourceConfig?.source_qualifier;
     this.source = qualifier ? `${this.source}_${qualifier}` : this.source;
     this.qualifiedSourceName = true;
     return this.source;
