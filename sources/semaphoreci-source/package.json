@@ -31,7 +31,7 @@
   "dependencies": {
     "axios": "^1.7.4",
     "axios-retry": "^4.0.0",
-    "commander": "^9.3.0",
+    "commander": "^13.0.0",
     "faros-airbyte-cdk": "*",
     "parse-link-header": "^2.0.0",
     "verror": "^1.10.1"
