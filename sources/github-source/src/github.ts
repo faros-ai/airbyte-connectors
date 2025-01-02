@@ -180,7 +180,7 @@ export abstract class GitHub {
     if (GitHub.github) {
       return GitHub.github;
     }
-    validateBucketingConfig(cfg);
+    validateBucketingConfig(cfg, logger.info.bind(logger));
 
     const github =
       cfg.authentication.type === 'token'

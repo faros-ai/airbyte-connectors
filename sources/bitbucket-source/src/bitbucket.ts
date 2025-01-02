@@ -71,7 +71,7 @@ export class Bitbucket {
       throw new VError(errorMessage);
     }
 
-    validateBucketingConfig(config);
+    validateBucketingConfig(config, logger.info.bind(logger));
 
     const auth = config.token
       ? {token: config.token}

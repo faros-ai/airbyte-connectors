@@ -216,7 +216,7 @@ export class Jira {
 
     const authentication = Jira.auth(cfg);
 
-    validateBucketingConfig(cfg);
+    validateBucketingConfig(cfg, logger.info.bind(logger));
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized:
