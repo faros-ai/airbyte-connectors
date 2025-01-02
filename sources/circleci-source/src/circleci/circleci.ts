@@ -59,7 +59,7 @@ export class CircleCI {
   static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
     if (CircleCI.circleCI) return CircleCI.circleCI;
 
-    validateBucketingConfig(config.bucket_id, config.bucket_total);
+    validateBucketingConfig(config);
 
     if (!config.token) {
       throw new VError('No token provided');
