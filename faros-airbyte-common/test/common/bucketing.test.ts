@@ -74,6 +74,52 @@ describe('getNextBucketId', () => {
     const state = undefined;
     expect(nextBucketId(config, state)).toBe(1);
   });
+
+  test('should use bucket ranges when provided', () => {
+    const config = {
+      bucket_total: 10,
+      round_robin_bucket_execution: true,
+      bucket_ranges: ['2-4', '7-8'],
+    };
+
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 2},
+      })
+    ).toBe(3);
+
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 4},
+      })
+    ).toBe(7);
+
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 8},
+      })
+    ).toBe(2);
+  });
+
+  test('should handle bucket ranges as comma-separated string', () => {
+    const config = {
+      bucket_total: 10,
+      round_robin_bucket_execution: true,
+      bucket_ranges: '2,4,6,8',
+    };
+
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 2},
+      })
+    ).toBe(4);
+
+    expect(
+      nextBucketId(config, {
+        __bucket_execution_state: {last_executed_bucket_id: 8},
+      })
+    ).toBe(2);
+  });
 });
 
 describe('bucket', () => {

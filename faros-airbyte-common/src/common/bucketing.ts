@@ -1,6 +1,8 @@
 import {createHmac} from 'crypto';
 import VError from 'verror';
 
+import {BucketSet} from './bucket-set';
+
 export interface BucketExecutionState {
   __bucket_execution_state?: {
     last_executed_bucket_id: number;
@@ -42,6 +44,11 @@ export function nextBucketId(
   const bucketTotal = config.bucket_total ?? 1;
   const lastExecutedBucketId =
     state?.__bucket_execution_state?.last_executed_bucket_id ?? bucketTotal;
+
+  if (config.round_robin_bucket_execution && config.bucket_ranges) {
+    const bucketSet = new BucketSet(bucketTotal, config.bucket_ranges);
+    return bucketSet.next(lastExecutedBucketId);
+  }
 
   return (lastExecutedBucketId % bucketTotal) + 1;
 }
