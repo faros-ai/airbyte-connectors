@@ -145,8 +145,15 @@
         "description": "Total number of buckets to distribute workspaces and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
-      "concurrency_limit": {
+      "round_robin_bucket_execution": {
         "order": 18,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "concurrency_limit": {
+        "order": 19,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
