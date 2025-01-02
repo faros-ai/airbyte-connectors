@@ -1,6 +1,8 @@
 import {createHmac} from 'crypto';
 import VError from 'verror';
 
+import {BucketSet} from './bucket-set';
+
 export interface BucketExecutionState {
   __bucket_execution_state?: {
     last_executed_bucket_id: number;
@@ -11,6 +13,7 @@ export interface BucketExecutionState {
 export interface RoundRobinConfig {
   round_robin_bucket_execution?: boolean;
   bucket_id?: number;
+  bucket_ranges?: string | ReadonlyArray<string>;
   bucket_total?: number;
   [key: string]: any;
 }
@@ -23,14 +26,27 @@ export function bucket(key: string, data: string, bucketTotal: number): number {
 }
 
 export function validateBucketingConfig(
-  bucketId: number = 1,
-  bucketTotal: number = 1
+  config: RoundRobinConfig,
+  logger?: (message: string) => void
 ): void {
+  const bucketTotal = config.bucket_total ?? 1;
+  const bucketId = config.bucket_id ?? 1;
+
   if (bucketTotal < 1) {
     throw new VError('bucket_total must be a positive integer');
   }
   if (bucketId < 1 || bucketId > bucketTotal) {
     throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
+  }
+
+  if (config.bucket_ranges) {
+    if (!config.round_robin_bucket_execution) {
+      logger?.(
+        `bucket_ranges ${config.bucket_ranges} ignored because round_robin_bucket_execution is not enabled`
+      );
+    } else {
+      new BucketSet(bucketTotal, config.bucket_ranges);
+    }
   }
 }
 
@@ -41,6 +57,11 @@ export function nextBucketId(
   const bucketTotal = config.bucket_total ?? 1;
   const lastExecutedBucketId =
     state?.__bucket_execution_state?.last_executed_bucket_id ?? bucketTotal;
+
+  if (config.round_robin_bucket_execution && config.bucket_ranges) {
+    const bucketSet = new BucketSet(bucketTotal, config.bucket_ranges);
+    return bucketSet.next(lastExecutedBucketId);
+  }
 
   return (lastExecutedBucketId % bucketTotal) + 1;
 }

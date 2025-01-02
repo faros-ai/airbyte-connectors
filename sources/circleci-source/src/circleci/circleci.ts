@@ -4,8 +4,12 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
-import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
+import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {
+  bucket,
+  RoundRobinConfig,
+  validateBucketingConfig,
+} from 'faros-airbyte-common/common';
 import https from 'https';
 import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -19,7 +23,7 @@ const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_REQUEST_TIMEOUT = 120000;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
-export interface CircleCIConfig {
+export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly token: string;
   readonly url?: string;
   project_slugs: ReadonlyArray<string>;
@@ -32,9 +36,6 @@ export interface CircleCIConfig {
   readonly cutoff_days?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
-  readonly bucket_id?: number;
-  readonly bucket_total?: number;
-  readonly round_robin_bucket_execution?: boolean;
 }
 
 export class CircleCI {
@@ -59,7 +60,7 @@ export class CircleCI {
   static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
     if (CircleCI.circleCI) return CircleCI.circleCI;
 
-    validateBucketingConfig(config.bucket_id, config.bucket_total);
+    validateBucketingConfig(config, logger.info.bind(logger));
 
     if (!config.token) {
       throw new VError('No token provided');

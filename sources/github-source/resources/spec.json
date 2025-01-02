@@ -245,77 +245,90 @@
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
-      "api_url": {
+      "bucket_ranges": {
         "order": 20,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "3-5",
+          "7"
+        ]
+      },
+      "api_url": {
+        "order": 21,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 21,
+        "order": 22,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 22,
+        "order": 23,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "page_size": {
-        "order": 23,
+        "order": 24,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "commits_page_size": {
-        "order": 24,
+        "order": 25,
         "type": "integer",
         "title": "Commits Page Size",
         "description": "Maximum number of items in a paginated response for commits",
         "default": 100
       },
       "pull_requests_page_size": {
-        "order": 25,
+        "order": 26,
         "type": "integer",
         "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
       "timeout": {
-        "order": 26,
+        "order": 27,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 27,
+        "order": 28,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 28,
+        "order": 29,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 29,
+        "order": 30,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 30,
+        "order": 31,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
@@ -324,14 +337,14 @@
         "type": "boolean",
         "title": "Fetch Pull Request diff coverage",
         "default": false,
-        "order": 31
+        "order": 32
       },
       "pull_request_cutoff_lag_seconds": {
         "title": "Pull Request Cutoff Lag (seconds)",
         "description": "Apply lag to the end cutoff saved in the state. PRs updated after this will be rewritten during the next sync.",
         "type": "integer",
         "default": 0,
-        "order": 32
+        "order": 33
       }
     }
   }

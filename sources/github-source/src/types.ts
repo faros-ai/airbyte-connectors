@@ -1,10 +1,11 @@
 import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
+import {RoundRobinConfig} from 'faros-airbyte-common/common';
 
 import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
 
-export interface GitHubConfig extends AirbyteConfig {
+export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly authentication: GitHubAuth;
   readonly reject_unauthorized?: boolean;
   readonly url?: string;
@@ -22,9 +23,6 @@ export interface GitHubConfig extends AirbyteConfig {
   readonly copilot_licenses_dates_fix?: boolean;
   readonly copilot_metrics_ga?: boolean;
   readonly cutoff_days?: number;
-  readonly bucket_id?: number;
-  readonly bucket_total?: number;
-  readonly round_robin_bucket_execution?: boolean;
   readonly api_url?: string;
   readonly api_key?: string;
   readonly graph?: string;
