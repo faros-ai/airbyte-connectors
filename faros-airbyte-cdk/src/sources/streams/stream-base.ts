@@ -145,6 +145,14 @@ export abstract class AirbyteStreamBase {
   }
 
   /**
+   * Percentage of slices (expressed as decimal from 0 to 1) that have to error
+   * for the stream to count as a failure instead of a partial success.
+   */
+  get sliceErrorPctForFailure(): number {
+    return 1;
+  }
+
+  /**
    * Decides how often to checkpoint state (i.e: emit a STATE message). E.g: if
    * this returns a value of 100, then state is persisted after reading 100
    * records, then 200, 300, etc.. A good default value is 1000 although your

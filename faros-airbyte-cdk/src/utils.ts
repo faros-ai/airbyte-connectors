@@ -156,32 +156,15 @@ function minimizeSpecObject(config: SpecObject): void {
 }
 
 const SOURCE_COMMON_PROPERTIES = {
-  max_stream_failures: {
-    // Use a high order to make sure these properties are displayed at the end
-    order: 1000,
-    type: 'integer',
-    title: 'Max Stream Failures',
-    description:
-      'The maximum number of stream failures before the sync fails. Use -1 for unlimited',
-    default: 0,
-  },
-  max_slice_failures: {
-    order: 1001,
-    type: 'integer',
-    title: 'Max Slice Failures',
-    description:
-      'The maximum number of slice failures before a stream sync fails. Use -1 for unlimited',
-    default: 0,
-  },
   debug: {
-    order: 1002,
+    order: 1000,
     type: 'boolean',
     title: 'Debug',
     description: 'Enable debug mode',
     default: false,
   },
   faros_source_id: {
-    order: 1003,
+    order: 1001,
     type: 'string',
     title: 'The source ID',
     description: 'The ID of the source (aka account)',
