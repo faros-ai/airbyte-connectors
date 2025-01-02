@@ -254,9 +254,8 @@
         "title": "Bucket Ranges",
         "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
         "examples": [
-          "1-3",
-          "5",
-          "7-9"
+          "3-5",
+          "7"
         ]
       },
       "api_url": {
