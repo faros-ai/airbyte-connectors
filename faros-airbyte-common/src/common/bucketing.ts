@@ -25,7 +25,10 @@ export function bucket(key: string, data: string, bucketTotal: number): number {
   return (parseInt(hex, 16) % bucketTotal) + 1; // 1-index for readability
 }
 
-export function validateBucketingConfig(config: RoundRobinConfig): void {
+export function validateBucketingConfig(
+  config: RoundRobinConfig,
+  logger?: (message: string) => void
+): void {
   const bucketTotal = config.bucket_total ?? 1;
   const bucketId = config.bucket_id ?? 1;
 
@@ -34,6 +37,16 @@ export function validateBucketingConfig(config: RoundRobinConfig): void {
   }
   if (bucketId < 1 || bucketId > bucketTotal) {
     throw new VError(`bucket_id must be between 1 and ${bucketTotal}`);
+  }
+
+  if (config.bucket_ranges) {
+    if (!config.round_robin_bucket_execution) {
+      logger?.(
+        `bucket_ranges ${config.bucket_ranges} ignored because round_robin_bucket_execution is not enabled`
+      );
+    } else {
+      new BucketSet(bucketTotal, config.bucket_ranges);
+    }
   }
 }
 

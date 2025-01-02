@@ -35,6 +35,36 @@ describe('validateBucketingConfig', () => {
       validateBucketingConfig({bucket_total: 5, bucket_id: 6})
     ).toThrow('bucket_id must be between 1 and 5');
   });
+
+  test('should warn when bucket_ranges present but round_robin disabled', () => {
+    const logger = jest.fn();
+    validateBucketingConfig(
+      {
+        bucket_total: 5,
+        bucket_id: 1,
+        bucket_ranges: '1-3',
+        round_robin_bucket_execution: false,
+      },
+      logger
+    );
+    expect(logger).toHaveBeenCalledWith(
+      'bucket_ranges 1-3 ignored because round_robin_bucket_execution is not enabled'
+    );
+  });
+
+  test('should not warn when bucket_ranges and round_robin both present', () => {
+    const logger = jest.fn();
+    validateBucketingConfig(
+      {
+        bucket_total: 5,
+        bucket_id: 1,
+        bucket_ranges: '1-3',
+        round_robin_bucket_execution: true,
+      },
+      logger
+    );
+    expect(logger).not.toHaveBeenCalled();
+  });
 });
 
 describe('getNextBucketId', () => {
@@ -196,5 +226,20 @@ describe('applyRoundRobinBucketing', () => {
 
     expect(result.config.other_prop).toBe('value');
     expect(result.config.round_robin_bucket_execution).toBe(true);
+  });
+
+  test('should ignore bucket_ranges when round robin is disabled', () => {
+    const config = {
+      round_robin_bucket_execution: false,
+      bucket_total: 5,
+      bucket_ranges: '2-4',
+      bucket_id: 1,
+    };
+    const state = {someField: 'test-value'};
+
+    const result = applyRoundRobinBucketing(config, state);
+
+    expect(result.config).toEqual(config);
+    expect(result.state).toEqual(state);
   });
 });
