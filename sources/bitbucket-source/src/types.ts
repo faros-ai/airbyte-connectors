@@ -1,8 +1,9 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
+import {RoundRobinConfig} from 'faros-airbyte-common/common';
 
 import {RunMode} from './streams/common';
 
-export interface BitbucketConfig extends AirbyteConfig {
+export interface BitbucketConfig extends AirbyteConfig, RoundRobinConfig {
   readonly api_url?: string;
   readonly username?: string;
   readonly password?: string;
@@ -14,9 +15,6 @@ export interface BitbucketConfig extends AirbyteConfig {
   readonly run_mode?: RunMode;
   readonly custom_streams?: ReadonlyArray<string>;
   readonly page_size?: number;
-  readonly bucket_id?: number;
-  readonly bucket_total?: number;
-  readonly round_robin_bucket_execution?: boolean;
   readonly concurrency_limit?: number;
   readonly cutoff_days?: number;
   readonly start_date?: string;
