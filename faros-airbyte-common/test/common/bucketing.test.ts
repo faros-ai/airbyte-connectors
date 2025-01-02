@@ -7,27 +7,33 @@ import {
 
 describe('validateBucketingConfig', () => {
   test('should not throw for valid config', () => {
-    expect(() => validateBucketingConfig(1, 1)).not.toThrow();
-    expect(() => validateBucketingConfig(2, 3)).not.toThrow();
-    expect(() => validateBucketingConfig(5, 5)).not.toThrow();
+    expect(() =>
+      validateBucketingConfig({bucket_total: 1, bucket_id: 1})
+    ).not.toThrow();
+    expect(() =>
+      validateBucketingConfig({bucket_total: 3, bucket_id: 2})
+    ).not.toThrow();
+    expect(() =>
+      validateBucketingConfig({bucket_total: 5, bucket_id: 5})
+    ).not.toThrow();
   });
 
   test('should throw for invalid bucket_total', () => {
-    expect(() => validateBucketingConfig(1, 0)).toThrow(
-      'bucket_total must be a positive integer'
-    );
-    expect(() => validateBucketingConfig(1, -1)).toThrow(
-      'bucket_total must be a positive integer'
-    );
+    expect(() =>
+      validateBucketingConfig({bucket_total: 0, bucket_id: 1})
+    ).toThrow('bucket_total must be a positive integer');
+    expect(() =>
+      validateBucketingConfig({bucket_total: -1, bucket_id: 1})
+    ).toThrow('bucket_total must be a positive integer');
   });
 
   test('should throw for invalid bucket_id', () => {
-    expect(() => validateBucketingConfig(0, 5)).toThrow(
-      'bucket_id must be between 1 and 5'
-    );
-    expect(() => validateBucketingConfig(6, 5)).toThrow(
-      'bucket_id must be between 1 and 5'
-    );
+    expect(() =>
+      validateBucketingConfig({bucket_total: 5, bucket_id: 0})
+    ).toThrow('bucket_id must be between 1 and 5');
+    expect(() =>
+      validateBucketingConfig({bucket_total: 5, bucket_id: 6})
+    ).toThrow('bucket_id must be between 1 and 5');
   });
 });
 

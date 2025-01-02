@@ -25,10 +25,10 @@ export function bucket(key: string, data: string, bucketTotal: number): number {
   return (parseInt(hex, 16) % bucketTotal) + 1; // 1-index for readability
 }
 
-export function validateBucketingConfig(
-  bucketId: number = 1,
-  bucketTotal: number = 1
-): void {
+export function validateBucketingConfig(config: RoundRobinConfig): void {
+  const bucketTotal = config.bucket_total ?? 1;
+  const bucketId = config.bucket_id ?? 1;
+
   if (bucketTotal < 1) {
     throw new VError('bucket_total must be a positive integer');
   }
