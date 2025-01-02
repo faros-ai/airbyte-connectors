@@ -8,29 +8,15 @@ AirbyteSpec {
         "debug": Object {
           "default": false,
           "description": "Enable debug mode",
-          "order": 1002,
+          "order": 1000,
           "title": "Debug",
           "type": "boolean",
         },
         "faros_source_id": Object {
           "description": "The ID of the source (aka account)",
-          "order": 1003,
+          "order": 1001,
           "title": "The source ID",
           "type": "string",
-        },
-        "max_slice_failures": Object {
-          "default": 0,
-          "description": "The maximum number of slice failures before a stream sync fails. Use -1 for unlimited",
-          "order": 1001,
-          "title": "Max Slice Failures",
-          "type": "integer",
-        },
-        "max_stream_failures": Object {
-          "default": 0,
-          "description": "The maximum number of stream failures before the sync fails. Use -1 for unlimited",
-          "order": 1000,
-          "title": "Max Stream Failures",
-          "type": "integer",
         },
         "prop1": Object {
           "type": "string",
