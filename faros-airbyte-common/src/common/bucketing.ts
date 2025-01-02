@@ -11,6 +11,7 @@ export interface BucketExecutionState {
 export interface RoundRobinConfig {
   round_robin_bucket_execution?: boolean;
   bucket_id?: number;
+  bucket_ranges?: string | ReadonlyArray<string>;
   bucket_total?: number;
   [key: string]: any;
 }
