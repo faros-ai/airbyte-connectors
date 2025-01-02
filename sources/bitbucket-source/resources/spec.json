@@ -11,7 +11,9 @@
         "type": "string",
         "title": "API URL",
         "description": "The API URL for fetching data from Bitbucket",
-        "examples": ["https://api.bitbucket.org/2.0"],
+        "examples": [
+          "https://api.bitbucket.org/2.0"
+        ],
         "default": "https://api.bitbucket.org/2.0"
       },
       "username": {
@@ -42,7 +44,9 @@
         },
         "title": "Workspaces",
         "description": "List of Workspaces from which to fetch data. If none passed, all visible workspaces for the authenticated user will be used.",
-        "examples": ["blaze-lib"]
+        "examples": [
+          "blaze-lib"
+        ]
       },
       "excluded_workspaces": {
         "order": 6,
@@ -52,7 +56,9 @@
         },
         "title": "Excluded Workspaces",
         "description": "List of Workspaces from which data won't be fetched. By default, no workspaces are excluded. If workspaces list is specified, this list will be ignored.",
-        "examples": ["blaze-lib"]
+        "examples": [
+          "blaze-lib"
+        ]
       },
       "repositories": {
         "order": 7,
@@ -62,17 +68,21 @@
         },
         "title": "Repositories",
         "description": "List of Bitbucket repositories in the format 'workspace/repo-slug'. If none are provided, data from all repositories for the specified workspaces will be pulled.",
-        "examples": ["blaze-lib/blaze"]
+        "examples": [
+          "blaze-lib/blaze"
+        ]
       },
       "excluded_repositories": {
-          "order": 8,
-          "type": "array",
-          "items": {
+        "order": 8,
+        "type": "array",
+        "items": {
           "type": "string"
-          },
-          "title": "Excluded Repositories",
-          "description": "List of Repositories from which data won't be fetched. By default, no repositories are excluded. If repositories list is specified, this list will be ignored.",
-          "examples": ["blaze-lib/blaze"]
+        },
+        "title": "Excluded Repositories",
+        "description": "List of Repositories from which data won't be fetched. By default, no repositories are excluded. If repositories list is specified, this list will be ignored.",
+        "examples": [
+          "blaze-lib/blaze"
+        ]
       },
       "cutoff_days": {
         "order": 9,
@@ -152,8 +162,22 @@
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
-      "concurrency_limit": {
+      "bucket_ranges": {
         "order": 19,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "1-3",
+          "5",
+          "7-9"
+        ]
+      },
+      "concurrency_limit": {
+        "order": 20,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",

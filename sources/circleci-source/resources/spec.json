@@ -124,8 +124,22 @@
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
-      "cutoff_days": {
+      "bucket_ranges": {
         "order": 15,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "1-3",
+          "5",
+          "7-9"
+        ]
+      },
+      "cutoff_days": {
+        "order": 16,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
