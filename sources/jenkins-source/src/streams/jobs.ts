@@ -9,7 +9,10 @@ import {Dictionary} from 'ts-essentials';
 import {Jenkins, JenkinsConfig, Job} from '../jenkins';
 
 export class Jobs extends AirbyteStreamBase {
-  constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: JenkinsConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 

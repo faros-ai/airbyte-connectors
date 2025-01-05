@@ -13,6 +13,7 @@
     "clean": "turbo run clean && rm -rf node_modules out",
     "fix": "turbo run fix",
     "lint": "turbo run lint",
+    "prepare": "husky install",
     "test": "turbo run test",
     "test-cov": "turbo run test-cov"
   },

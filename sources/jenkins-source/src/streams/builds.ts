@@ -9,7 +9,10 @@ import {Dictionary} from 'ts-essentials';
 import {Build, Jenkins, JenkinsConfig, JenkinsState} from '../jenkins';
 
 export class Builds extends AirbyteStreamBase {
-  constructor(readonly config: JenkinsConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: JenkinsConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
@@ -30,7 +33,7 @@ export class Builds extends AirbyteStreamBase {
   ): AsyncGenerator<Build, any, any> {
     const jenkins = Jenkins.instance(this.config, this.logger);
     const state =
-      syncMode === SyncMode.INCREMENTAL ? streamState ?? null : null;
+      syncMode === SyncMode.INCREMENTAL ? (streamState ?? null) : null;
 
     yield* jenkins.syncBuilds(this.config, state);
   }

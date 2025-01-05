@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
-import {getCICDArtifactsFromCommitShas, ArtifactKey} from '../common/cicd';
+import {ArtifactKey, getCICDArtifactsFromCommitShas} from '../common/cicd';
 import {
   Vulnerability as VulnerabilityCommon,
   VulnerabilityIdentifier,

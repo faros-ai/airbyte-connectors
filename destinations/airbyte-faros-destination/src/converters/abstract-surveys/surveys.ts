@@ -1,7 +1,7 @@
 import {createHash} from 'crypto';
 import {AirbyteRecord, toDate} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
-import _ from 'lodash';
+import _, {pick} from 'lodash';
 
 import {
   Converter,
@@ -214,8 +214,8 @@ export abstract class AbstractSurveys extends Converter {
       res.push({
         model: 'survey_TeamMembership',
         record: {
-          member: _.pick(surveyUser, ['uid', 'source']),
-          team: _.pick(surveyTeam, ['uid', 'source']),
+          member: pick(surveyUser, ['uid', 'source']),
+          team: pick(surveyTeam, ['uid', 'source']),
         },
       });
     }
@@ -365,10 +365,7 @@ export abstract class AbstractSurveys extends Converter {
 
       const res: DestinationRecord[] = [];
 
-      const questionResponse = AbstractSurveys.getColumnValue(
-        row,
-        question
-      )
+      const questionResponse = AbstractSurveys.getColumnValue(row, question);
 
       if (questionResponse) {
         const questionResponseRecord = {

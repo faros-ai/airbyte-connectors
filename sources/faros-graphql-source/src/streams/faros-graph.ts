@@ -193,7 +193,7 @@ export class FarosGraph extends AirbyteStreamBase {
       );
     }
 
-    this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
+    this.state = syncMode === SyncMode.INCREMENTAL ? (streamState ?? {}) : {};
     let refreshedAtMillis = 0;
     if (this.state[stateKey]) {
       refreshedAtMillis = this.state[stateKey].refreshedAtMillis;
