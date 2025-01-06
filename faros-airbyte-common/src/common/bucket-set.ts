@@ -42,7 +42,9 @@ export class BucketSet {
     const parts = range.split('-').map((p) => p.trim());
 
     if (parts.length > 2) {
-      throw new VError(`Invalid range format: ${range}`);
+      throw new VError(
+        `Invalid range format: ${range}. Valid formats are: single number (e.g., '7') or number range (e.g., '3-5')`
+      );
     }
 
     const start = parseInt(parts[0]);
