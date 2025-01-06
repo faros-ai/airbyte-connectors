@@ -221,75 +221,88 @@
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
-      "api_url": {
+      "bucket_ranges": {
         "order": 27,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "3-5",
+          "7"
+        ]
+      },
+      "api_url": {
+        "order": 28,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 28,
+        "order": 29,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 29,
+        "order": 30,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "use_sprints_reverse_search": {
-        "order": 30,
+        "order": 31,
         "type": "boolean",
         "title": "Use Sprints Reverse Search",
         "description": "Fetch closed sprints starting with most recent in backlog. Use this for Jira instances with a lots closed sprints and syncing sprints is slow.",
         "default": false
       },
       "backfill": {
-        "order": 31,
+        "order": 32,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 32,
+        "order": 33,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 33,
+        "order": 34,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
       },
       "fetch_teams": {
-        "order": 34,
+        "order": 35,
         "type": "boolean",
         "title": "Fetch Teams",
         "description": "Fetch teams from organization to populate teams and team memberships.",
         "default": false
       },
       "organization_id": {
-        "order": 35,
+        "order": 36,
         "type": "string",
         "title": "Organization ID",
         "description": "Atlassian organization ID for fetching teams. Required only when using Fetch Teams with Jira Cloud. See https://confluence.atlassian.com/jirakb/what-it-is-the-organization-id-and-where-to-find-it-1207189876.html for information on how to find it."
       },
       "use_faros_board_issue_tracker": {
-        "order": 36,
+        "order": 37,
         "type": "boolean",
         "title": "Use Board Issue Tracker",
         "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs. Requires faros_source_id to be configured.",
         "default": false
       },
       "source_qualifier": {
-        "order": 37,
+        "order": 38,
         "type": "string",
         "title": "Source Qualifier",
         "description": "The qualifier to append as a suffix to the Jira source name to ensure uniqueness among entities with similar IDs when syncing multiple Jira instances, while preserving their original IDs, e.g. for Boards and Sprints.",

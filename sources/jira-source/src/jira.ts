@@ -4,6 +4,7 @@ import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   bucket,
   normalizeString,
+  RoundRobinConfig,
   validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import {
@@ -45,7 +46,7 @@ import {JiraClient} from './client';
 import {IssueTransformer} from './issue_transformer';
 import {RunMode} from './streams/common';
 
-export interface JiraConfig extends AirbyteConfig {
+export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly url: string;
   readonly username?: string;
   readonly password?: string;
@@ -68,9 +69,6 @@ export interface JiraConfig extends AirbyteConfig {
   readonly cutoff_lag_days?: number;
   readonly run_mode?: RunMode;
   readonly custom_streams?: ReadonlyArray<string>;
-  readonly bucket_id?: number;
-  readonly bucket_total?: number;
-  readonly round_robin_bucket_execution?: boolean;
   readonly api_url?: string;
   readonly api_key?: string;
   readonly graph?: string;
@@ -216,7 +214,7 @@ export class Jira {
 
     const authentication = Jira.auth(cfg);
 
-    validateBucketingConfig(cfg.bucket_id, cfg.bucket_total);
+    validateBucketingConfig(cfg, logger.info.bind(logger));
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized:
