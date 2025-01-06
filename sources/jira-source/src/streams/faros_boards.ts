@@ -33,6 +33,8 @@ export class FarosBoards extends StreamWithProjectSlices {
       issueSync: false,
     };
 
+    // count the boards synced per project and then log the count
+    const boardIds = [];
     for (const board of await jira.getProjectBoards(projectKey)) {
       const boardId = toString(board.id);
       const {included, issueSync} =
@@ -44,7 +46,11 @@ export class FarosBoards extends StreamWithProjectSlices {
           projectKey,
           issueSync,
         };
+        boardIds.push(boardId);
       }
     }
+    this.logger.info(
+      `stats: project ${projectKey} - ${boardIds.length} boards: ${boardIds.join(', ')}`
+    );
   }
 }

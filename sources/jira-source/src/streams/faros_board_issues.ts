@@ -76,6 +76,12 @@ export class FarosBoardIssues extends StreamWithBoardSlices {
 
   override async onAfterRead(): Promise<void> {
     await this.updateBoardIssueTrackerState(this.boardIssueTrackerState);
+
+    for (const [boardId, issues] of Object.entries(
+      this.boardIssueTrackerState?.boardIssues ?? {}
+    )) {
+      this.logger.info(`stats: board ${boardId} - ${issues.length} issues.`);
+    }
   }
 
   private async updateBoardIssueTrackerState(
