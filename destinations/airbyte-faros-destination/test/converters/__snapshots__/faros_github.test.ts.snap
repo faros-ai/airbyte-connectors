@@ -8844,6 +8844,7 @@ Add any other context about the changes here.
         },
         "uid": "dora-employee-param",
       },
+      "sourceBranchName": "dora-employee-param",
       "state": Object {
         "category": "Merged",
         "detail": "MERGED",
@@ -8860,6 +8861,7 @@ Add any other context about the changes here.
         },
         "uid": "main",
       },
+      "targetBranchName": "main",
       "title": "DORA apps take optional employee uid param",
       "uid": "48",
       "updatedAt": "2021-02-16T17:15:29.000Z",
@@ -9102,6 +9104,7 @@ N/A
         },
         "uid": "nehanda/cleanup-apps",
       },
+      "sourceBranchName": "nehanda/cleanup-apps",
       "state": Object {
         "category": "Closed",
         "detail": "CLOSED",
@@ -9118,6 +9121,7 @@ N/A
         },
         "uid": "main",
       },
+      "targetBranchName": "main",
       "title": "Move apps with no feed support temporarily to internal",
       "uid": "47",
       "updatedAt": "2021-02-11T18:10:08.000Z",
@@ -9177,6 +9181,7 @@ N/A
         },
         "uid": "fix-edge-cases",
       },
+      "sourceBranchName": "fix-edge-cases",
       "state": Object {
         "category": "Merged",
         "detail": "MERGED",
@@ -9193,6 +9198,7 @@ N/A
         },
         "uid": "main",
       },
+      "targetBranchName": "main",
       "title": "Fix edge cases for deploy cycle breakdown",
       "uid": "46",
       "updatedAt": "2021-02-04T21:53:09.000Z",

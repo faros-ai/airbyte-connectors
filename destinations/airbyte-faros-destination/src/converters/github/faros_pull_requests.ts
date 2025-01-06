@@ -78,7 +78,15 @@ export class FarosPullRequests extends GitHubConverter {
     const targetBranch = this.collectBranch(pr.baseRefName, pr.baseRepository);
     // Ensure if we fail to get branch info we do not overwrite the previous branch info
     // since we should always have branches for a PR
-    const branchInfo = omitBy({sourceBranch, targetBranch}, isNil);
+    const branchInfo = omitBy(
+      {
+        sourceBranch,
+        sourceBranchName: sourceBranch?.name,
+        targetBranch,
+        targetBranchName: targetBranch?.name,
+      },
+      isNil
+    );
 
     const repoKey = GitHubCommon.repoKey(
       pr.org,
