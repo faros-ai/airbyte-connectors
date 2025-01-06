@@ -10,6 +10,7 @@ export {
   validateBucketingConfig,
   nextBucketId,
   applyRoundRobinBucketing,
+  RoundRobinConfig,
 } from './bucketing';
 
 // TODO: Try https://www.npmjs.com/package/diff
