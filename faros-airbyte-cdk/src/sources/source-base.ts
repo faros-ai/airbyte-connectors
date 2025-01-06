@@ -426,12 +426,14 @@ export abstract class AirbyteSourceBase<
       );
     }
 
-    const sliceFailurePct = failedSlices.length / totalSliceCount;
+    const sliceFailurePct =
+      totalSliceCount > 0 ? failedSlices.length / totalSliceCount : undefined;
     if (sliceFailurePct >= streamInstance.sliceErrorPctForFailure) {
       this.logger.error(
         `Exceeded slice failure threshold for ${streamName} stream:` +
-          ` ${Math.floor(sliceFailurePct * 100)}% of slices has failed.` +
-          ` Minimum threshold is ${streamInstance.sliceErrorPctForFailure * 100}%`
+          ` ${Math.floor(sliceFailurePct * 100)}% of slices -` +
+          ` ${failedSlices.length} out of ${totalSliceCount} - have failed.` +
+          ` Maximum threshold is ${streamInstance.sliceErrorPctForFailure * 100}%`
       );
       throw new VError(
         `Exceeded slice failure threshold for ${streamName} stream`
