@@ -63,13 +63,3 @@ export function wrapApiError(error: Error, message?: string): Error {
   }
   return new VError({info}, msg);
 }
-
-// Used to notify the destination of an error without failing the sync
-export class NonFatalError extends VError {
-  constructor(message: string, info = {}, cause?: Error) {
-    super(
-      {name: 'NonFatalError', cause, info: {...info, fatal: false}},
-      message
-    );
-  }
-}
