@@ -28,14 +28,14 @@
         "airbyte_secret": true
       },
       "debug": {
-        "order": 1002,
+        "order": 1000,
         "type": "boolean",
         "title": "Debug",
         "description": "Enable debug mode",
         "default": false
       },
       "faros_source_id": {
-        "order": 1003,
+        "order": 1001,
         "type": "string",
         "title": "The source ID",
         "description": "The ID of the source (aka account)"
