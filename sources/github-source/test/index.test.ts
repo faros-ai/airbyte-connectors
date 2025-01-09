@@ -241,9 +241,13 @@ describe('index', () => {
   });
 
   test('streams - copilot usage without teams', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_preview_api: true,
+    };
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: config,
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -255,7 +259,8 @@ describe('index', () => {
               new ErrorWithStatus(400, 'API not available')
             )
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -268,9 +273,13 @@ describe('index', () => {
   });
 
   test('streams - copilot usage with teams', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      copilot_metrics_preview_api: true,
+    };
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: config,
       catalogOrPath: 'copilot_usage/catalog.json',
       stateOrPath: {
         faros_copilot_usage: {
@@ -290,7 +299,8 @@ describe('index', () => {
               readTestResourceAsJSON('copilot_usage/copilot_usage.json')
             )
           ),
-          logger
+          logger,
+          config
         );
       },
       checkRecordsData: (records) => {
@@ -303,13 +313,9 @@ describe('index', () => {
   });
 
   test('streams - copilot usage without teams (GA API)', async () => {
-    const config = {
-      ...readTestResourceAsJSON('config.json'),
-      copilot_metrics_ga: true,
-    };
     await sourceReadTest({
       source,
-      configOrPath: config,
+      configOrPath: 'config.json',
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -321,8 +327,7 @@ describe('index', () => {
               new ErrorWithStatus(400, 'API not available')
             )
           ),
-          logger,
-          config
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -332,13 +337,9 @@ describe('index', () => {
   });
 
   test('streams - copilot usage with teams (GA API)', async () => {
-    const config = {
-      ...readTestResourceAsJSON('config.json'),
-      copilot_metrics_ga: true,
-    };
     await sourceReadTest({
       source,
-      configOrPath: config,
+      configOrPath: 'config.json',
       catalogOrPath: 'copilot_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
@@ -353,8 +354,7 @@ describe('index', () => {
               readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
             )
           ),
-          logger,
-          config
+          logger
         );
       },
       checkRecordsData: (records) => {
@@ -370,20 +370,20 @@ describe('index', () => {
       catalogOrPath: 'copilot_usage/catalog.json',
       stateOrPath: {
         faros_copilot_usage: {
-          github: {cutoff: new Date('2023-10-16').getTime()},
+          github: {cutoff: new Date('2024-06-24').getTime()},
         },
       },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
           merge(
-            getCopilotUsageForOrgMockedImplementation(
-              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            getCopilotUsageForOrgGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
             ),
             getTeamsMockedImplementation(
               readTestResourceAsJSON('teams/teams.json')
             ),
-            getCopilotUsageForTeamMockedImplementation(
-              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
+            getCopilotUsageForTeamGAMockedImplementation(
+              readTestResourceAsJSON('copilot_usage/copilot_usage_ga.json')
             )
           ),
           logger

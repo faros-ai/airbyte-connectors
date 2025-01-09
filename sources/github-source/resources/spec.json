@@ -210,11 +210,11 @@
         "description": "Fix the licenses dates for Copilot seats when using team assignments (requires Audit Log API)",
         "default": true
       },
-      "copilot_metrics_ga": {
+      "copilot_metrics_preview_api": {
         "order": 15,
         "type": "boolean",
-        "title": "Copilot Metrics GA",
-        "description": "Use Copilot Metrics GA API instead of Copilot Usage Beta API",
+        "title": "Copilot Metrics Preview API",
+        "description": "Use Copilot Metrics Preview API (/usage) instead of Copilot Metrics GA API (/metrics)",
         "default": false
       },
       "cutoff_days": {
