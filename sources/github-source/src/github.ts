@@ -104,7 +104,7 @@ export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
-export const DEFAULT_COPILOT_METRICS_GA = false;
+export const DEFAULT_COPILOT_METRICS_PREVIEW_API = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -137,7 +137,7 @@ export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
-  protected readonly copilotMetricsGA: boolean;
+  protected readonly copilotMetricsPreviewAPI: boolean;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -157,8 +157,8 @@ export abstract class GitHub {
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
-    this.copilotMetricsGA =
-      config.copilot_metrics_ga ?? DEFAULT_COPILOT_METRICS_GA;
+    this.copilotMetricsPreviewAPI =
+      config.copilot_metrics_preview_api ?? DEFAULT_COPILOT_METRICS_PREVIEW_API;
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -1073,32 +1073,19 @@ export abstract class GitHub {
     cutoffDate: number
   ): AsyncGenerator<CopilotUsageSummary> {
     let data: CopilotUsageResponse;
-    let useBetaAPI = false;
     try {
-      if (this.copilotMetricsGA) {
-        // try to use GA API first
-        try {
-          const res: OctokitResponse<CopilotMetricsResponse> =
-            await this.octokit(org).request(this.octokit(org).copilotMetrics, {
-              org,
-            });
-          data = transformCopilotMetricsResponse(res.data);
-        } catch (err: any) {
-          if (err.message) {
-            this.logger.warn(err.message);
-          }
-          this.logger.warn(
-            'Failed to use Copilot Metrics API. Will use Copilot Usage API (beta) as fallback'
-          );
-        }
-      }
-      if (!data) {
-        // try to use beta API as fallback (supposed to be available until EOY24)
+      if (!this.copilotMetricsPreviewAPI) {
+        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+          org
+        ).request(this.octokit(org).copilotMetrics, {
+          org,
+        });
+        data = transformCopilotMetricsResponse(res.data);
+      } else {
         const res = await this.octokit(org).copilot.usageMetricsForOrg({
           org,
         });
         data = res.data;
-        useBetaAPI = true;
       }
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
@@ -1121,15 +1108,14 @@ export abstract class GitHub {
           ...usage,
         };
       }
-      yield* this.getCopilotUsageTeams(org, useBetaAPI);
+      yield* this.getCopilotUsageTeams(org);
     } catch (err: any) {
       this.handleCopilotError(err, org, 'usage');
     }
   }
 
   async *getCopilotUsageTeams(
-    org: string,
-    useBetaAPI: boolean
+    org: string
   ): AsyncGenerator<CopilotUsageSummary> {
     let teams: ReadonlyArray<Team>;
     try {
@@ -1145,13 +1131,7 @@ export abstract class GitHub {
     }
     for (const team of teams) {
       let data: CopilotUsageResponse;
-      if (useBetaAPI) {
-        const res = await this.octokit(org).copilot.usageMetricsForTeam({
-          org,
-          team_slug: team.slug,
-        });
-        data = res.data;
-      } else {
+      if (!this.copilotMetricsPreviewAPI) {
         const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
           org
         ).request(this.octokit(org).copilotMetricsForTeam, {
@@ -1159,6 +1139,12 @@ export abstract class GitHub {
           team_slug: team.slug,
         });
         data = transformCopilotMetricsResponse(res.data);
+      } else {
+        const res = await this.octokit(org).copilot.usageMetricsForTeam({
+          org,
+          team_slug: team.slug,
+        });
+        data = res.data;
       }
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
