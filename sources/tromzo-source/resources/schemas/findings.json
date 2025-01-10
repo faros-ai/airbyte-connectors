@@ -29,6 +29,9 @@
     "sourcePath": {
       "type": "string"
     },
+    "url": {
+      "type": "string"
+    },
     "vulnerableVersion": {
       "type": "string"
     },
@@ -49,6 +52,12 @@
         },
         "fixAvailable": {
           "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
