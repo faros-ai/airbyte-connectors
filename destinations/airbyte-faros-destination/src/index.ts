@@ -42,3 +42,5 @@ export {
   StreamNameSeparator,
 } from './converters/converter';
 export {FarosDestinationRunner} from './destination-runner';
+
+export {GraphQLClient, GraphQLBackend} from './common/graphql-client';
