@@ -11,6 +11,7 @@ query getFindings($offset: Int, $first: Int, $q: String) {
         scannerDismissedAt
         sourceFilename
         sourcePath
+        url
         vulnerableVersion
         vulnerability {
           severity
@@ -18,6 +19,8 @@ query getFindings($offset: Int, $first: Int, $q: String) {
           ghsa
           score
           fixAvailable
+          summary
+          description
         }
         status
         scannerStatus
