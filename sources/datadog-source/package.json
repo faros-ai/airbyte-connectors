@@ -32,7 +32,7 @@
   "dependencies": {
     "@datadog/datadog-api-client": "1.24.0",
     "axios": "^1.7.4",
-    "commander": "^9.3.0",
+    "commander": "^13.0.0",
     "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },
