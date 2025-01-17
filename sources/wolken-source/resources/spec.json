@@ -1,0 +1,104 @@
+{
+  "documentationUrl": "https://docs.wolkensoft.com",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Wolken Spec",
+    "type": "object",
+    "required": [
+      "base_url",
+      "domain",
+      "auth_code",
+      "refresh_token",
+      "client_id",
+      "service_account"
+    ],
+    "properties": {
+      "base_url": {
+        "order": 0,
+        "type": "string",
+        "title": "Base URL",
+        "description": "Wolken base URL",
+        "examples": ["https://api.wolkensoft.com"]
+      },
+      "domain": {
+        "order": 1,
+        "type": "string",
+        "title": "Domain",
+        "description": "Wolken domain name"
+      },
+      "auth_code": {
+        "order": 2,
+        "type": "string",
+        "title": "Auth Code",
+        "description": "Wolken authentication code for Basic Auth",
+        "airbyte_secret": true
+      },
+      "refresh_token": {
+        "order": 3,
+        "type": "string",
+        "title": "Refresh Token",
+        "description": "OAuth refresh token for authentication",
+        "airbyte_secret": true
+      },
+      "client_id": {
+        "order": 4,
+        "type": "string",
+        "title": "Client ID",
+        "description": "Wolken client identifier"
+      },
+      "service_account": {
+        "order": 5,
+        "type": "string",
+        "title": "Service Account",
+        "description": "Service account identifier"
+      },
+      "cutoff_days": {
+        "order": 6,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch data updated after cutoff.",
+        "default": 90
+      },
+      "page_size": {
+        "order": 7,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of records to request from the API per call.",
+        "default": 100
+      },
+      "api_timeout": {
+        "order": 8,
+        "type": "integer",
+        "title": "API Timeout",
+        "description": "Timeout (in milliseconds) to use when making requests to Asana API. 0 means no timeout.",
+        "default": 0
+      },
+      "max_retries": {
+        "order": 9,
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Asana API.",
+        "default": 3
+      },
+      "backfill": {
+        "order": 10,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 11,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "order": 12,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      }
+    }
+  }
+} 
