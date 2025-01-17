@@ -36,6 +36,7 @@
     "./github/queries": "./lib/github/queries.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
+    "./wolken": "./lib/wolken/index.js",
     "./xray": "./lib/xray/index.js"
   },
   "typesVersions": {
@@ -69,6 +70,9 @@
       ],
       "vanta": [
           "./lib/vanta/index.d.ts"
+      ],
+      "wolken": [
+        "./lib/wolken/index.d.ts"
       ],
       "xray": [
         "./lib/xray/index.d.ts"
