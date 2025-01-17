@@ -2,12 +2,12 @@ import {Command} from 'commander';
 import {
   AirbyteConfiguredCatalog,
   AirbyteSourceBase,
+  AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
 import VError from 'verror';
 import {
   calculateDateRange,

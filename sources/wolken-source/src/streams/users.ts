@@ -1,4 +1,4 @@
-import {AirbyteLogger, AirbyteStreamBase, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/wolken';
 import {Dictionary} from 'ts-essentials';
 

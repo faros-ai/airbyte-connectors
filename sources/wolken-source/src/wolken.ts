@@ -102,7 +102,7 @@ export class Wolken {
           return this.httpClient(config);
         }
 
-        return Promise.reject(error);
+        return Promise.reject(new VError(error));
       }
     );
   }
@@ -186,16 +186,15 @@ export class Wolken {
         const users = response?.data?.data ?? [];
 
         this.logger.info(`Fetched ${users.length} users`);
+
         if (!users?.length) {
           done = true;
-          break;
+        } else {
+          for (const user of users) {
+            yield user;
+          }
+          offset += this.pageSize;
         }
-
-        for (const user of users) {
-          yield user;
-        }
-
-        offset += this.pageSize;
       }
     } catch (error: any) {
       throw new VError(error, `Failed to get users: ${error.message}`);
