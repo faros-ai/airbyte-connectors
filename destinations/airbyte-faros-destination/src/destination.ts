@@ -27,6 +27,12 @@ import {
 } from 'faros-airbyte-cdk';
 import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
 import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
+import {
+  GraphQLClient,
+  GraphQLWriter,
+  StreamNameSeparator,
+  WriteStats,
+} from 'faros-js-client';
 import http from 'http';
 import https from 'https';
 import {difference, isEmpty, keyBy, pickBy, uniq} from 'lodash';
@@ -37,14 +43,11 @@ import {Dictionary} from 'ts-essentials';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
-import {GraphQLClient} from './common/graphql-client';
-import {GraphQLWriter} from './common/graphql-writer';
 import {
   DestinationConfig,
   Edition,
   InvalidRecordStrategy,
 } from './common/types';
-import {WriteStats} from './common/write-stats';
 import {HasuraBackend} from './community/hasura-backend';
 import {
   Converter,
@@ -52,7 +55,6 @@ import {
   parseObjectConfig,
   StreamContext,
   StreamName,
-  StreamNameSeparator,
 } from './converters/converter';
 import {ConverterRegistry} from './converters/converter-registry';
 import {JSONataApplyMode, JSONataConverter} from './converters/jsonata';
@@ -492,12 +494,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
     }
 
-    const {
-      streams,
-      deleteModelEntries,
-      resetModelsByStream,
-      converterDependencies,
-    } = this.initStreamsCheckConverters(catalog);
+    const {streams, resetModelsByStream, converterDependencies} =
+      this.initStreamsCheckConverters(catalog);
 
     const streamsSyncMode: Dictionary<DestinationSyncMode> = {};
     for (const stream of Object.keys(streams)) {
