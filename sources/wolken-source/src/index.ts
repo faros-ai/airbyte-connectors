@@ -8,10 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
-import {
-  calculateDateRange,
-} from 'faros-airbyte-common/common';
+
+import {Incidents} from './streams/incidents';
 import {Users} from './streams/users';
 import {DEFAULT_CUTOFF_DAYS, Wolken, WolkenConfig} from './wolken';
 
@@ -43,7 +43,7 @@ export class WolkenSource extends AirbyteSourceBase<WolkenConfig> {
   }
 
   streams(config: WolkenConfig): AirbyteStreamBase[] {
-    return [new Users(config, this.logger)];
+    return [new Incidents(config, this.logger), new Users(config, this.logger)];
   }
 
   async onBeforeRead(

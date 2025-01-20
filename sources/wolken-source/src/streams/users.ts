@@ -20,8 +20,7 @@ export class Users extends AirbyteStreamBase {
     return 'userId';
   }
 
-  async *readRecords(
-  ): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<User> {
     const wolken = Wolken.instance(this.config, this.logger);
     yield* wolken.getUsers();
   }
