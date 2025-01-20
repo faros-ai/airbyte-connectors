@@ -9,3 +9,52 @@ export interface User {
   readonly activeUser: boolean;
   readonly hireDate: string;
 }
+
+export interface CIRequest {
+  pkey: number;
+  ciId: number;
+  ciName: string;
+  ciTypeId: number;
+  ciTypeName: string;
+}
+
+export interface Incident {
+  ticketId: number;
+  ticketFormattedId: string;
+  originId: number;
+  originName: string;
+  subject: string;
+  createdTime: string;
+  requesterId: number;
+  requesterName: string;
+  creatorId: number;
+  creatorName: string;
+  unitId: number;
+  unitName: string;
+  categoryId: number;
+  categoryName: string;
+  subCategoryId: number;
+  subCategoryName: string;
+  itemId: number;
+  itemName: string;
+  teamId: number;
+  teamName: string;
+  priorityId: number;
+  priorityName: string;
+  impactId: number;
+  impactName: string;
+  urgencyId: number;
+  urgencyName: string;
+  assignedUserId: string;
+  assignedUserName: string;
+  assignedUserPsNo: string;
+  updatedTimestamp: string;
+  statusName: string;
+  subStatusName: string;
+  statusId: number;
+  subStatusId: number;
+  lastUpdatedByUser: string;
+  lastUpdatedByUserId: number;
+  flexData: any[];
+  ciRequestList: CIRequest[];
+}

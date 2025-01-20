@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/wolken';
+import {Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {VError} from 'verror';
 
@@ -32,8 +32,12 @@ interface TokenResponse {
   refresh_token: string;
   expires_in: number;
 }
+interface TokenManager {
+  getAccessToken(): Promise<string>;
+  refreshAccessToken(): Promise<string>;
+}
 
-export class TokenManager {
+export class WolkenTokenManager implements TokenManager {
   private accessToken?: string;
 
   constructor(
@@ -145,7 +149,7 @@ export class Wolken {
       10000
     );
 
-    const tokenManager = new TokenManager(
+    const tokenManager = new WolkenTokenManager(
       httpClient,
       config.refresh_token,
       config.auth_code,
@@ -169,7 +173,7 @@ export class Wolken {
     });
   }
 
-  async *getUsers(): AsyncGenerator<User> {
+  private async *paginate<T>(endpoint: string, params = {}): AsyncGenerator<T> {
     let offset = 0;
     const token = await this.tokenManager.getAccessToken();
 
@@ -177,27 +181,50 @@ export class Wolken {
       let done = false;
       while (!done) {
         const response = await this.httpClient.get(
-          `/api/masters/user/${this.pageSize}/${offset}`,
+          `${endpoint}/${this.pageSize}/${offset}`,
           {
             headers: {Authorization: `Bearer ${token}`},
+            params,
           }
         );
 
-        const users = response?.data?.data ?? [];
+        const items = response?.data?.data ?? [];
 
-        this.logger.info(`Fetched ${users.length} users`);
+        this.logger.info(`Fetched ${items.length} items from ${endpoint}`);
 
-        if (!users?.length) {
+        if (!items?.length) {
           done = true;
         } else {
-          for (const user of users) {
-            yield user;
+          for (const item of items) {
+            yield item;
           }
           offset += this.pageSize;
         }
       }
     } catch (error: any) {
-      throw new VError(error, `Failed to get users: ${error.message}`);
+      throw new VError(
+        error,
+        `Failed to fetch data from ${endpoint}: ${error.message}`
+      );
     }
+  }
+
+  async *getUsers(): AsyncGenerator<User> {
+    yield* this.paginate<User>('/api/masters/user');
+  }
+
+  async *getIncidents(
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<Incident> {
+    const params = {};
+    if (startDate) {
+      params['updatedTimeGTE'] = startDate.getTime();
+    }
+    if (endDate) {
+      params['updatedTimeLT'] = endDate.getTime();
+    }
+
+    yield* this.paginate<Incident>('/api/incidents', params);
   }
 }
