@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`wolken users users 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__wolken__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 1 records",
+  "Would write records by model: {\\\\\\"ims_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`wolken users users 2`] = `
+Array [
+  Object {
+    "ims_User": Object {
+      "email": "test.user@company.com",
+      "name": "John Smith",
+      "source": "Wolken",
+      "uid": "12345",
+    },
+  },
+]
+`;
