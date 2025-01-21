@@ -18,7 +18,7 @@ Array [
       "email": "test.user@company.com",
       "name": "John Smith",
       "source": "Wolken",
-      "uid": 12345,
+      "uid": "12345",
     },
   },
 ]

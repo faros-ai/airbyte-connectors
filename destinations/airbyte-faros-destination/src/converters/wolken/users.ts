@@ -22,7 +22,7 @@ export class Users extends Converter {
       {
         model: 'ims_User',
         record: {
-          uid: user.userId,
+          uid: user.userId.toString(),
           email: user.userEmail ?? user.userPsNo,
           name: `${user.userFname} ${user.userLname}`,
           source,
