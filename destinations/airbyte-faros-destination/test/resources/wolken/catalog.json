@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__wolken__users"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

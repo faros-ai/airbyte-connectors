@@ -1,0 +1,1 @@
+{"record":{"stream":"mytestsource__wolken__users","emitted_at":1737485202928,"data":{"userId":12345,"userPsNo":"test.user@company.com","userFname":"John","userLname":"Smith","userEmail":"test.user@company.com","userPhno":"","userMobno":"","activeUser":true,"hireDate":"2023-03-20 00:00:00"}},"type":"RECORD"}

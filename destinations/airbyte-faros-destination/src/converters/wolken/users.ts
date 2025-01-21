@@ -1,0 +1,33 @@
+import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/wolken';
+
+import {Converter, DestinationModel, DestinationRecord} from '../converter';
+
+export class Users extends Converter {
+  source = 'Wolken';
+
+  id(record: AirbyteRecord) {
+    return record?.record?.data?.userId;
+  }
+
+  readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
+
+  async convert(
+    record: AirbyteRecord
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const source = this.streamName.source;
+    const user = record.record.data as User;
+
+    return [
+      {
+        model: 'ims_User',
+        record: {
+          uid: user.userId,
+          email: user.userEmail ?? user.userPsNo,
+          name: `${user.userFname} ${user.userLname}`,
+          source,
+        },
+      },
+    ];
+  }
+}
