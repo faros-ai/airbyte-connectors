@@ -6,25 +6,19 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {
-  createIncrementalQueriesV1,
   createIncrementalQueriesV2,
-  paginatedQuery,
+  FarosClient,
   paginatedQueryV2,
   PathToModel,
-  pathToModelV1,
   pathToModelV2,
-  QueryAdapter,
-  toIncrementalV1,
   toIncrementalV2,
 } from 'faros-js-client';
-import {FarosClient} from 'faros-js-client';
 import * as gql from 'graphql';
 import {omit} from 'lodash';
 import _ from 'lodash';
 import {Dictionary} from 'ts-essentials';
-import zlib from 'zlib';
 
-import {GraphQLConfig, GraphQLVersion, ResultModel} from '..';
+import {GraphQLConfig, ResultModel} from '..';
 import {Nodes} from '../nodes';
 
 export const DEFAULT_BUCKET_ID = 1;
@@ -52,7 +46,6 @@ type StreamSlice = {
 export class FarosGraph extends AirbyteStreamBase {
   private state: GraphQLState;
   private nodes: Nodes;
-  private legacyV1Schema: gql.GraphQLSchema;
   private readonly bucketId: number;
   private readonly bucketTotal: number;
 
@@ -62,24 +55,12 @@ export class FarosGraph extends AirbyteStreamBase {
     readonly faros: FarosClient
   ) {
     super(logger);
-
-    if (config.adapt_v1_query) {
-      const schemaAsString = zlib
-        .gunzipSync(Buffer.from(this.config.legacy_v1_schema, 'base64'))
-        .toString();
-      this.legacyV1Schema = gql.buildSchema(schemaAsString);
-    }
-
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
   }
 
   private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
-    const modelPath =
-      this.config.graphql_api === GraphQLVersion.V1 ||
-      this.config.adapt_v1_query
-        ? pathToModelV1(query, schema)
-        : pathToModelV2(query, schema);
+    const modelPath = pathToModelV2(query, schema);
     const nodeIdPaths: string[][] = [];
     const fieldPath: string[] = [];
     gql.visit(gql.parse(query), {
@@ -121,27 +102,19 @@ export class FarosGraph extends AirbyteStreamBase {
       yield {
         query: this.config.query,
         incremental: false,
-        queryPaths: this.config.adapt_v1_query
-          ? this.queryPaths(this.config.query, this.legacyV1Schema)
-          : this.queryPaths(this.config.query, schema),
+        queryPaths: this.queryPaths(this.config.query, schema),
       };
     } else {
       const queries = [];
-      if (this.config.graphql_api === GraphQLVersion.V1) {
-        // Don't pass in primary keys so that node IDs are used instead
-        // We'll decode them to primary keys as we iterate over the data
-        queries.push(...createIncrementalQueriesV1(schema, {}, false));
-      } else {
-        const gqlSchemaV2 = await this.faros.gqlSchema(this.config.graph);
-        queries.push(
-          ...createIncrementalQueriesV2(
-            schema,
-            gqlSchemaV2.primaryKeys,
-            gqlSchemaV2.references,
-            false
-          )
-        );
-      }
+      const gqlSchemaV2 = await this.faros.gqlSchema(this.config.graph);
+      queries.push(
+        ...createIncrementalQueriesV2({
+          graphSchema: schema,
+          primaryKeys: gqlSchemaV2.primaryKeys,
+          references: gqlSchemaV2.references,
+          scalarsOnly: false,
+        })
+      );
       this.logger.debug(
         `No query specified. Will execute ${queries.length} queries to fetch all models`
       );
@@ -193,7 +166,7 @@ export class FarosGraph extends AirbyteStreamBase {
       );
     }
 
-    this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
+    this.state = syncMode === SyncMode.INCREMENTAL ? (streamState ?? {}) : {};
     let refreshedAtMillis = 0;
     if (this.state[stateKey]) {
       refreshedAtMillis = this.state[stateKey].refreshedAtMillis;
@@ -211,18 +184,7 @@ export class FarosGraph extends AirbyteStreamBase {
         this.logger.debug(
           `Query is not in incremental format, it will be converted`
         );
-
-        // No need to convert the V1 query to incremental
-        // if it is going to be converted to V2 in the adapter.
-        // We will convert to V2 incremental in the adapter
-        if (!this.config.adapt_v1_query) {
-          if (this.config.graphql_api === GraphQLVersion.V1) {
-            modifiedQuery = toIncrementalV1(query);
-          } else {
-            modifiedQuery = toIncrementalV2(query);
-          }
-        }
-
+        modifiedQuery = toIncrementalV2(query);
         this.logger.debug(
           `Query was converted to incremental format: "${modifiedQuery}"`
         );
@@ -232,44 +194,20 @@ export class FarosGraph extends AirbyteStreamBase {
     // We need set the filter variables regardless
     // of syncMode if the query is incremental
     if (syncMode === SyncMode.INCREMENTAL || incremental) {
-      if (this.config.graphql_api === GraphQLVersion.V1) {
-        args.set('from', refreshedAtMillis);
-        args.set('to', INFINITY);
-      } else {
-        args.set('from', new Date(refreshedAtMillis).toISOString());
-        args.set('to', INFINITY_ISO_STRING);
-      }
+      args.set('from', new Date(refreshedAtMillis).toISOString());
+      args.set('to', INFINITY_ISO_STRING);
     }
 
-    let nodes: AsyncIterable<any>;
-    if (this.config.adapt_v1_query) {
-      const adapter = new QueryAdapter(this.faros, this.legacyV1Schema);
-      nodes = adapter.nodes(
-        this.config.graph,
-        query,
-        this.config.page_size || DEFAULT_PAGE_SIZE,
-        args,
-        // Convert the resulting V2 query to incremental in the adapter
-        toIncrementalV2
-      );
-    } else {
-      nodes = this.faros.nodeIterable(
-        this.config.graph,
-        modifiedQuery || query,
-        this.config.page_size || DEFAULT_PAGE_SIZE,
-        this.config.graphql_api === GraphQLVersion.V1
-          ? paginatedQuery
-          : paginatedQueryV2,
-        args
-      );
-    }
+    const nodes: AsyncIterable<any> = this.faros.nodeIterable(
+      this.config.graph,
+      modifiedQuery || query,
+      this.config.page_size || DEFAULT_PAGE_SIZE,
+      paginatedQueryV2,
+      args
+    );
 
     for await (const item of nodes) {
-      const recordRefreshedAtMillis =
-        this.config.graphql_api === GraphQLVersion.V1
-          ? Number(item.metadata?.refreshedAt) || 0
-          : new Date(item.refreshedAt).getTime() || 0;
-
+      const recordRefreshedAtMillis = new Date(item.refreshedAt).getTime() || 0;
       if (refreshedAtMillis < recordRefreshedAtMillis) {
         refreshedAtMillis = recordRefreshedAtMillis;
         this.state[stateKey] = {refreshedAtMillis};

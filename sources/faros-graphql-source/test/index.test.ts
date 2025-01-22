@@ -4,12 +4,11 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import _ from 'lodash';
 import VError from 'verror';
 
+import {ResultModel} from '../src';
 import * as sut from '../src/index';
-import {GraphQLVersion, ResultModel} from '../src/index';
-import {entrySchema, legacyV1Schema, readResourceAsJSON} from './helpers';
+import {entrySchema, readResourceAsJSON} from './helpers';
 
 const QUERY_HASH = 'acbd18db4cc2f85cedef654fccc4a4d8';
 
@@ -17,7 +16,6 @@ const BASE_CONFIG = {
   query: 'foo',
   api_url: 'x',
   api_key: 'y',
-  graphql_api: GraphQLVersion.V1,
   graph: 'default',
   result_model: ResultModel.Nested,
 };
@@ -112,7 +110,6 @@ describe('index', () => {
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
-        graphql_api: GraphQLVersion.V1,
       } as any)
     ).resolves.toStrictEqual([
       false,
@@ -122,7 +119,6 @@ describe('index', () => {
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
-        graphql_api: GraphQLVersion.V1,
         graph: 'default',
       } as any)
     ).resolves.toStrictEqual([
@@ -133,7 +129,6 @@ describe('index', () => {
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
-        graphql_api: GraphQLVersion.V1,
         graph: 'default',
         result_model: ResultModel.Nested,
       } as any)
@@ -150,53 +145,10 @@ describe('index', () => {
       source.checkConnection({
         api_url: 'x',
         api_key: 'y',
-        graphql_api: GraphQLVersion.V1,
         graph: 'default',
         result_model: ResultModel.Nested,
       } as any)
     ).resolves.toStrictEqual([true, undefined]);
-  });
-
-  test('check adapter config', async () => {
-    const source = new sut.FarosGraphSource(logger);
-    graphExists = true;
-    const config = {
-      api_url: 'x',
-      api_key: 'y',
-      graphql_api: GraphQLVersion.V2,
-      graph: 'default',
-      result_model: ResultModel.Nested,
-      query: 'query MyQuery { vcs { pullRequests { nodes { number } } } }',
-      adapt_v1_query: true,
-      legacy_v1_schema: 'XYZ',
-    } as any;
-    await expect(source.checkConnection(config)).resolves.toStrictEqual([
-      true,
-      undefined,
-    ]);
-    await expect(
-      source.checkConnection({
-        ...config,
-        graphql_api: GraphQLVersion.V1,
-      } as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError(
-        "GraphQL API version should be v2 when 'Adapt V1 query' is enabled"
-      ),
-    ]);
-    await expect(
-      source.checkConnection(_.omit(config, ['query']) as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('GraphQL query was not provided'),
-    ]);
-    await expect(
-      source.checkConnection(_.omit(config, ['legacy_v1_schema']) as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('Legacy V1 schema was not provided'),
-    ]);
   });
 
   test('check buckets config', async () => {
@@ -205,7 +157,6 @@ describe('index', () => {
     const config = {
       api_url: 'x',
       api_key: 'y',
-      graphql_api: GraphQLVersion.V1,
       graph: 'default',
       result_model: ResultModel.Nested,
     } as sut.GraphQLConfig;
@@ -259,32 +210,6 @@ describe('index', () => {
     expect(records).toMatchSnapshot();
   });
 
-  test('incremental sync mode - V1', async () => {
-    const source = new sut.FarosGraphSource(logger);
-    graphExists = true;
-    nodes = [
-      {k1: 'v1', metadata: {refreshedAt: 12}},
-      {k2: 'v2', metadata: {refreshedAt: 23}},
-    ];
-    const stream = source.streams(BASE_CONFIG)[0];
-    const iter = stream.readRecords(
-      SyncMode.INCREMENTAL,
-      undefined,
-      {query: 'foo', queryPaths},
-      {[QUERY_HASH]: {refreshedAtMillis: 1}}
-    );
-
-    const records = [];
-    for await (const record of iter) {
-      records.push(record);
-    }
-
-    expect(records).toMatchSnapshot();
-    expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      [QUERY_HASH]: {refreshedAtMillis: 23},
-    });
-  });
-
   test('incremental sync mode - V2', async () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;
@@ -294,7 +219,6 @@ describe('index', () => {
     ];
     const stream = source.streams({
       ...BASE_CONFIG,
-      graphql_api: GraphQLVersion.V2,
     } as any)[0];
     const iter = stream.readRecords(
       SyncMode.INCREMENTAL,
@@ -329,7 +253,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {query: 'foo', queryPaths},
-      {[QUERY_HASH]: {refreshedAtMillis: 1}}
+      {[QUERY_HASH]: {refreshedAtMillis: 15}}
     );
 
     const records = [];
@@ -339,30 +263,7 @@ describe('index', () => {
 
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      [QUERY_HASH]: {refreshedAtMillis: 23},
+      [QUERY_HASH]: {refreshedAtMillis: 15},
     });
-  });
-
-  test('adapt V1 query', async () => {
-    const source = new sut.FarosGraphSource(logger);
-    graphExists = true;
-    const iter = source
-      .streams({
-        ...BASE_CONFIG,
-        graphql_api: GraphQLVersion.V2,
-        adapt_v1_query: true,
-        legacy_v1_schema: legacyV1Schema,
-      })[0]
-      .readRecords(SyncMode.FULL_REFRESH, undefined, {
-        query: 'foo',
-        queryPaths,
-      });
-
-    const records = [];
-    for await (const record of iter) {
-      records.push(record);
-    }
-
-    expect(records).toMatchSnapshot();
   });
 });

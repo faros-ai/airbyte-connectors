@@ -32,7 +32,7 @@
     "axios": "^1.7.4",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
-    "faros-js-client": "^0.5.2",
+    "faros-js-client": "^0.6.1",
     "verror": "^1.10.1"
   },
   "jest": {

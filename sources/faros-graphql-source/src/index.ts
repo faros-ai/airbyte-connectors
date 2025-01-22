@@ -12,10 +12,6 @@ import VError from 'verror';
 
 import {FarosGraph} from './streams';
 import {DEFAULT_BUCKET_ID, DEFAULT_BUCKET_TOTAL} from './streams/faros-graph';
-export enum GraphQLVersion {
-  V1 = 'v1',
-  V2 = 'v2',
-}
 
 export enum ResultModel {
   Nested = 'Nested',
@@ -26,13 +22,10 @@ export interface GraphQLConfig extends AirbyteConfig {
   api_key: string;
   api_url?: string;
   graph: string;
-  graphql_api?: GraphQLVersion;
   page_size?: number;
   query?: string;
   models_filter?: ReadonlyArray<string>;
   result_model?: ResultModel;
-  adapt_v1_query?: boolean;
-  legacy_v1_schema?: string;
   bucket_id?: number;
   bucket_total?: number;
 }
@@ -78,17 +71,6 @@ export class FarosGraphSource extends AirbyteSourceBase<GraphQLConfig> {
     if (!config.graph) throw new VError('Faros graph name was not provided');
     if (config.result_model === undefined)
       throw new VError('Result model was not provided');
-    if (config.adapt_v1_query) {
-      if (!config.legacy_v1_schema)
-        throw new VError('Legacy V1 schema was not provided');
-      if (!config.query) throw new VError('GraphQL query was not provided');
-      if ((config.graphql_api ?? 'v2') !== GraphQLVersion.V2)
-        throw new VError(
-          `GraphQL API version should be ${GraphQLVersion.V2}` +
-            " when 'Adapt V1 query' is enabled"
-        );
-    }
-
     if (config.query) {
       if (config.bucket_id !== undefined)
         throw new VError('Bucket id cannot be used in combination with query');

@@ -71,10 +71,7 @@ export class FarosFeed extends Converter {
     if (!modelRecord) return [];
     const {model, rec} = modelRecord;
 
-    if (
-      ctx.config.edition_configs.edition === Edition.COMMUNITY ||
-      ctx.config.edition_configs.graphql_api === 'v2'
-    ) {
+    if (ctx.config.edition_configs.edition === Edition.COMMUNITY) {
       // Full model deletion records.
       // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
       // These are issued by the feed and are only applicable to the V1 API

@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import zlib from 'zlib';
 
 export function readResourceAsJSON(filename: string): any {
   return JSON.parse(fs.readFileSync(`resources/${filename}`, 'utf8'));
@@ -14,15 +13,3 @@ export function readTestResourceAsJSON(filename: string): any {
 }
 
 export const entrySchema = readTestResourceAsJSON('keys.avsc').schema;
-
-export const legacyV1Schema = Buffer.from(
-  zlib.gzipSync(
-    `schema {
-      query: Query
-    }
-
-    type Query {
-      name(id: ID!): String
-    }`
-  )
-).toString('base64');

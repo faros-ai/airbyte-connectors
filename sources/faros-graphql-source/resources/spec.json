@@ -78,21 +78,6 @@
           "Flat"
         ]
       },
-      "adapt_v1_query": {
-        "order": 8,
-        "type": "boolean",
-        "title": "Adapt V1 query",
-        "default": false,
-        "description": "Indicate that the input query conforms to the V1 schema provided in 'Legacy V1 schema' and should be translated into V2 to query the graph. Requires the 'query' and 'Legacy V1 schema' fields to be present and the 'GraphQL API' to be V2"
-      },
-      "legacy_v1_schema": {
-        "order": 9,
-        "type": "string",
-        "title": "Legacy V1 schema",
-        "description": "Legacy V1 schema as a gzip compressed, base 64 encoded text. Only used when 'Adapt V1 query' is enabled.",
-        "multiline": true,
-        "airbyte_secret": true
-      },
       "bucket_id": {
         "order": 10,
         "type": "integer",

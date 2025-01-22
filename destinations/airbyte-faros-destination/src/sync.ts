@@ -108,7 +108,7 @@ class FarosSyncClient extends FarosClient {
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('PUT', `/accounts/${accountId}`, {
-          params: {...redactedConfig, graphName, graphql_api: 'v2'},
+          params: {...redactedConfig, graphName},
           type: type ?? DEFAULT_ACCOUNT_TYPE,
           mode,
           local: true,
@@ -128,7 +128,7 @@ class FarosSyncClient extends FarosClient {
     accountId: string,
     graphName: string,
     redactedConfig: AirbyteConfig
-  ) {
+  ): Promise<Account | undefined> {
     const account = await this.getAccount(accountId);
     if (account) {
       return account;
