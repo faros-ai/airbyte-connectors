@@ -2,7 +2,7 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
-import { get, isNil } from 'lodash';
+import {get} from 'lodash';
 import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 100;
