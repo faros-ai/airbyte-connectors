@@ -1,53 +1,40 @@
 {
-  "name": "faros-airbyte-cdk",
+  "name": "wolken-source",
   "version": "0.0.1",
-  "description": "Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript",
+  "description": "Wolken Airbyte source",
   "keywords": [
     "airbyte",
-    "cdk",
-    "faros"
+    "source",
+    "faros",
+    "wolken"
   ],
   "homepage": "https://www.faros.ai",
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
-  "repository": "https://github.com/faros-ai/airbyte-connectors",
-  "bugs": {
-    "url": "https://github.com/faros-ai/airbyte-connectors/issues"
-  },
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
   "files": [
     "lib/",
     "resources/"
   ],
-  "main": "./lib",
   "engines": {
     "node": ">=18"
   },
+  "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-    "prepare": "npm run build",
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.9",
+    "axios": "^1.7.4",
     "commander": "^9.3.0",
-    "enquirer": "^2.3.6",
+    "faros-airbyte-cdk": "*",
     "faros-js-client": "^0.5.2",
-    "fast-redact": "^3.0.2",
-    "json-schema-traverse": "^1.0.0",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.1",
-    "pino": "^8.17.0",
-    "table": "^6.8.1",
-    "toposort": "^2.0.2",
+    "typescript-memoize": "^1.1.0",
+    "nock": "^13.1.0",
     "verror": "^1.10.1"
   },
   "jest": {
@@ -68,8 +55,7 @@
       ]
     },
     "snapshotFormat": {
-      "printBasicPrototype": true,
-      "escapeString": true
+      "printBasicPrototype": true
     }
   }
 }

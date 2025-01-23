@@ -33,7 +33,7 @@
     "faros-airbyte-common": "*",
     "fs-extra": "^11.2.0",
     "google-spreadsheet": "^3.1.15",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "verror": "^1.10.1"
   },
   "devDependencies": {

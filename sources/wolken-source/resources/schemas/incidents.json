@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ticketId": {
+      "type": "integer"
+    },
+    "ticketFormattedId": {
+      "type": "string"
+    },
+    "originId": {
+      "type": "integer"
+    },
+    "originName": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "createdTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requesterId": {
+      "type": "integer"
+    },
+    "requesterName": {
+      "type": "string"
+    },
+    "creatorId": {
+      "type": "integer"
+    },
+    "creatorName": {
+      "type": "string"
+    },
+    "unitId": {
+      "type": "integer"
+    },
+    "unitName": {
+      "type": "string"
+    },
+    "categoryId": {
+      "type": "integer"
+    },
+    "categoryName": {
+      "type": "string"
+    },
+    "subCategoryId": {
+      "type": "integer"
+    },
+    "subCategoryName": {
+      "type": "string"
+    },
+    "itemId": {
+      "type": "integer"
+    },
+    "itemName": {
+      "type": "string"
+    },
+    "teamId": {
+      "type": "integer"
+    },
+    "teamName": {
+      "type": "string"
+    },
+    "priorityId": {
+      "type": "integer"
+    },
+    "priorityName": {
+      "type": "string"
+    },
+    "impactId": {
+      "type": "integer"
+    },
+    "impactName": {
+      "type": "string"
+    },
+    "urgencyId": {
+      "type": "integer"
+    },
+    "urgencyName": {
+      "type": "string"
+    },
+    "assignedUserId": {
+      "type": "string"
+    },
+    "assignedUserName": {
+      "type": "string"
+    },
+    "assignedUserPsNo": {
+      "type": "string"
+    },
+    "updatedTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "statusName": {
+      "type": "string"
+    },
+    "subStatusName": {
+      "type": "string"
+    },
+    "statusId": {
+      "type": "integer"
+    },
+    "subStatusId": {
+      "type": "integer"
+    },
+    "lastUpdatedByUser": {
+      "type": "string"
+    },
+    "lastUpdatedByUserId": {
+      "type": "integer"
+    },
+    "flexData": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "ciRequestList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pkey": {
+            "type": "integer"
+          },
+          "ciId": {
+            "type": "integer"
+          },
+          "ciName": {
+            "type": "string"
+          },
+          "ciTypeId": {
+            "type": "integer"
+          },
+          "ciTypeName": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
