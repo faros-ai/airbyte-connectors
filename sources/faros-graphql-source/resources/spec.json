@@ -33,17 +33,6 @@
         "title": "Graph name",
         "description": "The graph name."
       },
-      "graphql_api": {
-        "order": 3,
-        "type": "string",
-        "title": "GraphQL API",
-        "description": "The version of GraphQL API for reads.",
-        "default": "v2",
-        "enum": [
-          "v1",
-          "v2"
-        ]
-      },
       "query": {
         "order": 4,
         "type": "string",

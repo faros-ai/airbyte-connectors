@@ -4,8 +4,8 @@ exports[`faros_feeds process records from all streams 1`] = `
 Array [
   "Processed 1004 records",
   "Processed records by stream: {\\\\\\"mytestsource__faros_feeds__faros_feed\\\\\\":1004}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 1002 records",
-  "Would write records by model: {\\\\\\"cicd_ReleaseTagAssociation__Deletion\\\\\\":1,\\\\\\"tms_Project__Deletion\\\\\\":1,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship__Deletion\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":34,\\\\\\"vcs_Label\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":166,\\\\\\"vcs_PullRequest\\\\\\":91,\\\\\\"vcs_PullRequestLabel\\\\\\":13,\\\\\\"vcs_PullRequestReview\\\\\\":437,\\\\\\"vcs_Tag\\\\\\":32,\\\\\\"vcs_User\\\\\\":217}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 999 records",
+  "Would write records by model: {\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":3,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":3,\\\\\\"vcs_Commit\\\\\\":34,\\\\\\"vcs_Label\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":166,\\\\\\"vcs_PullRequest\\\\\\":91,\\\\\\"vcs_PullRequestLabel\\\\\\":13,\\\\\\"vcs_PullRequestReview\\\\\\":437,\\\\\\"vcs_Tag\\\\\\":32,\\\\\\"vcs_User\\\\\\":217}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
