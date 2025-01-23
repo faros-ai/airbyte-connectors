@@ -33,6 +33,9 @@
         "bamboohr": {
           "$ref": "bamboohr.json"
         },
+        "bigquery": {
+          "$ref": "bigquery.json"
+        },
         "bitbucket": {
           "$ref": "bitbucket.json"
         },

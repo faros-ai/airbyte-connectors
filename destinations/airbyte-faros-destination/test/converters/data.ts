@@ -140,3 +140,6 @@ export const zendeskAllStreamsLog = readTestResourceFile(
 export const trelloAllStreamsLog = readTestResourceFile(
   'trello/all-streams.log'
 );
+export const bigqueryAllStreamsLog = readTestResourceFile(
+  'bigquery/all-streams.log'
+);

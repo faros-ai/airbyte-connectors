@@ -1,0 +1,10 @@
+{
+    "streams": [
+      {
+        "stream": {
+          "name": "bigquery__bigquery__deployments"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
+  }
