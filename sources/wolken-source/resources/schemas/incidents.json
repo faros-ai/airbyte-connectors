@@ -112,10 +112,48 @@
     "lastUpdatedByUserId": {
       "type": "integer"
     },
-    "flexData": {
+    "plannedStartDate": {
+      "type": "string"
+    },
+    "plannedEndDate": {
+      "type": "string"
+    },
+    "closedByUserID": {
+      "type": "string"
+    },
+    "closureTimeStamp": {
+      "type": "string"
+    },
+    "resolvedByUserID": {
+      "type": "string"
+    },
+    "resolvedByUserEmail": {
+      "type": "string"
+    },
+    "resolvedByUserName": {
+      "type": "string"
+    },
+    "resolutionTimeStamp": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "flexFields": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "flexId": {
+            "type": "integer"
+          },
+          "flexName": {
+            "type": "string"
+          },
+          "flexValue": {
+            "type": "string"
+          }
+        }
       }
     },
     "ciRequestList": {
