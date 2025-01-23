@@ -2,7 +2,6 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosGraphSchema} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
-import {Edition} from '../../common/types';
 import {
   Converter,
   DestinationModel,
@@ -71,18 +70,16 @@ export class FarosFeed extends Converter {
     if (!modelRecord) return [];
     const {model, rec} = modelRecord;
 
-    if (ctx.config.edition_configs.edition === Edition.COMMUNITY) {
-      // Full model deletion records.
-      // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
-      // These are issued by the feed and are only applicable to the V1 API
-      // We accumulate the model names in 'resetModels' to reset them in topological order
-      if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
-        const [key, value] = Object.entries(rec).pop();
-        if (key === 'where' && typeof value == 'string') {
-          const [baseModel] = model.split('__', 1);
-          ctx.registerStreamResetModels('faros_feed', new Set([baseModel]));
-          return [];
-        }
+    // Full model deletion records.
+    // E.g., {"vcs_TeamMembership__Deletion":{"where":"my-source"}}
+    // These are issued by the feed and are only applicable to the V1 API
+    // We accumulate the model names in 'resetModels' to reset them in topological order
+    if (model.endsWith('__Deletion') && Object.entries(rec).length == 1) {
+      const [key, value] = Object.entries(rec).pop();
+      if (key === 'where' && typeof value == 'string') {
+        const [baseModel] = model.split('__', 1);
+        ctx.registerStreamResetModels('faros_feed', new Set([baseModel]));
+        return [];
       }
     }
 
