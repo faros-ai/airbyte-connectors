@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bigquery basic test process records from all streams 1`] = `
+Array [
+  "Processed 7 records",
+  "Processed records by stream: {\\\\\\"bigquery__bigquery__deployments\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 28 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":7,\\\\\\"cicd_Deployment\\\\\\":7,\\\\\\"cicd_DeploymentChangeset\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
