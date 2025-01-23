@@ -26,10 +26,12 @@ import {
   wrapApiError,
 } from 'faros-airbyte-cdk';
 import {ConnectorVersion} from 'faros-airbyte-cdk/lib/runner';
-import {FarosClientConfig, HasuraSchemaLoader, Schema} from 'faros-js-client';
 import {
+  FarosClientConfig,
   GraphQLClient,
   GraphQLWriter,
+  HasuraSchemaLoader,
+  Schema,
   StreamNameSeparator,
   WriteStats,
 } from 'faros-js-client';
