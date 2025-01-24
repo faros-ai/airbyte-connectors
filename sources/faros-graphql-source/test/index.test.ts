@@ -242,8 +242,8 @@ describe('index', () => {
     const source = new sut.FarosGraphSource(logger);
     graphExists = true;
     nodes = [
-      {k1: 'v1', metadata: {refreshedAt: 12}},
-      {k2: 'v2', metadata: {refreshedAt: 23}},
+      {k1: 'v1', refreshedAt: '2022-10-19T22:02:14.483165+00:00'},
+      {k2: 'v2', refreshedAt: '2023-11-14T22:13:20.000Z'},
     ];
     const stream = source.streams({
       ...BASE_CONFIG,
@@ -253,7 +253,7 @@ describe('index', () => {
       SyncMode.INCREMENTAL,
       undefined,
       {query: 'foo', queryPaths},
-      {[QUERY_HASH]: {refreshedAtMillis: 15}}
+      {[QUERY_HASH]: {refreshedAtMillis: 1}}
     );
 
     const records = [];
@@ -263,7 +263,7 @@ describe('index', () => {
 
     expect(records).toMatchSnapshot();
     expect(stream.getUpdatedState(undefined, undefined)).toEqual({
-      [QUERY_HASH]: {refreshedAtMillis: 15},
+      [QUERY_HASH]: {refreshedAtMillis: 1700000000000},
     });
   });
 });
