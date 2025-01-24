@@ -2,6 +2,7 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {get} from 'lodash';
 import {VError} from 'verror';
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -225,6 +226,18 @@ export class Wolken {
       params['updatedTimeLT'] = endDate.getTime();
     }
 
-    yield* this.paginate<Incident>('/api/incidents', params);
+    for await (const incident of this.paginate<Incident>('/api/incidents', params)) {
+      try {
+        const response = await this.httpClient.get(`/api/incidents/${incident.ticketId}`, {
+          headers: {Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`}
+        });
+        const responseData = get(response, 'data.data');
+        if (Array.isArray(responseData) && responseData.length > 0) {
+          yield responseData[0];
+        }
+      } catch (error: any) {
+        throw new VError(error, `Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`);
+      }
+    }
   }
 }
