@@ -1,32 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`index adapt V1 query 1`] = `
-Array [
-  Object {
-    "A": Object {
-      "B": Object {
-        "C": Array [
-          Object {
-            "k3": "v3",
-          },
-        ],
-      },
-    },
-  },
-  Object {
-    "A": Object {
-      "B": Object {
-        "C": Array [
-          Object {
-            "k4": "v4",
-          },
-        ],
-      },
-    },
-  },
-]
-`;
-
 exports[`index flat result model 1`] = `
 Array [
   Object {
@@ -43,33 +16,6 @@ Array [
 `;
 
 exports[`index full_refresh sync mode 1`] = `
-Array [
-  Object {
-    "A": Object {
-      "B": Object {
-        "C": Array [
-          Object {
-            "k1": "v1",
-          },
-        ],
-      },
-    },
-  },
-  Object {
-    "A": Object {
-      "B": Object {
-        "C": Array [
-          Object {
-            "k2": "v2",
-          },
-        ],
-      },
-    },
-  },
-]
-`;
-
-exports[`index incremental sync mode - V1 1`] = `
 Array [
   Object {
     "A": Object {

@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^20.1.1",
+    "faros-js-client": "^0.6.1",
     "jira.js": "^4.0.0",
     "luxon": "^3.4.4"
   },

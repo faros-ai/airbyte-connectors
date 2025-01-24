@@ -4,13 +4,16 @@ import {
   AirbyteRecord,
   DestinationSyncMode,
 } from 'faros-airbyte-cdk';
-import {FarosClient} from 'faros-js-client';
+import {
+  FarosClient,
+  OriginProvider,
+  StreamNameSeparator,
+} from 'faros-js-client';
 import {difference, snakeCase} from 'lodash';
 import sizeof from 'object-sizeof';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
-import {OriginProvider} from '../common/graphql-writer';
 import {DestinationConfig} from '../common/types';
 
 /** Airbyte -> Faros record converter */
@@ -210,8 +213,6 @@ export class StreamContext implements OriginProvider {
     );
   }
 }
-
-export const StreamNameSeparator = '__';
 
 /**
  * Stream name with source prefix, e.g

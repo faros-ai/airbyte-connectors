@@ -28,16 +28,6 @@
       "description": "The Faros graph name.",
       "default": "default"
     },
-    "graphql_api": {
-      "type": "string",
-      "title": "GraphQL API",
-      "description": "The version of GraphQL API for writes.",
-      "default": "v2",
-      "enum": [
-        "v1",
-        "v2"
-      ]
-    },
     "cloud_graphql_upsert_batch_size": {
       "type": "integer",
       "title": "GraphQL upsert batch size",

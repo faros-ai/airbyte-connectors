@@ -39,6 +39,5 @@ export {
   DestinationModel,
   StreamContext,
   StreamName,
-  StreamNameSeparator,
 } from './converters/converter';
 export {FarosDestinationRunner} from './destination-runner';

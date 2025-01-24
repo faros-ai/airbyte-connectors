@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
+import {GraphQLBackend} from 'faros-js-client';
 
-import {GraphQLBackend} from '../common/graphql-client';
 import {HttpAgents} from '../destination';
 
 export class HasuraBackend implements GraphQLBackend {

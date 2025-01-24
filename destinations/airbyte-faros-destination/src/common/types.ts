@@ -1,4 +1,5 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
+import {Operation} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {JSONataApplyMode} from '../converters/jsonata';
@@ -32,37 +33,6 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly skip_source_success_check?: boolean;
   readonly faros_source_id?: string;
   readonly fail_on_source_error?: boolean;
-}
-
-export enum Operation {
-  UPSERT = 'Upsert',
-  UPDATE = 'Update',
-  DELETION = 'Deletion',
-  FLUSH = 'Flush',
-}
-
-export interface TimestampedRecord {
-  model: string;
-  origin: string;
-  at: number;
-  operation: Operation;
-}
-
-export interface UpsertRecord extends TimestampedRecord {
-  operation: Operation.UPSERT;
-  data: Dictionary<any>;
-}
-
-export interface UpdateRecord extends TimestampedRecord {
-  operation: Operation.UPDATE;
-  where: Dictionary<any>;
-  mask: string[];
-  patch: Dictionary<any>;
-}
-
-export interface DeletionRecord extends TimestampedRecord {
-  operation: Operation.DELETION;
-  where: Dictionary<any>;
 }
 
 export const FLUSH = {
