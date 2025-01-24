@@ -7,6 +7,7 @@
     "activatedDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
     "completeDate": "2024-03-14T12:00:00Z",
-    "originBoardId": 1
+    "originBoardId": 1,
+    "goal": "Finalize tasks for UI component"
   }
 ]

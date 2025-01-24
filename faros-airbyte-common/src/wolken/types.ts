@@ -55,6 +55,21 @@ export interface Incident {
   subStatusId: number;
   lastUpdatedByUser: string;
   lastUpdatedByUserId: number;
-  flexData: any[];
+  plannedStartDate: string;
+  plannedEndDate: string;
+  closedByUserID: string;
+  closureTimeStamp: string;
+  resolvedByUserID: string;
+  resolvedByUserEmail: string;
+  resolvedByUserName: string;
+  resolutionTimeStamp: string;
+  description: string;
+  flexFields: FlexField[];
   ciRequestList: CIRequest[];
+}
+
+export interface FlexField {
+  flexId: number;
+  flexName: string;
+  flexValue: string;
 }
