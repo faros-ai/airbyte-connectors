@@ -1231,6 +1231,7 @@ exports[`index streams - sprints 1`] = `
     "boardId": 1,
     "completeDate": "2024-03-14T12:00:00Z",
     "endDate": "2024-03-14T12:00:00Z",
+    "goal": "Finalize tasks for UI component",
     "id": 1,
     "name": "Test Sprint",
     "originBoardId": 1,

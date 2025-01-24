@@ -1223,6 +1223,7 @@ Array [
   Object {
     "tms_Sprint": Object {
       "closedAt": "2024-05-13T07:10:11.135Z",
+      "description": "Add tests",
       "endedAt": "2024-05-19T22:39:39.000Z",
       "name": "Another Sprint",
       "openedAt": null,
@@ -1248,6 +1249,7 @@ Array [
   Object {
     "tms_Sprint": Object {
       "closedAt": null,
+      "description": "Finalize tasks for UI component",
       "endedAt": null,
       "name": "PLAYG Sprint 20",
       "openedAt": null,
@@ -2241,6 +2243,7 @@ Array [
   Object {
     "tms_Sprint": Object {
       "closedAt": "2024-05-13T07:10:11.135Z",
+      "description": "Add tests",
       "endedAt": "2024-05-19T22:39:39.000Z",
       "name": "Another Sprint",
       "openedAt": null,
@@ -2266,6 +2269,7 @@ Array [
   Object {
     "tms_Sprint": Object {
       "closedAt": null,
+      "description": "Finalize tasks for UI component",
       "endedAt": null,
       "name": "PLAYG Sprint 20",
       "openedAt": null,
