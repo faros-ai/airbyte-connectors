@@ -29,4 +29,15 @@ describe('wolken', () => {
       });
     });
   });
+
+  describe('incidents', () => {
+    test('incidents', async () => {
+      await destinationWriteTest({
+        configPath,
+        catalogPath: 'test/resources/wolken/catalog.json',
+        inputRecordsPath: 'wolken/incidents.log',
+        checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      });
+    });
+  });
 });

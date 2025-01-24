@@ -6,10 +6,9 @@ import {Dictionary} from 'ts-essentials';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
-  IncidentPriorityCategory,
-  IncidentSeverityCategory,
   ServiceNowConverter,
 } from './common';
+import { IncidentPriorityCategory, IncidentSeverityCategory } from '../common/ims';
 
 enum IncidentStatusCategory {
   Created = 'Created',
@@ -255,13 +254,13 @@ export class Incidents extends ServiceNowConverter {
     if (priority) {
       switch (priority) {
         case '1':
-          return {category: IncidentPriorityCategory.P1, detail: priority};
+          return {category: IncidentPriorityCategory.Critical, detail: priority};
         case '2':
-          return {category: IncidentPriorityCategory.P2, detail: priority};
+          return {category: IncidentPriorityCategory.High, detail: priority};
         case '3':
-          return {category: IncidentPriorityCategory.P3, detail: priority};
+          return {category: IncidentPriorityCategory.Medium, detail: priority};
         case '4':
-          return {category: IncidentPriorityCategory.P4, detail: priority};
+          return {category: IncidentPriorityCategory.Low, detail: priority};
         default:
           return {category: IncidentPriorityCategory.Custom, detail: priority};
       }

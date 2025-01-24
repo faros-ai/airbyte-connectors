@@ -1,25 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
+import {IncidentPriorityCategory, IncidentSeverityCategory} from '../common/ims';
 
 const DEFAULT_APPLICATION_FIELD = 'business_service';
-
-export enum IncidentSeverityCategory {
-  Sev1 = 'Sev1',
-  Sev2 = 'Sev2',
-  Sev3 = 'Sev3',
-  Sev4 = 'Sev4',
-  Sev5 = 'Sev5',
-  Custom = 'Custom',
-}
-
-export enum IncidentPriorityCategory {
-  P1 = 'Critical',
-  P2 = 'High',
-  P3 = 'Medium',
-  P4 = 'Low',
-  Custom = 'Custom',
-}
 
 type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 

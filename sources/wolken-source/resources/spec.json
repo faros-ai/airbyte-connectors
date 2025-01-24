@@ -70,14 +70,14 @@
         "order": 8,
         "type": "integer",
         "title": "API Timeout",
-        "description": "Timeout (in milliseconds) to use when making requests to Asana API. 0 means no timeout.",
+        "description": "Timeout (in milliseconds) to use when making requests to Wolken API. 0 means no timeout.",
         "default": 0
       },
       "max_retries": {
         "order": 9,
         "type": "integer",
         "title": "Max Number of Retries",
-        "description": "The max number of retries before giving up on retrying requests to the Asana API.",
+        "description": "The max number of retries before giving up on retrying requests to the Wolken API.",
         "default": 3
       },
       "backfill": {
