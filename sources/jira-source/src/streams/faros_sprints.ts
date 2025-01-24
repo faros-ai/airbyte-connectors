@@ -40,6 +40,7 @@ export class FarosSprints extends StreamWithBoardSlices {
         id: sprint.id,
         originBoardId: sprint.originBoardId,
         name: sprint.name,
+        goal: sprint.goal,
         state: sprint.state,
         startDate: sprint.startDate,
         endDate: sprint.endDate,
