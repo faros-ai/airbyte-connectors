@@ -965,6 +965,7 @@ export abstract class GitHub {
             yield {
               org,
               team: team.slug,
+              user_login: member.login,
               user: pick(member, [
                 'login',
                 'name',
@@ -1284,6 +1285,7 @@ export abstract class GitHub {
         }
         yield {
           org,
+          user_login: identity.user.login,
           ...identity,
         };
       }
@@ -1318,6 +1320,7 @@ export abstract class GitHub {
         yield {
           repository: `${org}/${repo}`,
           name: tag.name,
+          commit_sha: commit.sha,
           commit,
         };
       }
@@ -1838,6 +1841,7 @@ export abstract class GitHub {
             yield {
               enterprise,
               team: team.slug,
+              user_login: member.login,
               user: pick(member, [
                 'login',
                 'name',

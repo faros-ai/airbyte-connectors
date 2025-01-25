@@ -121,6 +121,7 @@ export type Team = {
 export type TeamMembership = {
   org: string;
   team: string;
+  user_login: string;
   user: Pick<
     GetResponseDataTypeFromEndpointMethod<
       typeof octokit.teams.listMembersInOrg
@@ -140,11 +141,13 @@ export type OutsideCollaborator = {
 
 export type SamlSsoUser = {
   org: string;
+  user_login: string;
 } & ListSamlSsoUsersQuery['organization']['samlIdentityProvider']['externalIdentities']['nodes'][0];
 
 export type Tag = {
   repository: string;
   name: string;
+  commit_sha: string;
   commit: TagsQueryCommitNode;
 };
 
@@ -395,6 +398,7 @@ export type EnterpriseTeam = {
 export type EnterpriseTeamMembership = {
   enterprise: string;
   team: string;
+  user_login: string;
   user: EnterpriseTeamMembershipsResponse[0];
 };
 

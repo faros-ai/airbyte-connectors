@@ -11,7 +11,7 @@ export class FarosTags extends StreamWithRepoSlices {
   }
 
   get primaryKey(): StreamKey {
-    return [['name'], ['commit', 'sha']];
+    return [['name'], ['commit_sha']];
   }
 
   async *readRecords(

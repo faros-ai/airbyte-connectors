@@ -8,6 +8,9 @@
     "name": {
       "type": "string"
     },
+    "commit_sha": {
+      "type": "string"
+    },
     "commit": {
       "type": "object",
       "properties": {
