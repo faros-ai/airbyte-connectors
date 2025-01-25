@@ -7,7 +7,6 @@ import {GitHubCommon} from '../../src/converters/github/common';
 import {CLI, read} from '../cli';
 import {
   initMockttp,
-  readTestResourceFile,
   tempConfig,
   testLogger,
 } from '../testing-tools';
