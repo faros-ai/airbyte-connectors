@@ -236,7 +236,7 @@ export class Wolken {
           yield responseData[0];
         }
       } catch (error: any) {
-        this.logger.info(`Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`);
+        throw new VError(error, `Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`);
       }
     }
   }
