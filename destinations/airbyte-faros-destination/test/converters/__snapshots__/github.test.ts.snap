@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`github process and write records 1`] = `
+Array [
+  "Processed 96 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__assignees\\\\\\":12,\\\\\\"mytestsource__github__collaborators\\\\\\":12,\\\\\\"mytestsource__github__commits\\\\\\":55,\\\\\\"mytestsource__github__pull_requests\\\\\\":17}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 58 records",
+  "Would write records by model: {\\\\\\"tms_User\\\\\\":12,\\\\\\"vcs_PullRequest\\\\\\":17,\\\\\\"vcs_User\\\\\\":29}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
 exports[`github process records from all streams 1`] = `
 Array [
   "Processed 538 records",
