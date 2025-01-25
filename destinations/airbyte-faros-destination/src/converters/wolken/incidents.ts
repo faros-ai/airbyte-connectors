@@ -41,7 +41,7 @@ export class Incidents extends Converter {
       record: {
         ...incidentKey,
         title: incident.subject,
-        description: incident.description,
+        description: Utils.cleanAndTruncate(incident.description),
         // TODO: Add severity
         priority: this.getPriority(incident.priorityName) ?? null,
         status: this.getStatus(incident.statusName) ?? null,
