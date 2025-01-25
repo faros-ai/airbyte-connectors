@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`gitlab process records from all streams 1`] = `
+exports[`gitlab basic test process records from all streams 1`] = `
 Array [
   "Processed 55 records",
   "Processed records by stream: {\\\\\\"mytestsource__gitlab__branches\\\\\\":7,\\\\\\"mytestsource__gitlab__commits\\\\\\":2,\\\\\\"mytestsource__gitlab__group_labels\\\\\\":2,\\\\\\"mytestsource__gitlab__group_milestones\\\\\\":1,\\\\\\"mytestsource__gitlab__groups\\\\\\":1,\\\\\\"mytestsource__gitlab__issues\\\\\\":2,\\\\\\"mytestsource__gitlab__jobs\\\\\\":8,\\\\\\"mytestsource__gitlab__merge_request_commits\\\\\\":6,\\\\\\"mytestsource__gitlab__merge_requests\\\\\\":6,\\\\\\"mytestsource__gitlab__pipelines\\\\\\":2,\\\\\\"mytestsource__gitlab__project_labels\\\\\\":12,\\\\\\"mytestsource__gitlab__project_milestones\\\\\\":2,\\\\\\"mytestsource__gitlab__projects\\\\\\":1,\\\\\\"mytestsource__gitlab__releases\\\\\\":1,\\\\\\"mytestsource__gitlab__tags\\\\\\":1,\\\\\\"mytestsource__gitlab__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
