@@ -11,7 +11,7 @@ export class FarosSamlSsoUsers extends StreamWithOrgSlices {
   }
 
   get primaryKey(): StreamKey {
-    return [['org'], ['user', 'login']];
+    return [['org'], ['user_login']];
   }
 
   async *readRecords(

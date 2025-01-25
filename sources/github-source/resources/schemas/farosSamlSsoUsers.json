@@ -14,6 +14,9 @@
         }
       }
     },
+    "user_login": {
+      "type": "string"
+    },
     "user": {
       "type": "object",
       "properties": {

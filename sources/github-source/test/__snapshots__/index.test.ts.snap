@@ -1241,6 +1241,7 @@ exports[`index streams - enterprise team memberships 1`] = `
       "login": "octocat",
       "type": "User",
     },
+    "user_login": "octocat",
   },
 ]
 `;
@@ -2296,6 +2297,7 @@ exports[`index streams - saml sso users 1`] = `
       "login": "tovbinm",
       "type": "User",
     },
+    "user_login": "tovbinm",
   },
   {
     "org": "github",
@@ -2307,6 +2309,7 @@ exports[`index streams - saml sso users 1`] = `
       "login": "jeniii",
       "type": "User",
     },
+    "user_login": "jeniii",
   },
 ]
 `;
@@ -2368,6 +2371,7 @@ exports[`index streams - tags 1`] = `
       "sha": "a91f0eb6e2c0dd050a72bf2e2b73878a9342403c",
       "type": "Commit",
     },
+    "commit_sha": "a91f0eb6e2c0dd050a72bf2e2b73878a9342403c",
     "name": "v0.0.1",
     "repository": "github/Hello-World",
   },
@@ -2377,6 +2381,7 @@ exports[`index streams - tags 1`] = `
       "sha": "97b456be6dab02610a7f7683be82a5c7191372c0",
       "type": "Commit",
     },
+    "commit_sha": "97b456be6dab02610a7f7683be82a5c7191372c0",
     "name": "v0.0.2",
     "repository": "github/Hello-World",
   },
@@ -2386,6 +2391,7 @@ exports[`index streams - tags 1`] = `
       "sha": "8c73521620f8cd70a07c7a475dfe3dd09f7690cf",
       "type": "Commit",
     },
+    "commit_sha": "8c73521620f8cd70a07c7a475dfe3dd09f7690cf",
     "name": "v0.0.3",
     "repository": "github/Hello-World",
   },
@@ -2402,6 +2408,7 @@ exports[`index streams - team memberships 1`] = `
       "login": "octocat",
       "type": "User",
     },
+    "user_login": "octocat",
   },
 ]
 `;

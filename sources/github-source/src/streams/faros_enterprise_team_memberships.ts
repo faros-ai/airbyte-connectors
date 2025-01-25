@@ -11,7 +11,7 @@ export class FarosEnterpriseTeamMemberships extends StreamWithEnterpriseSlices {
   }
 
   get primaryKey(): StreamKey {
-    return [['enterprise'], ['team'], ['user', 'login']];
+    return [['enterprise'], ['team'], ['user_login']];
   }
 
   async *readRecords(
