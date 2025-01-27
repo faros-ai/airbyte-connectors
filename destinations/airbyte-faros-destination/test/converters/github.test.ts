@@ -7,7 +7,6 @@ import {GitHubCommon} from '../../src/converters/github/common';
 import {CLI, read} from '../cli';
 import {
   initMockttp,
-  readTestResourceFile,
   tempConfig,
   testLogger,
 } from '../testing-tools';
@@ -20,9 +19,6 @@ describe('github', () => {
   const catalogPath = 'test/resources/github/catalog.json';
   const catalogRawPath = 'test/resources/github/catalog-raw.json';
   let configPath: string;
-  const graphSchema = JSON.parse(readTestResourceFile('graph-schema.json'));
-  const revisionId = 'test-revision-id';
-  const streamNamePrefix = 'mytestsource__github__';
 
   beforeEach(async () => {
     await initMockttp(mockttp);
@@ -48,59 +44,12 @@ describe('github', () => {
     expect(GitHubCommon.vcs_User({type: 'Bot'}, 'mysource')).toBeUndefined();
   });
 
-  test.skip('process and write records', async () => {
-    await mockttp
-      .forPost('/graphs/test-graph/models')
-      .withQuery({schema: 'canonical'})
-      .once()
-      .thenReply(200, JSON.stringify({}));
-
-    await mockttp
-      .forPost('/graphs/test-graph/revisions')
-      .once()
-      .thenReply(
-        200,
-        JSON.stringify({
-          entrySchema: graphSchema,
-          revision: {uid: revisionId, lock: {state: {}}},
-        })
-      );
-
-    let entriesSize = 0;
-    await mockttp
-      .forPost(`/graphs/test-graph/revisions/${revisionId}/entries`)
-      .thenCallback(async (r) => {
-        entriesSize = r.body.buffer.length;
-        return {statusCode: 204};
-      });
-
-    await mockttp
-      .forPatch(`/graphs/test-graph/revisions/${revisionId}`)
-      .withJsonBodyIncluding({status: 'active'})
-      .once()
-      .thenReply(204);
-
-    const cli = await CLI.runWith([
-      'write',
-      '--config',
+  test('process and write records', async () => {
+    await destinationWriteTest({
       configPath,
-      '--catalog',
-      catalogPath,
-    ]);
-    cli.stdin.end(githubLog, 'utf8');
-
-    const stdout = await read(cli.stdout);
-    logger.debug(stdout);
-    expect(stdout).toMatch('\\"api_key\\":\\"REDACTED\\"');
-    expect(stdout).toMatch('Read 110 messages');
-    expect(stdout).toMatch('Read 96 records');
-    expect(stdout).toMatch('Processed 96 records');
-    expect(stdout).toMatch('Wrote 58 records');
-    expect(stdout).toMatch('Errored 0 records');
-    expect(stdout).toMatch('Skipped 0 records');
-    expect(await read(cli.stderr)).toBe('');
-    expect(await cli.wait()).toBe(0);
-    expect(entriesSize).toBeGreaterThan(0);
+      catalogPath: 'test/resources/github/catalog.json',
+      inputRecordsPath: 'github/streams.log',
+    });
   });
 
   test('process records but skip writes when dry run is enabled', async () => {
