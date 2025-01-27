@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`wolken incidents incidents 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__wolken__incidents\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 2 records",
+  "Would write records by model: {\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`wolken incidents incidents 2`] = `
+Array [
+  Object {
+    "ims_Incident": Object {
+      "createdAt": "2025-01-08T09:54:48.000Z",
+      "description": "Support notification incident requiring investigation",
+      "priority": Object {
+        "category": "Low",
+        "detail": "Low - P4",
+      },
+      "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "source": "Wolken",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "Closed",
+      },
+      "title": "Inc_Support_Notification",
+      "uid": 123456,
+      "updatedAt": "2025-01-23T09:02:39.000Z",
+    },
+  },
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "Wolken",
+        "uid": 10002,
+      },
+      "incident": Object {
+        "source": "Wolken",
+        "uid": 123456,
+      },
+      "source": "Wolken",
+    },
+  },
+]
+`;
+
 exports[`wolken users users 1`] = `
 Array [
   "Processed 1 records",
