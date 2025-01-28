@@ -1267,16 +1267,18 @@ export abstract class GitHub {
   }
 
   async *getSamlSsoUsers(org: string): AsyncGenerator<SamlSsoUser> {
-    const iter = this.octokit(
-      org
-    ).graphql.paginate.iterator<ListSamlSsoUsersQuery>(
-      LIST_SAML_SSO_USERS_QUERY,
-      {
-        login: org,
-        page_size: this.pageSize,
-      }
-    );
-    for await (const res of iter) {
+    let res: ListSamlSsoUsersQuery;
+    let currentCursor: string = undefined;
+    let hasNextPage = true;
+    while (hasNextPage) {
+      res = await this.octokit(org).graphql<ListSamlSsoUsersQuery>(
+        LIST_SAML_SSO_USERS_QUERY,
+        {
+          login: org,
+          page_size: this.pageSize,
+          cursor: currentCursor,
+        }
+      );
       const identities =
         res.organization.samlIdentityProvider?.externalIdentities?.nodes ?? [];
       for (const identity of identities) {
@@ -1289,6 +1291,12 @@ export abstract class GitHub {
           ...identity,
         };
       }
+      currentCursor =
+        res.organization.samlIdentityProvider?.externalIdentities?.pageInfo
+          ?.endCursor;
+      hasNextPage =
+        res.organization.samlIdentityProvider?.externalIdentities?.pageInfo
+          ?.hasNextPage;
     }
   }
 
