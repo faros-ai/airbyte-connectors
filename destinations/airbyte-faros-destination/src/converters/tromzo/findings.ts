@@ -43,7 +43,7 @@ export class Findings extends Converter {
       record: {
         ...vulnerabilityKey,
         title: vulnerability.summary,
-        description: vulnerability.description,
+        description: Utils.cleanAndTruncate(vulnerability.description),
         url: finding.url,
         vulnerabilityIds: vulnerabilityIds.length ? vulnerabilityIds : null,
         severity,
