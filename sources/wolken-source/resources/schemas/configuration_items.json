@@ -174,20 +174,7 @@
         "urgencyId": {
           "type": "integer"
         }
-      },
-      "required": [
-        "urgencyId"
-      ]
+      }
     }
-  },
-  "required": [
-    "ciId",
-    "ciName",
-    "ciTypeId",
-    "ciTypeName",
-    "ciStatusId",
-    "ciStatusName",
-    "flexFields",
-    "urgency"
-  ]
+  }
 }

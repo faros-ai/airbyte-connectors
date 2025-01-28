@@ -18,7 +18,9 @@
         "type": "string",
         "title": "Base URL",
         "description": "Wolken base URL",
-        "examples": ["https://api.wolkensoft.com"]
+        "examples": [
+          "https://api.wolkensoft.com"
+        ]
       },
       "domain": {
         "order": 1,
@@ -110,4 +112,4 @@
       }
     }
   }
-} 
+}
