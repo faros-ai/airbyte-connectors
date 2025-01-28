@@ -42,6 +42,9 @@ export class Findings extends Converter {
       model: 'sec_Vulnerability',
       record: {
         ...vulnerabilityKey,
+        title: vulnerability.summary,
+        description: Utils.cleanAndTruncate(vulnerability.description),
+        url: finding.url,
         vulnerabilityIds: vulnerabilityIds.length ? vulnerabilityIds : null,
         severity,
         discoveredBy: finding.toolName,
