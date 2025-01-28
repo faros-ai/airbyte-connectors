@@ -98,6 +98,15 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
+      },
+      "configuration_items_type_ids": {
+        "order": 13,
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "title": "Configuration Items Type IDs",
+        "description": "Optional list of configuration item type IDs to filter by. If not provided, all configuration items will be fetched."
       }
     }
   }

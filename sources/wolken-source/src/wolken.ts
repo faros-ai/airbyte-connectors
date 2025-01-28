@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Incident, User} from 'faros-airbyte-common/wolken';
+import {Incident, User, ConfigurationItem} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {get} from 'lodash';
 import {VError} from 'verror';
@@ -26,6 +26,7 @@ export interface WolkenConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
+  readonly configuration_items_type_ids?: number[];
 }
 
 interface TokenResponse {
@@ -237,6 +238,30 @@ export class Wolken {
         }
       } catch (error: any) {
         throw new VError(error, `Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`);
+      }
+    }
+  }
+
+  async *getConfigurationItems(ciTypeId?: number): AsyncGenerator<ConfigurationItem> {
+    const params = {};
+    if (ciTypeId) {
+      params['ciTypeId'] = ciTypeId;
+    }
+
+    for await (const ci of this.paginate<ConfigurationItem>('/api/ci', params)) {
+      try {
+        const response = await this.httpClient.get(`/api/ci/get_ci`, {
+          headers: {Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`},
+          params: {
+            ciId: ci.ciId
+          }
+        });
+        const responseData = response?.data?.data;
+        if (Array.isArray(responseData) && responseData.length > 0) {
+          yield responseData[0];
+        }
+      } catch (error: any) {
+        throw new VError(error, `Failed to fetch CI details for ${ci.ciId}: ${error.message}`);
       }
     }
   }
