@@ -16,14 +16,17 @@ Array [
   Object {
     "sec_Vulnerability": Object {
       "affectedVersions": null,
+      "description": "",
       "discoveredBy": "codeql",
       "severity": 9.5,
       "source": "Tromzo",
+      "title": "Defined vulnerability",
       "type": Object {
         "category": "Custom",
         "detail": "codeql",
       },
       "uid": "fin_1",
+      "url": "http://tromzo-instance.com/findings/fin_1",
       "vulnerabilityIds": null,
     },
   },
@@ -54,14 +57,17 @@ Array [
   Object {
     "sec_Vulnerability": Object {
       "affectedVersions": null,
+      "description": null,
       "discoveredBy": "codeql",
       "severity": 3.9,
       "source": "Tromzo",
+      "title": null,
       "type": Object {
         "category": "Custom",
         "detail": "codeql",
       },
       "uid": "fin_2",
+      "url": "http://tromzo-instance.com/findings/fin_2",
       "vulnerabilityIds": null,
     },
   },
@@ -148,14 +154,17 @@ Array [
       "affectedVersions": Array [
         ">= 2.12|^3.0,< 3.0.0",
       ],
+      "description": "An attacker can increase the CPU usage and crash the program by crafting a very large and well crafted string.",
       "discoveredBy": "github dependabot",
       "severity": 10,
       "source": "Tromzo",
+      "title": "Regular Expression Denial of Service (ReDoS) in cross-spawn",
       "type": Object {
         "category": "Dependency",
         "detail": "github dependabot",
       },
       "uid": "fin_3",
+      "url": "http://tromzo-instance.com/findings/fin_3",
       "vulnerabilityIds": Array [
         "CVE-2024-21538",
         "GHSA-3xgq-45jj-v275",
