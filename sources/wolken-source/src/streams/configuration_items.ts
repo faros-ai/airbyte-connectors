@@ -30,4 +30,4 @@ export class ConfigurationItems extends AirbyteStreamBase {
     }
     yield* wolken.getConfigurationItems();
   }
-} 
+}
