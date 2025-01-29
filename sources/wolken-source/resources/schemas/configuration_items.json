@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ciId": {
+      "type": "integer"
+    },
+    "ciName": {
+      "type": "string"
+    },
+    "ciDesc": {
+      "type": "string"
+    },
+    "ciNotes": {
+      "type": "string"
+    },
+    "ciStatusId": {
+      "type": "integer"
+    },
+    "ciOwnerId": {
+      "type": "string"
+    },
+    "ciNumber": {
+      "type": "string"
+    },
+    "ciSerialNumber": {
+      "type": "string"
+    },
+    "ciTypeId": {
+      "type": "integer"
+    },
+    "ciTypeName": {
+      "type": "string"
+    },
+    "ciLocationId": {
+      "type": "integer"
+    },
+    "ciAssetTag": {
+      "type": "string"
+    },
+    "ciCostCenterId": {
+      "type": "string"
+    },
+    "ciPoNumber": {
+      "type": "string"
+    },
+    "ciCost": {
+      "type": "string"
+    },
+    "dateofpurchase": {
+      "type": "string"
+    },
+    "dateofuse": {
+      "type": "string"
+    },
+    "createdById": {
+      "type": "integer"
+    },
+    "createddate": {
+      "type": "string"
+    },
+    "updatedbyId": {
+      "type": "integer"
+    },
+    "updatedDate": {
+      "type": "string"
+    },
+    "ciSourceid": {
+      "type": "integer"
+    },
+    "ciSupplier": {
+      "type": "string"
+    },
+    "ciIpAddress": {
+      "type": "string"
+    },
+    "ciOS": {
+      "type": "string"
+    },
+    "ciMemory": {
+      "type": "string"
+    },
+    "ciStorage": {
+      "type": "string"
+    },
+    "hostName": {
+      "type": "string"
+    },
+    "prodGroup": {
+      "type": "string"
+    },
+    "deviceClass": {
+      "type": "string"
+    },
+    "deviceModel": {
+      "type": "string"
+    },
+    "ciArch": {
+      "type": "string"
+    },
+    "ciModel": {
+      "type": "string"
+    },
+    "ciSubTypeId": {
+      "type": "integer"
+    },
+    "ciSubTypeName": {
+      "type": "string"
+    },
+    "ciCPU": {
+      "type": "string"
+    },
+    "ciRAM": {
+      "type": "string"
+    },
+    "ciHDD": {
+      "type": "string"
+    },
+    "amcRequired": {
+      "type": "boolean"
+    },
+    "ciClassificationId": {
+      "type": "string"
+    },
+    "ciSecondaryOwnerid": {
+      "type": "string"
+    },
+    "ciAssignmentTeamId": {
+      "type": "integer"
+    },
+    "ciApprovalGroupId": {
+      "type": "string"
+    },
+    "warrantyStartdate": {
+      "type": "string"
+    },
+    "warrantyEnddate": {
+      "type": "string"
+    },
+    "cimanufacture": {
+      "type": "string"
+    },
+    "taskTeam": {
+      "type": "string"
+    },
+    "ciStatusName": {
+      "type": "string"
+    },
+    "flexFields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "flexId": {
+            "type": "integer"
+          },
+          "flexName": {
+            "type": "string"
+          },
+          "flexValue": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "flexId",
+          "flexName",
+          "flexValue"
+        ]
+      }
+    },
+    "urgency": {
+      "type": "object",
+      "properties": {
+        "urgencyId": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
