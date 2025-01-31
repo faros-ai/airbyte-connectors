@@ -102,15 +102,15 @@ export class ConfigurationItems extends WolkenConverter {
       }
 
       // Custom Application and Jira Path Hierarchy
-      const pathElements = [];
+      const pathParts = [];
       const pathHierarchyFlexIds = this.config(ctx).path_hierarchy_flex_ids ?? [];
       for (const flexId of pathHierarchyFlexIds) {
         const flexField = getFlexField(flexId);
-        pathElements.push(flexField?.flexValue?.replace(/\//, '_') ?? 'unknown');
+        pathParts.push(flexField?.flexValue?.replace(/\//, '_') ?? 'unknown');
       }
 
-      if (pathElements.length > 0) {
-        const path = pathElements.join('/');
+      if (pathParts.length > 0) {
+        const path = pathParts.join('/');
         const faros_Path = {
           uid: path,
           path,
