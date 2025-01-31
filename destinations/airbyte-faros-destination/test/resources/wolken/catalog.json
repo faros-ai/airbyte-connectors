@@ -11,6 +11,12 @@
         "name": "mytestsource__wolken__incidents"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__wolken__configuration_items"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

@@ -24,3 +24,5 @@ export enum IncidentStatusCategory {
   Resolved = 'Resolved',
   Custom = 'Custom',
 }
+
+export type ApplicationMapping = Record<string, {name: string; platform?: string}>;

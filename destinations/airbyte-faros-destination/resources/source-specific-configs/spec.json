@@ -99,6 +99,9 @@
         "victorops": {
           "$ref": "victorops.json"
         },
+        "wolken": {
+          "$ref": "wolken.json"
+        },
         "workday": {
           "$ref": "workday.json"
         },

@@ -1,11 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/wolken';
 
-import {Converter, DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
+import {WolkenConverter} from './common';
 
-export class Users extends Converter {
-  source = 'Wolken';
-
+export class Users extends WolkenConverter {
   id(record: AirbyteRecord) {
     return record?.record?.data?.userId;
   }

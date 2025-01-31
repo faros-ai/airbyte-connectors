@@ -2,17 +2,16 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {Converter, DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   IncidentPriorityCategory,
   IncidentStatusCategory,
 } from '../common/ims';
 import {Incident} from 'faros-airbyte-common/wolken';
+import {WolkenConverter} from './common';
 
 
-export class Incidents extends Converter {
-  source = 'Wolken';
-
+export class Incidents extends WolkenConverter {
   id(record: AirbyteRecord) {
     return record?.record?.data?.ticketId;
   }
