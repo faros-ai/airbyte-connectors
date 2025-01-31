@@ -19,7 +19,7 @@ export class ConfigurationItems extends WolkenConverter {
     'tms_ProjectPath',
   ];
 
-  private seenServices = new Set<string>();
+  private readonly seenServices = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
