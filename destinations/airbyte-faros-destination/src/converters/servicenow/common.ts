@@ -1,11 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
-import {IncidentPriorityCategory, IncidentSeverityCategory} from '../common/ims';
+import {ApplicationMapping, IncidentPriorityCategory, IncidentSeverityCategory} from '../common/ims';
 
 const DEFAULT_APPLICATION_FIELD = 'business_service';
-
-type ApplicationMapping = Record<string, {name: string; platform?: string}>;
 
 interface ServiceNowConfig {
   application_mapping?: ApplicationMapping;

@@ -1,0 +1,33 @@
+{
+  "title": "Wolken",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Wolken",
+          "order": 0
+        },
+        "application_mapping": {
+          "type": "string",
+          "title": "Application Mapping",
+          "description": "JSON map of Wolken service(s) name, to compute platform specific app name and platform name.",
+          "multiline": true,
+          "default": "{}",
+          "examples": [
+            "{ \"Aion\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
+          ]
+        },
+        "store_current_incidents_associations": {
+          "type": "boolean",
+          "title": "Only store current incidents associations",
+          "description": "Only store current incidents associations in the graph.",
+          "default": false
+        }
+      }
+    }
+  ]
+}
