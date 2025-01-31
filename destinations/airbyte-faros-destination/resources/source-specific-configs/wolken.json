@@ -5,23 +5,67 @@
     {
       "type": "object",
       "title": "Configuration",
+      "required": [
+        "service_id_flex_id"
+      ],
       "properties": {
         "source_type": {
           "type": "string",
           "const": "Wolken",
           "order": 0
         },
+        "service_id_flex_id": {
+          "order": 1,
+          "type": "integer",
+          "title": "Service ID Flex ID",
+          "description": "Flex ID of the field in the configuration item that contains the service ID."
+        },
+        "jira_project_key_flex_id": {
+          "order": 2,
+          "type": "integer",
+          "title": "Jira Project Key Flex ID",
+          "description": "Flex ID of the field in the configuration item that contains the Jira project key."
+        },
+        "application_tag_flex_ids": {
+          "order": 3,
+          "type": "array",
+          "title": "Application Tag Flex IDs",
+          "description": "List of flex IDs to use as application tags",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "project_tag_flex_ids": {
+          "order": 4,
+          "type": "array",
+          "title": "Project Tag Flex IDs",
+          "description": "List of flex IDs to use as project tags",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "path_hierarchy_flex_ids": {
+          "order": 5,
+          "type": "array",
+          "title": "Path Hierarchy Flex IDs",
+          "description": "List of flex IDs that define the path hierarchy",
+          "items": {
+            "type": "integer"
+          }
+        },
         "application_mapping": {
+          "order": 6,
           "type": "string",
           "title": "Application Mapping",
-          "description": "JSON map of Wolken service(s) name, to compute platform specific app name and platform name.",
+          "description": "JSON map of Wolken service(s) ID, to compute platform specific app name and platform name.",
           "multiline": true,
           "default": "{}",
           "examples": [
-            "{ \"Aion\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
+            "{ \"A3F91B6D\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
           ]
         },
         "store_current_incidents_associations": {
+          "order": 7,
           "type": "boolean",
           "title": "Only store current incidents associations",
           "description": "Only store current incidents associations in the graph.",

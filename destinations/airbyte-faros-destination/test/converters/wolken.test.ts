@@ -40,4 +40,31 @@ describe('wolken', () => {
       });
     });
   });
+
+  describe('configuration_items', () => {
+    test('configuration_items', async () => {
+      configPath = await tempConfig({
+        api_url: mockttp.url,
+        log_records: true,
+        source_specific_configs: {
+          wolken: {
+            service_id_flex_id: 1,
+            jira_project_key_flex_id: 2,
+            application_tag_flex_ids: [3],
+            project_tag_flex_ids: [4],
+            path_hierarchy_flex_ids: [1],
+            application_mapping: {
+              'A3F91B6D': {name: 'Test App'},
+            },
+          },
+        },
+      });
+      await destinationWriteTest({
+        configPath,
+        catalogPath: 'test/resources/wolken/catalog.json',
+        inputRecordsPath: 'wolken/configuration_items.log',
+        checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      });
+    });
+  });
 });
