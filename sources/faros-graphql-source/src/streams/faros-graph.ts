@@ -112,7 +112,7 @@ export class FarosGraph extends AirbyteStreamBase {
           graphSchema: schema,
           primaryKeys: gqlSchemaV2.primaryKeys,
           references: gqlSchemaV2.references,
-          scalarsOnly: false,
+          avoidCollisions: false,
         })
       );
       this.logger.debug(
