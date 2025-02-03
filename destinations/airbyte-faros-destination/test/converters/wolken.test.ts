@@ -67,4 +67,28 @@ describe('wolken', () => {
       });
     });
   });
+
+  describe('incidents_configuration_items', () => {
+    test('incidents_configuration_items', async () => {
+      configPath = await tempConfig({
+        api_url: mockttp.url,
+        log_records: true,
+        source_specific_configs: {
+          wolken: {
+            service_id_flex_id: 1,
+            application_mapping: {
+              'A3F91B6D': {name: 'Test App'},
+            },
+            store_current_incidents_associations: true,
+          },
+        },
+      });
+      await destinationWriteTest({
+        configPath,
+        catalogPath: 'test/resources/wolken/catalog.json',
+        inputRecordsPath: 'wolken/incidents_configuration_items.log',
+        checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+      });
+    });
+  });
 });

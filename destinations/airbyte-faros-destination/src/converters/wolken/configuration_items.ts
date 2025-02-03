@@ -25,42 +25,22 @@ export class ConfigurationItems extends WolkenConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
     const configurationItem = record.record.data as ConfigurationItem;
 
-    const getFlexField = (flexId: number) =>
-      configurationItem.flexFields?.find(f => f.flexId === flexId);
+    const application = this.getApplication(configurationItem, ctx);
 
-    const serviceIdFlexId = this.config(ctx).service_id_flex_id;
-    const serviceId = getFlexField(serviceIdFlexId)?.flexValue;
-
-    if (!serviceId) {
+    if (!application) {
       return [];
     }
 
-    const res: DestinationRecord[] = [];
-
-    const applicationMapping = this.applicationMapping(ctx);
-    let application = {
-      name: serviceId,
-      platform: 'unknown',
-    };
-
     const jiraProjectKeyFlexId = this.config(ctx).jira_project_key_flex_id;
-    const jiraProjectKey = getFlexField(jiraProjectKeyFlexId)?.flexValue;
+    const jiraProjectKey = WolkenConverter.getFlexField(configurationItem, jiraProjectKeyFlexId)?.flexValue;
 
     const project = {
       uid: jiraProjectKey ?? 'unknown',
       source: 'Jira',
     };
-
-    if (serviceId in applicationMapping && applicationMapping[serviceId].name) {
-      const mappedApp = applicationMapping[serviceId];
-      application = {
-        ...application,
-        name: mappedApp.name,
-        platform: mappedApp.platform ?? application.platform,
-      };
-    }
 
     const appKey = JSON.stringify(application);
     if (!this.seenServices.has(appKey)) {
@@ -69,7 +49,7 @@ export class ConfigurationItems extends WolkenConverter {
 
       const applicationTagFlexIds = this.config(ctx).application_tag_flex_ids ?? [];
       for (const flexId of applicationTagFlexIds) {
-        const flexField = getFlexField(flexId);
+        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
         if (flexField) {
           const tag = {
             uid: `${flexField.flexName}__${flexField.flexValue}`,
@@ -86,7 +66,7 @@ export class ConfigurationItems extends WolkenConverter {
 
       const projectTagFlexIds = this.config(ctx).project_tag_flex_ids ?? [];
       for (const flexId of projectTagFlexIds) {
-        const flexField = getFlexField(flexId);
+        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
         if (flexField) {
           const tag = {
             uid: `${flexField.flexName}__${flexField.flexValue}`,
@@ -105,7 +85,7 @@ export class ConfigurationItems extends WolkenConverter {
       const pathParts = [];
       const pathHierarchyFlexIds = this.config(ctx).path_hierarchy_flex_ids ?? [];
       for (const flexId of pathHierarchyFlexIds) {
-        const flexField = getFlexField(flexId);
+        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
         pathParts.push(flexField?.flexValue?.replace(/\//, '_') ?? 'unknown');
       }
 
