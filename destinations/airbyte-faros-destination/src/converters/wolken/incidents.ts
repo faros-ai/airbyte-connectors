@@ -21,6 +21,7 @@ export class Incidents extends WolkenConverter {
   }
 
   private incidentCI: Map<string, Set<number>> = new Map();
+  private resolvedApplicationsByCI = new Map<number, ComputeApplication | undefined>();
 
   id(record: AirbyteRecord) {
     return record?.record?.data?.ticketId;
@@ -129,11 +130,17 @@ export class Incidents extends WolkenConverter {
   }
 
   private getApplicationFromCI(ciId: number, ctx: StreamContext): ComputeApplication | undefined {
+    if (this.resolvedApplicationsByCI.has(ciId)) {
+      return this.resolvedApplicationsByCI.get(ciId);
+    }
     const ci = ctx.get(Incidents.configurationItemsStream.asString, ciId.toString());
     if (!ci) {
+      this.resolvedApplicationsByCI.set(ciId, undefined);
       return undefined;
     }
-    return this.getApplication(ci.record.data as ConfigurationItem, ctx);
+    const application = this.getApplication(ci.record.data as ConfigurationItem, ctx);
+    this.resolvedApplicationsByCI.set(ciId, application);
+    return application;
   }
 
   private getPriority(
