@@ -123,10 +123,10 @@ export class ProjectBoardFilter {
   private async getProjectsFromConfig(): Promise<void> {
     const jira = await Jira.instance(this.config, this.logger);
     const visibleProjects = await jira.getProjects();
-    const keys = visibleProjects.map((p) => p.key);
-    const ids = visibleProjects.map((p) => p.id);
+    const keys = new Set(visibleProjects.map((p) => p.key));
+    const ids = new Set(visibleProjects.map((p) => p.id));
     for (const project of this.filterConfig.projects) {
-      if (!keys.includes(project) && !ids.includes(project)) {
+      if (!keys.has(project) && !ids.has(project)) {
         this.logger.warn(
           `Project ${project} defined in config is not visible in Jira instance. Skipping.`
         );

@@ -118,6 +118,7 @@ export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
+export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
 type TeamMemberTimestamps = {
   [user: string]: {
@@ -147,6 +148,7 @@ export abstract class GitHub {
   protected readonly fetchPullRequestDiffCoverage: boolean;
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
+  protected readonly fetchPublicOrganizations: boolean;
 
   constructor(
     config: GitHubConfig,
@@ -171,6 +173,8 @@ export abstract class GitHub {
     this.pullRequestCutoffLagSeconds =
       config.pull_request_cutoff_lag_seconds ?? DEFAULT_PR_CUTOFF_LAG_SECONDS;
     this.useEnterpriseAPIs = config.enterprises?.length > 0;
+    this.fetchPublicOrganizations =
+      config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
   }
 
   static async instance(
@@ -214,6 +218,7 @@ export abstract class GitHub {
     return orgs;
   }
 
+  @Memoize()
   async getOrganization(orgLogin: string): Promise<Organization> {
     const org = await this.octokit(orgLogin).orgs.get({org: orgLogin});
     return pick(org.data, [
@@ -2055,6 +2060,13 @@ export class GitHubToken extends GitHub {
       }
     }
 
+    if (this.fetchPublicOrganizations) {
+      for await (const org of this.getPublicOrganizations()) {
+        empty = false;
+        yield org;
+      }
+    }
+
     if (!empty) {
       return;
     }
@@ -2078,6 +2090,24 @@ export class GitHubToken extends GitHub {
             yield repo.owner.login;
           }
         }
+      }
+    }
+  }
+
+  private async *getPublicOrganizations(): AsyncGenerator<string> {
+    this.logger.info(
+      `Fetching public organizations enabled. ` +
+        `This may result in a large number of requests.`
+    );
+    const orgList = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.orgs.list,
+      {
+        per_page: this.pageSize,
+      }
+    );
+    for await (const res of orgList) {
+      for (const org of res.data) {
+        yield org.login;
       }
     }
   }
