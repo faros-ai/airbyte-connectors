@@ -92,6 +92,7 @@ export class ProjectBoardFilter {
   @Memoize()
   async getProjects(): Promise<ReadonlyArray<string>> {
     if (!this.projects) {
+      this.logger.info('Generating list of projects to sync');
       this.projects = new Set();
 
       const jira = await Jira.instance(this.config, this.logger);
@@ -109,19 +110,38 @@ export class ProjectBoardFilter {
           }
         }
       } else {
-        for (const project of this.filterConfig.projects) {
-          if (jira.isProjectInBucket(project)) {
-            this.projects.add(toUpper(project));
-          }
-        }
+        await this.getProjectsFromConfig();
       }
+      this.logger.info(
+        `Will sync ${this.projects.size} projects: ` +
+          `${Array.from(this.projects).join(', ')}`
+      );
     }
     return Array.from(this.projects);
+  }
+
+  private async getProjectsFromConfig(): Promise<void> {
+    const jira = await Jira.instance(this.config, this.logger);
+    const visibleProjects = await jira.getProjects();
+    const keys = visibleProjects.map((p) => p.key);
+    const ids = visibleProjects.map((p) => p.id);
+    for (const project of this.filterConfig.projects) {
+      if (!keys.includes(project) && !ids.includes(project)) {
+        this.logger.warn(
+          `Project ${project} defined in config is not visible in Jira instance. Skipping.`
+        );
+        continue;
+      }
+      if (jira.isProjectInBucket(project)) {
+        this.projects.add(toUpper(project));
+      }
+    }
   }
 
   @Memoize()
   async getBoards(): Promise<ReadonlyArray<BoardInclusion>> {
     if (!this.boards) {
+      this.logger.info('Generating list of boards to sync.');
       this.boards = new Map();
 
       const jira = await Jira.instance(this.config, this.logger);
@@ -137,6 +157,8 @@ export class ProjectBoardFilter {
       } else {
         await this.getBoardsFromJira(jira);
       }
+      this.logger.info(`Will sync ${this.boards.size} boards.`);
+      this.logger.debug(`Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`);
     }
     return Array.from(this.boards.values());
   }
@@ -187,7 +209,9 @@ export class ProjectBoardFilter {
    * @returns A Promise that resolves when all boards have been processed.
    */
   private async getBoardsFromJira(jira: Jira): Promise<void> {
+    this.logger.info('Fetching boards to sync from Jira.');
     for (const project of this.projects) {
+      this.logger.info(`Fetching boards to sync for project ${project}`);
       for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
         const {included, issueSync} = await this.getBoardInclusion(boardId);
@@ -199,6 +223,7 @@ export class ProjectBoardFilter {
   }
 
   private async getBoardsFromFaros(jira: Jira): Promise<void> {
+    this.logger.info('Fetching boards to sync from Faros Graph.');
     const projects = jira.getProjectBoardsFromGraph(
       this.farosClient,
       this.config.graph ?? DEFAULT_GRAPH,
