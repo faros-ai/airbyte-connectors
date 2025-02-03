@@ -20,8 +20,8 @@ export class Incidents extends WolkenConverter {
     return [Incidents.configurationItemsStream];
   }
 
-  private incidentCI: Map<string, Set<number>> = new Map();
-  private resolvedApplicationsByCI = new Map<number, ComputeApplication | undefined>();
+  private readonly incidentCI: Map<string, Set<number>> = new Map();
+  private readonly resolvedApplicationsByCI = new Map<number, ComputeApplication | undefined>();
 
   id(record: AirbyteRecord) {
     return record?.record?.data?.ticketId;
@@ -79,7 +79,7 @@ export class Incidents extends WolkenConverter {
       if (!this.incidentCI.has(incidentKey.uid)) {
         this.incidentCI.set(incidentKey.uid, new Set());
       }
-      this.incidentCI.get(incidentKey.uid)!.add(ci.ciId);
+      this.incidentCI.get(incidentKey.uid).add(ci.ciId);
     }
 
     return res;
