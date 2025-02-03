@@ -166,5 +166,3 @@ export class Incidents extends WolkenConverter {
     return undefined;
   }
 }
-
-
