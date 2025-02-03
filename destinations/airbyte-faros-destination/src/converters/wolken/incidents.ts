@@ -68,7 +68,7 @@ export class Incidents extends WolkenConverter {
         record: {
           incident: incidentKey,
           assignee: {
-            uid: assigneeUid,
+            uid: assigneeUid.toString(),
             source,
           },
         },
