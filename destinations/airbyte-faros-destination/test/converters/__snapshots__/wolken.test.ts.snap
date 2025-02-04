@@ -101,10 +101,10 @@ Array [
 
 exports[`wolken incidents incident application impact 1`] = `
 Array [
-  "Processed 2 records",
-  "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__incidents\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 6 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 3 records",
+  "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__incidents\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 8 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -118,6 +118,25 @@ Array [
       "platform": "unknown",
       "source": "Wolken",
       "uid": "Test App_unknown",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "createdAt": "2025-01-08T09:54:48.000Z",
+      "description": "Support notification incident requiring investigation",
+      "priority": Object {
+        "category": "Low",
+        "detail": "Low - P4",
+      },
+      "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "source": "Wolken",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "Closed",
+      },
+      "title": "Inc_Support_Notification",
+      "uid": "123457",
+      "updatedAt": "2025-01-23T09:02:39.000Z",
     },
   },
   Object {
@@ -150,6 +169,18 @@ Array [
         "uid": "123456",
       },
       "source": "Wolken",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact__Deletion": Object {
+      "flushRequired": false,
+      "source": "Wolken",
+      "where": Object {
+        "incident": Object {
+          "source": "Wolken",
+          "uid": "123457",
+        },
+      },
     },
   },
   Object {
