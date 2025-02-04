@@ -157,8 +157,11 @@ export class OrgRepoFilter {
     try {
       await github.getOrganization(lowerOrg);
       return true;
-    } catch (error) {
-      this.logger.warn(`Skipping not found organization ${lowerOrg}`);
+    } catch (error: any) {
+      this.logger.warn(
+        `Fetching organization ${lowerOrg} failed with error: ` +
+          `${error.status} - ${error.message}. Skipping.`
+      );
       return false;
     }
   }
