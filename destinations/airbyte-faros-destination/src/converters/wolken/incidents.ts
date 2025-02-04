@@ -51,7 +51,7 @@ export class Incidents extends WolkenConverter {
       record: {
         ...incidentKey,
         title: incident.subject,
-        description: Utils.cleanAndTruncate(incident.description),
+        description: typeof incident.description === 'string' ? Utils.cleanAndTruncate(incident.description) : null,
         // TODO: Add severity
         priority: this.getPriority(incident.priorityName) ?? null,
         status: this.getStatus(incident.statusName) ?? null,
@@ -75,10 +75,11 @@ export class Incidents extends WolkenConverter {
       });
     }
 
+    if (!this.incidentCI.has(incidentKey.uid)) {
+      this.incidentCI.set(incidentKey.uid, new Set());
+    }
+
     for (const ci of incident.ciRequestList ?? []) {
-      if (!this.incidentCI.has(incidentKey.uid)) {
-        this.incidentCI.set(incidentKey.uid, new Set());
-      }
       this.incidentCI.get(incidentKey.uid).add(ci.ciId);
     }
 
