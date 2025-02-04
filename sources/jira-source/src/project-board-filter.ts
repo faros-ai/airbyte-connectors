@@ -132,6 +132,10 @@ export class ProjectBoardFilter {
       // Ensure included / excluded boards are loaded
       await this.loadSelectedBoards();
 
+      if (!this.useBoardOwnership()) {
+        await this.getBoardsFromProjects();
+      }
+
       if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
         await this.getBoardsFromFaros(jira);
       } else {
@@ -214,6 +218,23 @@ export class ProjectBoardFilter {
     }
   }
 
+  /**
+   * Use the Jira API to get all boards for each project and use the UIDs to populate
+   * the internal boards map.
+   * Only includes boards based on the inclusion criteria determined by getBoardInclusion.
+   * With this method we generate a unique board per project to represent all tasks in the project
+   *
+   * @returns A Promise that resolves when all boards have been processed.
+   */
+  private async getBoardsFromProjects(): Promise<void> {
+    for (const project of this.projects) {
+      const {included, issueSync} = await this.getBoardInclusion(project);
+      if (included) {
+        this.boards.set(project, {uid: project, issueSync});
+      }
+    }
+  }
+
   private async loadSelectedBoards(): Promise<void> {
     if (this.loadedSelectedBoards) {
       return;
@@ -250,5 +271,9 @@ export class ProjectBoardFilter {
 
   private hasFarosClient(): boolean {
     return Boolean(this.farosClient);
+  }
+
+  private useBoardOwnership(): boolean {
+    return this.config.use_board_ownership ?? true;
   }
 }

@@ -75,6 +75,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
   readonly use_faros_board_issue_tracker?: boolean;
+  readonly use_board_ownership?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;

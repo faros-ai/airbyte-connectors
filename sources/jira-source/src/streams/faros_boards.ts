@@ -24,6 +24,22 @@ export class FarosBoards extends StreamWithProjectSlices {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
 
+    // If board ownership is disabled, return a virtual board for all tasks in the project.
+    if (this.config.use_board_ownership === false) {
+      const {included, issueSync} =
+        await this.projectBoardFilter.getBoardInclusion(projectKey);
+      if (included) {
+        yield {
+          uid: projectKey,
+          name: `Tasks in project ${projectKey}`,
+          projectKey,
+          type: 'Custom',
+          issueSync,
+        };
+      }
+      return;
+    }
+
     // Virtual board to represent all tasks in the project without a board
     yield {
       uid: `faros-tasks-with-no-board-${projectKey}`,

@@ -129,6 +129,16 @@ export class FarosIssues extends JiraConverter {
       },
     });
 
+    if (!this.useBoardOwnership(ctx)) {
+      results.push({
+        model: 'tms_TaskBoardRelationship',
+        record: {
+          task: {uid: issue.key, source},
+          board: {uid: issue.project, source},
+        },
+      });
+    }
+
     if (JiraCommon.normalize(issue.type) === 'epic') {
       results.push({
         model: 'tms_Epic',
