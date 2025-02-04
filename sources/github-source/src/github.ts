@@ -2073,25 +2073,7 @@ export class GitHubToken extends GitHub {
 
     // Fine-grained tokens return an empty list for visible orgs,
     // so if we get to this point, we're possibly using a fine-grained token.
-    // In order to determine which orgs are visible, check visible repos and track their orgs
-    const seenOrgs = new Set<string>();
-    const reposIter = this.baseOctokit.paginate.iterator(
-      this.baseOctokit.repos.listForAuthenticatedUser,
-      {
-        per_page: this.pageSize,
-        affiliation: 'organization_member',
-      }
-    );
-    for await (const res of reposIter) {
-      for (const repo of res.data) {
-        if (repo.owner?.type === 'Organization') {
-          if (!seenOrgs.has(repo.owner.login)) {
-            seenOrgs.add(repo.owner.login);
-            yield repo.owner.login;
-          }
-        }
-      }
-    }
+    yield* this.getOrganizationsByRepositories();
   }
 
   private async *getPublicOrganizations(): AsyncGenerator<string> {
@@ -2108,6 +2090,30 @@ export class GitHubToken extends GitHub {
     for await (const res of orgList) {
       for (const org of res.data) {
         yield org.login;
+      }
+    }
+  }
+
+  /*
+   * In order to determine which orgs are visible, check visible repos and track their orgs
+   */
+  private async *getOrganizationsByRepositories(): AsyncGenerator<string> {
+    const seenOrgs = new Set<string>();
+    const reposIter = this.baseOctokit.paginate.iterator(
+      this.baseOctokit.repos.listForAuthenticatedUser,
+      {
+        per_page: this.pageSize,
+        affiliation: 'organization_member',
+      }
+    );
+    for await (const res of reposIter) {
+      for (const repo of res.data) {
+        if (repo.owner?.type === 'Organization') {
+          if (!seenOrgs.has(repo.owner.login)) {
+            seenOrgs.add(repo.owner.login);
+            yield repo.owner.login;
+          }
+        }
       }
     }
   }
