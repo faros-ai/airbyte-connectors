@@ -24,6 +24,7 @@ describe('OrgRepoFilter', () => {
               {login: 'Org-2'},
               {login: 'Org-3'},
             ]),
+          get: jest.fn().mockRejectedValue(new Error('404')),
         },
         repos: {
           listForOrg: jest
@@ -62,6 +63,51 @@ describe('OrgRepoFilter', () => {
       {
         ...config,
         organizations: ['org-1', 'org-2'],
+      },
+      logger
+    );
+    const organizations = await orgRepoFilter.getOrganizations();
+    expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - fetch public orgs', async () => {
+    const publicOrgsConfig = {
+      ...config,
+      fetch_public_organizations: true,
+    };
+    setupGitHubInstance(
+      {
+        orgs: {
+          listForAuthenticatedUser: jest
+            .fn()
+            .mockReturnValue([{login: 'Org-1'}]),
+          list: jest.fn().mockReturnValue([{login: 'Org-2'}]),
+        },
+      },
+      logger,
+      publicOrgsConfig
+    );
+    const orgRepoFilter = new OrgRepoFilter(publicOrgsConfig, logger);
+    const organizations = await orgRepoFilter.getOrganizations();
+    expect(organizations).toMatchSnapshot();
+  });
+
+  test('getOrganizations - visible organization not in listForAuthenticatedUser', async () => {
+    setupGitHubInstance(
+      {
+        orgs: {
+          listForAuthenticatedUser: jest
+            .fn()
+            .mockReturnValue([{login: 'Org-1'}]),
+          get: jest.fn().mockResolvedValue({login: 'Org-OSS'}),
+        },
+      },
+      logger
+    );
+    const orgRepoFilter = new OrgRepoFilter(
+      {
+        ...config,
+        organizations: ['org-1', 'org-oss'],
       },
       logger
     );

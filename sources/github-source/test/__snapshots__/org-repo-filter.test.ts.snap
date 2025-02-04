@@ -16,6 +16,13 @@ exports[`OrgRepoFilter getOrganizations - all - no list 1`] = `
 ]
 `;
 
+exports[`OrgRepoFilter getOrganizations - fetch public orgs 1`] = `
+[
+  "org-1",
+  "org-2",
+]
+`;
+
 exports[`OrgRepoFilter getOrganizations - fine-grained token - no list 1`] = `
 [
   "org-1",
@@ -33,6 +40,13 @@ exports[`OrgRepoFilter getOrganizations - specific organizations included 1`] = 
 [
   "org-1",
   "org-2",
+]
+`;
+
+exports[`OrgRepoFilter getOrganizations - visible organization not in listForAuthenticatedUser 1`] = `
+[
+  "org-1",
+  "org-oss",
 ]
 `;
 

@@ -345,6 +345,13 @@
         "type": "integer",
         "default": 0,
         "order": 33
+      },
+      "fetch_public_organizations": {
+        "type": "boolean",
+        "title": "Fetch Public Organizations",
+        "description": "Fetch public organizations",
+        "default": false,
+        "order": 34
       }
     }
   }

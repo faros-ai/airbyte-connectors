@@ -1,18 +1,18 @@
 [
   {
-    "key": "TEST-1",
+    "key": "TEST",
     "id": "1234",
     "name": "Test 1",
     "description": "This is a test"
   },
   {
-    "key": "TEST-2",
+    "key": "TEST2",
     "id": "1235",
     "name": "Test 2",
     "description": "This is a test"
   },
   {
-    "key": "TEST-3",
+    "key": "TEST3",
     "id": "1236",
     "name": "Test 3",
     "description": "This is a test"
