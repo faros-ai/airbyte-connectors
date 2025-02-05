@@ -147,9 +147,9 @@ export class AzureWorkitems {
 
     // If using a custom API URL for Server, a custom Graph API URL must also be provided
     const apiUrl =
-      config.api_url?.replace(/\/+$/, '').trim() ?? DEFAULT_API_URL;
+      config.api_url?.replace(/\/*$/, '').trim() ?? DEFAULT_API_URL;
     const graphApiUrl =
-      config.graph_api_url?.replace(/\/+$/, '').trim() ?? DEFAULT_GRAPH_API_URL;
+      config.graph_api_url?.replace(/\/*$/, '').trim() ?? DEFAULT_GRAPH_API_URL;
 
     if (apiUrl !== DEFAULT_API_URL && graphApiUrl === DEFAULT_GRAPH_API_URL) {
       throw new VError(
