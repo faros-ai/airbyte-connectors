@@ -879,7 +879,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             const streamName = StreamName.fromString(stream).asString;
             const recordId = converter.id(unpacked);
             if (converterDependencies.has(streamName) && recordId) {
-              ctx.set(streamName, String(recordId), unpacked);
+              ctx.set(streamName, String(recordId), converter.toContextStorageRecord(unpacked, ctx));
               // Print stream context stats every so often
               if (stats.recordsProcessed % 1000 == 0) {
                 this.logger.info(`Stream context stats: ${ctx.stats()}`);
