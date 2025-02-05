@@ -179,17 +179,19 @@ export abstract class GitHub {
 
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    octokit?: ExtendedOctokit
   ): Promise<GitHub> {
     if (GitHub.github) {
       return GitHub.github;
     }
     validateBucketingConfig(cfg, logger.info.bind(logger));
+    const baseOctokit = octokit ?? makeOctokitClient(cfg, undefined, logger);
 
     const github =
       cfg.authentication.type === 'token'
-        ? await GitHubToken.instance(cfg, logger)
-        : await GitHubApp.instance(cfg, logger);
+        ? await GitHubToken.instance(cfg, logger, baseOctokit)
+        : await GitHubApp.instance(cfg, logger, baseOctokit);
 
     GitHub.github = github;
     return github;
@@ -2028,9 +2030,9 @@ export abstract class GitHub {
 export class GitHubToken extends GitHub {
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    baseOctokit: ExtendedOctokit
   ): Promise<GitHub> {
-    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
     const github = new GitHubToken(cfg, baseOctokit, logger);
     await github.checkConnection();
     return github;
@@ -2125,9 +2127,9 @@ export class GitHubApp extends GitHub {
 
   static async instance(
     cfg: GitHubConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    baseOctokit: ExtendedOctokit
   ): Promise<GitHub> {
-    const baseOctokit = makeOctokitClient(cfg, undefined, logger);
     const github = new GitHubApp(cfg, baseOctokit, logger);
     await github.checkConnection();
     const installations = await github.getAppInstallations();
