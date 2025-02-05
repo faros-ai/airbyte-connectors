@@ -42,6 +42,13 @@ export abstract class ConverterTyped<R> {
   /** Function to extract record id */
   abstract id(record: AirbyteRecord): any;
 
+  /** Returns a minimal version of the record suitable for context storage
+   * Override this to provide a reduced representation when this stream is a dependency
+   * By default returns the full record */
+  toContextStorageRecord(record: AirbyteRecord, ctx: StreamContext): AirbyteRecord {
+    return record;
+  }
+
   /** All the record models produced by converter */
   abstract get destinationModels(): ReadonlyArray<DestinationModel>;
 

@@ -9,6 +9,17 @@ export class ConfigurationItems extends WolkenConverter {
     return record?.record?.data?.ciId;
   }
 
+  toContextStorageRecord(record: AirbyteRecord, ctx: StreamContext) {
+    const configurationItem = record.record.data as ConfigurationItem;
+    const serviceIdFlexId = this.config(ctx).service_id_flex_id;
+    const serviceIdFlexField = WolkenConverter.getFlexField(
+      configurationItem,
+      serviceIdFlexId
+    );
+    const configItemCompact = serviceIdFlexField ? { flexFields: [serviceIdFlexField] } : {};
+    return AirbyteRecord.make(this.streamName.asString, configItemCompact);
+  }
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'compute_Application',
     'compute_ApplicationTag',
