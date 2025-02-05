@@ -14,7 +14,10 @@ import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
+const DEFAULT_API_URL = 'https://dev.azure.com';
+const DEFAULT_VSRM_API_URL = 'https://vsrm.dev.azure.com';
 const DEFAULT_API_VERSION = '6.0';
+
 const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
@@ -28,6 +31,8 @@ export interface AzurePipelineConfig {
   readonly access_token: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
+  readonly api_url?: string;
+  readonly vsrm_api_url?: string;
   readonly api_version?: string;
   readonly api_timeout?: number;
   readonly max_retries?: number;
@@ -70,6 +75,7 @@ export class AzurePipeline {
   ): Promise<AzurePipeline> {
     if (AzurePipeline.azurePipeline) return AzurePipeline.azurePipeline;
 
+    // TODO - Move to common utility for Azure clients
     if (!config.access_token) {
       throw new VError('Please provide an access token');
     }
@@ -89,15 +95,16 @@ export class AzurePipeline {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - cutoff_days);
 
-    const version = config.api_version ?? DEFAULT_API_VERSION;
+    const apiUrl = config.api_url ?? DEFAULT_API_URL;
+    const apiVersion = config.api_version ?? DEFAULT_API_VERSION;
 
     const httpClient = makeAxiosInstanceWithRetry(
       {
-        baseURL: `https://dev.azure.com/${config.organization}`,
+        baseURL: `${apiUrl}/${config.organization}`,
         timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
-          'api-version': version,
+          'api-version': apiVersion,
         },
         headers: {
           Authorization: `Basic ${accessToken}`,
@@ -108,13 +115,15 @@ export class AzurePipeline {
       config.api_retry_delay ?? DEFAULT_RETRY_DELAY_MS
     );
 
+
+    const vsrmApiUrl = config.vsrm_api_url ?? DEFAULT_VSRM_API_URL;
     const httpVSRMClient = makeAxiosInstanceWithRetry(
       {
-        baseURL: `https://vsrm.dev.azure.com/${config.organization}`,
+        baseURL: `${vsrmApiUrl}/${config.organization}`,
         timeout: config.api_timeout ?? DEFAULT_API_TIMEOUT_MS,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
-          'api-version': version,
+          'api-version': apiVersion,
         },
         headers: {
           Authorization: `Basic ${accessToken}`,

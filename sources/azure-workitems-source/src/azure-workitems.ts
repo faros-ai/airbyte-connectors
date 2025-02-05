@@ -14,7 +14,10 @@ import {
   WorkItemResponse,
   WorkItemUpdatesResponse,
 } from './models';
+
+const DEFAULT_API_URL = 'https://dev.azure.com';
 const DEFAULT_API_VERSION = '7.1';
+const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -37,14 +40,16 @@ const WORK_ITEM_TYPES = [
 
 export interface AzureWorkitemsConfig {
   readonly access_token: string;
+  readonly api_url: string;
+  readonly graph_api_url: string;
   readonly organization: string;
   readonly project: string;
   readonly projects: string[];
   readonly additional_fields: string[];
   readonly cutoff_days?: number;
   readonly api_version?: string;
-  readonly request_timeout?: number;
   readonly graph_version?: string;
+  readonly request_timeout?: number;
 }
 
 export class AzureWorkitems {
@@ -63,22 +68,15 @@ export class AzureWorkitems {
   ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
-    if (!config.access_token) {
-      throw new VError('access_token must not be an empty string');
-    }
+    AzureWorkitems.validateConfig(config);
 
-    if (!config.organization) {
-      throw new VError('organization must not be an empty string');
-    }
-
-    const accessToken = base64Encode(`:${config.access_token}`);
-
+    const apiUrl = config.api_url ?? DEFAULT_API_URL;
     const version = config.api_version ?? DEFAULT_API_VERSION;
+    const accessToken = base64Encode(`:${config.access_token}`);
 
     const httpClient = makeAxiosInstanceWithRetry(
       {
-        // baseURL: `https://dev.azure.com/${config.organization}/${config.project}/_apis`,
-        baseURL: `https://dev.azure.com/${config.organization}`,
+        baseURL: `${apiUrl}/${config.organization}`,
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
@@ -93,8 +91,10 @@ export class AzureWorkitems {
       1000
     );
 
+    const graphApiUrl = config.graph_api_url ?? DEFAULT_GRAPH_API_URL;
+
     const graphClient = axios.create({
-      baseURL: `https://vssps.dev.azure.com/${config.organization}/_apis/graph`,
+      baseURL: `${graphApiUrl}/${config.organization}/_apis/graph`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
@@ -136,7 +136,30 @@ export class AzureWorkitems {
     return AzureWorkitems.azure_Workitems;
   }
 
+  static validateConfig(config: AzureWorkitemsConfig) {
+    if (!config.access_token) {
+      throw new VError('access_token must not be an empty string');
+    }
+
+    if (!config.organization) {
+      throw new VError('organization must not be an empty string');
+    }
+
+    // If using a custom API URL for Server, a custom Graph API URL must also be provided
+    const apiUrl =
+      config.api_url?.replace(/\/+$/, '').trim() ?? DEFAULT_API_URL;
+    const graphApiUrl =
+      config.graph_api_url?.replace(/\/+$/, '').trim() ?? DEFAULT_GRAPH_API_URL;
+
+    if (apiUrl !== DEFAULT_API_URL && graphApiUrl === DEFAULT_GRAPH_API_URL) {
+      throw new VError(
+        'When using a custom API URL, a custom Graph API URL must also be provided'
+      );
+    }
+  }
+
   async checkConnection(): Promise<void> {
+    let iter2: AsyncGenerator<User>;
     try {
       const iter = this.getUsers();
       await iter.next();

@@ -35,11 +35,11 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     config: AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureActiveDirectory = await AzureWorkitems.instance(
+      const azureWorkItems = await AzureWorkitems.instance(
         config,
         this.logger
       );
-      await azureActiveDirectory.checkConnection();
+      await azureWorkItems.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
