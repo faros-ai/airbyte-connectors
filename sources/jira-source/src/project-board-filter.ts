@@ -129,17 +129,17 @@ export class ProjectBoardFilter {
       // Ensure projects is populated
       await this.getProjects();
 
-      // Ensure included / excluded boards are loaded
-      await this.loadSelectedBoards();
-
-      if (!this.useBoardOwnership()) {
+      if (this.useProjectsAsBoards()) {
         await this.getBoardsFromProjects();
-      }
-
-      if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
-        await this.getBoardsFromFaros(jira);
       } else {
-        await this.getBoardsFromJira(jira);
+        // Ensure included / excluded boards are loaded
+        await this.loadSelectedBoards();
+
+        if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
+          await this.getBoardsFromFaros(jira);
+        } else {
+          await this.getBoardsFromJira(jira);
+        }
       }
     }
     return Array.from(this.boards.values());
@@ -228,10 +228,7 @@ export class ProjectBoardFilter {
    */
   private async getBoardsFromProjects(): Promise<void> {
     for (const project of this.projects) {
-      const {included, issueSync} = await this.getBoardInclusion(project);
-      if (included) {
-        this.boards.set(project, {uid: project, issueSync});
-      }
+      this.boards.set(project, {uid: project, issueSync: true});
     }
   }
 
@@ -273,7 +270,7 @@ export class ProjectBoardFilter {
     return Boolean(this.farosClient);
   }
 
-  private useBoardOwnership(): boolean {
-    return this.config.use_board_ownership ?? true;
+  private useProjectsAsBoards(): boolean {
+    return this.config.use_projects_as_boards ?? false;
   }
 }

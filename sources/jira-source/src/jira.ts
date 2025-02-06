@@ -75,7 +75,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
   readonly use_faros_board_issue_tracker?: boolean;
-  readonly use_board_ownership?: boolean;
+  readonly use_projects_as_boards?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;
@@ -977,6 +977,8 @@ export class Jira {
     this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
     return sprints;
   }
+
+  // add a get sprint and sprint report by project or smth like that
 
   private getSprintsIterator(
     boardId: string,

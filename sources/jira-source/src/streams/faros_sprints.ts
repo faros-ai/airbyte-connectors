@@ -28,6 +28,7 @@ export class FarosSprints extends StreamWithBoardSlices {
   ): AsyncGenerator<Sprint> {
     const boardId = streamSlice.board;
     const jira = await Jira.instance(this.config, this.logger);
+
     const board = await jira.getBoard(boardId);
     if (board.type !== 'scrum') return;
     const updateRange =
