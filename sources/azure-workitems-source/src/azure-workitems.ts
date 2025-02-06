@@ -70,7 +70,7 @@ export class AzureWorkitems {
 
     AzureWorkitems.validateConfig(config);
 
-    const apiUrl = config.api_url ?? DEFAULT_API_URL;
+    const apiUrl = AzureWorkitems.cleanUrl(config.api_url) ?? DEFAULT_API_URL;
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const accessToken = base64Encode(`:${config.access_token}`);
 
@@ -91,7 +91,8 @@ export class AzureWorkitems {
       1000
     );
 
-    const graphApiUrl = config.graph_api_url ?? DEFAULT_GRAPH_API_URL;
+    const graphApiUrl =
+      AzureWorkitems.cleanUrl(config.graph_api_url) ?? DEFAULT_GRAPH_API_URL;
 
     const graphClient = axios.create({
       baseURL: `${graphApiUrl}/${config.organization}/_apis/graph`,
@@ -146,17 +147,19 @@ export class AzureWorkitems {
     }
 
     // If using a custom API URL for Server, a custom Graph API URL must also be provided
-    const apiUrl =
-      config.api_url?.trimEnd().replace(/\/$/, '').trim() ?? DEFAULT_API_URL;
+    const apiUrl = AzureWorkitems.cleanUrl(config.api_url) ?? DEFAULT_API_URL;
     const graphApiUrl =
-      config.graph_api_url?.trimEnd().replace(/\/$/, '').trim() ??
-      DEFAULT_GRAPH_API_URL;
+      AzureWorkitems.cleanUrl(config.graph_api_url) ?? DEFAULT_GRAPH_API_URL;
 
     if (apiUrl !== DEFAULT_API_URL && graphApiUrl === DEFAULT_GRAPH_API_URL) {
       throw new VError(
         'When using a custom API URL, a custom Graph API URL must also be provided'
       );
     }
+  }
+
+  static cleanUrl(url?: string): string | undefined {
+    return url?.trim().endsWith('/') ? url.trim().slice(0, -1) : url?.trim();
   }
 
   async checkConnection(): Promise<void> {
