@@ -2,10 +2,10 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import {VError} from 'verror';
 
 import {AzureWorkitems} from '../src/azure-workitems';
 import * as sut from '../src/index';
@@ -21,6 +21,8 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.INFO
   );
+
+  const source = new sut.AzureWorkitemsSource(logger);
 
   beforeEach(() => {
     AzureWorkitems.instance = azureWorkitem;
@@ -41,18 +43,63 @@ describe('index', () => {
     );
   });
 
+  test('check connection - valid config', async () => {
+    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
+      const usersResource: any[] = readTestResourceFile('users.json');
+      return new AzureWorkitems(
+        null,
+        {
+          get: jest.fn().mockResolvedValue({
+            data: {value: usersResource},
+          }),
+        } as any,
+        new Map(),
+        logger
+      );
+    });
+
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        access_token: 'access_token',
+        organization: 'organization',
+        project: 'project',
+      },
+    });
+  });
+
   test('check connection - no access token', async () => {
-    const source = new sut.AzureWorkitemsSource(logger);
-    await expect(
-      source.checkConnection({
+    await sourceCheckTest({
+      source,
+      configOrPath: {
         access_token: '',
         organization: 'organization',
         project: 'project',
-      } as any)
-    ).resolves.toStrictEqual([
-      false,
-      new VError('access_token must not be an empty string'),
-    ]);
+      },
+    });
+  });
+
+  test('check connection - no organization', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        access_token: 'access_token',
+        organization: '',
+        project: 'project',
+      },
+    });
+  });
+
+  test('check connection - custom api_url with no graph_api_url', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        access_token: 'access_token',
+        organization: 'organization',
+        api_url: 'https://azure.myorg.com',
+        project: 'project',
+      },
+    });
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
