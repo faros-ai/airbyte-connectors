@@ -444,23 +444,7 @@ describe('index', () => {
       configOrPath: {...config, use_projects_as_boards: true},
       catalogOrPath: 'boards/catalog.json',
       onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            agile: {
-              board: {
-                getAllBoards: paginate(
-                  readTestResourceAsJSON('boards/boards.json'),
-                  'values',
-                  1,
-                  true
-                ),
-              },
-            },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
+        setupJiraInstance({}, true, res.config as JiraConfig, logger);
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
