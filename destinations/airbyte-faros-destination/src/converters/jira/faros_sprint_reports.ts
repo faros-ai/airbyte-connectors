@@ -18,6 +18,12 @@ export class FarosSprintReports extends JiraConverter {
     const boardUid = toString(sprintReport.boardId);
     const results: DestinationRecord[] = [];
     const source = this.initializeSource(ctx);
+    const projectKey = sprintReport.projectKey;
+    // If the project key is provided and use_board_ownership enabled, we use it as board uid.
+    const board =
+      projectKey && this.useBoardOwnership(ctx)
+        ? {uid: projectKey, source}
+        : {uid: boardUid, source};
     for (const issue of sprintReport.issues || []) {
       const status = issue.status
         ? {
@@ -34,7 +40,7 @@ export class FarosSprintReports extends JiraConverter {
             task: {uid: issue.key, source},
             sprint: {uid: sprintUid, source},
           },
-          board: {uid: boardUid, source},
+          board,
           points: issue.points,
           plannedPoints: issue.plannedPoints,
           classification: {category: issue.classification},

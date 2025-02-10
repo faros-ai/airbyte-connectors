@@ -17,6 +17,11 @@ export class FarosSprints extends JiraConverter {
     const sprint = record.record.data;
     const source = this.initializeSource(ctx);
     const uid = toString(sprint.id);
+    // If the project key is provided and use_board_ownership enabled, we use it as board uid.
+    const board =
+      sprint.projectKey && this.useBoardOwnership(ctx)
+        ? {uid: sprint.projectKey, source}
+        : {uid: toString(sprint.boardId), source};
     return [
       {
         model: 'tms_Sprint',
@@ -36,7 +41,7 @@ export class FarosSprints extends JiraConverter {
         model: 'tms_SprintBoardRelationship',
         record: {
           sprint: {uid, source},
-          board: {uid: toString(sprint.boardId), source},
+          board,
         },
       },
     ];
