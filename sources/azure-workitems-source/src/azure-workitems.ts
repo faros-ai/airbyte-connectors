@@ -3,6 +3,7 @@ import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
+import * as azdev from 'azure-devops-node-api';
 
 import {
   AdditionalField,
@@ -71,12 +72,13 @@ export class AzureWorkitems {
     AzureWorkitems.validateConfig(config);
 
     const apiUrl = AzureWorkitems.cleanUrl(config.api_url) ?? DEFAULT_API_URL;
+    const orgUrl = `${apiUrl}/${config.organization}`;
     const version = config.api_version ?? DEFAULT_API_VERSION;
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const httpClient = makeAxiosInstanceWithRetry(
       {
-        baseURL: `${apiUrl}/${config.organization}`,
+        baseURL: orgUrl,
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
@@ -102,6 +104,15 @@ export class AzureWorkitems {
       params: {'api-version': config.graph_version ?? DEFAULT_GRAPH_VERSION},
       headers: {Authorization: `Basic ${accessToken}`},
     });
+
+    const authHandler = azdev.getPersonalAccessTokenHandler(config.access_token);
+    const connection = new azdev.WebApi(orgUrl, authHandler);
+    const witClient = await connection.getWorkItemTrackingApi();
+    const fieldNameReferences2 = new Map<string, string>();
+    const fields = await witClient.getFields();
+    for (const field of fields) {
+      fieldNameReferences2.set(field.name, field.referenceName);
+    }
 
     const fieldNameReferences = new Map<string, string>();
     const res = await httpClient.get<any>(`_apis/wit/fields`);
