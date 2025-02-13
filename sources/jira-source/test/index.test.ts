@@ -392,45 +392,7 @@ describe('index', () => {
       configOrPath: {...config, use_projects_as_boards: true},
       catalogOrPath: 'board_issues/catalog.json',
       onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            agile: {
-              board: {
-                getConfiguration: jest
-                  .fn()
-                  .mockResolvedValue(
-                    readTestResourceAsJSON(
-                      'board_issues/board_configuration.json'
-                    )
-                  ),
-                getAllBoards: paginate(
-                  readTestResourceAsJSON('common/boards_unique.json'),
-                  'values',
-                  1,
-                  true
-                ),
-              },
-            },
-            v2: {
-              filters: {
-                getFilter: jest
-                  .fn()
-                  .mockResolvedValue(
-                    readTestResourceAsJSON('board_issues/board_filter.json')
-                  ),
-              },
-              issueSearch: {
-                searchForIssuesUsingJql: paginate(
-                  readTestResourceAsJSON('board_issues/issues_from_board.json'),
-                  'issues'
-                ),
-              },
-            },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
+        setupJiraInstance({}, true, res.config as JiraConfig, logger);
       },
       checkRecordsData: (records) => {
         expect(records).toEqual([]);
