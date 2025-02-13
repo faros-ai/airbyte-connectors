@@ -820,7 +820,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               if (sourceModeOrType === 'mock-data-feed') {
                 this.logger.info('Running a mock data feed sync. Resetting all models before writing records.');
                 ctx.markAllStreamsForReset();
-                await resetData?.(isResetSync);
+                await resetData?.(false);
               }
 
               await updateLocalAccount?.(msg);
