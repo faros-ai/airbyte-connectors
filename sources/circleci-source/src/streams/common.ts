@@ -1,10 +1,10 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
+import {bucket} from 'faros-airbyte-common/common';
 
-import {CircleCI, CircleCIConfig} from '../circleci/circleci';
+import {CircleCIConfig} from '../circleci/circleci';
 
 export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   constructor(
-    protected readonly circleCI: CircleCI,
     protected readonly cfg: CircleCIConfig,
     protected readonly logger: AirbyteLogger
   ) {
@@ -13,10 +13,20 @@ export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
 
   async *streamSlices(): AsyncGenerator<StreamSlice> {
     for (const projectSlug of this.cfg.project_slugs) {
-      if (this.circleCI.isProjectInBucket(projectSlug)) {
+      if (this.isProjectInBucket(projectSlug)) {
         yield {projectSlug};
       }
     }
+  }
+
+  isProjectInBucket(project: string): boolean {
+    return (
+      bucket(
+        'farosai/airbyte-circleci-source',
+        project,
+        this.cfg.bucket_total
+      ) === this.cfg.bucket_id
+    );
   }
 }
 

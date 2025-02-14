@@ -6,7 +6,6 @@ import axios, {
 } from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
-  bucket,
   RoundRobinConfig,
   validateBucketingConfig,
 } from 'faros-airbyte-common/common';
@@ -42,8 +41,6 @@ export class CircleCI {
   private static circleCI: CircleCI = undefined;
   private readonly cutoffDays: number;
   private readonly maxRetries: number;
-  private readonly bucketId: number;
-  private readonly bucketTotal: number;
 
   constructor(
     config: CircleCIConfig,
@@ -53,8 +50,6 @@ export class CircleCI {
   ) {
     this.cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
     this.maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
-    this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
-    this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
   }
 
   static instance(config: CircleCIConfig, logger: AirbyteLogger): CircleCI {
@@ -402,13 +397,6 @@ export class CircleCI {
           },
         }),
       (item: any) => item
-    );
-  }
-
-  isProjectInBucket(project: string): boolean {
-    return (
-      bucket('farosai/airbyte-circleci-source', project, this.bucketTotal) ===
-      this.bucketId
     );
   }
 }

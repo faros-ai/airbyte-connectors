@@ -1,6 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {CircleCI} from '../circleci/circleci';
 import {TestMetadata} from '../circleci/types';
 import {StreamSlice, StreamWithProjectSlices} from './common';
 
@@ -25,12 +26,13 @@ export class Tests extends StreamWithProjectSlices {
     streamSlice?: StreamSlice,
     streamState?: TestsState
   ): AsyncGenerator<TestMetadata, any, unknown> {
+    const circleCI = CircleCI.instance(this.cfg, this.logger);
     const since =
       syncMode === SyncMode.INCREMENTAL
         ? streamState?.[streamSlice.projectSlug]?.lastUpdatedAt
         : undefined;
 
-    for await (const pipeline of this.circleCI.fetchPipelines(
+    for await (const pipeline of circleCI.fetchPipelines(
       streamSlice.projectSlug,
       since
     )) {
@@ -51,7 +53,7 @@ export class Tests extends StreamWithProjectSlices {
           }
           seenJobs.add(jobNum);
 
-          const tests = this.circleCI.fetchTests(
+          const tests = circleCI.fetchTests(
             pipeline.project_slug,
             job.job_number
           );
