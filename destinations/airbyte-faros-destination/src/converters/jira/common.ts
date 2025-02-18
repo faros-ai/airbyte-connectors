@@ -92,7 +92,7 @@ export abstract class JiraConverter extends Converter {
   }
 
   protected useProjectsAsBoards(ctx: StreamContext): boolean {
-    return this.jiraConfig(ctx).use_projects_as_boards ?? true;
+    return this.jiraConfig(ctx).use_projects_as_boards ?? false;
   }
 
   protected convertAdditionalFieldsIssue(
