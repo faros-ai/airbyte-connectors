@@ -454,7 +454,22 @@ describe('index', () => {
       configOrPath: {...config, use_projects_as_boards: true},
       catalogOrPath: 'boards/catalog.json',
       onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance({}, true, res.config as JiraConfig, logger);
+        setupJiraInstance(
+          {
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
@@ -471,6 +486,15 @@ describe('index', () => {
       onBeforeReadResultConsumer: (res) => {
         setupJiraInstance(
           {
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
+            },
             agile: {
               board: {
                 getBoard: jest
