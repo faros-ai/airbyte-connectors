@@ -427,7 +427,7 @@ export class AzureWorkitems {
         }
       }
     }
-    this.logger.info(`Fetched members from ${teams} teams`);
+    this.logger.debug(`Fetched members from ${teams} teams`);
   }
 
   private async *paginateResults<T>(
