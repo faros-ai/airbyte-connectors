@@ -999,19 +999,19 @@ exports[`index streams - projects - Cloud project list 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
-    "key": "TEST-1",
+    "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
-    "key": "TEST-2",
+    "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
-    "key": "TEST-3",
+    "key": "TEST3",
     "name": "Test 3",
   },
 ]
@@ -1022,13 +1022,13 @@ exports[`index streams - projects - Jira Server - project list 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
-    "key": "TEST-1",
+    "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
-    "key": "TEST-2",
+    "key": "TEST2",
     "name": "Test 2",
   },
 ]
@@ -1039,19 +1039,19 @@ exports[`index streams - projects - Jira Server 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
-    "key": "TEST-1",
+    "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
-    "key": "TEST-2",
+    "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
-    "key": "TEST-3",
+    "key": "TEST3",
     "name": "Test 3",
   },
 ]
@@ -1062,19 +1062,19 @@ exports[`index streams - projects - pull all projects 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
-    "key": "TEST-1",
+    "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
-    "key": "TEST-2",
+    "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
-    "key": "TEST-3",
+    "key": "TEST3",
     "name": "Test 3",
   },
 ]

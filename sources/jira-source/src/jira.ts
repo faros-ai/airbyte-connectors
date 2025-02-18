@@ -546,6 +546,7 @@ export class Jira {
     for await (const project of this.getProjectsIterator(keys)) {
       projects.push(project);
     }
+    this.logger?.debug(`Found ${projects.length} browseable projects from Jira instance: ${projects.map(p => p.key).join(', ')}`);
     return projects;
   }
 

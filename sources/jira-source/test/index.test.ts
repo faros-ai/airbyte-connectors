@@ -94,6 +94,13 @@ describe('index', () => {
           'issues'
         ),
       },
+      projects: {
+        searchProjects: paginate(
+          readTestResourceAsJSON('projects/projects.json'),
+          'values',
+          50
+        ),
+      },
     },
     getDevStatusSummary: jest
       .fn()
@@ -122,6 +129,15 @@ describe('index', () => {
         ),
       },
     },
+    v2: {
+      projects: {
+        searchProjects: paginate(
+          readTestResourceAsJSON('projects/projects.json'),
+          'values',
+          50
+        ),
+      },
+    },
     getSprintReport: jest
       .fn()
       .mockResolvedValue(
@@ -137,6 +153,13 @@ describe('index', () => {
           'issues',
           1,
           true
+        ),
+      },
+      projects: {
+        searchProjects: paginate(
+          readTestResourceAsJSON('projects/projects.json'),
+          'values',
+          50
         ),
       },
     },
@@ -258,6 +281,13 @@ describe('index', () => {
                   'issues'
                 ),
               },
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
             },
           },
           true,
@@ -294,6 +324,15 @@ describe('index', () => {
                   'values',
                   1,
                   true
+                ),
+              },
+            },
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
                 ),
               },
             },
@@ -348,6 +387,15 @@ describe('index', () => {
                   'values',
                   1,
                   true
+                ),
+              },
+            },
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
                 ),
               },
             },
@@ -531,7 +579,7 @@ describe('index', () => {
   });
 
   test('streams - projects - Cloud project list', async () => {
-    const projects = ['TEST-1', 'TEST-2', 'TEST-3', 'TEST-4'];
+    const projects = ['TEST', 'TEST2', 'TEST3', 'TEST4'];
     const searchProjects = paginate(
       readTestResourceAsJSON('projects/projects.json'),
       'values',
@@ -604,7 +652,7 @@ describe('index', () => {
       source,
       configOrPath: {
         ...readTestResourceAsJSON('projects/config.json'),
-        projects: ['TEST-1', 'TEST-2'],
+        projects: ['TEST', 'TEST2', 'TEST4'],
       },
       catalogOrPath: 'projects/catalog.json',
       onBeforeReadResultConsumer: (res) => {
@@ -654,6 +702,15 @@ describe('index', () => {
                 ),
               },
             },
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
+            },
           },
           true,
           res.config as JiraConfig,
@@ -681,6 +738,13 @@ describe('index', () => {
                   readTestResourceAsJSON(
                     'project_versions/project_versions.json'
                   )
+                ),
+              },
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
                 ),
               },
             },
@@ -715,6 +779,13 @@ describe('index', () => {
                     'project_version_issues/project_version_issues.json'
                   ),
                   'issues'
+                ),
+              },
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
                 ),
               },
               projectVersions: {
@@ -799,6 +870,13 @@ describe('index', () => {
                     'issue_additional_fields/issues_with_additional_fields.json'
                   ),
                   'issues'
+                ),
+              },
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
                 ),
               },
             },

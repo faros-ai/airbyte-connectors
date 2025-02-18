@@ -116,11 +116,10 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    const circleCI = CircleCI.instance(config, this.logger);
     return [
-      new Projects(circleCI, config, this.logger),
-      new Pipelines(circleCI, config, this.logger),
-      new Tests(circleCI, config, this.logger),
+      new Projects(config, this.logger),
+      new Pipelines(config, this.logger),
+      new Tests(config, this.logger),
     ];
   }
 

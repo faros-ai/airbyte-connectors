@@ -1,6 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {CircleCI} from '../circleci/circleci';
 import {Project} from '../circleci/types';
 import {StreamSlice, StreamWithProjectSlices} from './common';
 
@@ -18,6 +19,7 @@ export class Projects extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: StreamSlice
   ): AsyncGenerator<Project, any, unknown> {
-    yield await this.circleCI.fetchProject(streamSlice.projectSlug);
+    const circleCI = CircleCI.instance(this.cfg, this.logger);
+    yield await circleCI.fetchProject(streamSlice.projectSlug);
   }
 }

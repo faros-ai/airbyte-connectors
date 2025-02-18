@@ -93,43 +93,77 @@ export class OrgRepoFilter {
   @Memoize()
   async getOrganizations(): Promise<ReadonlyArray<string>> {
     if (!this.organizations) {
-      const organizations = new Set<string>();
       const github = await GitHub.instance(this.config, this.logger);
-      const visibleOrgs = await github.getOrganizations();
-      if (!visibleOrgs.length) {
+      const visibleOrgs = new Set(
+        (await github.getOrganizations()).map((o) => toLower(o))
+      );
+
+      if (!visibleOrgs.size) {
         this.logger.warn('No visible organizations found');
       }
-      if (!this.filterConfig.organizations) {
-        visibleOrgs.forEach((org) => {
-          const lowerOrg = toLower(org);
-          if (this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
-            this.logger.info(`Skipping excluded organization ${lowerOrg}`);
-            return;
-          }
-          organizations.add(lowerOrg);
-        });
-      } else {
-        this.filterConfig.organizations.forEach((org) => {
-          const lowerOrg = toLower(org);
-          if (!visibleOrgs.some((o) => toLower(o) === lowerOrg)) {
-            this.logger.warn(`Skipping not found organization ${lowerOrg}`);
-            return;
-          }
-          organizations.add(lowerOrg);
-        });
-      }
-      this.organizations = organizations;
+
+      this.organizations = await this.filterOrganizations(visibleOrgs, github);
     }
 
-    if (this.config.run_mode !== RunMode.EnterpriseCopilotOnly) {
-      if (this.organizations.size === 0) {
-        throw new VError(
-          'No visible organizations remain after applying inclusion and exclusion filters'
-        );
-      }
+    if (
+      this.config.run_mode !== RunMode.EnterpriseCopilotOnly &&
+      this.organizations.size === 0
+    ) {
+      throw new VError(
+        'No visible organizations remain after applying inclusion and exclusion filters'
+      );
     }
 
     return Array.from(this.organizations);
+  }
+
+  private async filterOrganizations(
+    visibleOrgs: Set<string>,
+    github: GitHub
+  ): Promise<Set<string>> {
+    const organizations = new Set<string>();
+
+    if (!this.filterConfig.organizations) {
+      for (const org of visibleOrgs) {
+        const lowerOrg = toLower(org);
+        if (!this.filterConfig.excludedOrganizations?.has(lowerOrg)) {
+          organizations.add(lowerOrg);
+        } else {
+          this.logger.info(`Skipping excluded organization ${lowerOrg}`);
+        }
+      }
+    } else {
+      for (const organization of this.filterConfig.organizations) {
+        const lowerOrg = toLower(organization);
+        if (await this.isVisibleOrganization(visibleOrgs, lowerOrg, github)) {
+          organizations.add(lowerOrg);
+        }
+      }
+    }
+
+    return organizations;
+  }
+
+  private async isVisibleOrganization(
+    visibleOrgs: Set<string>,
+    lowerOrg: string,
+    github: GitHub
+  ): Promise<boolean> {
+    if (visibleOrgs.has(lowerOrg)) {
+      return true;
+    }
+
+    // Attempt direct organization lookup if not in visibleOrgs
+    try {
+      await github.getOrganization(lowerOrg);
+      return true;
+    } catch (error: any) {
+      this.logger.warn(
+        `Fetching organization ${lowerOrg} failed with error: ` +
+          `${error.status} - ${error.message}. Skipping.`
+      );
+      return false;
+    }
   }
 
   @Memoize()

@@ -1,5 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`index check connection - custom api_url with no graph_api_url 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "When using a custom API URL, a custom Graph API URL must also be provided",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - no access token 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "access_token must not be an empty string",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - no organization 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "organization must not be an empty string",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
 exports[`index streams - iterations, use full_refresh sync mode 1`] = `
 [
   {

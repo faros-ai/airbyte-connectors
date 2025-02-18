@@ -25,50 +25,61 @@
         "title": "Project IDs or project names",
         "description": "Azure Projects. If empty or '*' all available projects will be processed."
       },
-      "access_token": {
+      "api_url": {
         "order": 2,
+        "type": "string",
+        "title": "API URL",
+        "default": "https://dev.azure.com"
+      },
+      "vsrm_api_url": {
+        "order": 3,
+        "type": "string",
+        "title": "VSRM API URL",
+        "default": "https://vsrm.dev.azure.com"
+      },
+      "api_version": {
+        "order": 4,
+        "type": "string",
+        "title": "API Version",
+        "default": "6.0"
+      },
+      "access_token": {
+        "order": 5,
         "type": "string",
         "title": "Azure Access Token",
         "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
       "cutoff_days": {
-        "order": 3,
+        "order": 6,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Fetch builds and releases created within the specified number of days"
       },
       "page_size": {
-        "order": 4,
+        "order": 7,
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when requesting records from Azure API",
         "default": 100
       },
-      "api_version": {
-        "order": 5,
-        "type": "string",
-        "title": "API Version",
-        "description": "Azure API Version",
-        "default": "6.0"
-      },
       "api_timeout": {
-        "order": 6,
+        "order": 8,
         "type": "integer",
         "title": "API Timeout",
         "description": "Timeout (in milliseconds) to use when making requests to Azure API. 0 means no timeout.",
         "default": 0
       },
       "max_retries": {
-        "order": 7,
+        "order": 9,
         "type": "integer",
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to the Azure API.",
         "default": 3
       },
       "api_retry_delay": {
-        "order": 8,
+        "order": 10,
         "type": "integer",
         "title": "API Retry Delay",
         "description": "Delay (in milliseconds) to use when retrying Azure API calls.",
