@@ -38,7 +38,12 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
+export type InstanceType = {
+  type: 'cloud' | 'server';
+};
+
 export interface AzureWorkitemsConfig {
+  readonly instance_type?: InstanceType;
   readonly access_token: string;
   readonly api_url: string;
   readonly graph_api_url: string;
@@ -56,6 +61,7 @@ export class AzureWorkitems {
   private static azure_Workitems: AzureWorkitems = null;
 
   constructor(
+    private readonly instanceType: InstanceType,
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
     private readonly additionalFieldReferences: Map<string, string>,
@@ -129,6 +135,7 @@ export class AzureWorkitems {
     );
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
+      config.instance_type,
       httpClient,
       graphClient,
       additionalFieldReferences,
@@ -211,41 +218,6 @@ export class AzureWorkitems {
     return this.handleNotFound<T, R>(() =>
       this.httpClient.post<T, R>(path, data, {params})
     );
-  }
-
-  async *getStories(): AsyncGenerator<any> {
-    const data = {
-      query:
-        "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' order by [id] asc",
-    };
-    const list = await this.post<any>('wit/wiql', data);
-    const ids: string[] = [];
-    for (let i = 0; i < list.data.workItems.length; i++) {
-      ids.push(list.data.workItems[i].id);
-    }
-    const ids2: string[] = [];
-    const userStories = [];
-    for (const id of ids) {
-      if (ids2.length == MAX_BATCH_SIZE) {
-        userStories.push(
-          await this.get<WorkItemResponse>(
-            `wit/workitems?ids=${ids2}&$expand=all`
-          )
-        );
-        ids2.splice(0);
-      }
-      ids2.push(id);
-    }
-    if (ids2.length > 0) {
-      userStories.push(
-        await this.get<WorkItemResponse>(
-          `wit/workitems?ids=${ids2}&$expand=all`
-        )
-      );
-    }
-    for (const item of userStories) {
-      yield item;
-    }
   }
 
   async *getWorkitems(
@@ -414,6 +386,14 @@ export class AzureWorkitems {
   }
 
   async *getUsers(): AsyncGenerator<User> {
+    if (this.instanceType.type === 'cloud') {
+      yield* this.getCloudUsers();
+    } else {
+      yield* this.getServerUsers();
+    }
+  }
+
+  async *getCloudUsers(): AsyncGenerator<User> {
     let continuationToken: string;
     do {
       const res = await this.graphClient.get<UserResponse>('users', {
@@ -424,6 +404,65 @@ export class AzureWorkitems {
         yield item;
       }
     } while (continuationToken);
+  }
+
+  async *getServerUsers(): AsyncGenerator<User> {
+    const teams = await this.getTeams();
+
+    for (const team of teams) {
+      const teamMembers = await this.getTeamMembers(team);
+      for (const member of teamMembers) {
+        yield member;
+      }
+    }
+  }
+
+  async getTeams(): Promise<ReadonlyArray<any>> {
+    const pageSize = 100; // Number of items per page
+    let skip = 0;
+    const allTeams: any[] = [];
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const url = `_apis/teams?$top=${pageSize}&$skip=${skip}`;
+      const response = await this.get<any>(url);
+      const data = response?.data;
+
+      const teams = data?.value;
+      if (!Array.isArray(teams) || !teams.length) {
+        hasMoreResults = false;
+      } else {
+        allTeams.push(...teams);
+        skip += pageSize;
+
+        if (teams.length < pageSize) {
+          hasMoreResults = false;
+        }
+      }
+    }
+
+    return allTeams;
+  }
+
+  async *getTeamMembers(team: any): AsyncGenerator<User> {
+    const pageSize = 100; // Number of items per page
+    let skip = 0;
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const url = `${team.url}/members?$top=${pageSize}&$skip=${skip}`;
+      const res = await this.get<any>(url);
+      for (const item of res.data?.value ?? []) {
+        yield item.identity;
+      }
+
+      const count = res.data?.count;
+      if (!count || count < pageSize) {
+        hasMoreResults = false;
+      } else {
+        skip += pageSize;
+      }
+    }
   }
 
   /**

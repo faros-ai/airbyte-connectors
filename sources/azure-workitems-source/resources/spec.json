@@ -4,36 +4,79 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Workitems Spec",
     "type": "object",
-    "required": ["access_token", "organization"],
+    "required": [
+      "instance_type",
+      "access_token",
+      "organization"
+    ],
     "additionalProperties": true,
     "properties": {
-      "api_url": {
+      "instance_type": {
+        "title": "Instance Type",
+        "description": "Choose how your Azure instance is setup",
+        "type": "object",
         "order": 0,
+        "default": {
+          "type": "cloud"
+        },
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Cloud",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "cloud",
+                "order": 0
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "Server",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "server",
+                "order": 0
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ]
+      },
+      "api_url": {
+        "order": 1,
         "type": "string",
         "title": "API URL",
         "default": "https://dev.azure.com"
       },
       "graph_api_url": {
-        "order": 1,
+        "order": 2,
         "type": "string",
         "title": "Graph API URL",
         "default": "https://vssps.dev.azure.com"
       },
       "access_token": {
-        "order": 2,
+        "order": 3,
         "type": "string",
         "title": "Azure Access Token",
         "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
       "organization": {
-        "order": 3,
+        "order": 4,
         "type": "string",
         "title": "Organization",
         "description": "Azure Organization"
       },
       "projects": {
-        "order": 4,
+        "order": 5,
         "type": "array",
         "items": {
           "type": "string",
@@ -43,14 +86,14 @@
         "description": "Azure Projects. If empty or '*' all available projects will be processed."
       },
       "project": {
-        "order": 5,
+        "order": 6,
         "type": "string",
         "title": "Azure Project",
         "deprecated": true,
         "description": "Deprecated: Please use 'projects' array instead"
       },
       "additional_fields": {
-        "order": 6,
+        "order": 7,
         "type": "array",
         "title": "Additional Fields",
         "items": {
@@ -64,33 +107,33 @@
         ]
       },
       "cutoff_days": {
-        "order": 7,
+        "order": 8,
         "type": "integer",
         "title": "Cutoff Days",
         "description": "The threshold after which data should be synced.",
         "default": 90
       },
       "api_version": {
-        "order": 8,
+        "order": 9,
         "type": "string",
         "title": "API Version",
         "default": "7.1"
       },
       "graph_version": {
-        "order": 9,
+        "order": 10,
         "type": "string",
         "title": "Graph API Version",
         "default": "7.1-preview.1"
       },
       "reject_unauthorized": {
-        "order": 10,
+        "order": 11,
         "type": "boolean",
         "title": "Reject Unauthorized",
         "description": "If true, requests to Azure DevOps API with self-signed certificates will be rejected.",
         "default": true
       },
       "request_timeout": {
-        "order": 11,
+        "order": 12,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
