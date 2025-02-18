@@ -59,6 +59,7 @@ export interface user {
 }
 
 export interface User {
+  id: string;
   subjectKind: string;
   domain: string;
   principalName: string;
@@ -68,6 +69,7 @@ export interface User {
   displayName: string;
   url: string;
   descriptor: string;
+  uniqueName: string;
   _links: UserLink;
 }
 

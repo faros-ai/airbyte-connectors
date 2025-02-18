@@ -62,6 +62,7 @@ export class AzureWorkitems {
 
   constructor(
     private readonly instanceType: InstanceType,
+    private readonly apiVersion: string,
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
     private readonly additionalFieldReferences: Map<string, string>,
@@ -75,9 +76,16 @@ export class AzureWorkitems {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
     AzureWorkitems.validateConfig(config);
+    if (config.instance_type?.type) {
+      logger.info(`Azure DevOps instance type: ${config.instance_type.type}`);
+    } else {
+      logger.info(
+        'No Azure DevOps instance type provided, defaulting to cloud'
+      );
+    }
 
     const apiUrl = AzureWorkitems.cleanUrl(config.api_url) ?? DEFAULT_API_URL;
-    const version = config.api_version ?? DEFAULT_API_VERSION;
+    const apiVersion = config.api_version ?? DEFAULT_API_VERSION;
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const httpClient = makeAxiosInstanceWithRetry(
@@ -86,7 +94,7 @@ export class AzureWorkitems {
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
-          'api-version': version,
+          'api-version': apiVersion,
         },
         headers: {
           Authorization: `Basic ${accessToken}`,
@@ -136,6 +144,7 @@ export class AzureWorkitems {
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       config.instance_type,
+      apiVersion,
       httpClient,
       graphClient,
       additionalFieldReferences,
@@ -386,10 +395,10 @@ export class AzureWorkitems {
   }
 
   async *getUsers(): AsyncGenerator<User> {
-    if (this.instanceType.type === 'cloud') {
-      yield* this.getCloudUsers();
-    } else {
+    if (this.instanceType?.type === 'server') {
       yield* this.getServerUsers();
+    } else {
+      yield* this.getCloudUsers();
     }
   }
 
@@ -407,61 +416,67 @@ export class AzureWorkitems {
   }
 
   async *getServerUsers(): AsyncGenerator<User> {
-    const teams = await this.getTeams();
-
-    for (const team of teams) {
-      const teamMembers = await this.getTeamMembers(team);
-      for (const member of teamMembers) {
-        yield member;
-      }
-    }
-  }
-
-  async getTeams(): Promise<ReadonlyArray<any>> {
-    const pageSize = 100; // Number of items per page
-    let skip = 0;
-    const allTeams: any[] = [];
-    let hasMoreResults = true;
-
-    while (hasMoreResults) {
-      const url = `_apis/teams?$top=${pageSize}&$skip=${skip}`;
-      const response = await this.get<any>(url);
-      const data = response?.data;
-
-      const teams = data?.value;
-      if (!Array.isArray(teams) || !teams.length) {
-        hasMoreResults = false;
-      } else {
-        allTeams.push(...teams);
-        skip += pageSize;
-
-        if (teams.length < pageSize) {
-          hasMoreResults = false;
+    const seenUsers = new Set<string>();
+    let teams = 0;
+    for await (const team of this.getTeams()) {
+      teams++;
+      for await (const member of this.getTeamMembers(team)) {
+        if (!seenUsers.has(member.uniqueName)) {
+          seenUsers.add(member.uniqueName);
+          yield member;
         }
       }
     }
-
-    return allTeams;
+    this.logger.info(`Fetched members from ${teams} teams`);
   }
 
-  async *getTeamMembers(team: any): AsyncGenerator<User> {
-    const pageSize = 100; // Number of items per page
+  private async *paginateResults<T>(
+    fetchPage: (
+      pageSize: number,
+      skip: number
+    ) => Promise<{data?: {value?: T[]; count?: number}}>,
+    pageSize = 100
+  ): AsyncGenerator<T> {
     let skip = 0;
     let hasMoreResults = true;
 
     while (hasMoreResults) {
-      const url = `${team.url}/members?$top=${pageSize}&$skip=${skip}`;
-      const res = await this.get<any>(url);
+      const res = await fetchPage(pageSize, skip);
+
       for (const item of res.data?.value ?? []) {
-        yield item.identity;
+        yield item;
       }
 
       const count = res.data?.count;
       if (!count || count < pageSize) {
         hasMoreResults = false;
-      } else {
-        skip += pageSize;
       }
+      skip += pageSize;
+    }
+  }
+
+  async *getTeams(): AsyncGenerator<any> {
+    let teams = 0;
+    const fetchTeams = (pageSize: number, skip: number) =>
+      this.get<any>('_apis/teams', {
+        params: {
+          $top: pageSize,
+          $skip: skip,
+          'api-version': `${this.apiVersion}-preview.3`,
+        },
+      });
+
+    yield* this.paginateResults(fetchTeams);
+  }
+
+  async *getTeamMembers(team: any): AsyncGenerator<User> {
+    const fetchMembers = (pageSize: number, skip: number) =>
+      this.get<any>(`${team.url}/members`, {
+        params: {$top: pageSize, $skip: skip},
+      });
+
+    for await (const item of this.paginateResults<any>(fetchMembers)) {
+      yield item.identity;
     }
   }
 

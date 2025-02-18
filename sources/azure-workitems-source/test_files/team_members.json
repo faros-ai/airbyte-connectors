@@ -1,0 +1,35 @@
+{
+  "value": [
+    {
+      "isTeamAdmin": false,
+      "identity": {
+        "id": "3b5f0c34-4aec-4bf4-8708-1d36f0dbc468",
+        "displayName": "Christie Church",
+        "uniqueName": "fabrikamfiber1@hotmail.com",
+        "url": "https://fabrikam:8080/tfs/_apis/Identities/3b5f0c34-4aec-4bf4-8708-1d36f0dbc468",
+        "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=3b5f0c34-4aec-4bf4-8708-1d36f0dbc468"
+      }
+    },
+    {
+      "isTeamAdmin": false,
+      "identity": {
+        "id": "8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d",
+        "displayName": "Chuck Reinhart",
+        "uniqueName": "fabrikamfiber3@hotmail.com",
+        "url": "https://fabrikam:8080/tfs/_apis/Identities/8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d",
+        "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d"
+      }
+    },
+    {
+      "isTeamAdmin": true,
+      "identity": {
+        "id": "19d9411e-9a34-45bb-b985-d24d9d87c0c9",
+        "displayName": "Johnnie McLeod",
+        "uniqueName": "fabrikamfiber2@hotmail.com",
+        "url": "https://fabrikam:8080/tfs/_apis/Identities/19d9411e-9a34-45bb-b985-d24d9d87c0c9",
+        "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=19d9411e-9a34-45bb-b985-d24d9d87c0c9"
+      }
+    }
+  ],
+  "count": 3
+}
