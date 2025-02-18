@@ -26,17 +26,13 @@ export class FarosBoards extends StreamWithProjectSlices {
 
     // If board ownership is disabled, return a virtual board for all tasks in the project.
     if (this.config.use_projects_as_boards) {
-      const {included, issueSync} =
-        await this.projectBoardFilter.getBoardInclusion(projectKey);
-      if (included) {
-        yield {
-          uid: projectKey,
-          name: `Tasks in project ${projectKey}`,
-          projectKey,
-          type: 'Custom',
-          issueSync,
-        };
-      }
+      yield {
+        uid: projectKey,
+        name: `Tasks in project ${projectKey}`,
+        projectKey,
+        type: 'Custom',
+        issueSync: true,
+      };
       return;
     }
 
