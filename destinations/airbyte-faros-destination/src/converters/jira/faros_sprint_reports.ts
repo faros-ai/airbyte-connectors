@@ -19,9 +19,9 @@ export class FarosSprintReports extends JiraConverter {
     const results: DestinationRecord[] = [];
     const source = this.initializeSource(ctx);
     const projectKey = sprintReport.projectKey;
-    // If the project key is provided and use_board_ownership enabled, we use it as board uid.
+    // If the project key is provided and use_projects_as_boards is enabled, we use project as board uid.
     const board =
-      projectKey && this.useBoardOwnership(ctx)
+      projectKey && this.useProjectsAsBoards(ctx)
         ? {uid: projectKey, source}
         : {uid: boardUid, source};
     for (const issue of sprintReport.issues || []) {

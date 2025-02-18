@@ -129,7 +129,7 @@ export class FarosIssues extends JiraConverter {
       },
     });
 
-    if (!this.useBoardOwnership(ctx)) {
+    if (this.useProjectsAsBoards(ctx)) {
       results.push({
         model: 'tms_TaskBoardRelationship',
         record: {

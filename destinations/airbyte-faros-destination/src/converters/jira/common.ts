@@ -35,7 +35,7 @@ export const JiraStatusCategories: ReadonlyMap<string, string> = new Map(
 export interface JiraConfig {
   additional_fields_array_limit?: number;
   exclude_fields?: string[];
-  use_board_ownership?: boolean;
+  use_projects_as_boards?: boolean;
   truncate_limit?: number;
   source_qualifier?: string;
 }
@@ -91,8 +91,8 @@ export abstract class JiraConverter extends Converter {
     return str;
   }
 
-  protected useBoardOwnership(ctx: StreamContext): boolean {
-    return this.jiraConfig(ctx).use_board_ownership ?? false;
+  protected useProjectsAsBoards(ctx: StreamContext): boolean {
+    return this.jiraConfig(ctx).use_projects_as_boards ?? true;
   }
 
   protected convertAdditionalFieldsIssue(
