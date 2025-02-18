@@ -433,6 +433,118 @@ describe('index', () => {
     });
   });
 
+  test('streams - board_issues with use_projects_as_boards enabled', async () => {
+    const config = readTestResourceAsJSON('board_issues/config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, use_projects_as_boards: true},
+      catalogOrPath: 'board_issues/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance({}, true, res.config as JiraConfig, logger);
+      },
+      checkRecordsData: (records) => {
+        expect(records).toEqual([]);
+      },
+    });
+  });
+
+  test('streams - boards with use_projects_as_boards enabled', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, use_projects_as_boards: true},
+      catalogOrPath: 'boards/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - sprints with use_projects_as_boards enabled', async () => {
+    const config = readTestResourceAsJSON('sprints/config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, use_projects_as_boards: true},
+      catalogOrPath: 'sprints/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          {
+            v2: {
+              projects: {
+                searchProjects: paginate(
+                  readTestResourceAsJSON('projects/projects.json'),
+                  'values',
+                  50
+                ),
+              },
+            },
+            agile: {
+              board: {
+                getBoard: jest
+                  .fn()
+                  .mockResolvedValue(
+                    readTestResourceAsJSON('common/board.json')
+                  ),
+                getAllSprints: paginate(
+                  readTestResourceAsJSON('sprints/sprints.json')
+                ),
+                getAllBoards: paginate(
+                  readTestResourceAsJSON('common/boards_unique.json'),
+                  'values',
+                  1,
+                  true
+                ),
+              },
+            },
+          },
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - sprint_reports with use_projects_as_boards enabled', async () => {
+    const config = readTestResourceAsJSON('sprint_reports/config.json');
+    await sourceReadTest({
+      source,
+      configOrPath: {...config, use_projects_as_boards: true},
+      catalogOrPath: 'sprint_reports/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupJiraInstance(
+          getSprintReportsMockedImplementation(),
+          true,
+          res.config as JiraConfig,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - users', async () => {
     await sourceReadTest({
       source,

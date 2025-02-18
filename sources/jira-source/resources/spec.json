@@ -301,8 +301,16 @@
         "description": "Use stateful board issue tracker to track issues on boards. This uses the Faros API to persist the state of boards between runs. Requires faros_source_id to be configured.",
         "default": false
       },
-      "source_qualifier": {
+      "use_projects_as_boards": {
         "order": 38,
+        "type": "boolean",
+        "title": "Use Projects as Boards",
+        "description": "Deprecated: Use default behaviour (disabled) and sync Jira boards. When enabled, Jira project boards are not synced and each project has a single board with the project UID and all issues.",
+        "default": false,
+        "deprecated": true
+      },
+      "source_qualifier": {
+        "order": 39,
         "type": "string",
         "title": "Source Qualifier",
         "description": "The qualifier to append as a suffix to the Jira source name to ensure uniqueness among entities with similar IDs when syncing multiple Jira instances, while preserving their original IDs, e.g. for Boards and Sprints.",

@@ -450,7 +450,7 @@ export class Issues extends JiraConverter {
         project: {uid: issue.projectKey, source},
       },
     });
-    if (!this.useBoardOwnership(ctx)) {
+    if (this.useProjectsAsBoards(ctx)) {
       results.push({
         model: 'tms_TaskBoardRelationship',
         record: {

@@ -12,7 +12,7 @@ export class BoardIssues extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    if (!this.useBoardOwnership(ctx)) return [];
+    if (this.useProjectsAsBoards(ctx)) return [];
     const issue = record.record.data;
     const source = this.initializeSource(ctx);
     const relation = {
