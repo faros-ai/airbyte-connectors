@@ -57,6 +57,7 @@ export interface user {
 }
 
 export interface User {
+  id: string;
   subjectKind: string;
   domain: string;
   principalName: string;
@@ -67,6 +68,7 @@ export interface User {
   url: string;
   descriptor: string;
   _links: UserLink;
+  uniqueName: string;
 }
 
 interface UserLink {

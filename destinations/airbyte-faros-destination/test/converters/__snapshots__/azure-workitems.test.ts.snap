@@ -2,10 +2,10 @@
 
 exports[`azure-workitems process records from all streams 1`] = `
 Array [
-  "Processed 10 records",
-  "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":2,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":2,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 35 records",
-  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":2,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":3,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 36 records",
+  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -514,6 +514,14 @@ Array [
       "name": "Christie Church",
       "source": "Azure-Workitems",
       "uid": "christie.church@fabrikam.com",
+    },
+  },
+  Object {
+    "tms_User": Object {
+      "emailAddress": "fabrikamfiber3@hotmail.com",
+      "name": "Chuck Reinhart",
+      "source": "Azure-Workitems",
+      "uid": "fabrikamfiber3@hotmail.com",
     },
   },
   Object {
