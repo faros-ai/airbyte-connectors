@@ -46,9 +46,9 @@ describe('wolken', () => {
         log_records: true,
         source_specific_configs: {
           wolken: {
-            service_id_flex_id: 1,
+            service_id_flex_field_name: 'Service ID',
             application_mapping: {
-              'A3F91B6D': {name: 'Test App'},
+              A3F91B6D: {name: 'Test App'},
             },
             store_current_incidents_associations: true,
           },
@@ -70,13 +70,13 @@ describe('wolken', () => {
         log_records: true,
         source_specific_configs: {
           wolken: {
-            service_id_flex_id: 1,
-            jira_project_key_flex_id: 2,
-            application_tag_flex_ids: [3],
-            project_tag_flex_ids: [4],
-            path_hierarchy_flex_ids: [1],
+            service_id_flex_field_name: 'Service ID',
+            jira_project_key_flex_field_name: 'JIRA Key',
+            application_tag_flex_field_names: ['Environment'],
+            project_tag_flex_field_names: ['Engineering Owner'],
+            path_hierarchy_flex_field_names: ['Service ID'],
             application_mapping: {
-              'A3F91B6D': {name: 'Test App'},
+              A3F91B6D: {name: 'Test App'},
             },
           },
         },
