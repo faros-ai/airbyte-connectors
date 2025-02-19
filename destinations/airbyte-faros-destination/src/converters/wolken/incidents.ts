@@ -1,27 +1,38 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {ConfigurationItem, Incident} from 'faros-airbyte-common/wolken';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext, StreamName} from '../converter';
-import {
-  IncidentPriorityCategory,
-  IncidentStatusCategory,
-} from '../common/ims';
-import {ConfigurationItem, Incident} from 'faros-airbyte-common/wolken';
-import {WolkenConverter} from './common';
 import {FLUSH} from '../../common/types';
 import {ComputeApplication} from '../common/common';
-
+import {
+  IncidentPriorityCategory,
+  IncidentSeverityCategory,
+  IncidentStatusCategory,
+} from '../common/ims';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
+import {WolkenConverter} from './common';
 
 export class Incidents extends WolkenConverter {
-  static readonly configurationItemsStream = new StreamName('wolken', 'configuration_items');
+  static readonly configurationItemsStream = new StreamName(
+    'wolken',
+    'configuration_items'
+  );
 
   override get dependencies(): ReadonlyArray<StreamName> {
     return [Incidents.configurationItemsStream];
   }
 
   private readonly incidentCI: Map<string, Set<number>> = new Map();
-  private readonly resolvedApplicationsByCI = new Map<number, ComputeApplication | undefined>();
+  private readonly resolvedApplicationsByCI = new Map<
+    number,
+    ComputeApplication | undefined
+  >();
 
   id(record: AirbyteRecord) {
     return record?.record?.data?.ticketId;
@@ -34,7 +45,7 @@ export class Incidents extends WolkenConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const incident = record.record.data as Incident;
@@ -51,8 +62,11 @@ export class Incidents extends WolkenConverter {
       record: {
         ...incidentKey,
         title: incident.subject,
-        description: typeof incident.description === 'string' ? Utils.cleanAndTruncate(incident.description) : null,
-        // TODO: Add severity
+        description:
+          typeof incident.description === 'string'
+            ? Utils.cleanAndTruncate(incident.description)
+            : null,
+        severity: this.getSeverity(incident.impactName) ?? null,
         priority: this.getPriority(incident.priorityName) ?? null,
         status: this.getStatus(incident.statusName) ?? null,
         createdAt: Utils.toDate(incident.createdTime) ?? null,
@@ -91,19 +105,20 @@ export class Incidents extends WolkenConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res = [];
     if (this.onlyStoreCurrentIncidentsAssociations(ctx)) {
-      res.push(...Array.from(this.incidentCI.keys()).map((incidentKeyStr) => ({
-        model: 'ims_IncidentApplicationImpact__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            incident: {
-              uid: incidentKeyStr,
-              source: this.source,
+      res.push(
+        ...Array.from(this.incidentCI.keys()).map((incidentKeyStr) => ({
+          model: 'ims_IncidentApplicationImpact__Deletion',
+          record: {
+            flushRequired: false,
+            where: {
+              incident: {
+                uid: incidentKeyStr,
+                source: this.source,
+              },
             },
           },
-        },
         })),
-        FLUSH,
+        FLUSH
       );
     }
 
@@ -130,18 +145,40 @@ export class Incidents extends WolkenConverter {
     return res;
   }
 
-  private getApplicationFromCI(ciId: number, ctx: StreamContext): ComputeApplication | undefined {
+  private getApplicationFromCI(
+    ciId: number,
+    ctx: StreamContext
+  ): ComputeApplication | undefined {
     if (this.resolvedApplicationsByCI.has(ciId)) {
       return this.resolvedApplicationsByCI.get(ciId);
     }
-    const ci = ctx.get(Incidents.configurationItemsStream.asString, ciId.toString());
+    const ci = ctx.get(
+      Incidents.configurationItemsStream.asString,
+      ciId.toString()
+    );
     if (!ci) {
       this.resolvedApplicationsByCI.set(ciId, undefined);
       return undefined;
     }
-    const application = this.getApplication(ci.record.data as ConfigurationItem, ctx);
+    const application = this.getApplication(
+      ci.record.data as ConfigurationItem,
+      ctx
+    );
     this.resolvedApplicationsByCI.set(ciId, application);
     return application;
+  }
+
+  private getSeverity(
+    impactName?: string
+  ): {category: IncidentSeverityCategory; detail: string} | undefined {
+    if (!isNil(impactName)) {
+      return Utils.toCategoryDetail(IncidentSeverityCategory, impactName, {
+        High: IncidentSeverityCategory.Sev1,
+        Medium: IncidentSeverityCategory.Sev3,
+        Low: IncidentSeverityCategory.Sev5,
+      });
+    }
+    return undefined;
   }
 
   private getPriority(
@@ -152,7 +189,7 @@ export class Incidents extends WolkenConverter {
         'Critical - P1': IncidentPriorityCategory.Critical,
         'High - P2': IncidentPriorityCategory.High,
         'Medium - P3': IncidentPriorityCategory.Medium,
-        'Low - P4': IncidentPriorityCategory.Low
+        'Low - P4': IncidentPriorityCategory.Low,
       });
     }
     return undefined;
@@ -163,12 +200,12 @@ export class Incidents extends WolkenConverter {
   ): {category: IncidentStatusCategory; detail: string} | undefined {
     if (!isNil(statusName)) {
       return Utils.toCategoryDetail(IncidentStatusCategory, statusName, {
-        'Closed': IncidentStatusCategory.Resolved,
+        Closed: IncidentStatusCategory.Resolved,
         'In Progress': IncidentStatusCategory.Investigating,
-        'Open': IncidentStatusCategory.Created,
-        'Reopen': IncidentStatusCategory.Identified,
-        'Resolved': IncidentStatusCategory.Resolved,
-        'Waiting': IncidentStatusCategory.Identified,
+        Open: IncidentStatusCategory.Created,
+        Reopen: IncidentStatusCategory.Identified,
+        Resolved: IncidentStatusCategory.Resolved,
+        Waiting: IncidentStatusCategory.Identified,
       });
     }
     return undefined;

@@ -6,7 +6,7 @@
       "type": "object",
       "title": "Configuration",
       "required": [
-        "service_id_flex_id"
+        "service_id_flex_field_name"
       ],
       "properties": {
         "source_type": {
@@ -14,43 +14,43 @@
           "const": "Wolken",
           "order": 0
         },
-        "service_id_flex_id": {
+        "service_id_flex_field_name": {
           "order": 1,
-          "type": "integer",
-          "title": "Service ID Flex ID",
-          "description": "Flex ID of the field in the configuration item that contains the service ID."
+          "type": "string",
+          "title": "Service ID Flex Field Name",
+          "description": "Flex Field Name in the configuration item that contains the service ID."
         },
-        "jira_project_key_flex_id": {
+        "jira_project_key_flex_field_name": {
           "order": 2,
-          "type": "integer",
-          "title": "Jira Project Key Flex ID",
-          "description": "Flex ID of the field in the configuration item that contains the Jira project key."
+          "type": "string",
+          "title": "Jira Project Key Flex Field Name",
+          "description": "Flex Field Name in the configuration item that contains the Jira project key."
         },
-        "application_tag_flex_ids": {
+        "application_tag_flex_field_names": {
           "order": 3,
           "type": "array",
-          "title": "Application Tag Flex IDs",
-          "description": "List of flex IDs to use as application tags",
+          "title": "Application Tag Flex Names",
+          "description": "List of Flex Field Names to use as application tags",
           "items": {
-            "type": "integer"
+            "type": "string"
           }
         },
-        "project_tag_flex_ids": {
+        "project_tag_flex_field_names": {
           "order": 4,
           "type": "array",
-          "title": "Project Tag Flex IDs",
-          "description": "List of flex IDs to use as project tags",
+          "title": "Project Tag Flex Field Names",
+          "description": "List of Flex Field Names to use as project tags",
           "items": {
-            "type": "integer"
+            "type": "string"
           }
         },
-        "path_hierarchy_flex_ids": {
+        "path_hierarchy_flex_field_names": {
           "order": 5,
           "type": "array",
-          "title": "Path Hierarchy Flex IDs",
-          "description": "List of flex IDs that define the path hierarchy",
+          "title": "Path Hierarchy Flex Field Names",
+          "description": "List of Flex Field Names that define the path hierarchy",
           "items": {
-            "type": "integer"
+            "type": "string"
           }
         },
         "application_mapping": {

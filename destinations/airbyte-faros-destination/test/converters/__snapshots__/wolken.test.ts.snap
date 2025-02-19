@@ -129,6 +129,10 @@ Array [
         "detail": "Low - P4",
       },
       "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "severity": Object {
+        "category": "Sev3",
+        "detail": "Medium",
+      },
       "source": "Wolken",
       "status": Object {
         "category": "Resolved",
@@ -148,6 +152,10 @@ Array [
         "detail": "Low - P4",
       },
       "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "severity": Object {
+        "category": "Sev3",
+        "detail": "Medium",
+      },
       "source": "Wolken",
       "status": Object {
         "category": "Resolved",
@@ -239,6 +247,10 @@ Array [
         "detail": "Low - P4",
       },
       "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "severity": Object {
+        "category": "Sev3",
+        "detail": "Medium",
+      },
       "source": "Wolken",
       "status": Object {
         "category": "Resolved",
