@@ -52,6 +52,8 @@ describe('index', () => {
         readTestResourceFile('repositories.json');
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
+        {type: 'cloud'},
+        '7.0',
         DEFAULT_PAGE_SIZE,
         {
           get: jest.fn().mockResolvedValueOnce({
@@ -102,6 +104,8 @@ describe('index', () => {
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
       return new AzureRepos(
+        {type: 'cloud'},
+        '7.0',
         1,
         {
           get: fnPullrequestsFunc
@@ -147,6 +151,8 @@ describe('index', () => {
 
     AzureRepos.make = jest.fn().mockImplementation(() => {
       return new AzureRepos(
+        {type: 'cloud'},
+        '7.0',
         1,
         {
           get: fnPullrequestsFunc
@@ -201,6 +207,8 @@ describe('index', () => {
       const repositoriesResource: any[] =
         readTestResourceFile('repositories.json');
       return new AzureRepos(
+        {type: 'cloud'},
+        '7.0',
         DEFAULT_PAGE_SIZE,
         {
           get: fnRepositoriesFunc.mockResolvedValueOnce({
@@ -238,6 +246,8 @@ describe('index', () => {
     AzureRepos.make = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureRepos(
+        {type: 'cloud'},
+        '7.0',
         DEFAULT_PAGE_SIZE,
         null,
         {

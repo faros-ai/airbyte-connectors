@@ -456,7 +456,6 @@ export class AzureWorkitems {
   }
 
   async *getTeams(): AsyncGenerator<any> {
-    let teams = 0;
     const fetchTeams = (pageSize: number, skip: number) =>
       this.get<any>('_apis/teams', {
         params: {

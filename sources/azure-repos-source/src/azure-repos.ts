@@ -19,23 +19,21 @@ import {VError} from 'verror';
 
 import {
   Branch,
+  BranchResponse,
   Commit,
   CommitRepository,
-  ProjectResponse,
-  PullRequestThreadResponse,
-  TagCommit,
-  User,
-  UserResponse,
-} from './models';
-import {
-  BranchResponse,
   CommitResponse,
+  ProjectResponse,
   PullRequest,
   PullRequestResponse,
+  PullRequestThreadResponse,
   Repository,
   RepositoryResponse,
   Tag,
+  TagCommit,
   TagResponse,
+  User,
+  UserResponse,
 } from './models';
 
 const DEFAULT_API_VERSION = '7.0';
@@ -48,7 +46,12 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_API_URL = 'https://dev.azure.com';
 const DEFAULT_GRAPH_URL = 'https://vssps.dev.azure.com';
 
+export type InstanceType = {
+  type: 'cloud' | 'server';
+};
+
 export interface AzureRepoConfig {
+  readonly instance_type?: InstanceType;
   readonly access_token: string;
   readonly organization: string;
   readonly projects?: string[];
@@ -68,6 +71,8 @@ export class AzureRepos {
   private static instance: AzureRepos = null;
 
   constructor(
+    private readonly instanceType: InstanceType,
+    private readonly apiVersion: string,
     private readonly top: number,
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
@@ -107,12 +112,13 @@ export class AzureRepos {
       });
     }
 
+    const apiVersion = config.api_version ?? DEFAULT_API_VERSION;
     const httpClient = axios.create({
       baseURL: `${config.api_url ?? DEFAULT_API_URL}/${config.organization}`,
       timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
-      params: {'api-version': config.api_version ?? DEFAULT_API_VERSION},
+      params: {'api-version': apiVersion},
       headers: {Authorization: `Basic ${accessToken}`},
       httpsAgent: makeAgent(config.api_url ?? DEFAULT_API_URL),
     });
@@ -165,6 +171,8 @@ export class AzureRepos {
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
     AzureRepos.instance = new AzureRepos(
+      config.instance_type,
+      apiVersion,
       top,
       httpClient,
       graphClient,
@@ -264,6 +272,14 @@ export class AzureRepos {
   }
 
   async *getUsers(): AsyncGenerator<User> {
+    if (this.instanceType?.type === 'server') {
+      yield* this.getServerUsers();
+    } else {
+      yield* this.getCloudUsers();
+    }
+  }
+
+  async *getCloudUsers(): AsyncGenerator<User> {
     let continuationToken: string;
     do {
       const res = await this.graphClient.get<UserResponse>('users', {
@@ -274,6 +290,70 @@ export class AzureRepos {
         yield item;
       }
     } while (continuationToken);
+  }
+
+  async *getServerUsers(): AsyncGenerator<User> {
+    const seenUsers = new Set<string>();
+    let teams = 0;
+    for await (const team of this.getTeams()) {
+      teams++;
+      for await (const member of this.getTeamMembers(team)) {
+        if (!seenUsers.has(member.uniqueName)) {
+          seenUsers.add(member.uniqueName);
+          yield member;
+        }
+      }
+    }
+    this.logger.debug(`Fetched members from ${teams} teams`);
+  }
+
+  private async *paginateResults<T>(
+    fetchPage: (
+      pageSize: number,
+      skip: number
+    ) => Promise<{data?: {value?: T[]; count?: number}}>,
+    pageSize = 100
+  ): AsyncGenerator<T> {
+    let skip = 0;
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const res = await fetchPage(pageSize, skip);
+
+      for (const item of res.data?.value ?? []) {
+        yield item;
+      }
+
+      const count = res.data?.count;
+      if (!count || count < pageSize) {
+        hasMoreResults = false;
+      }
+      skip += pageSize;
+    }
+  }
+
+  async *getTeams(): AsyncGenerator<any> {
+    const fetchTeams = (pageSize: number, skip: number) =>
+      this.get<any>('_apis/teams', {
+        params: {
+          $top: pageSize,
+          $skip: skip,
+          'api-version': `${this.apiVersion}-preview.3`,
+        },
+      });
+
+    yield* this.paginateResults(fetchTeams);
+  }
+
+  async *getTeamMembers(team: any): AsyncGenerator<User> {
+    const fetchMembers = (pageSize: number, skip: number) =>
+      this.get<any>(`${team.url}/members`, {
+        params: {$top: pageSize, $skip: skip},
+      });
+
+    for await (const item of this.paginateResults<any>(fetchMembers)) {
+      yield item.identity;
+    }
   }
 
   private async listProjects(): Promise<string[]> {
