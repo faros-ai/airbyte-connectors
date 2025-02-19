@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
@@ -9,11 +8,8 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
+import {SourceConfig} from './config';
 import {Builds} from './streams';
-
-interface SourceConfig extends AirbyteConfig {
-  readonly user: string;
-}
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -38,7 +34,7 @@ export class ExampleSource extends AirbyteSourceBase<SourceConfig> {
     }
     return [false, new VError('User is not chris')];
   }
-  streams(): AirbyteStreamBase[] {
-    return [new Builds(this.logger)];
+  streams(config: SourceConfig): AirbyteStreamBase[] {
+    return [new Builds(config, this.logger)];
   }
 }

@@ -341,7 +341,6 @@ export class CircleCI {
     }
   }
 
-  @Memoize()
   async fetchWorkflows(pipelineId: string, since: Date): Promise<Workflow[]> {
     const url = `/pipeline/${pipelineId}/workflow`;
     const results: Workflow[] = [];
@@ -363,7 +362,6 @@ export class CircleCI {
     return results;
   }
 
-  @Memoize()
   async fetchJobs(workflowId: string): Promise<Job[]> {
     const results: Job[] = [];
     const iterator = this.iterate<Job>(
