@@ -1,7 +1,21 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
+import {SourceConfig} from '../config';
+
 export class Builds extends AirbyteStreamBase {
+  constructor(
+    private readonly config: SourceConfig,
+    protected readonly logger: AirbyteLogger
+  ) {
+    super(logger);
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/builds.json');
   }
@@ -18,6 +32,7 @@ export class Builds extends AirbyteStreamBase {
     streamSlice?: Dictionary<any, string>,
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
+    // Check incremental state to determine where to start reading records
     const lastCutoff: number = streamState?.cutoff ?? 0;
     if (lastCutoff > Date.now()) {
       this.logger.info(
@@ -25,6 +40,11 @@ export class Builds extends AirbyteStreamBase {
       );
       return;
     }
+
+    // Read the source config
+    this.logger.info(`User from config is ${this.config.user}`);
+
+    // Generate records
     const numBuilds = 5;
     for (let i = 1; i <= numBuilds; i++) {
       yield this.newBuild(i, lastCutoff);
