@@ -1,6 +1,5 @@
 import {Command} from 'commander';
 import {
-  AirbyteConfig,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
