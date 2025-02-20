@@ -307,52 +307,31 @@ export class AzureRepos {
     this.logger.debug(`Fetched members from ${teams} teams`);
   }
 
-  private async *paginateResults<T>(
-    fetchPage: (
-      pageSize: number,
-      skip: number
-    ) => Promise<{data?: {value?: T[]; count?: number}}>,
-    pageSize = 100
-  ): AsyncGenerator<T> {
-    let skip = 0;
-    let hasMoreResults = true;
-
-    while (hasMoreResults) {
-      const res = await fetchPage(pageSize, skip);
-
-      for (const item of res.data?.value ?? []) {
-        yield item;
+  async *getTeams(): AsyncGenerator<any> {
+    for await (const teamRes of this.getPaginated<any>(
+      '_apis/teams',
+      '$top',
+      '$skip',
+      {'api-version': `${this.apiVersion}-preview.3`},
+      this.top
+    )) {
+      for (const team of teamRes?.data?.value ?? []) {
+        yield team;
       }
-
-      const count = res.data?.count;
-      if (!count || count < pageSize) {
-        hasMoreResults = false;
-      }
-      skip += pageSize;
     }
   }
 
-  async *getTeams(): AsyncGenerator<any> {
-    const fetchTeams = (pageSize: number, skip: number) =>
-      this.get<any>('_apis/teams', {
-        params: {
-          $top: pageSize,
-          $skip: skip,
-          'api-version': `${this.apiVersion}-preview.3`,
-        },
-      });
-
-    yield* this.paginateResults(fetchTeams);
-  }
-
   async *getTeamMembers(team: any): AsyncGenerator<User> {
-    const fetchMembers = (pageSize: number, skip: number) =>
-      this.get<any>(`${team.url}/members`, {
-        params: {$top: pageSize, $skip: skip},
-      });
-
-    for await (const item of this.paginateResults<any>(fetchMembers)) {
-      yield item.identity;
+    for await (const memberRes of this.getPaginated<any>(
+      `${team.url}/members`,
+      '$top',
+      '$skip',
+      {},
+      this.top
+    )) {
+      for (const member of memberRes?.data?.value ?? []) {
+        yield member.identity;
+      }
     }
   }
 
