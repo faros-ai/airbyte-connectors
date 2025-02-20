@@ -149,16 +149,22 @@ export class ProjectBoardFilter {
       // Ensure projects is populated
       await this.getProjects();
 
-      // Ensure included / excluded boards are loaded
-      await this.loadSelectedBoards();
-
-      if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
-        await this.getBoardsFromFaros(jira);
+      if (this.useProjectsAsBoards()) {
+        await this.getBoardsFromProjects();
       } else {
-        await this.getBoardsFromJira(jira);
+        // Ensure included / excluded boards are loaded
+        await this.loadSelectedBoards();
+
+        if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
+          await this.getBoardsFromFaros(jira);
+        } else {
+          await this.getBoardsFromJira(jira);
+        }
       }
       this.logger.info(`Will sync ${this.boards.size} boards.`);
-      this.logger.debug(`Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`);
+      this.logger.debug(
+        `Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`
+      );
     }
     return Array.from(this.boards.values());
   }
@@ -187,6 +193,11 @@ export class ProjectBoardFilter {
       const issueSync =
         (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
       return {included, issueSync};
+    }
+
+    // If using projects as boards and not using Faros graph board selection, skip boards and excludedBoards configs.
+    if (this.useProjectsAsBoards()) {
+      return {included: true, issueSync: true};
     }
 
     if (boards?.size) {
@@ -239,6 +250,21 @@ export class ProjectBoardFilter {
     }
   }
 
+  /**
+   * Use project list as boards.
+   * With this method we generate a unique board per project to represent all tasks in the project.
+   * If using Faros Graph, inclusion is determined based on the Faros options for the board. Otherwise,
+   * the board is included if it is in the `projects` set.
+   */
+  private async getBoardsFromProjects(): Promise<void> {
+    for (const project of this.projects) {
+      const {included, issueSync} = await this.getBoardInclusion(project);
+      if (included) {
+        this.boards.set(project, {uid: project, issueSync});
+      }
+    }
+  }
+
   private async loadSelectedBoards(): Promise<void> {
     if (this.loadedSelectedBoards) {
       return;
@@ -275,5 +301,9 @@ export class ProjectBoardFilter {
 
   private hasFarosClient(): boolean {
     return Boolean(this.farosClient);
+  }
+
+  private useProjectsAsBoards(): boolean {
+    return this.config.use_projects_as_boards ?? false;
   }
 }

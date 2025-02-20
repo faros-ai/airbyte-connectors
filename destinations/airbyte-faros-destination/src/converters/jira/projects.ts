@@ -27,7 +27,7 @@ export class Projects extends JiraConverter {
         source,
       },
     });
-    if (!this.useBoardOwnership(ctx)) {
+    if (this.useProjectsAsBoards(ctx)) {
       results.push(
         {
           model: 'tms_TaskBoard',

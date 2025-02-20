@@ -75,6 +75,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly requestedStreams?: Set<string>;
   readonly use_sprints_reverse_search?: boolean;
   readonly use_faros_board_issue_tracker?: boolean;
+  readonly use_projects_as_boards?: boolean;
   readonly fetch_teams?: boolean;
   readonly organization_id?: string;
   readonly start_date?: string;
@@ -545,7 +546,9 @@ export class Jira {
     for await (const project of this.getProjectsIterator(keys)) {
       projects.push(project);
     }
-    this.logger?.debug(`Found ${projects.length} browseable projects from Jira instance: ${projects.map(p => p.key).join(', ')}`);
+    this.logger?.debug(
+      `Found ${projects.length} browseable projects from Jira instance: ${projects.map((p) => p.key).join(', ')}`
+    );
     return projects;
   }
 
