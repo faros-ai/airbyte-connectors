@@ -162,7 +162,9 @@ export class ProjectBoardFilter {
         }
       }
       this.logger.info(`Will sync ${this.boards.size} boards.`);
-      this.logger.debug(`Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`);
+      this.logger.debug(
+        `Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`
+      );
     }
     return Array.from(this.boards.values());
   }
@@ -191,6 +193,11 @@ export class ProjectBoardFilter {
       const issueSync =
         (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
       return {included, issueSync};
+    }
+
+    // If using projects as boards and not using Faros graph board selection, skip boards and excludedBoards configs.
+    if (this.useProjectsAsBoards()) {
+      return {included: true, issueSync: true};
     }
 
     if (boards?.size) {
@@ -244,16 +251,17 @@ export class ProjectBoardFilter {
   }
 
   /**
-   * Use the Jira API to get all boards for each project and use the UIDs to populate
-   * the internal boards map.
-   * Only includes boards based on the inclusion criteria determined by getBoardInclusion.
-   * With this method we generate a unique board per project to represent all tasks in the project
-   *
-   * @returns A Promise that resolves when all boards have been processed.
+   * Use project list as boards.
+   * With this method we generate a unique board per project to represent all tasks in the project.
+   * If using Faros Graph, inclusion is determined based on the Faros options for the board. Otherwise,
+   * the board is included if it is in the `projects` set.
    */
   private async getBoardsFromProjects(): Promise<void> {
     for (const project of this.projects) {
-      this.boards.set(project, {uid: project, issueSync: true});
+      const {included, issueSync} = await this.getBoardInclusion(project);
+      if (included) {
+        this.boards.set(project, {uid: project, issueSync});
+      }
     }
   }
 

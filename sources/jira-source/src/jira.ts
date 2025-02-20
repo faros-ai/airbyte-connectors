@@ -546,7 +546,9 @@ export class Jira {
     for await (const project of this.getProjectsIterator(keys)) {
       projects.push(project);
     }
-    this.logger?.debug(`Found ${projects.length} browseable projects from Jira instance: ${projects.map(p => p.key).join(', ')}`);
+    this.logger?.debug(
+      `Found ${projects.length} browseable projects from Jira instance: ${projects.map((p) => p.key).join(', ')}`
+    );
     return projects;
   }
 
@@ -978,8 +980,6 @@ export class Jira {
     this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
     return sprints;
   }
-
-  // add a get sprint and sprint report by project or smth like that
 
   private getSprintsIterator(
     boardId: string,

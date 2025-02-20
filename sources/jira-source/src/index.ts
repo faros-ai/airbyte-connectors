@@ -150,7 +150,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
     }
-    // If board ownership not enabled, remove the board issues stream.
+    // If use projects as boards is enabled, remove the board issues stream.
     if (config.use_projects_as_boards) {
       streamNames.splice(streamNames.indexOf('faros_board_issues'), 1);
     }
