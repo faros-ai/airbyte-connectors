@@ -2,10 +2,10 @@
 
 exports[`azure-repos basic test process records from all streams 1`] = `
 Array [
-  "Processed 16 records",
-  "Processed records by stream: {\\\\\\"mytestsource__azure-repos__commits\\\\\\":7,\\\\\\"mytestsource__azure-repos__pull_requests\\\\\\":2,\\\\\\"mytestsource__azure-repos__repositories\\\\\\":5,\\\\\\"mytestsource__azure-repos__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 43 records",
-  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":5,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":2,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 17 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-repos__commits\\\\\\":7,\\\\\\"mytestsource__azure-repos__pull_requests\\\\\\":2,\\\\\\"mytestsource__azure-repos__repositories\\\\\\":5,\\\\\\"mytestsource__azure-repos__users\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 45 records",
+  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":5,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -980,6 +980,32 @@ Array [
         "detail": "user",
       },
       "uid": "test2@gmail.com",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "Azure-Repos",
+        "uid": "test",
+      },
+      "source": "Azure-Repos",
+      "user": Object {
+        "source": "Azure-Repos",
+        "uid": "test3@gmail.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": null,
+      "htmlUrl": "https://vssps.dev.azure.com/test/_apis/Graph/Users/aad.0",
+      "name": "Test Tester3",
+      "source": "Azure-Repos",
+      "type": Object {
+        "category": "User",
+        "detail": null,
+      },
+      "uid": "test3@gmail.com",
     },
   },
   Object {

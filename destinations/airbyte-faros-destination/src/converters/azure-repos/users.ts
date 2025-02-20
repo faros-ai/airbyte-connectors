@@ -12,7 +12,7 @@ export class Users extends AzureReposConverter {
 
   private checkUserItemValidity(userItem: User): boolean {
     // Add checks to record in this function
-    return !!userItem.principalName;
+    return !!userItem.principalName || !!userItem.uniqueName;
   }
 
   async convert(
@@ -24,15 +24,17 @@ export class Users extends AzureReposConverter {
     if (!this.checkUserItemValidity(userItem)) {
       return res;
     }
-    const organizationName = this.getOrganizationFromUrl(
-      userItem._links.self.href
-    );
+
+    const url = userItem._links?.self?.href ?? userItem.url;
+    const organizationName = this.getOrganizationFromUrl(url);
     const organization = {uid: organizationName, source};
     const type: UserType = {
       category: UserTypeCategory.User,
       detail: userItem.subjectKind,
     };
-    const uid = userItem.principalName.toLowerCase();
+    // Support both principalName and uniqueName for AzureDevOps Server
+    const uniqueName = userItem.principalName ?? userItem.uniqueName;
+    const uid = uniqueName.toLowerCase();
     res.push({
       model: 'vcs_Membership',
       record: {

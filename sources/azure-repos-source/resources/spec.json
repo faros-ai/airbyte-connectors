@@ -7,6 +7,45 @@
     "required": ["access_token", "organization"],
     "additionalProperties": true,
     "properties": {
+      "instance_type": {
+        "title": "Instance Type",
+        "description": "Choose how your Azure instance is setup",
+        "type": "object",
+        "order": 0,
+        "default": {
+          "type": "cloud"
+        },
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Cloud",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "cloud",
+                "order": 0
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "Server",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "server",
+                "order": 0
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ]
+      },
       "access_token": {
         "type": "string",
         "title": "Azure Access Token",
@@ -24,7 +63,7 @@
         },
         "title": "Azure Projects",
         "description": "List of projects. If empty or '*' all available projects will be processed."
-      },     
+      },
       "branch_pattern": {
         "type": "string",
         "title": "Branch Name Pattern",

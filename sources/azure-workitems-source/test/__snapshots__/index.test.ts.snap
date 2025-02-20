@@ -106,6 +106,32 @@ exports[`index streams - iterations, use full_refresh sync mode 1`] = `
 ]
 `;
 
+exports[`index streams - users (server), use full_refresh sync mode 1`] = `
+[
+  {
+    "displayName": "Christie Church",
+    "id": "3b5f0c34-4aec-4bf4-8708-1d36f0dbc468",
+    "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=3b5f0c34-4aec-4bf4-8708-1d36f0dbc468",
+    "uniqueName": "fabrikamfiber1@hotmail.com",
+    "url": "https://fabrikam:8080/tfs/_apis/Identities/3b5f0c34-4aec-4bf4-8708-1d36f0dbc468",
+  },
+  {
+    "displayName": "Chuck Reinhart",
+    "id": "8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d",
+    "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d",
+    "uniqueName": "fabrikamfiber3@hotmail.com",
+    "url": "https://fabrikam:8080/tfs/_apis/Identities/8c8c7d32-6b1b-47f4-b2e9-30b477b5ab3d",
+  },
+  {
+    "displayName": "Johnnie McLeod",
+    "id": "19d9411e-9a34-45bb-b985-d24d9d87c0c9",
+    "imageUrl": "https://fabrikam:8080/tfs/_api/_common/identityImage?id=19d9411e-9a34-45bb-b985-d24d9d87c0c9",
+    "uniqueName": "fabrikamfiber2@hotmail.com",
+    "url": "https://fabrikam:8080/tfs/_apis/Identities/19d9411e-9a34-45bb-b985-d24d9d87c0c9",
+  },
+]
+`;
+
 exports[`index streams - workitems, use full_refresh sync mode 1`] = `
 [
   {
