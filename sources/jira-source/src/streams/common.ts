@@ -9,6 +9,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {DEFAULT_CUTOFF_LAG_DAYS, JiraConfig} from '../jira';
 import {ProjectBoardFilter} from '../project-board-filter';
+import {ProjectFilter} from '../project-filter';
 
 export type ProjectStreamSlice = {
   project: string;
@@ -101,18 +102,16 @@ export const RunModeStreams = {
 };
 
 export abstract class StreamBase extends AirbyteStreamBase {
-  readonly projectBoardFilter: ProjectBoardFilter;
+  readonly projectBoardFilter: ProjectBoardFilter | ProjectFilter;
   constructor(
     protected readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger,
     protected readonly farosClient?: FarosClient
   ) {
     super(logger);
-    this.projectBoardFilter = ProjectBoardFilter.instance(
-      config,
-      logger,
-      farosClient
-    );
+    this.projectBoardFilter = this.useProjectsAsBoards()
+      ? ProjectFilter.instance(config, logger, farosClient)
+      : ProjectBoardFilter.instance(config, logger, farosClient);
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {
@@ -151,12 +150,18 @@ export abstract class StreamBase extends AirbyteStreamBase {
   protected hasFarosClient(): boolean {
     return Boolean(this.farosClient);
   }
+
+  protected useProjectsAsBoards(): boolean {
+    return this.config.use_projects_as_boards ?? false;
+  }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     for (const project of await this.projectBoardFilter.getProjects()) {
-      yield {project};
+      if (project.issueSync) {
+        yield {project: project.uid};
+      }
     }
   }
 }

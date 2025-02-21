@@ -901,17 +901,7 @@ exports[`index streams - boards 1`] = `
 ]
 `;
 
-exports[`index streams - boards with use_projects_as_boards enabled 1`] = `
-[
-  {
-    "issueSync": true,
-    "name": "Tasks in project TEST",
-    "projectKey": "TEST",
-    "type": "Custom",
-    "uid": "TEST",
-  },
-]
-`;
+exports[`index streams - boards with use_projects_as_boards enabled 1`] = `[]`;
 
 exports[`index streams - issue_pull_requests 1`] = `
 [
@@ -999,18 +989,21 @@ exports[`index streams - projects - Cloud project list 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
+    "issueSync": true,
     "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
+    "issueSync": true,
     "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
+    "issueSync": true,
     "key": "TEST3",
     "name": "Test 3",
   },
@@ -1022,12 +1015,14 @@ exports[`index streams - projects - Jira Server - project list 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
+    "issueSync": true,
     "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
+    "issueSync": true,
     "key": "TEST2",
     "name": "Test 2",
   },
@@ -1039,18 +1034,21 @@ exports[`index streams - projects - Jira Server 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
+    "issueSync": true,
     "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
+    "issueSync": true,
     "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
+    "issueSync": true,
     "key": "TEST3",
     "name": "Test 3",
   },
@@ -1062,18 +1060,21 @@ exports[`index streams - projects - pull all projects 1`] = `
   {
     "description": "This is a test",
     "id": "1234",
+    "issueSync": true,
     "key": "TEST",
     "name": "Test 1",
   },
   {
     "description": "This is a test",
     "id": "1235",
+    "issueSync": true,
     "key": "TEST2",
     "name": "Test 2",
   },
   {
     "description": "This is a test",
     "id": "1236",
+    "issueSync": true,
     "key": "TEST3",
     "name": "Test 3",
   },

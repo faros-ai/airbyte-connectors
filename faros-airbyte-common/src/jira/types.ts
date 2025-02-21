@@ -137,6 +137,10 @@ export interface Board extends AgileModels.Board {
   issueSync: boolean;
 }
 
+export interface Project extends Version2Models.Project {
+  issueSync: boolean;
+}
+
 export interface ProjectVersion extends Version2Models.Version {
   projectKey: string;
 }
