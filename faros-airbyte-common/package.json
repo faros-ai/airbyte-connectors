@@ -29,6 +29,7 @@
     "./azurepipeline": "./lib/azurepipeline/index.js",
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
+    "./circleci": "./lib/circleci/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
     "./github": "./lib/github/index.js",
@@ -49,6 +50,9 @@
       ],
       "bitbucket-server": [
         "./lib/bitbucket-server/index.d.ts"
+      ],
+      "circleci": [
+        "./lib/circleci/index.d.ts"
       ],
       "clickup": [
         "./lib/clickup/index.d.ts"
