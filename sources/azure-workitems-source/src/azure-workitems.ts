@@ -39,7 +39,12 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
+export type InstanceType = {
+  type: 'cloud' | 'server';
+};
+
 export interface AzureWorkitemsConfig {
+  readonly instance_type?: InstanceType;
   readonly access_token: string;
   readonly api_url: string;
   readonly graph_api_url: string;
@@ -57,6 +62,8 @@ export class AzureWorkitems {
   private static azure_Workitems: AzureWorkitems = null;
 
   constructor(
+    private readonly instanceType: InstanceType,
+    private readonly apiVersion: string,
     private readonly httpClient: AxiosInstance,
     private readonly graphClient: AxiosInstance,
     private readonly additionalFieldReferences: Map<string, string>,
@@ -70,10 +77,17 @@ export class AzureWorkitems {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
     AzureWorkitems.validateConfig(config);
+    if (config.instance_type?.type) {
+      logger.info(`Azure DevOps instance type: ${config.instance_type.type}`);
+    } else {
+      logger.info(
+        'No Azure DevOps instance type provided, defaulting to cloud'
+      );
+    }
 
     const apiUrl = AzureWorkitems.cleanUrl(config.api_url) ?? DEFAULT_API_URL;
     const orgUrl = `${apiUrl}/${config.organization}`;
-    const version = config.api_version ?? DEFAULT_API_VERSION;
+    const apiVersion = config.api_version ?? DEFAULT_API_VERSION;
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const httpClient = makeAxiosInstanceWithRetry(
@@ -82,7 +96,7 @@ export class AzureWorkitems {
         timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
         maxContentLength: Infinity, //default is 2000 bytes
         params: {
-          'api-version': version,
+          'api-version': apiVersion,
         },
         headers: {
           Authorization: `Basic ${accessToken}`,
@@ -140,6 +154,8 @@ export class AzureWorkitems {
     );
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
+      config.instance_type,
+      apiVersion,
       httpClient,
       graphClient,
       additionalFieldReferences,
@@ -222,41 +238,6 @@ export class AzureWorkitems {
     return this.handleNotFound<T, R>(() =>
       this.httpClient.post<T, R>(path, data, {params})
     );
-  }
-
-  async *getStories(): AsyncGenerator<any> {
-    const data = {
-      query:
-        "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' order by [id] asc",
-    };
-    const list = await this.post<any>('wit/wiql', data);
-    const ids: string[] = [];
-    for (let i = 0; i < list.data.workItems.length; i++) {
-      ids.push(list.data.workItems[i].id);
-    }
-    const ids2: string[] = [];
-    const userStories = [];
-    for (const id of ids) {
-      if (ids2.length == MAX_BATCH_SIZE) {
-        userStories.push(
-          await this.get<WorkItemResponse>(
-            `wit/workitems?ids=${ids2}&$expand=all`
-          )
-        );
-        ids2.splice(0);
-      }
-      ids2.push(id);
-    }
-    if (ids2.length > 0) {
-      userStories.push(
-        await this.get<WorkItemResponse>(
-          `wit/workitems?ids=${ids2}&$expand=all`
-        )
-      );
-    }
-    for (const item of userStories) {
-      yield item;
-    }
   }
 
   async *getWorkitems(
@@ -425,6 +406,14 @@ export class AzureWorkitems {
   }
 
   async *getUsers(): AsyncGenerator<User> {
+    if (this.instanceType?.type === 'server') {
+      yield* this.getServerUsers();
+    } else {
+      yield* this.getCloudUsers();
+    }
+  }
+
+  async *getCloudUsers(): AsyncGenerator<User> {
     let continuationToken: string;
     do {
       const res = await this.graphClient.get<UserResponse>('users', {
@@ -435,6 +424,70 @@ export class AzureWorkitems {
         yield item;
       }
     } while (continuationToken);
+  }
+
+  async *getServerUsers(): AsyncGenerator<User> {
+    const seenUsers = new Set<string>();
+    let teams = 0;
+    for await (const team of this.getTeams()) {
+      teams++;
+      for await (const member of this.getTeamMembers(team)) {
+        if (!seenUsers.has(member.uniqueName)) {
+          seenUsers.add(member.uniqueName);
+          yield member;
+        }
+      }
+    }
+    this.logger.debug(`Fetched members from ${teams} teams`);
+  }
+
+  private async *paginateResults<T>(
+    fetchPage: (
+      pageSize: number,
+      skip: number
+    ) => Promise<{data?: {value?: T[]; count?: number}}>,
+    pageSize = 100
+  ): AsyncGenerator<T> {
+    let skip = 0;
+    let hasMoreResults = true;
+
+    while (hasMoreResults) {
+      const res = await fetchPage(pageSize, skip);
+
+      for (const item of res.data?.value ?? []) {
+        yield item;
+      }
+
+      const count = res.data?.count;
+      if (!count || count < pageSize) {
+        hasMoreResults = false;
+      }
+      skip += pageSize;
+    }
+  }
+
+  async *getTeams(): AsyncGenerator<any> {
+    const fetchTeams = (pageSize: number, skip: number) =>
+      this.get<any>('_apis/teams', {
+        params: {
+          $top: pageSize,
+          $skip: skip,
+          'api-version': `${this.apiVersion}-preview.3`,
+        },
+      });
+
+    yield* this.paginateResults(fetchTeams);
+  }
+
+  async *getTeamMembers(team: any): AsyncGenerator<User> {
+    const fetchMembers = (pageSize: number, skip: number) =>
+      this.get<any>(`${team.url}/members`, {
+        params: {$top: pageSize, $skip: skip},
+      });
+
+    for await (const item of this.paginateResults<any>(fetchMembers)) {
+      yield item.identity;
+    }
   }
 
   /**

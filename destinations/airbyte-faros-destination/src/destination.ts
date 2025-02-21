@@ -816,6 +816,13 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                 msg.sourceType === 'faros-feeds'
                   ? msg.sourceMode
                   : msg.sourceType;
+
+              if (sourceModeOrType === 'mock-data-feed') {
+                this.logger.info('Running a mock data feed sync. Resetting all models before writing records.');
+                ctx.markAllStreamsForReset();
+                await resetData?.(false);
+              }
+
               await updateLocalAccount?.(msg);
               if (sourceVersion) sourceVersion.version = msg.sourceVersion;
               ctx.setSourceConfig(msg.redactedConfig);
@@ -968,6 +975,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           isBackfillSync,
           isFarosSource: sourceConfigReceived,
           sourceSucceeded,
+          sourceModeOrType,
         })
       ) {
         if (!streamStatusReceived) {
@@ -1010,6 +1018,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     isBackfillSync: boolean;
     isFarosSource: boolean;
     sourceSucceeded: boolean;
+    sourceModeOrType: string;
   }): boolean {
     const {
       syncErrors,
@@ -1019,11 +1028,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       isBackfillSync,
       isFarosSource,
       sourceSucceeded,
+      sourceModeOrType,
     } = syncInfo;
     if (isBackfillSync) {
       this.logger.info(
         'Running a backfill sync. Skipping reset of non-incremental models.'
       );
+      return false;
+    }
+    if (sourceModeOrType === 'mock-data-feed') {
+      // Reset is performed BEFORE writing records, so we don't need to reset again
       return false;
     }
     if (streamStatusReceived) {

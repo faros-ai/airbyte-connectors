@@ -247,6 +247,9 @@ export class FarosPullRequests extends GitHubConverter {
 
     reviewRequests.forEach((reviewRequest) => {
       const {requestedReviewer} = reviewRequest;
+      if (!requestedReviewer) {
+        return;
+      }
 
       if (
         requestedReviewer.type === 'Team' &&

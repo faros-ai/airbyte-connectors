@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {ConfigurationItem} from 'faros-airbyte-common/wolken';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {WolkenConverter} from './common';
-import {ConfigurationItem} from 'faros-airbyte-common/wolken';
 
 export class ConfigurationItems extends WolkenConverter {
   id(record: AirbyteRecord) {
@@ -11,12 +11,14 @@ export class ConfigurationItems extends WolkenConverter {
 
   toContextStorageRecord(record: AirbyteRecord, ctx: StreamContext) {
     const configurationItem = record.record.data as ConfigurationItem;
-    const serviceIdFlexId = this.config(ctx).service_id_flex_id;
+    const serviceIdFlexFieldName = this.config(ctx).service_id_flex_field_name;
     const serviceIdFlexField = WolkenConverter.getFlexField(
       configurationItem,
-      serviceIdFlexId
+      serviceIdFlexFieldName
     );
-    const configItemCompact = serviceIdFlexField ? { flexFields: [serviceIdFlexField] } : {};
+    const configItemCompact = serviceIdFlexField
+      ? {flexFields: [serviceIdFlexField]}
+      : {};
     return AirbyteRecord.make(this.streamName.asString, configItemCompact);
   }
 
@@ -45,8 +47,12 @@ export class ConfigurationItems extends WolkenConverter {
       return [];
     }
 
-    const jiraProjectKeyFlexId = this.config(ctx).jira_project_key_flex_id;
-    const jiraProjectKey = WolkenConverter.getFlexField(configurationItem, jiraProjectKeyFlexId)?.flexValue;
+    const jiraProjectKeyFlexFieldName =
+      this.config(ctx).jira_project_key_flex_field_name;
+    const jiraProjectKey = WolkenConverter.getFlexField(
+      configurationItem,
+      jiraProjectKeyFlexFieldName
+    )?.flexValue;
 
     const project = {
       uid: jiraProjectKey ?? 'unknown',
@@ -58,9 +64,13 @@ export class ConfigurationItems extends WolkenConverter {
       res.push({model: 'compute_Application', record: application});
       this.seenServices.add(appKey);
 
-      const applicationTagFlexIds = this.config(ctx).application_tag_flex_ids ?? [];
-      for (const flexId of applicationTagFlexIds) {
-        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
+      const applicationTagFlexFieldNames =
+        this.config(ctx).application_tag_flex_field_names ?? [];
+      for (const flexFieldName of applicationTagFlexFieldNames) {
+        const flexField = WolkenConverter.getFlexField(
+          configurationItem,
+          flexFieldName
+        );
         if (flexField) {
           const tag = {
             uid: `${flexField.flexName}__${flexField.flexValue}`,
@@ -75,9 +85,13 @@ export class ConfigurationItems extends WolkenConverter {
         }
       }
 
-      const projectTagFlexIds = this.config(ctx).project_tag_flex_ids ?? [];
-      for (const flexId of projectTagFlexIds) {
-        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
+      const projectTagFlexFieldNames =
+        this.config(ctx).project_tag_flex_field_names ?? [];
+      for (const flexFieldName of projectTagFlexFieldNames) {
+        const flexField = WolkenConverter.getFlexField(
+          configurationItem,
+          flexFieldName
+        );
         if (flexField) {
           const tag = {
             uid: `${flexField.flexName}__${flexField.flexValue}`,
@@ -94,9 +108,13 @@ export class ConfigurationItems extends WolkenConverter {
 
       // Custom Application and Jira Path Hierarchy
       const pathParts = [];
-      const pathHierarchyFlexIds = this.config(ctx).path_hierarchy_flex_ids ?? [];
-      for (const flexId of pathHierarchyFlexIds) {
-        const flexField = WolkenConverter.getFlexField(configurationItem, flexId);
+      const pathHierarchyFlexFieldNames =
+        this.config(ctx).path_hierarchy_flex_field_names ?? [];
+      for (const flexFieldName of pathHierarchyFlexFieldNames) {
+        const flexField = WolkenConverter.getFlexField(
+          configurationItem,
+          flexFieldName
+        );
         pathParts.push(flexField?.flexValue?.replace(/\//, '_') ?? 'unknown');
       }
 

@@ -1,14 +1,15 @@
-import {Converter, parseObjectConfig, StreamContext} from '../converter';
-import {ApplicationMapping} from '../common/ims';
 import {ConfigurationItem, FlexField} from 'faros-airbyte-common/wolken';
+
 import {Common, ComputeApplication} from '../common/common';
+import {ApplicationMapping} from '../common/ims';
+import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 interface WolkenConfig {
-  service_id_flex_id: number;
-  jira_project_key_flex_id?: number;
-  application_tag_flex_ids?: number[];
-  project_tag_flex_ids?: number[];
-  path_hierarchy_flex_ids?: number[];
+  service_id_flex_field_name: string;
+  jira_project_key_flex_field_name?: string;
+  application_tag_flex_field_names?: string[];
+  project_tag_flex_field_names?: string[];
+  path_hierarchy_flex_field_names?: string[];
   application_mapping?: ApplicationMapping;
   store_current_incidents_associations?: boolean;
 }
@@ -21,10 +22,12 @@ export abstract class WolkenConverter extends Converter {
   }
 
   protected applicationMapping(ctx: StreamContext): ApplicationMapping {
-    return parseObjectConfig(
-      this.config(ctx)?.application_mapping,
-      'Application Mapping'
-    ) ?? {};
+    return (
+      parseObjectConfig(
+        this.config(ctx)?.application_mapping,
+        'Application Mapping'
+      ) ?? {}
+    );
   }
 
   protected onlyStoreCurrentIncidentsAssociations(ctx: StreamContext): boolean {
@@ -33,10 +36,13 @@ export abstract class WolkenConverter extends Converter {
 
   protected getApplication(
     configurationItem: ConfigurationItem,
-    ctx: StreamContext,
+    ctx: StreamContext
   ): ComputeApplication | undefined {
-    const serviceIdFlexId = this.config(ctx).service_id_flex_id;
-    const serviceId = WolkenConverter.getFlexField(configurationItem, serviceIdFlexId)?.flexValue;
+    const serviceIdFlexFieldName = this.config(ctx).service_id_flex_field_name;
+    const serviceId = WolkenConverter.getFlexField(
+      configurationItem,
+      serviceIdFlexFieldName
+    )?.flexValue;
 
     if (!serviceId) {
       return undefined;
@@ -56,7 +62,10 @@ export abstract class WolkenConverter extends Converter {
     return application;
   }
 
-  static getFlexField(configurationItem: ConfigurationItem, flexId: number): FlexField | undefined {
-    return configurationItem.flexFields?.find(f => f.flexId === flexId);
+  static getFlexField(
+    configurationItem: ConfigurationItem,
+    flexName: string
+  ): FlexField | undefined {
+    return configurationItem.flexFields?.find((f) => f.flexName === flexName);
   }
 }

@@ -43,7 +43,7 @@ export class Incidents extends PagerDutyConverter {
 
     let acknowledgedAt, resolvedAt;
     if (incident.status === 'acknowledged') {
-      if (!incident.acknowledgements || !incident.acknowledgements.length) {
+      if (!incident.acknowledgements?.length) {
         ctx.logger.warn(
           `Incident ${incident.id} acknowledged, but acknowledger info missing`
         );

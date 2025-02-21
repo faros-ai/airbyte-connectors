@@ -48,6 +48,8 @@ describe('index', () => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureWorkitems(
         null,
+        null,
+        null,
         {
           get: jest.fn().mockResolvedValue({
             data: {value: usersResource},
@@ -102,12 +104,14 @@ describe('index', () => {
     });
   });
 
-  test('streams - users, use full_refresh sync mode', async () => {
+  test('streams - users (cloud), use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureWorkitems(
+        null,
+        null,
         null,
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -132,6 +136,41 @@ describe('index', () => {
     expect(users).toStrictEqual(readTestResourceFile('users.json'));
   });
 
+  test('streams - users (server), use full_refresh sync mode', async () => {
+    const fnUsersFunc = jest.fn();
+
+    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
+      return new AzureWorkitems(
+        {type: 'server'},
+        null,
+        {
+          get: fnUsersFunc
+            .mockResolvedValueOnce({
+              data: readTestResourceFile('teams.json'),
+            })
+            .mockResolvedValue({
+              data: readTestResourceFile('team_members.json'),
+            }),
+        } as any,
+        null,
+        new Map(),
+        logger
+      );
+    });
+    const source = new sut.AzureWorkitemsSource(logger);
+    const streams = source.streams({} as any);
+
+    const usersStream = streams[1];
+    const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
+    const users = [];
+    for await (const user of userIter) {
+      users.push(user);
+    }
+
+    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
+    expect(users).toMatchSnapshot();
+  });
+
   test('streams - iterations, use full_refresh sync mode', async () => {
     const fnIterationsFunc = jest.fn().mockImplementation((url) => {
       if (url.endsWith('classificationnodes/Iterations')) {
@@ -144,6 +183,8 @@ describe('index', () => {
 
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
+        null,
+        null,
         {
           get: fnIterationsFunc,
         } as any,
@@ -172,6 +213,8 @@ describe('index', () => {
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       const boardsResource: any[] = readTestResourceFile('boards.json');
       return new AzureWorkitems(
+        null,
+        null,
         {
           get: fnBoardsFunc.mockResolvedValue({
             data: {value: boardsResource},
@@ -217,6 +260,8 @@ describe('index', () => {
     ]);
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
+        null,
+        null,
         {
           get: getFunc,
           post: workitemIdsFunc
