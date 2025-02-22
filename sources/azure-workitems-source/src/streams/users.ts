@@ -25,6 +25,6 @@ export class Users extends AirbyteStreamBase {
       this.config,
       this.logger
     );
-    yield* azureWorkitem.getUsers();
+    yield* azureWorkitem.getUsers(this.config.projects);
   }
 }

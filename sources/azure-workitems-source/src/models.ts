@@ -1,3 +1,7 @@
+import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
+import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
+
 export interface WorkItemResponse {
   count: number;
   value: WorkItem[];
@@ -8,11 +12,7 @@ export interface WorkItemUpdatesResponse {
   value: any[];
 }
 
-export interface WorkItem {
-  fields: fields;
-  id: string;
-  rev: string;
-  url: string;
+export interface WorkItemWithRevisions extends WorkItem {
   revisions: {
     states: any[];
     assignees: any[];
@@ -58,21 +58,22 @@ export interface user {
   uniqueName: string;
 }
 
-export interface User {
-  id: string;
-  subjectKind: string;
-  domain: string;
-  principalName: string;
-  mailAddress: string;
-  origin: string;
-  originId: string;
-  displayName: string;
-  url: string;
-  descriptor: string;
-  uniqueName: string;
-  _links: UserLink;
-}
+// export interface User {
+//   id: string;
+//   subjectKind: string;
+//   domain: string;
+//   principalName: string;
+//   mailAddress: string;
+//   origin: string;
+//   originId: string;
+//   displayName: string;
+//   url: string;
+//   descriptor: string;
+//   uniqueName: string;
+//   _links: UserLink;
+// }
 
+export type User = GraphUser | IdentityRef;
 interface UserLink {
   self: Href;
   memberships: Href;
@@ -86,7 +87,7 @@ interface Href {
 
 export interface UserResponse {
   count: number;
-  value: User[];
+  value: GraphUser[];
 }
 
 export interface fields {
@@ -105,27 +106,8 @@ export interface fields {
   };
 }
 
-export interface Iteration {
-  attributes: {
-    startDate: string;
-    finishDate: string;
-    timeFrame: string;
-  };
-  id: string;
-  name: string;
-  path: string;
-  url: string;
-}
-
 export interface Board {
   id: string;
   name: string;
   url: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  lastUpdateTime: string;
 }

@@ -42,25 +42,37 @@
                 "type": "string",
                 "const": "server",
                 "order": 0
+              },
+              "api_url": {
+                "order": 0,
+                "type": "string",
+                "title": "API URL"
+              },
+              "api_version": {
+                "order": 8,
+                "type": "string",
+                "title": "API Version",
+                "default": "7.1"
+              },
+              "graph_api_url": {
+                "order": 1,
+                "type": "string",
+                "title": "Graph API URL"
+              },
+              "graph_api_version": {
+                "order": 9,
+                "type": "string",
+                "title": "Graph API Version",
+                "default": "7.1-preview.1"
               }
             },
             "required": [
-              "type"
+              "type",
+              "api_url",
+              "graph_api_url"
             ]
           }
         ]
-      },
-      "api_url": {
-        "order": 1,
-        "type": "string",
-        "title": "API URL",
-        "default": "https://dev.azure.com"
-      },
-      "graph_api_url": {
-        "order": 2,
-        "type": "string",
-        "title": "Graph API URL",
-        "default": "https://vssps.dev.azure.com"
       },
       "access_token": {
         "order": 3,
@@ -112,18 +124,6 @@
         "title": "Cutoff Days",
         "description": "The threshold after which data should be synced.",
         "default": 90
-      },
-      "api_version": {
-        "order": 9,
-        "type": "string",
-        "title": "API Version",
-        "default": "7.1"
-      },
-      "graph_version": {
-        "order": 10,
-        "type": "string",
-        "title": "Graph API Version",
-        "default": "7.1-preview.1"
       },
       "reject_unauthorized": {
         "order": 11,

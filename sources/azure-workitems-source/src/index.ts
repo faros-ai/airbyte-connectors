@@ -11,7 +11,7 @@ import {
 import VError from 'verror';
 
 import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
-import {Boards, Iterations, Projects, Users} from './streams';
+import {Iterations, Projects, Users} from './streams';
 import {Workitems} from './streams/workitems';
 
 /** The main entry point. */
@@ -35,10 +35,7 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     config: AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureWorkItems = await AzureWorkitems.instance(
-        config,
-        this.logger
-      );
+      const azureWorkItems = await AzureWorkitems.instance(config, this.logger);
       await azureWorkItems.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -47,11 +44,10 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
   }
   streams(config: AzureWorkitemsConfig): AirbyteStreamBase[] {
     return [
+      new Projects(config, this.logger),
       new Workitems(config, this.logger),
       new Users(config, this.logger),
       new Iterations(config, this.logger),
-      new Boards(config, this.logger),
-      new Projects(config, this.logger),
     ];
   }
   async onBeforeRead(
