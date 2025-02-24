@@ -53,17 +53,6 @@
                 "type": "string",
                 "title": "API Version",
                 "default": "7.1"
-              },
-              "graph_api_url": {
-                "order": 1,
-                "type": "string",
-                "title": "Graph API URL"
-              },
-              "graph_api_version": {
-                "order": 9,
-                "type": "string",
-                "title": "Graph API Version",
-                "default": "7.1-preview.1"
               }
             },
             "required": [

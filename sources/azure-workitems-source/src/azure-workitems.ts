@@ -35,7 +35,7 @@ const DEFAULT_API_VERSION = '7.1';
 const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
-export const DEFAULT_REQUEST_TIMEOUT = 60000;
+export const DEFAULT_REQUEST_TIMEOUT = 300_000;
 
 // Curated list of work item types from Azure DevOps
 // https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-item-types/list?view=azure-devops-rest-7.0&tabs=HTTP#uri-parameters
@@ -123,13 +123,14 @@ export class AzureWorkitems {
     const apiVersion = instanceConfig.apiVersion ?? DEFAULT_API_VERSION;
     const accessToken = base64Encode(`:${config.access_token}`);
 
+    const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
     // Graph API is only available in Azure DevOps Cloud
     const graphClient =
       config.instance_type.type === 'cloud'
         ? makeAxiosInstanceWithRetry(
             {
               baseURL: `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
-              timeout: config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT,
+              timeout,
               maxContentLength: Infinity,
               maxBodyLength: Infinity,
               params: {'api-version': DEFAULT_GRAPH_VERSION},
@@ -142,7 +143,15 @@ export class AzureWorkitems {
         : undefined;
 
     const authHandler = getPersonalAccessTokenHandler(config.access_token);
-    const connection = new WebApi(baseUrl, authHandler);
+    const connection = new WebApi(baseUrl, authHandler, {
+      socketTimeout: timeout,
+      allowRetries: true,
+      maxRetries: 3, // Number of retry attempts
+      globalAgentOptions: {
+        keepAlive: true,
+        timeout,
+      },
+    });
 
     const witApiClient = await connection.getWorkItemTrackingApi();
     const fieldNameReferences = new Map<string, string>();
@@ -204,7 +213,7 @@ export class AzureWorkitems {
       config.instance_type.graph_api_url
     );
 
-    if (!apiUrl || !graphApiUrl) {
+    if (!apiUrl) {
       throw new VError(
         'API URL and Graph API URL must be provided when Azure DevOps ' +
           'instance type is Azure DevOps Server'
@@ -464,6 +473,7 @@ export class AzureWorkitems {
   async *getUsers(projects: ReadonlyArray<string>): AsyncGenerator<User> {
     if (this.instanceType?.type === 'server') {
       yield* this.getServerUsers(projects);
+      return;
     }
     yield* this.getCloudUsers();
   }
@@ -482,7 +492,7 @@ export class AzureWorkitems {
   }
 
   async *getServerUsers(
-    projects: ReadonlyArray<string>
+    projects?: ReadonlyArray<string>
   ): AsyncGenerator<IdentityRef> {
     const seenUsers = new Set<string>();
     let teams = 0;
@@ -592,14 +602,18 @@ export class AzureWorkitems {
       yield child;
 
       if (child.hasChildren) {
-        const iteration = await this.client.wit.getClassificationNode(
+        const iteration = await this.client.wit.getClassificationNodes(
           projectId,
-          TreeStructureGroup.Iterations,
-          child.path,
+          [child.id],
           1
         );
-        if (iteration) {
-          yield* this.processIterationChildren(projectId, iteration);
+        if (iteration?.length) {
+          // This should only have one iteration
+          yield* this.processIterationChildren(projectId, iteration[0]);
+        } else {
+          this.logger.warn(
+            `Failed to fetch iteration for ${child.id} ${child.name} to get children`
+          );
         }
       }
     }
