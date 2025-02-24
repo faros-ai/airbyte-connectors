@@ -1,10 +1,9 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {getFarosOptions} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
-import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
+import {Jira, JiraConfig} from './jira';
 import {
   ProjectBoardFilter,
   ProjectOrBoardInclusion,
