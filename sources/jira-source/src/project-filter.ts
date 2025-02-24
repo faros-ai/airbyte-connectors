@@ -1,7 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
-import VError from 'verror';
 
 import {Jira, JiraConfig} from './jira';
 import {
