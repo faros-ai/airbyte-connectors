@@ -171,40 +171,55 @@ export class ProjectBoardFilter {
     return {included: true, issueSync: true};
   }
 
-  /**
-   * Determines how a board should be included in the sync.
-   * 1. When using Faros Graph, all boards are included for boards stream but
-   *    only those explicitly included in the Faros Graph are synced.
-   * 2. When not using Faros Graph, boards are included if they are in the
-   *    `boards` set or not in the `excludedBoards` set.
-   *
-   * @returns An object containing:
-   *   - included: Whether the board should be included in the sync.
-   *   - syncIssues: Whether the issues from this board should be synced.
-   */
   async getBoardInclusion(board: string): Promise<{
     included: boolean;
     issueSync: boolean;
   }> {
     await this.loadSelectedBoards();
-    const {boards, excludedBoards} = this.filterConfig;
+    return this.getInclusion(
+      board,
+      this.filterConfig.boards,
+      this.filterConfig.excludedBoards
+    );
+  }
 
+  /**
+   * Determines whether an item (e.g., a board or a project) should be included in the sync.
+   * 1. When using Faros Graph, all items are included in their stream (boards or projects streams), but
+   *    only those explicitly included in the Faros Graph are synced.
+   * 2. When not using Faros Graph, an item is included if it is in the
+   *    `includedSet` or not in the `excludedSet`.
+   *
+   * @param item - The unique identifier of the item (board or project).
+   * @param includedSet - A set of explicitly included items (if applicable).
+   * @param excludedSet - A set of explicitly excluded items (if applicable).
+   * @returns An object containing:
+   *   - included: Whether the item should be included in the sync.
+   *   - issueSync: Whether issues related to this item should be synced.
+   */
+  protected async getInclusion(
+    item: string,
+    includedSet?: Set<string>,
+    excludedSet?: Set<string>
+  ): Promise<{included: boolean; issueSync: boolean}> {
     if (this.useFarosGraphBoardsSelection) {
       const included = true;
-
       const issueSync =
-        (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
+        (!includedSet?.size || includedSet.has(item)) &&
+        !excludedSet?.has(item);
       return {included, issueSync};
     }
-    if (boards?.size) {
-      const included = boards.has(board);
+
+    if (includedSet?.size) {
+      const included = includedSet.has(item);
       return {included, issueSync: included};
     }
 
-    if (excludedBoards?.size) {
-      const included = !excludedBoards.has(board);
+    if (excludedSet?.size) {
+      const included = !excludedSet.has(item);
       return {included, issueSync: included};
     }
+
     return {included: true, issueSync: true};
   }
 
@@ -250,6 +265,14 @@ export class ProjectBoardFilter {
     if (this.loadedSelectedBoards) {
       return;
     }
+    await this.loadItemsBasedOnInclusion('boards', 'excludedBoards');
+    this.loadedSelectedBoards = true;
+  }
+
+  protected async loadItemsBasedOnInclusion(
+    includedSetKey: 'boards' | 'projects',
+    excludedSetKey: 'excludedBoards' | 'excludedProjects'
+  ): Promise<void> {
     if (this.useFarosGraphBoardsSelection) {
       const source = this.config.source_qualifier
         ? `Jira_${this.config.source_qualifier}`
@@ -260,20 +283,19 @@ export class ProjectBoardFilter {
         this.farosClient,
         this.config.graph ?? DEFAULT_GRAPH
       );
-      const {included: boards} = farosOptions;
-      let {excluded: excludedBoards} = farosOptions;
-      if (boards?.size && excludedBoards?.size) {
+      const {included: items} = farosOptions;
+      let {excluded: excludedItems} = farosOptions;
+      if (items?.size && excludedItems?.size) {
         this.logger.warn(
-          'FarosGraph detected both included and excluded boards, excluded boards will be ignored.'
+          `FarosGraph detected both included and excluded ${includedSetKey}, excluded ${includedSetKey} will be ignored.`
         );
-        excludedBoards = undefined;
+        excludedItems = undefined;
       }
-      this.filterConfig.boards = boards.size ? boards : undefined;
-      this.filterConfig.excludedBoards = excludedBoards?.size
-        ? excludedBoards
+      this.filterConfig[includedSetKey] = items.size ? items : undefined;
+      this.filterConfig[excludedSetKey] = excludedItems?.size
+        ? excludedItems
         : undefined;
     }
-    this.loadedSelectedBoards = true;
   }
 
   private isWebhookSupplementMode(): boolean {

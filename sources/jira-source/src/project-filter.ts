@@ -102,72 +102,23 @@ export class ProjectFilter extends ProjectBoardFilter {
     return this.getProjects();
   }
 
-  /**
-   * Determines how a project should be included in the sync.
-   * 1. When using Faros Graph, all projects are included for projects stream but
-   *    only those explicitly included in the Faros Graph are synced.
-   * 2. When not using Faros Graph, projects are included if they are in the
-   *    `projects` set or not in the `excludedProjects` set.
-   *
-   * @returns An object containing:
-   *   - included: Whether the board should be included in the sync.
-   *   - syncIssues: Whether the issues from this board should be synced.
-   */
   async getProjectInclusion(project: string): Promise<{
     included: boolean;
     issueSync: boolean;
   }> {
     await this.loadSelectedProjects();
-    const {projects, excludedProjects} = this.filterConfig;
-
-    if (this.useFarosGraphBoardsSelection) {
-      const included = true;
-
-      const issueSync =
-        (!projects?.size || projects.has(project)) &&
-        !excludedProjects?.has(project);
-      return {included, issueSync};
-    }
-
-    if (projects?.size) {
-      const included = projects.has(project);
-      return {included, issueSync: included};
-    }
-
-    if (excludedProjects?.size) {
-      const included = !excludedProjects.has(project);
-      return {included, issueSync: included};
-    }
-    return {included: true, issueSync: true};
+    return this.getInclusion(
+      project,
+      this.filterConfig.projects,
+      this.filterConfig.excludedProjects
+    );
   }
 
   private async loadSelectedProjects(): Promise<void> {
     if (this.loadedSelectedProjects) {
       return;
     }
-    if (this.useFarosGraphBoardsSelection) {
-      const source = this.config.source_qualifier
-        ? `Jira_${this.config.source_qualifier}`
-        : 'Jira';
-      const farosOptions = await getFarosOptions(
-        'board',
-        source,
-        this.farosClient,
-        this.config.graph ?? DEFAULT_GRAPH
-      );
-      const {included: projects} = farosOptions;
-      let {excluded: excludedProjects} = farosOptions;
-      if (projects?.size && excludedProjects?.size) {
-        this.logger.warn(
-          'FarosGraph detected both included and excluded projects, excluded projects will be ignored.'
-        );
-        excludedProjects = undefined;
-      }
-      this.filterConfig.projects = projects.size ? projects : undefined;
-      this.filterConfig.excludedProjects = excludedProjects?.size
-        ? excludedProjects
-        : undefined;
-    }
+    await this.loadItemsBasedOnInclusion('projects', 'excludedProjects');
     this.loadedSelectedProjects = true;
   }
 }
