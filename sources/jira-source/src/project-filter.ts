@@ -10,6 +10,10 @@ import {
   ProjectOrBoardInclusion,
 } from './project-board-filter';
 
+/**
+ * Extension of ProjectBoardFilter class modified to use projects as boards.
+ * This class handles inclusion at a project level, and returns 1 artificial board per project.
+ */
 export class ProjectFilter extends ProjectBoardFilter {
   private loadedSelectedProjects = false;
 
@@ -71,8 +75,6 @@ export class ProjectFilter extends ProjectBoardFilter {
       this.projects = new Map();
 
       const jira = await Jira.instance(this.config, this.logger);
-
-      await this.loadSelectedProjects();
 
       if (!this.filterConfig.projects?.size) {
         const projects = await jira.getProjects();

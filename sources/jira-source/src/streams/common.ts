@@ -159,6 +159,9 @@ export abstract class StreamBase extends AirbyteStreamBase {
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     for (const project of await this.projectBoardFilter.getProjects()) {
+      this.logger.info(
+        `Processing project ${project.uid} with issueSync ${project.issueSync}`
+      );
       if (project.issueSync) {
         yield {project: project.uid};
       }
@@ -169,6 +172,9 @@ export abstract class StreamWithProjectSlices extends StreamBase {
 export abstract class StreamWithBoardSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<BoardStreamSlice> {
     for (const board of await this.projectBoardFilter.getBoards()) {
+      this.logger.info(
+        `Processing board ${board.uid} with issueSync ${board.issueSync}`
+      );
       if (board.issueSync) {
         yield {board: board.uid};
       }

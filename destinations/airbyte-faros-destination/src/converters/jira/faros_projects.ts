@@ -31,14 +31,25 @@ export class FarosProjects extends JiraConverter {
       },
     ];
     if (this.useProjectsAsBoards(ctx)) {
-      results.push({
-        model: 'tms_TaskBoard',
-        record: {
-          uid,
-          name: project.name,
-          source,
-        },
-      });
+      results.push(
+        ...[
+          {
+            model: 'tms_TaskBoard',
+            record: {
+              uid,
+              name: project.name,
+              source,
+            },
+          },
+          {
+            model: 'tms_TaskBoardProjectRelationship',
+            record: {
+              board: {uid, source},
+              project: {uid, source},
+            },
+          },
+        ]
+      );
       if (
         project.issueSync &&
         ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
