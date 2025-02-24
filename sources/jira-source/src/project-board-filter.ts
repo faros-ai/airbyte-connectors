@@ -47,37 +47,20 @@ export class ProjectBoardFilter {
       config.use_faros_graph_boards_selection ?? false;
 
     const {projects} = config;
-    let {excluded_projects, boards, excluded_boards} = config;
+    let {excluded_projects} = config;
 
-    if (projects?.length && excluded_projects?.length) {
-      logger.warn(
-        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
+    excluded_projects = this.verifyExclusionList(
+      projects,
+      excluded_projects,
+      'projects'
+    );
+
+    const {items: boards, excludedItems: excluded_boards} =
+      this.verifyListsWithGraphSelection(
+        config.boards,
+        config.excluded_boards,
+        'boards'
       );
-      excluded_projects = undefined;
-    }
-
-    if (!this.useFarosGraphBoardsSelection) {
-      if (boards?.length && excluded_boards?.length) {
-        logger.warn(
-          'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
-        );
-        excluded_boards = undefined;
-      }
-      this.loadedSelectedBoards = true;
-    } else {
-      if (!this.hasFarosClient()) {
-        throw new VError(
-          'Faros credentials are required when using Faros Graph for boards selection'
-        );
-      }
-      if (boards?.length || excluded_boards?.length) {
-        logger.warn(
-          'Using Faros Graph for boards selection but boards and/or excluded_boards are specified, both will be ignored.'
-        );
-        boards = undefined;
-        excluded_boards = undefined;
-      }
-    }
 
     this.filterConfig = {
       projects: projects?.length ? new Set(projects) : undefined,
@@ -89,6 +72,48 @@ export class ProjectBoardFilter {
         ? new Set(excluded_boards)
         : undefined,
     };
+  }
+
+  // Verifies that inclusion and exclusion lists are not both specified and returns the exclusion list to use.
+  protected verifyExclusionList(
+    items: ReadonlyArray<string>,
+    excludedItems: ReadonlyArray<string>,
+    key: 'projects' | 'boards'
+  ): ReadonlyArray<string> | undefined {
+    if (items?.length && excludedItems?.length) {
+      this.logger.warn(
+        `Both ${key} and excluded_${key} are specified, excluded_${key} will be ignored.`
+      );
+      excludedItems = undefined;
+    }
+    return excludedItems;
+  }
+
+  // Verifies that inclusion and exclusion lists are not specified when using Faros Graph for selection, and
+  // returns the lists to use.
+  protected verifyListsWithGraphSelection(
+    items: ReadonlyArray<string>,
+    excludedItems: ReadonlyArray<string>,
+    key: 'boards' | 'projects' = 'boards'
+  ): {items?: ReadonlyArray<string>; excludedItems?: ReadonlyArray<string>} {
+    if (!this.useFarosGraphBoardsSelection) {
+      excludedItems = this.verifyExclusionList(items, excludedItems, key);
+      this.loadedSelectedBoards = true;
+    } else {
+      if (!this.hasFarosClient()) {
+        throw new VError(
+          `Faros credentials are required when using Faros Graph for ${key} selection`
+        );
+      }
+      if (items?.length || excludedItems?.length) {
+        this.logger.warn(
+          `Using Faros Graph for ${key} selection but ${key} and/or excluded_${key} are specified, both will be ignored.`
+        );
+        items = undefined;
+        excludedItems = undefined;
+      }
+    }
+    return {items, excludedItems};
   }
 
   @Memoize()
@@ -145,6 +170,7 @@ export class ProjectBoardFilter {
   @Memoize()
   async getBoards(): Promise<ReadonlyArray<ProjectOrBoardInclusion>> {
     if (!this.boards) {
+      this.logger.info('Generating list of boards to sync.');
       this.boards = new Map();
 
       const jira = await Jira.instance(this.config, this.logger);
@@ -160,6 +186,10 @@ export class ProjectBoardFilter {
       } else {
         await this.getBoardsFromJira(jira);
       }
+      this.logger.info(`Will sync ${this.boards.size} boards.`);
+      this.logger.debug(
+        `Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`
+      );
     }
     return Array.from(this.boards.values());
   }

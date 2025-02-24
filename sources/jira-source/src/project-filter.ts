@@ -34,30 +34,12 @@ export class ProjectFilter extends ProjectBoardFilter {
   ) {
     super(config, logger, farosClient);
 
-    let {projects, excluded_projects} = config;
-
-    if (!this.useFarosGraphBoardsSelection) {
-      if (projects?.length && excluded_projects?.length) {
-        logger.warn(
-          'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
-        );
-        excluded_projects = undefined;
-      }
-      this.loadedSelectedProjects = true;
-    } else {
-      if (!this.hasFarosClient()) {
-        throw new VError(
-          'Faros credentials are required when using Faros Graph for projects selection'
-        );
-      }
-      if (projects?.length || excluded_projects?.length) {
-        logger.warn(
-          'Using Faros Graph for project selection but project and/or excluded_projects are specified, both will be ignored.'
-        );
-        projects = undefined;
-        excluded_projects = undefined;
-      }
-    }
+    const {items: projects, excludedItems: excluded_projects} =
+      this.verifyListsWithGraphSelection(
+        config.projects,
+        config.excluded_projects,
+        'projects'
+      );
 
     this.filterConfig = {
       projects: projects?.length ? new Set(projects) : undefined,
