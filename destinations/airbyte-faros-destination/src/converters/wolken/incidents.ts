@@ -75,6 +75,11 @@ export class Incidents extends WolkenConverter {
       },
     });
 
+    res.push(
+      ...this.incidentTag(incidentKey, 'Category', incident.categoryName),
+      ...this.incidentTag(incidentKey, 'Subcategory', incident.subCategoryName)
+    );
+
     const assigneeUid = incident.assignedUserId;
     if (assigneeUid) {
       res.push({
@@ -209,5 +214,35 @@ export class Incidents extends WolkenConverter {
       });
     }
     return undefined;
+  }
+
+  private incidentTag(
+    incidentKey: {uid: string; source: string},
+    key: string,
+    value: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!value) {
+      return [];
+    }
+    const tagKey = {
+      uid: `${key}__${value}`,
+    };
+    return [
+      {
+        model: 'faros_Tag',
+        record: {
+          ...tagKey,
+          key,
+          value,
+        },
+      },
+      {
+        model: 'ims_IncidentTagV2',
+        record: {
+          incident: incidentKey,
+          tag: tagKey,
+        },
+      },
+    ];
   }
 }

@@ -210,12 +210,15 @@ export class ConfigurationItems extends WolkenConverter {
     userFieldValue: string,
     userFieldDisplayName: string,
     application: ComputeApplication
-  ) {
+  ): ReadonlyArray<DestinationRecord> {
     if (!userFieldValue) {
       return [];
     }
-    const tag = {
+    const tagKey = {
       uid: `${userLookupFlexFieldName} ${userFieldDisplayName}__${userFieldValue}`,
+    };
+    const tag = {
+      ...tagKey,
       key: `${userLookupFlexFieldName} ${userFieldDisplayName}`,
       value: userFieldValue,
     };
@@ -226,7 +229,7 @@ export class ConfigurationItems extends WolkenConverter {
       },
       {
         model: 'compute_ApplicationTag',
-        record: {application, tag: {uid: tag.uid}},
+        record: {application, tag: tagKey},
       },
     ];
   }

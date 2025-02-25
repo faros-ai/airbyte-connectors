@@ -155,8 +155,8 @@ exports[`wolken incidents incident application impact 1`] = `
 Array [
   "Processed 3 records",
   "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__incidents\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 8 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 16 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_Tag\\\\\\":4,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentTagV2\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -185,6 +185,46 @@ Array [
       "title": "Inc_Support_Notification",
       "uid": "123456",
       "updatedAt": "2025-01-23T09:02:39.000Z",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Category",
+      "source": "Wolken",
+      "uid": "Category__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123456",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Category__N/A",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Subcategory",
+      "source": "Wolken",
+      "uid": "Subcategory__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123456",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Subcategory__N/A",
+      },
     },
   },
   Object {
@@ -229,6 +269,46 @@ Array [
       "title": "Inc_Support_Notification",
       "uid": "123457",
       "updatedAt": "2025-01-23T09:02:39.000Z",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Category",
+      "source": "Wolken",
+      "uid": "Category__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123457",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Category__N/A",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Subcategory",
+      "source": "Wolken",
+      "uid": "Subcategory__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123457",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Subcategory__N/A",
+      },
     },
   },
   Object {
@@ -281,8 +361,8 @@ exports[`wolken incidents incidents 1`] = `
 Array [
   "Processed 1 records",
   "Processed records by stream: {\\\\\\"mytestsource__wolken__incidents\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 2 records",
-  "Would write records by model: {\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 6 records",
+  "Would write records by model: {\\\\\\"faros_Tag\\\\\\":2,\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentTagV2\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -311,6 +391,46 @@ Array [
       "title": "Inc_Support_Notification",
       "uid": "123456",
       "updatedAt": "2025-01-23T09:02:39.000Z",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Category",
+      "source": "Wolken",
+      "uid": "Category__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123456",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Category__N/A",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Subcategory",
+      "source": "Wolken",
+      "uid": "Subcategory__N/A",
+      "value": "N/A",
+    },
+  },
+  Object {
+    "ims_IncidentTagV2": Object {
+      "incident": Object {
+        "source": "Wolken",
+        "uid": "123456",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Subcategory__N/A",
+      },
     },
   },
   Object {
