@@ -214,12 +214,13 @@ export class ConfigurationItems extends WolkenConverter {
     if (!userFieldValue) {
       return [];
     }
+    const key = `${userLookupFlexFieldName} ${userFieldDisplayName}`;
     const tagKey = {
-      uid: `${userLookupFlexFieldName} ${userFieldDisplayName}__${userFieldValue}`,
+      uid: `${key}__${userFieldValue}`,
     };
     const tag = {
       ...tagKey,
-      key: `${userLookupFlexFieldName} ${userFieldDisplayName}`,
+      key,
       value: userFieldValue,
     };
     return [

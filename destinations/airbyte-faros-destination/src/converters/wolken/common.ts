@@ -4,6 +4,9 @@ import {Common, ComputeApplication} from '../common/common';
 import {ApplicationMapping} from '../common/ims';
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
+// key: user property display name
+// value: user property path
+// e.g. {"Department": "userAddress.departmentName"}
 type UserLookupExtraFieldsMapping = Record<string, string>;
 
 interface WolkenConfig {
