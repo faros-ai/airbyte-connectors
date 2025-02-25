@@ -17,7 +17,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   get primaryKey(): string {
-    return 'userId';
+    return 'userPsNo';
   }
 
   async *readRecords(): AsyncGenerator<User> {

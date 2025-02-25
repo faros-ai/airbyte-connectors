@@ -8,6 +8,9 @@ export interface User {
   readonly userMobno: string;
   readonly activeUser: boolean;
   readonly hireDate: string;
+  readonly userAddress: {
+    readonly departmentName: string;
+  };
 }
 
 export interface CIRequest {

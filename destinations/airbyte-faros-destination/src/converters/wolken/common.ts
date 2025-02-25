@@ -4,13 +4,17 @@ import {Common, ComputeApplication} from '../common/common';
 import {ApplicationMapping} from '../common/ims';
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
+type UserLookupExtraFieldsMapping = Record<string, string>;
+
 interface WolkenConfig {
   service_id_flex_field_name: string;
   jira_project_key_flex_field_name?: string;
   application_tag_flex_field_names?: string[];
+  application_tag_flex_field_user_lookup_names?: string[];
   project_tag_flex_field_names?: string[];
   path_hierarchy_flex_field_names?: string[];
   application_mapping?: ApplicationMapping;
+  user_lookup_extra_fields_mapping?: UserLookupExtraFieldsMapping;
   store_current_incidents_associations?: boolean;
 }
 
@@ -26,6 +30,17 @@ export abstract class WolkenConverter extends Converter {
       parseObjectConfig(
         this.config(ctx)?.application_mapping,
         'Application Mapping'
+      ) ?? {}
+    );
+  }
+
+  protected userLookupExtraFieldsMapping(
+    ctx: StreamContext
+  ): UserLookupExtraFieldsMapping {
+    return (
+      parseObjectConfig(
+        this.config(ctx)?.user_lookup_extra_fields_mapping,
+        'User Lookup Extra Fields Mapping'
       ) ?? {}
     );
   }

@@ -2,10 +2,10 @@
 
 exports[`wolken configuration_items configuration_items 1`] = `
 Array [
-  "Processed 1 records",
-  "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 8 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"compute_ApplicationPath\\\\\\":1,\\\\\\"compute_ApplicationTag\\\\\\":1,\\\\\\"faros_Path\\\\\\":1,\\\\\\"faros_Tag\\\\\\":2,\\\\\\"tms_ProjectPath\\\\\\":1,\\\\\\"tms_ProjectTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 2 records",
+  "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 13 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"compute_ApplicationPath\\\\\\":1,\\\\\\"compute_ApplicationTag\\\\\\":3,\\\\\\"faros_Path\\\\\\":1,\\\\\\"faros_Tag\\\\\\":4,\\\\\\"ims_User\\\\\\":1,\\\\\\"tms_ProjectPath\\\\\\":1,\\\\\\"tms_ProjectTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -13,6 +13,14 @@ Array [
 
 exports[`wolken configuration_items configuration_items 2`] = `
 Array [
+  Object {
+    "ims_User": Object {
+      "email": "john.doe@example.com",
+      "name": "John Smith",
+      "source": "Wolken",
+      "uid": "12345",
+    },
+  },
   Object {
     "compute_Application": Object {
       "name": "Test App",
@@ -40,6 +48,50 @@ Array [
       "source": "Wolken",
       "tag": Object {
         "uid": "Environment__Production",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Engineering Owner",
+      "source": "Wolken",
+      "uid": "Engineering Owner__john.doe@example.com",
+      "value": "john.doe@example.com",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "Test App",
+        "platform": "unknown",
+        "source": "Wolken",
+        "uid": "Test App_unknown",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Engineering Owner__john.doe@example.com",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Engineering Owner Department",
+      "source": "Wolken",
+      "uid": "Engineering Owner Department__DEP1",
+      "value": "DEP1",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "Test App",
+        "platform": "unknown",
+        "source": "Wolken",
+        "uid": "Test App_unknown",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Engineering Owner Department__DEP1",
       },
     },
   },
@@ -113,37 +165,6 @@ Array [
 exports[`wolken incidents incident application impact 2`] = `
 Array [
   Object {
-    "compute_Application": Object {
-      "name": "Test App",
-      "platform": "unknown",
-      "source": "Wolken",
-      "uid": "Test App_unknown",
-    },
-  },
-  Object {
-    "ims_Incident": Object {
-      "createdAt": "2025-01-08T09:54:48.000Z",
-      "description": "Support notification incident requiring investigation",
-      "priority": Object {
-        "category": "Low",
-        "detail": "Low - P4",
-      },
-      "resolvedAt": "2025-01-23T09:02:12.000Z",
-      "severity": Object {
-        "category": "Sev3",
-        "detail": "Medium",
-      },
-      "source": "Wolken",
-      "status": Object {
-        "category": "Resolved",
-        "detail": "Closed",
-      },
-      "title": "Inc_Support_Notification",
-      "uid": "123457",
-      "updatedAt": "2025-01-23T09:02:39.000Z",
-    },
-  },
-  Object {
     "ims_Incident": Object {
       "createdAt": "2025-01-08T09:54:48.000Z",
       "description": "Support notification incident requiring investigation",
@@ -180,13 +201,44 @@ Array [
     },
   },
   Object {
+    "compute_Application": Object {
+      "name": "Test App",
+      "platform": "unknown",
+      "source": "Wolken",
+      "uid": "Test App_unknown",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "createdAt": "2025-01-08T09:54:48.000Z",
+      "description": "Support notification incident requiring investigation",
+      "priority": Object {
+        "category": "Low",
+        "detail": "Low - P4",
+      },
+      "resolvedAt": "2025-01-23T09:02:12.000Z",
+      "severity": Object {
+        "category": "Sev3",
+        "detail": "Medium",
+      },
+      "source": "Wolken",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "Closed",
+      },
+      "title": "Inc_Support_Notification",
+      "uid": "123457",
+      "updatedAt": "2025-01-23T09:02:39.000Z",
+    },
+  },
+  Object {
     "ims_IncidentApplicationImpact__Deletion": Object {
       "flushRequired": false,
       "source": "Wolken",
       "where": Object {
         "incident": Object {
           "source": "Wolken",
-          "uid": "123457",
+          "uid": "123456",
         },
       },
     },
@@ -198,7 +250,7 @@ Array [
       "where": Object {
         "incident": Object {
           "source": "Wolken",
-          "uid": "123456",
+          "uid": "123457",
         },
       },
     },

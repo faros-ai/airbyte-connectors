@@ -6,7 +6,7 @@ import {WolkenConverter} from './common';
 
 export class Users extends WolkenConverter {
   id(record: AirbyteRecord) {
-    return record?.record?.data?.userId;
+    return record?.record?.data?.userPsNo;
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
