@@ -39,9 +39,11 @@ export class Incidents extends WolkenConverter {
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'faros_Tag',
     'ims_Incident',
     'ims_IncidentAssignment',
     'ims_IncidentApplicationImpact',
+    'ims_IncidentTagV2',
   ];
 
   async convert(
