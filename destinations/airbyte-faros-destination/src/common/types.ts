@@ -33,6 +33,8 @@ export interface DestinationConfig extends AirbyteConfig {
   readonly skip_source_success_check?: boolean;
   readonly faros_source_id?: string;
   readonly fail_on_source_error?: boolean;
+  readonly heartbeat_timeout?: number;
+  readonly heartbeat_interval?: number;
 }
 
 export const FLUSH = {

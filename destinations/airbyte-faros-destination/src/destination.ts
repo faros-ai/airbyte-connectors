@@ -350,6 +350,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       );
     }
 
+    if (
+      config.heartbeat_timeout &&
+      (config.heartbeat_timeout < 1 || config.heartbeat_timeout > 900)
+    ) {
+      throw new VError(
+        'Heartbeat timeout must be between 1 and 900 seconds (15 minutes)'
+      );
+    }
+
+    if (
+      config.heartbeat_interval &&
+      (config.heartbeat_interval < 1 ||
+        config.heartbeat_interval > config.heartbeat_timeout)
+    ) {
+      throw new VError(
+        `Heartbeat interval must be between 1 and ${config.heartbeat_timeout} seconds`
+      );
+    }
+
     if (config.exclude_fields_map) {
       this.excludeFieldsByModel =
         typeof config.exclude_fields_map === 'object'
@@ -469,6 +488,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     let account: Account;
     let sync: AccountSync;
     let logFiles: LogFiles;
+    let heartbeatIntervalId: NodeJS.Timeout;
     if (!dryRunEnabled && this.edition === Edition.CLOUD) {
       account = await this.getFarosClient().getOrCreateAccount(
         accountId,
@@ -482,12 +502,23 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         sync = await this.getFarosClient().createAccountSync(
           accountId,
           startedAt,
-          logId
+          logId,
+          config.heartbeat_timeout
         );
         this.logger.shouldSaveLogs =
           !!account.local &&
           sync &&
           config.edition_configs.upload_sync_logs !== false;
+        if (sync && config.heartbeat_timeout) {
+          const interval =
+            (config.heartbeat_interval ||
+              Math.floor(config.heartbeat_timeout / 3)) * 1000;
+          heartbeatIntervalId = setInterval(
+            async () =>
+              this.getFarosClient().sendHeartbeat(accountId, sync.syncId),
+            interval
+          );
+        }
         if (this.logger.shouldSaveLogs) {
           logId = undefined; // let Faros generate a unique log id
           logFiles = new LogFiles(this.logger);
@@ -709,6 +740,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           await this.getFarosClient().uploadLogs(accountId, sync.syncId, logs);
         }
       }
+      if (heartbeatIntervalId) {
+        clearInterval(heartbeatIntervalId);
+      }
     }
   }
 
@@ -818,7 +852,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                   : msg.sourceType;
 
               if (sourceModeOrType === 'mock-data-feed') {
-                this.logger.info('Running a mock data feed sync. Resetting all models before writing records.');
+                this.logger.info(
+                  'Running a mock data feed sync. Resetting all models before writing records.'
+                );
                 ctx.markAllStreamsForReset();
                 await resetData?.(false);
               }
@@ -886,7 +922,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             const streamName = StreamName.fromString(stream).asString;
             const recordId = converter.id(unpacked);
             if (converterDependencies.has(streamName) && recordId) {
-              ctx.set(streamName, String(recordId), converter.toContextStorageRecord(unpacked, ctx));
+              ctx.set(
+                streamName,
+                String(recordId),
+                converter.toContextStorageRecord(unpacked, ctx)
+              );
               // Print stream context stats every so often
               if (stats.recordsProcessed % 1000 == 0) {
                 this.logger.info(`Stream context stats: ${ctx.stats()}`);
