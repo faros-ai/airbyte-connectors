@@ -111,7 +111,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
     super(logger);
     this.projectBoardFilter = this.useProjectsAsBoards()
       ? ProjectFilter.instance(config, logger, farosClient)
-      : ProjectBoardFilter.instance(config, logger, farosClient);
+      : ProjectBoardFilter.instance(
+          config,
+          logger,
+          farosClient,
+          this.isWebhookSupplementMode()
+        );
   }
 
   protected getUpdateRange(cutoff?: number): [Date, Date] {

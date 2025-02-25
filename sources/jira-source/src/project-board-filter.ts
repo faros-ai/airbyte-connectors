@@ -30,10 +30,16 @@ export class ProjectBoardFilter {
   static instance(
     config: JiraConfig,
     logger: AirbyteLogger,
-    farosClient?: FarosClient
+    farosClient?: FarosClient,
+    isWebhookSupplementMode?: boolean
   ): ProjectBoardFilter {
     if (!this._instance) {
-      this._instance = new ProjectBoardFilter(config, logger, farosClient);
+      this._instance = new ProjectBoardFilter(
+        config,
+        logger,
+        farosClient,
+        isWebhookSupplementMode
+      );
     }
     return this._instance;
   }
@@ -41,7 +47,8 @@ export class ProjectBoardFilter {
   constructor(
     protected readonly config: JiraConfig,
     protected readonly logger: AirbyteLogger,
-    protected readonly farosClient?: FarosClient
+    protected readonly farosClient?: FarosClient,
+    private readonly isWebhookSupplementMode?: boolean
   ) {
     this.useFarosGraphBoardsSelection =
       config.use_faros_graph_boards_selection ?? false;
@@ -125,7 +132,7 @@ export class ProjectBoardFilter {
       const jira = await Jira.instance(this.config, this.logger);
       if (!this.filterConfig.projects?.size) {
         const projects =
-          this.isWebhookSupplementMode() && this.hasFarosClient()
+          this.isWebhookSupplementMode && this.hasFarosClient()
             ? jira.getProjectsFromGraph(
                 this.farosClient,
                 this.config.graph ?? DEFAULT_GRAPH
@@ -181,7 +188,7 @@ export class ProjectBoardFilter {
       // Ensure included / excluded boards are loaded
       await this.loadSelectedBoards();
 
-      if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
+      if (this.isWebhookSupplementMode && this.hasFarosClient()) {
         await this.getBoardsFromFaros(jira);
       } else {
         await this.getBoardsFromJira(jira);
@@ -326,10 +333,6 @@ export class ProjectBoardFilter {
         ? excludedItems
         : undefined;
     }
-  }
-
-  private isWebhookSupplementMode(): boolean {
-    return this.config.run_mode === 'WebhookSupplement';
   }
 
   protected hasFarosClient(): boolean {
