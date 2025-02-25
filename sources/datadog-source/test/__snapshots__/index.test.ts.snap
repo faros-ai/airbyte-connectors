@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index streams - slos 1`] = `
+[
+  {
+    "attributes": {
+      "all_tags": [
+        "hermes",
+        "service:hermes",
+      ],
+      "created_at": 1740453374,
+      "creator": {
+        "email": "user@test.ai",
+        "id": 3675033,
+        "name": "User Test",
+      },
+      "description": "Test SLO for new stream for pagination",
+      "env_tags": [],
+      "groups": null,
+      "modified_at": 1740453374,
+      "monitor_ids": [
+        1000,
+      ],
+      "name": "Test SLO for Source",
+      "overall_status": [
+        {
+          "error": null,
+          "error_budget_remaining": -1685.7365,
+          "indexed_at": 1740519550,
+          "raw_error_budget_remaining": {
+            "unit": "seconds",
+            "value": -10195,
+          },
+          "span_precision": 2,
+          "state": "breached",
+          "status": 98.21429,
+          "target": 99.9,
+          "timeframe": "7d",
+        },
+      ],
+      "query": null,
+      "service_tags": [
+        "hermes",
+      ],
+      "slo_type": "monitor",
+      "status": {
+        "calculation_error": null,
+        "error_budget_remaining": -1685.7364501953125,
+        "indexed_at": 1740519550,
+        "raw_error_budget_remaining": {
+          "unit": "seconds",
+          "value": -10195,
+        },
+        "sli": 98.21428680419922,
+        "span_precision": 2,
+        "state": "breached",
+      },
+      "target_threshold": 99.9,
+      "team_tags": [],
+      "thresholds": [
+        {
+          "target": 99.9,
+          "target_display": "99.9",
+          "timeframe": "7d",
+          "warning": null,
+          "warning_display": null,
+        },
+      ],
+      "timeframe": "7d",
+      "warning_threshold": 0,
+    },
+    "id": "35281fa93f745b2ba41204f01f7b886",
+    "type": "slo",
+  },
+  {
+    "attributes": {
+      "all_tags": [
+        "delivery",
+        "tag2",
+        "service:delivery-api",
+      ],
+      "created_at": 1740453374,
+      "creator": {
+        "email": "user@test.ai",
+        "id": 3675033,
+        "name": "User Test",
+      },
+      "description": "Delivery API responses are handled in time",
+      "env_tags": [],
+      "groups": null,
+      "modified_at": 1649787310,
+      "monitor_ids": [],
+      "name": "Delivery API latency",
+      "overall_status": [
+        {
+          "error": null,
+          "error_budget_remaining": 79.16636657714844,
+          "indexed_at": 1740522500,
+          "raw_error_budget_remaining": {
+            "unit": "seconds",
+            "value": 20520,
+          },
+          "span_precision": 2,
+          "state": "ok",
+          "status": 99.79166412353516,
+          "target": 99,
+          "timeframe": "7d",
+        },
+      ],
+      "query": {
+        "denominator": "sum:request_count{*}.as_count()",
+        "numerator": "sum:failed_requests.as_count()",
+      },
+      "service_tags": [
+        "hermes",
+      ],
+      "slo_type": "metric",
+      "status": {
+        "calculation_error": null,
+        "error_budget_remaining": 79.16636657714844,
+        "indexed_at": 1740522500,
+        "raw_error_budget_remaining": {
+          "unit": "seconds",
+          "value": 20520,
+        },
+        "sli": 99.79166412353516,
+        "span_precision": 2,
+        "state": "ok",
+      },
+      "target_threshold": 99.9,
+      "team_tags": [],
+      "thresholds": [
+        {
+          "target": 99.9,
+          "target_display": "99.9",
+          "timeframe": "30d",
+          "warning": null,
+          "warning_display": null,
+        },
+      ],
+      "timeframe": "30d",
+      "warning_threshold": 0,
+    },
+    "id": "045d8f22cd87122128de35cdb66437203",
+    "type": "slo",
+  },
+]
+`;

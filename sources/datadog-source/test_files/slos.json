@@ -1,0 +1,167 @@
+{
+  "data": {
+    "type": "service_level_objective_search_results",
+    "attributes": {
+      "slos": [
+        {
+          "data": {
+            "type": "slo",
+            "attributes": {
+              "status": {
+                "raw_error_budget_remaining": {
+                  "value": -10195,
+                  "unit": "seconds"
+                },
+                "state": "breached",
+                "error_budget_remaining": -1685.7364501953125,
+                "indexed_at": 1740519550,
+                "calculation_error": null,
+                "span_precision": 2,
+                "sli": 98.21428680419922
+              },
+              "timeframe": "7d",
+              "name": "Test SLO for Source",
+              "warning_threshold": 0.0,
+              "target_threshold": 99.9,
+              "groups": null,
+              "slo_type": "monitor",
+              "query": null,
+              "modified_at": 1740453374,
+              "all_tags": [
+                "hermes",
+                "service:hermes"
+              ],
+              "description": "Test SLO for new stream for pagination",
+              "env_tags": [],
+              "thresholds": [
+                {
+                  "target_display": "99.9",
+                  "warning": null,
+                  "timeframe": "7d",
+                  "target": 99.9,
+                  "warning_display": null
+                }
+              ],
+              "created_at": 1740453374,
+              "monitor_ids": [
+                1000
+              ],
+              "creator": {
+                "email": "user@test.ai",
+                "id": 3675033,
+                "name": "User Test"
+              },
+              "team_tags": [],
+              "service_tags": [
+                "hermes"
+              ],
+              "overall_status": [
+                {
+                  "raw_error_budget_remaining": {
+                    "value": -10195,
+                    "unit": "seconds"
+                  },
+                  "state": "breached",
+                  "error": null,
+                  "indexed_at": 1740519550,
+                  "status": 98.21429,
+                  "error_budget_remaining": -1685.7365,
+                  "timeframe": "7d",
+                  "span_precision": 2,
+                  "target": 99.9
+                }
+              ]
+            },
+            "id": "35281fa93f745b2ba41204f01f7b886"
+          }
+        },
+        {
+          "data": {
+            "type": "slo",
+            "attributes": {
+              "status": {
+                "raw_error_budget_remaining": {
+                  "value": 20520,
+                  "unit": "seconds"
+                },
+                "state": "ok",
+                "error_budget_remaining": 79.16636657714844,
+                "indexed_at": 1740522500,
+                "calculation_error": null,
+                "span_precision": 2,
+                "sli": 99.79166412353516
+              },
+              "timeframe": "30d",
+              "name": "Delivery API latency",
+              "warning_threshold": 0.0,
+              "target_threshold": 99.9,
+              "groups": null,
+              "slo_type": "metric",
+              "query": {
+                "numerator": "sum:failed_requests.as_count()",
+                "denominator": "sum:request_count{*}.as_count()"
+              },
+              "modified_at": 1649787310,
+              "all_tags": [
+                "delivery",
+                "tag2",
+                "service:delivery-api"
+              ],
+              "description": "Delivery API responses are handled in time",
+              "env_tags": [],
+              "thresholds": [
+                {
+                  "target_display": "99.9",
+                  "warning": null,
+                  "timeframe": "30d",
+                  "target": 99.9,
+                  "warning_display": null
+                }
+              ],
+              "created_at": 1740453374,
+              "monitor_ids": [],
+              "creator": {
+                "email": "user@test.ai",
+                "id": 3675033,
+                "name": "User Test"
+              },
+              "team_tags": [],
+              "service_tags": [
+                "hermes"
+              ],
+              "overall_status": [
+                {
+                  "raw_error_budget_remaining": {
+                    "value": 20520,
+                    "unit": "seconds"
+                  },
+                  "state": "ok",
+                  "error": null,
+                  "indexed_at": 1740522500,
+                  "status": 99.79166412353516,
+                  "error_budget_remaining": 79.16636657714844,
+                  "timeframe": "7d",
+                  "span_precision": 2,
+                  "target": 99
+                }
+              ]
+            },
+            "id": "045d8f22cd87122128de35cdb66437203"
+          }
+        }
+      ]
+    }
+  },
+  "meta": {
+    "pagination": {
+      "number": 0,
+      "firstNumber": 0,
+      "prevNumber": 0,
+      "nextNumber": 1,
+      "lastNumber": 0,
+      "size": 100,
+      "type": "number_size",
+      "total": 2
+    }
+  }
+}
