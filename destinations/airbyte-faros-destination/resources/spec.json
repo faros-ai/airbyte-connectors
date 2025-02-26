@@ -182,19 +182,6 @@
         "title": "GraphQL page size for reset queries",
         "description": "Maximum number of record ids to query/delete in single GraphQL statement.",
         "default": 500
-      },
-      "heartbeat_timeout": {
-        "order": 18,
-        "type": "integer",
-        "title": "Heartbeat Timeout",
-        "description": "Timeout in seconds for heartbeat check. If the Faros API does not receive a heartbeat within this time, the sync will be considered failed.",
-        "default": 180
-      },
-      "heartbeat_interval": {
-        "order": 19,
-        "type": "integer",
-        "title": "Heartbeat Interval",
-        "description": "Interval in seconds for the destination to send a heartbeat to the Faros API. If left blank, the interval will be set to 1/3 of the heartbeat timeout."
       }
     }
   }

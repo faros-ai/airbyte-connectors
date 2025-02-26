@@ -219,6 +219,26 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     if (!config.edition_configs.api_key) {
       throw new VError('API key is not set');
     }
+    if (
+      config.edition_configs.heartbeat_timeout &&
+      (config.edition_configs.heartbeat_timeout < 1 ||
+        config.edition_configs.heartbeat_timeout > 900)
+    ) {
+      throw new VError(
+        'Heartbeat timeout must be between 1 and 900 seconds (15 minutes)'
+      );
+    }
+    if (
+      config.edition_configs.heartbeat_interval &&
+      (config.edition_configs.heartbeat_interval < 1 ||
+        config.edition_configs.heartbeat_interval >
+          config.edition_configs.heartbeat_timeout)
+    ) {
+      throw new VError(
+        `Heartbeat interval must be between 1 and ${config.edition_configs.heartbeat_timeout} seconds`
+      );
+    }
+
     try {
       this.farosClientConfig = {
         url: config.edition_configs.api_url ?? DEFAULT_API_URL,
@@ -347,25 +367,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     ) {
       throw new VError(
         'JSONata destination models must be set when using JSONata expression'
-      );
-    }
-
-    if (
-      config.heartbeat_timeout &&
-      (config.heartbeat_timeout < 1 || config.heartbeat_timeout > 900)
-    ) {
-      throw new VError(
-        'Heartbeat timeout must be between 1 and 900 seconds (15 minutes)'
-      );
-    }
-
-    if (
-      config.heartbeat_interval &&
-      (config.heartbeat_interval < 1 ||
-        config.heartbeat_interval > config.heartbeat_timeout)
-    ) {
-      throw new VError(
-        `Heartbeat interval must be between 1 and ${config.heartbeat_timeout} seconds`
       );
     }
 
@@ -503,16 +504,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           accountId,
           startedAt,
           logId,
-          config.heartbeat_timeout
+          config.edition_configs.heartbeat_timeout
         );
         this.logger.shouldSaveLogs =
           !!account.local &&
           sync &&
           config.edition_configs.upload_sync_logs !== false;
-        if (sync && config.heartbeat_timeout) {
+        if (sync && config.edition_configs.heartbeat_timeout) {
           const interval =
-            (config.heartbeat_interval ||
-              Math.floor(config.heartbeat_timeout / 3)) * 1000;
+            (config.edition_configs.heartbeat_interval ||
+              Math.floor(config.edition_configs.heartbeat_timeout / 3)) * 1000;
           heartbeatIntervalId = setInterval(
             async () =>
               this.getFarosClient().sendHeartbeat(accountId, sync.syncId),
@@ -668,6 +669,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           throw error;
         } finally {
           if (sync?.syncId) {
+            // sleep for 6 minutes
+            await new Promise((resolve) => setTimeout(resolve, 6 * 60 * 1000));
             await this.getFarosClient().updateAccountSync(
               accountId,
               sync.syncId,
