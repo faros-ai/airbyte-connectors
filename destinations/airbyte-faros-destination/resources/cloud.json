@@ -56,7 +56,7 @@
       "type": "integer",
       "title": "Heartbeat Timeout",
       "description": "Timeout in seconds for heartbeat check. If the Faros API does not receive a heartbeat within this time, the sync will be considered failed.",
-      "default": 180
+      "default": 300
     },
     "heartbeat_interval": {
       "type": "integer",
