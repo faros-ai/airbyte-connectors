@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Incident, User, ConfigurationItem} from 'faros-airbyte-common/wolken';
+import {ConfigurationItem,Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {get} from 'lodash';
 import {VError} from 'verror';
@@ -27,6 +27,7 @@ export interface WolkenConfig {
   startDate?: Date;
   endDate?: Date;
   readonly configuration_items_type_ids?: number[];
+  readonly flex_field_user_lookup_names?: string[];
 }
 
 interface TokenResponse {
@@ -85,12 +86,14 @@ export class WolkenTokenManager implements TokenManager {
 
 export class Wolken {
   private static wolken: Wolken;
+  private readonly userLookupRefs: Set<string> = new Set();
 
   constructor(
     private readonly logger: AirbyteLogger,
     private readonly httpClient: AxiosInstance,
     private readonly tokenManager: TokenManager,
-    private readonly pageSize: number
+    private readonly pageSize: number,
+    private readonly flexFieldUserLookupNames: string[]
   ) {
     // Add response interceptor to handle token refresh on 401
     this.httpClient.interceptors.response.use(
@@ -162,7 +165,8 @@ export class Wolken {
       logger,
       httpClient,
       tokenManager,
-      config.page_size ?? DEFAULT_PAGE_SIZE
+      config.page_size ?? DEFAULT_PAGE_SIZE,
+      config.flex_field_user_lookup_names ?? []
     );
 
     return Wolken.wolken;
@@ -212,7 +216,31 @@ export class Wolken {
   }
 
   async *getUsers(): AsyncGenerator<User> {
-    yield* this.paginate<User>('/api/masters/user');
+    for await (const user of this.paginate<User>('/api/masters/user')) {
+      if (!this.userLookupRefs.has(user.userPsNo)) {
+        yield user;
+      } else {
+        try {
+          const response = await this.httpClient.get(
+            `/api/masters/user?userPsNo=${user.userPsNo}`,
+            {
+              headers: {
+                Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
+              },
+            }
+          );
+          const responseData = get(response, 'data.data');
+          if (Array.isArray(responseData) && responseData.length > 0) {
+            yield responseData[0];
+          }
+        } catch (error: any) {
+          throw new VError(
+            error,
+            `Failed to fetch user details for user ${user.userPsNo}: ${error.message}`
+          );
+        }
+      }
+    }
   }
 
   async *getIncidents(
@@ -227,41 +255,67 @@ export class Wolken {
       params['updatedTimeLT'] = endDate.getTime();
     }
 
-    for await (const incident of this.paginate<Incident>('/api/incidents', params)) {
+    for await (const incident of this.paginate<Incident>(
+      '/api/incidents',
+      params
+    )) {
       try {
-        const response = await this.httpClient.get(`/api/incidents/${incident.ticketId}`, {
-          headers: {Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`}
-        });
+        const response = await this.httpClient.get(
+          `/api/incidents/${incident.ticketId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
+            },
+          }
+        );
         const responseData = get(response, 'data.data');
         if (Array.isArray(responseData) && responseData.length > 0) {
           yield responseData[0];
         }
       } catch (error: any) {
-        throw new VError(error, `Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`);
+        throw new VError(
+          error,
+          `Failed to fetch incident details for ticket ${incident.ticketId}: ${error.message}`
+        );
       }
     }
   }
 
-  async *getConfigurationItems(ciTypeId?: number): AsyncGenerator<ConfigurationItem> {
+  async *getConfigurationItems(
+    ciTypeId?: number
+  ): AsyncGenerator<ConfigurationItem> {
     const params = {};
     if (ciTypeId) {
       params['ciTypeId'] = ciTypeId;
     }
 
-    for await (const ci of this.paginate<ConfigurationItem>('/api/ci', params)) {
+    for await (const ci of this.paginate<ConfigurationItem>(
+      '/api/ci',
+      params
+    )) {
       try {
         const response = await this.httpClient.get(`/api/ci/get_ci`, {
-          headers: {Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`},
+          headers: {
+            Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
+          },
           params: {
-            ciId: ci.ciId
-          }
+            ciId: ci.ciId,
+          },
         });
         const responseData = response?.data?.data;
         if (Array.isArray(responseData) && responseData.length > 0) {
-          yield responseData[0];
+          const ci = responseData[0] as ConfigurationItem;
+          ci.flexFields
+            .filter((f) => this.flexFieldUserLookupNames.includes(f.flexName))
+            .map((f) => f.flexValue)
+            .forEach((f) => this.userLookupRefs.add(f));
+          yield ci;
         }
       } catch (error: any) {
-        throw new VError(error, `Failed to fetch CI details for ${ci.ciId}: ${error.message}`);
+        throw new VError(
+          error,
+          `Failed to fetch CI details for ${ci.ciId}: ${error.message}`
+        );
       }
     }
   }
