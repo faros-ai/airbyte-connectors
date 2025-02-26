@@ -2432,3 +2432,440 @@ Array [
   },
 ]
 `;
+
+exports[`faros_jira process records from all streams with use_projects_as_boards 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":2,\\\\\\"mytestsource__jira__faros_projects\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 27 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":2,\\\\\\"tms_Sprint\\\\\\":1,\\\\\\"tms_SprintBoardRelationship\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_SprintReport\\\\\\":1,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskDependency__Deletion\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_jira process records from all streams with use_projects_as_boards 2`] = `
+Array [
+  Object {
+    "tms_Project": Object {
+      "description": "Playground project description Test",
+      "name": "Playground",
+      "source": "Jira",
+      "sourceSystemId": "10011",
+      "uid": "PLAYG",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Playground",
+      "source": "Jira",
+      "uid": "PLAYG",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+    },
+  },
+  Object {
+    "faros_TmsTaskBoardOptions": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "inclusion": Object {
+        "category": "Included",
+      },
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "description": "Playground project description Test",
+      "name": "Playground 2",
+      "source": "Jira",
+      "sourceSystemId": "10012",
+      "uid": "PLAYG-2",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "Playground 2",
+      "source": "Jira",
+      "uid": "PLAYG-2",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG-2",
+      },
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG-2",
+      },
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [],
+      "createdAt": "2022-06-16T22:26:57.334Z",
+      "creator": Object {
+        "source": "Jira",
+        "uid": "5f64de67327ea50070931346",
+      },
+      "description": "DESCRIPTION",
+      "epic": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "name": "Test task in sprint then moved",
+      "parent": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "points": null,
+      "priority": "Highest",
+      "resolutionStatus": null,
+      "resolvedAt": null,
+      "source": "Jira",
+      "sourceSystemId": "12553",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "90",
+      },
+      "status": Object {
+        "category": "Todo",
+        "detail": "To Do",
+      },
+      "statusChangedAt": "2022-06-16T22:26:57.334Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2022-06-16T22:26:57.334Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "To Do",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Story",
+        "detail": "Story",
+      },
+      "uid": "PLAYG-18",
+      "updatedAt": "2025-01-17T18:22:04.985Z",
+      "url": "https://faros-ai.atlassian.net/browse/PLAYG-18",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2023-11-20T07:14:33.316Z",
+      "assignee": Object {
+        "source": "Jira",
+        "uid": "712020:6365c53f-dbb3-4baf-a823-be111400e458",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "name": "3rd-party-issue",
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "3rd-party-issue",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2025-01-17T18:22:04.601Z",
+      "removedAt": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "90",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "additionalFields": Array [],
+      "createdAt": "2021-10-07T20:01:30.258Z",
+      "creator": Object {
+        "source": "Jira",
+        "uid": "6025c1954fb89e0070d00ae3",
+      },
+      "description": null,
+      "epic": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "name": "Epic Issue 1",
+      "parent": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "points": null,
+      "priority": "Medium",
+      "resolutionStatus": null,
+      "resolvedAt": null,
+      "source": "Jira",
+      "sourceSystemId": "10597",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "90",
+      },
+      "status": Object {
+        "category": "InProgress",
+        "detail": "In Progress",
+      },
+      "statusChangedAt": "2021-12-20T19:42:07.817Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2021-10-07T20:01:30.258Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "To Do",
+          },
+        },
+        Object {
+          "changedAt": "2021-12-20T19:42:07.817Z",
+          "status": Object {
+            "category": "InProgress",
+            "detail": "In Progress",
+          },
+        },
+      ],
+      "type": Object {
+        "category": "Task",
+        "detail": "Task",
+      },
+      "uid": "PLAYG-7",
+      "updatedAt": "2025-01-17T18:22:02.625Z",
+      "url": "https://faros-ai.atlassian.net/browse/PLAYG-7",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2021-12-20T19:33:54.358Z",
+      "assignee": Object {
+        "source": "Jira",
+        "uid": "6025c037692da10070004e74",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2022-01-01T20:00:51.512Z",
+      "removedAt": "2022-01-01T20:01:05.224Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "27",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2022-01-01T20:01:05.224Z",
+      "removedAt": "2022-01-01T20:01:08.152Z",
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "39",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_SprintHistory": Object {
+      "addedAt": "2025-01-17T18:22:02.625Z",
+      "removedAt": null,
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "90",
+      },
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-7",
+      },
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2024-08-13T16:27:03.606Z",
+      "description": "",
+      "endedAt": "2024-08-16T04:35:18.000Z",
+      "name": "Test Sprint 127",
+      "openedAt": null,
+      "source": "Jira",
+      "startedAt": "2024-08-13T16:26:20.680Z",
+      "state": "Closed",
+      "uid": "86",
+    },
+  },
+  Object {
+    "tms_SprintBoardRelationship": Object {
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "source": "Jira",
+      "sprint": Object {
+        "source": "Jira",
+        "uid": "86",
+      },
+    },
+  },
+  Object {
+    "tms_SprintReport": Object {
+      "addedDuringSprint": null,
+      "board": Object {
+        "source": "Jira",
+        "uid": "PLAYG",
+      },
+      "classification": Object {
+        "category": "NotCompleted",
+      },
+      "plannedPoints": null,
+      "points": null,
+      "source": "Jira",
+      "sprintHistory": Object {
+        "sprint": Object {
+          "source": "Jira",
+          "uid": "52",
+        },
+        "task": Object {
+          "source": "Jira",
+          "uid": "PLAYG-1",
+        },
+      },
+      "status": Object {
+        "category": "Todo",
+        "detail": "To Do",
+      },
+    },
+  },
+  Object {
+    "tms_TaskDependency__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "dependentTask": Object {
+          "source": "Jira",
+          "uid": "PLAYG-18",
+        },
+      },
+    },
+  },
+  Object {
+    "tms_TaskDependency__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "dependentTask": Object {
+          "source": "Jira",
+          "uid": "PLAYG-7",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
+]
+`;

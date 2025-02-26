@@ -1,0 +1,138 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectFilter getBoards - board list wrongly set is ignored 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects (FarosGraph) - nothing included - nothing excluded 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects (FarosGraph) - nothing included - some excluded 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": false,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects (FarosGraph) - some included - nothing excluded 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": false,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects (FarosGraph) - some included - some excluded 1`] = `
+[
+  {
+    "issueSync": false,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": false,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects - all projects - empty list 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects - all projects - no list 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects - specific projects excluded 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
+]
+`;
+
+exports[`ProjectFilter getProjects - specific projects included 1`] = `
+[
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+]
+`;

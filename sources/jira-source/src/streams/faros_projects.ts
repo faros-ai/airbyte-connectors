@@ -1,5 +1,5 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {Version2Models} from 'jira.js';
+import {Project} from 'faros-airbyte-common/jira';
 import {toUpper} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
@@ -15,14 +15,19 @@ export class FarosProjects extends StreamBase {
     return 'key';
   }
 
-  async *readRecords(): AsyncGenerator<Version2Models.Project> {
+  async *readRecords(): AsyncGenerator<Project> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKeys = this.config.projects?.length
       ? new Set(this.config.projects.map((key) => toUpper(key)))
       : undefined;
     for (const project of await jira.getProjects(projectKeys)) {
-      if (!this.config.excluded_projects?.includes(project.key)) {
-        yield project;
+      const {included, issueSync} =
+        await this.projectBoardFilter.getProjectInclusion(project.key);
+      if (included) {
+        yield {
+          ...project,
+          issueSync,
+        };
       }
     }
   }
