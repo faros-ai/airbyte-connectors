@@ -43,7 +43,7 @@ export class Incidents extends WolkenConverter {
     'ims_Incident',
     'ims_IncidentAssignment',
     'ims_IncidentApplicationImpact',
-    'ims_IncidentTagV2',
+    'ims_IncidentFarosTag',
   ];
 
   async convert(
@@ -239,7 +239,7 @@ export class Incidents extends WolkenConverter {
         },
       },
       {
-        model: 'ims_IncidentTagV2',
+        model: 'ims_IncidentFarosTag',
         record: {
           incident: incidentKey,
           tag: tagKey,

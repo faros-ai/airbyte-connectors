@@ -156,7 +156,7 @@ Array [
   "Processed 3 records",
   "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__incidents\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 16 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_Tag\\\\\\":4,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentTagV2\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_Tag\\\\\\":4,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentApplicationImpact__Deletion\\\\\\":2,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentFarosTag\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -196,7 +196,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123456",
@@ -216,7 +216,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123456",
@@ -280,7 +280,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123457",
@@ -300,7 +300,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123457",
@@ -362,7 +362,7 @@ Array [
   "Processed 1 records",
   "Processed records by stream: {\\\\\\"mytestsource__wolken__incidents\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 6 records",
-  "Would write records by model: {\\\\\\"faros_Tag\\\\\\":2,\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentTagV2\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write records by model: {\\\\\\"faros_Tag\\\\\\":2,\\\\\\"ims_Incident\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":1,\\\\\\"ims_IncidentFarosTag\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -402,7 +402,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123456",
@@ -422,7 +422,7 @@ Array [
     },
   },
   Object {
-    "ims_IncidentTagV2": Object {
+    "ims_IncidentFarosTag": Object {
       "incident": Object {
         "source": "Wolken",
         "uid": "123456",
