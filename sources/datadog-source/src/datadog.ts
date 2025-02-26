@@ -216,7 +216,7 @@ export class Datadog {
     );
   }
 
-  async *getSLOs(
+  async *getServiceLevelObjectivess(
     pageSize = this.pageSize
   ): AsyncGenerator<v1.SearchServiceLevelObjectiveData, any, any> {
     yield* this.paginate<v1.SearchServiceLevelObjectiveData>(
