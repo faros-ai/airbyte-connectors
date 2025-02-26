@@ -107,6 +107,7 @@ export interface Sprint extends AgileModels.Sprint {
 export interface SprintReport {
   readonly sprintId: number;
   readonly boardId: string;
+  readonly projectKey?: string;
   readonly completeDate: Date;
   readonly issues: SprintIssue[];
 }
@@ -133,6 +134,10 @@ export interface User extends Version2Models.User {
 export interface Board extends AgileModels.Board {
   uid: string;
   projectKey: string;
+  issueSync: boolean;
+}
+
+export interface Project extends Version2Models.Project {
   issueSync: boolean;
 }
 
