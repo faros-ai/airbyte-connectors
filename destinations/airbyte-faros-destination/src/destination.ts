@@ -669,8 +669,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           throw error;
         } finally {
           if (sync?.syncId) {
-            // sleep for 6 minutes
-            await new Promise((resolve) => setTimeout(resolve, 6 * 60 * 1000));
             await this.getFarosClient().updateAccountSync(
               accountId,
               sync.syncId,
