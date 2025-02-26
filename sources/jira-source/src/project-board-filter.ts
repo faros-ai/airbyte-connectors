@@ -6,11 +6,13 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {DEFAULT_GRAPH, Jira, JiraConfig} from './jira';
-import {RunMode} from './streams/common';
 
-type BoardInclusion = {uid: string; issueSync: boolean};
+export type ProjectOrBoardInclusion = {
+  uid: string;
+  issueSync: boolean;
+};
 
-type FilterConfig = {
+export type FilterConfig = {
   projects?: Set<string>;
   excludedProjects?: Set<string>;
   boards?: Set<string>;
@@ -18,64 +20,54 @@ type FilterConfig = {
 };
 
 export class ProjectBoardFilter {
-  private readonly filterConfig: FilterConfig;
-  private readonly useFarosGraphBoardsSelection: boolean;
-  private projects?: Set<string>;
-  private boards?: Map<string, BoardInclusion>;
+  protected filterConfig: FilterConfig;
+  protected readonly useFarosGraphBoardsSelection: boolean;
+  protected projects?: Map<string, ProjectOrBoardInclusion>;
+  private boards?: Map<string, ProjectOrBoardInclusion>;
   private loadedSelectedBoards: boolean = false;
 
-  private static _instance: ProjectBoardFilter;
+  protected static _instance: ProjectBoardFilter;
   static instance(
     config: JiraConfig,
     logger: AirbyteLogger,
-    farosClient?: FarosClient
+    farosClient?: FarosClient,
+    isWebhookSupplementMode?: boolean
   ): ProjectBoardFilter {
     if (!this._instance) {
-      this._instance = new ProjectBoardFilter(config, logger, farosClient);
+      this._instance = new ProjectBoardFilter(
+        config,
+        logger,
+        farosClient,
+        isWebhookSupplementMode
+      );
     }
     return this._instance;
   }
 
   constructor(
-    private readonly config: JiraConfig,
-    private readonly logger: AirbyteLogger,
-    private readonly farosClient?: FarosClient
+    protected readonly config: JiraConfig,
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient,
+    private readonly isWebhookSupplementMode?: boolean
   ) {
     this.useFarosGraphBoardsSelection =
       config.use_faros_graph_boards_selection ?? false;
 
     const {projects} = config;
-    let {excluded_projects, boards, excluded_boards} = config;
+    let {excluded_projects} = config;
 
-    if (projects?.length && excluded_projects?.length) {
-      logger.warn(
-        'Both projects and excluded_projects are specified, excluded_projects will be ignored.'
+    excluded_projects = this.verifyExclusionList(
+      projects,
+      excluded_projects,
+      'projects'
+    );
+
+    const {items: boards, excludedItems: excluded_boards} =
+      this.verifyListsWithGraphSelection(
+        config.boards,
+        config.excluded_boards,
+        'boards'
       );
-      excluded_projects = undefined;
-    }
-
-    if (!this.useFarosGraphBoardsSelection) {
-      if (boards?.length && excluded_boards?.length) {
-        logger.warn(
-          'Both boards and excluded_boards are specified, excluded_boards will be ignored.'
-        );
-        excluded_boards = undefined;
-      }
-      this.loadedSelectedBoards = true;
-    } else {
-      if (!this.hasFarosClient()) {
-        throw new VError(
-          'Faros credentials are required when using Faros Graph for boards selection'
-        );
-      }
-      if (boards?.length || excluded_boards?.length) {
-        logger.warn(
-          'Using Faros Graph for boards selection but boards and/or excluded_boards are specified, both will be ignored.'
-        );
-        boards = undefined;
-        excluded_boards = undefined;
-      }
-    }
 
     this.filterConfig = {
       projects: projects?.length ? new Set(projects) : undefined,
@@ -89,16 +81,58 @@ export class ProjectBoardFilter {
     };
   }
 
+  // Verifies that inclusion and exclusion lists are not both specified and returns the exclusion list to use.
+  protected verifyExclusionList(
+    items: ReadonlyArray<string>,
+    excludedItems: ReadonlyArray<string>,
+    key: 'projects' | 'boards'
+  ): ReadonlyArray<string> | undefined {
+    if (items?.length && excludedItems?.length) {
+      this.logger.warn(
+        `Both ${key} and excluded_${key} are specified, excluded_${key} will be ignored.`
+      );
+      excludedItems = undefined;
+    }
+    return excludedItems;
+  }
+
+  // Verifies that inclusion and exclusion lists are not specified when using Faros Graph for selection, and
+  // returns the lists to use.
+  protected verifyListsWithGraphSelection(
+    items: ReadonlyArray<string>,
+    excludedItems: ReadonlyArray<string>,
+    key: 'boards' | 'projects' = 'boards'
+  ): {items?: ReadonlyArray<string>; excludedItems?: ReadonlyArray<string>} {
+    if (!this.useFarosGraphBoardsSelection) {
+      excludedItems = this.verifyExclusionList(items, excludedItems, key);
+      this.loadedSelectedBoards = true;
+    } else {
+      if (!this.hasFarosClient()) {
+        throw new VError(
+          `Faros credentials are required when using Faros Graph for ${key} selection`
+        );
+      }
+      if (items?.length || excludedItems?.length) {
+        this.logger.warn(
+          `Using Faros Graph for ${key} selection but ${key} and/or excluded_${key} are specified, both will be ignored.`
+        );
+        items = undefined;
+        excludedItems = undefined;
+      }
+    }
+    return {items, excludedItems};
+  }
+
   @Memoize()
-  async getProjects(): Promise<ReadonlyArray<string>> {
+  async getProjects(): Promise<ReadonlyArray<ProjectOrBoardInclusion>> {
     if (!this.projects) {
       this.logger.info('Generating list of projects to sync');
-      this.projects = new Set();
+      this.projects = new Map();
 
       const jira = await Jira.instance(this.config, this.logger);
       if (!this.filterConfig.projects?.size) {
         const projects =
-          this.isWebhookSupplementMode() && this.hasFarosClient()
+          this.isWebhookSupplementMode && this.hasFarosClient()
             ? jira.getProjectsFromGraph(
                 this.farosClient,
                 this.config.graph ?? DEFAULT_GRAPH
@@ -106,7 +140,7 @@ export class ProjectBoardFilter {
             : await jira.getProjects();
         for await (const project of projects) {
           if (!this.filterConfig.excludedProjects?.has(project.key)) {
-            this.projects.add(project.key);
+            this.projects.set(project.key, {uid: project.key, issueSync: true});
           }
         }
       } else {
@@ -114,13 +148,13 @@ export class ProjectBoardFilter {
       }
       this.logger.info(
         `Will sync ${this.projects.size} projects: ` +
-          `${Array.from(this.projects).join(', ')}`
+          `${Array.from(this.projects.keys()).join(', ')}`
       );
     }
-    return Array.from(this.projects);
+    return Array.from(this.projects.values());
   }
 
-  private async getProjectsFromConfig(): Promise<void> {
+  protected async getProjectsFromConfig(): Promise<void> {
     const jira = await Jira.instance(this.config, this.logger);
     const visibleProjects = await jira.getProjects();
     const keys = new Set(visibleProjects.map((p) => p.key));
@@ -132,14 +166,16 @@ export class ProjectBoardFilter {
         );
         continue;
       }
-      if (jira.isProjectInBucket(project)) {
-        this.projects.add(toUpper(project));
+      const {included, issueSync} = await this.getProjectInclusion(project);
+      if (jira.isProjectInBucket(project) && included) {
+        const projectKey = toUpper(project);
+        this.projects.set(projectKey, {uid: projectKey, issueSync});
       }
     }
   }
 
   @Memoize()
-  async getBoards(): Promise<ReadonlyArray<BoardInclusion>> {
+  async getBoards(): Promise<ReadonlyArray<ProjectOrBoardInclusion>> {
     if (!this.boards) {
       this.logger.info('Generating list of boards to sync.');
       this.boards = new Map();
@@ -152,52 +188,75 @@ export class ProjectBoardFilter {
       // Ensure included / excluded boards are loaded
       await this.loadSelectedBoards();
 
-      if (this.isWebhookSupplementMode() && this.hasFarosClient()) {
+      if (this.isWebhookSupplementMode && this.hasFarosClient()) {
         await this.getBoardsFromFaros(jira);
       } else {
         await this.getBoardsFromJira(jira);
       }
       this.logger.info(`Will sync ${this.boards.size} boards.`);
-      this.logger.debug(`Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`);
+      this.logger.debug(
+        `Boards to sync: ${Array.from(this.boards.keys()).join(', ')}`
+      );
     }
     return Array.from(this.boards.values());
   }
 
-  /**
-   * Determines how a board should be included in the sync.
-   * 1. When using Faros Graph, all boards are included for boards stream but
-   *    only those explicitly included in the Faros Graph are synced.
-   * 2. When not using Faros Graph, boards are included if they are in the
-   *    `boards` set or not in the `excludedBoards` set.
-   *
-   * @returns An object containing:
-   *   - included: Whether the board should be included in the sync.
-   *   - syncIssues: Whether the issues from this board should be synced.
-   */
+  async getProjectInclusion(project: string): Promise<{
+    included: boolean;
+    issueSync: boolean;
+  }> {
+    return {included: true, issueSync: true};
+  }
+
   async getBoardInclusion(board: string): Promise<{
     included: boolean;
     issueSync: boolean;
   }> {
     await this.loadSelectedBoards();
-    const {boards, excludedBoards} = this.filterConfig;
+    return this.getInclusion(
+      board,
+      this.filterConfig.boards,
+      this.filterConfig.excludedBoards
+    );
+  }
 
+  /**
+   * Determines whether an item (e.g., a board or a project) should be included in the sync.
+   * 1. When using Faros Graph, all items are included in their stream (boards or projects streams), but
+   *    only those explicitly included in the Faros Graph are synced.
+   * 2. When not using Faros Graph, an item is included if it is in the
+   *    `includedSet` or not in the `excludedSet`.
+   *
+   * @param item - The unique identifier of the item (board or project).
+   * @param includedSet - A set of explicitly included items (if applicable).
+   * @param excludedSet - A set of explicitly excluded items (if applicable).
+   * @returns An object containing:
+   *   - included: Whether the item should be included in the sync.
+   *   - issueSync: Whether issues related to this item should be synced.
+   */
+  protected async getInclusion(
+    item: string,
+    includedSet?: Set<string>,
+    excludedSet?: Set<string>
+  ): Promise<{included: boolean; issueSync: boolean}> {
     if (this.useFarosGraphBoardsSelection) {
       const included = true;
-
       const issueSync =
-        (!boards?.size || boards.has(board)) && !excludedBoards?.has(board);
+        (!includedSet?.size || includedSet.has(item)) &&
+        !excludedSet?.has(item);
       return {included, issueSync};
     }
 
-    if (boards?.size) {
-      const included = boards.has(board);
+    if (includedSet?.size) {
+      const included = includedSet.has(item);
       return {included, issueSync: included};
     }
 
-    if (excludedBoards?.size) {
-      const included = !excludedBoards.has(board);
+    if (excludedSet?.size) {
+      const included = !excludedSet.has(item);
       return {included, issueSync: included};
     }
+
     return {included: true, issueSync: true};
   }
 
@@ -210,7 +269,7 @@ export class ProjectBoardFilter {
    */
   private async getBoardsFromJira(jira: Jira): Promise<void> {
     this.logger.info('Fetching boards to sync from Jira.');
-    for (const project of this.projects) {
+    for (const project of this.projects.keys()) {
       this.logger.info(`Fetching boards to sync for project ${project}`);
       for (const board of await jira.getProjectBoards(project)) {
         const boardId = toString(board.id);
@@ -227,7 +286,7 @@ export class ProjectBoardFilter {
     const projects = jira.getProjectBoardsFromGraph(
       this.farosClient,
       this.config.graph ?? DEFAULT_GRAPH,
-      Array.from(this.projects)
+      Array.from(this.projects.keys())
     );
     for await (const project of projects) {
       for (const board of project.boardUids) {
@@ -243,6 +302,14 @@ export class ProjectBoardFilter {
     if (this.loadedSelectedBoards) {
       return;
     }
+    await this.loadItemsBasedOnInclusion('boards', 'excludedBoards');
+    this.loadedSelectedBoards = true;
+  }
+
+  protected async loadItemsBasedOnInclusion(
+    includedSetKey: 'boards' | 'projects',
+    excludedSetKey: 'excludedBoards' | 'excludedProjects'
+  ): Promise<void> {
     if (this.useFarosGraphBoardsSelection) {
       const source = this.config.source_qualifier
         ? `Jira_${this.config.source_qualifier}`
@@ -253,27 +320,22 @@ export class ProjectBoardFilter {
         this.farosClient,
         this.config.graph ?? DEFAULT_GRAPH
       );
-      const {included: boards} = farosOptions;
-      let {excluded: excludedBoards} = farosOptions;
-      if (boards?.size && excludedBoards?.size) {
+      const {included: items} = farosOptions;
+      let {excluded: excludedItems} = farosOptions;
+      if (items?.size && excludedItems?.size) {
         this.logger.warn(
-          'FarosGraph detected both included and excluded boards, excluded boards will be ignored.'
+          `FarosGraph detected both included and excluded ${includedSetKey}, excluded ${includedSetKey} will be ignored.`
         );
-        excludedBoards = undefined;
+        excludedItems = undefined;
       }
-      this.filterConfig.boards = boards.size ? boards : undefined;
-      this.filterConfig.excludedBoards = excludedBoards?.size
-        ? excludedBoards
+      this.filterConfig[includedSetKey] = items.size ? items : undefined;
+      this.filterConfig[excludedSetKey] = excludedItems?.size
+        ? excludedItems
         : undefined;
     }
-    this.loadedSelectedBoards = true;
   }
 
-  private isWebhookSupplementMode(): boolean {
-    return this.config.run_mode === RunMode.WebhookSupplement;
-  }
-
-  private hasFarosClient(): boolean {
+  protected hasFarosClient(): boolean {
     return Boolean(this.farosClient);
   }
 }

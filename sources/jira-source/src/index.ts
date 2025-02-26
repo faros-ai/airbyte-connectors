@@ -150,6 +150,11 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
     }
+    // If use projects as boards is enabled, remove the boards and board issues stream.
+    if (config.use_projects_as_boards) {
+      streamNames.splice(streamNames.indexOf('faros_board_issues'), 1);
+      streamNames.splice(streamNames.indexOf('faros_boards'), 1);
+    }
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)
     );

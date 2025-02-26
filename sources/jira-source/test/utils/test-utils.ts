@@ -90,3 +90,31 @@ export async function* iterate<T>(
     yield x;
   }
 }
+
+export function mockFarosOptions({
+  includedUids = [],
+  excludedUids = [],
+}: {
+  includedUids?: string[];
+  excludedUids?: string[];
+} = {}): any {
+  return {
+    nodeIterable: () =>
+      iterate([
+        ...includedUids.map((uid) => taskBoardOptions(uid, 'Included')),
+        ...excludedUids.map((uid) => taskBoardOptions(uid, 'Excluded')),
+      ]),
+  };
+}
+
+function taskBoardOptions(
+  uid: string,
+  inclusionCategory: 'Included' | 'Excluded'
+) {
+  return {
+    board: {
+      uid,
+    },
+    inclusionCategory,
+  };
+}

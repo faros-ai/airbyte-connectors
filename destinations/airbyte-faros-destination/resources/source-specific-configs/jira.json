@@ -11,11 +11,12 @@
           "const": "Jira",
           "order": 0
         },
-        "use_board_ownership": {
+        "use_projects_as_boards": {
           "type": "boolean",
-          "title": "Use Board Ownership",
-          "description": "Use Jira boards for assigning owners of tasks, or use projects.",
-          "default": true
+          "title": "Use Projects as Boards",
+          "description": "Deprecated: Use default behaviour (disabled) and sync Jira boards. When enabled, Jira project boards are not synced and each project has a single board with the project UID and all issues.",
+          "default": false,
+          "deprecated": true
         },
         "truncate_limit": {
           "type": "integer",
