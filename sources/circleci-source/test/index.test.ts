@@ -203,7 +203,6 @@ describe('index', () => {
     for await (const test of testsIter) {
       tests.push(test);
     }
-    console.log(fnTestsList.mock.calls);
     expect(fnTestsList).toHaveBeenCalledTimes(4);
     expect(tests).toStrictEqual(readTestResourceFile('tests.json'));
   });

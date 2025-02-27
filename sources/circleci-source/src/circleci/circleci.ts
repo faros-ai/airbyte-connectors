@@ -363,7 +363,6 @@ export class CircleCI {
                 pipeline: pick(pipeline, ['id', 'vcs', 'project_slug']),
                 workflow: pick(workflow, ['id', 'name']),
               });
-              console.log(this.seenJobsPerProject);
             }
           }
         }
@@ -430,7 +429,6 @@ export class CircleCI {
   }
 
   getSeenJobs(projectSlug: string): CompactJob[] {
-    console.log(this.seenJobsPerProject);
     return this.seenJobsPerProject.get(projectSlug) ?? [];
   }
 }

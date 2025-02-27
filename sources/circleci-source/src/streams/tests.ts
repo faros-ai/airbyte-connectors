@@ -31,7 +31,6 @@ export class Tests extends StreamWithProjectSlices {
 
     const jobs = circleCI.getSeenJobs(streamSlice.projectSlug);
     const jobsWithUndefinedNumbers: string[] = [];
-    console.log(jobs);
     for (const job of jobs) {
       const jobNum = job.job_number;
       if (jobNum === undefined) {
