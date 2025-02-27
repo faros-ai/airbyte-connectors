@@ -46,12 +46,15 @@ export class Customreports extends Converter {
   generalLogCollection: string[] = [];
   terminatedEmployees: EmployeeRecord[] = [];
   currentDate: Date = new Date();
-  // These are set in setOrgsToKeepAndIgnore
+  // These variables are populated in setOrgsToKeepAndIgnore
   org_ids_to_keep = null;
   org_ids_to_ignore = null;
+  // Logging variables
   skipped_due_to_missing_fields = 0;
   skipped_due_to_termination = 0;
-  employees_with_more_than_one_record: Record<string, number> = {};
+  // employees that appear in more than one record belong to more than one team
+  employees_with_more_than_one_record_by_id: Record<string, number> = {};
+  writtenEmployeeIds: Set<string> = new Set<string>();
   failedRecordFields: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
@@ -87,10 +90,10 @@ export class Customreports extends Converter {
     // We might have more than one record per employee (hopefully not many)
     if (rec.Employee_ID in this.employeeIDToRecords) {
       this.employeeIDToRecords[rec.Employee_ID].push(rec);
-      if (rec.Full_Name in this.employees_with_more_than_one_record) {
-        this.employees_with_more_than_one_record[rec.Full_Name] += 1;
+      if (rec.Employee_ID in this.employees_with_more_than_one_record_by_id) {
+        this.employees_with_more_than_one_record_by_id[rec.Employee_ID] += 1;
       } else {
-        this.employees_with_more_than_one_record[rec.Full_Name] = 2;
+        this.employees_with_more_than_one_record_by_id[rec.Employee_ID] = 2;
       }
     } else {
       this.employeeIDToRecords[rec.Employee_ID] = [rec];
@@ -485,6 +488,15 @@ export class Customreports extends Converter {
 
   private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
     const teamIDs = Object.keys(this.teamIDToManagerIDs);
+    // Preparing to list employees with more than one record by their name
+    const employees_with_more_than_one_record_by_name: Record<string, number> =
+      {};
+    for (const [employeeID, count] of Object.entries(
+      this.employees_with_more_than_one_record_by_id
+    )) {
+      const employeeName = this.employeeIDToRecords[employeeID][0].Full_Name;
+      employees_with_more_than_one_record_by_name[employeeName] = count;
+    }
     const report_obj = {
       nAcceptableTeams: acceptableTeams.size,
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
@@ -495,8 +507,9 @@ export class Customreports extends Converter {
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
       generalLogs: this.generalLogCollection,
-      employees_with_more_than_one_record:
-        this.employees_with_more_than_one_record,
+      employees_with_more_than_one_record_by_id:
+        this.employees_with_more_than_one_record_by_id,
+      employees_with_more_than_one_record_by_name,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
@@ -532,6 +545,47 @@ export class Customreports extends Converter {
     return {category, detail: employeeType};
   }
 
+  getRecordsForDuplicateEmployee(
+    employee_record: EmployeeRecord
+  ): DestinationRecord[] {
+    // When a single employee has several records associated with them (e.g. they are on multiple teams)
+    // we need to handle this properly
+    const all_employee_records: EmployeeRecord[] =
+      this.employeeIDToRecords[employee_record.Employee_ID];
+    const firstRecord = all_employee_records[0];
+    const errors_log: string[] = [];
+
+    // We don't error out because we don't want to stop the process
+    // We just want to log the errors
+    for (const record of all_employee_records) {
+      if (record.Start_Date !== firstRecord.Start_Date) {
+        errors_log.push(
+          `Start Date mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Start_Date} vs ${firstRecord.Start_Date}`
+        );
+      }
+      if (record.Location !== firstRecord.Location) {
+        errors_log.push(
+          `Location mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Location} vs ${firstRecord.Location}`
+        );
+      }
+      if (record.Email !== firstRecord.Email) {
+        errors_log.push(
+          `Email mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Email} vs ${firstRecord.Email}`
+        );
+      }
+    }
+    this.generalLogCollection.push(...errors_log);
+    return [
+      {
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid: employee_record.Team_ID},
+          member: {uid: employee_record.Employee_ID},
+        },
+      },
+    ];
+  }
+
   private async createEmployeeRecordList(
     employee_record: EmployeeRecord,
     isTerminated: boolean = false
@@ -547,6 +601,10 @@ export class Customreports extends Converter {
       teamUid = this.FAROS_UNASSIGNED_TEAM;
       managerKey = null;
       terminatedAt = this.getTerminationDate(employee_record);
+    }
+    if (employee_record.Employee_ID in this.writtenEmployeeIds) {
+      // We only return the team membership record
+      return this.getRecordsForDuplicateEmployee(employee_record);
     }
     records.push(
       {
@@ -582,6 +640,7 @@ export class Customreports extends Converter {
         },
       }
     );
+    this.writtenEmployeeIds.add(employee_record.Employee_ID);
 
     return records;
   }

@@ -2,6 +2,9 @@
 We keep the orgs where the most recent parent is kept.
 If you leave both orgs_to_keep and orgs_to_ignore empty, then this
 syncs the entire org.
+By default, we don't sync employees that are no longer active (i.e. terminated employees).
+In order to sync them, set the flag keep_terminated_employees to true.
+
 Expecting fields (? implies optional):
 ```
   Start_Date: Date;
@@ -22,9 +25,14 @@ Source Specific Configs:
 ```
 orgs_to_keep: string[];
 orgs_to_ignore: string[]
+ignore_cycle_teams
 fail_on_cycles: bool (default is false)
+keep_terminated_employees: bool (default is false)
+resolve_locations: bool (default is false)
 
 ```
+For more details on source specific configs, look at 
+destinations/airbyte-faros-destination/resources/source-specific-configs/workday.json
 
 Note: 
-Employees might appear on more-than-one records if they belong to more-than-one teams.
+Employees might appear on >1 records if they belong to >1 teams.
