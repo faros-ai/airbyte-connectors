@@ -1,7 +1,7 @@
 ## Notes
-Note that blocked orgs is stronger than used orgs.
-That means, if an org is under a used org, but is also under a blocked org,
-then we do not keep that org.
+We keep the orgs where the most recent parent is kept.
+If you leave both orgs_to_keep and orgs_to_ignore empty, then this
+syncs the entire org.
 Expecting fields (? implies optional):
 ```
   Start_Date: Date;
