@@ -349,22 +349,7 @@ export class CircleCI {
         pipeline.workflows = workflows;
         for (const workflow of pipeline.workflows) {
           workflow.jobs = await this.fetchJobs(workflow.id);
-          for (const job of workflow.jobs) {
-            if (!this.seenJobIdsPerProject.has(projectName)) {
-              this.seenJobIdsPerProject.set(projectName, new Set());
-            }
-            if (!this.seenJobIdsPerProject.get(projectName).has(job.id)) {
-              this.seenJobIdsPerProject.get(projectName).add(job.id);
-              if (!this.seenJobsPerProject.has(projectName)) {
-                this.seenJobsPerProject.set(projectName, []);
-              }
-              this.seenJobsPerProject.get(projectName).push({
-                ...pick(job, ['id', 'job_number', 'started_at', 'stopped_at']),
-                pipeline: pick(pipeline, ['id', 'vcs', 'project_slug']),
-                workflow: pick(workflow, ['id', 'name']),
-              });
-            }
-          }
+          this.storeSeenJobs(pipeline, workflow, projectName);
         }
         yield pipeline;
       }
@@ -428,8 +413,32 @@ export class CircleCI {
     );
   }
 
+  private storeSeenJobs(
+    pipeline: Pipeline,
+    workflow: Workflow,
+    projectSlug: string
+  ): void {
+    const project = toLower(projectSlug);
+    for (const job of workflow.jobs) {
+      if (!this.seenJobIdsPerProject.has(project)) {
+        this.seenJobIdsPerProject.set(project, new Set());
+      }
+      if (!this.seenJobIdsPerProject.get(project).has(job.id)) {
+        this.seenJobIdsPerProject.get(project).add(job.id);
+        if (!this.seenJobsPerProject.has(project)) {
+          this.seenJobsPerProject.set(project, []);
+        }
+        this.seenJobsPerProject.get(project).push({
+          ...pick(job, ['id', 'job_number', 'started_at', 'stopped_at']),
+          pipeline: pick(pipeline, ['id', 'vcs', 'project_slug']),
+          workflow: pick(workflow, ['id', 'name']),
+        });
+      }
+    }
+  }
+
   getSeenJobs(projectSlug: string): CompactJob[] {
-    return this.seenJobsPerProject.get(projectSlug) ?? [];
+    return this.seenJobsPerProject.get(toLower(projectSlug)) ?? [];
   }
 }
 
