@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {ConfigurationItem,Incident, User} from 'faros-airbyte-common/wolken';
+import {ConfigurationItem, Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {get} from 'lodash';
 import {VError} from 'verror';
