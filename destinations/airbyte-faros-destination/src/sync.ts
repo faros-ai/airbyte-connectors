@@ -58,13 +58,15 @@ class FarosSyncClient extends FarosClient {
   async createAccountSync(
     accountId: string,
     startedAt: Date,
-    logId?: string
+    logId?: string,
+    heartbeatTimeoutSecs?: number
   ): Promise<AccountSync | undefined> {
     const sync = syncResult(
       await this.attemptRequest(
         this.request('PUT', `/accounts/${accountId}/syncs`, {
           startedAt: startedAt.toISOString(),
           logId,
+          heartbeatTimeoutSecs,
         }),
         `Failed to create sync for account ${accountId}`
       )
@@ -73,6 +75,14 @@ class FarosSyncClient extends FarosClient {
       this.airbyteLogger?.info(`Created sync id: ${sync?.syncId}`);
     }
     return sync;
+  }
+
+  async sendHeartbeat(accountId: string, syncId: string): Promise<void> {
+    this.airbyteLogger?.debug('Sending sync heartbeat');
+    await this.attemptRequest(
+      this.request('POST', `/accounts/${accountId}/syncs/${syncId}/heartbeat`),
+      `Failed to send heartbeat for sync ${syncId}, account ${accountId}`
+    );
   }
 
   async createLocalAccount(

@@ -73,10 +73,14 @@ describe('wolken', () => {
             service_id_flex_field_name: 'Service ID',
             jira_project_key_flex_field_name: 'JIRA Key',
             application_tag_flex_field_names: ['Environment'],
+            application_tag_flex_field_user_lookup_names: ['Engineering Owner'],
             project_tag_flex_field_names: ['Engineering Owner'],
             path_hierarchy_flex_field_names: ['Service ID'],
             application_mapping: {
               A3F91B6D: {name: 'Test App'},
+            },
+            user_lookup_extra_fields_mapping: {
+              Department: 'userAddress.departmentName',
             },
           },
         },
