@@ -29,14 +29,22 @@ export class Tests extends StreamWithProjectSlices {
   ): AsyncGenerator<TestMetadata, any, unknown> {
     const circleCI = CircleCI.instance(this.cfg, this.logger);
 
-    const jobs = circleCI.getSeenJobs(streamSlice.projectSlug);
+    const jobs = circleCI.getFetchedJobs(streamSlice.projectSlug);
     const jobsWithUndefinedNumbers: string[] = [];
+    const seenJobs = new Set<number>();
     for (const job of jobs) {
       const jobNum = job.job_number;
       if (jobNum === undefined) {
         jobsWithUndefinedNumbers.push(job.id);
         continue;
       }
+      if (seenJobs.has(jobNum)) {
+        this.logger.warn(
+          `Tests already seen for job [${jobNum}] in project [${job.pipeline.project_slug}] - Skipping additional occurrence`
+        );
+        continue;
+      }
+      seenJobs.add(jobNum);
 
       const tests = circleCI.fetchTests(
         streamSlice.projectSlug,

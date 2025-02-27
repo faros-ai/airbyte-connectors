@@ -53,8 +53,9 @@ export class CircleCI {
   private static circleCI: CircleCI = undefined;
   private readonly cutoffDays: number;
   private readonly maxRetries: number;
-  private readonly seenJobIdsPerProject: Map<string, Set<string>> = new Map();
-  private readonly seenJobsPerProject: Map<string, CompactJob[]> = new Map();
+  private readonly fetchedJobIdsPerProject: Map<string, Set<string>> =
+    new Map();
+  private readonly fetchedJobsPerProject: Map<string, CompactJob[]> = new Map();
 
   constructor(
     config: CircleCIConfig,
@@ -349,7 +350,7 @@ export class CircleCI {
         pipeline.workflows = workflows;
         for (const workflow of pipeline.workflows) {
           workflow.jobs = await this.fetchJobs(workflow.id);
-          this.storeSeenJobs(pipeline, workflow, projectName);
+          this.storeFetchedJobs(pipeline, workflow, projectName);
         }
         yield pipeline;
       }
@@ -413,22 +414,22 @@ export class CircleCI {
     );
   }
 
-  private storeSeenJobs(
+  private storeFetchedJobs(
     pipeline: Pipeline,
     workflow: Workflow,
     projectSlug: string
   ): void {
     const project = toLower(projectSlug);
     for (const job of workflow.jobs) {
-      if (!this.seenJobIdsPerProject.has(project)) {
-        this.seenJobIdsPerProject.set(project, new Set());
+      if (!this.fetchedJobIdsPerProject.has(project)) {
+        this.fetchedJobIdsPerProject.set(project, new Set());
       }
-      if (!this.seenJobIdsPerProject.get(project).has(job.id)) {
-        this.seenJobIdsPerProject.get(project).add(job.id);
-        if (!this.seenJobsPerProject.has(project)) {
-          this.seenJobsPerProject.set(project, []);
+      if (!this.fetchedJobIdsPerProject.get(project).has(job.id)) {
+        this.fetchedJobIdsPerProject.get(project).add(job.id);
+        if (!this.fetchedJobsPerProject.has(project)) {
+          this.fetchedJobsPerProject.set(project, []);
         }
-        this.seenJobsPerProject.get(project).push({
+        this.fetchedJobsPerProject.get(project).push({
           ...pick(job, ['id', 'job_number', 'started_at', 'stopped_at']),
           pipeline: pick(pipeline, ['id', 'vcs', 'project_slug']),
           workflow: pick(workflow, ['id', 'name']),
@@ -437,8 +438,8 @@ export class CircleCI {
     }
   }
 
-  getSeenJobs(projectSlug: string): CompactJob[] {
-    return this.seenJobsPerProject.get(toLower(projectSlug)) ?? [];
+  getFetchedJobs(projectSlug: string): CompactJob[] {
+    return this.fetchedJobsPerProject.get(toLower(projectSlug)) ?? [];
   }
 }
 
