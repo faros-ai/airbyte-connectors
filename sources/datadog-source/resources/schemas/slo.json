@@ -11,156 +11,27 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "status": {
+        "additionalProperties": {
           "type": "object",
           "properties": {
-            "calculation_error": {
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            "raw_error_budget_remaining": {
-              "type": [
-                "null",
-                "number"
-              ]
-            },
-            "sli": {
+            "warning_threshold": {
               "type": "number"
             },
-            "span_precision": {
-              "type": "integer"
+            "target_threshold": {
+              "type": "number"
             },
-            "indexed_at": {
-              "type": "integer"
-            },
-            "state": {
+            "timeframe": {
               "type": "string"
-            },
-            "error_budget_remaining": {
-              "type": [
-                "null",
-                "number"
-              ]
             }
           }
         },
-        "thresholds": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "warning_display": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "target_display": {
-                "type": "string"
-              },
-              "timeframe": {
-                "type": "string"
-              },
-              "warning": {
-                "type": [
-                  "number",
-                  "null"
-                ]
-              },
-              "target": {
-                "type": "number"
-              }
-            }
-          }
-        },
-        "overall_status": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "number"
-              },
-              "raw_error_budget_remaining": {
-                "type": [
-                  "null",
-                  "number"
-                ]
-              },
-              "timeframe": {
-                "type": "string"
-              },
-              "span_precision": {
-                "type": "integer"
-              },
-              "indexed_at": {
-                "type": "integer"
-              },
-              "target": {
-                "type": "number"
-              },
-              "error": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "state": {
-                "type": "string"
-              },
-              "error_budget_remaining": {
-                "type": [
-                  "null",
-                  "number"
-                ]
-              }
-            }
-          }
-        },
-        "modified_at": {
-          "type": "integer"
-        },
-        "all_tags": {
+        "allTags": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "timeframe": {
-          "type": "string",
-          "enum": [
-            "7d",
-            "30d",
-            "90d",
-            "custom"
-          ]
-        },
-        "monitor_ids": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "description": {
-          "type": "string"
-        },
-        "slo_type": {
-          "type": "string",
-          "enum": [
-            "metric",
-            "monitor",
-            "time_slice"
-          ]
-        },
-        "query": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "created_at": {
+        "createdAt": {
           "type": "integer"
         },
         "creator": {
@@ -177,44 +48,151 @@
             }
           }
         },
-        "target_threshold": {
-          "type": "number"
+        "description": {
+          "type": "string"
         },
-        "groups": {
-          "type": [
-            "null",
-            "object"
-          ]
-        },
-        "service_tags": {
+        "envTags": {
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "groups": {
+          "type": ["null", "object"]
+        },
+        "modifiedAt": {
+          "type": "integer"
+        },
+        "monitorIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
           }
         },
         "name": {
           "type": "string"
         },
-        "env_tags": {
+        "overallStatus": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": ["null", "string"]
+              },
+              "errorBudgetRemaining": {
+                "type": "number"
+              },
+              "indexedAt": {
+                "type": "integer"
+              },
+              "rawErrorBudgetRemaining": {
+                "type": "object",
+                "properties": {
+                  "unit": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              },
+              "spanPrecision": {
+                "type": "integer"
+              },
+              "state": {
+                "type": "string"
+              },
+              "status": {
+                "type": "number"
+              },
+              "target": {
+                "type": "number"
+              },
+              "timeframe": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "query": {
+          "type": ["null", "string"]
+        },
+        "serviceTags": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "team_tags": {
+        "sloType": {
+          "type": "string",
+          "enum": ["metric", "monitor", "time_slice"]
+        },
+        "status": {
+          "type": "object",
+          "properties": {
+            "calculationError": {
+              "type": ["null", "string"]
+            },
+            "errorBudgetRemaining": {
+              "type": "number"
+            },
+            "indexedAt": {
+              "type": "integer"
+            },
+            "rawErrorBudgetRemaining": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              }
+            },
+            "sli": {
+              "type": "number"
+            },
+            "spanPrecision": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            }
+          }
+        },
+        "teamTags": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "warning_threshold": {
-          "type": "number"
+        "thresholds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number"
+              },
+              "targetDisplay": {
+                "type": "string"
+              },
+              "timeframe": {
+                "type": "string"
+              },
+              "warning": {
+                "type": ["number", "null"]
+              },
+              "warningDisplay": {
+                "type": ["string", "null"]
+              }
+            }
+          }
         }
       }
     }
   },
-  "required": [
-    "id",
-    "attributes"
-  ]
+  "required": ["id", "attributes"]
 }

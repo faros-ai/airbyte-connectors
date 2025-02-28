@@ -1,8 +1,8 @@
+import {v2} from '@datadog/datadog-api-client';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {DatadogConverter} from './common';
-
 export class Users extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['ims_User'];
 
@@ -10,7 +10,7 @@ export class Users extends DatadogConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const user = record.record.data;
+    const user = record.record.data as v2.User;
 
     return [
       {

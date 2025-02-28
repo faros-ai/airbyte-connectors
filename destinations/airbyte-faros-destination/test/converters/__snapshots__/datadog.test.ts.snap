@@ -4,8 +4,8 @@ exports[`datadog process records from all streams 1`] = `
 Array [
   "Processed 186 records",
   "Processed records by stream: {\\\\\\"mytestsource__datadog__incidents\\\\\\":2,\\\\\\"mytestsource__datadog__metrics\\\\\\":168,\\\\\\"mytestsource__datadog__service_level_objectives\\\\\\":2,\\\\\\"mytestsource__datadog__users\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 203 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":168,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":14,\\\\\\"sre_ErrorBudget\\\\\\":2,\\\\\\"sre_ServiceLevelIndicator\\\\\\":2,\\\\\\"sre_ServiceLevelObjective\\\\\\":2,\\\\\\"sre_ServiceLevelObjectiveTag\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 210 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":3,\\\\\\"compute_ApplicationServiceLevelObjective\\\\\\":1,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":168,\\\\\\"faros_Tag\\\\\\":5,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":14,\\\\\\"sre_SLOErrorBudget\\\\\\":2,\\\\\\"sre_ServiceLevelIndicator\\\\\\":2,\\\\\\"sre_ServiceLevelObjective\\\\\\":2,\\\\\\"sre_ServiceLevelObjectiveTag\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -48,19 +48,10 @@ Array [
     },
   },
   Object {
-    "compute_Application": Object {
-      "name": "Service 1",
-      "platform": "test",
-      "source": "Datadog",
-      "uid": "Service 1_test",
-    },
-  },
-  Object {
     "ims_IncidentApplicationImpact": Object {
       "application": Object {
         "name": "Service 1",
         "platform": "test",
-        "source": "Datadog",
         "uid": "Service 1_test",
       },
       "incident": Object {
@@ -119,19 +110,10 @@ Array [
     },
   },
   Object {
-    "compute_Application": Object {
-      "name": "service2",
-      "platform": "",
-      "source": "Datadog",
-      "uid": "service2",
-    },
-  },
-  Object {
     "ims_IncidentApplicationImpact": Object {
       "application": Object {
         "name": "service2",
         "platform": "",
-        "source": "Datadog",
         "uid": "service2",
       },
       "incident": Object {
@@ -2150,12 +2132,9 @@ Array [
     },
   },
   Object {
-    "sre_ErrorBudget": Object {
+    "sre_SLOErrorBudget": Object {
       "measuredAt": "2025-02-25T21:39:10.000Z",
-      "remaining": Object {
-        "unit": "seconds",
-        "value": -10195,
-      },
+      "remaining": -10195,
       "remainingPercentage": -1685.7364501953125,
       "slo": Object {
         "source": "Datadog",
@@ -2163,6 +2142,7 @@ Array [
       },
       "source": "Datadog",
       "uid": "1740519550",
+      "unit": "seconds",
     },
   },
   Object {
@@ -2173,9 +2153,7 @@ Array [
       },
       "source": "Datadog",
       "tag": Object {
-        "key": "fake",
         "uid": "fake:key:key",
-        "value": "key:key",
       },
     },
   },
@@ -2187,9 +2165,7 @@ Array [
       },
       "source": "Datadog",
       "tag": Object {
-        "key": "hermes",
-        "uid": "hermes",
-        "value": null,
+        "uid": "service3",
       },
     },
   },
@@ -2201,10 +2177,22 @@ Array [
       },
       "source": "Datadog",
       "tag": Object {
-        "key": "service",
-        "uid": "service:hermes",
-        "value": "hermes",
+        "uid": "service:service3",
       },
+    },
+  },
+  Object {
+    "compute_ApplicationServiceLevelObjective": Object {
+      "application": Object {
+        "name": "service3",
+        "platform": "",
+        "uid": "service3",
+      },
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
     },
   },
   Object {
@@ -2244,12 +2232,9 @@ Array [
     },
   },
   Object {
-    "sre_ErrorBudget": Object {
+    "sre_SLOErrorBudget": Object {
       "measuredAt": "2025-02-26T18:59:10.000Z",
-      "remaining": Object {
-        "unit": "seconds",
-        "value": 20520,
-      },
+      "remaining": 20520,
       "remainingPercentage": 79.16636657714844,
       "slo": Object {
         "source": "Datadog",
@@ -2257,6 +2242,7 @@ Array [
       },
       "source": "Datadog",
       "uid": "1740596350",
+      "unit": "seconds",
     },
   },
   Object {
@@ -2267,9 +2253,7 @@ Array [
       },
       "source": "Datadog",
       "tag": Object {
-        "key": "delivery",
         "uid": "delivery",
-        "value": null,
       },
     },
   },
@@ -2281,10 +2265,72 @@ Array [
       },
       "source": "Datadog",
       "tag": Object {
-        "key": "service",
         "uid": "service:delivery-api",
-        "value": "delivery-api",
       },
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "Service 1",
+      "platform": "test",
+      "source": "Datadog",
+      "uid": "Service 1_test",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "service2",
+      "platform": "",
+      "source": "Datadog",
+      "uid": "service2",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "service3",
+      "platform": "",
+      "source": "Datadog",
+      "uid": "service3",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "fake",
+      "source": "Datadog",
+      "uid": "fake:key:key",
+      "value": "key:key",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service3",
+      "source": "Datadog",
+      "uid": "service3",
+      "value": null,
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service",
+      "source": "Datadog",
+      "uid": "service:service3",
+      "value": "service3",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "delivery",
+      "source": "Datadog",
+      "uid": "delivery",
+      "value": null,
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service",
+      "source": "Datadog",
+      "uid": "service:delivery-api",
+      "value": "delivery-api",
     },
   },
 ]

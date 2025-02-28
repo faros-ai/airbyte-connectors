@@ -2,18 +2,21 @@ import {v1} from '@datadog/datadog-api-client';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {CategoryDetail} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {DatadogConverter} from './common';
 
 export class ServiceLevelObjectives extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_ApplicationServiceLevelObjective',
     'sre_ServiceLevelObjective',
     'sre_ServiceLevelIndicator',
-    'sre_ErrorBudget',
+    'sre_SLOErrorBudget',
+    'sre_ServiceLevelObjectiveTag'
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const slo = record.record.data as v1.SearchServiceLevelObjectiveData;
@@ -58,43 +61,33 @@ export class ServiceLevelObjectives extends DatadogConverter {
       });
 
       records.push({
-        model: 'sre_ErrorBudget',
+        model: 'sre_SLOErrorBudget',
         record: {
           uid: String(status.indexedAt),
           remainingPercentage: status.errorBudgetRemaining,
-          remaining: status.rawErrorBudgetRemaining
-            ? {
-                value: status.rawErrorBudgetRemaining.value,
-                unit: status.rawErrorBudgetRemaining.unit,
-              }
-            : null,
+          remaining: status.rawErrorBudgetRemaining?.value,
+          unit: status.rawErrorBudgetRemaining?.unit,
           measuredAt: this.toDate(status.indexedAt),
           slo: sloKey,
         },
       });
+    }
 
-      for (const sloTag of attributes.allTags ?? []) {
-        // Tags are in the format of key:value or key
-        // For tags with multiple colons, everything after the first colon is considered the value
-        const colonIndex = sloTag.indexOf(':');
-        const [key, value] =
-          colonIndex === -1
-            ? [sloTag, null]
-            : [
-                sloTag.substring(0, colonIndex),
-                sloTag.substring(colonIndex + 1),
-              ];
-        const tag = {
-          uid: value ? `${key}:${value}` : key,
-          key,
-          value,
-        };
+    for (const tag of this.getTags(attributes.allTags)) {
+      records.push({
+        model: 'sre_ServiceLevelObjectiveTag',
+        record: {slo: sloKey, tag: {uid: tag}},
+      });
+    }
 
-        records.push({
-          model: 'sre_ServiceLevelObjectiveTag',
-          record: {slo: sloKey, tag},
-        });
-      }
+    for (const application of this.getApplications(
+      ctx,
+      attributes.serviceTags
+    )) {
+      records.push({
+        model: 'compute_ApplicationServiceLevelObjective',
+        record: {slo: sloKey, application},
+      });
     }
 
     return records;
