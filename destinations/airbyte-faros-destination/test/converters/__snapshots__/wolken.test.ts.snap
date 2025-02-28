@@ -4,8 +4,8 @@ exports[`wolken configuration_items configuration_items 1`] = `
 Array [
   "Processed 2 records",
   "Processed records by stream: {\\\\\\"mytestsource__wolken__configuration_items\\\\\\":1,\\\\\\"mytestsource__wolken__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 15 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"compute_ApplicationPath\\\\\\":1,\\\\\\"compute_ApplicationTag\\\\\\":4,\\\\\\"faros_Path\\\\\\":1,\\\\\\"faros_Tag\\\\\\":5,\\\\\\"ims_User\\\\\\":1,\\\\\\"tms_ProjectPath\\\\\\":1,\\\\\\"tms_ProjectTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 17 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"compute_ApplicationPath\\\\\\":1,\\\\\\"compute_ApplicationTag\\\\\\":5,\\\\\\"faros_Path\\\\\\":1,\\\\\\"faros_Tag\\\\\\":6,\\\\\\"ims_User\\\\\\":1,\\\\\\"tms_ProjectPath\\\\\\":1,\\\\\\"tms_ProjectTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -27,6 +27,28 @@ Array [
       "platform": "unknown",
       "source": "Wolken",
       "uid": "Test App_unknown",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "Application Display Name",
+      "source": "Wolken",
+      "uid": "Application Display Name__Test Application",
+      "value": "Test Application",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "Test App",
+        "platform": "unknown",
+        "source": "Wolken",
+        "uid": "Test App_unknown",
+      },
+      "source": "Wolken",
+      "tag": Object {
+        "uid": "Application Display Name__Test Application",
+      },
     },
   },
   Object {
