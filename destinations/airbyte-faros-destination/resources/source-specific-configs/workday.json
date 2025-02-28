@@ -52,6 +52,12 @@
           "title": "Resolve Locations",
           "description": "If true, will resolve location information with Faros Geocoding API.",
           "default": false
+        },
+        "use_parent_team_id": {
+          "type": "boolean",
+          "title": "Use Parent Team ID",
+          "description": "If true, the Parent_Team_ID field will be used to create org structure",
+          "default": false
         }
       }
     }

@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
+import {Stream} from 'stream';
 
 import {LocationCollector} from '../common/geo';
 import {
@@ -205,6 +206,17 @@ export class Customreports extends Converter {
         return false;
       }
     }
+    if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+      // Despite setting the flag to use parent team ids, record is missing parent team id
+      if (!rec.Parent_Team_ID) {
+        this.generalLogCollection.push(
+          `Missing Parent_Team_ID for record with Employee_ID: ${rec.Employee_ID}`
+        );
+        this.failedRecordFields.add(this.getSortedRecordFields(rec));
+        this.skipped_due_to_missing_fields += 1;
+        return false;
+      }
+    }
     return true;
   }
 
@@ -309,10 +321,10 @@ export class Customreports extends Converter {
     return topTeamID;
   }
 
-  private computeTeamToParentTeamMapping(
+  private computeTeamToParentTeamMappingFromManagers(
     ctx: StreamContext
   ): Record<string, string> {
-    ctx.logger.info('Computing team to parent mapping');
+    ctx.logger.info('Computing team to parent mapping from managers');
     const teamIDToParentTeamID: Record<string, string> = {};
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
@@ -354,6 +366,51 @@ export class Customreports extends Converter {
     }
 
     return teamIDToParentTeamID;
+  }
+
+  private getAllEmployeeRecords(ctx: StreamContext): EmployeeRecord[] {
+    const allRecords: EmployeeRecord[] = [];
+    for (const employeeID of Object.keys(this.employeeIDToRecords)) {
+      allRecords.push(...this.employeeIDToRecords[employeeID]);
+    }
+    return allRecords;
+  }
+
+  private computeTeamToParentTeamMappingUsingParentIDField(
+    ctx: StreamContext
+  ): Record<string, string> {
+    ctx.logger.info('Computing team to parent mapping via Parent_Team_ID');
+    const teamIDToParentTeamID: Record<string, string> = {};
+    teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
+    const all_employee_records = this.getAllEmployeeRecords(ctx);
+    for (const employeeRecord of all_employee_records) {
+      if (!employeeRecord.Parent_Team_ID) {
+        teamIDToParentTeamID[employeeRecord.Team_ID] = this.FAROS_TEAM_ROOT;
+        continue;
+      }
+      const TeamID = employeeRecord.Team_ID;
+      const parentTeamID = employeeRecord.Parent_Team_ID;
+      if (TeamID in teamIDToParentTeamID) {
+        if (parentTeamID != teamIDToParentTeamID[TeamID]) {
+          const err_str = `More than one parent team ID for team ${TeamID}: ${parentTeamID} & ${teamIDToParentTeamID[TeamID]}`;
+          ctx.logger.error(err_str);
+          this.generalLogCollection.push(err_str);
+        }
+      } else {
+        teamIDToParentTeamID[TeamID] = parentTeamID;
+      }
+    }
+    return teamIDToParentTeamID;
+  }
+
+  private computeTeamToParentTeamMapping(
+    ctx: StreamContext
+  ): Record<string, string> {
+    if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+      return this.computeTeamToParentTeamMappingUsingParentIDField(ctx);
+    } else {
+      return this.computeTeamToParentTeamMappingFromManagers(ctx);
+    }
   }
   private computeOwnershipChain(
     elementId: string,
@@ -506,10 +563,10 @@ export class Customreports extends Converter {
       numRecordsSkippedDueToTermination: this.skipped_due_to_termination,
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
-      generalLogs: this.generalLogCollection,
       employees_with_more_than_one_record_by_id:
         this.employees_with_more_than_one_record_by_id,
       employees_with_more_than_one_record_by_name,
+      generalLogs: this.generalLogCollection,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
