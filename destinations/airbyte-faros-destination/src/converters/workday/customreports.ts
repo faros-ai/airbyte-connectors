@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
-import {Stream} from 'stream';
 
 import {LocationCollector} from '../common/geo';
 import {
@@ -374,7 +373,7 @@ export class Customreports extends Converter {
     return teamIDToParentTeamID;
   }
 
-  private getAllEmployeeRecords(ctx: StreamContext): EmployeeRecord[] {
+  private getAllEmployeeRecords(): EmployeeRecord[] {
     const allRecords: EmployeeRecord[] = [];
     for (const employeeID of Object.keys(this.employeeIDToRecords)) {
       allRecords.push(...this.employeeIDToRecords[employeeID]);
@@ -388,7 +387,7 @@ export class Customreports extends Converter {
     ctx.logger.info('Computing team to parent mapping via Parent_Team_ID');
     const teamIDToParentTeamID: Record<string, string> = {};
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
-    const all_employee_records = this.getAllEmployeeRecords(ctx);
+    const all_employee_records = this.getAllEmployeeRecords();
     const all_parent_team_ids = new Set<string>();
     for (const employeeRecord of all_employee_records) {
       if (!employeeRecord.Parent_Team_ID) {
