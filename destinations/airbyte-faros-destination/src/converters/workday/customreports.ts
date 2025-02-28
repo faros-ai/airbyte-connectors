@@ -238,8 +238,14 @@ export class Customreports extends Converter {
     return sorted_keys_str;
   }
 
-  private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
+  private getManagerIDFromList(
+    recs: ManagerTimeRecord[],
+    ctx: StreamContext
+  ): string | null {
     if (!recs) {
+      if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+        return null;
+      }
       throw new Error('Missing recs');
     }
     const last_record: ManagerTimeRecord = recs[recs.length - 1];
@@ -329,7 +335,7 @@ export class Customreports extends Converter {
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
     for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
-      const manager_id = this.getManagerIDFromList(recs);
+      const manager_id: string | null = this.getManagerIDFromList(recs, ctx);
       if (!manager_id) {
         this.generalLogCollection.push(
           `Failed to get manager id for team ${teamID}`
@@ -383,6 +389,7 @@ export class Customreports extends Converter {
     const teamIDToParentTeamID: Record<string, string> = {};
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const all_employee_records = this.getAllEmployeeRecords(ctx);
+    const all_parent_team_ids = new Set<string>();
     for (const employeeRecord of all_employee_records) {
       if (!employeeRecord.Parent_Team_ID) {
         teamIDToParentTeamID[employeeRecord.Team_ID] = this.FAROS_TEAM_ROOT;
@@ -390,6 +397,7 @@ export class Customreports extends Converter {
       }
       const TeamID = employeeRecord.Team_ID;
       const parentTeamID = employeeRecord.Parent_Team_ID;
+      all_parent_team_ids.add(parentTeamID);
       if (TeamID in teamIDToParentTeamID) {
         if (parentTeamID != teamIDToParentTeamID[TeamID]) {
           const err_str = `More than one parent team ID for team ${TeamID}: ${parentTeamID} & ${teamIDToParentTeamID[TeamID]}`;
@@ -398,6 +406,17 @@ export class Customreports extends Converter {
         }
       } else {
         teamIDToParentTeamID[TeamID] = parentTeamID;
+      }
+    }
+    for (const parentTeamID of all_parent_team_ids) {
+      if (!(parentTeamID in teamIDToParentTeamID)) {
+        teamIDToParentTeamID[parentTeamID] = this.FAROS_TEAM_ROOT;
+      }
+      if (!(parentTeamID in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[parentTeamID] = parentTeamID;
+        const err_str = `Parent team ID ${parentTeamID} not found in team ID to team name mapping`;
+        ctx.logger.error(err_str);
+        this.generalLogCollection.push(err_str);
       }
     }
     return teamIDToParentTeamID;
@@ -704,17 +723,19 @@ export class Customreports extends Converter {
 
   private createOrgTeamRecord(
     teamID: string,
-    teamIDToParentID: Record<string, string>
+    teamIDToParentID: Record<string, string>,
+    ctx: StreamContext
   ): DestinationRecord {
     const manager_id = this.getManagerIDFromList(
-      this.teamIDToManagerIDs[teamID]
+      this.teamIDToManagerIDs[teamID],
+      ctx
     );
     return {
       model: 'org_Team',
       record: {
         uid: teamID,
         name: this.teamIDToTeamName[teamID],
-        lead: {uid: manager_id},
+        lead: manager_id ? {uid: manager_id} : null,
         parentTeam: {uid: teamIDToParentID[teamID]},
       },
     };
@@ -787,7 +808,7 @@ export class Customreports extends Converter {
 
     for (const team of acceptable_teams) {
       if (team != 'all_teams') {
-        res.push(this.createOrgTeamRecord(team, newTeamToParent));
+        res.push(this.createOrgTeamRecord(team, newTeamToParent, ctx));
       }
     }
     for (const employeeID of Object.keys(this.employeeIDToRecords)) {
