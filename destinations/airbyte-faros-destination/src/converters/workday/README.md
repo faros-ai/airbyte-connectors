@@ -1,9 +1,10 @@
 ## Notes
-We keep the orgs where the most recent parent is kept.
-If you leave both orgs_to_keep and orgs_to_ignore empty, then this
+We keep the orgs where the closest parent is kept.
+If you leave both orgs_to_keep and orgs_to_ignore empty, then the destination
 syncs the entire org.
 By default, we don't sync employees that are no longer active (i.e. terminated employees).
 In order to sync them, set the flag keep_terminated_employees to true.
+To avoid using managers to create org, you can set Parent_Team_ID on every record.
 
 Expecting fields (? implies optional):
 ```
