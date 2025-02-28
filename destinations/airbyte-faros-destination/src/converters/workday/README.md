@@ -19,6 +19,7 @@ Expecting fields (? implies optional):
   Email?: string;
   Employee_Type?: string;
   Job_Title?: string;
+  Parent_Team_ID?: string
 ```
 
 Source Specific Configs:
@@ -29,6 +30,7 @@ ignore_cycle_teams
 fail_on_cycles: bool (default is false)
 keep_terminated_employees: bool (default is false)
 resolve_locations: bool (default is false)
+use_parent_team_id: bool (default is false)
 
 ```
 For more details on source specific configs, look at 
