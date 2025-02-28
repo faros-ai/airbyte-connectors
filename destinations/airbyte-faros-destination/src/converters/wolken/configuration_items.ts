@@ -120,10 +120,10 @@ export class ConfigurationItems extends WolkenConverter {
           });
           const user = this.getUserFromLookup(flexField.flexValue, ctx);
           if (user) {
-            for (const [displayName, path] of Object.entries(
+            for (const [displayName, jsonataPath] of Object.entries(
               userLookupExtraFieldsMapping
             )) {
-              const value = _.get(user, path);
+              const value = _.get(user, jsonataPath);
               res.push(
                 ...this.applicationTagFromUserLookupField(
                   flexField.flexName,

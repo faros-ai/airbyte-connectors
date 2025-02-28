@@ -5,7 +5,7 @@ import {ApplicationMapping} from '../common/ims';
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
 
 // key: user property display name
-// value: user property path
+// value: user property jsonata path
 // e.g. {"Department": "userAddress.departmentName"}
 type UserLookupExtraFieldsMapping = Record<string, string>;
 
