@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {Datadog, DatadogConfig} from './datadog';
-import {Incidents, Metrics, Users} from './streams';
+import {Incidents, Metrics, ServiceLevelObjectives, Users} from './streams';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -41,6 +41,7 @@ export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
       new Incidents(datadog, this.logger),
       new Metrics(datadog, this.logger),
       new Users(datadog, this.logger),
+      new ServiceLevelObjectives(datadog, this.logger),
     ];
   }
 }
