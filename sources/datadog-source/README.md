@@ -4,11 +4,12 @@ This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/
 
 ## Streams
 
-| Model     | Full | Incremental |
-|-----------|---|---|
-| Incidents | ✅ | ✅ |
-| Metrics   | ✅ | ✅ |
-| Users     | ✅ | ✅ |
+| Model     | Full | Incremental | Required Permissions |
+|-----------|---|---|---|
+| Incidents | ✅ | ✅ | incident_read |
+| Metrics   | ✅ | ✅ | timeseries_query |
+| Users     | ✅ | ✅ | user_access_read  |
+| SLOs      | ✅ | ✅ | slos_read |
 
 ## Testing
 

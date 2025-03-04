@@ -87,10 +87,12 @@ export interface Incident extends PagerdutyObject {
   readonly urgency: IncidentUrgency;
   readonly title: string;
   readonly created_at: string; // date-time
+  readonly updated_at: string;
   readonly service: PagerdutyObject;
   readonly assignments: Assignment[];
   readonly priority?: Priority;
   readonly last_status_change_at: string;
+  readonly resolved_at: string;
 }
 
 export interface Priority extends PagerdutyObject {

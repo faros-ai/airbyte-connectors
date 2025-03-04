@@ -71,7 +71,7 @@ describe('Pagerduty', () => {
       items.push(item);
     }
 
-    expect(mockGet).toBeCalledTimes(1);
+    expect(mockGet).toHaveBeenCalledTimes(1);
     expect(items).toEqual([logEntry]);
   });
 
@@ -99,7 +99,9 @@ describe('Pagerduty', () => {
       summary: 'Summary',
       self: 'self',
       html_url: 'url',
-      created_at: '1',
+      created_at: '2021-10-29T05:52:30.000Z',
+      updated_at: '2021-10-29T05:52:30.000Z',
+      resolved_at: '2021-10-29T05:52:30.000Z',
     };
 
     const response = pagination10000Response<Incident>(
@@ -121,7 +123,7 @@ describe('Pagerduty', () => {
       items.push(item);
     }
 
-    expect(mockGet).toBeCalledTimes(1);
+    expect(mockGet).toHaveBeenCalledTimes(1);
     expect(items).toEqual([incidentEntry]);
   });
 });
