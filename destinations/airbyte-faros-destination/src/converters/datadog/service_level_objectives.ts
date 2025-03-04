@@ -11,7 +11,7 @@ export class ServiceLevelObjectives extends DatadogConverter {
     'sre_ServiceLevelObjective',
     'sre_ServiceLevelIndicator',
     'sre_SLOErrorBudget',
-    'sre_ServiceLevelObjectiveTag'
+    'sre_ServiceLevelObjectiveTag',
   ];
 
   async convert(
@@ -40,8 +40,8 @@ export class ServiceLevelObjectives extends DatadogConverter {
         timeWindow: this.getTimeWindow(
           attributes.additionalProperties?.timeframe
         ),
-        createdAt: this.toDate(attributes.createdAt),
-        updatedAt: this.toDate(attributes.modifiedAt),
+        createdAt: this.unixSecondsToDate(attributes.createdAt),
+        updatedAt: this.unixSecondsToDate(attributes.modifiedAt),
       },
     });
 
@@ -52,7 +52,7 @@ export class ServiceLevelObjectives extends DatadogConverter {
         record: {
           // Using the timestamp of the indicator as the uid
           uid: String(status.indexedAt),
-          measuredAt: this.toDate(status.indexedAt),
+          measuredAt: this.unixSecondsToDate(status.indexedAt),
           value: status.sli,
           unit: 'Percentage',
           status: this.toStatus(status.state),
@@ -67,7 +67,7 @@ export class ServiceLevelObjectives extends DatadogConverter {
           remainingPercentage: status.errorBudgetRemaining,
           remaining: status.rawErrorBudgetRemaining?.value,
           unit: status.rawErrorBudgetRemaining?.unit,
-          measuredAt: this.toDate(status.indexedAt),
+          measuredAt: this.unixSecondsToDate(status.indexedAt),
           slo: sloKey,
         },
       });
@@ -127,11 +127,12 @@ export class ServiceLevelObjectives extends DatadogConverter {
   }
 
   /**
-   * Service Level Objective timestamps are in Unix time (seconds). Convert to milliseconds.
+   * Service Level Objective timestamps are in Unix time (seconds).
+   * Convert to milliseconds first before creating the Date object.
    * @param number - The Unix timestamp
    * @returns The Date object
    */
-  private toDate(number?: number): Date | undefined {
+  private unixSecondsToDate(number?: number): Date | undefined {
     if (!number) {
       return;
     }

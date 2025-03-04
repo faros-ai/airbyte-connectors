@@ -98,7 +98,7 @@ export abstract class DatadogConverter extends Converter {
       records.push({
         model: 'faros_Tag',
         record: {
-          uid: value ? `${key}:${value}` : key,
+          uid: tag,
           key,
           value,
         },
