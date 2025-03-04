@@ -8,8 +8,8 @@ This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/
 |-----------|---|---|---|
 | Incidents | ✅ | ✅ | incident_read |
 | Metrics   | ✅ | ✅ | timeseries_query |
-| Users     | ✅ | ✅ | user_access_read  |
 | SLOs      | ✅ | ✅ | slos_read |
+| Users     | ✅ | ✅ | user_access_read  |
 
 ## Testing
 
