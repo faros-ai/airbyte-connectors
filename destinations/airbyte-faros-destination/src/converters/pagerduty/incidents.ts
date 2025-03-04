@@ -39,11 +39,10 @@ export class Incidents extends PagerDutyConverter {
     const incident = record.record.data;
     const res: DestinationRecord[] = [];
     const incidentRef = {uid: incident.id, source};
-    const lastUpdated = Utils.toDate(incident.last_status_change_at);
 
-    let acknowledgedAt, resolvedAt;
+    let acknowledgedAt;
     if (incident.status === 'acknowledged') {
-      if (!incident.acknowledgements?.length) {
+      if (!incident?.acknowledgements?.length) {
         ctx.logger.warn(
           `Incident ${incident.id} acknowledged, but acknowledger info missing`
         );
@@ -55,8 +54,6 @@ export class Incidents extends PagerDutyConverter {
             .sort()[0]
         );
       }
-    } else if (incident.status === 'resolved') {
-      resolvedAt = lastUpdated;
     }
 
     res.push({
@@ -67,9 +64,9 @@ export class Incidents extends PagerDutyConverter {
         description: incident.description,
         url: incident.self,
         createdAt: Utils.toDate(incident.created_at),
-        updatedAt: resolvedAt,
+        updatedAt: Utils.toDate(incident.updated_at),
         acknowledgedAt: acknowledgedAt,
-        resolvedAt: resolvedAt,
+        resolvedAt: Utils.toDate(incident.resolved_at),
         priority: this.incidentPriority(incident.urgency),
         status: this.incidentState(incident.status),
       },

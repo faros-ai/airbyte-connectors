@@ -14,7 +14,7 @@ import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Job, Pipeline, Project, TestMetadata, Workflow} from './types';
+import {Job, Pipeline, Project, TestMetadata, Workflow} from 'faros-airbyte-common/circleci';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;

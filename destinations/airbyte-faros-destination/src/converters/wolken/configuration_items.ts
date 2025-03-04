@@ -1,10 +1,23 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {ConfigurationItem} from 'faros-airbyte-common/wolken';
+import {ConfigurationItem, User} from 'faros-airbyte-common/wolken';
+import _ from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {ComputeApplication} from '../common/common';
+import {
+  DestinationModel,
+  DestinationRecord,
+  StreamContext,
+  StreamName,
+} from '../converter';
 import {WolkenConverter} from './common';
 
 export class ConfigurationItems extends WolkenConverter {
+  static readonly usersStream = new StreamName('wolken', 'users');
+
+  override get dependencies(): ReadonlyArray<StreamName> {
+    return [ConfigurationItems.usersStream];
+  }
+
   id(record: AirbyteRecord) {
     return record?.record?.data?.ciId;
   }
@@ -85,6 +98,45 @@ export class ConfigurationItems extends WolkenConverter {
         }
       }
 
+      const applicationTagFlexFieldUserLookupNames =
+        this.config(ctx).application_tag_flex_field_user_lookup_names ?? [];
+      const userLookupExtraFieldsMapping =
+        this.userLookupExtraFieldsMapping(ctx);
+      for (const flexFieldUserLookupName of applicationTagFlexFieldUserLookupNames) {
+        const flexField = WolkenConverter.getFlexField(
+          configurationItem,
+          flexFieldUserLookupName
+        );
+        if (flexField) {
+          const tag = {
+            uid: `${flexField.flexName}__${flexField.flexValue}`,
+            key: flexField.flexName,
+            value: flexField.flexValue,
+          };
+          res.push({model: 'faros_Tag', record: tag});
+          res.push({
+            model: 'compute_ApplicationTag',
+            record: {application, tag: {uid: tag.uid}},
+          });
+          const user = this.getUserFromLookup(flexField.flexValue, ctx);
+          if (user) {
+            for (const [displayName, path] of Object.entries(
+              userLookupExtraFieldsMapping
+            )) {
+              const value = _.get(user, path);
+              res.push(
+                ...this.applicationTagFromUserLookupField(
+                  flexField.flexName,
+                  value,
+                  displayName,
+                  application
+                )
+              );
+            }
+          }
+        }
+      }
+
       const projectTagFlexFieldNames =
         this.config(ctx).project_tag_flex_field_names ?? [];
       for (const flexFieldName of projectTagFlexFieldNames) {
@@ -140,5 +192,46 @@ export class ConfigurationItems extends WolkenConverter {
     }
 
     return res;
+  }
+
+  private getUserFromLookup(
+    userPsNo: string,
+    ctx: StreamContext
+  ): User | undefined {
+    const user = ctx.get(ConfigurationItems.usersStream.asString, userPsNo);
+    if (!user) {
+      return undefined;
+    }
+    return user.record.data as User;
+  }
+
+  private applicationTagFromUserLookupField(
+    userLookupFlexFieldName: string,
+    userFieldValue: string,
+    userFieldDisplayName: string,
+    application: ComputeApplication
+  ): ReadonlyArray<DestinationRecord> {
+    if (!userFieldValue) {
+      return [];
+    }
+    const key = `${userLookupFlexFieldName} ${userFieldDisplayName}`;
+    const tagKey = {
+      uid: `${key}__${userFieldValue}`,
+    };
+    const tag = {
+      ...tagKey,
+      key,
+      value: userFieldValue,
+    };
+    return [
+      {
+        model: 'faros_Tag',
+        record: tag,
+      },
+      {
+        model: 'compute_ApplicationTag',
+        record: {application, tag: tagKey},
+      },
+    ];
   }
 }

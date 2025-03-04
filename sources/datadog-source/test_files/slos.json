@@ -1,0 +1,181 @@
+{
+  "data": {
+    "type": "service_level_objective_search_results",
+    "attributes": {
+      "slos": [
+        {
+          "data": {
+            "attributes": {
+              "additionalProperties": {
+                "warning_threshold": 0,
+                "target_threshold": 99.9,
+                "timeframe": "7d"
+              },
+              "allTags": [
+                "fake:key:key",
+                "subscription",
+                "service:subscription"
+              ],
+              "createdAt": 1740453374,
+              "creator": {
+                "email": "user@test.ai",
+                "id": 3675033,
+                "name": "User Test"
+              },
+              "description": "Test SLO for new stream for pagination",
+              "envTags": [],
+              "groups": null,
+              "modifiedAt": 1740589575,
+              "monitorIds": [
+                1000
+              ],
+              "name": "Test SLO for Source",
+              "overallStatus": [
+                {
+                  "error": null,
+                  "errorBudgetRemaining": -1685.7365,
+                  "indexedAt": 1740596990,
+                  "rawErrorBudgetRemaining": {
+                    "unit": "seconds",
+                    "value": -10195
+                  },
+                  "spanPrecision": 2,
+                  "state": "breached",
+                  "status": 98.21429,
+                  "target": 99.9,
+                  "timeframe": "7d"
+                }
+              ],
+              "query": null,
+              "serviceTags": [
+                "subscription"
+              ],
+              "sloType": "monitor",
+              "status": {
+                "calculationError": null,
+                "errorBudgetRemaining": -1685.7364501953125,
+                "indexedAt": 1740596990,
+                "rawErrorBudgetRemaining": {
+                  "unit": "seconds",
+                  "value": -10195
+                },
+                "sli": 98.21428680419922,
+                "spanPrecision": 2,
+                "state": "breached"
+              },
+              "teamTags": [],
+              "thresholds": [
+                {
+                  "target": 99.9,
+                  "targetDisplay": "99.9",
+                  "timeframe": "7d",
+                  "warning": null,
+                  "warningDisplay": null
+                }
+              ]
+            },
+            "id": "35281fa93f745b2ba41204f01f7b886",
+            "type": "slo"
+          }
+        },
+        {
+          "data": {
+            "attributes": {
+              "additionalProperties": {
+                "warning_threshold": 0,
+                "target_threshold": 98,
+                "timeframe": "7d"
+              },
+              "allTags": [
+                "delivery",
+                "service:delivery-api"
+              ],
+              "createdAt": 1740453374,
+              "creator": {
+                "email": "user@test.ai",
+                "id": 3675033,
+                "name": "User Test"
+              },
+              "description": "Delivery API responses are handled in time",
+              "envTags": [],
+              "groups": null,
+              "modifiedAt": 1740579710,
+              "monitorIds": [],
+              "name": "Delivery API latency",
+              "overallStatus": [
+                {
+                  "error": null,
+                  "errorBudgetRemaining": null,
+                  "indexedAt": 1740596350,
+                  "rawErrorBudgetRemaining": null,
+                  "spanPrecision": 0,
+                  "state": "breached",
+                  "status": 0,
+                  "target": 98,
+                  "timeframe": "7d"
+                },
+                {
+                  "error": null,
+                  "errorBudgetRemaining": null,
+                  "indexedAt": 1740596350,
+                  "rawErrorBudgetRemaining": null,
+                  "spanPrecision": 0,
+                  "state": "breached",
+                  "status": 0,
+                  "target": 99,
+                  "timeframe": "30d"
+                }
+              ],
+              "query": null,
+              "serviceTags": [],
+              "sloType": "metric",
+              "status": {
+                "calculationError": null,
+                "errorBudgetRemaining": 79.16636657714844,
+                "indexedAt": 1740596350,
+                "rawErrorBudgetRemaining": {
+                  "unit": "seconds",
+                  "value": 20520
+                },
+                "sli": 99.79166412353516,
+                "spanPrecision": 2,
+                "state": "ok"
+              },
+              "teamTags": [],
+              "thresholds": [
+                {
+                  "target": 98,
+                  "targetDisplay": "98",
+                  "timeframe": "7d",
+                  "warning": null,
+                  "warningDisplay": null
+                },
+                {
+                  "target": 99,
+                  "targetDisplay": "99",
+                  "timeframe": "30d",
+                  "warning": 99.9,
+                  "warningDisplay": "99"
+                }
+              ]
+            },
+            "id": "045d8f22cd8359b28de35cdb66437203",
+            "type": "slo"
+          }
+        }
+      ]
+    }
+  },
+  "meta": {
+    "pagination": {
+      "number": 0,
+      "firstNumber": 0,
+      "prevNumber": 0,
+      "nextNumber": 1,
+      "lastNumber": 0,
+      "size": 100,
+      "type": "number_size",
+      "total": 2
+    }
+  }
+}

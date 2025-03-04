@@ -2,7 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../circleci/circleci';
-import {Project} from '../circleci/types';
+import {Project} from 'faros-airbyte-common/circleci';
 import {StreamSlice, StreamWithProjectSlices} from './common';
 
 export class Projects extends StreamWithProjectSlices {

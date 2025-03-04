@@ -12,12 +12,16 @@ export class Users extends AirbyteStreamBase {
     super(logger);
   }
 
+  get dependencies(): ReadonlyArray<string> {
+    return ['configuration_items'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
 
   get primaryKey(): string {
-    return 'userId';
+    return 'userPsNo';
   }
 
   async *readRecords(): AsyncGenerator<User> {

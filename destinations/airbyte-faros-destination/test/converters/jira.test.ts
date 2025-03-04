@@ -20,7 +20,6 @@ describe('jira', () => {
       edition_configs: {},
       source_specific_configs: {
         jira: {
-          use_board_ownership: false,
           truncate_limit: 1000,
         },
       },

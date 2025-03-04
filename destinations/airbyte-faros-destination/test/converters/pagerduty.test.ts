@@ -1,6 +1,6 @@
 import {getLocal} from 'mockttp';
 
-import {initMockttp, sourceSpecificTempConfig} from '../testing-tools';
+import {initMockttp, tempConfig} from '../testing-tools';
 import {destinationWriteTest} from './utils';
 
 describe('pagerduty', () => {
@@ -9,8 +9,12 @@ describe('pagerduty', () => {
 
   beforeEach(async () => {
     await initMockttp(mockttp);
-    configPath = await sourceSpecificTempConfig(mockttp.url, {
-      pagerduty: {associate_applications_to_teams: true},
+    configPath = await tempConfig({
+      api_url: mockttp.url,
+      log_records: true,
+      source_specific_configs: {
+        pagerduty: {associate_applications_to_teams: true},
+      },
     });
     await mockttp
       .forPost('/graphs/test-graph/graphql')
@@ -32,6 +36,7 @@ describe('pagerduty', () => {
       configPath,
       catalogPath: 'test/resources/pagerduty/catalog.json',
       inputRecordsPath: 'pagerduty/all-streams.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
 });

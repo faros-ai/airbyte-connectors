@@ -11,12 +11,6 @@
           "const": "Jira",
           "order": 0
         },
-        "use_board_ownership": {
-          "type": "boolean",
-          "title": "Use Board Ownership",
-          "description": "Use Jira boards for assigning owners of tasks, or use projects.",
-          "default": true
-        },
         "truncate_limit": {
           "type": "integer",
           "title": "Truncate Limit",

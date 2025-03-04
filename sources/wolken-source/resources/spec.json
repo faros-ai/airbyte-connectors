@@ -109,6 +109,15 @@
         },
         "title": "Configuration Items Type IDs",
         "description": "Optional list of configuration item type IDs to filter by. If not provided, all configuration items will be fetched."
+      },
+      "flex_field_user_lookup_names": {
+        "order": 14,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Flex Field User Lookup Names",
+        "description": "Optional list of flex field names to be treated as user lookup refs, so that the users stream fetches their full details."
       }
     }
   }

@@ -29,6 +29,7 @@
     "./azurepipeline": "./lib/azurepipeline/index.js",
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
+    "./circleci": "./lib/circleci/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
     "./github": "./lib/github/index.js",
@@ -49,6 +50,9 @@
       ],
       "bitbucket-server": [
         "./lib/bitbucket-server/index.d.ts"
+      ],
+      "circleci": [
+        "./lib/circleci/index.d.ts"
       ],
       "clickup": [
         "./lib/clickup/index.d.ts"
@@ -94,7 +98,8 @@
     "@octokit/rest": "^20.1.1",
     "faros-js-client": "^0.6.1",
     "jira.js": "^4.0.0",
-    "luxon": "^3.4.4"
+    "luxon": "^3.4.4",
+    "@datadog/datadog-api-client": "1.32.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",

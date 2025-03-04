@@ -10,3 +10,251 @@ Array [
   "Errored 0 records",
 ]
 `;
+
+exports[`pagerduty process records from all streams 2`] = `
+Array [
+  Object {
+    "ims_IncidentEvent": Object {
+      "createdAt": "2021-10-29T05:52:30.000Z",
+      "detail": "Triggered through the website",
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q1LAD3450AG7V9",
+      },
+      "source": "PagerDuty",
+      "type": Object {
+        "category": "Created",
+        "detail": "trigger_log_entry",
+      },
+      "uid": "R38IMK6FP5WR0DXUJJF1XX5XYI",
+    },
+  },
+  Object {
+    "ims_IncidentEvent": Object {
+      "createdAt": "2021-10-29T05:45:32.000Z",
+      "detail": "Triggered through the website",
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q2KDNUM7R5JYEK",
+      },
+      "source": "PagerDuty",
+      "type": Object {
+        "category": "Created",
+        "detail": "trigger_log_entry",
+      },
+      "uid": "ROP0M3PU3JNHE6BNBEGDWK1JIR",
+    },
+  },
+  Object {
+    "ims_IncidentEvent": Object {
+      "createdAt": "2021-10-27T08:05:58.000Z",
+      "detail": "Triggered through the website",
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q27MXNAJQ834PC",
+      },
+      "source": "PagerDuty",
+      "type": Object {
+        "category": "Created",
+        "detail": "trigger_log_entry",
+      },
+      "uid": "ROY0T85D14A25S8B70XGK31YS9",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "acknowledgedAt": null,
+      "createdAt": "2021-10-27T08:05:59.000Z",
+      "description": "Incident-just-for-test",
+      "priority": Object {
+        "category": "High",
+        "detail": "high",
+      },
+      "resolvedAt": null,
+      "source": "PagerDuty",
+      "status": Object {
+        "category": "Created",
+        "detail": "triggered",
+      },
+      "title": "Incident-just-for-test",
+      "uid": "Q27MXNAJQ834PC",
+      "updatedAt": "2021-10-27T08:05:59.000Z",
+      "url": "https://api.pagerduty.com/incidents/Q27MXNAJQ834PC",
+    },
+  },
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "PagerDuty",
+        "uid": "PFYTIXD",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q27MXNAJQ834PC",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "Service",
+      "platform": "",
+      "source": "PagerDuty",
+      "uid": "Service",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "Service",
+        "platform": "",
+        "source": "PagerDuty",
+        "uid": "Service",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q27MXNAJQ834PC",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "acknowledgedAt": null,
+      "createdAt": "2021-10-29T05:45:33.000Z",
+      "description": "Incident #2",
+      "priority": Object {
+        "category": "High",
+        "detail": "high",
+      },
+      "resolvedAt": "2021-10-29T05:45:33.000Z",
+      "source": "PagerDuty",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "resolved",
+      },
+      "title": "Incident #2",
+      "uid": "Q2KDNUM7R5JYEK",
+      "updatedAt": "2021-10-29T05:45:33.000Z",
+      "url": "https://api.pagerduty.com/incidents/Q2KDNUM7R5JYEK",
+    },
+  },
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "PagerDuty",
+        "uid": "PFYTIXD",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q2KDNUM7R5JYEK",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "Service",
+        "platform": "",
+        "uid": "Service",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q2KDNUM7R5JYEK",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "acknowledgedAt": null,
+      "createdAt": "2021-10-29T05:52:30.000Z",
+      "description": "Incident #3",
+      "priority": Object {
+        "category": "High",
+        "detail": "high",
+      },
+      "resolvedAt": null,
+      "source": "PagerDuty",
+      "status": Object {
+        "category": "Created",
+        "detail": "triggered",
+      },
+      "title": "Incident #3",
+      "uid": "Q1LAD3450AG7V9",
+      "updatedAt": "2021-10-29T05:52:30.000Z",
+      "url": "https://api.pagerduty.com/incidents/Q1LAD3450AG7V9",
+    },
+  },
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "PagerDuty",
+        "uid": "PFYTIXD",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q1LAD3450AG7V9",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "Service",
+        "platform": "",
+        "uid": "Service",
+      },
+      "incident": Object {
+        "source": "PagerDuty",
+        "uid": "Q1LAD3450AG7V9",
+      },
+      "source": "PagerDuty",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "roman.ky@mydevcube.com",
+      "name": "Roman Kyrnis",
+      "source": "PagerDuty",
+      "uid": "PFYTIXD",
+    },
+  },
+  Object {
+    "org_ApplicationOwnership__Deletion": Object {
+      "source": "PagerDuty",
+      "where": Object {
+        "application": Object {
+          "name": "DevOps platform",
+          "platform": "",
+          "uid": "DevOps platform",
+        },
+      },
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "DevOps platform",
+      "platform": "",
+      "source": "PagerDuty",
+      "uid": "DevOps platform",
+    },
+  },
+  Object {
+    "org_ApplicationOwnership": Object {
+      "application": Object {
+        "name": "DevOps platform",
+        "platform": "",
+        "source": "PagerDuty",
+        "uid": "DevOps platform",
+      },
+      "source": "PagerDuty",
+      "team": Object {
+        "uid": "eng",
+      },
+    },
+  },
+]
+`;

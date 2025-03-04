@@ -2,36 +2,2336 @@
 
 exports[`datadog process records from all streams 1`] = `
 Array [
-  "Processed 184 records",
-  "Processed records by stream: {\\\\\\"mytestsource__datadog__incidents\\\\\\":2,\\\\\\"mytestsource__datadog__metrics\\\\\\":168,\\\\\\"mytestsource__datadog__users\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 192 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":168,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 186 records",
+  "Processed records by stream: {\\\\\\"mytestsource__datadog__incidents\\\\\\":2,\\\\\\"mytestsource__datadog__metrics\\\\\\":168,\\\\\\"mytestsource__datadog__service_level_objectives\\\\\\":2,\\\\\\"mytestsource__datadog__users\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 210 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":3,\\\\\\"compute_ApplicationServiceLevelObjective\\\\\\":1,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":168,\\\\\\"faros_Tag\\\\\\":5,\\\\\\"ims_Incident\\\\\\":2,\\\\\\"ims_IncidentApplicationImpact\\\\\\":3,\\\\\\"ims_IncidentAssignment\\\\\\":2,\\\\\\"ims_User\\\\\\":14,\\\\\\"sre_SLOErrorBudget\\\\\\":2,\\\\\\"sre_ServiceLevelIndicator\\\\\\":2,\\\\\\"sre_ServiceLevelObjective\\\\\\":2,\\\\\\"sre_ServiceLevelObjectiveTag\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
 `;
 
 exports[`datadog process records from all streams 2`] = `
-Object {
-  "messagesRead": 184,
-  "processedByStream": Object {
-    "mytestsource__datadog__incidents": 2,
-    "mytestsource__datadog__metrics": 168,
-    "mytestsource__datadog__users": 14,
+Array [
+  Object {
+    "ims_Incident": Object {
+      "createdAt": "2022-02-27T20:20:00.870Z",
+      "description": null,
+      "priority": null,
+      "resolvedAt": "2022-03-01T02:48:53.731Z",
+      "severity": Object {
+        "category": "Sev5",
+        "detail": "SEV-5",
+      },
+      "source": "Datadog",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "resolved",
+      },
+      "title": "Test Incident",
+      "uid": "00000000-0000-0000-000000000001",
+      "updatedAt": "2022-03-01T02:48:53.734Z",
+      "url": null,
+    },
   },
-  "recordsErrored": 0,
-  "recordsProcessed": 184,
-  "recordsRead": 184,
-  "recordsSkipped": 0,
-  "recordsWritten": 192,
-  "writtenByModel": Object {
-    "compute_Application": 2,
-    "faros_MetricDefinition": 1,
-    "faros_MetricValue": 168,
-    "ims_Incident": 2,
-    "ims_IncidentApplicationImpact": 3,
-    "ims_IncidentAssignment": 2,
-    "ims_User": 14,
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000001",
+      },
+      "incident": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000001",
+      },
+      "source": "Datadog",
+    },
   },
-}
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "Service 1",
+        "platform": "test",
+        "uid": "Service 1_test",
+      },
+      "incident": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000001",
+      },
+      "source": "Datadog",
+    },
+  },
+  Object {
+    "ims_Incident": Object {
+      "createdAt": "2022-02-27T20:43:03.757Z",
+      "description": null,
+      "priority": null,
+      "resolvedAt": "2022-02-27T20:43:08.788Z",
+      "severity": Object {
+        "category": "Sev5",
+        "detail": "SEV-5",
+      },
+      "source": "Datadog",
+      "status": Object {
+        "category": "Resolved",
+        "detail": "resolved",
+      },
+      "title": "Test Incident 2",
+      "uid": "00000000-0000-0000-000000000002",
+      "updatedAt": "2022-02-27T20:43:08.790Z",
+      "url": null,
+    },
+  },
+  Object {
+    "ims_IncidentAssignment": Object {
+      "assignee": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000001",
+      },
+      "incident": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000002",
+      },
+      "source": "Datadog",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "Service 1",
+        "platform": "test",
+        "uid": "Service 1_test",
+      },
+      "incident": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000002",
+      },
+      "source": "Datadog",
+    },
+  },
+  Object {
+    "ims_IncidentApplicationImpact": Object {
+      "application": Object {
+        "name": "service2",
+        "platform": "",
+        "uid": "service2",
+      },
+      "incident": Object {
+        "source": "Datadog",
+        "uid": "00000000-0000-0000-000000000002",
+      },
+      "source": "Datadog",
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "description": "system.cpu.idle",
+      "name": "system.cpu.idle",
+      "source": "Datadog",
+      "uid": "undefined-system.cpu.idle",
+      "valueType": Object {
+        "category": "Percentage",
+        "detail": "percentage",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685556000000",
+      "value": 79.44724703792944,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685559600000",
+      "value": 82.52437801549009,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685563200000",
+      "value": 82.35272329658466,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685566800000",
+      "value": 80.27699873676256,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685570400000",
+      "value": 78.15695400570415,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-05-31T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685574000000",
+      "value": 74.08322262400407,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685577600000",
+      "value": 71.0023850067305,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685581200000",
+      "value": 79.91056791137873,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685584800000",
+      "value": 80.91016962529096,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685588400000",
+      "value": 74.84998744275013,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685592000000",
+      "value": 78.71814009186626,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685595600000",
+      "value": 73.81095254603893,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685599200000",
+      "value": 74.08095001130945,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685602800000",
+      "value": 77.72346452810652,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685606400000",
+      "value": 80.70037160731741,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685610000000",
+      "value": 74.36562836013844,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685613600000",
+      "value": 77.71010759584568,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685617200000",
+      "value": 72.37362499888137,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685620800000",
+      "value": 73.80582468790458,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685624400000",
+      "value": 77.2938565788949,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685628000000",
+      "value": 81.89622276826488,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685631600000",
+      "value": 73.41682527142264,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685635200000",
+      "value": 74.1730050654754,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685638800000",
+      "value": 73.22476780959245,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685642400000",
+      "value": 74.13773215235032,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685646000000",
+      "value": 74.87304999049985,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685649600000",
+      "value": 83.92665412902373,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685653200000",
+      "value": 86.68591282167215,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685656800000",
+      "value": 87.76883585551899,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-01T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685660400000",
+      "value": 85.81057297162683,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685664000000",
+      "value": 84.16177710164196,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685667600000",
+      "value": 85.63840362119038,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685671200000",
+      "value": 89.75290100203969,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685674800000",
+      "value": 86.48426729557843,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685678400000",
+      "value": 87.33811981685797,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685682000000",
+      "value": 86.86124678665922,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685685600000",
+      "value": 87.2429056618257,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685689200000",
+      "value": 86.5529832174703,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685692800000",
+      "value": 90.37982676415653,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685696400000",
+      "value": 87.0165803860699,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685700000000",
+      "value": 87.58637794664018,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685703600000",
+      "value": 85.00563059622618,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685707200000",
+      "value": 86.54719708143945,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685710800000",
+      "value": 85.98386086885,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685714400000",
+      "value": 88.41777540717813,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685718000000",
+      "value": 86.30782674159211,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685721600000",
+      "value": 86.00280322776014,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685725200000",
+      "value": 84.95406439004633,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685728800000",
+      "value": 84.47139220888758,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685732400000",
+      "value": 85.72434157875071,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685736000000",
+      "value": 88.46701148776815,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685739600000",
+      "value": 86.69188823859646,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685743200000",
+      "value": 86.94394625832204,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-02T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685746800000",
+      "value": 86.94788052351394,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685750400000",
+      "value": 87.19420543286886,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685754000000",
+      "value": 86.24628407367426,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685757600000",
+      "value": 90.46892718407877,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685761200000",
+      "value": 87.83287751307196,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685764800000",
+      "value": 88.17856911670115,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685768400000",
+      "value": 87.5946983461198,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685772000000",
+      "value": 87.93648363298445,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685775600000",
+      "value": 86.77532984958579,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685779200000",
+      "value": 87.86589236497093,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685782800000",
+      "value": 84.62252155930727,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685786400000",
+      "value": 85.02603687959342,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685790000000",
+      "value": 84.0811753141502,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685793600000",
+      "value": 84.08866569363391,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685797200000",
+      "value": 83.31260879963676,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685800800000",
+      "value": 88.87407604380725,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685804400000",
+      "value": 87.37823812989531,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685808000000",
+      "value": 88.47079649644763,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685811600000",
+      "value": 88.0943069907668,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685815200000",
+      "value": 87.80305675273196,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685818800000",
+      "value": 86.42319648278533,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685822400000",
+      "value": 89.92916008926795,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685826000000",
+      "value": 87.66381058394686,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685829600000",
+      "value": 88.34744342677769,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-03T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685833200000",
+      "value": 87.4851595504331,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685836800000",
+      "value": 87.33159796431733,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685840400000",
+      "value": 86.8467258782813,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685844000000",
+      "value": 90.64224339457917,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685847600000",
+      "value": 87.9880445818289,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685851200000",
+      "value": 88.73007066791689,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685854800000",
+      "value": 87.79780159004575,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685858400000",
+      "value": 87.3413712276613,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685862000000",
+      "value": 86.39998844437339,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685865600000",
+      "value": 90.12528876432965,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685869200000",
+      "value": 87.48091775302903,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685872800000",
+      "value": 88.50678349162393,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685876400000",
+      "value": 87.6333951749492,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685880000000",
+      "value": 83.34686607821044,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685883600000",
+      "value": 83.64915689682631,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685887200000",
+      "value": 87.66925812280124,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685890800000",
+      "value": 84.17443583001786,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685894400000",
+      "value": 84.16791224006147,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685898000000",
+      "value": 82.99202190165822,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685901600000",
+      "value": 82.76870119840274,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685905200000",
+      "value": 82.87629457401587,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685908800000",
+      "value": 87.44483213731145,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685912400000",
+      "value": 82.68063626305619,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685916000000",
+      "value": 85.12211276948523,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-04T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685919600000",
+      "value": 83.65897650011998,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685923200000",
+      "value": 82.94272266875734,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685926800000",
+      "value": 84.23096170800233,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685930400000",
+      "value": 87.74114814388523,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685934000000",
+      "value": 83.87990652889991,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685937600000",
+      "value": 84.45144969673356,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685941200000",
+      "value": 83.00198197111263,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685944800000",
+      "value": 83.11702587313074,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685948400000",
+      "value": 83.87136237841987,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685952000000",
+      "value": 86.5212865516406,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685955600000",
+      "value": 82.60615929106909,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685959200000",
+      "value": 84.23213102020043,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685962800000",
+      "value": 82.0771347993506,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685966400000",
+      "value": 81.09703804198459,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685970000000",
+      "value": 80.97872470137519,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685973600000",
+      "value": 86.26319384338187,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685977200000",
+      "value": 82.76229265458944,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685980800000",
+      "value": 85.02656080884948,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685984400000",
+      "value": 82.50271725421405,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685988000000",
+      "value": 82.60432440963086,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685991600000",
+      "value": 82.61845604063684,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685995200000",
+      "value": 87.68665513040578,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1685998800000",
+      "value": 84.32827154688913,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686002400000",
+      "value": 85.4865834671921,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-05T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686006000000",
+      "value": 83.27873482732943,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686009600000",
+      "value": 83.01586727231462,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686013200000",
+      "value": 83.03741267188165,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686016800000",
+      "value": 87.4444534393983,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686020400000",
+      "value": 83.9819723926687,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686024000000",
+      "value": 83.81502019400045,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686027600000",
+      "value": 83.80754436979774,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686031200000",
+      "value": 83.4674184832093,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686034800000",
+      "value": 82.96236882013145,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686038400000",
+      "value": 87.16742838424989,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686042000000",
+      "value": 85.06786184774172,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686045600000",
+      "value": 84.25834812205306,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686049200000",
+      "value": 82.39145134312834,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686052800000",
+      "value": 81.09575483599481,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686056400000",
+      "value": 80.95898007141338,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686060000000",
+      "value": 85.68515448925572,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686063600000",
+      "value": 82.55858143629808,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686067200000",
+      "value": 83.29632282326146,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686070800000",
+      "value": 82.92042672075928,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T18:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686074400000",
+      "value": 82.52903143193663,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T19:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686078000000",
+      "value": 81.38751893381033,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T20:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686081600000",
+      "value": 86.73186255879484,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T21:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686085200000",
+      "value": 82.89727635550149,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T22:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686088800000",
+      "value": 84.5858651843637,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-06T23:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686092400000",
+      "value": 82.98975513162225,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T00:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686096000000",
+      "value": 82.74190511484404,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T01:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686099600000",
+      "value": 82.61225573150779,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T02:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686103200000",
+      "value": 88.15948478772607,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T03:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686106800000",
+      "value": 83.770824291853,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T04:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686110400000",
+      "value": 83.91039761947323,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T05:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686114000000",
+      "value": 82.82806012941938,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T06:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686117600000",
+      "value": 82.88140262339785,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T07:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686121200000",
+      "value": 82.95536483394052,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T08:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686124800000",
+      "value": 87.62014638050346,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T09:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686128400000",
+      "value": 83.77291382628492,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T10:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686132000000",
+      "value": 85.2325658250815,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T11:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686135600000",
+      "value": 83.41884076014894,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T12:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686139200000",
+      "value": 82.15631943069751,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T13:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686142800000",
+      "value": 82.27655230501574,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T14:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686146400000",
+      "value": 87.03490754174251,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T15:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686150000000",
+      "value": 82.00434447942155,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T16:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686153600000",
+      "value": 83.82245684999917,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2023-06-07T17:00:00.000Z",
+      "definition": Object {
+        "uid": "undefined-system.cpu.idle",
+      },
+      "source": "Datadog",
+      "uid": "186b347b33f1ffb049439fba14dc3090-system.cpu.idle-1686157200000",
+      "value": 81.81042354161802,
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000001",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000002",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000003",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000004",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000005",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000006",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000007",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000008",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000009",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000010",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000011",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000012",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000013",
+    },
+  },
+  Object {
+    "ims_User": Object {
+      "email": "test@test.com",
+      "name": "Test User",
+      "source": "Datadog",
+      "uid": "00000000-0000-0000-000000000014",
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjective": Object {
+      "createdAt": "2025-02-25T03:16:14.000Z",
+      "description": "Test SLO for new stream for pagination",
+      "name": "Test SLO for Source",
+      "source": "Datadog",
+      "target": 99.9,
+      "timeWindow": Object {
+        "length": "7d",
+        "type": Object {
+          "category": "RollingPeriod",
+          "detail": "7d",
+        },
+      },
+      "uid": "35281fa93f745b2ba41204f01f7b886",
+      "updatedAt": "2025-02-26T17:06:15.000Z",
+      "warningThreshold": 0,
+    },
+  },
+  Object {
+    "sre_ServiceLevelIndicator": Object {
+      "measuredAt": "2025-02-25T21:39:10.000Z",
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+      "status": Object {
+        "category": "Breached",
+        "detail": "breached",
+      },
+      "uid": "1740519550",
+      "unit": "Percentage",
+      "value": 98.21428680419922,
+    },
+  },
+  Object {
+    "sre_SLOErrorBudget": Object {
+      "measuredAt": "2025-02-25T21:39:10.000Z",
+      "remaining": -10195,
+      "remainingPercentage": -1685.7364501953125,
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+      "uid": "1740519550",
+      "unit": "seconds",
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjectiveTag": Object {
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+      "tag": Object {
+        "uid": "fake:key:key",
+      },
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjectiveTag": Object {
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+      "tag": Object {
+        "uid": "service3",
+      },
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjectiveTag": Object {
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+      "tag": Object {
+        "uid": "service:service3",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationServiceLevelObjective": Object {
+      "application": Object {
+        "name": "service3",
+        "platform": "",
+        "uid": "service3",
+      },
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "35281fa93f745b2ba41204f01f7b886",
+      },
+      "source": "Datadog",
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjective": Object {
+      "createdAt": "2025-02-25T03:16:14.000Z",
+      "description": "Delivery API responses are handled in time",
+      "name": "Delivery API latency",
+      "source": "Datadog",
+      "target": 98,
+      "timeWindow": Object {
+        "length": "7d",
+        "type": Object {
+          "category": "RollingPeriod",
+          "detail": "7d",
+        },
+      },
+      "uid": "045d8f22cd8359b28de35cdb66437203",
+      "updatedAt": "2025-02-26T14:21:50.000Z",
+      "warningThreshold": 0,
+    },
+  },
+  Object {
+    "sre_ServiceLevelIndicator": Object {
+      "measuredAt": "2025-02-26T18:59:10.000Z",
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "045d8f22cd8359b28de35cdb66437203",
+      },
+      "source": "Datadog",
+      "status": Object {
+        "category": "Healthy",
+        "detail": "ok",
+      },
+      "uid": "1740596350",
+      "unit": "Percentage",
+      "value": 99.79166412353516,
+    },
+  },
+  Object {
+    "sre_SLOErrorBudget": Object {
+      "measuredAt": "2025-02-26T18:59:10.000Z",
+      "remaining": 20520,
+      "remainingPercentage": 79.16636657714844,
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "045d8f22cd8359b28de35cdb66437203",
+      },
+      "source": "Datadog",
+      "uid": "1740596350",
+      "unit": "seconds",
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjectiveTag": Object {
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "045d8f22cd8359b28de35cdb66437203",
+      },
+      "source": "Datadog",
+      "tag": Object {
+        "uid": "delivery",
+      },
+    },
+  },
+  Object {
+    "sre_ServiceLevelObjectiveTag": Object {
+      "slo": Object {
+        "source": "Datadog",
+        "uid": "045d8f22cd8359b28de35cdb66437203",
+      },
+      "source": "Datadog",
+      "tag": Object {
+        "uid": "service:delivery-api",
+      },
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "Service 1",
+      "platform": "test",
+      "source": "Datadog",
+      "uid": "Service 1_test",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "service2",
+      "platform": "",
+      "source": "Datadog",
+      "uid": "service2",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "service3",
+      "platform": "",
+      "source": "Datadog",
+      "uid": "service3",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "fake",
+      "source": "Datadog",
+      "uid": "fake:key:key",
+      "value": "key:key",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service3",
+      "source": "Datadog",
+      "uid": "service3",
+      "value": null,
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service",
+      "source": "Datadog",
+      "uid": "service:service3",
+      "value": "service3",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "delivery",
+      "source": "Datadog",
+      "uid": "delivery",
+      "value": null,
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "service",
+      "source": "Datadog",
+      "uid": "service:delivery-api",
+      "value": "delivery-api",
+    },
+  },
+]
 `;

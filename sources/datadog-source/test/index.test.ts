@@ -62,7 +62,10 @@ describe('index', () => {
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
-    const incidents = readTestResourceFile('incidents.json');
+    const res = readTestResourceFile('incidents.json');
+    const pagination = new v2.IncidentResponseMetaPagination();
+    Object.assign(pagination, res.meta.pagination);
+    const incidents = {...res, meta: {pagination}};
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -70,7 +73,8 @@ describe('index', () => {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
         } as DatadogClient,
-        {page_size: 10} as DatadogConfig,
+        10,
+        undefined,
         logger
       )
     );
@@ -83,11 +87,14 @@ describe('index', () => {
     for await (const item of itemIter) {
       items.push(item);
     }
-    expect(items).toStrictEqual(incidents.data);
+    expect(items).toStrictEqual(res.data);
   });
 
   test('streams - incidents, use incremental sync mode', async () => {
-    const incidents = readTestResourceFile('incidents.json');
+    const res = readTestResourceFile('incidents.json');
+    const pagination = new v2.IncidentResponseMetaPagination();
+    Object.assign(pagination, res.meta.pagination);
+    const incidents = {...res, meta: {pagination}};
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -95,7 +102,8 @@ describe('index', () => {
             listIncidents: jest.fn().mockReturnValue(incidents),
           } as unknown as v2.IncidentsApi,
         } as DatadogClient,
-        {} as DatadogConfig,
+        10,
+        undefined,
         logger
       )
     );
@@ -125,6 +133,7 @@ describe('index', () => {
             queryMetrics: jest.fn().mockReturnValue(metricsResponse),
           } as unknown as v1.MetricsApi,
         } as DatadogClient,
+        10,
         {
           metrics: ['system.cpu.idle{*}'],
         } as DatadogConfig,
@@ -169,6 +178,7 @@ describe('index', () => {
             queryMetrics: jest.fn().mockReturnValue(metricsResponse),
           } as unknown as v1.MetricsApi,
         } as DatadogClient,
+        10,
         {
           metrics: ['system.cpu.idle{*}'],
         } as DatadogConfig,
@@ -218,7 +228,8 @@ describe('index', () => {
             listUsers: jest.fn().mockReturnValue(users),
           } as unknown as v2.UsersApi,
         } as DatadogClient,
-        {} as DatadogConfig,
+        10,
+        undefined,
         logger
       )
     );
@@ -243,7 +254,8 @@ describe('index', () => {
             listUsers: jest.fn().mockReturnValue(users),
           } as unknown as v2.UsersApi,
         } as DatadogClient,
-        {} as DatadogConfig,
+        10,
+        undefined,
         logger
       )
     );
@@ -262,5 +274,34 @@ describe('index', () => {
       items.push(item);
     }
     expect(items).toStrictEqual([users.data[1]]);
+  });
+
+  test('streams - slos', async () => {
+    const res = readTestResourceFile('slos.json');
+    const pagination = new v1.SearchSLOResponseMetaPage();
+    Object.assign(pagination, res.meta.pagination);
+    const slos = {...res, meta: {pagination}};
+    Datadog.instance = jest.fn().mockReturnValue(
+      new Datadog(
+        {
+          slos: {
+            searchSLO: jest.fn().mockReturnValue(slos),
+          } as unknown as v1.SLOResponse,
+        } as DatadogClient,
+        10,
+        undefined,
+        logger
+      )
+    );
+
+    const source = new sut.DatadogSource(logger);
+    const streams = source.streams(sourceConfig);
+    const stream = streams[3];
+    const itemIter = stream.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of itemIter) {
+      items.push(item);
+    }
+    expect(items).toMatchSnapshot();
   });
 });
