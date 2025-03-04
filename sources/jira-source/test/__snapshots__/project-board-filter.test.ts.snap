@@ -147,30 +147,60 @@ exports[`ProjectBoardFilter getBoards - specific boards included 1`] = `
 
 exports[`ProjectBoardFilter getProjects - all projects - empty list 1`] = `
 [
-  "TEST-1",
-  "TEST-2",
-  "TEST-3",
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
 ]
 `;
 
 exports[`ProjectBoardFilter getProjects - all projects - no list 1`] = `
 [
-  "TEST-1",
-  "TEST-2",
-  "TEST-3",
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
 ]
 `;
 
 exports[`ProjectBoardFilter getProjects - specific projects excluded 1`] = `
 [
-  "TEST-2",
-  "TEST-3",
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-3",
+  },
 ]
 `;
 
 exports[`ProjectBoardFilter getProjects - specific projects included 1`] = `
 [
-  "TEST-1",
-  "TEST-2",
+  {
+    "issueSync": true,
+    "uid": "TEST-1",
+  },
+  {
+    "issueSync": true,
+    "uid": "TEST-2",
+  },
 ]
 `;

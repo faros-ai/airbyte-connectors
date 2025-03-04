@@ -6,7 +6,11 @@ import {
 
 import {JiraConfig} from '../src/jira';
 import {ProjectBoardFilter} from '../src/project-board-filter';
-import {iterate, paginate, setupJiraInstance} from './utils/test-utils';
+import {
+  mockFarosOptions,
+  paginate,
+  setupJiraInstance,
+} from './utils/test-utils';
 
 describe('ProjectBoardFilter', () => {
   let logger: AirbyteLogger;
@@ -166,31 +170,3 @@ describe('ProjectBoardFilter', () => {
     expect(boards).toMatchSnapshot();
   });
 });
-
-function mockFarosOptions({
-  includedUids = [],
-  excludedUids = [],
-}: {
-  includedUids?: string[];
-  excludedUids?: string[];
-} = {}): any {
-  return {
-    nodeIterable: () =>
-      iterate([
-        ...includedUids.map((uid) => taskBoardOptions(uid, 'Included')),
-        ...excludedUids.map((uid) => taskBoardOptions(uid, 'Excluded')),
-      ]),
-  };
-}
-
-function taskBoardOptions(
-  uid: string,
-  inclusionCategory: 'Included' | 'Excluded'
-) {
-  return {
-    board: {
-      uid,
-    },
-    inclusionCategory,
-  };
-}

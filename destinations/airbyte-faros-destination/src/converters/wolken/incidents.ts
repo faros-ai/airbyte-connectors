@@ -39,9 +39,11 @@ export class Incidents extends WolkenConverter {
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'faros_Tag',
     'ims_Incident',
     'ims_IncidentAssignment',
     'ims_IncidentApplicationImpact',
+    'ims_IncidentFarosTag',
   ];
 
   async convert(
@@ -74,6 +76,11 @@ export class Incidents extends WolkenConverter {
         resolvedAt: Utils.toDate(incident.resolutionTimeStamp) ?? null,
       },
     });
+
+    res.push(
+      ...this.incidentTag(incidentKey, 'Category', incident.categoryName),
+      ...this.incidentTag(incidentKey, 'Subcategory', incident.subCategoryName)
+    );
 
     const assigneeUid = incident.assignedUserId;
     if (assigneeUid) {
@@ -209,5 +216,35 @@ export class Incidents extends WolkenConverter {
       });
     }
     return undefined;
+  }
+
+  private incidentTag(
+    incidentKey: {uid: string; source: string},
+    key: string,
+    value: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!value) {
+      return [];
+    }
+    const tagKey = {
+      uid: `${key}__${value}`,
+    };
+    return [
+      {
+        model: 'faros_Tag',
+        record: {
+          ...tagKey,
+          key,
+          value,
+        },
+      },
+      {
+        model: 'ims_IncidentFarosTag',
+        record: {
+          incident: incidentKey,
+          tag: tagKey,
+        },
+      },
+    ];
   }
 }

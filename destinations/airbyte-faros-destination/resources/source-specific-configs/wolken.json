@@ -35,8 +35,17 @@
             "type": "string"
           }
         },
-        "project_tag_flex_field_names": {
+        "application_tag_flex_field_user_lookup_names": {
           "order": 4,
+          "type": "array",
+          "title": "Application Tag Flex User Lookup Names",
+          "description": "List of Flex Field User Lookup Names to use as application tags",
+          "items": {
+            "type": "string"
+          }
+        },
+        "project_tag_flex_field_names": {
+          "order": 5,
           "type": "array",
           "title": "Project Tag Flex Field Names",
           "description": "List of Flex Field Names to use as project tags",
@@ -45,7 +54,7 @@
           }
         },
         "path_hierarchy_flex_field_names": {
-          "order": 5,
+          "order": 6,
           "type": "array",
           "title": "Path Hierarchy Flex Field Names",
           "description": "List of Flex Field Names that define the path hierarchy",
@@ -54,7 +63,7 @@
           }
         },
         "application_mapping": {
-          "order": 6,
+          "order": 7,
           "type": "string",
           "title": "Application Mapping",
           "description": "JSON map of Wolken service(s) ID, to compute platform specific app name and platform name.",
@@ -64,8 +73,19 @@
             "{ \"A3F91B6D\": { \"name\": \"aion\", \"platform\": \"ECS\" } }"
           ]
         },
+        "user_lookup_extra_fields_mapping": {
+          "order": 8,
+          "type": "string",
+          "title": "User Lookup Extra Fields Mapping",
+          "description": "JSON map of extra fields taken from User lookup to be added as tags. Key is the display name for the tag and value is the property path on the User record.",
+          "multiline": true,
+          "default": "{}",
+          "examples": [
+            "{ \"Department\": \"userAddress.departmentName\" }"
+          ]
+        },
         "store_current_incidents_associations": {
-          "order": 7,
+          "order": 9,
           "type": "boolean",
           "title": "Only store current incidents associations",
           "description": "Only store current incidents associations in the graph.",

@@ -50,4 +50,18 @@ describe('faros_jira', () => {
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
+
+  test('process records from all streams with use_projects_as_boards', async () => {
+    const projectAsBoardsConfigPath = await tempConfig({
+      api_url: mockttp.url,
+      log_records: true,
+    });
+
+    await destinationWriteTest({
+      configPath: projectAsBoardsConfigPath,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/with-use-projects-as-boards.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
 });
