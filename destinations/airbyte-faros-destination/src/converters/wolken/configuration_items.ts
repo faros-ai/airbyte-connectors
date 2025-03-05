@@ -60,22 +60,19 @@ export class ConfigurationItems extends WolkenConverter {
       return [];
     }
 
-    const jiraProjectKeyFlexFieldName =
-      this.config(ctx).jira_project_key_flex_field_name;
-    const jiraProjectKey = WolkenConverter.getFlexField(
-      configurationItem,
-      jiraProjectKeyFlexFieldName
-    )?.flexValue;
-
-    const project = {
-      uid: jiraProjectKey ?? 'unknown',
-      source: 'Jira',
-    };
-
     const appKey = JSON.stringify(application);
     if (!this.seenServices.has(appKey)) {
       res.push({model: 'compute_Application', record: application});
       this.seenServices.add(appKey);
+
+      const applicationDisplayName = configurationItem.ciName;
+      res.push(
+        ...this.applicationTag(
+          'Application Display Name',
+          applicationDisplayName,
+          application
+        )
+      );
 
       const applicationTagFlexFieldNames =
         this.config(ctx).application_tag_flex_field_names ?? [];
@@ -85,16 +82,13 @@ export class ConfigurationItems extends WolkenConverter {
           flexFieldName
         );
         if (flexField) {
-          const tag = {
-            uid: `${flexField.flexName}__${flexField.flexValue}`,
-            key: flexField.flexName,
-            value: flexField.flexValue,
-          };
-          res.push({model: 'faros_Tag', record: tag});
-          res.push({
-            model: 'compute_ApplicationTag',
-            record: {application, tag: {uid: tag.uid}},
-          });
+          res.push(
+            ...this.applicationTag(
+              flexField.flexName,
+              flexField.flexValue,
+              application
+            )
+          );
         }
       }
 
@@ -108,27 +102,23 @@ export class ConfigurationItems extends WolkenConverter {
           flexFieldUserLookupName
         );
         if (flexField) {
-          const tag = {
-            uid: `${flexField.flexName}__${flexField.flexValue}`,
-            key: flexField.flexName,
-            value: flexField.flexValue,
-          };
-          res.push({model: 'faros_Tag', record: tag});
-          res.push({
-            model: 'compute_ApplicationTag',
-            record: {application, tag: {uid: tag.uid}},
-          });
+          res.push(
+            ...this.applicationTag(
+              flexField.flexName,
+              flexField.flexValue,
+              application
+            )
+          );
           const user = this.getUserFromLookup(flexField.flexValue, ctx);
           if (user) {
-            for (const [displayName, path] of Object.entries(
+            for (const [displayName, jsonataPath] of Object.entries(
               userLookupExtraFieldsMapping
             )) {
-              const value = _.get(user, path);
+              const value = _.get(user, jsonataPath);
               res.push(
-                ...this.applicationTagFromUserLookupField(
-                  flexField.flexName,
+                ...this.applicationTag(
+                  `${flexField.flexName} ${displayName}`,
                   value,
-                  displayName,
                   application
                 )
               );
@@ -136,6 +126,18 @@ export class ConfigurationItems extends WolkenConverter {
           }
         }
       }
+
+      const jiraProjectKeyFlexFieldName =
+        this.config(ctx).jira_project_key_flex_field_name;
+      const jiraProjectKey = WolkenConverter.getFlexField(
+        configurationItem,
+        jiraProjectKeyFlexFieldName
+      )?.flexValue;
+
+      const project = {
+        uid: jiraProjectKey ?? 'unknown',
+        source: 'Jira',
+      };
 
       const projectTagFlexFieldNames =
         this.config(ctx).project_tag_flex_field_names ?? [];
@@ -205,23 +207,21 @@ export class ConfigurationItems extends WolkenConverter {
     return user.record.data as User;
   }
 
-  private applicationTagFromUserLookupField(
-    userLookupFlexFieldName: string,
-    userFieldValue: string,
-    userFieldDisplayName: string,
+  private applicationTag(
+    key: string,
+    value: string,
     application: ComputeApplication
   ): ReadonlyArray<DestinationRecord> {
-    if (!userFieldValue) {
+    if (!value) {
       return [];
     }
-    const key = `${userLookupFlexFieldName} ${userFieldDisplayName}`;
     const tagKey = {
-      uid: `${key}__${userFieldValue}`,
+      uid: `${key}__${value}`,
     };
     const tag = {
       ...tagKey,
       key,
-      value: userFieldValue,
+      value,
     };
     return [
       {

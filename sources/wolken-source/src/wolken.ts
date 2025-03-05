@@ -1,6 +1,6 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {ConfigurationItem,Incident, User} from 'faros-airbyte-common/wolken';
+import {ConfigurationItem, Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {get} from 'lodash';
 import {VError} from 'verror';
@@ -222,7 +222,7 @@ export class Wolken {
       } else {
         try {
           const response = await this.httpClient.get(
-            `/api/masters/user?userPsNo=${user.userPsNo}`,
+            `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
             {
               headers: {
                 Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,

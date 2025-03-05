@@ -1,7 +1,7 @@
 /** Incident severity level category. The lower severity the number, the more and urgent impactful the incident. */
 export enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
-  Sev2 = 'Sev2', 
+  Sev2 = 'Sev2',
   Sev3 = 'Sev3',
   Sev4 = 'Sev4',
   Sev5 = 'Sev5',
@@ -11,7 +11,7 @@ export enum IncidentSeverityCategory {
 export enum IncidentPriorityCategory {
   Critical = 'Critical',
   High = 'High',
-  Medium = 'Medium', 
+  Medium = 'Medium',
   Low = 'Low',
   Custom = 'Custom',
 }
@@ -25,4 +25,7 @@ export enum IncidentStatusCategory {
   Custom = 'Custom',
 }
 
-export type ApplicationMapping = Record<string, {name: string; platform?: string}>;
+export type ApplicationMapping = Record<
+  string,
+  {name: string; platform?: string}
+>;

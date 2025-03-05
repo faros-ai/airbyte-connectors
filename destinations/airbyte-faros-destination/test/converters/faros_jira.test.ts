@@ -55,7 +55,6 @@ describe('faros_jira', () => {
     const projectAsBoardsConfigPath = await tempConfig({
       api_url: mockttp.url,
       log_records: true,
-      source_specific_configs: {jira: {use_projects_as_boards: true}},
     });
 
     await destinationWriteTest({
