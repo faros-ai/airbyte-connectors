@@ -81,6 +81,7 @@ describe('wolken', () => {
             },
             user_lookup_extra_fields_mapping: {
               Department: 'userAddress.departmentName',
+              Division: 'userFlex[flexName = "Division"].flexValue',
             },
           },
         },
