@@ -1,9 +1,9 @@
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
 import {StreamBase} from './common';
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 export class Projects extends StreamBase {
   getJsonSchema(): Dictionary<any, string> {

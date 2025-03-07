@@ -1,9 +1,9 @@
+import {WorkItemClassificationNode} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
 import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
-import {WorkItemClassificationNode} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 
 export class Iterations extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {

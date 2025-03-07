@@ -1,40 +1,30 @@
-import {AxiosInstance, AxiosResponse} from 'axios';
-import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry} from 'faros-js-client';
-import {chunk, flatten} from 'lodash';
-import {VError} from 'verror';
-
-import {
-  AdditionalField,
-  AzureInstanceType,
-  AzureWorkitemsConfig,
-  User,
-  UserResponse,
-  WorkItemAssigneeRevision,
-  WorkItemIterationRevision,
-  WorkItemRevisions,
-  WorkItemState,
-  WorkItemStateRevision,
-  WorkItemWithRevisions,
-} from './models';
-
-import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
+import {AxiosInstance} from 'axios';
 import {getPersonalAccessTokenHandler, WebApi} from 'azure-devops-node-api';
 import {ICoreApi} from 'azure-devops-node-api/CoreApi';
+import {
+  IdentityRef,
+  TeamMember,
+} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import {
   TeamProject,
   TeamProjectReference,
   WebApiTeam,
 } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {
   TreeStructureGroup,
   WorkItemClassificationNode,
   WorkItemExpand,
   WorkItemUpdate,
 } from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
-import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
-import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
+import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
+import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {chunk, flatten} from 'lodash';
 import {Memoize} from 'typescript-memoize';
+import {VError} from 'verror';
+
+import * as models from './models';
 
 const CLOUD_API_URL = 'https://dev.azure.com';
 const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
@@ -60,7 +50,7 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
-interface AzureWorkitemsClient {
+export interface AzureWorkitemsClient {
   readonly core: ICoreApi;
   readonly wit: IWorkItemTrackingApi;
   readonly graph?: AxiosInstance;
@@ -71,19 +61,19 @@ export class AzureWorkitems {
 
   constructor(
     private readonly client: AzureWorkitemsClient,
-    private readonly instanceType: AzureInstanceType,
+    private readonly instance: models.AzureInstance,
     private readonly additionalFieldReferences: Map<string, string>,
-    private readonly top: number,
+    private readonly top: number = DEFAULT_PAGE_SIZE,
     private readonly logger: AirbyteLogger
   ) {}
 
   static async instance(
-    config: AzureWorkitemsConfig,
+    config: models.AzureWorkitemsConfig,
     logger: AirbyteLogger
   ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
-    if (config.instance.type) {
+    if (config.instance?.type) {
       logger.info(`Azure DevOps instance type: ${config.instance.type}`);
     } else {
       logger.info(
@@ -176,7 +166,7 @@ export class AzureWorkitems {
     return AzureWorkitems.azure_Workitems;
   }
 
-  static validateConfig(config: AzureWorkitemsConfig) {
+  static validateConfig(config: models.AzureWorkitemsConfig): void {
     if (!config.access_token) {
       throw new VError('access_token must not be an empty string');
     }
@@ -242,25 +232,10 @@ export class AzureWorkitems {
     } while (resCount >= top);
   }
 
-  // TODO: How to use this?
-  private async handleNotFound<T = any, R = AxiosResponse<T>>(
-    call: () => Promise<R>
-  ): Promise<R | undefined> {
-    try {
-      const res = await call();
-      return res;
-    } catch (err: any) {
-      if (err?.response?.status === 404) {
-        return undefined;
-      }
-      throw err;
-    }
-  }
-
   async *getWorkitems(
     project: string,
     projectId: string
-  ): AsyncGenerator<WorkItemWithRevisions> {
+  ): AsyncGenerator<models.WorkItemWithRevisions> {
     const stateCategories = await this.getStateCategories(project);
     const stateCategoriesObj = Object.fromEntries(
       Array.from(stateCategories.entries()).map(([type, states]) => [
@@ -322,9 +297,8 @@ export class AzureWorkitems {
     id: number,
     project: string,
     states: Map<string, string>
-  ): Promise<WorkItemRevisions> {
+  ): Promise<models.WorkItemRevisions> {
     const updates = await this.getWorkItemUpdates(id, project);
-
     return {
       states: this.getStateRevisions(states, updates),
       assignees: this.getAssigneeRevisions(updates),
@@ -336,7 +310,10 @@ export class AzureWorkitems {
     id: number,
     project: string
   ): Promise<ReadonlyArray<WorkItemUpdate>> {
-    const getUpdatesFn = (top: number, skip: number) =>
+    const getUpdatesFn = (
+      top: number,
+      skip: number
+    ): Promise<WorkItemUpdate[]> =>
       this.client.wit.getUpdates(id, top, skip, project);
 
     const updates = [];
@@ -369,7 +346,7 @@ export class AzureWorkitems {
   private getStateRevisions(
     states: Map<string, string>,
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<WorkItemStateRevision> {
+  ): ReadonlyArray<models.WorkItemStateRevision> {
     const changes = this.getFieldChanges('System.State', updates);
     return changes.map((change) => ({
       state: this.getStateCategory(change.value, states),
@@ -379,7 +356,7 @@ export class AzureWorkitems {
 
   private getIterationRevisions(
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<WorkItemIterationRevision> {
+  ): ReadonlyArray<models.WorkItemIterationRevision> {
     const changes = this.getFieldChanges('System.IterationId', updates);
     return changes.map((change, index) => ({
       iteration: change.value,
@@ -392,7 +369,7 @@ export class AzureWorkitems {
   private getStateCategory(
     state: string,
     states: Map<string, string>
-  ): WorkItemState {
+  ): models.WorkItemState {
     const category = states?.get(state);
     if (!category) {
       this.logger.debug(`Unknown category for state: ${state}`);
@@ -405,7 +382,7 @@ export class AzureWorkitems {
 
   private getAssigneeRevisions(
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<WorkItemAssigneeRevision> {
+  ): ReadonlyArray<models.WorkItemAssigneeRevision> {
     const changes = this.getFieldChanges('System.AssignedTo', updates);
     return changes.map((change) => ({
       assignee: change.value,
@@ -432,13 +409,15 @@ export class AzureWorkitems {
       data,
       undefined,
       true, // time precision to get timestamp and not date
-      3
+      19999 // max items allowed
     );
     return result.workItems.map((workItem) => workItem.id);
   }
 
-  async *getUsers(projects?: ReadonlyArray<string>): AsyncGenerator<User> {
-    if (this.instanceType?.type === 'server') {
+  async *getUsers(
+    projects?: ReadonlyArray<string>
+  ): AsyncGenerator<models.User> {
+    if (this.instance?.type === 'server') {
       yield* this.getServerUsers(projects);
       return;
     }
@@ -448,7 +427,7 @@ export class AzureWorkitems {
   async *getCloudUsers(): AsyncGenerator<GraphUser> {
     let continuationToken: string;
     do {
-      const res = await this.client.graph.get<UserResponse>('users', {
+      const res = await this.client.graph.get<models.UserResponse>('users', {
         params: {subjectTypes: 'msa,aad,imp', continuationToken},
       });
       continuationToken = res?.headers?.['X-MS-ContinuationToken'];
@@ -479,7 +458,10 @@ export class AzureWorkitems {
   }
 
   async *getTeams(projectId: string): AsyncGenerator<WebApiTeam> {
-    const getTeamsFn = (pageSize: number, skip: number) =>
+    const getTeamsFn = (
+      pageSize: number,
+      skip: number
+    ): Promise<WebApiTeam[]> =>
       this.client.core.getTeams(projectId, false, pageSize, skip);
 
     yield* this.getPaginated<WebApiTeam>(getTeamsFn);
@@ -489,7 +471,7 @@ export class AzureWorkitems {
     projectId: string,
     teamId: string
   ): AsyncGenerator<IdentityRef> {
-    const getMembersFn = (top: number, skip: number) =>
+    const getMembersFn = (top: number, skip: number): Promise<TeamMember[]> =>
       this.client.core.getTeamMembersWithExtendedProperties(
         projectId,
         teamId,
@@ -626,7 +608,7 @@ export class AzureWorkitems {
 
   private extractAdditionalFields(fields?: {
     [key: string]: any;
-  }): ReadonlyArray<AdditionalField> {
+  }): ReadonlyArray<models.AdditionalField> {
     const additionalFields = [];
     if (!fields) {
       return additionalFields;

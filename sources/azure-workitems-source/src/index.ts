@@ -11,8 +11,8 @@ import {
 import VError from 'verror';
 
 import {AzureWorkitems} from './azure-workitems';
-import {Iterations, Projects, Workitems, Users} from './streams';
 import {AzureWorkitemsConfig} from './models';
+import {Iterations, Projects, Users, Workitems} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {

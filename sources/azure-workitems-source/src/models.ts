@@ -11,10 +11,10 @@ export type DevOpsServer = {
   api_url: string;
 };
 
-export type AzureInstanceType = DevOpsCloud | DevOpsServer;
+export type AzureInstance = DevOpsCloud | DevOpsServer;
 
 export interface AzureWorkitemsConfig {
-  readonly instance: AzureInstanceType;
+  readonly instance: AzureInstance;
   readonly access_token: string;
   readonly organization: string;
   readonly project: string;
