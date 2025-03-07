@@ -7,7 +7,7 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
-import {AzureWorkitems} from '../src/azure-workitems';
+import {AzureWorkitems, AzureWorkitemsClient} from '../src/azure-workitems';
 import * as sut from '../src/index';
 
 const azureWorkitem = AzureWorkitems.instance;
@@ -45,27 +45,40 @@ describe('index', () => {
 
   test('check connection - valid config', async () => {
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users.json');
+      const projectsResource: any[] = readTestResourceFile('projects.json');
       return new AzureWorkitems(
-        null,
-        null,
-        null,
         {
-          get: jest.fn().mockResolvedValue({
-            data: {value: usersResource},
-          }),
-        } as any,
+          core: {
+            getProject: jest.fn().mockResolvedValue({
+              data: {value: projectsResource},
+            }),
+          },
+        } as unknown as AzureWorkitemsClient,
+        null,
         new Map(),
+        null,
         logger
       );
     });
 
+    const config = {
+      access_token: 'access_token',
+      organization: 'organization',
+      projects: ['project'],
+    };
+
+    // Valid cloud config
+    await sourceCheckTest({
+      source,
+      configOrPath: config,
+    });
+
+    // Valid server config
     await sourceCheckTest({
       source,
       configOrPath: {
-        access_token: 'access_token',
-        organization: 'organization',
-        project: 'project',
+        ...config,
+        instance: {type: 'server', api_url: 'https://azure.myorg.com'},
       },
     });
   });
@@ -76,7 +89,7 @@ describe('index', () => {
       configOrPath: {
         access_token: '',
         organization: 'organization',
-        project: 'project',
+        projects: ['project'],
       },
     });
   });
@@ -92,13 +105,31 @@ describe('index', () => {
     });
   });
 
-  test('check connection - custom api_url with no graph_api_url', async () => {
+  test('check connection - api_url not provided for server instance', async () => {
     await sourceCheckTest({
       source,
       configOrPath: {
+        instance: {
+          type: 'server',
+          api_url: '',
+        },
         access_token: 'access_token',
         organization: 'organization',
-        api_url: 'https://azure.myorg.com',
+        project: 'project',
+      },
+    });
+  });
+
+  test('check connection - invalid server api_url', async () => {
+    await sourceCheckTest({
+      source,
+      configOrPath: {
+        instance: {
+          type: 'server',
+          api_url: 'invalid_url',
+        },
+        access_token: 'access_token',
+        organization: 'organization',
         project: 'project',
       },
     });
@@ -110,22 +141,23 @@ describe('index', () => {
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
       return new AzureWorkitems(
-        null,
-        null,
-        null,
         {
-          get: fnUsersFunc.mockResolvedValue({
-            data: {value: usersResource},
-          }),
-        } as any,
+          graph: {
+            get: fnUsersFunc.mockResolvedValue({
+              data: {value: usersResource},
+            }),
+          },
+        } as unknown as AzureWorkitemsClient,
+        {type: 'cloud'},
         new Map(),
+        null,
         logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
     const streams = source.streams({} as any);
 
-    const usersStream = streams[1];
+    const usersStream = streams[2];
     const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of userIter) {
@@ -137,119 +169,80 @@ describe('index', () => {
   });
 
   test('streams - users (server), use full_refresh sync mode', async () => {
-    const fnUsersFunc = jest.fn();
-
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
-        {type: 'server'},
-        null,
         {
-          get: fnUsersFunc
-            .mockResolvedValueOnce({
-              data: readTestResourceFile('teams.json'),
-            })
-            .mockResolvedValue({
-              data: readTestResourceFile('team_members.json'),
+          core: {
+            getProject: jest.fn().mockResolvedValue({
+              id: 'eb6e4656-77fc-42a1-9181-4c6d8e9da5d1',
             }),
-        } as any,
-        null,
+            getTeams: jest
+              .fn()
+              .mockResolvedValueOnce(readTestResourceFile('teams.json').value),
+            getTeamMembersWithExtendedProperties: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('team_members.json').value
+              ),
+          },
+        } as unknown as AzureWorkitemsClient,
+        {type: 'server', api_url: 'https://azure.myorg.com'},
         new Map(),
+        100,
         logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
-    const streams = source.streams({} as any);
+    const streams = source.streams({projects: ['project']} as any);
 
-    const usersStream = streams[1];
+    const usersStream = streams[2];
     const userIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of userIter) {
       users.push(user);
     }
-
-    expect(fnUsersFunc).toHaveBeenCalledTimes(3);
     expect(users).toMatchSnapshot();
   });
 
   test('streams - iterations, use full_refresh sync mode', async () => {
-    const fnIterationsFunc = jest.fn().mockImplementation((url) => {
-      if (url.endsWith('classificationnodes/Iterations')) {
-        return {data: readTestResourceFile('iterations_root.json')};
-      } else if (url.endsWith('classificationNodes/Iterations/Release%201')) {
-        return {data: readTestResourceFile('iterations_node_3.json')};
-      }
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
-        null,
-        null,
         {
-          get: fnIterationsFunc,
-        } as any,
+          wit: {
+            getClassificationNode: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('iterations_root.json')),
+            getClassificationNodes: jest
+              .fn()
+              .mockResolvedValueOnce([
+                readTestResourceFile('iterations_node_3.json'),
+              ]),
+          },
+        } as unknown as AzureWorkitemsClient,
         null,
         new Map(),
+        100,
         logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
     const streams = source.streams({} as any);
 
-    const iterationsStream = streams[2];
-    const iterationsIter = iterationsStream.readRecords(SyncMode.FULL_REFRESH);
+    const iterationsStream = streams[3];
+    const iterationsIter = iterationsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {name: 'test', id: '123'}
+    );
     const iterations = [];
     for await (const iteration of iterationsIter) {
       iterations.push(iteration);
     }
 
-    expect(fnIterationsFunc).toHaveBeenCalledTimes(2);
     expect(iterations).toMatchSnapshot();
   });
 
-  test('streams - boards, use full_refresh sync mode', async () => {
-    const fnBoardsFunc = jest.fn();
-
-    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
-      const boardsResource: any[] = readTestResourceFile('boards.json');
-      return new AzureWorkitems(
-        null,
-        null,
-        {
-          get: fnBoardsFunc.mockResolvedValue({
-            data: {value: boardsResource},
-          }),
-        } as any,
-        null,
-        new Map(),
-        logger
-      );
-    });
-    const source = new sut.AzureWorkitemsSource(logger);
-    const streams = source.streams({} as any);
-
-    const boardsStream = streams[3];
-    const boardIter = boardsStream.readRecords(SyncMode.FULL_REFRESH);
-    const boards = [];
-    for await (const board of boardIter) {
-      boards.push(board);
-    }
-
-    expect(fnBoardsFunc).toHaveBeenCalledTimes(1);
-    expect(boards).toStrictEqual(readTestResourceFile('boards.json'));
-  });
-
   test('streams - workitems, use full_refresh sync mode', async () => {
-    const getFunc = jest.fn().mockImplementation((url) => {
-      if (url.includes('states')) {
-        return {data: readTestResourceFile('workitem_states.json')};
-      } else if (url.includes('updates')) {
-        return {data: readTestResourceFile('workitem_updates.json')};
-      } else if (url.includes('workitems?ids')) {
-        return {data: readTestResourceFile('workitems.json')};
-      }
-      return {};
-    });
     const workitemIdsFunc = jest.fn();
 
     const fieldReferences = new Map([
@@ -258,27 +251,39 @@ describe('index', () => {
       ['Microsoft.VSTS.Scheduling.RemainingWork', 'Remaining Work'],
       ['Custom.TestName', 'Test Name'],
     ]);
+
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
       return new AzureWorkitems(
-        null,
-        null,
         {
-          get: getFunc,
-          post: workitemIdsFunc
-            .mockResolvedValueOnce({
-              data: readTestResourceFile('workitem_ids.json'),
-            })
-            .mockResolvedValue({data: {}}),
-        } as any,
+          wit: {
+            getWorkItems: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('workitems.json').value),
+            getWorkItemTypeStates: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('workitem_states.json').value
+              ),
+            getUpdates: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('workitem_updates.json').value
+              ),
+            queryByWiql: workitemIdsFunc.mockResolvedValue(
+              readTestResourceFile('workitem_ids.json')
+            ),
+          },
+        } as unknown as AzureWorkitemsClient,
         null,
         fieldReferences,
+        100,
         logger
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
     const streams = source.streams({} as any);
 
-    const workitemsStream = streams[0];
+    const workitemsStream = streams[1];
     const workitemsIter = workitemsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
@@ -289,7 +294,6 @@ describe('index', () => {
       workitems.push(workitem);
     }
 
-    expect(getFunc).toHaveBeenCalledTimes(15);
     expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
     expect(workitems).toMatchSnapshot();
   });

@@ -11,18 +11,15 @@
     ],
     "additionalProperties": true,
     "properties": {
-      "instance_type": {
+      "instance": {
         "title": "Instance Type",
         "description": "Choose how your Azure instance is setup",
         "type": "object",
         "order": 0,
-        "default": {
-          "type": "cloud"
-        },
         "oneOf": [
           {
             "type": "object",
-            "title": "Cloud",
+            "title": "cloud",
             "properties": {
               "type": {
                 "type": "string",
@@ -36,31 +33,25 @@
           },
           {
             "type": "object",
-            "title": "Server",
+            "title": "server",
             "properties": {
               "type": {
                 "type": "string",
                 "const": "server",
                 "order": 0
+              },
+              "api_url": {
+                "order": 1,
+                "type": "string",
+                "title": "API URL"
               }
             },
             "required": [
-              "type"
+              "type",
+              "api_url"
             ]
           }
         ]
-      },
-      "api_url": {
-        "order": 1,
-        "type": "string",
-        "title": "API URL",
-        "default": "https://dev.azure.com"
-      },
-      "graph_api_url": {
-        "order": 2,
-        "type": "string",
-        "title": "Graph API URL",
-        "default": "https://vssps.dev.azure.com"
       },
       "access_token": {
         "order": 3,
@@ -83,17 +74,10 @@
           "minLength": 1
         },
         "title": "Project IDs or project names",
-        "description": "Azure Projects. If empty or '*' all available projects will be processed."
-      },
-      "project": {
-        "order": 6,
-        "type": "string",
-        "title": "Azure Project",
-        "deprecated": true,
-        "description": "Deprecated: Please use 'projects' array instead"
+        "description": "Azure Projects. If empty all available projects will be processed."
       },
       "additional_fields": {
-        "order": 7,
+        "order": 6,
         "type": "array",
         "title": "Additional Fields",
         "items": {
@@ -107,37 +91,31 @@
         ]
       },
       "cutoff_days": {
-        "order": 8,
+        "order": 7,
         "type": "integer",
         "title": "Cutoff Days",
         "description": "The threshold after which data should be synced.",
         "default": 90
       },
-      "api_version": {
-        "order": 9,
-        "type": "string",
-        "title": "API Version",
-        "default": "7.1"
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
+        "default": 100
       },
-      "graph_version": {
-        "order": 10,
-        "type": "string",
-        "title": "Graph API Version",
-        "default": "7.1-preview.1"
-      },
-      "reject_unauthorized": {
-        "order": 11,
-        "type": "boolean",
-        "title": "Reject Unauthorized",
-        "description": "If true, requests to Azure DevOps API with self-signed certificates will be rejected.",
-        "default": true
+      "max_retries": {
+        "type": "integer",
+        "order": 8,
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
+        "default": 3
       },
       "request_timeout": {
-        "order": 12,
+        "order": 9,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
-        "default": 60000
+        "default": 300000
       }
     }
   }

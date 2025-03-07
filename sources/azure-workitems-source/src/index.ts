@@ -10,9 +10,9 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
-import {Boards, Iterations, Projects, Users} from './streams';
-import {Workitems} from './streams/workitems';
+import {AzureWorkitems} from './azure-workitems';
+import {AzureWorkitemsConfig} from './models';
+import {Iterations, Projects, Users, Workitems} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -35,11 +35,8 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     config: AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureWorkItems = await AzureWorkitems.instance(
-        config,
-        this.logger
-      );
-      await azureWorkItems.checkConnection();
+      const azureWorkItems = await AzureWorkitems.instance(config, this.logger);
+      await azureWorkItems.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];
     }
@@ -47,11 +44,10 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
   }
   streams(config: AzureWorkitemsConfig): AirbyteStreamBase[] {
     return [
+      new Projects(config, this.logger),
       new Workitems(config, this.logger),
       new Users(config, this.logger),
       new Iterations(config, this.logger),
-      new Boards(config, this.logger),
-      new Projects(config, this.logger),
     ];
   }
   async onBeforeRead(

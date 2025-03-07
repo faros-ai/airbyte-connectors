@@ -1,8 +1,8 @@
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {StreamKey} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {Project} from '../models';
 import {StreamBase} from './common';
 
 export class Projects extends StreamBase {
@@ -14,7 +14,7 @@ export class Projects extends StreamBase {
     return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<Project> {
+  async *readRecords(): AsyncGenerator<TeamProject> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger

@@ -1,9 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`index check connection - custom api_url with no graph_api_url 1`] = `
+exports[`index check connection - api_url not provided for server instance 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "When using a custom API URL, a custom Graph API URL must also be provided",
+    "message": "api_url must not be an empty string if instance is server",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - invalid server api_url 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Invalid URL: invalid_url",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
@@ -31,6 +41,15 @@ AirbyteConnectionStatusMessage {
 `;
 
 exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 2`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
     "status": "SUCCEEDED",
