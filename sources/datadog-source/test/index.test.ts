@@ -3,6 +3,8 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  customStreamsTest,
+  sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
@@ -26,39 +28,54 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.FATAL
   );
+  const source = new sut.DatadogSource(logger);
 
   test('spec', async () => {
-    const source = new sut.DatadogSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
       new AirbyteSpec(readResourceFile('spec.json'))
     );
   });
 
   test('check connection bad token', async () => {
-    const source = new sut.DatadogSource(logger);
     const expectedError = new VError('Bad Connection');
     Datadog.instance = jest.fn().mockReturnValue({
       checkConnection: jest.fn().mockRejectedValue(expectedError),
     });
-    await expect(
-      source.checkConnection({
+    await sourceCheckTest({
+      source,
+      configOrPath: {
         api_key: 'bad',
         application_key: 'bad',
-      })
-    ).resolves.toStrictEqual([false, expectedError]);
+      },
+    });
   });
 
   const sourceConfig = {api_key: 'good', application_key: 'good'};
 
   test('check connection good token', async () => {
-    const source = new sut.DatadogSource(logger);
     Datadog.instance = jest.fn().mockReturnValue({
       checkConnection: jest.fn().mockResolvedValue({}),
     });
-    await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
-      true,
-      undefined,
-    ]);
+    await sourceCheckTest({
+      source,
+      configOrPath: sourceConfig,
+    });
+  });
+
+  test('onBeforeRead with run_mode Custom streams without filtering', async () => {
+    await customStreamsTest(source, sourceConfig, sut.StreamNames);
+  });
+
+  test('onBeforeRead with run_mode Custom streams with filtering', async () => {
+    await customStreamsTest(
+      source,
+      {
+        ...sourceConfig,
+        custom_streams: sut.StreamNames.slice(2, 3),
+      },
+      sut.StreamNames,
+      sut.StreamNames.slice(2, 3)
+    );
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
