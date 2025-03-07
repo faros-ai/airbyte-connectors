@@ -36,7 +36,7 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
       const azureWorkItems = await AzureWorkitems.instance(config, this.logger);
-      await azureWorkItems.checkConnection();
+      await azureWorkItems.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];
     }

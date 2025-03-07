@@ -11,7 +11,7 @@
     ],
     "additionalProperties": true,
     "properties": {
-      "instance_type": {
+      "instance": {
         "title": "Instance Type",
         "description": "Choose how your Azure instance is setup",
         "type": "object",
@@ -19,7 +19,7 @@
         "oneOf": [
           {
             "type": "object",
-            "title": "Cloud",
+            "title": "cloud",
             "properties": {
               "type": {
                 "type": "string",
@@ -33,7 +33,7 @@
           },
           {
             "type": "object",
-            "title": "Server",
+            "title": "server",
             "properties": {
               "type": {
                 "type": "string",

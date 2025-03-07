@@ -83,8 +83,8 @@ export class AzureWorkitems {
   ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
-    if (config.instance_type.type) {
-      logger.info(`Azure DevOps instance type: ${config.instance_type.type}`);
+    if (config.instance.type) {
+      logger.info(`Azure DevOps instance type: ${config.instance.type}`);
     } else {
       logger.info(
         'No Azure DevOps instance type provided, defaulting to cloud'
@@ -94,8 +94,8 @@ export class AzureWorkitems {
     AzureWorkitems.validateConfig(config);
 
     const apiUrl =
-      config.instance_type.type === 'server'
-        ? config.instance_type.api_url
+      config.instance.type === 'server'
+        ? config.instance.api_url
         : CLOUD_API_URL;
 
     const baseUrl = `${apiUrl}/${config.organization}`;
@@ -106,7 +106,7 @@ export class AzureWorkitems {
     // Graph API is only available in Azure DevOps Cloud for users, groups, and group memberships
     // https://learn.microsoft.com/en-us/rest/api/azure/devops/graph
     const graphClient =
-      config.instance_type.type !== 'server'
+      config.instance.type !== 'server'
         ? makeAxiosInstanceWithRetry(
             {
               baseURL: `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
@@ -168,7 +168,7 @@ export class AzureWorkitems {
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
       client,
-      config.instance_type,
+      config.instance,
       additionalFieldReferences,
       config.page_size ?? DEFAULT_PAGE_SIZE,
       logger
@@ -185,23 +185,33 @@ export class AzureWorkitems {
       throw new VError('organization must not be an empty string');
     }
 
-    if (config.instance_type.type === 'cloud') {
+    if (config.instance?.type === 'cloud' || !config.instance?.type) {
       return;
     }
 
     // Validate Server instance URL
+    if (!config.instance?.api_url?.trim()) {
+      throw new VError(
+        'api_url must not be an empty string if instance is server'
+      );
+    }
+
     try {
-      new URL(config.instance_type.api_url.trim());
+      new URL(config.instance.api_url.trim());
     } catch (error) {
-      throw new VError(`Invalid URL: ${config.instance_type.api_url}`);
+      throw new VError(`Invalid URL: ${config.instance.api_url}`);
     }
   }
 
-  async checkConnection(): Promise<void> {
+  async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
     try {
-      // TODO: Fix this
-      const iter = this.getUsers();
-      await iter.next();
+      const res = await this.getProjects(projects);
+      if (!res.length) {
+        const msg = projects?.length
+          ? 'No projects found in the organization.'
+          : 'Failed to fetch projects in the config.';
+        throw new VError(msg);
+      }
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
       if (err.error_code || err.error_info) {
@@ -404,7 +414,6 @@ export class AzureWorkitems {
   }
 
   // TODO - Fetch all work items instead of only max 20000
-  // Add time precision to the query for incremental sync
   async getIdsFromAWorkItemType(
     project: string,
     workItemsType: string
@@ -412,7 +421,7 @@ export class AzureWorkitems {
     const quotedProject = `'${project}'`;
     const data = {
       query:
-        'Select [System.Id] From WorkItems WHERE [System.WorkItemType] = ' +
+        'Select [System.Id], [System.ChangedDate] From WorkItems WHERE [System.WorkItemType] = ' +
         workItemsType +
         ' AND [System.ChangedDate] >= @Today-180 AND [System.TeamProject] = ' +
         quotedProject +
@@ -422,8 +431,8 @@ export class AzureWorkitems {
     const result = await this.client.wit.queryByWiql(
       data,
       undefined,
-      true, // time precision
-      19999
+      true, // time precision to get timestamp and not date
+      3
     );
     return result.workItems.map((workItem) => workItem.id);
   }
@@ -566,7 +575,7 @@ export class AzureWorkitems {
 
     const allProjects = [];
     for (const project of projects) {
-      const res = await this.getProject(project);
+      const res = await this.client.core.getProject(project);
       if (res) {
         allProjects.push(res);
       } else {
@@ -574,10 +583,6 @@ export class AzureWorkitems {
       }
     }
     return allProjects;
-  }
-
-  private async getProject(project: string): Promise<TeamProject> {
-    return await this.client.core.getProject(project);
   }
 
   private async getAllProjects(): Promise<ReadonlyArray<TeamProjectReference>> {
