@@ -6,7 +6,7 @@ This source streams data from the [Azure DevOps APIs](https://learn.microsoft.co
 
 | Name     | Full | Incremental | Required Permissions |
 |-----------|---|---|---|
-| Projects  | ✅ |  | vso.profile, vso.project |
+| Projects  | ✅ |  | vso.profile,vso.project |
 | Iterations | ✅ |  | vso.work |
 | Workitems | ✅ | ✅ | vso.work  |
 | Users     | ✅ |   | Cloud - vso.graph / Server - vso.profile,vso.project |
