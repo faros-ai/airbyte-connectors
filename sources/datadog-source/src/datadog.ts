@@ -39,6 +39,7 @@ export interface DatadogConfig {
   readonly metrics?: Array<string>;
   readonly metrics_max_window?: number;
   readonly site?: string;
+  readonly custom_streams?: ReadonlyArray<string>;
 }
 
 export interface DatadogClient {

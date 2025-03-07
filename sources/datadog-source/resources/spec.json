@@ -49,6 +49,21 @@
         "title": "Datadog Site",
         "description": "Datadog Site parameter, e.g 'datadoghq.com'. See all available site options here - https://docs.datadoghq.com/getting_started/site/",
         "default": "datadoghq.com"
+      },
+      "custom_streams": {
+        "order": 6,
+        "title": "Custom Streams",
+        "description": "List of streams to run (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "incidents",
+            "metrics",
+            "service_level_objectives",
+            "users"
+          ]
+        }
       }
     }
   }
