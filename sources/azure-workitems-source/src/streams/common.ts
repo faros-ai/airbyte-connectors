@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from '../azure-workitems';
-
+import {AzureWorkitems} from '../azure-workitems';
+import {AzureWorkitemsConfig} from '../models';
 export type ProjectStreamSlice = {
   name: string;
   id: string;

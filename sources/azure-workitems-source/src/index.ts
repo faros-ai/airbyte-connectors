@@ -10,9 +10,9 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzureWorkitems, AzureWorkitemsConfig} from './azure-workitems';
-import {Iterations, Projects, Users} from './streams';
-import {Workitems} from './streams/workitems';
+import {AzureWorkitems} from './azure-workitems';
+import {Iterations, Projects, Workitems, Users} from './streams';
+import {AzureWorkitemsConfig} from './models';
 
 /** The main entry point. */
 export function mainCommand(): Command {

@@ -6,8 +6,15 @@ import {VError} from 'verror';
 
 import {
   AdditionalField,
+  AzureInstanceType,
+  AzureWorkitemsConfig,
   User,
   UserResponse,
+  WorkItemAssigneeRevision,
+  WorkItemIterationRevision,
+  WorkItemRevisions,
+  WorkItemState,
+  WorkItemStateRevision,
   WorkItemWithRevisions,
 } from './models';
 
@@ -23,22 +30,22 @@ import {
   TreeStructureGroup,
   WorkItemClassificationNode,
   WorkItemExpand,
+  WorkItemUpdate,
 } from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
-import {
-  IdentityRef,
-  TeamMember,
-} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
+import {Memoize} from 'typescript-memoize';
 
-const DEFAULT_API_URL = 'https://dev.azure.com';
-const DEFAULT_API_VERSION = '7.1';
+const CLOUD_API_URL = 'https://dev.azure.com';
 const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
 const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
-export const DEFAULT_REQUEST_TIMEOUT = 300_000;
+const DEFAULT_REQUEST_TIMEOUT = 300_000;
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_PAGE_SIZE = 100;
 
 // Curated list of work item types from Azure DevOps
-// https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-item-types/list?view=azure-devops-rest-7.0&tabs=HTTP#uri-parameters
+// https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-item-types/list
 const WORK_ITEM_TYPES = [
   "'Task'",
   "'User Story'",
@@ -53,38 +60,6 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
-type DevOpsCloud = {
-  type: 'cloud';
-};
-
-type DevOpsServer = {
-  type: 'server';
-  api_url: string;
-  api_version: string;
-  graph_api_url: string;
-  graph_api_version: string;
-};
-
-export type InstanceType = DevOpsCloud | DevOpsServer;
-
-export interface AzureWorkitemsConfig {
-  readonly instance_type: InstanceType;
-  readonly access_token: string;
-  readonly organization: string;
-  readonly project: string;
-  readonly projects: string[];
-  readonly additional_fields: string[];
-  readonly cutoff_days?: number;
-  readonly request_timeout?: number;
-}
-
-interface InstanceConfig {
-  instanceUrl: string;
-  apiVersion: string;
-  graphApiUrl?: string;
-  graphApiVersion?: string;
-}
-
 interface AzureWorkitemsClient {
   readonly core: ICoreApi;
   readonly wit: IWorkItemTrackingApi;
@@ -95,10 +70,10 @@ export class AzureWorkitems {
   private static azure_Workitems: AzureWorkitems = null;
 
   constructor(
-    private readonly instanceType: InstanceType,
-    private readonly apiVersion: string,
     private readonly client: AzureWorkitemsClient,
+    private readonly instanceType: AzureInstanceType,
     private readonly additionalFieldReferences: Map<string, string>,
+    private readonly top: number,
     private readonly logger: AirbyteLogger
   ) {}
 
@@ -108,7 +83,6 @@ export class AzureWorkitems {
   ): Promise<AzureWorkitems> {
     if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
 
-    AzureWorkitems.validateConfig(config);
     if (config.instance_type.type) {
       logger.info(`Azure DevOps instance type: ${config.instance_type.type}`);
     } else {
@@ -117,16 +91,22 @@ export class AzureWorkitems {
       );
     }
 
-    const instanceConfig = AzureWorkitems.getInstanceConfig(config);
+    AzureWorkitems.validateConfig(config);
 
-    const baseUrl = `${instanceConfig.instanceUrl}/${config.organization}`;
-    const apiVersion = instanceConfig.apiVersion ?? DEFAULT_API_VERSION;
+    const apiUrl =
+      config.instance_type.type === 'server'
+        ? config.instance_type.api_url
+        : CLOUD_API_URL;
+
+    const baseUrl = `${apiUrl}/${config.organization}`;
     const accessToken = base64Encode(`:${config.access_token}`);
 
     const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
-    // Graph API is only available in Azure DevOps Cloud
+    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    // Graph API is only available in Azure DevOps Cloud for users, groups, and group memberships
+    // https://learn.microsoft.com/en-us/rest/api/azure/devops/graph
     const graphClient =
-      config.instance_type.type === 'cloud'
+      config.instance_type.type !== 'server'
         ? makeAxiosInstanceWithRetry(
             {
               baseURL: `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
@@ -137,16 +117,17 @@ export class AzureWorkitems {
               headers: {Authorization: `Basic ${accessToken}`},
             },
             logger.asPino(),
-            3,
+            maxRetries,
             1000
           )
         : undefined;
 
+    // Create Azure DevOps API client
     const authHandler = getPersonalAccessTokenHandler(config.access_token);
     const connection = new WebApi(baseUrl, authHandler, {
       socketTimeout: timeout,
       allowRetries: true,
-      maxRetries: 3, // Number of retry attempts
+      maxRetries,
       globalAgentOptions: {
         keepAlive: true,
         timeout,
@@ -186,10 +167,10 @@ export class AzureWorkitems {
     };
 
     AzureWorkitems.azure_Workitems = new AzureWorkitems(
-      config.instance_type,
-      apiVersion,
       client,
+      config.instance_type,
       additionalFieldReferences,
+      config.page_size ?? DEFAULT_PAGE_SIZE,
       logger
     );
     return AzureWorkitems.azure_Workitems;
@@ -208,42 +189,18 @@ export class AzureWorkitems {
       return;
     }
 
-    const apiUrl = AzureWorkitems.cleanUrl(config.instance_type.api_url);
-    const graphApiUrl = AzureWorkitems.cleanUrl(
-      config.instance_type.graph_api_url
-    );
-
-    if (!apiUrl) {
-      throw new VError(
-        'API URL and Graph API URL must be provided when Azure DevOps ' +
-          'instance type is Azure DevOps Server'
-      );
+    // Validate Server instance URL
+    try {
+      new URL(config.instance_type.api_url.trim());
+    } catch (error) {
+      throw new VError(`Invalid URL: ${config.instance_type.api_url}`);
     }
-  }
-
-  static cleanUrl(url?: string): string | undefined {
-    return url?.trim().endsWith('/') ? url.trim().slice(0, -1) : url?.trim();
-  }
-
-  static getInstanceConfig(config: AzureWorkitemsConfig): InstanceConfig {
-    if (config.instance_type.type === 'server') {
-      return {
-        instanceUrl: config.instance_type.api_url,
-        apiVersion: config.instance_type.api_version,
-      };
-    }
-    return {
-      instanceUrl: DEFAULT_API_URL,
-      apiVersion: DEFAULT_API_VERSION,
-      graphApiUrl: DEFAULT_GRAPH_API_URL,
-      graphApiVersion: DEFAULT_GRAPH_VERSION,
-    };
   }
 
   async checkConnection(): Promise<void> {
     try {
       // TODO: Fix this
-      const iter = this.getUsers([]);
+      const iter = this.getUsers();
       await iter.next();
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
@@ -260,14 +217,20 @@ export class AzureWorkitems {
     }
   }
 
-  // private get<T = any, R = AxiosResponse<T>>(
-  //   path: string,
-  //   config?: any
-  // ): Promise<R | undefined> {
-  //   return this.handleNotFound<T, R>(() =>
-  //     this.httpClient.get<T, R>(path, config)
-  //   );
-  // }
+  private async *getPaginated<T>(
+    getFn: (top: number, skip: number) => Promise<Array<T>>
+  ): AsyncGenerator<T> {
+    let resCount = 0;
+    let skip = 0;
+    const top = this.top;
+
+    do {
+      const res = await getFn(top, skip);
+      if (res.length) yield* res;
+      resCount = res.length;
+      skip += resCount;
+    } while (resCount >= top);
+  }
 
   // TODO: How to use this?
   private async handleNotFound<T = any, R = AxiosResponse<T>>(
@@ -317,8 +280,6 @@ export class AzureWorkitems {
       );
 
       for (const item of workitems ?? []) {
-        // TODO: Verify id if defined
-        const {revisions} = await this.getWorkItemRevisions(project, item.id);
         const states = stateCategories.get(item.fields['System.WorkItemType']);
         const stateCategory = this.getStateCategory(
           item.fields['System.State'],
@@ -326,9 +287,11 @@ export class AzureWorkitems {
         );
 
         const additionalFields = this.extractAdditionalFields(item.fields);
-        const stateRevisions = this.getStateRevisions(states, revisions);
-        const assigneeRevisions = this.getAssigneeRevisions(revisions);
-        const iterationRevisions = this.getIterationRevisions(revisions);
+        const revisions = await this.getWorkItemRevisions(
+          item.id,
+          project,
+          states
+        );
         yield {
           ...item,
           fields: {
@@ -337,11 +300,7 @@ export class AzureWorkitems {
               WorkItemStateCategory: stateCategory,
             },
           },
-          revisions: {
-            states: stateRevisions,
-            assignees: assigneeRevisions,
-            iterations: iterationRevisions,
-          },
+          revisions,
           additionalFields,
           projectId,
         };
@@ -349,46 +308,41 @@ export class AzureWorkitems {
     }
   }
 
-  // TODO: Build generic pagination for all APIs
   private async getWorkItemRevisions(
+    id: number,
     project: string,
-    id: number
-  ): Promise<any> {
-    const pageSize = 100; // Number of items per page
-    let skip = 0;
-    const allRevisions: any[] = [];
-    let hasMoreResults = true;
+    states: Map<string, string>
+  ): Promise<WorkItemRevisions> {
+    const updates = await this.getWorkItemUpdates(id, project);
 
-    while (hasMoreResults) {
-      const updates = await this.client.wit.getUpdates(
-        id,
-        pageSize,
-        skip,
-        project
-      );
+    return {
+      states: this.getStateRevisions(states, updates),
+      assignees: this.getAssigneeRevisions(updates),
+      iterations: this.getIterationRevisions(updates),
+    };
+  }
 
-      if (!Array.isArray(updates) || !updates.length) {
-        hasMoreResults = false;
-      } else {
-        allRevisions.push(...updates);
-        skip += pageSize;
+  private async getWorkItemUpdates(
+    id: number,
+    project: string
+  ): Promise<ReadonlyArray<WorkItemUpdate>> {
+    const getUpdatesFn = (top: number, skip: number) =>
+      this.client.wit.getUpdates(id, top, skip, project);
 
-        if (pageSize > updates.length) {
-          hasMoreResults = false;
-        }
-      }
+    const updates = [];
+    for await (const update of this.getPaginated(getUpdatesFn)) {
+      updates.push(update);
     }
-
-    return {revisions: allRevisions};
+    return updates;
   }
 
   private getFieldChanges(
     field: string,
-    updates: any[]
+    updates: ReadonlyArray<WorkItemUpdate>
   ): {value: any; changedDate: string}[] {
     const changes = [];
-    for (const revision of updates ?? []) {
-      const fields = revision.fields;
+    for (const update of updates ?? []) {
+      const fields = update.fields;
       if (!fields) {
         continue;
       }
@@ -402,7 +356,10 @@ export class AzureWorkitems {
     return changes;
   }
 
-  private getStateRevisions(states: Map<string, string>, updates: any): any[] {
+  private getStateRevisions(
+    states: Map<string, string>,
+    updates: ReadonlyArray<WorkItemUpdate>
+  ): ReadonlyArray<WorkItemStateRevision> {
     const changes = this.getFieldChanges('System.State', updates);
     return changes.map((change) => ({
       state: this.getStateCategory(change.value, states),
@@ -410,7 +367,9 @@ export class AzureWorkitems {
     }));
   }
 
-  private getIterationRevisions(updates: any[]): any[] {
+  private getIterationRevisions(
+    updates: ReadonlyArray<WorkItemUpdate>
+  ): ReadonlyArray<WorkItemIterationRevision> {
     const changes = this.getFieldChanges('System.IterationId', updates);
     return changes.map((change, index) => ({
       iteration: change.value,
@@ -423,10 +382,7 @@ export class AzureWorkitems {
   private getStateCategory(
     state: string,
     states: Map<string, string>
-  ): {
-    name: string;
-    category: string;
-  } {
+  ): WorkItemState {
     const category = states?.get(state);
     if (!category) {
       this.logger.debug(`Unknown category for state: ${state}`);
@@ -437,7 +393,9 @@ export class AzureWorkitems {
     };
   }
 
-  private getAssigneeRevisions(updates: any[]): any[] {
+  private getAssigneeRevisions(
+    updates: ReadonlyArray<WorkItemUpdate>
+  ): ReadonlyArray<WorkItemAssigneeRevision> {
     const changes = this.getFieldChanges('System.AssignedTo', updates);
     return changes.map((change) => ({
       assignee: change.value,
@@ -464,13 +422,13 @@ export class AzureWorkitems {
     const result = await this.client.wit.queryByWiql(
       data,
       undefined,
-      undefined,
+      true, // time precision
       19999
     );
     return result.workItems.map((workItem) => workItem.id);
   }
 
-  async *getUsers(projects: ReadonlyArray<string>): AsyncGenerator<User> {
+  async *getUsers(projects?: ReadonlyArray<string>): AsyncGenerator<User> {
     if (this.instanceType?.type === 'server') {
       yield* this.getServerUsers(projects);
       return;
@@ -496,8 +454,8 @@ export class AzureWorkitems {
   ): AsyncGenerator<IdentityRef> {
     const seenUsers = new Set<string>();
     let teams = 0;
-    const projectsRes = await this.getProjects(projects);
-    for await (const project of projectsRes) {
+
+    for (const project of await this.getProjects(projects)) {
       for await (const team of this.getTeams(project.id)) {
         teams++;
         for await (const member of this.getTeamMembers(project.id, team.id)) {
@@ -511,47 +469,26 @@ export class AzureWorkitems {
     this.logger.debug(`Fetched members from ${teams} teams`);
   }
 
-  private async *paginateResults<T>(
-    fetchPage: (pageSize: number, skip: number) => Promise<T[]>,
-    pageSize = 100
-  ): AsyncGenerator<T> {
-    let skip = 0;
-    let hasMoreResults = true;
-
-    while (hasMoreResults) {
-      const res = await fetchPage(pageSize, skip);
-
-      for (const item of res ?? []) {
-        yield item;
-      }
-
-      if (res?.length < pageSize) {
-        hasMoreResults = false;
-      }
-      skip += pageSize;
-    }
-  }
-
   async *getTeams(projectId: string): AsyncGenerator<WebApiTeam> {
-    const fetchTeams = (pageSize: number, skip: number) =>
+    const getTeamsFn = (pageSize: number, skip: number) =>
       this.client.core.getTeams(projectId, false, pageSize, skip);
 
-    yield* this.paginateResults<WebApiTeam>(fetchTeams);
+    yield* this.getPaginated<WebApiTeam>(getTeamsFn);
   }
 
   async *getTeamMembers(
     projectId: string,
     teamId: string
   ): AsyncGenerator<IdentityRef> {
-    const fetchMembers = (pageSize: number, skip: number) =>
+    const getMembersFn = (top: number, skip: number) =>
       this.client.core.getTeamMembersWithExtendedProperties(
         projectId,
         teamId,
-        pageSize,
+        top,
         skip
       );
 
-    for await (const member of this.paginateResults<TeamMember>(fetchMembers)) {
+    for await (const member of this.getPaginated(getMembersFn)) {
       yield member.identity;
     }
   }
@@ -619,23 +556,24 @@ export class AzureWorkitems {
     }
   }
 
-  // TODO: Memoize this
+  @Memoize()
   async getProjects(
-    projects: ReadonlyArray<string>
+    projects?: ReadonlyArray<string>
   ): Promise<ReadonlyArray<TeamProject>> {
-    if (projects?.length) {
-      const allProjects = [];
-      for (const project of projects ?? []) {
-        const res = await this.getProject(project);
-        if (res) {
-          allProjects.push(res);
-        } else {
-          this.logger.warn(`Project ${project} not found`);
-        }
-      }
-      return allProjects;
+    if (!projects?.length) {
+      return await this.getAllProjects();
     }
-    return await this.getAllProjects();
+
+    const allProjects = [];
+    for (const project of projects) {
+      const res = await this.getProject(project);
+      if (res) {
+        allProjects.push(res);
+      } else {
+        this.logger.warn(`Project ${project} in config not found. Skipping`);
+      }
+    }
+    return allProjects;
   }
 
   private async getProject(project: string): Promise<TeamProject> {
@@ -643,25 +581,19 @@ export class AzureWorkitems {
   }
 
   private async getAllProjects(): Promise<ReadonlyArray<TeamProjectReference>> {
-    const allProjects = [];
-    let continuationToken;
+    const projects = [];
+    const getProjectsFn = async (
+      top: number,
+      skip: number
+    ): Promise<Array<TeamProjectReference>> => {
+      const res = await this.client.core.getProjects('wellFormed', top, skip);
+      return Array.from(res.values());
+    };
 
-    // TODO: Generalize pagination for this
-    do {
-      const res = await this.client.core.getProjects(
-        'wellFormed',
-        100,
-        undefined,
-        continuationToken
-      );
-
-      for (const project of res.values()) {
-        allProjects.push(project);
-      }
-      continuationToken = res.continuationToken;
-    } while (continuationToken);
-
-    return allProjects;
+    for await (const project of this.getPaginated(getProjectsFn)) {
+      projects.push(project);
+    }
+    return projects;
   }
 
   private async getStateCategories(
