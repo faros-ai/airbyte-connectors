@@ -223,21 +223,9 @@ export class Datadog {
     yield* this.paginate<v1.SearchServiceLevelObjectiveData>(
       pageSize,
       async (pageNumber) => {
-        try {
-          const res = await this.client.slos.searchSLO({pageSize, pageNumber});
-          const slos = res.data?.attributes?.slos?.map((slo) => slo.data) ?? [];
-          return {meta: res.meta, data: slos};
-        } catch (err: any) {
-          if (err?.code === 403) {
-            this.logger.warn(
-              'Received response 403 when listing SLOs. Ensure your ' +
-                'Application key and/or API key have the `slos_read` permissions.'
-            );
-            return undefined;
-          } else {
-            throw err;
-          }
-        }
+        const res = await this.client.slos.searchSLO({pageSize, pageNumber});
+        const slos = res.data?.attributes?.slos?.map((slo) => slo.data) ?? [];
+        return {meta: res.meta, data: slos};
       },
       async (data) => data
     );
