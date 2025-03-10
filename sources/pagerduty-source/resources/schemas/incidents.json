@@ -66,6 +66,9 @@
     "created_at": {
       "type": "string"
     },
+    "updated_at": {
+      "type": "string"
+    },
     "service": {
       "type": "object",
       "properties": {
@@ -145,6 +148,9 @@
     },
     "last_status_change_at": {
       "type": "string"
+    },
+    "resolved_at": {
+      "type": "string"
     }
   },
   "required": [
@@ -160,8 +166,10 @@
     "urgency",
     "title",
     "created_at",
+    "updated_at",
     "service",
     "assignments",
-    "last_status_change_at"
+    "last_status_change_at",
+    "resolved_at"
   ]
 }
