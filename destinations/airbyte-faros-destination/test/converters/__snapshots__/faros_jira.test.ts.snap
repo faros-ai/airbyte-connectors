@@ -4,8 +4,8 @@ exports[`faros_jira faros_issues 1`] = `
 Array [
   "Processed 1 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 23 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_Task__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 25 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_TaskTag__Deletion\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -118,33 +118,9 @@ Array [
     },
   },
   Object {
-    "tms_TaskTag": Object {
-      "label": Object {
-        "name": "l0",
-      },
-      "source": "Jira",
-      "task": Object {
-        "source": "Jira",
-        "uid": "PLAYG-6",
-      },
-    },
-  },
-  Object {
     "tms_Label": Object {
       "name": "l1",
       "source": "Jira",
-    },
-  },
-  Object {
-    "tms_TaskTag": Object {
-      "label": Object {
-        "name": "l1",
-      },
-      "source": "Jira",
-      "task": Object {
-        "source": "Jira",
-        "uid": "PLAYG-6",
-      },
     },
   },
   Object {
@@ -390,6 +366,47 @@ Array [
       "source": "Jira",
     },
   },
+  Object {
+    "tms_TaskTag__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "task": Object {
+          "source": "Jira",
+          "uid": "PLAYG-6",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "l0",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "l1",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+    },
+  },
 ]
 `;
 
@@ -397,8 +414,8 @@ exports[`faros_jira process records from all streams 1`] = `
 Array [
   "Processed 17 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_additional_fields\\\\\\":1,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_version_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_versions\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_team_memberships\\\\\\":2,\\\\\\"mytestsource__jira__faros_teams\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 51 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_SprintReport\\\\\\":14,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":2,\\\\\\"tms_Team\\\\\\":1,\\\\\\"tms_TeamMembership\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 53 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_SprintReport\\\\\\":14,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_TaskTag__Deletion\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":2,\\\\\\"tms_Team\\\\\\":1,\\\\\\"tms_TeamMembership\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -1410,6 +1427,23 @@ Array [
       "source": "Jira",
     },
   },
+  Object {
+    "tms_TaskTag__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "task": Object {
+          "source": "Jira",
+          "uid": "PLAYG-1",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
 ]
 `;
 
@@ -1417,8 +1451,8 @@ exports[`faros_jira process records from all streams with qualifier 1`] = `
 Array [
   "Processed 17 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_board_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_boards\\\\\\":2,\\\\\\"mytestsource__jira__faros_issue_additional_fields\\\\\\":1,\\\\\\"mytestsource__jira__faros_issue_pull_requests\\\\\\":1,\\\\\\"mytestsource__jira__faros_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_version_issues\\\\\\":1,\\\\\\"mytestsource__jira__faros_project_versions\\\\\\":1,\\\\\\"mytestsource__jira__faros_projects\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":2,\\\\\\"mytestsource__jira__faros_team_memberships\\\\\\":2,\\\\\\"mytestsource__jira__faros_teams\\\\\\":1,\\\\\\"mytestsource__jira__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 51 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_SprintReport\\\\\\":14,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":2,\\\\\\"tms_Team\\\\\\":1,\\\\\\"tms_TeamMembership\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 53 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_ProjectReleaseRelationship\\\\\\":1,\\\\\\"tms_Release\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_SprintReport\\\\\\":14,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskPullRequestAssociation\\\\\\":1,\\\\\\"tms_TaskReleaseRelationship\\\\\\":1,\\\\\\"tms_TaskTag__Deletion\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":2,\\\\\\"tms_Team\\\\\\":1,\\\\\\"tms_TeamMembership\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -2430,6 +2464,23 @@ Array [
       "source": "Jira_Instance2",
     },
   },
+  Object {
+    "tms_TaskTag__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira_Instance2",
+      "where": Object {
+        "task": Object {
+          "source": "Jira_Instance2",
+          "uid": "PLAYG-1",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira_Instance2",
+    },
+  },
 ]
 `;
 
@@ -2437,8 +2488,8 @@ exports[`faros_jira process records from all streams with use_projects_as_boards
 Array [
   "Processed 6 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":2,\\\\\\"mytestsource__jira__faros_projects\\\\\\":2,\\\\\\"mytestsource__jira__faros_sprint_reports\\\\\\":1,\\\\\\"mytestsource__jira__faros_sprints\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 27 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":2,\\\\\\"tms_Sprint\\\\\\":1,\\\\\\"tms_SprintBoardRelationship\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_SprintReport\\\\\\":1,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskDependency__Deletion\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 30 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":2,\\\\\\"tms_Sprint\\\\\\":1,\\\\\\"tms_SprintBoardRelationship\\\\\\":1,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_SprintReport\\\\\\":1,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskDependency__Deletion\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"tms_TaskTag__Deletion\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -2611,18 +2662,6 @@ Array [
     "tms_Label": Object {
       "name": "3rd-party-issue",
       "source": "Jira",
-    },
-  },
-  Object {
-    "tms_TaskTag": Object {
-      "label": Object {
-        "name": "3rd-party-issue",
-      },
-      "source": "Jira",
-      "task": Object {
-        "source": "Jira",
-        "uid": "PLAYG-18",
-      },
     },
   },
   Object {
@@ -2865,6 +2904,47 @@ Array [
   Object {
     "__Flush": Object {
       "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "task": Object {
+          "source": "Jira",
+          "uid": "PLAYG-18",
+        },
+      },
+    },
+  },
+  Object {
+    "tms_TaskTag__Deletion": Object {
+      "flushRequired": false,
+      "source": "Jira",
+      "where": Object {
+        "task": Object {
+          "source": "Jira",
+          "uid": "PLAYG-7",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "3rd-party-issue",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-18",
+      },
     },
   },
 ]
