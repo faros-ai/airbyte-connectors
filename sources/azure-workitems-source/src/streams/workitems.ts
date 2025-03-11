@@ -2,7 +2,7 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {WorkItem} from '../models';
+import {WorkItemWithRevisions} from '../models';
 import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
 
 export class Workitems extends StreamWithProjectSlices {
@@ -14,7 +14,7 @@ export class Workitems extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice
-  ): AsyncGenerator<WorkItem> {
+  ): AsyncGenerator<WorkItemWithRevisions> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger
