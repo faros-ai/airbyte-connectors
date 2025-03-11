@@ -4,21 +4,22 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Repos Spec",
     "type": "object",
-    "required": ["access_token", "organization"],
+    "required": [
+      "instance_type",
+      "access_token",
+      "organization"
+    ],
     "additionalProperties": true,
     "properties": {
-      "instance_type": {
+      "instance": {
         "title": "Instance Type",
         "description": "Choose how your Azure instance is setup",
         "type": "object",
         "order": 0,
-        "default": {
-          "type": "cloud"
-        },
         "oneOf": [
           {
             "type": "object",
-            "title": "Cloud",
+            "title": "cloud",
             "properties": {
               "type": {
                 "type": "string",
@@ -32,40 +33,52 @@
           },
           {
             "type": "object",
-            "title": "Server",
+            "title": "server",
             "properties": {
               "type": {
                 "type": "string",
                 "const": "server",
                 "order": 0
+              },
+              "api_url": {
+                "order": 1,
+                "type": "string",
+                "title": "API URL"
               }
             },
             "required": [
-              "type"
+              "type",
+              "api_url"
             ]
           }
         ]
       },
       "access_token": {
+        "order": 3,
         "type": "string",
         "title": "Azure Access Token",
         "description": "Your unaltered Azure Access Token",
         "airbyte_secret": true
       },
       "organization": {
+        "order": 4,
         "type": "string",
-        "title": "Azure Organization"
+        "title": "Azure Organization",
+        "description": "Azure Organization"
       },
       "projects": {
+        "order": 5,
         "type": "array",
         "items": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "title": "Azure Projects",
-        "description": "List of projects. If empty or '*' all available projects will be processed."
+        "description": "Azure project IDs or project names. If empty all available projects will be processed."
       },
       "branch_pattern": {
         "type": "string",
+        "order": 6,
         "title": "Branch Name Pattern",
         "description": "Regex pattern to match branch names. If you would like to match all branches, use '.*'",
         "default": "^main$",
@@ -74,6 +87,7 @@
         ]
       },
       "cutoff_days": {
+        "order": 7,
         "type": "integer",
         "title": "Cutoff Days",
         "description": "The threshold after which data should be synced.",
@@ -82,46 +96,22 @@
       "page_size": {
         "type": "integer",
         "title": "Page Size",
-        "description": "The number of items to retrieve per call. Corresponds to 'top' parameter in Azure DevOps API.",
+        "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
         "default": 100
-      },
-      "api_url": {
-        "type": "string",
-        "title": "API URL",
-        "default": "https://dev.azure.com"
-      },
-      "graph_api_url": {
-        "type": "string",
-        "title": "Graph API URL",
-        "default": "https://vssps.dev.azure.com"
-      },
-      "api_version": {
-        "type": "string",
-        "title": "API Version",
-        "default": "7.0"
-      },
-      "graph_version": {
-        "type": "string",
-        "title": "Graph API Version",
-        "default": "7.1-preview.1"
-      },
-      "request_timeout": {
-        "type": "integer",
-        "title": "Request Timeout",
-        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
-        "default": 60000
       },
       "max_retries": {
         "type": "integer",
+        "order": 8,
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
       },
-      "reject_unauthorized": {
-        "type": "boolean",
-        "title": "Reject Unauthorized",
-        "description": "If true, requests to Azure DevOps API with self-signed certificates will be rejected.",
-        "default": true
+      "request_timeout": {
+        "order": 9,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
+        "default": 300000
       }
     }
   }

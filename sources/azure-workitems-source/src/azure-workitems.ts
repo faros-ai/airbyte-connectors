@@ -166,6 +166,7 @@ export class AzureWorkitems {
     return AzureWorkitems.azure_Workitems;
   }
 
+  // TODO - Remove and use common
   static validateConfig(config: models.AzureWorkitemsConfig): void {
     if (!config.access_token) {
       throw new VError('access_token must not be an empty string');

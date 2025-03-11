@@ -1,17 +1,10 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey} from 'faros-airbyte-cdk';
+import {AzureDevOpsStreamBase, User} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepoConfig, AzureRepos} from '../azure-repos';
-import {User} from '../models';
+import {AzureRepos} from '../azure-repos';
 
-export class Users extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureRepoConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Users extends AzureDevOpsStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }
@@ -33,7 +26,7 @@ export class Users extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<User> {
-    const azureRepo = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepo.getUsers();
+    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    yield* azureRepos.getUsers();
   }
 }

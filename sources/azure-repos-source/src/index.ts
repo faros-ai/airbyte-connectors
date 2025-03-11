@@ -8,7 +8,8 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzureRepoConfig, AzureRepos} from './azure-repos';
+import {AzureRepos} from './azure-repos';
+import {AzureRepoConfig} from './models';
 import {PullRequests, Repositories, Users} from './streams';
 import {Commits} from './streams/commits';
 
@@ -31,8 +32,11 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
   }
   async checkConnection(config: AzureRepoConfig): Promise<[boolean, VError]> {
     try {
-      const azureRepos = await AzureRepos.make(config, this.logger);
-      await azureRepos.checkConnection();
+      const azureRepos = await AzureRepos.instance<AzureRepos>(
+        config,
+        this.logger
+      );
+      await azureRepos.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];
     }

@@ -1,27 +1,25 @@
-import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {SyncMode} from 'faros-airbyte-cdk';
+import {StreamWithProjectSlices} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepoConfig, AzureRepos} from '../azure-repos';
+import {AzureRepos} from '../azure-repos';
 import {Repository} from '../models';
 
-export class Repositories extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureRepoConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Repositories extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/repositories.json');
   }
 
-  get primaryKey(): StreamKey {
-    return 'id';
-  }
-
-  async *readRecords(): AsyncGenerator<Repository> {
-    const azureRepos = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepos.getRepositories();
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: TeamProject
+  ): AsyncGenerator<Repository> {
+    const azureRepos = await AzureRepos.instance<AzureRepos>(
+      this.config,
+      this.logger
+    );
+    yield* azureRepos.getRepositories(streamSlice);
   }
 }

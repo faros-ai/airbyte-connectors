@@ -6,8 +6,8 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepoConfig, AzureRepos} from '../azure-repos';
-import {Commit} from '../models';
+import {AzureRepos} from '../azure-repos';
+import {AzureRepoConfig, Commit} from '../models';
 
 export class Commits extends AirbyteStreamBase {
   constructor(
@@ -51,7 +51,11 @@ export class Commits extends AirbyteStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepos.getCommits(since);
+    const azureRepos = await AzureRepos.instance<AzureRepos>(
+      this.config,
+      this.logger
+    );
+    // TODO: Should use project slices
+    yield* azureRepos.getCommits(since, this.config.projects);
   }
 }
