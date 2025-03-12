@@ -9,7 +9,7 @@ import {
 import VError from 'verror';
 
 import {AzureRepos} from './azure-repos';
-import {AzureRepoConfig} from './models';
+import {AzureReposConfig} from './models';
 import {PullRequests, Repositories, Users} from './streams';
 import {Commits} from './streams/commits';
 
@@ -21,7 +21,7 @@ export function mainCommand(): Command {
 }
 
 /** AzureRepo source implementation. */
-export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
+export class AzureRepoSource extends AirbyteSourceBase<AzureReposConfig> {
   get type(): string {
     return 'azure-repos';
   }
@@ -30,7 +30,8 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return new AirbyteSpec(require('../resources/spec.json'));
   }
-  async checkConnection(config: AzureRepoConfig): Promise<[boolean, VError]> {
+
+  async checkConnection(config: AzureReposConfig): Promise<[boolean, VError]> {
     try {
       const azureRepos = await AzureRepos.instance<AzureRepos>(
         config,
@@ -42,7 +43,7 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureRepoConfig> {
     }
     return [true, undefined];
   }
-  streams(config: AzureRepoConfig): AirbyteStreamBase[] {
+  streams(config: AzureReposConfig): AirbyteStreamBase[] {
     return [
       new Commits(config, this.logger),
       new PullRequests(config, this.logger),

@@ -1,10 +1,11 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {AzureDevOpsStreamBase, User} from 'faros-airbyte-common/azure-devops';
+import {User} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
+import {AzureReposStreamBase} from './common';
 
-export class Users extends AzureDevOpsStreamBase {
+export class Users extends AzureReposStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/users.json');
   }

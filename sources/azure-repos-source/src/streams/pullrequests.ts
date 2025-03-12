@@ -1,12 +1,12 @@
 import {PullRequestStatus} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {AzureDevOpsStreamBase} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
 import {PullRequest} from '../models';
+import {AzureReposStreamBase} from './common';
 
-export class PullRequests extends AzureDevOpsStreamBase {
+export class PullRequests extends AzureReposStreamBase {
   // Run commits stream first to get the changeCounts for populating
   // vcs_PullRequest.diffStats
   get dependencies(): string[] {
@@ -53,9 +53,10 @@ export class PullRequests extends AzureDevOpsStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.instance<AzureRepos>(
+    const azureRepos = await AzureRepos.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.branch_pattern
     );
     // TODO: Should use project slices or repository slices
     yield* azureRepos.getPullRequests(since, this.config.projects);

@@ -1,14 +1,24 @@
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
-import {SyncMode} from 'faros-airbyte-cdk';
-import {StreamWithProjectSlices} from 'faros-airbyte-common/azure-devops';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
 import {Repository} from '../models';
+import {AzureReposStreamBase} from './common';
 
-export class Repositories extends StreamWithProjectSlices {
+export class Repositories extends AzureReposStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/repositories.json');
+  }
+
+  get primaryKey(): StreamKey {
+    return 'id';
+  }
+
+  async *streamSlices(): AsyncGenerator<TeamProject> {
+    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    const projects = await azureRepos.getProjects(this.config.projects);
+    yield* projects;
   }
 
   async *readRecords(
@@ -16,10 +26,7 @@ export class Repositories extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: TeamProject
   ): AsyncGenerator<Repository> {
-    const azureRepos = await AzureRepos.instance<AzureRepos>(
-      this.config,
-      this.logger
-    );
+    const azureRepos = await AzureRepos.instance(this.config, this.logger);
     yield* azureRepos.getRepositories(streamSlice);
   }
 }

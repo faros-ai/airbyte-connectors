@@ -1,3 +1,4 @@
+import {AxiosInstance} from 'axios';
 import {getPersonalAccessTokenHandler, WebApi} from 'azure-devops-node-api';
 import {
   IdentityRef,
@@ -23,7 +24,6 @@ const DEFAULT_REQUEST_TIMEOUT = 300_000;
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_CUTOFF_DAYS = 90;
-
 export abstract class AzureDevOps {
   private static azureDevOps: AzureDevOps = null;
 
@@ -35,8 +35,10 @@ export abstract class AzureDevOps {
   ) {}
 
   static async instance<T extends AzureDevOps>(
+    this: new (...args: any[]) => T,
     config: types.AzureDevOpsConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
+    ...rest: any[]
   ): Promise<T> {
     if (AzureDevOps.azureDevOps) {
       return AzureDevOps.azureDevOps as T;
@@ -48,40 +50,90 @@ export abstract class AzureDevOps {
       logger.info(`Azure DevOps instance type: ${config.instance.type}`);
     } else {
       logger.info(
-        'No Azure DevOps instance type provided, will attempt to use Azure DevOps Services (cloud)'
+        'No Azure DevOps instance type provided, will attempt to use ' +
+          'Azure DevOps Services (cloud)'
       );
     }
 
-    const azureDevOps =
-      config.instance?.type === 'server'
-        ? await AzureDevOpsServer.instance(config, logger)
-        : await AzureDevOpsServices.instance(config, logger);
+    const apiUrl = AzureDevOps.getApiUrl(config?.instance);
+    const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
+    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    const webApi = await AzureDevOps.createWebAPI(
+      apiUrl,
+      config.organization,
+      config.access_token,
+      timeout,
+      maxRetries
+    );
+    const graphApi = AzureDevOps.createGraphAPI(
+      config.instance,
+      config.organization,
+      config.access_token,
+      timeout,
+      maxRetries,
+      logger
+    );
 
-    AzureDevOps.azureDevOps = azureDevOps;
-    return azureDevOps as T;
+    const client = {
+      core: await webApi.getCoreApi(),
+      wit: await webApi.getWorkItemTrackingApi(),
+      git: await webApi.getGitApi(),
+      graph: graphApi,
+    };
+
+    const top = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
+
+    AzureDevOps.azureDevOps = new this(
+      client,
+      cutoffDays,
+      top,
+      logger,
+      ...rest
+    );
+    return AzureDevOps.azureDevOps as T;
+  }
+
+  static getApiUrl(instance: types.AzureDevOpsInstance): string {
+    if (instance?.type !== 'server') {
+      return CLOUD_API_URL;
+    }
+
+    const apiUrl = instance?.api_url?.trim();
+    if (!apiUrl) {
+      throw new VError(
+        'api_url must not be an empty string for server instance type'
+      );
+    }
+
+    try {
+      new URL(apiUrl);
+    } catch (error) {
+      throw new VError(`Invalid URL: ${instance?.api_url}`);
+    }
+    return apiUrl;
   }
 
   static validateAuth(config: types.AzureDevOpsConfig): void {
     if (!config.access_token) {
       throw new VError('access_token must not be an empty string');
     }
-
     if (!config.organization) {
       throw new VError('organization must not be an empty string');
     }
   }
 
   // Create Azure DevOps Node API clients
-  static async createNodeClients(
+  static async createWebAPI(
     apiUrl: string,
     organization: string,
     accessToken: string,
     timeout: number = DEFAULT_REQUEST_TIMEOUT,
     maxRetries: number = DEFAULT_MAX_RETRIES
-  ): Promise<types.AzureDevOpsClient> {
+  ): Promise<WebApi> {
     const baseUrl = `${apiUrl}/${organization}`;
     const authHandler = getPersonalAccessTokenHandler(accessToken);
-    const connection = new WebApi(baseUrl, authHandler, {
+    return new WebApi(baseUrl, authHandler, {
       socketTimeout: timeout,
       allowRetries: true,
       maxRetries,
@@ -90,12 +142,34 @@ export abstract class AzureDevOps {
         timeout,
       },
     });
+  }
 
-    return {
-      core: await connection.getCoreApi(),
-      wit: await connection.getWorkItemTrackingApi(),
-      git: await connection.getGitApi(),
-    };
+  static createGraphAPI(
+    instance: types.AzureDevOpsInstance,
+    organization: string,
+    access_token: string,
+    timeout: number,
+    maxRetries: number,
+    logger: AirbyteLogger
+  ): AxiosInstance | undefined {
+    if (instance?.type === 'server') {
+      return undefined;
+    }
+
+    const base64EncodedToken = base64Encode(`:${access_token}`);
+    return makeAxiosInstanceWithRetry(
+      {
+        baseURL: `${DEFAULT_GRAPH_API_URL}/${organization}/_apis/graph`,
+        timeout,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        params: {'api-version': DEFAULT_GRAPH_API_VERSION},
+        headers: {Authorization: `Basic ${base64EncodedToken}`},
+      },
+      logger.asPino(),
+      maxRetries,
+      1000 // Default retry delay
+    );
   }
 
   protected async *getPaginated<T>(
@@ -176,15 +250,20 @@ export abstract class AzureDevOps {
     }
   }
 
-  // Defaulting to using Azure DevOps Services (cloud) Graph API for users.
-  // Overridden for AzureDevOpsServer class
-  async *getUsers(): AsyncGenerator<GraphUser> {
-    if (!this.client.graph) {
-      throw new VError(
-        'Failed to create Graph API client for Azure DevOps Services (cloud)'
-      );
+  // If graph API is available, i.e. Azure DevOps Services (cloud) instance,
+  // use it to fetch users. Otherwise, fetch users through teams and
+  // team members (Azure DevOps Server)
+  async *getUsers(
+    projects?: ReadonlyArray<string>
+  ): AsyncGenerator<types.User> {
+    if (this.client.graph) {
+      yield* this.getGraphUsers();
+      return;
     }
+    yield* this.getTeamUsers(projects);
+  }
 
+  private async *getGraphUsers(): AsyncGenerator<GraphUser> {
     let continuationToken: string;
     do {
       const res = await this.client.graph.get<types.GraphUserResponse>(
@@ -199,89 +278,8 @@ export abstract class AzureDevOps {
       }
     } while (continuationToken);
   }
-}
 
-class AzureDevOpsServices extends AzureDevOps {
-  static async instance<T extends AzureDevOps>(
-    config: types.AzureDevOpsConfig,
-    logger: AirbyteLogger
-  ): Promise<T> {
-    const nodeClient = await AzureDevOps.createNodeClients(
-      CLOUD_API_URL,
-      config.organization,
-      config.access_token,
-      config.request_timeout,
-      config.max_retries
-    );
-
-    const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
-    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
-    const accessToken = base64Encode(`:${config.access_token}`);
-
-    // Graph API is only available in Azure DevOps Cloud for users, groups, and group memberships
-    // https://learn.microsoft.com/en-us/rest/api/azure/devops/graph
-    const graphClient = makeAxiosInstanceWithRetry(
-      {
-        baseURL: `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
-        timeout,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        params: {'api-version': DEFAULT_GRAPH_API_VERSION},
-        headers: {Authorization: `Basic ${accessToken}`},
-      },
-      logger.asPino(),
-      maxRetries,
-      1000 // Default retry delay
-    );
-
-    const client = {
-      ...nodeClient,
-      graph: graphClient,
-    };
-
-    const top = config.page_size ?? DEFAULT_PAGE_SIZE;
-    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    return new AzureDevOpsServices(client, cutoffDays, top, logger) as T;
-  }
-}
-
-class AzureDevOpsServer extends AzureDevOps {
-  static async instance<T extends AzureDevOps>(
-    config: types.AzureDevOpsConfig,
-    logger: AirbyteLogger
-  ): Promise<T> {
-    const instance = config.instance as types.DevOpsServer;
-    AzureDevOpsServer.validateApiUrl(instance);
-    const client = await AzureDevOps.createNodeClients(
-      instance.api_url,
-      config.organization,
-      config.access_token,
-      config.request_timeout,
-      config.max_retries
-    );
-
-    const top = config.page_size ?? DEFAULT_PAGE_SIZE;
-    const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    return new AzureDevOpsServer(client, cutoffDays, top, logger) as T;
-  }
-
-  static validateApiUrl(instance: types.DevOpsServer): void {
-    if (!instance?.api_url?.trim()) {
-      throw new VError(
-        'api_url must not be an empty string for server instance type'
-      );
-    }
-
-    try {
-      new URL(instance.api_url.trim());
-    } catch (error) {
-      throw new VError(`Invalid URL: ${instance.api_url}`);
-    }
-  }
-
-  // Azure DevOps Server has no Graph API so fetching users through
-  // REST API through teams and team members
-  async *getUsers(
+  private async *getTeamUsers(
     projects?: ReadonlyArray<string>
   ): AsyncGenerator<IdentityRef> {
     const seenUsers = new Set<string>();

@@ -12,43 +12,39 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
   AzureDevOpsClient,
-  User,
 } from 'faros-airbyte-common/azure-devops';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {AzureRepoConfig, Commit, PullRequest, Repository, Tag} from './models';
+import {Commit, PullRequest, Repository, Tag} from './models';
 export const DEFAULT_BRANCH_PATTERN = '^main$';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
 export const DEFAULT_MAX_RETRIES = 3;
 export const DEFAULT_CUTOFF_DAYS = 90;
 
-export type InstanceType = {
-  type: 'cloud' | 'server';
-};
-
 export class AzureRepos extends AzureDevOps {
+  private readonly branchPattern: RegExp;
   constructor(
     protected readonly client: AzureDevOpsClient,
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger,
-    private readonly branchPattern: RegExp
+    branchPattern: string
   ) {
     super(client, cutoffDays, top, logger);
-    this.branchPattern = branchPattern;
+    this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
     try {
       const allProjects = await this.getProjects(projects);
       if (!allProjects.length) {
-        throw new VError('No projects found');
+        throw new VError('Failed to fetch projects');
       }
       await this.getRepositories(allProjects[0]).next();
-      await this.getUsers().next();
+      await this.getUsers(projects).next();
     } catch (err: any) {
       throw new VError(err, 'Please verify your access token is correct');
     }
@@ -72,17 +68,26 @@ export class AzureRepos extends AzureDevOps {
     since?: string,
     projects?: ReadonlyArray<string>
   ): AsyncGenerator<PullRequest> {
-    const cutoffDate = DateTime.now().minus({days: this.cutoffDays});
-    const sinceDate = DateTime.fromISO(since);
+    const sinceDate = since
+      ? DateTime.fromISO(since)
+      : DateTime.now().minus({days: this.cutoffDays});
 
     for (const project of await this.getProjects(projects)) {
+      this.logger.info(`Fetching pull requests for project ${project.name}`);
       for (const repository of await this.listRepositories(project.id)) {
+        if (repository.isDisabled) {
+          this.logger.info(
+            `Repository ${repository.name}:${repository.id} in project ` +
+              `${project.name} is disabled, skipping`
+          );
+          continue;
+        }
         for (const branch of await this.listBranches(project.id, repository)) {
           yield* this.listPullRequests(
             project.id,
             repository,
             branch,
-            sinceDate > cutoffDate ? sinceDate : cutoffDate
+            sinceDate
           );
         }
       }
@@ -93,11 +98,20 @@ export class AzureRepos extends AzureDevOps {
     since?: string,
     projects?: ReadonlyArray<string>
   ): AsyncGenerator<Commit> {
-    const cutoffDate = DateTime.now().minus({day: this.cutoffDays});
-    const sinceDate = DateTime.fromISO(since);
+    const sinceDate = since
+      ? DateTime.fromISO(since)
+      : DateTime.now().minus({day: this.cutoffDays});
 
     for (const project of await this.getProjects(projects)) {
+      this.logger.info(`Fetching commits for project ${project.name}`);
       for (const repository of await this.listRepositories(project.id)) {
+        if (repository.isDisabled) {
+          this.logger.info(
+            `Repository ${repository.name}:${repository.id} in project ` +
+              `${project.name} is disabled, skipping`
+          );
+          continue;
+        }
         const branch = getQueryableDefaultBranch(repository.defaultBranch);
         if (!branch) {
           this.logger.error(
@@ -110,7 +124,7 @@ export class AzureRepos extends AzureDevOps {
           project.id,
           repository,
           branch,
-          sinceDate > cutoffDate ? sinceDate : cutoffDate
+          sinceDate
         );
         for await (const commit of commits) {
           yield {
@@ -126,7 +140,7 @@ export class AzureRepos extends AzureDevOps {
     }
   }
 
-  @Memoize()
+  @Memoize((project: string) => project)
   private async listRepositories(project: string): Promise<GitRepository[]> {
     return await this.client.git.getRepositories(project);
   }
@@ -145,11 +159,11 @@ export class AzureRepos extends AzureDevOps {
     project: string,
     repo: GitRepository,
     branch: string,
-    since?: DateTime
+    since: DateTime
   ): AsyncGenerator<GitCommitRef> {
     const searchCriteria: GitQueryCommitsCriteria = {
       itemVersion: {version: branch},
-      fromDate: since?.toISO(),
+      fromDate: since.toISO(),
     };
     const getCommitsFn = (top: number, skip: number): Promise<GitCommitRef[]> =>
       this.client.git.getCommits(repo.id, searchCriteria, project, skip, top);
@@ -172,8 +186,8 @@ export class AzureRepos extends AzureDevOps {
   ): Promise<GitBranchStats[]> {
     const branches = [];
     try {
-      const branches = await this.client.git.getBranches(project, repo.id);
-      for (const branch of branches ?? []) {
+      const branchesRes = await this.client.git.getBranches(repo.id, project);
+      for (const branch of branchesRes ?? []) {
         if (!this.branchPattern.test(branch.name)) {
           this.logger.info(
             `Skipping branch ${branch.name} since it does not match ${this.branchPattern} pattern`
@@ -206,22 +220,22 @@ export class AzureRepos extends AzureDevOps {
       const res = await this.client.git.getRefs(
         repo.id,
         project,
-        'tags',
-        false,
-        false,
-        false,
-        false,
-        true
+        /* filter */ 'tags',
+        /* includeLinks */ false,
+        /* includeStatuses */ false,
+        /* includeMyBranches */ false,
+        /* latestStatusesOnly */ false,
+        /* peelTags */ true
       );
       for (const tag of res ?? []) {
         // Per docs, annotated tags will populate the peeledObjectId property
         if (tag.peeledObjectId) {
-          const tagCommit = await this.client.git.getAnnotatedTag(
+          const annotatedTag = await this.client.git.getAnnotatedTag(
             project,
             repo.id,
             tag.objectId
           );
-          tags.push({...tag, commit: tagCommit});
+          tags.push({...tag, commit: annotatedTag});
         }
       }
     } catch (err: any) {
