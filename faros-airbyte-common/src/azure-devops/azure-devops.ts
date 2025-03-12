@@ -24,6 +24,15 @@ const DEFAULT_REQUEST_TIMEOUT = 300_000;
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_CUTOFF_DAYS = 90;
+
+/**
+ * This abstract class is used to create Azure DevOps clients.
+ * Extended by Azure DevOps sources that need to access Azure DevOps APIs,
+ * such as Azure Repos, Azure Pipelines, Azure Work Items, etc.
+ *
+ * @abstract
+ * @class AzureDevOps
+ */
 export abstract class AzureDevOps {
   private static azureDevOps: AzureDevOps = null;
 

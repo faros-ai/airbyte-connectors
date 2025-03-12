@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "luxon": "^3.4.4",
-    "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "verror": "^1.10.1"
   },
