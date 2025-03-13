@@ -84,9 +84,13 @@ export abstract class AzureDevOps {
     );
 
     const client = {
+      build: await webApi.getBuildApi(),
       core: await webApi.getCoreApi(),
       wit: await webApi.getWorkItemTrackingApi(),
       git: await webApi.getGitApi(),
+      pipelines: await webApi.getPipelinesApi(),
+      release: await webApi.getReleaseApi(),
+      test: await webApi.getTestApi(),
       graph: graphApi,
     };
 

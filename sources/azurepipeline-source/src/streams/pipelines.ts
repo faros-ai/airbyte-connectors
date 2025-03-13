@@ -1,54 +1,24 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
-import {Pipeline} from 'faros-airbyte-common/azurepipeline';
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-
-type StreamSlice = {
-  project: string;
-};
-
-export class Pipelines extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzurePipelineConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+import {AzurePipelines} from '../azurepipeline';
+import * as types from '../types';
+import {AzurePipelinesStreamBase} from './common';
+export class Pipelines extends AzurePipelinesStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
-  }
-  get primaryKey(): StreamKey {
-    return 'id';
-  }
-
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const azurePipeline = await AzurePipeline.instance(
-      this.config,
-      this.logger
-    );
-    for (const project of azurePipeline.getInitializedProjects()) {
-      yield {
-        project,
-      };
-    }
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice
-  ): AsyncGenerator<Pipeline> {
-    const azurePipeline = await AzurePipeline.instance(
+    streamSlice?: TeamProject
+  ): AsyncGenerator<types.Pipeline> {
+    const azurePipeline = await AzurePipelines.instance(
       this.config,
       this.logger
     );
-    yield* azurePipeline.getPipelines(streamSlice.project, this.logger);
+    yield* azurePipeline.getPipelines(streamSlice);
   }
 }

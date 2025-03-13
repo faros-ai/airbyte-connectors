@@ -8,8 +8,9 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {AzurePipeline, AzurePipelineConfig} from './azurepipeline';
+import {AzurePipelines} from './azurepipeline';
 import {Builds, Pipelines, Releases} from './streams';
+import {AzurePipelineConfig} from './types';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -31,8 +32,8 @@ export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> 
     config: AzurePipelineConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azurePipeline = await AzurePipeline.instance(config, this.logger);
-      await azurePipeline.checkConnection();
+      const azurePipelines = await AzurePipelines.instance(config, this.logger);
+      await azurePipelines.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];
     }
