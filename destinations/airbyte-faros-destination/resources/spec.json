@@ -24,10 +24,10 @@
         "type": "object",
         "oneOf": [
           {
-            "$ref": "community.json"
+            "$ref": "cloud.json"
           },
           {
-            "$ref": "cloud.json"
+            "$ref": "community.json"
           }
         ]
       },

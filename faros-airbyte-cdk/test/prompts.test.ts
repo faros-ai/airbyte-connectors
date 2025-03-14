@@ -14,11 +14,12 @@ import {
   runSelect,
   runStringPrompt,
   SelectConfig,
+  SelectConfigName,
 } from '../src/prompts';
 
 describe('runSelect', () => {
   const cfg: SelectConfig = {
-    name: 'Select an option',
+    name: SelectConfigName.LEAF,
     message: 'Select an option',
     autofill: true,
     choices: [{type: ChoiceType.SKIP, value: 'Value A', message: 'Skip'}],
