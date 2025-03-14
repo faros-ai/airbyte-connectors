@@ -1,6 +1,6 @@
 import {createAppAuth} from '@octokit/auth-app';
 import {Octokit as OctokitCore} from '@octokit/core';
-import {paginateGraphql} from '@octokit/plugin-paginate-graphql';
+import {paginateGraphQL} from '@octokit/plugin-paginate-graphql';
 import {retry} from '@octokit/plugin-retry';
 import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
 import {RequestError} from '@octokit/request-error';
@@ -24,7 +24,7 @@ import {
 import {GitHubConfig} from './types';
 
 export type ExtendedOctokit = OctokitRest &
-  ReturnType<typeof paginateGraphql> & {
+  ReturnType<typeof paginateGraphQL> & {
     auditLogs: string;
     copilotMetrics: string;
     copilotMetricsForTeam: string;
@@ -35,7 +35,7 @@ export type ExtendedOctokit = OctokitRest &
     enterpriseTeamMembers: string;
   };
 const ExtendedOctokitConstructor = OctokitRest.plugin(
-  paginateGraphql,
+  paginateGraphQL,
   timeout,
   retryAdditionalConditions,
   retry,

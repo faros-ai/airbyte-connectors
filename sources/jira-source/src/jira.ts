@@ -222,7 +222,9 @@ export class Jira {
         cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
     });
 
-    const http = setupCache(axios.create(), {ttl: 60 * 60 * 1000}); // 60 minutes cache
+    const instance = axios.create();
+    setupCache(instance, {ttl: 60 * 60 * 1000}); // 60 minutes cache
+    const http = instance;
     const api = new JiraClient({
       // Telemetry will not be collected (for jira.js >= 2.x)
       ...{telemetry: false},
