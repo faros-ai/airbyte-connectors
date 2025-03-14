@@ -21,14 +21,20 @@ export type BaseConfig = {
   autofill?: boolean;
 };
 
+export enum SelectConfigName {
+  ONE_OF = 'oneOf',
+  ARRAY = 'array',
+  LEAF = 'leaf',
+}
+
 export type SelectConfig = BaseConfig & {
-  name: string;
+  name: SelectConfigName;
   choices: ReadonlyArray<UserChoice>;
 };
 
-export const PLACEHOLDER_PASSWORD = 'bar';
-export const PLACEHOLDER_STRING = 'foo';
-export const PLACEHOLDER_NUMBER = 123.45;
+export const PLACEHOLDER_PASSWORD = '<UPDATE_YOUR_CREDENTIAL>';
+export const PLACEHOLDER_STRING = '<UPDATE_THIS_VALUE>';
+export const PLACEHOLDER_NUMBER = 0;
 export const PLACEHOLDER_BOOLEAN = false;
 
 export function runSelect(cfg: SelectConfig): Promise<string> {
@@ -39,9 +45,24 @@ export function runSelect(cfg: SelectConfig): Promise<string> {
       if (choices.has(choice.type)) return;
       choices.set(choice.type, choice);
     });
-    // Return the first choice of the lowest order
+    /**
+     * Return the first choice of the lowest order for autofill.
+     * Check `ChoiceType` enum: SKIP -> DEFAULT -> EXAMPLE -> ENVIRONMENT_VARIABLE -> BOOLEAN -> ENUM -> USER_INPUT
+     *
+     * If the config is not requried, SKIP choice is pushed before this function is called and makes the config not filled.
+     * If the config falls into the last choice `USER_INPUT`, it will be autofilled with the placeholder value.
+     *
+     * If the config is a leaf, skip EXAMPLE and ENUM.
+     * That means we don't autofill EXAMPLE and ENUM values as that might get confused with DEFAULT values.
+     */
     for (const symbol of Object.values(ChoiceType)) {
-      if (choices.has(symbol)) {
+      if (
+        choices.has(symbol) &&
+        !(
+          cfg.name === SelectConfigName.LEAF &&
+          (symbol === ChoiceType.EXAMPLE || symbol === ChoiceType.ENUM)
+        )
+      ) {
         return Promise.resolve(choices.get(symbol)!.value as string);
       }
     }
