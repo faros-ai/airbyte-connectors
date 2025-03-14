@@ -1,22 +1,12 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {PullRequestStatus} from 'azure-devops-node-api/interfaces/GitInterfaces';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepoConfig, AzureRepos} from '../azure-repos';
+import {AzureRepos} from '../azure-repos';
 import {PullRequest} from '../models';
+import {AzureReposStreamBase} from './common';
 
-export class PullRequests extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureRepoConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class PullRequests extends AzureReposStreamBase {
   // Run commits stream first to get the changeCounts for populating
   // vcs_PullRequest.diffStats
   get dependencies(): string[] {
@@ -41,7 +31,7 @@ export class PullRequests extends AirbyteStreamBase {
   ): Dictionary<any> {
     const newStreamState = currentStreamState;
 
-    if (latestPR.status === 'completed') {
+    if (latestPR.status === PullRequestStatus.Completed) {
       return {
         cutoff:
           new Date(latestPR.closedDate) >
@@ -63,7 +53,12 @@ export class PullRequests extends AirbyteStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepos.getPullRequests(since);
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern
+    );
+    // TODO: Should use project slices or repository slices
+    yield* azureRepos.getPullRequests(since, this.config.projects);
   }
 }
