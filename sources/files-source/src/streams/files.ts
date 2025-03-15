@@ -36,7 +36,7 @@ export class Files extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return undefined;
+    return ['fileName', 'chunkNumber'];
   }
 
   get cursorField(): string | string[] {

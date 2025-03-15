@@ -8,6 +8,9 @@
     "fileName": {
       "type": "string"
     },
+    "chunkNumber": {
+      "type": "integer"
+    },
     "lastModified": {
       "type": "number"
     },

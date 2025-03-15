@@ -81,6 +81,29 @@
                   "PROCESS_ALL_FILES",
                   "IMMUTABLE_LEXICOGRAPHICAL_ORDER"
                 ]
+              },
+              "files": {
+                "order": 7,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Files",
+                "description": "List of files to process in the order given. If empty, all files in the path will be processed."
+              },
+              "max_request_length": {
+                "order": 8,
+                "type": "number",
+                "title": "Max Request Length (bytes)",
+                "description": "Used to split the file into smaller chunks when reading from S3.",
+                "default": 0
+              },
+              "bytes_limit": {
+                "order": 9,
+                "type": "number",
+                "title": "Bytes Limit",
+                "description": "Used to limit the number of bytes to read from the file.",
+                "default": 0
               }
             }
           }
