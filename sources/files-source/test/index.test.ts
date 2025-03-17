@@ -156,6 +156,7 @@ describe('index', () => {
         {
           Key: 'your-path/1.json',
           LastModified: new Date('2023-12-03T01:18:03.000Z'),
+          Size: 100,
         },
       ],
       IsTruncated: false,
