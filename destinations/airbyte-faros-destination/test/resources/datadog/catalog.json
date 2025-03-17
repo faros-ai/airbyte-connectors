@@ -17,6 +17,12 @@
         "name": "mytestsource__datadog__users"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__datadog__service_level_objectives"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

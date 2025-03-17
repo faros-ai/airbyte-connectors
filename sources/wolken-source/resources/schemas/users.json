@@ -38,6 +38,28 @@
           "type": "string"
         }
       }
+    },
+    "userFlex": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "flexId": {
+            "type": "integer"
+          },
+          "flexName": {
+            "type": "string"
+          },
+          "flexValue": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "flexId",
+          "flexName",
+          "flexValue"
+        ]
+      }
     }
   }
 }

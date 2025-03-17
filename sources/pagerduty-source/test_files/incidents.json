@@ -4,6 +4,7 @@
     "title": "Incident-just-for-test",
     "description": "Incident-just-for-test",
     "created_at": "2021-10-27T08:05:59Z",
+    "updated_at": "2021-10-27T08:05:59Z",
     "status": "triggered",
     "incident_key": "ffd13150e56c4659bc3468b3bea5585f",
     "service": {
@@ -27,6 +28,7 @@
     ],
     "assigned_via": "escalation_policy",
     "last_status_change_at": "2021-10-27T08:05:59Z",
+    "resolved_at": null,
     "first_trigger_log_entry": {
       "id": "ROY0T85D14A25S8B70XGK31YS9",
       "type": "trigger_log_entry_reference",
@@ -167,6 +169,7 @@
     "title": "Incident #2",
     "description": "Incident #2",
     "created_at": "2021-10-29T05:45:33Z",
+    "updated_at": "2021-10-29T05:45:33Z",
     "status": "triggered",
     "incident_key": "c059ece287c440fe90583c38ae3d15a8",
     "service": {
@@ -190,6 +193,7 @@
     ],
     "assigned_via": "escalation_policy",
     "last_status_change_at": "2021-10-29T05:45:33Z",
+    "resolved_at": null,
     "first_trigger_log_entry": {
       "id": "ROP0M3PU3JNHE6BNBEGDWK1JIR",
       "type": "trigger_log_entry_reference",
@@ -237,6 +241,7 @@
     "title": "Incident #3",
     "description": "Incident #3",
     "created_at": "2021-10-29T05:52:30Z",
+    "updated_at": "2021-10-29T05:52:30Z",
     "status": "triggered",
     "incident_key": "4f1a2c8ae595475fa44fb5b82b0330d2",
     "service": {
@@ -260,6 +265,7 @@
     ],
     "assigned_via": "escalation_policy",
     "last_status_change_at": "2021-10-29T05:52:30Z",
+    "resolved_at": null,
     "first_trigger_log_entry": {
       "id": "R38IMK6FP5WR0DXUJJF1XX5XYI",
       "type": "trigger_log_entry_reference",

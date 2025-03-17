@@ -222,7 +222,7 @@ export class Wolken {
       } else {
         try {
           const response = await this.httpClient.get(
-            `/api/masters/user?userPsNo=${user.userPsNo}`,
+            `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
             {
               headers: {
                 Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,

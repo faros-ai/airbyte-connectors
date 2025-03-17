@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/wolken';
+import jsonata from 'jsonata';
 import _ from 'lodash';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -12,12 +13,24 @@ export class Users extends WolkenConverter {
 
   toContextStorageRecord(record: AirbyteRecord, ctx: StreamContext) {
     const user = record.record.data as User;
-    const paths = new Set([
+    const jsonataPaths = new Set([
       ...Object.values(this.userLookupExtraFieldsMapping(ctx)),
     ]);
     const userCompact = {};
-    for (const path of paths) {
-      _.set(userCompact, path, _.get(user, path));
+    for (const jsonataPath of jsonataPaths) {
+      let jsonataExpr: jsonata.Expression;
+      try {
+        jsonataExpr = jsonata(jsonataPath);
+      } catch (e: any) {
+        ctx.logger.warn(
+          `Error evaluating user lookup jsonata path expression ${jsonataPath}: ${e.message}`
+        );
+        continue;
+      }
+      const value = jsonataExpr.evaluate(user);
+      if (value) {
+        _.set(userCompact, jsonataPath, value);
+      }
     }
     return AirbyteRecord.make(this.streamName.asString, userCompact);
   }

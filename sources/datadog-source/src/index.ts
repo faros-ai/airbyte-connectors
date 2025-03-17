@@ -1,15 +1,24 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
 import {Datadog, DatadogConfig} from './datadog';
-import {Incidents, Metrics, Users} from './streams';
+import {Incidents, Metrics, ServiceLevelObjectives, Users} from './streams';
+
+export const StreamNames = [
+  'incidents',
+  'metrics',
+  'service_level_objectives',
+  'users',
+];
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -41,6 +50,28 @@ export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
       new Incidents(datadog, this.logger),
       new Metrics(datadog, this.logger),
       new Users(datadog, this.logger),
+      new ServiceLevelObjectives(datadog, this.logger),
     ];
+  }
+
+  async onBeforeRead(
+    config: DatadogConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: DatadogConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const streams = config.custom_streams?.length
+      ? catalog.streams.filter((stream) =>
+          config.custom_streams.includes(stream.stream.name)
+        )
+      : catalog.streams;
+    return {
+      config,
+      catalog: {streams},
+      state,
+    };
   }
 }

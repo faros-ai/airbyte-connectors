@@ -77,11 +77,12 @@
           "order": 8,
           "type": "string",
           "title": "User Lookup Extra Fields Mapping",
-          "description": "JSON map of extra fields taken from User lookup to be added as tags. Key is the display name for the tag and value is the property path on the User record.",
+          "description": "JSON map of extra fields taken from User lookup to be added as tags. Key is the display name for the tag and value is a jsonata expression to obtain a property value from the User record.",
           "multiline": true,
           "default": "{}",
           "examples": [
-            "{ \"Department\": \"userAddress.departmentName\" }"
+            "{ \"Department\": \"userAddress.departmentName\" }",
+            "{ \"Division\": \"userFlex[flexName = 'Division'].flexValue\" }"
           ]
         },
         "store_current_incidents_associations": {

@@ -41,6 +41,7 @@ export class FarosIssues extends JiraConverter {
   ];
 
   labels: Set<string> = new Set();
+  taskTags: DestinationRecord[] = [];
   taskDependencies: DestinationRecord[] = [];
   seenIssues: Set<string> = new Set();
 
@@ -202,7 +203,7 @@ export class FarosIssues extends JiraConverter {
         results.push({model: 'tms_Label', record: {name: label}});
         this.labels.add(label);
       }
-      results.push({
+      this.taskTags.push({
         model: 'tms_TaskTag',
         record: {
           label: {name: label},
@@ -228,7 +229,7 @@ export class FarosIssues extends JiraConverter {
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.convertDependencies();
+    return [...this.convertDependencies(), ...this.convertLabels()];
   }
 
   private convertDependencies(): DestinationRecord[] {
@@ -244,6 +245,22 @@ export class FarosIssues extends JiraConverter {
       })),
       FLUSH,
       ...this.taskDependencies,
+    ];
+  }
+
+  private convertLabels(): DestinationRecord[] {
+    return [
+      ...Array.from(this.seenIssues.keys()).map((issueKeyStr) => ({
+        model: 'tms_TaskTag__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task: {uid: issueKeyStr, source: this.source},
+          },
+        },
+      })),
+      FLUSH,
+      ...this.taskTags,
     ];
   }
 

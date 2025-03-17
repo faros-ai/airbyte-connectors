@@ -27,6 +27,7 @@
   },
   "exports": {
     "./azurepipeline": "./lib/azurepipeline/index.js",
+    "./azure-devops": "./lib/azure-devops/index.js",
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./circleci": "./lib/circleci/index.js",
@@ -44,6 +45,9 @@
     "*": {
       "azurepipeline": [
         "./lib/azurepipeline/index.d.ts"
+      ],
+      "azure-devops": [
+        "./lib/azure-devops/index.d.ts"
       ],
       "bitbucket": [
         "./lib/bitbucket/index.d.ts"
@@ -73,7 +77,7 @@
         "./lib/jira/index.d.ts"
       ],
       "vanta": [
-          "./lib/vanta/index.d.ts"
+        "./lib/vanta/index.d.ts"
       ],
       "wolken": [
         "./lib/wolken/index.d.ts"
@@ -88,17 +92,20 @@
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-    "prepare": "npm run build",
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test",
     "codegen:github": "graphql-codegen --config src/github/codegen.ts"
   },
   "dependencies": {
+    "@datadog/datadog-api-client": "1.32.0",
     "@octokit/rest": "^20.1.1",
+    "azure-devops-node-api": "^14.1.0",
+    "faros-airbyte-cdk": "*",
     "faros-js-client": "^0.6.1",
     "jira.js": "^4.0.0",
-    "luxon": "^3.4.4"
+    "luxon": "^3.4.4",
+    "typescript-memoize": "^1.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",

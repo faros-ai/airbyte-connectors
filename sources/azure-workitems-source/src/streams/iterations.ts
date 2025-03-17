@@ -1,8 +1,8 @@
+import {WorkItemClassificationNode} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {Iteration} from '../models';
 import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
 
 export class Iterations extends StreamWithProjectSlices {
@@ -14,7 +14,7 @@ export class Iterations extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice
-  ): AsyncGenerator<Iteration> {
+  ): AsyncGenerator<WorkItemClassificationNode> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger

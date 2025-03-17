@@ -49,7 +49,7 @@ export class Metrics extends DatadogConverter {
   }
 
   metricValueType(unit: Dictionary<any>): {category: string; detail: string} {
-    if (!unit || !unit.family) return {category: 'Custom', detail: 'unknown'};
+    if (!unit?.family) return {category: 'Custom', detail: 'unknown'};
     const detail = toLower(unit.family);
 
     // For more details see - https://docs.datadoghq.com/metrics/units/

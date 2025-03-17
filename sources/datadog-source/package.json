@@ -30,10 +30,10 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "1.24.0",
     "axios": "^1.7.4",
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "verror": "^1.10.1"
   },
   "jest": {

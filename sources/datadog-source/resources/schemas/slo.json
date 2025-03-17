@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "warning_threshold": {
+              "type": "number"
+            },
+            "target_threshold": {
+              "type": "number"
+            },
+            "timeframe": {
+              "type": "string"
+            }
+          }
+        },
+        "allTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "integer"
+        },
+        "creator": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "email": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "envTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groups": {
+          "type": ["null", "object"]
+        },
+        "modifiedAt": {
+          "type": "integer"
+        },
+        "monitorIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "overallStatus": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": ["null", "string"]
+              },
+              "errorBudgetRemaining": {
+                "type": "number"
+              },
+              "indexedAt": {
+                "type": "integer"
+              },
+              "rawErrorBudgetRemaining": {
+                "type": "object",
+                "properties": {
+                  "unit": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              },
+              "spanPrecision": {
+                "type": "integer"
+              },
+              "state": {
+                "type": "string"
+              },
+              "status": {
+                "type": "number"
+              },
+              "target": {
+                "type": "number"
+              },
+              "timeframe": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "query": {
+          "type": ["null", "string"]
+        },
+        "serviceTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sloType": {
+          "type": "string",
+          "enum": ["metric", "monitor", "time_slice"]
+        },
+        "status": {
+          "type": "object",
+          "properties": {
+            "calculationError": {
+              "type": ["null", "string"]
+            },
+            "errorBudgetRemaining": {
+              "type": "number"
+            },
+            "indexedAt": {
+              "type": "integer"
+            },
+            "rawErrorBudgetRemaining": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              }
+            },
+            "sli": {
+              "type": "number"
+            },
+            "spanPrecision": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            }
+          }
+        },
+        "teamTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "thresholds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number"
+              },
+              "targetDisplay": {
+                "type": "string"
+              },
+              "timeframe": {
+                "type": "string"
+              },
+              "warning": {
+                "type": ["number", "null"]
+              },
+              "warningDisplay": {
+                "type": ["string", "null"]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["id", "attributes"]
+}
