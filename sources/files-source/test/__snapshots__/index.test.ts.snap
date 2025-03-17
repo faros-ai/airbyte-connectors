@@ -3,6 +3,7 @@
 exports[`index files full 1`] = `
 [
   {
+    "chunkNumber": 1,
     "contents": "test",
     "fileName": "your-path/1.json",
     "filesSource": "S3",
