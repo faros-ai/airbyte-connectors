@@ -14,11 +14,12 @@ import {
   runSelect,
   runStringPrompt,
   SelectConfig,
+  SelectConfigName,
 } from '../src/prompts';
 
 describe('runSelect', () => {
   const cfg: SelectConfig = {
-    name: 'Select an option',
+    name: SelectConfigName.LEAF,
     message: 'Select an option',
     autofill: true,
     choices: [{type: ChoiceType.SKIP, value: 'Value A', message: 'Skip'}],
@@ -35,6 +36,30 @@ describe('runSelect', () => {
       ],
     });
     expect(result).toBe('Value A');
+  });
+
+  it('should return the autofilled value with user input for leaf', async () => {
+    const result = await runSelect({
+      ...cfg,
+      choices: [
+        {type: ChoiceType.USER_INPUT, value: ' ', message: 'user input'},
+        {type: ChoiceType.EXAMPLE, value: 'Value C', message: 'Example'},
+        {type: ChoiceType.ENUM, value: 'Value B', message: 'Enum'},
+      ],
+    });
+    expect(result).toBe(' ');
+  });
+
+  it('should return the autofilled value with enum for oneOf', async () => {
+    const result = await runSelect({
+      ...cfg,
+      name: SelectConfigName.ONE_OF,
+      choices: [
+        {type: ChoiceType.USER_INPUT, value: ' ', message: 'user input'},
+        {type: ChoiceType.ENUM, value: 'Value B', message: 'Enum'},
+      ],
+    });
+    expect(result).toBe('Value B');
   });
 
   it('should prompt the user when autofill is disabled', async () => {
