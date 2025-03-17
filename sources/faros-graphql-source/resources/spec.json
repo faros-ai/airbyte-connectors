@@ -31,7 +31,8 @@
         "order": 2,
         "type": "string",
         "title": "Graph name",
-        "description": "The graph name."
+        "description": "The graph name.",
+        "default": "default"
       },
       "query": {
         "order": 4,

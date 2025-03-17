@@ -12,6 +12,7 @@ import {
   runPassword,
   runSelect,
   runStringPrompt,
+  SelectConfigName,
 } from './prompts';
 
 export interface TableRow {
@@ -251,7 +252,7 @@ async function promptOneOf(
     });
   }
   const choice = await runSelect({
-    name: 'oneOf',
+    name: SelectConfigName.ONE_OF,
     message: row.title,
     choices,
     autofill,
@@ -404,7 +405,7 @@ async function promptLeaf(
       ? `${row.title}: ${row.description}`
       : row.title;
     choice = await runSelect({
-      name: 'leaf',
+      name: SelectConfigName.LEAF,
       message,
       choices,
       autofill,
@@ -509,7 +510,7 @@ async function acceptUserInput(
             type: ChoiceType.USER_INPUT,
           });
           const choice = await runSelect({
-            name: 'array',
+            name: SelectConfigName.ARRAY,
             message: row.title,
             choices,
             autofill,
