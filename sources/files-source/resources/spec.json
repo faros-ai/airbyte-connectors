@@ -89,21 +89,26 @@
                   "type": "string"
                 },
                 "title": "Files",
-                "description": "List of files to process in the order given. If empty, all files in the path will be processed."
+                "description": "List of files to be filtered from the S3 path (they will also be processed in the indicated order). If empty, all files in the path will be processed.",
+                "examples": [
+                  "file1.csv",
+                  "file2.csv",
+                  "file3.csv"
+                ]
               },
               "max_request_length": {
                 "order": 8,
                 "type": "number",
                 "title": "Max Request Length (bytes)",
-                "description": "Used to split the file into smaller chunks when reading from S3.",
-                "default": 0
+                "description": "Used to split the file into smaller chunks when reading from S3. Default is 1MB",
+                "default": 1048576
               },
               "bytes_limit": {
                 "order": 9,
                 "type": "number",
                 "title": "Bytes Limit",
-                "description": "Used to limit the number of bytes to read from the file.",
-                "default": 0
+                "description": "Used to limit the number of bytes to read from the file. Default is 1GB",
+                "default": 1073741824
               }
             }
           }

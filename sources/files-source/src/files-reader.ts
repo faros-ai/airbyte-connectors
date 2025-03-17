@@ -130,24 +130,27 @@ export class S3Reader {
   ): AsyncGenerator<OutputRecord> {
     let isTruncated = true;
     let continuationToken: string;
-    const contents: _Object[] = [];
+    const objects: _Object[] = [];
     while (isTruncated) {
-      const {Contents, IsTruncated, NextContinuationToken} =
-        await this.s3Client.send(
-          new ListObjectsV2Command({
-            Bucket: this.bucketName,
-            Prefix: this.prefix,
-            ...(continuationToken && {ContinuationToken: continuationToken}),
-            ...(lastFileName && {StartAfter: lastFileName}),
-          })
-        );
-      contents.push(...Contents);
+      const {
+        Contents: Objects,
+        IsTruncated,
+        NextContinuationToken,
+      } = await this.s3Client.send(
+        new ListObjectsV2Command({
+          Bucket: this.bucketName,
+          Prefix: this.prefix,
+          ...(continuationToken && {ContinuationToken: continuationToken}),
+          ...(lastFileName && {StartAfter: lastFileName}),
+        })
+      );
+      objects.push(...Objects);
       isTruncated = IsTruncated;
       continuationToken = NextContinuationToken;
     }
 
-    const sortedContents =
-      contents?.sort((a, b) => {
+    const sortedObjects =
+      objects?.sort((a, b) => {
         if (!this.config.files_source.files?.length) return 0;
         const aIndex = this.config.files_source.files.indexOf(
           a.Key.split('/').pop()
@@ -159,7 +162,7 @@ export class S3Reader {
       }) || [];
 
     const maxRequestLength = this.config.files_source.max_request_length;
-    for (const object of sortedContents) {
+    for (const object of sortedObjects) {
       if (object.Key.slice(-1) === '/') continue;
 
       const fileName = object.Key.split('/').pop();
