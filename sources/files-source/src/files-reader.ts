@@ -12,6 +12,9 @@ export enum FileProcessingStrategy {
   IMMUTABLE_LEXICOGRAPHICAL_ORDER = 'IMMUTABLE_LEXICOGRAPHICAL_ORDER',
 }
 
+const DEFAULT_MAX_REQUEST_LENGTH = 1048576; // 1MB
+const DEFAULT_BYTES_LIMIT = 1073741824; // 1GB
+
 type S3 = {
   source_type: 'S3';
   path: string;
@@ -74,7 +77,9 @@ export class S3Reader {
     readonly config: FilesConfig,
     private readonly s3Client: S3Client,
     private readonly bucketName: string,
-    private readonly prefix: string
+    private readonly prefix: string,
+    private readonly maxRequestLength: number,
+    private readonly bytesLimit: number
   ) {}
 
   static async instance(
@@ -112,7 +117,14 @@ export class S3Reader {
     }
     const s3Client = S3Reader.getS3Client(config);
     const {bucketName, prefix} = S3Reader.parseS3Path(config);
-    return new S3Reader(config, s3Client, bucketName, prefix);
+    return new S3Reader(
+      config,
+      s3Client,
+      bucketName,
+      prefix,
+      config.files_source.max_request_length || DEFAULT_MAX_REQUEST_LENGTH,
+      config.files_source.bytes_limit || DEFAULT_BYTES_LIMIT
+    );
   }
 
   async checkConnection(): Promise<void> {
@@ -161,7 +173,7 @@ export class S3Reader {
         return aIndex - bIndex;
       }) || [];
 
-    const maxRequestLength = this.config.files_source.max_request_length;
+    const maxRequestLength = this.maxRequestLength;
     for (const object of sortedObjects) {
       if (object.Key.slice(-1) === '/') continue;
 
@@ -181,13 +193,10 @@ export class S3Reader {
       let currentByte = 0;
       let chunkNumber = 0;
       while (currentByte < object.Size) {
-        if (
-          this.config.files_source.bytes_limit &&
-          currentByte >= this.config.files_source.bytes_limit
-        ) {
+        if (this.bytesLimit && currentByte >= this.bytesLimit) {
           if (currentByte != object.Size) {
             logger?.warn(
-              `File ${object.Key} surpassed the configured bytes limit of ${this.config.files_source.bytes_limit}. Skipping remaining bytes.`
+              `File ${object.Key} surpassed the configured bytes limit of ${this.bytesLimit}. Skipping remaining bytes.`
             );
           }
           break;
