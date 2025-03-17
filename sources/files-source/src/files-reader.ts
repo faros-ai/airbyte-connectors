@@ -78,8 +78,8 @@ export class S3Reader {
     private readonly s3Client: S3Client,
     private readonly bucketName: string,
     private readonly prefix: string,
-    private readonly maxRequestLength: number,
-    private readonly bytesLimit: number
+    private readonly maxRequestLength?: number,
+    private readonly bytesLimit?: number
   ) {}
 
   static async instance(
