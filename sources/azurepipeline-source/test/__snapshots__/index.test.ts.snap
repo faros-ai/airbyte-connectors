@@ -1,9 +1,642 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`index check connection - no access token 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": Object {
+    "message": "access_token must not be an empty string",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - builds 1`] = `
 Array [
-  false,
-  [VError: Please provide an access token],
+  Object {
+    "_links": Object {
+      "badge": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/status/2",
+      },
+      "self": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/24",
+      },
+      "sourceVersionDisplayUri": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/24/sources",
+      },
+      "timeline": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/24/Timeline",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=24",
+      },
+    },
+    "artifacts": Array [],
+    "buildNumber": "20220214.1",
+    "buildNumberRevision": 1,
+    "coverageStats": undefined,
+    "definition": Object {
+      "drafts": Array [],
+      "id": 2,
+      "name": "coonglinh.medee_dms",
+      "path": "\\",
+      "project": Object {
+        "description": "tesst",
+        "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+        "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+        "name": "devcube",
+        "revision": 12,
+        "state": "wellFormed",
+        "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+        "visibility": "private",
+      },
+      "queueStatus": "enabled",
+      "revision": 1,
+      "type": "build",
+      "uri": "vstfs:///Build/Definition/2",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Definitions/2?revision=1",
+    },
+    "finishTime": "2022-02-14T02:35:38.7767368Z",
+    "id": 24,
+    "jobs": Array [
+      Object {
+        "attempt": 1,
+        "changeId": 9,
+        "currentOperation": null,
+        "details": null,
+        "errorCount": 1,
+        "finishTime": null,
+        "id": "b44a04b4-b5b2-595a-77f4-4561138d2268",
+        "identifier": "A.__default",
+        "issues": Array [
+          Object {
+            "category": null,
+            "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request",
+            "type": "error",
+          },
+        ],
+        "lastModified": "0001-01-01T00:00:00",
+        "log": null,
+        "name": "A",
+        "order": 1,
+        "parentId": "67c760f8-35f0-533f-1d24-8e8c3788c96d",
+        "percentComplete": null,
+        "previousAttempts": Array [],
+        "queueId": 9,
+        "result": "failed",
+        "resultCode": null,
+        "startTime": null,
+        "state": "completed",
+        "task": null,
+        "type": "Job",
+        "url": null,
+        "warningCount": 0,
+        "workerName": null,
+      },
+      Object {
+        "attempt": 1,
+        "changeId": 10,
+        "currentOperation": null,
+        "details": null,
+        "errorCount": 1,
+        "finishTime": null,
+        "id": "b79b690b-82d1-5750-8a0a-452d70195841",
+        "identifier": "B.__default",
+        "issues": Array [
+          Object {
+            "category": null,
+            "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request",
+            "type": "error",
+          },
+        ],
+        "lastModified": "0001-01-01T00:00:00",
+        "log": null,
+        "name": "B",
+        "order": 1,
+        "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
+        "percentComplete": null,
+        "previousAttempts": Array [],
+        "queueId": 9,
+        "result": "failed",
+        "resultCode": null,
+        "startTime": null,
+        "state": "completed",
+        "task": null,
+        "type": "Job",
+        "url": null,
+        "warningCount": 0,
+        "workerName": null,
+      },
+    ],
+    "keepForever": false,
+    "lastChangedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        },
+      },
+      "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "displayName": "Microsoft.VisualStudio.Services.TFS",
+      "id": "00000002-0000-8888-8000-000000000000",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/00000002-0000-8888-8000-000000000000",
+    },
+    "lastChangedDate": "2022-02-14T02:35:38.867Z",
+    "logs": Object {
+      "id": 0,
+      "type": "Container",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/24/logs",
+    },
+    "orchestrationPlan": Object {
+      "planId": "d5fd24b3-2524-45b8-b641-a19bee1a8308",
+    },
+    "plans": Array [
+      Object {
+        "planId": "d5fd24b3-2524-45b8-b641-a19bee1a8308",
+      },
+    ],
+    "priority": "normal",
+    "project": Object {
+      "description": "tesst",
+      "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+      "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+      "name": "devcube",
+      "revision": 12,
+      "state": "wellFormed",
+      "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+      "visibility": "private",
+    },
+    "properties": Object {},
+    "queue": Object {
+      "id": 9,
+      "name": "Azure Pipelines",
+      "pool": Object {
+        "id": 9,
+        "isHosted": true,
+        "name": "Azure Pipelines",
+      },
+    },
+    "queueTime": "2022-02-14T02:35:32.5194025Z",
+    "reason": "manual",
+    "repository": Object {
+      "checkoutSubmodules": false,
+      "clean": null,
+      "id": "coonglinh/medee_dms",
+      "type": "Bitbucket",
+    },
+    "requestedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "requestedFor": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "result": "failed",
+    "retainedByRelease": false,
+    "sourceBranch": "refs/heads/master",
+    "sourceVersion": "d6ef20d64886947134ea0bcdcadce24f8b7823ff",
+    "startTime": "2022-02-14T02:35:38.7767368Z",
+    "status": "completed",
+    "tags": Array [],
+    "triggerInfo": Object {},
+    "triggeredByBuild": null,
+    "uri": "vstfs:///Build/Build/24",
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/24",
+    "validationResults": Array [],
+  },
+  Object {
+    "_links": Object {
+      "badge": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/status/2",
+      },
+      "self": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/21",
+      },
+      "sourceVersionDisplayUri": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/21/sources",
+      },
+      "timeline": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/21/Timeline",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=21",
+      },
+    },
+    "artifacts": Array [
+      Object {
+        "id": 1,
+        "name": "test",
+        "resource": Object {
+          "data": "123",
+          "properties": Object {},
+          "type": "File container,",
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/21/artifacts?artifactName=test&api-version=6.0",
+        },
+        "source": null,
+      },
+      Object {
+        "id": 2,
+        "name": "test 2",
+        "resource": Object {
+          "data": "123",
+          "properties": Object {
+            "tag1": "1",
+          },
+          "type": "File container,",
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/21/artifacts?artifactName=test%202&api-version=6.0",
+        },
+        "source": null,
+      },
+    ],
+    "buildNumber": "20220211.2",
+    "buildNumberRevision": 2,
+    "coverageStats": undefined,
+    "definition": Object {
+      "drafts": Array [],
+      "id": 2,
+      "name": "coonglinh.medee_dms",
+      "path": "\\",
+      "project": Object {
+        "description": "tesst",
+        "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+        "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+        "name": "devcube",
+        "revision": 12,
+        "state": "wellFormed",
+        "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+        "visibility": "private",
+      },
+      "queueStatus": "enabled",
+      "revision": 1,
+      "type": "build",
+      "uri": "vstfs:///Build/Definition/2",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Definitions/2?revision=1",
+    },
+    "finishTime": "2022-02-11T14:53:07.6747517Z",
+    "id": 21,
+    "jobs": Array [
+      Object {
+        "attempt": 1,
+        "changeId": 9,
+        "currentOperation": null,
+        "details": null,
+        "errorCount": 1,
+        "finishTime": null,
+        "id": "b44a04b4-b5b2-595a-77f4-4561138d2268",
+        "identifier": "A.__default",
+        "issues": Array [
+          Object {
+            "category": null,
+            "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request",
+            "type": "error",
+          },
+        ],
+        "lastModified": "0001-01-01T00:00:00",
+        "log": null,
+        "name": "A",
+        "order": 1,
+        "parentId": "67c760f8-35f0-533f-1d24-8e8c3788c96d",
+        "percentComplete": null,
+        "previousAttempts": Array [],
+        "queueId": 9,
+        "result": "failed",
+        "resultCode": null,
+        "startTime": null,
+        "state": "completed",
+        "task": null,
+        "type": "Job",
+        "url": null,
+        "warningCount": 0,
+        "workerName": null,
+      },
+      Object {
+        "attempt": 1,
+        "changeId": 10,
+        "currentOperation": null,
+        "details": null,
+        "errorCount": 1,
+        "finishTime": null,
+        "id": "b79b690b-82d1-5750-8a0a-452d70195841",
+        "identifier": "B.__default",
+        "issues": Array [
+          Object {
+            "category": null,
+            "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request",
+            "type": "error",
+          },
+        ],
+        "lastModified": "0001-01-01T00:00:00",
+        "log": null,
+        "name": "B",
+        "order": 1,
+        "parentId": "c8ede3e9-af9a-5ef1-8d3f-38453e19c638",
+        "percentComplete": null,
+        "previousAttempts": Array [],
+        "queueId": 9,
+        "result": "failed",
+        "resultCode": null,
+        "startTime": null,
+        "state": "completed",
+        "task": null,
+        "type": "Job",
+        "url": null,
+        "warningCount": 0,
+        "workerName": null,
+      },
+    ],
+    "keepForever": false,
+    "lastChangedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        },
+      },
+      "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "displayName": "Microsoft.VisualStudio.Services.TFS",
+      "id": "00000002-0000-8888-8000-000000000000",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/00000002-0000-8888-8000-000000000000",
+    },
+    "lastChangedDate": "2022-02-11T14:53:07.783Z",
+    "logs": Object {
+      "id": 0,
+      "type": "Container",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/21/logs",
+    },
+    "orchestrationPlan": Object {
+      "planId": "a1df9311-9973-4d5d-bb68-31c9283f831d",
+    },
+    "plans": Array [
+      Object {
+        "planId": "a1df9311-9973-4d5d-bb68-31c9283f831d",
+      },
+    ],
+    "priority": "normal",
+    "project": Object {
+      "description": "tesst",
+      "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+      "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+      "name": "devcube",
+      "revision": 12,
+      "state": "wellFormed",
+      "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+      "visibility": "private",
+    },
+    "properties": Object {},
+    "queue": Object {
+      "id": 9,
+      "name": "Azure Pipelines",
+      "pool": Object {
+        "id": 9,
+        "isHosted": true,
+        "name": "Azure Pipelines",
+      },
+    },
+    "queueTime": "2022-02-11T14:53:02.0556022Z",
+    "reason": "manual",
+    "repository": Object {
+      "checkoutSubmodules": false,
+      "clean": null,
+      "id": "coonglinh/medee_dms",
+      "type": "Bitbucket",
+    },
+    "requestedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "requestedFor": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "result": "failed",
+    "retainedByRelease": false,
+    "sourceBranch": "refs/heads/master",
+    "sourceVersion": "d6ef20d64886947134ea0bcdcadce24f8b7823ff",
+    "startTime": "2022-02-11T14:53:07.6747517Z",
+    "status": "completed",
+    "tags": Array [],
+    "triggerInfo": Object {},
+    "triggeredByBuild": null,
+    "uri": "vstfs:///Build/Build/21",
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/21",
+    "validationResults": Array [],
+  },
+  Object {
+    "_links": Object {
+      "badge": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/status/2",
+      },
+      "self": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/17",
+      },
+      "sourceVersionDisplayUri": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/17/sources",
+      },
+      "timeline": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/17/Timeline",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=17",
+      },
+    },
+    "artifacts": Array [],
+    "buildNumber": "20220210.5",
+    "buildNumberRevision": 5,
+    "coverageStats": undefined,
+    "definition": Object {
+      "drafts": Array [],
+      "id": 2,
+      "name": "coonglinh.medee_dms",
+      "path": "\\",
+      "project": Object {
+        "description": "tesst",
+        "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+        "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+        "name": "devcube",
+        "revision": 12,
+        "state": "wellFormed",
+        "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+        "visibility": "private",
+      },
+      "queueStatus": "enabled",
+      "revision": 1,
+      "type": "build",
+      "uri": "vstfs:///Build/Definition/2",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Definitions/2?revision=1",
+    },
+    "finishTime": "2022-02-10T06:20:38.522628Z",
+    "id": 17,
+    "jobs": Array [
+      Object {
+        "attempt": 1,
+        "changeId": 8,
+        "currentOperation": null,
+        "details": null,
+        "errorCount": 1,
+        "finishTime": null,
+        "id": "12f1170f-54f2-53f3-20dd-22fc7dff55f9",
+        "identifier": "Job.__default",
+        "issues": Array [
+          Object {
+            "category": null,
+            "message": "No hosted parallelism has been purchased or granted. To request a free parallelism grant, please fill out the following form https://aka.ms/azpipelines-parallelism-request",
+            "type": "error",
+          },
+        ],
+        "lastModified": "0001-01-01T00:00:00",
+        "log": null,
+        "name": "Job",
+        "order": 1,
+        "parentId": "3a3a2a60-14c7-570b-14a4-fa42ad92f52a",
+        "percentComplete": null,
+        "previousAttempts": Array [],
+        "queueId": 9,
+        "result": "failed",
+        "resultCode": null,
+        "startTime": null,
+        "state": "completed",
+        "task": null,
+        "type": "Job",
+        "url": null,
+        "warningCount": 0,
+        "workerName": null,
+      },
+    ],
+    "keepForever": true,
+    "lastChangedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        },
+      },
+      "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "displayName": "Microsoft.VisualStudio.Services.TFS",
+      "id": "00000002-0000-8888-8000-000000000000",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+      "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/00000002-0000-8888-8000-000000000000",
+    },
+    "lastChangedDate": "2022-02-10T06:20:38.61Z",
+    "logs": Object {
+      "id": 0,
+      "type": "Container",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/builds/17/logs",
+    },
+    "orchestrationPlan": Object {
+      "planId": "a33e6bdc-e7a2-4805-a5e0-7802571ca415",
+    },
+    "parameters": "{"system.debug":"true","agent.diagnostic":"true"}",
+    "plans": Array [
+      Object {
+        "planId": "a33e6bdc-e7a2-4805-a5e0-7802571ca415",
+      },
+    ],
+    "priority": "normal",
+    "project": Object {
+      "description": "tesst",
+      "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+      "lastUpdateTime": "2022-02-10T07:00:49.76Z",
+      "name": "devcube",
+      "revision": 12,
+      "state": "wellFormed",
+      "url": "https://dev.azure.com/huongkstn/_apis/projects/a432baaf-0264-4311-b613-087a2e7931f8",
+      "visibility": "private",
+    },
+    "properties": Object {},
+    "queue": Object {
+      "id": 9,
+      "name": "Azure Pipelines",
+      "pool": Object {
+        "id": 9,
+        "isHosted": true,
+        "name": "Azure Pipelines",
+      },
+    },
+    "queueTime": "2022-02-10T06:20:34.4483472Z",
+    "reason": "manual",
+    "repository": Object {
+      "checkoutSubmodules": false,
+      "clean": null,
+      "id": "coonglinh/medee_dms",
+      "type": "Bitbucket",
+    },
+    "requestedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "requestedFor": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "result": "failed",
+    "retainedByRelease": false,
+    "sourceBranch": "refs/heads/master",
+    "sourceVersion": "11f90c4879fd3469f9d0c188d5fbec764689788a",
+    "startTime": "2022-02-10T06:20:38.522628Z",
+    "status": "completed",
+    "tags": Array [],
+    "triggerInfo": Object {},
+    "triggeredByBuild": null,
+    "uri": "vstfs:///Build/Build/17",
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/17",
+    "validationResults": Array [],
+  },
 ]
 `;
 
@@ -183,7 +816,7 @@ Array [
       },
     },
     "queueTime": "2022-02-14T02:35:32.5194025Z",
-    "reason": "pullRequest",
+    "reason": "pullrequest",
     "repository": Object {
       "checkoutSubmodules": false,
       "clean": null,
@@ -228,6 +861,235 @@ Array [
     "uri": "vstfs:///Build/Build/24",
     "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/24",
     "validationResults": Array [],
+  },
+]
+`;
+
+exports[`index streams - pipelines, use full_refresh sync mode 1`] = `
+Array [
+  Object {
+    "_links": Object {
+      "self": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2",
+      },
+    },
+    "folder": "\\",
+    "id": 2,
+    "name": "coonglinh.medee_dms",
+    "projectName": "proj1",
+    "revision": 1,
+    "runs": Array [
+      Object {
+        "_links": Object {
+          "pipeline": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+          },
+          "pipeline.web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2",
+          },
+          "self": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/24",
+          },
+          "web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=24",
+          },
+        },
+        "createdDate": "2022-02-14T02:35:32.5194025Z",
+        "finishedDate": "2022-02-14T02:35:38.7767368Z",
+        "id": 24,
+        "name": "20220214.1",
+        "pipeline": Object {
+          "folder": "\\",
+          "id": 2,
+          "name": "coonglinh.medee_dms",
+          "revision": 1,
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+        },
+        "result": "failed",
+        "state": "completed",
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/24",
+      },
+      Object {
+        "_links": Object {
+          "pipeline": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+          },
+          "pipeline.web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2",
+          },
+          "self": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/21",
+          },
+          "web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=21",
+          },
+        },
+        "createdDate": "2022-02-11T14:53:02.0556022Z",
+        "finishedDate": "2022-02-11T14:53:07.6747517Z",
+        "id": 21,
+        "name": "20220211.2",
+        "pipeline": Object {
+          "folder": "\\",
+          "id": 2,
+          "name": "coonglinh.medee_dms",
+          "revision": 1,
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+        },
+        "result": "failed",
+        "state": "completed",
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/21",
+      },
+      Object {
+        "_links": Object {
+          "pipeline": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+          },
+          "pipeline.web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2",
+          },
+          "self": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/17",
+          },
+          "web": Object {
+            "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=17",
+          },
+        },
+        "createdDate": "2022-02-10T06:20:34.4483472Z",
+        "finishedDate": "2022-02-10T06:20:38.522628Z",
+        "id": 17,
+        "name": "20220210.5",
+        "pipeline": Object {
+          "folder": "\\",
+          "id": 2,
+          "name": "coonglinh.medee_dms",
+          "revision": 1,
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+        },
+        "result": "failed",
+        "state": "completed",
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/17",
+        "variables": Object {
+          "agent.diagnostic": Object {
+            "value": "true",
+          },
+          "system.debug": Object {
+            "value": "true",
+          },
+        },
+      },
+    ],
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+  },
+  Object {
+    "_links": Object {
+      "self": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=6",
+      },
+    },
+    "folder": "\\",
+    "id": 6,
+    "name": "devcube",
+    "projectName": "proj1",
+    "revision": 1,
+    "runs": Array [],
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1",
+  },
+]
+`;
+
+exports[`index streams - releases 1`] = `
+Array [
+  Object {
+    "_links": Object {
+      "self": Object {
+        "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1",
+      },
+      "web": Object {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?releaseId=1&_a=release-summary",
+      },
+    },
+    "createdBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "createdFor": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "createdOn": "2022-02-14T03:35:24.14Z",
+    "definitionSnapshotRevision": 1,
+    "description": "",
+    "id": 1,
+    "keepForever": false,
+    "logsContainerUrl": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1/logs",
+    "modifiedBy": Object {
+      "_links": Object {
+        "avatar": Object {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        },
+      },
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "displayName": "tran ngoc huong",
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "uniqueName": "huongkstn@gmail.com",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+    },
+    "modifiedOn": "2022-02-14T03:35:24.14Z",
+    "name": "Release-11",
+    "projectReference": Object {
+      "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+      "name": "devcube",
+    },
+    "properties": Object {},
+    "reason": "manual",
+    "releaseDefinition": Object {
+      "_links": Object {
+        "self": Object {
+          "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1",
+        },
+        "web": Object {
+          "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?definitionId=1",
+        },
+      },
+      "id": 1,
+      "name": "release 14/02/2022",
+      "path": "\\",
+      "projectReference": null,
+      "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1",
+    },
+    "releaseDefinitionRevision": 8,
+    "releaseNameFormat": "Release-$(rev:r)1",
+    "status": "active",
+    "tags": Array [],
+    "triggeringArtifactAlias": null,
+    "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1",
+    "variableGroups": Array [],
+    "variables": Object {},
   },
 ]
 `;

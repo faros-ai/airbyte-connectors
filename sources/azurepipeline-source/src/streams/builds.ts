@@ -1,85 +1,51 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  calculateUpdatedStreamState,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
-import {Build} from 'faros-airbyte-common/azurepipeline';
-import {Utils} from 'faros-js-client';
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
+import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AzurePipeline, AzurePipelineConfig} from '../azurepipeline';
-
+import {AzurePipelines} from '../azurepipeline';
+import * as types from '../types';
+import {AzurePipelinesStreamBase} from './common';
 interface BuildState {
   readonly [p: string]: {
     cutoff: number;
   };
 }
 
-type StreamSlice = {
-  project: string;
-};
-
-export class Builds extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzurePipelineConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Builds extends AzurePipelinesStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/builds.json');
-  }
-
-  get primaryKey(): StreamKey {
-    return 'id';
   }
 
   get cursorField(): string | string[] {
     return 'finishTime';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const azurePipeline = await AzurePipeline.instance(
-      this.config,
-      this.logger
-    );
-    for (const project of azurePipeline.getInitializedProjects()) {
-      yield {
-        project,
-      };
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
+    streamSlice?: ProjectReference,
     streamState?: BuildState
-  ): AsyncGenerator<Build> {
-    const project = streamSlice?.project;
-    const state = streamState?.[project];
+  ): AsyncGenerator<types.Build> {
+    const project = streamSlice;
+    const state = streamState?.[project.name];
     const cutoff =
       syncMode === SyncMode.INCREMENTAL ? state?.cutoff : undefined;
-    const azurePipeline = await AzurePipeline.instance(
+    const azurePipelines = await AzurePipelines.instance(
       this.config,
       this.logger
     );
-    yield* azurePipeline.getBuilds(project, cutoff, this.logger);
+    yield* azurePipelines.getBuilds(project, cutoff);
   }
 
   getUpdatedState(
     currentStreamState: BuildState,
-    latestRecord: Build,
-    slice: StreamSlice
+    latestRecord: types.Build,
+    slice: ProjectReference
   ): BuildState {
-    const latestRecordCutoff = Utils.toDate(latestRecord.finishTime);
     return calculateUpdatedStreamState(
-      latestRecordCutoff,
+      latestRecord.finishTime,
       currentStreamState,
-      slice.project
+      slice.name
     );
   }
 }
