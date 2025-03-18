@@ -84,9 +84,13 @@ export abstract class AzureDevOps {
     );
 
     const client = {
+      build: await webApi.getBuildApi(),
       core: await webApi.getCoreApi(),
       wit: await webApi.getWorkItemTrackingApi(),
       git: await webApi.getGitApi(),
+      pipelines: await webApi.getPipelinesApi(),
+      release: await webApi.getReleaseApi(),
+      test: await webApi.getTestApi(),
       graph: graphApi,
     };
 
@@ -189,11 +193,49 @@ export abstract class AzureDevOps {
     const top = this.top;
 
     do {
-      const res = await getFn(top, skip);
-      if (res.length) yield* res;
-      resCount = res.length;
+      const result = await getFn(top, skip);
+      if (result.length) yield* result;
+      resCount = result.length;
       skip += resCount;
     } while (resCount >= top);
+  }
+
+  // Workaround for Azure DevOps API pagination not returning the continuation token
+  // https://github.com/microsoft/azure-devops-node-api/issues/609
+  protected async *getPaginatedWithContinuationToken<T>(
+    getFn: (
+      top: number,
+      continuationToken: string | number
+    ) => Promise<Array<T>>,
+    continuationTokenParam: string
+  ): AsyncGenerator<T> {
+    const top = this.top;
+    let hasNext = true;
+    let continuationToken = undefined;
+
+    while (hasNext) {
+      const result = await getFn(top, continuationToken);
+      // Skip first record when we have a continuation token since we've
+      // already processed it. Normally the continuation token is the
+      // next record to process.
+      const records = continuationToken ? result.slice(1) : result;
+      if (records.length) yield* records;
+
+      if (result.length === top) {
+        // If we got back the maximum number of records, use the last record's
+        // continuationTokenParam as the continuation token
+        const lastRecord = result[result.length - 1];
+        continuationToken = lastRecord[continuationTokenParam];
+      } else {
+        continuationToken = undefined;
+      }
+      hasNext = Boolean(continuationToken);
+      this.logger.debug(
+        hasNext
+          ? `Fetching next page using continuation token ${continuationToken}`
+          : 'No more pages'
+      );
+    }
   }
 
   @Memoize()
