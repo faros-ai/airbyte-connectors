@@ -1,4 +1,4 @@
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 
 import {AzurePipelines} from '../azurepipeline';
@@ -16,11 +16,18 @@ export abstract class AzurePipelinesStreamBase extends AirbyteStreamBase {
     return 'id';
   }
 
-  async *streamSlices(): AsyncGenerator<TeamProject> {
+  async *streamSlices(): AsyncGenerator<ProjectReference> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
       this.logger
     );
-    yield* await azurePipelines.getProjects(this.config.projects);
+    for (const project of await azurePipelines.getProjects(
+      this.config.projects
+    )) {
+      yield {
+        id: project.id,
+        name: project.name,
+      };
+    }
   }
 }

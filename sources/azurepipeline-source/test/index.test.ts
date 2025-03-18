@@ -3,6 +3,7 @@ import {
   BuildResult,
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {CoverageDetailedSummaryStatus} from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
@@ -153,6 +154,11 @@ describe('index', () => {
 
     const artifacts = buildsResource.flatMap((b) => b.artifacts);
     const timeline = {records: buildsResource[0].jobs};
+    const coverage = {
+      ...readTestResourceFile('builds_coverage.json'),
+      coverageDetailedSummaryStatus:
+        CoverageDetailedSummaryStatus.CodeCoverageSuccess,
+    };
 
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
       return new AzurePipelines(
@@ -163,9 +169,7 @@ describe('index', () => {
             getBuildTimeline: jest.fn().mockResolvedValueOnce(timeline),
           },
           test: {
-            getCodeCoverageSummary: jest
-              .fn()
-              .mockResolvedValue(readTestResourceFile('builds_coverage.json')),
+            getCodeCoverageSummary: jest.fn().mockResolvedValue(coverage),
           },
         } as unknown as AzureDevOpsClient,
         cutoffDays,
@@ -190,13 +194,12 @@ describe('index', () => {
   });
 
   test('streams - releases', async () => {
+    const releasesData = readTestResourceFile('releases.json');
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
       return new AzurePipelines(
         {
           release: {
-            getReleases: jest
-              .fn()
-              .mockResolvedValueOnce(readTestResourceFile('releases.json')),
+            getReleases: jest.fn().mockResolvedValue(releasesData),
           },
         } as unknown as AzureDevOpsClient,
         cutoffDays,

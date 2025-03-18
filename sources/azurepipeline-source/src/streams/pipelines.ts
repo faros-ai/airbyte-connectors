@@ -1,4 +1,4 @@
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
@@ -13,7 +13,7 @@ export class Pipelines extends AzurePipelinesStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: TeamProject
+    streamSlice?: ProjectReference
   ): AsyncGenerator<types.Pipeline> {
     const azurePipeline = await AzurePipelines.instance(
       this.config,

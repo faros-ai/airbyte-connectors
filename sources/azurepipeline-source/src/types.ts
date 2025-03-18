@@ -1,7 +1,7 @@
 import {
   Build as BaseBuild,
   BuildArtifact,
-  Timeline,
+  TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
@@ -12,9 +12,16 @@ export interface AzurePipelineConfig extends AzureDevOpsConfig {}
 export interface Pipeline extends BasePipeline {
   projectName: string;
 }
-
-export interface Build extends BaseBuild {
+// Ensure Build reason, status, and result enums are strings
+export interface Build extends Omit<BaseBuild, 'reason' | 'status' | 'result'> {
   artifacts: BuildArtifact[];
   coverageStats: CodeCoverageStatistics[];
-  jobs: Timeline[];
+  jobs: TimelineRecord[];
+  reason: string;
+  status: string;
+  result: string;
+}
+
+export interface TimelineRecord extends Omit<BaseTimelineRecord, 'result'> {
+  result: string;
 }

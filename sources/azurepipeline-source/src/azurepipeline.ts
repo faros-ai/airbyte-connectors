@@ -4,9 +4,10 @@ import {
   BuildReason,
   BuildResult,
   BuildStatus,
+  TaskResult,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {
+  ProjectReference,
   Release,
   ReleaseQueryOrder,
 } from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
@@ -46,54 +47,37 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
-  // TODO: Use generic pagination function
-  async *getPipelines(project: TeamProject): AsyncGenerator<types.Pipeline> {
-    let hasNext = true;
-    const continuationToken = undefined;
-
-    while (hasNext) {
-      // TODO: do we use continuation token and top?
-      const pipelines = await this.client.pipelines.listPipelines(project.id);
-
-      for (const pipeline of pipelines) {
-        yield {
-          projectName: project.name,
-          ...pipeline,
-        };
-      }
-
-      // continuationToken = pipelines.headers[CONTINUATION_TOKEN_HEADER];
-      hasNext = Boolean(continuationToken);
-      this.logger.info(`Fetched ${pipelines.length} pipelines for ${project}`);
-
-      this.logger.debug(
-        hasNext
-          ? `Fetching next pipelines page for project ${project.name}`
-          : 'No more pipelines'
-      );
+  async *getPipelines(
+    project: ProjectReference
+  ): AsyncGenerator<types.Pipeline> {
+    const pipelines = await this.client.pipelines.listPipelines(project.id);
+    for (const pipeline of pipelines) {
+      yield {
+        projectName: project.name,
+        ...pipeline,
+      };
     }
   }
 
   // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds
   async *getBuilds(
-    project: TeamProject,
+    project: ProjectReference,
     lastFinishTime?: number
   ): AsyncGenerator<types.Build> {
-    const startTime = lastFinishTime
+    const minTime = lastFinishTime
       ? Utils.toDate(lastFinishTime)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
 
-    let hasNext = true;
-    let continuationToken = undefined;
-    let totalBuilds = 0;
-
-    while (hasNext) {
-      const builds = await this.client.build.getBuilds(
+    const getBuildsFn = (
+      top: number,
+      continuationToken: string | number
+    ): Promise<AzureBuild[]> =>
+      this.client.build.getBuilds(
         project.id, // project id
         undefined, // definitions - array of definition ids
         undefined, // queues - array of queue ids
         undefined, // buildNumber - build number to search for
-        startTime, // minTime - minimum build finish time
+        minTime, // minTime - minimum build finish time
         undefined, // maxTime - maximum build finish time
         undefined, // requestedFor - team project ID
         undefined, // reasonFilter - build reason
@@ -101,47 +85,34 @@ export class AzurePipelines extends AzureDevOps {
         undefined, // resultFilter - build result
         undefined, // tagFilters - build tags
         undefined, // properties - build properties
-        this.top, // top - number of builds to return
-        continuationToken, // continuationToken - token for pagination
+        top, // top - number of builds to return
+        String(continuationToken), // continuationToken - token for pagination
         undefined, // maxBuildsPerDefinition - max builds per def
         undefined, // deletedFilter - include deleted builds
         BuildQueryOrder.FinishTimeAscending // queryOrder - sort order
       );
 
-      totalBuilds += builds.length;
-      this.logger.debug(
-        `Fetched ${totalBuilds} builds for project ${project.name}`
-      );
+    for await (const build of this.getPaginatedWithContinuationToken(
+      getBuildsFn,
+      'finishTime'
+    ) ?? []) {
+      const coverageStats = await this.getCoverageStats(project.id, build);
 
-      for (const build of builds) {
-        const coverageStats = await this.getCoverageStats(project.id, build);
+      // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
+      const artifacts =
+        (await this.client.build.getArtifacts(project.id, build.id)) ?? [];
 
-        // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
-        const artifacts = await this.client.build.getArtifacts(
-          project.id,
-          build.id
-        );
-        // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get
-        const timeline = await this.client.build.getBuildTimeline(
-          project.id,
-          build.id
-        );
-        const jobs = timeline.records?.filter((r) => r.type === 'Job');
-        yield {
-          ...build,
-          artifacts,
-          jobs,
-          coverageStats,
-        };
-
-        continuationToken = builds.continuationToken;
-        hasNext = Boolean(continuationToken);
-        this.logger.debug(
-          hasNext
-            ? `Fetching next builds page for project ${project.name}`
-            : 'No more builds'
-        );
-      }
+      const jobs = await this.getJobs(project.id, build.id);
+      yield {
+        ...build,
+        // Convert enum values to strings
+        reason: BuildReason[build.reason]?.toLowerCase(),
+        status: BuildStatus[build.status]?.toLowerCase(),
+        result: BuildResult[build.result]?.toLowerCase(),
+        artifacts,
+        jobs,
+        coverageStats,
+      };
     }
   }
 
@@ -171,18 +142,40 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
+  // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get
+  private async getJobs(
+    projectId: string,
+    buildId: number
+  ): Promise<types.TimelineRecord[]> {
+    const timeline = await this.client.build.getBuildTimeline(
+      projectId,
+      buildId
+    );
+    if (!timeline?.records) {
+      this.logger.warn(`No timeline records found for build ${buildId}`);
+      return [];
+    }
+    return timeline.records
+      .filter((r) => r.type === 'Job')
+      .map((r) => ({
+        ...r,
+        result: r.result ? TaskResult[r.result].toLowerCase() : undefined,
+      }));
+  }
+
   async *getReleases(
-    project: TeamProject,
+    project: ProjectReference,
     lastCreatedOn?: number
   ): AsyncGenerator<Release> {
-    const startTime = lastCreatedOn
+    const minCreatedTime = lastCreatedOn
       ? Utils.toDate(lastCreatedOn)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
-    let hasNext = true;
-    let continuationToken = undefined;
 
-    while (hasNext) {
-      const releases = await this.client.release.getReleases(
+    const getReleasesFn = (
+      top: number,
+      continuationToken: string | number
+    ): Promise<Release[]> =>
+      this.client.release.getReleases(
         project.id,
         undefined, // definitionId
         undefined, // definitionEnvironmentId
@@ -190,25 +183,13 @@ export class AzurePipelines extends AzureDevOps {
         undefined, // createdBy
         undefined, // statusFilter
         undefined, // environmentStatusFilter
-        startTime, // minCreatedTime
+        minCreatedTime, // minCreatedTime
         undefined, // maxCreatedTime
         ReleaseQueryOrder.Ascending,
-        this.top,
-        continuationToken
+        top,
+        Number(continuationToken)
       );
-      this.logger.debug(
-        `Fetched ${releases.length} releases for ${project.name}`
-      );
-      for (const release of releases) {
-        yield release;
-      }
 
-      continuationToken = releases.continuationToken;
-      hasNext = Boolean(continuationToken);
-
-      this.logger.debug(
-        hasNext ? 'Fetching next releases page' : 'No more releases'
-      );
-    }
+    yield* this.getPaginatedWithContinuationToken(getReleasesFn, 'id');
   }
 }

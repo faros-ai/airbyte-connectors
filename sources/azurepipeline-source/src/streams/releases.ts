@@ -1,5 +1,7 @@
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
-import {Release} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
+import {
+  ProjectReference,
+  Release,
+} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
@@ -24,7 +26,7 @@ export class Releases extends AzurePipelinesStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: TeamProject,
+    streamSlice?: ProjectReference,
     streamState?: ReleaseState
   ): AsyncGenerator<Release> {
     const project = streamSlice;
@@ -41,7 +43,7 @@ export class Releases extends AzurePipelinesStreamBase {
   getUpdatedState(
     currentStreamState: ReleaseState,
     latestRecord: Release,
-    slice: TeamProject
+    slice: ProjectReference
   ): ReleaseState {
     const latestRecordCutoff = latestRecord.createdOn;
     return calculateUpdatedStreamState(
