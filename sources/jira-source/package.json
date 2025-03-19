@@ -35,7 +35,7 @@
     "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "faros-js-client": "^0.6.1",
+    "faros-js-client": "^0.6.5",
     "moment": "^2.29.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1",
