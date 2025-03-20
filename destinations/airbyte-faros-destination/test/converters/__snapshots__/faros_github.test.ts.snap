@@ -9668,8 +9668,8 @@ N/A
     "faros_Tag": Object {
       "source": "GitHub",
       "tag": Object {
-        "key": "Language-JavaScript",
-        "uid": "github_github_Hello-World_JavaScript_bytes",
+        "key": "Language__JavaScript",
+        "uid": "github__github__Hello-World__JavaScript__bytes",
         "value": "1024",
       },
     },
@@ -9686,7 +9686,7 @@ N/A
       },
       "source": "GitHub",
       "tag": Object {
-        "uid": "github_github_Hello-World_JavaScript_bytes",
+        "uid": "github__github__Hello-World__JavaScript__bytes",
       },
     },
   },
