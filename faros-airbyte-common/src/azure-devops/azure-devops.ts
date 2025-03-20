@@ -211,29 +211,45 @@ export abstract class AzureDevOps {
   ): AsyncGenerator<T> {
     const top = this.top;
     let hasNext = true;
+    let pages = 0;
     let continuationToken = undefined;
 
     while (hasNext) {
       const result = await getFn(top, continuationToken);
-      // Skip first record when we have a continuation token since we've
-      // already processed it. Normally the continuation token is the
-      // next record to process.
-      const records = continuationToken ? result.slice(1) : result;
-      if (records.length) yield* records;
+      if (!result) {
+        this.logger.warn(
+          'Failed to fetch results, received empty result. Continuing...'
+        );
+        return;
+      }
 
+      if (!Array.isArray(result)) {
+        throw new VError(
+          `Expected array result but got ${typeof result} ${JSON.stringify(
+            result
+          )}`
+        );
+      }
+
+      // Remove the first record when we have a continuation token to avoid duplication
+      // since we already processed it in the previous page
+      const records = continuationToken ? result.slice(1) : result;
+      yield* records;
+
+      // If we have results and received a full page, use the last record as the continuation token
       if (result.length === top) {
-        // If we got back the maximum number of records, use the last record's
-        // continuationTokenParam as the continuation token
-        const lastRecord = result[result.length - 1];
+        const lastRecord = result.at(-1);
         continuationToken = lastRecord[continuationTokenParam];
       } else {
         continuationToken = undefined;
       }
+
       hasNext = Boolean(continuationToken);
-      this.logger.debug(
+      pages++;
+      this.logger.info(
         hasNext
           ? `Fetching next page using continuation token ${continuationToken}`
-          : 'No more pages'
+          : `Finished fetching ${pages} pages`
       );
     }
   }
