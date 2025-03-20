@@ -1381,12 +1381,7 @@ export abstract class GitHub {
   async *getRepoLanguages(
     org: string,
     repo: string
-  ): AsyncGenerator<{
-    org: string;
-    repo: string;
-    language: string;
-    bytes: number;
-  }> {
+  ): AsyncGenerator<RepositoryLanguage> {
     const response = await this.octokit(org).repos.listLanguages({
       owner: org,
       repo,
