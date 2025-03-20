@@ -28,6 +28,7 @@ export type Repository = {
   org: string;
   tmsEnabled?: boolean;
   syncRepoData?: boolean;
+  languages?: {language: string; bytes: number}[];
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
   | 'name'
@@ -149,13 +150,6 @@ export type Tag = {
   name: string;
   commit_sha: string;
   commit: TagsQueryCommitNode;
-};
-
-export type RepositoryLanguage = {
-  org: string;
-  repo: string;
-  language: string;
-  bytes: number;
 };
 
 export type TagsQueryCommitNode = Extract<

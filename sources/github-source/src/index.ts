@@ -45,7 +45,6 @@ import {FarosPullRequestComments} from './streams/faros_pull_request_comments';
 import {FarosPullRequests} from './streams/faros_pull_requests';
 import {FarosReleases} from './streams/faros_releases';
 import {FarosRepositories} from './streams/faros_repositories';
-import {FarosRepositoryLanguages} from './streams/faros_repository_languages';
 import {FarosSamlSsoUsers} from './streams/faros_saml_sso_users';
 import {FarosSecretScanningAlerts} from './streams/faros_secret_scanning_alerts';
 import {FarosTags} from './streams/faros_tags';
@@ -125,7 +124,6 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosPullRequestComments(config, this.logger, farosClient),
       new FarosReleases(config, this.logger, farosClient),
       new FarosRepositories(config, this.logger, farosClient),
-      new FarosRepositoryLanguages(config, this.logger, farosClient),
       new FarosSamlSsoUsers(config, this.logger, farosClient),
       new FarosSecretScanningAlerts(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),

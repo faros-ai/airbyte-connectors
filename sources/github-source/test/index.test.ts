@@ -433,6 +433,30 @@ describe('index', () => {
     });
   });
 
+  test('streams - repositories with languages', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          {
+            ...getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            ...getRepositoryLanguagesMockedImplementation(
+              readTestResourceAsJSON('repositories/repository_languages.json')
+            ),
+          },
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - repositories with bucketing', async () => {
     const config = readTestResourceAsJSON('repositories/config-bucketing.json');
     await sourceReadTest({
@@ -827,32 +851,6 @@ describe('index', () => {
             ),
             getRepositoryReleasesMockedImplementation(
               readTestResourceAsJSON('releases/releases.json')
-            )
-          ),
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - repository languages', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: 'config.json',
-      catalogOrPath: 'repository_languages/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getRepositoriesMockedImplementation(
-              readTestResourceAsJSON('repositories/repositories.json')
-            ),
-            getRepositoryLanguagesMockedImplementation(
-              readTestResourceAsJSON(
-                'repository_languages/repository_languages.json'
-              )
             )
           ),
           logger

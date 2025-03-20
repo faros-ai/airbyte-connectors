@@ -2285,40 +2285,7 @@ exports[`index streams - repositories with bucketing 1`] = `
 ]
 `;
 
-exports[`index streams - repository languages 1`] = `
-[
-  {
-    "bytes": 850000,
-    "language": "TypeScript",
-    "org": "github",
-    "repo": "Hello-World",
-  },
-  {
-    "bytes": 420000,
-    "language": "JavaScript",
-    "org": "github",
-    "repo": "Hello-World",
-  },
-  {
-    "bytes": 130000,
-    "language": "Python",
-    "org": "github",
-    "repo": "Hello-World",
-  },
-  {
-    "bytes": 50000,
-    "language": "Shell",
-    "org": "github",
-    "repo": "Hello-World",
-  },
-  {
-    "bytes": 30000,
-    "language": "Java",
-    "org": "github",
-    "repo": "Hello-World",
-  },
-]
-`;
+exports[`index streams - repositories with languages 1`] = `[]`;
 
 exports[`index streams - saml sso users 1`] = `
 [

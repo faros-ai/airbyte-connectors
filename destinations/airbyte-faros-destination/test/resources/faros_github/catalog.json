@@ -92,12 +92,6 @@
     },
     {
       "stream": {
-        "name": "mytestsource__github__faros_repository_languages"
-      },
-      "destination_sync_mode": "overwrite"
-    },
-    {
-      "stream": {
         "name": "mytestsource__github__faros_projects"
       },
       "destination_sync_mode": "overwrite"
