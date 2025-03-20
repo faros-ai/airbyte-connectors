@@ -151,6 +151,13 @@ export type Tag = {
   commit: TagsQueryCommitNode;
 };
 
+export type RepositoryLanguage = {
+  org: string;
+  repo: string;
+  language: string;
+  bytes: number;
+};
+
 export type TagsQueryCommitNode = Extract<
   RepoTagsQuery['repository']['refs']['nodes'][0]['target'],
   {type: 'Commit'}

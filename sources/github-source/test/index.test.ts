@@ -838,6 +838,32 @@ describe('index', () => {
     });
   });
 
+  test('streams - repository languages', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'repository_languages/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
+            ),
+            getRepositoryLanguagesMockedImplementation(
+              readTestResourceAsJSON(
+                'repository_languages/repository_languages.json'
+              )
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('streams - projects', async () => {
     await sourceReadTest({
       source,
@@ -1377,9 +1403,9 @@ const getRepositoryReleasesMockedImplementation = (res: any) => ({
   },
 });
 
-const getContributorsStatsMockedImplementation = (res: any) => ({
+const getRepositoryLanguagesMockedImplementation = (res: any) => ({
   repos: {
-    getContributorsStats: jest.fn().mockReturnValue({data: res}),
+    listLanguages: jest.fn().mockReturnValue({data: res}),
   },
 });
 

@@ -37,6 +37,7 @@ import {
   PullRequestReviewRequest,
   Release,
   Repository,
+  RepositoryLanguage,
   SamlSsoUser,
   SecretScanningAlert,
   Tag,
@@ -1374,6 +1375,30 @@ export abstract class GitHub {
           ]),
         };
       }
+    }
+  }
+
+  async *getRepoLanguages(
+    org: string,
+    repo: string
+  ): AsyncGenerator<{
+    org: string;
+    repo: string;
+    language: string;
+    bytes: number;
+  }> {
+    const response = await this.octokit(org).repos.listLanguages({
+      owner: org,
+      repo,
+    });
+
+    for (const [language, bytes] of Object.entries(response.data)) {
+      yield {
+        org,
+        repo,
+        language,
+        bytes,
+      };
     }
   }
 
