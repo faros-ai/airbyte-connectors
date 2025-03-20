@@ -440,14 +440,14 @@ describe('index', () => {
       catalogOrPath: 'repositories/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          {
-            ...getRepositoriesMockedImplementation(
+          merge(
+            getRepositoriesMockedImplementation(
               readTestResourceAsJSON('repositories/repositories.json')
             ),
-            ...getRepositoryLanguagesMockedImplementation(
+            getRepositoryLanguagesMockedImplementation(
               readTestResourceAsJSON('repositories/repository_languages.json')
-            ),
-          },
+            )
+          ),
           logger
         );
       },
