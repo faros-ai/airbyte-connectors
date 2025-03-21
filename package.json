@@ -17,7 +17,7 @@
     "test-cov": "turbo run test-cov"
   },
   "dependencies": {
-    "faros-js-client": "^0.6.1"
+    "faros-js-client": "^0.6.5"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.8",
