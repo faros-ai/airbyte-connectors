@@ -1,4 +1,7 @@
-import {OctokitResponse} from '@octokit/types';
+import {
+  GetResponseDataTypeFromEndpointMethod,
+  OctokitResponse,
+} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -249,7 +252,7 @@ export abstract class GitHub {
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
         }
-        repos.push({
+        const repository: Repository = {
           org,
           ...pick(repo, [
             'name',
@@ -265,6 +268,31 @@ export abstract class GitHub {
             'updated_at',
             'archived',
           ]),
+        };
+        let languagesResponse:
+          | GetResponseDataTypeFromEndpointMethod<
+              typeof this.baseOctokit.repos.listLanguages
+            >
+          | undefined;
+        try {
+          languagesResponse = (
+            await this.octokit(org).repos.listLanguages({
+              owner: org,
+              repo: repo.name,
+            })
+          ).data;
+        } catch (error: any) {
+          this.logger.warn(
+            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status} $`
+          );
+        }
+        repos.push({
+          ...repository,
+          ...(languagesResponse && {
+            languages: Object.entries(languagesResponse).map(
+              ([language, bytes]) => ({language, bytes})
+            ),
+          }),
         });
       }
     }

@@ -28,6 +28,7 @@ export type Repository = {
   org: string;
   tmsEnabled?: boolean;
   syncRepoData?: boolean;
+  languages?: {language: string; bytes: number}[];
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
   | 'name'

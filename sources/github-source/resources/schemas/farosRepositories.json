@@ -51,6 +51,20 @@
     },
     "syncRepoData": {
       "type": "boolean"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          }
+        }
+      }
     }
   }
 }
