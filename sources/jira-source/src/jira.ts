@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {setupCache} from 'axios-cache-interceptor';
+import {setupCache, AxiosCacheInstance} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   bucket,
@@ -174,7 +174,7 @@ export class Jira {
     // https://community.atlassian.com/t5/Jira-questions/How-can-I-get-an-issue-url-that-can-be-navigated-to-in-the/qaq-p/1500948
     private readonly baseURL: string,
     private readonly api: JiraClient,
-    private readonly http: AxiosInstance,
+    private readonly http: AxiosInstance | AxiosCacheInstance,
     private readonly fieldNameById: Map<string, string>,
     private readonly additionalFieldsArrayLimit: number,
     private readonly statusByName: Map<string, Status>,

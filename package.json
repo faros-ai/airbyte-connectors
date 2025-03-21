@@ -55,7 +55,7 @@
     "typescript": "^5.3.3"
   },
   "overrides": {
-    "axios": "^1.7.4",
+    "axios": "^1.8.3",
     "cross-spawn": "^7.0.6",
     "degenerator": "^5.0.0",
     "protobufjs": "^7.2.6",
