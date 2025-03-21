@@ -12,6 +12,8 @@ export class FarosRepositories extends GitHubConverter {
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
+    'faros_Tag',
+    'vcs_RepositoryTag',
   ];
 
   async convert(
@@ -45,6 +47,33 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
+
+    if (repo.languages) {
+      for (const {language, bytes} of repo.languages) {
+        const tagKey = {
+          uid: `githubLanguageBytes__${repo.org}__${repo.name}__${language}`,
+        };
+
+        res.push(
+          {
+            model: 'faros_Tag',
+            record: {
+              ...tagKey,
+              key: `Language__${language}`,
+              value: bytes.toString(),
+            },
+          },
+          {
+            model: 'vcs_RepositoryTag',
+            record: {
+              tag: tagKey,
+              repository: repoKey,
+            },
+          }
+        );
+      }
+    }
+
     const writeInclusion = repo.syncRepoData && !isCommunity;
     if (repo.syncRepoData && repo.tmsEnabled) {
       const projectUid = `${repoKey.organization.uid}/${repoKey.name}`;
