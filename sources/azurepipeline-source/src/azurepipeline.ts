@@ -97,10 +97,10 @@ export class AzurePipelines extends AzureDevOps {
       );
     };
 
-    for await (const build of this.getPaginatedWithContinuationToken(
-      getBuildsFn,
-      'finishTime'
-    ) ?? []) {
+    for await (const build of this.getPaginated(getBuildsFn, {
+      useContinuationToken: true,
+      continuationTokenParam: 'finishTime',
+    }) ?? []) {
       const coverageStats = await this.getCoverageStats(project.id, build);
 
       // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
@@ -195,6 +195,9 @@ export class AzurePipelines extends AzureDevOps {
         Number(continuationToken)
       );
 
-    yield* this.getPaginatedWithContinuationToken(getReleasesFn, 'id');
+    yield* this.getPaginated(getReleasesFn, {
+      useContinuationToken: true,
+      continuationTokenParam: 'id',
+    });
   }
 }
