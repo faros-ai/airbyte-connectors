@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "faros-airbyte-common": "*",
-    "faros-js-client": "^0.6.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },
