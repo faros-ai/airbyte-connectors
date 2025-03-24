@@ -1,5 +1,5 @@
+import {Release} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Release} from 'faros-airbyte-common/azurepipeline';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';

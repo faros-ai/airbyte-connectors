@@ -3,8 +3,8 @@ import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import * as types from '../types';
 import {AzurePipelinesStreamBase} from './common';
+import {Build} from 'faros-airbyte-common/azure-devops';
 interface BuildState {
   readonly [p: string]: {
     cutoff: number;
@@ -25,7 +25,7 @@ export class Builds extends AzurePipelinesStreamBase {
     cursorField?: string[],
     streamSlice?: ProjectReference,
     streamState?: BuildState
-  ): AsyncGenerator<types.Build> {
+  ): AsyncGenerator<Build> {
     const project = streamSlice;
     const state = streamState?.[project.name];
     const cutoff =
@@ -39,7 +39,7 @@ export class Builds extends AzurePipelinesStreamBase {
 
   getUpdatedState(
     currentStreamState: BuildState,
-    latestRecord: types.Build,
+    latestRecord: Build,
     slice: ProjectReference
   ): BuildState {
     return calculateUpdatedStreamState(

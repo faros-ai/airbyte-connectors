@@ -3,8 +3,8 @@ import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import * as types from '../types';
 import {AzurePipelinesStreamBase} from './common';
+import {Pipeline} from 'faros-airbyte-common/azure-devops';
 export class Pipelines extends AzurePipelinesStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
@@ -14,7 +14,7 @@ export class Pipelines extends AzurePipelinesStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectReference
-  ): AsyncGenerator<types.Pipeline> {
+  ): AsyncGenerator<Pipeline> {
     const azurePipeline = await AzurePipelines.instance(
       this.config,
       this.logger
