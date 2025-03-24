@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`client get projects (empty list provided) 1`] = `
+Array [
+  Object {
+    "description": "Team Foundation Version Control projects.",
+    "id": "eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+    "name": "Fabrikam-Fiber-TFVC",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+  },
+  Object {
+    "description": "Git projects",
+    "id": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+    "name": "Fabrikam-Fiber-Git",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+  },
+  Object {
+    "id": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+    "name": "TestGit",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+  },
+]
+`;
+
+exports[`client get projects (invalid project provided) 1`] = `
+Array [
+  Object {
+    "id": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+    "name": "TestGit",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+  },
+]
+`;
+
+exports[`client get projects (list provided) 1`] = `
+Array [
+  Object {
+    "id": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+    "name": "TestGit",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+  },
+  Object {
+    "description": "Git projects",
+    "id": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+    "name": "Fabrikam-Fiber-Git",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+  },
+]
+`;
+
+exports[`client get projects (no projects provided) 1`] = `
+Array [
+  Object {
+    "description": "Team Foundation Version Control projects.",
+    "id": "eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+    "name": "Fabrikam-Fiber-TFVC",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/eb6e4656-77fc-42a1-9181-4c6d8e9da5d1",
+  },
+  Object {
+    "description": "Git projects",
+    "id": "6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+    "name": "Fabrikam-Fiber-Git",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
+  },
+  Object {
+    "id": "281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+    "name": "TestGit",
+    "state": "wellFormed",
+    "url": "https://fabrikam:8080/_apis/projects/281f9a5b-af0d-49b4-a1df-fe6f5e5f84d0",
+  },
+]
+`;

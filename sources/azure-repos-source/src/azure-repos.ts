@@ -165,8 +165,11 @@ export class AzureRepos extends AzureDevOps {
       itemVersion: {version: branch},
       fromDate: since.toISO(),
     };
-    const getCommitsFn = (top: number, skip: number): Promise<GitCommitRef[]> =>
-      this.client.git.getCommits(repo.id, searchCriteria, project, skip, top);
+    const getCommitsFn = (
+      top: number,
+      skip: number | string
+    ): Promise<GitCommitRef[]> =>
+      this.client.git.getCommits(repo.id, searchCriteria, project, skip as number, top);
 
     yield* this.getPaginated<GitCommitRef>(getCommitsFn);
   }
@@ -269,14 +272,14 @@ export class AzureRepos extends AzureDevOps {
 
     const getPullRequestsFn = (
       top: number,
-      skip: number
+      skip: number | string
     ): Promise<GitPullRequest[]> =>
       this.client.git.getPullRequests(
         repo.id,
         searchCriteria,
         project,
         undefined,
-        skip,
+        skip as number,
         top
       );
 

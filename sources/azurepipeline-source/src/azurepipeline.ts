@@ -71,8 +71,12 @@ export class AzurePipelines extends AzureDevOps {
     const getBuildsFn = (
       top: number,
       continuationToken: string | number
-    ): Promise<AzureBuild[]> =>
-      this.client.build.getBuilds(
+    ): Promise<AzureBuild[]> => {
+      // API field 'finishTime' is a Date object, but actual token should be a string
+      const token = continuationToken
+        ? Utils.toDate(continuationToken)?.toISOString()
+        : undefined;
+      return this.client.build.getBuilds(
         project.id, // project id
         undefined, // definitions - array of definition ids
         undefined, // queues - array of queue ids
@@ -86,16 +90,17 @@ export class AzurePipelines extends AzureDevOps {
         undefined, // tagFilters - build tags
         undefined, // properties - build properties
         top, // top - number of builds to return
-        String(continuationToken), // continuationToken - token for pagination
+        token, // continuationToken - token for pagination
         undefined, // maxBuildsPerDefinition - max builds per def
         undefined, // deletedFilter - include deleted builds
         BuildQueryOrder.FinishTimeAscending // queryOrder - sort order
       );
+    };
 
-    for await (const build of this.getPaginatedWithContinuationToken(
-      getBuildsFn,
-      'finishTime'
-    ) ?? []) {
+    for await (const build of this.getPaginated(getBuildsFn, {
+      useContinuationToken: true,
+      continuationTokenParam: 'finishTime',
+    }) ?? []) {
       const coverageStats = await this.getCoverageStats(project.id, build);
 
       // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
@@ -190,6 +195,9 @@ export class AzurePipelines extends AzureDevOps {
         Number(continuationToken)
       );
 
-    yield* this.getPaginatedWithContinuationToken(getReleasesFn, 'id');
+    yield* this.getPaginated(getReleasesFn, {
+      useContinuationToken: true,
+      continuationTokenParam: 'id',
+    });
   }
 }

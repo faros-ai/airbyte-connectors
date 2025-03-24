@@ -94,7 +94,14 @@ export abstract class AzureDevOps {
       graph: graphApi,
     };
 
-    const top = config.page_size ?? DEFAULT_PAGE_SIZE;
+    const pageSize = isNaN(config.page_size) ? undefined : config.page_size;
+    if (pageSize && pageSize <= 1) {
+      logger.warn(
+        'Page size must be greater than 1, will use default minimum of 2'
+      );
+    }
+
+    const top = Math.max(2, pageSize ?? DEFAULT_PAGE_SIZE);
     const cutoffDays = config.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
 
     AzureDevOps.azureDevOps = new this(
@@ -186,6 +193,23 @@ export abstract class AzureDevOps {
   }
 
   protected async *getPaginated<T>(
+    getFn: (top: number, skipOrToken: number | string) => Promise<Array<T>>,
+    options?: {
+      useContinuationToken: boolean;
+      continuationTokenParam: string;
+    }
+  ): AsyncGenerator<T> {
+    if (options?.useContinuationToken) {
+      yield* this.paginateWithContinuationToken(
+        getFn,
+        options.continuationTokenParam
+      );
+    } else {
+      yield* this.paginateWithSkip(getFn);
+    }
+  }
+
+  private async *paginateWithSkip<T>(
     getFn: (top: number, skip: number) => Promise<Array<T>>
   ): AsyncGenerator<T> {
     let resCount = 0;
@@ -202,7 +226,7 @@ export abstract class AzureDevOps {
 
   // Workaround for Azure DevOps API pagination not returning the continuation token
   // https://github.com/microsoft/azure-devops-node-api/issues/609
-  protected async *getPaginatedWithContinuationToken<T>(
+  private async *paginateWithContinuationToken<T>(
     getFn: (
       top: number,
       continuationToken: string | number
@@ -210,32 +234,45 @@ export abstract class AzureDevOps {
     continuationTokenParam: string
   ): AsyncGenerator<T> {
     const top = this.top;
-    let hasNext = true;
+    let hasNext = false;
+    let pages = 0;
     let continuationToken = undefined;
 
-    while (hasNext) {
+    do {
       const result = await getFn(top, continuationToken);
-      // Skip first record when we have a continuation token since we've
-      // already processed it. Normally the continuation token is the
-      // next record to process.
-      const records = continuationToken ? result.slice(1) : result;
-      if (records.length) yield* records;
-
-      if (result.length === top) {
-        // If we got back the maximum number of records, use the last record's
-        // continuationTokenParam as the continuation token
-        const lastRecord = result[result.length - 1];
-        continuationToken = lastRecord[continuationTokenParam];
-      } else {
-        continuationToken = undefined;
+      if (!result) {
+        this.logger.warn(
+          'Failed to fetch results, received empty result. Skipping...'
+        );
+        return;
       }
+
+      if (!Array.isArray(result)) {
+        throw new VError(
+          `Expected array result but got ${typeof result} ${JSON.stringify(
+            result
+          )}`
+        );
+      }
+
+      // Remove the first record when we have a continuation token to avoid duplication
+      // since we already processed it in the previous page
+      const records = continuationToken ? result.slice(1) : result;
+      yield* records;
+
+      continuationToken =
+        result.length === top
+          ? result.at(-1)[continuationTokenParam]
+          : undefined;
+
       hasNext = Boolean(continuationToken);
+      pages++;
       this.logger.debug(
         hasNext
           ? `Fetching next page using continuation token ${continuationToken}`
-          : 'No more pages'
+          : `Finished fetching ${pages} pages`
       );
-    }
+    } while (hasNext);
   }
 
   @Memoize()
@@ -262,9 +299,13 @@ export abstract class AzureDevOps {
     const projects = [];
     const getProjectsFn = async (
       top: number,
-      skip: number
+      skip: number | string
     ): Promise<Array<TeamProjectReference>> => {
-      const res = await this.client.core.getProjects('wellFormed', top, skip);
+      const res = await this.client.core.getProjects(
+        'wellFormed',
+        top,
+        skip as number
+      );
       return Array.from(res.values());
     };
 
@@ -277,9 +318,9 @@ export abstract class AzureDevOps {
   protected async *getTeams(projectId: string): AsyncGenerator<WebApiTeam> {
     const getTeamsFn = (
       pageSize: number,
-      skip: number
+      skip: number | string
     ): Promise<WebApiTeam[]> =>
-      this.client.core.getTeams(projectId, false, pageSize, skip);
+      this.client.core.getTeams(projectId, false, pageSize, skip as number);
 
     yield* this.getPaginated<WebApiTeam>(getTeamsFn);
   }
@@ -288,12 +329,15 @@ export abstract class AzureDevOps {
     projectId: string,
     teamId: string
   ): AsyncGenerator<IdentityRef> {
-    const getMembersFn = (top: number, skip: number): Promise<TeamMember[]> =>
+    const getMembersFn = (
+      top: number,
+      skip: number | string
+    ): Promise<TeamMember[]> =>
       this.client.core.getTeamMembersWithExtendedProperties(
         projectId,
         teamId,
         top,
-        skip
+        skip as number
       );
 
     for await (const member of this.getPaginated(getMembersFn)) {
