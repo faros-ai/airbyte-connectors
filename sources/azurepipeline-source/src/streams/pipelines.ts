@@ -1,10 +1,10 @@
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {SyncMode} from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
 import {AzurePipelinesStreamBase} from './common';
-import {Pipeline} from 'faros-airbyte-common/azure-devops';
 export class Pipelines extends AzurePipelinesStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');

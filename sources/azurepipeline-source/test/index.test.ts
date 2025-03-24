@@ -11,13 +11,12 @@ import {
   sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
+import {AzureDevOpsClient, Build} from 'faros-airbyte-common/azure-devops';
 import fs from 'fs-extra';
 import {omit} from 'lodash';
 
 import {AzurePipelines} from '../src/azurepipeline';
 import * as sut from '../src/index';
-import {Build} from '../src/types';
 
 const azurePipelines = AzurePipelines.instance;
 

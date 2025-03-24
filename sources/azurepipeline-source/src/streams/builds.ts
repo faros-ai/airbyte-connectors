@@ -1,10 +1,10 @@
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
+import {Build} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
 import {AzurePipelinesStreamBase} from './common';
-import {Build} from 'faros-airbyte-common/azure-devops';
 interface BuildState {
   readonly [p: string]: {
     cutoff: number;
