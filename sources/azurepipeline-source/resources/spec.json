@@ -87,7 +87,8 @@
         "type": "integer",
         "title": "Page Size",
         "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
-        "default": 100
+        "default": 100,
+        "minimum": 2
       },
       "max_retries": {
         "type": "integer",
