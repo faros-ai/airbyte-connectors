@@ -81,9 +81,9 @@ export class FarosPullRequests extends GitHubConverter {
     const branchInfo = omitBy(
       {
         sourceBranch,
-        sourceBranchName: sourceBranch?.name,
+        sourceBranchName: pr.headRefName,
         targetBranch,
-        targetBranchName: targetBranch?.name,
+        targetBranchName: pr.baseRefName,
       },
       isNil
     );
