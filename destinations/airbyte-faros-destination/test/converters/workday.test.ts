@@ -86,7 +86,8 @@ describe('workday', () => {
     orgs_to_ignore,
     keep_terminated_employees = false,
     resolve_locations = false,
-    log_records = false
+    log_records = false,
+    team_to_parent_list = []
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
@@ -99,6 +100,7 @@ describe('workday', () => {
           orgs_to_ignore,
           keep_terminated_employees,
           resolve_locations,
+          team_to_parent_list,
         },
       },
       log_records,
