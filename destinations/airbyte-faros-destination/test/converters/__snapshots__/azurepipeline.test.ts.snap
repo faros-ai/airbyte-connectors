@@ -29,7 +29,7 @@ Array [
       },
       "source": "AzurePipeline",
       "uid": "2",
-      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+      "url": "https://my-azure-server.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
     },
   },
   Object {
