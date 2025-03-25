@@ -311,8 +311,16 @@ export class Customreports extends Converter {
   ): Record<string, string> {
     const team_to_parent_list: string[][] =
       ctx.config.source_specific_configs.workday.team_to_parent_list;
+    if (!Array.isArray(team_to_parent_list)) {
+      throw new Error('team_to_parent_list is not an array.');
+    }
     const map: Record<string, string> = {};
     for (const team_parent_tuple of team_to_parent_list) {
+      if (!Array.isArray(team_parent_tuple)) {
+        throw new Error(
+          `Expected each element in team_to_parent_list to be an array, but received: ${team_parent_tuple}`
+        );
+      }
       if (team_parent_tuple.length != 2) {
         throw new Error(
           `Team to Parent Tuple must have length 2, instead: ${team_parent_tuple}.`
