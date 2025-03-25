@@ -52,6 +52,18 @@
           "title": "Resolve Locations",
           "description": "If true, will resolve location information with Faros Geocoding API.",
           "default": false
+        },
+        "team_to_parent_map": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": "Team to Parent List",
+          "description": "A list with team and parent team ids (not names) in a sub-array, e.g. [['child1', 'parent1'],['child2', 'parent2']]",
+          "default": []
         }
       }
     }
