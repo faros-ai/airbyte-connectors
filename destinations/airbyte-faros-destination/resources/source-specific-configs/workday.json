@@ -53,7 +53,7 @@
           "description": "If true, will resolve location information with Faros Geocoding API.",
           "default": false
         },
-        "team_to_parent_map": {
+        "team_to_parent_list": {
           "type": "array",
           "items": {
             "type": "array",

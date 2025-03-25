@@ -306,11 +306,43 @@ export class Customreports extends Converter {
     return topTeamID;
   }
 
+  private initializeTeamToParentWithInput(
+    ctx: StreamContext
+  ): Record<string, string> {
+    const team_to_parent_list: string[][] =
+      ctx.config.source_specific_configs.workday.team_to_parent_list;
+    const map: Record<string, string> = {};
+    for (const team_parent_tuple of team_to_parent_list) {
+      if (team_parent_tuple.length != 2) {
+        throw new Error(
+          `Team to Parent Tuple must have length 2, instead: ${team_parent_tuple}.`
+        );
+      }
+      const team_id = team_parent_tuple[0];
+      const parent_id = team_parent_tuple[1];
+      if (team_id in map) {
+        throw new Error(
+          `Team ID ${team_id} appears twice in input team to parent list.`
+        );
+      }
+      map[team_id] = parent_id;
+      this.teamIDToTeamName[team_id] = team_id;
+      this.teamIDToTeamName[parent_id] = parent_id;
+    }
+    for (const parentTeamID of Object.values(map)) {
+      if (!(parentTeamID in map)) {
+        map[parentTeamID] = this.FAROS_TEAM_ROOT;
+      }
+    }
+    return map;
+  }
+
   private computeTeamToParentTeamMapping(
     ctx: StreamContext
   ): Record<string, string> {
     ctx.logger.info('Computing team to parent mapping');
-    const teamIDToParentTeamID: Record<string, string> = {};
+    const teamIDToParentTeamID: Record<string, string> =
+      this.initializeTeamToParentWithInput(ctx);
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
     for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
@@ -330,6 +362,7 @@ export class Customreports extends Converter {
           // Expected case - one record per employee
           parent_team_uid = records[0].Team_ID;
         } else if (records.length > 1) {
+          // Hacky
           parent_team_uid = this.determineTeamParentId(records, teamID, ctx);
         }
       } else {
