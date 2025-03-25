@@ -1,0 +1,1 @@
+{"record":{"stream":"mytestsource__jira__faros_issues","emitted_at":1716898894872,"data":{"id":"10456","key":"PLAYG-1","updateAdditionalFields":true,"updated":"2024-03-08T17:59:28.167Z","additionalFields":[["Components","[]"]]}},"type":"RECORD"}
