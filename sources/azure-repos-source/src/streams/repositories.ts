@@ -1,9 +1,9 @@
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Repository} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {Repository} from '../models';
 import {AzureReposStreamBase} from './common';
 
 export class Repositories extends AzureReposStreamBase {

@@ -1,9 +1,8 @@
-import {PullRequestStatus} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {PullRequest} from '../models';
 import {AzureReposStreamBase} from './common';
 
 export class PullRequests extends AzureReposStreamBase {
@@ -31,7 +30,7 @@ export class PullRequests extends AzureReposStreamBase {
   ): Dictionary<any> {
     const newStreamState = currentStreamState;
 
-    if (latestPR.status === PullRequestStatus.Completed) {
+    if (latestPR.status === 'completed') {
       return {
         cutoff:
           new Date(latestPR.closedDate) >

@@ -2,6 +2,8 @@ import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces'
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
+import {getProjectFromUrl} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {BuildStateCategory, JobCategory} from '../common/cicd';
 import {CategoryDetail} from '../common/common';
 import {RepoKey} from '../common/vcs';
@@ -22,36 +24,6 @@ export abstract class AzurePipelineConverter extends Converter {
   /** Almost every Azurepipeline record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  getOrganizationFromUrl(url: string): string | undefined {
-    try {
-      const parsed = new URL(url);
-      const parts = parsed.pathname.split('/');
-
-      if (parts.length < 2 || parts[1] === '') {
-        return undefined;
-      }
-
-      return parts[1];
-    } catch (error) {
-      return undefined;
-    }
-  }
-
-  getProjectFromUrl(url: string): string | undefined {
-    try {
-      const parsed = new URL(url);
-      const parts = parsed.pathname.split('/');
-
-      if (parts.length < 3 || parts[2] === '') {
-        return undefined;
-      }
-
-      return parts[2];
-    } catch (error) {
-      return undefined;
-    }
   }
 
   protected azurePipelineConfig(ctx: StreamContext): AzurePipelineConfig {
@@ -87,8 +59,8 @@ export abstract class AzurePipelineConverter extends Converter {
     const repoType = toLower(repo.type);
 
     if (repoType === 'tfsgit') {
-      const orgName = this.getOrganizationFromUrl(repo.url);
-      const projectName = this.getProjectFromUrl(repo.url);
+      const orgName = getOrganizationFromUrl(repo.url);
+      const projectName = getProjectFromUrl(repo.url);
 
       if (!orgName || !projectName) {
         return undefined;

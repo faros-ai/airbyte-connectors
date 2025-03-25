@@ -8,6 +8,7 @@ import {
   TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
@@ -72,4 +73,24 @@ export interface TimelineRecord
   extends Omit<BaseTimelineRecord, 'result' | 'state'> {
   result: string;
   state: string;
+}
+
+export interface Tag extends GitInterfaces.GitRef {
+  commit?: GitInterfaces.GitAnnotatedTag;
+}
+
+export interface Repository extends GitInterfaces.GitRepository {
+  branches?: GitInterfaces.GitBranchStats[];
+  tags?: Tag[];
+}
+
+export interface PullRequest
+  extends Omit<GitInterfaces.GitPullRequest, 'status'> {
+  status: string;
+  threads: GitInterfaces.GitPullRequestCommentThread[];
+}
+
+export interface Commit extends GitInterfaces.GitCommitRef {
+  repository?: Repository;
+  branch?: string;
 }
