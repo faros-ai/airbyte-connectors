@@ -329,6 +329,8 @@ export class Customreports extends Converter {
       this.teamIDToTeamName[team_id] = team_id;
       this.teamIDToTeamName[parent_id] = parent_id;
     }
+    // For every parent team, if it does not appear as a child to another team,
+    // then it is assumed to be a root team
     for (const parentTeamID of Object.values(map)) {
       if (!(parentTeamID in map)) {
         map[parentTeamID] = this.FAROS_TEAM_ROOT;
