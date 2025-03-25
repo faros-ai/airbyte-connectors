@@ -50,14 +50,15 @@ export class FarosIssues extends JiraConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const issue = record.record.data as Issue;
-    this.seenIssues.add(issue.key);
-
-    const source = this.initializeSource(ctx);
-    const results: DestinationRecord[] = [];
 
     if (issue.updateAdditionalFields) {
       return [this.convertAdditionalFieldsIssue(issue)];
     }
+
+    const source = this.initializeSource(ctx);
+    const results: DestinationRecord[] = [];
+
+    this.seenIssues.add(issue.key);
 
     // For next-gen projects, epic should be parent of issue with issue
     // type Epic otherwise use the epic key from custom field in the issue
