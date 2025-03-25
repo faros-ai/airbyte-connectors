@@ -24,9 +24,9 @@ Array [
   Object {
     "compute_Application": Object {
       "name": "Test App",
-      "platform": "unknown",
+      "platform": "",
       "source": "Wolken",
-      "uid": "Test App_unknown",
+      "uid": "Test App",
     },
   },
   Object {
@@ -41,9 +41,9 @@ Array [
     "compute_ApplicationTag": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "source": "Wolken",
       "tag": Object {
@@ -63,9 +63,9 @@ Array [
     "compute_ApplicationTag": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "source": "Wolken",
       "tag": Object {
@@ -85,9 +85,9 @@ Array [
     "compute_ApplicationTag": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "source": "Wolken",
       "tag": Object {
@@ -107,9 +107,9 @@ Array [
     "compute_ApplicationTag": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "source": "Wolken",
       "tag": Object {
@@ -129,9 +129,9 @@ Array [
     "compute_ApplicationTag": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "source": "Wolken",
       "tag": Object {
@@ -170,9 +170,9 @@ Array [
     "compute_ApplicationPath": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
+        "platform": "",
         "source": "Wolken",
-        "uid": "Test App_unknown",
+        "uid": "Test App",
       },
       "path": Object {
         "uid": "A3F91B6D",
@@ -287,9 +287,9 @@ Array [
   Object {
     "compute_Application": Object {
       "name": "Test App",
-      "platform": "unknown",
+      "platform": "",
       "source": "Wolken",
-      "uid": "Test App_unknown",
+      "uid": "Test App",
     },
   },
   Object {
@@ -388,8 +388,8 @@ Array [
     "ims_IncidentApplicationImpact": Object {
       "application": Object {
         "name": "Test App",
-        "platform": "unknown",
-        "uid": "Test App_unknown",
+        "platform": "",
+        "uid": "Test App",
       },
       "incident": Object {
         "source": "Wolken",
