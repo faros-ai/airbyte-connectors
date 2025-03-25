@@ -67,7 +67,7 @@ export abstract class WolkenConverter extends Converter {
     }
 
     const applicationMapping = this.applicationMapping(ctx);
-    let application = Common.computeApplication(serviceId);
+    let application = Common.computeApplication(serviceId, serviceId);
 
     if (serviceId in applicationMapping && applicationMapping[serviceId].name) {
       const mappedApp = applicationMapping[serviceId];
