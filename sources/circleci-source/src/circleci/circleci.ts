@@ -6,15 +6,20 @@ import axios, {
 } from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
+  Job,
+  Pipeline,
+  Project,
+  TestMetadata,
+  Workflow,
+} from 'faros-airbyte-common/circleci';
+import {
   RoundRobinConfig,
   validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import https from 'https';
-import {maxBy, toLower} from 'lodash';
+import {maxBy, pick, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-
-import {Job, Pipeline, Project, TestMetadata, Workflow} from 'faros-airbyte-common/circleci';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -37,10 +42,20 @@ export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly max_retries?: number;
 }
 
+type CompactJob = Pick<
+  Job,
+  'id' | 'job_number' | 'started_at' | 'stopped_at'
+> & {pipeline: Pick<Pipeline, 'id' | 'vcs' | 'project_slug'>} & {
+  workflow: Pick<Workflow, 'id' | 'name'>;
+};
+
 export class CircleCI {
   private static circleCI: CircleCI = undefined;
   private readonly cutoffDays: number;
   private readonly maxRetries: number;
+  private readonly fetchedJobIdsPerProject: Map<string, Set<string>> =
+    new Map();
+  private readonly fetchedJobsPerProject: Map<string, CompactJob[]> = new Map();
 
   constructor(
     config: CircleCIConfig,
@@ -335,6 +350,7 @@ export class CircleCI {
         pipeline.workflows = workflows;
         for (const workflow of pipeline.workflows) {
           workflow.jobs = await this.fetchJobs(workflow.id);
+          this.storeFetchedJobs(pipeline, workflow, projectName);
         }
         yield pipeline;
       }
@@ -396,6 +412,34 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+  }
+
+  private storeFetchedJobs(
+    pipeline: Pipeline,
+    workflow: Workflow,
+    projectSlug: string
+  ): void {
+    const project = toLower(projectSlug);
+    for (const job of workflow.jobs) {
+      if (!this.fetchedJobIdsPerProject.has(project)) {
+        this.fetchedJobIdsPerProject.set(project, new Set());
+      }
+      if (!this.fetchedJobIdsPerProject.get(project).has(job.id)) {
+        this.fetchedJobIdsPerProject.get(project).add(job.id);
+        if (!this.fetchedJobsPerProject.has(project)) {
+          this.fetchedJobsPerProject.set(project, []);
+        }
+        this.fetchedJobsPerProject.get(project).push({
+          ...pick(job, ['id', 'job_number', 'started_at', 'stopped_at']),
+          pipeline: pick(pipeline, ['id', 'vcs', 'project_slug']),
+          workflow: pick(workflow, ['id', 'name']),
+        });
+      }
+    }
+  }
+
+  getFetchedJobs(projectSlug: string): CompactJob[] {
+    return this.fetchedJobsPerProject.get(toLower(projectSlug)) ?? [];
   }
 }
 
