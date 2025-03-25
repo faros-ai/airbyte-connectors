@@ -62,7 +62,7 @@
             }
           },
           "title": "Team to Parent List",
-          "description": "A list with team and parent team ids (not names) in a sub-array, e.g. [['child1', 'parent1'],['child2', 'parent2']]",
+          "description": "A list with team and parent team ids (not names) in a sub-array, e.g. [['child1', 'parent1'],['child2', 'parent2'], ...]",
           "default": []
         }
       }
