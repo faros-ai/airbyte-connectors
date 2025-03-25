@@ -3,6 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -19,7 +20,7 @@ export class Builds extends AzurePipelineConverter {
     'qa_CodeQuality',
   ];
 
-  private seenRepositories = new Set<string>();
+  private readonly seenRepositories = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -29,8 +30,9 @@ export class Builds extends AzurePipelineConverter {
     const build = record.record.data as Build;
     const uid = String(build.id);
 
-    const organizationName = this.getOrganizationFromUrl(build.url);
+    const organizationName = getOrganizationFromUrl(build.url);
     if (!organizationName) {
+      ctx?.logger.warn(`Build ${uid} has no organization name`);
       return [];
     }
 

@@ -12,6 +12,35 @@ export interface VcsDiffStats {
   filesChanged: number;
 }
 
+export enum OrgTypeCategory {
+  Organization = 'Organization',
+  Workspace = 'Workspace',
+  Group = 'Group',
+  Custom = 'Custom',
+}
+
+export enum PullRequestStateCategory {
+  Closed = 'Closed',
+  Merged = 'Merged',
+  Open = 'Open',
+  Custom = 'Custom',
+}
+
+export enum PullRequestReviewStateCategory {
+  Approved = 'Approved',
+  Commented = 'Commented',
+  ChangesRequested = 'ChangesRequested',
+  Dismissed = 'Dismissed',
+  Custom = 'Custom',
+}
+
+export enum UserTypeCategory {
+  Bot = 'Bot',
+  Organization = 'Organization',
+  User = 'User',
+  Custom = 'Custom',
+}
+
 export type OrgKey = {uid: string; source: string};
 export type RepoKey = {uid: string; name: string; organization: OrgKey};
 export type PullRequestKey = {

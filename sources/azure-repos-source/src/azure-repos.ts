@@ -12,12 +12,15 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
   AzureDevOpsClient,
+  Commit,
+  PullRequest,
+  Repository,
+  Tag,
 } from 'faros-airbyte-common/azure-devops';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Commit, PullRequest, Repository, Tag} from './models';
 export const DEFAULT_BRANCH_PATTERN = '^main$';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -169,7 +172,13 @@ export class AzureRepos extends AzureDevOps {
       top: number,
       skip: number | string
     ): Promise<GitCommitRef[]> =>
-      this.client.git.getCommits(repo.id, searchCriteria, project, skip as number, top);
+      this.client.git.getCommits(
+        repo.id,
+        searchCriteria,
+        project,
+        skip as number,
+        top
+      );
 
     yield* this.getPaginated<GitCommitRef>(getCommitsFn);
   }
@@ -299,7 +308,8 @@ export class AzureRepos extends AzureDevOps {
         pullRequest.pullRequestId,
         project
       );
-      yield {...pullRequest, threads};
+      const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
+      yield {...pullRequest, status, threads};
     }
   }
 }
