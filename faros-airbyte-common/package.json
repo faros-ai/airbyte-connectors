@@ -43,9 +43,6 @@
   },
   "typesVersions": {
     "*": {
-      "azurepipeline": [
-        "./lib/azurepipeline/index.d.ts"
-      ],
       "azure-devops": [
         "./lib/azure-devops/index.d.ts"
       ],
