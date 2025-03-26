@@ -108,7 +108,6 @@ export class PullRequests extends AzureReposConverter {
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
-    'vcs_User',
   ];
 
   // TODO: Review commits and work items associations
