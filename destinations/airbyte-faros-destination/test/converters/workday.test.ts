@@ -45,7 +45,8 @@ function updateCustomReportWithFields(
 function getCustomReportandCtxGivenKey(
   mockttp: Mockttp,
   k: string,
-  fail_on_cycles: boolean = false
+  fail_on_cycles: boolean = false,
+  team_to_parent_list: string[] = []
 ): [Customreports, StreamContext] {
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
@@ -56,7 +57,12 @@ function getCustomReportandCtxGivenKey(
     edition: Edition.CLOUD,
     edition_configs: {},
     source_specific_configs: {
-      workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles},
+      workday: {
+        orgs_to_keep,
+        orgs_to_ignore,
+        fail_on_cycles,
+        team_to_parent_list,
+      },
     },
   });
 
@@ -87,7 +93,7 @@ describe('workday', () => {
     keep_terminated_employees = false,
     resolve_locations = false,
     log_records = false,
-    team_to_parent_list = []
+    team_to_parent_list: string[] = []
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
@@ -245,6 +251,19 @@ describe('workday', () => {
       configPath,
       catalogPath: 'test/resources/workday/catalog.json',
       inputRecordsPath: 'workday/stream_v6.log',
+    });
+  });
+
+  test('Combine input team parent arrays with the rest v7 stream', async () => {
+    const configPath = await getTempConfig([], [], false, false, false, [
+      'A:B',
+      'B:D',
+      'C:D',
+    ]);
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v7.log',
     });
   });
 

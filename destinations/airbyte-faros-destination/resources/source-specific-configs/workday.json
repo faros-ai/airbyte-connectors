@@ -56,13 +56,10 @@
         "team_to_parent_list": {
           "type": "array",
           "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "string"
           },
           "title": "Team to Parent List",
-          "description": "A list with team and parent team ids (not names) in a sub-array, e.g. [['child1', 'parent1'],['child2', 'parent2'], ...]",
+          "description": "A list with strings containing team to parent team ids (not names) in X:Y format, e.g. [['child1:parent1'],['child2:parent2'], ...]",
           "default": []
         }
       }

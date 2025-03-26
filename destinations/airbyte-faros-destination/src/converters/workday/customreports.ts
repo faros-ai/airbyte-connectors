@@ -53,6 +53,8 @@ export class Customreports extends Converter {
   skipped_due_to_termination = 0;
   employees_with_more_than_one_record: Record<string, number> = {};
   failedRecordFields: Set<string> = new Set<string>();
+  // Store all the input teams for reference in the end
+  teamToParentListInputTeams: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
   id(record: AirbyteRecord): any {
@@ -309,7 +311,7 @@ export class Customreports extends Converter {
   private initializeTeamToParentWithInput(
     ctx: StreamContext
   ): Record<string, string> {
-    const team_to_parent_list: string[][] | null =
+    const team_to_parent_list: string[] | null =
       ctx.config.source_specific_configs?.workday?.team_to_parent_list;
     if (!team_to_parent_list) {
       ctx.logger.warn('No team to parent list provided in config');
@@ -321,15 +323,18 @@ export class Customreports extends Converter {
       );
     }
     const map: Record<string, string> = {};
-    for (const team_parent_tuple of team_to_parent_list) {
-      if (!Array.isArray(team_parent_tuple)) {
+    for (const team_parent_str of team_to_parent_list) {
+      // check if team_parent_str is a string:
+      if (typeof team_parent_str !== 'string') {
         throw new Error(
-          `Expected each element in team_to_parent_list to be an array, but received: ${team_parent_tuple}`
+          `Expected each element in team_to_parent_list to be a string, but received: ${team_parent_str}`
         );
       }
+      // If it does not contain one colon, it is an error:
+      const team_parent_tuple: string[] = team_parent_str.split(':');
       if (team_parent_tuple.length != 2) {
         throw new Error(
-          `Team to Parent Tuple must have length 2, instead: ${team_parent_tuple}.`
+          `Team to Parent Tuple must have length 2, instead: ${team_parent_tuple}, from string: ${team_parent_str}`
         );
       }
       const team_id = team_parent_tuple[0];
@@ -342,6 +347,8 @@ export class Customreports extends Converter {
       map[team_id] = parent_id;
       this.teamIDToTeamName[team_id] = team_id;
       this.teamIDToTeamName[parent_id] = parent_id;
+      this.teamToParentListInputTeams.add(team_id);
+      this.teamToParentListInputTeams.add(parent_id);
     }
     // For every parent team, if it does not appear as a child to another team,
     // then it is assumed to be a root team
@@ -362,6 +369,10 @@ export class Customreports extends Converter {
     teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
     for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
+      if (teamID in teamIDToParentTeamID) {
+        // This is the case where the team is already in the input list
+        continue;
+      }
       const manager_id = this.getManagerIDFromList(recs);
       if (!manager_id) {
         this.generalLogCollection.push(
@@ -639,6 +650,18 @@ export class Customreports extends Converter {
     teamID: string,
     teamIDToParentID: Record<string, string>
   ): DestinationRecord {
+    // Only an input list team
+    if (this.teamToParentListInputTeams.has(teamID)) {
+      return {
+        model: 'org_Team',
+        record: {
+          uid: teamID,
+          name: this.teamIDToTeamName[teamID],
+          parentTeam: {uid: teamIDToParentID[teamID]},
+        },
+      };
+    }
+    // Standard teams
     const manager_id = this.getManagerIDFromList(
       this.teamIDToManagerIDs[teamID]
     );
