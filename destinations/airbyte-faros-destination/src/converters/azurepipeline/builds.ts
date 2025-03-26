@@ -1,7 +1,9 @@
+import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Build, CoverageStats, Tag} from 'faros-airbyte-common/azurepipeline';
+import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
+import {Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
@@ -195,7 +197,10 @@ export class Builds extends AzurePipelineConverter {
     return res;
   }
 
-  private getMeasures(coverage: CoverageStats, ctx?: StreamContext): any {
+  private getMeasures(
+    coverage: CodeCoverageStatistics,
+    ctx?: StreamContext
+  ): any {
     switch (coverage.label) {
       case 'Lines':
         return {

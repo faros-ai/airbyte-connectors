@@ -5,6 +5,7 @@ import {
   BuildResult,
   BuildStatus,
   TaskResult,
+  TimelineRecordState,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {
   ProjectReference,
@@ -16,12 +17,15 @@ import {
   CoverageDetailedSummaryStatus,
 } from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {wrapApiError} from 'faros-airbyte-cdk';
-import {AzureDevOps} from 'faros-airbyte-common/azure-devops';
+import {
+  AzureDevOps,
+  Build,
+  Pipeline,
+  TimelineRecord,
+} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
-
-import * as types from './types';
 
 export class AzurePipelines extends AzureDevOps {
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -47,13 +51,11 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
-  async *getPipelines(
-    project: ProjectReference
-  ): AsyncGenerator<types.Pipeline> {
+  async *getPipelines(project: ProjectReference): AsyncGenerator<Pipeline> {
     const pipelines = await this.client.pipelines.listPipelines(project.id);
     for (const pipeline of pipelines) {
       yield {
-        projectName: project.name,
+        project,
         ...pipeline,
       };
     }
@@ -63,7 +65,7 @@ export class AzurePipelines extends AzureDevOps {
   async *getBuilds(
     project: ProjectReference,
     lastFinishTime?: number
-  ): AsyncGenerator<types.Build> {
+  ): AsyncGenerator<Build> {
     const minTime = lastFinishTime
       ? Utils.toDate(lastFinishTime)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
@@ -151,7 +153,7 @@ export class AzurePipelines extends AzureDevOps {
   private async getJobs(
     projectId: string,
     buildId: number
-  ): Promise<types.TimelineRecord[]> {
+  ): Promise<TimelineRecord[]> {
     const timeline = await this.client.build.getBuildTimeline(
       projectId,
       buildId
@@ -164,7 +166,8 @@ export class AzurePipelines extends AzureDevOps {
       .filter((r) => r.type === 'Job')
       .map((r) => ({
         ...r,
-        result: r.result ? TaskResult[r.result].toLowerCase() : undefined,
+        state: TimelineRecordState[r.state]?.toLowerCase(),
+        result: TaskResult[r.result]?.toLowerCase(),
       }));
   }
 

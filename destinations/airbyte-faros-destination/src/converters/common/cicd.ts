@@ -16,6 +16,22 @@ export interface ArtifactKey {
   repository: CicdRepoKey;
 }
 
+export enum BuildStateCategory {
+  Unknown = 'Unknown',
+  Canceled = 'Canceled',
+  Failed = 'Failed',
+  Success = 'Success',
+  Running = 'Running',
+  Queued = 'Queued',
+  Custom = 'Custom',
+}
+
+export enum JobCategory {
+  Custom = 'Custom',
+  Script = 'Script',
+  Manual = 'Manual',
+}
+
 const cicdArtifactQueryByCommitSha = getQueryFromName(
   'cicdArtifactQueryByCommitSha'
 );
