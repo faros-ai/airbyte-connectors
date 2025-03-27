@@ -1,9 +1,11 @@
+import {ChangeCountDictionary} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {getOrganizationFromUrl} from '../common/azure-devops';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
-import {Commit, CommitChange} from './models';
 
 export class Commits extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -12,22 +14,20 @@ export class Commits extends AzureReposConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const commitItem = record.record.data as Commit;
     const res: DestinationRecord[] = [];
-    const organizationName = this.getOrganizationFromUrl(commitItem.url);
+    const organizationName = getOrganizationFromUrl(commitItem.url);
     const organization = {uid: organizationName, source};
 
-    if (!commitItem.repository) return res;
-
-    const projectRepo = this.getProjectRepo(commitItem.repository);
-    const repository = {
-      name: projectRepo,
-      uid: projectRepo,
-      organization,
-    };
+    if (!commitItem.repository) {
+      ctx.logger.error('No repository found for commit', commitItem.commitId);
+      return res;
+    }
+    const repository = this.getProjectRepo(commitItem.repository, organization);
 
     const author = commitItem.author?.email
       ? {uid: commitItem.author.email.toLowerCase(), source}
@@ -73,13 +73,15 @@ export class Commits extends AzureReposConverter {
   }
 }
 
-function getTotalChangeCount(changeCounts?: CommitChange): number | undefined {
+function getTotalChangeCount(
+  changeCounts?: ChangeCountDictionary
+): number | undefined {
   if (!changeCounts) {
     return undefined;
   }
   return (
-    (changeCounts.Add ?? 0) +
-    (changeCounts.Edit ?? 0) +
-    (changeCounts.Delete ?? 0)
+    (changeCounts['Add'] ?? 0) +
+    (changeCounts['Edit'] ?? 0) +
+    (changeCounts['Delete'] ?? 0)
   );
 }

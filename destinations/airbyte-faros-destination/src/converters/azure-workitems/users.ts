@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {User} from './models';
-import {Common} from '../common/common';
 
 export class Users extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];

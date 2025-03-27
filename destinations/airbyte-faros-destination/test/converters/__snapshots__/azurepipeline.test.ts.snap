@@ -341,7 +341,7 @@ Array [
       },
       "source": "AzurePipeline",
       "uid": "TfsGit:123",
-      "url": "https://dev.azure.com/Test-Org/Test%20Project/_git/Repository.Test",
+      "url": "https://my-azure-server.com/Test-Org/Test%20Project/_git/Repository.Test",
     },
   },
   Object {
