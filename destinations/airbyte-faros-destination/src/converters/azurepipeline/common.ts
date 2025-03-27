@@ -2,8 +2,10 @@ import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces'
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {getProjectFromUrl} from '../common/azure-devops';
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {
+  getOrganizationFromUrl,
+  getProjectFromUrl,
+} from '../common/azure-devops';
 import {BuildStateCategory, JobCategory} from '../common/cicd';
 import {CategoryDetail} from '../common/common';
 import {RepoKey} from '../common/vcs';
