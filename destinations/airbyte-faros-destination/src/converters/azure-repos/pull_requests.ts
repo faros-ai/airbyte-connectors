@@ -1,21 +1,23 @@
+import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {GitPullRequestCommentThread} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {Common} from '../common/common';
-import {VcsDiffStats} from '../common/vcs';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {getOrganizationFromUrl} from '../common/azure-devops';
+import {CategoryDetail, Common} from '../common/common';
+import {
+  PullRequestKey,
+  PullRequestReviewStateCategory,
+  PullRequestStateCategory,
+  VcsDiffStats,
+} from '../common/vcs';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
   AzureReposConverter,
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
-import {
-  PullRequest,
-  PullRequestReviewState,
-  PullRequestReviewStateCategory,
-  PullRequestState,
-  PullRequestStateCategory,
-} from './models';
 
 interface ReviewThread {
   reviewerUid: string;
@@ -23,21 +25,18 @@ interface ReviewThread {
   publishedDate: Date;
 }
 
-function getPartialUserRecord(obj: {
-  uniqueName: string;
-  displayName: string;
-}): PartialUserRecord {
-  if (Common.isEmail(obj.uniqueName)) {
-    const email = obj.uniqueName.toLowerCase();
+function getPartialUserRecord(user: IdentityRef): PartialUserRecord {
+  if (Common.isEmail(user.uniqueName)) {
+    const email = user.uniqueName.toLowerCase();
     return {
       uid: email,
-      name: obj.displayName,
+      name: user.displayName,
       email,
     };
   }
   return {
-    uid: obj.uniqueName,
-    name: obj.displayName,
+    uid: user.uniqueName,
+    name: user.displayName,
   };
 }
 
@@ -45,7 +44,7 @@ function getPartialUserRecord(obj: {
 function convertPullRequestState(
   status: string,
   mergeCommitId?: string
-): PullRequestState {
+): CategoryDetail {
   switch (status) {
     case 'completed':
       return {
@@ -79,7 +78,7 @@ function convertPullRequestState(
   }
 }
 
-function convertPullRequestReviewState(vote: number): PullRequestReviewState {
+function convertPullRequestReviewState(vote: number): CategoryDetail {
   if (vote > 5)
     return {
       category: PullRequestReviewStateCategory.Approved,
@@ -103,32 +102,39 @@ function convertPullRequestReviewState(vote: number): PullRequestReviewState {
 
 export class PullRequests extends AzureReposConverter {
   private partialUserRecords: Record<string, PartialUserRecord> = {};
-  private reviewThreads: ReviewThread[] = [];
+  private readonly reviewThreads: ReviewThread[] = [];
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
-    'vcs_User',
   ];
 
+  // TODO: Review commits and work items associations
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
 
     const pullRequestItem = record.record.data as PullRequest;
-    const organizationName = this.getOrganizationFromUrl(
+    const organizationName = getOrganizationFromUrl(
       pullRequestItem.repository.url
     );
     const organization = {uid: organizationName, source};
-    const projectRepo = this.getProjectRepo(pullRequestItem.repository);
-    const repository = {
-      name: projectRepo,
-      uid: projectRepo,
-      organization,
-    };
-    const pullRequest = {
+    if (!pullRequestItem.repository) {
+      ctx.logger.error(
+        `No repository found for pull request ${pullRequestItem.pullRequestId}`
+      );
+      return [];
+    }
+
+    const repository = this.getProjectRepo(
+      pullRequestItem.repository,
+      organization
+    );
+
+    const pullRequest: PullRequestKey = {
       number: pullRequestItem.pullRequestId,
       uid: pullRequestItem.pullRequestId.toString(),
       repository,
@@ -136,50 +142,12 @@ export class PullRequests extends AzureReposConverter {
 
     const res: DestinationRecord[] = [];
 
-    let maxThreadLastUpdatedDate: Date | undefined;
     this.reviewThreads.length = 0; // clear array
-    for (const thread of pullRequestItem.threads ?? []) {
-      for (const comment of thread.comments) {
-        const author = getPartialUserRecord(comment.author);
-        res.push({
-          model: 'vcs_PullRequestComment',
-          record: {
-            number: comment.id,
-            uid: comment.id.toString(),
-            comment: Utils.cleanAndTruncate(
-              comment.content,
-              MAX_DESCRIPTION_LENGTH
-            ),
-            createdAt: Utils.toDate(comment.publishedDate),
-            updatedAt: Utils.toDate(comment.lastUpdatedDate),
-            author: {uid: author.uid, source},
-            pullRequest,
-          },
-        });
-      }
-
-      const properties = thread.properties ?? {};
-      const vote = parseInt(properties['CodeReviewVoteResult']?.$value);
-      const voteIdentityRef = properties['CodeReviewVotedByIdentity']?.$value;
-      const voteIdentity = thread.identities?.[voteIdentityRef];
-      if (Number.isInteger(vote) && voteIdentity?.uniqueName) {
-        this.reviewThreads.push({
-          reviewerUid: voteIdentity.uniqueName,
-          vote,
-          publishedDate: Utils.toDate(thread.publishedDate),
-        });
-      }
-
-      if (thread.lastUpdatedDate) {
-        const lastUpdatedDate = Utils.toDate(thread.lastUpdatedDate);
-        if (
-          !maxThreadLastUpdatedDate ||
-          lastUpdatedDate > maxThreadLastUpdatedDate
-        ) {
-          maxThreadLastUpdatedDate = lastUpdatedDate;
-        }
-      }
-    }
+    const {maxThreadLastUpdatedDate, comments} = this.getReviewComments(
+      pullRequestItem.threads,
+      pullRequest
+    );
+    res.push(...comments);
 
     const mergeCommitId = pullRequestItem.lastMergeCommit?.commitId;
     const mergeCommit = mergeCommitId
@@ -254,6 +222,60 @@ export class PullRequests extends AzureReposConverter {
     }
 
     return res;
+  }
+
+  private getReviewComments(
+    threads: GitPullRequestCommentThread[],
+    pullRequest: PullRequestKey
+  ): {
+    maxThreadLastUpdatedDate: Date | undefined;
+    comments: DestinationRecord[];
+  } {
+    const comments: DestinationRecord[] = [];
+    let maxThreadLastUpdatedDate: Date | undefined;
+    for (const thread of threads ?? []) {
+      for (const comment of thread.comments) {
+        const author = getPartialUserRecord(comment.author);
+        comments.push({
+          model: 'vcs_PullRequestComment',
+          record: {
+            number: comment.id,
+            uid: comment.id.toString(),
+            comment: Utils.cleanAndTruncate(
+              comment.content,
+              MAX_DESCRIPTION_LENGTH
+            ),
+            createdAt: Utils.toDate(comment.publishedDate),
+            updatedAt: Utils.toDate(comment.lastUpdatedDate),
+            author: {uid: author.uid, source: this.streamName.source},
+            pullRequest,
+          },
+        });
+      }
+
+      const properties = thread.properties ?? {};
+      const vote = parseInt(properties['CodeReviewVoteResult']?.$value);
+      const voteIdentityRef = properties['CodeReviewVotedByIdentity']?.$value;
+      const voteIdentity = thread.identities?.[voteIdentityRef];
+      if (Number.isInteger(vote) && voteIdentity?.uniqueName) {
+        this.reviewThreads.push({
+          reviewerUid: voteIdentity.uniqueName,
+          vote,
+          publishedDate: Utils.toDate(thread.publishedDate),
+        });
+      }
+
+      if (thread.lastUpdatedDate) {
+        const lastUpdatedDate = Utils.toDate(thread.lastUpdatedDate);
+        if (
+          !maxThreadLastUpdatedDate ||
+          lastUpdatedDate > maxThreadLastUpdatedDate
+        ) {
+          maxThreadLastUpdatedDate = lastUpdatedDate;
+        }
+      }
+    }
+    return {maxThreadLastUpdatedDate, comments};
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {

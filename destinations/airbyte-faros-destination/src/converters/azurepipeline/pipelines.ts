@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Pipeline} from 'faros-airbyte-common/azure-devops';
 
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 
@@ -10,7 +11,7 @@ export class Pipelines extends AzurePipelineConverter {
     'cicd_Pipeline',
   ];
 
-  private seenOrganizations = new Set<string>();
+  private readonly seenOrganizations = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -20,8 +21,11 @@ export class Pipelines extends AzurePipelineConverter {
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    const organizationName = this.getOrganizationFromUrl(pipeline.url);
+    const organizationName = getOrganizationFromUrl(pipeline.url);
     if (!organizationName) {
+      ctx.logger.error(
+        `No organization found for pipeline ${pipeline.id}. URL: ${pipeline.url}`
+      );
       return [];
     }
 
