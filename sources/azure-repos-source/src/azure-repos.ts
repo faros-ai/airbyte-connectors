@@ -6,6 +6,7 @@ import {
   GitPullRequestSearchCriteria,
   GitQueryCommitsCriteria,
   GitRepository,
+  PullRequestAsyncStatus,
   PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
@@ -366,7 +367,8 @@ export class AzureRepos extends AzureDevOps {
         project
       );
       const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
-      yield {...pullRequest, status, threads};
+      const mergeStatus = PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
+      yield {...pullRequest, status, mergeStatus, threads};
     }
   }
 }
