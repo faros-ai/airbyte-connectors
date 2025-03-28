@@ -40,10 +40,18 @@ export class Commits extends AzureReposStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.instance(
+    const azureRepos = await AzureRepos.instance<AzureRepos>(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
+    this.logger.debug(
+      this.config.fetch_branch_commits
+        ? `Fetching commits from branches matching pattern ${this.config.branch_pattern}`
+        : `Fetching commits from default branch only`
     );
     // TODO: Should use project slices
     yield* azureRepos.getCommits(since, this.config.projects);

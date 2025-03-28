@@ -7,6 +7,7 @@ import {Utils} from 'faros-js-client';
 import {getOrganizationFromUrl} from '../common/azure-devops';
 import {CategoryDetail, Common} from '../common/common';
 import {
+  BranchCollector,
   PullRequestKey,
   PullRequestReviewStateCategory,
   PullRequestStateCategory,
@@ -18,6 +19,8 @@ import {
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
+
+const BRANCH_REF_NAME_PREFIX = 'refs/heads/';
 
 interface ReviewThread {
   reviewerUid: string;
@@ -103,6 +106,7 @@ function convertPullRequestReviewState(vote: number): CategoryDetail {
 export class PullRequests extends AzureReposConverter {
   private partialUserRecords: Record<string, PartialUserRecord> = {};
   private readonly reviewThreads: ReviewThread[] = [];
+  private readonly branchCollector = new BranchCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
@@ -169,6 +173,17 @@ export class PullRequests extends AzureReposConverter {
       this.partialUserRecords[author.uid] = author;
     }
 
+    const sourceBranchName = this.getBranchName(pullRequestItem.sourceRefName);
+    const targetBranchName = this.getBranchName(pullRequestItem.targetRefName);
+    const sourceBranch = this.branchCollector.collectBranch(
+      sourceBranchName,
+      repository
+    );
+    const targetBranch = this.branchCollector.collectBranch(
+      targetBranchName,
+      repository
+    );
+
     const prRecord = {
       number: pullRequestItem.pullRequestId,
       uid: pullRequestItem.pullRequestId.toString(),
@@ -182,6 +197,10 @@ export class PullRequests extends AzureReposConverter {
       commentCount: pullRequestItem.threads.length,
       author: author ? {uid: author.uid, source} : undefined,
       mergeCommit,
+      sourceBranchName,
+      sourceBranch,
+      targetBranchName,
+      targetBranch,
       repository,
     };
     const diffStats = this.getDiffStats(mergeCommitId);
@@ -290,7 +309,7 @@ export class PullRequests extends AzureReposConverter {
         record: {...this.partialUserRecords[uid], source},
       });
     }
-    return records;
+    return [...records, ...this.branchCollector.convertBranches()];
   }
 
   getDiffStats(mergeCommitId?: string): VcsDiffStats | undefined {
@@ -305,5 +324,15 @@ export class PullRequests extends AzureReposConverter {
       linesAdded: 0, // TODO: get this from file diff api
       linesDeleted: 0,
     };
+  }
+
+  private getBranchName(branchRefName: string): string {
+    if (!branchRefName) {
+      return undefined;
+    }
+    if (branchRefName.startsWith(BRANCH_REF_NAME_PREFIX)) {
+      return branchRefName.slice(BRANCH_REF_NAME_PREFIX.length);
+    }
+    return branchRefName;
   }
 }

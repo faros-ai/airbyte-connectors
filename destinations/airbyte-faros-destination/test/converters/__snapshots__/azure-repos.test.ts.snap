@@ -4,8 +4,8 @@ exports[`azure-repos basic test process records from all streams 1`] = `
 Array [
   "Processed 17 records",
   "Processed records by stream: {\\\\\\"mytestsource__azure-repos__commits\\\\\\":7,\\\\\\"mytestsource__azure-repos__pull_requests\\\\\\":2,\\\\\\"mytestsource__azure-repos__repositories\\\\\\":5,\\\\\\"mytestsource__azure-repos__users\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 46 records",
-  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":5,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 49 records",
+  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":8,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -537,10 +537,36 @@ Array [
         "uid": "test:test",
       },
       "source": "Azure-Repos",
+      "sourceBranch": Object {
+        "name": "test2",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "test2",
+      },
+      "sourceBranchName": "test2",
       "state": Object {
         "category": "Merged",
         "detail": "completed",
       },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "targetBranchName": "main",
       "title": "Updated AnotherFile.md",
       "uid": "2",
       "updatedAt": "2023-01-07T01:20:34.537Z",
@@ -690,10 +716,36 @@ Array [
         "uid": "test:test",
       },
       "source": "Azure-Repos",
+      "sourceBranch": Object {
+        "name": "test1",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "test1",
+      },
+      "sourceBranchName": "test1",
       "state": Object {
         "category": "Merged",
         "detail": "completed",
       },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "targetBranchName": "main",
       "title": "Test PR 1",
       "uid": "1",
       "updatedAt": "2023-01-05T18:05:32.003Z",
@@ -1027,6 +1079,51 @@ Array [
       "name": "External Test Tester",
       "source": "Azure-Repos",
       "uid": "externaltest@gmail.com",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "test2",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "test2",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "main",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "main",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "test1",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "test1",
     },
   },
 ]

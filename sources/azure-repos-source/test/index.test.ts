@@ -173,6 +173,48 @@ describe('index', () => {
     expect(commits).toMatchSnapshot();
   });
 
+  test('streams - commits, fetch branch commits', async () => {
+    AzureRepos.instance = jest.fn().mockImplementation(() => {
+      const reposResource = readTestResourceFile('repositories.json');
+      const repos = reposResource.map((repo) =>
+        omit(repo, ['branches', 'tags'])
+      );
+      const commits = readTestResourceFile('commits.json');
+      const branches = readTestResourceFile('branches.json');
+      return new AzureRepos(
+        {
+          core: {
+            getProject: jest
+              .fn()
+              .mockResolvedValueOnce({id: 'project', name: 'project'}),
+          },
+          git: {
+            getRepositories: jest.fn().mockResolvedValueOnce(repos),
+            getCommits: jest.fn().mockResolvedValue(commits),
+            getBranches: jest.fn().mockResolvedValueOnce(branches),
+          },
+        } as unknown as AzureDevOpsClient,
+        cutoffDays,
+        top,
+        logger,
+        ALL_BRANCHES_PATTERN,
+        [],
+        false,
+        true
+      );
+    });
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams(config);
+
+    const commitsStream = streams[0];
+    const commitIter = commitsStream.readRecords(SyncMode.FULL_REFRESH);
+    const commits = [];
+    for await (const pullrequest of commitIter) {
+      commits.push(pullrequest);
+    }
+    expect(commits).toMatchSnapshot();
+  });
+
   test('streams - pullrequests, use full_refresh sync mode', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
       const repos = readTestResourceFile('repositories.json');
@@ -220,9 +262,12 @@ describe('index', () => {
 
   test('streams - repositories, use full_refresh sync mode', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const repos = readTestResourceFile('repositories.json');
+      const reposResource = readTestResourceFile('repositories.json');
+      const repos = reposResource.map((repo) =>
+        omit(repo, ['branches', 'tags'])
+      );
 
-      const tagResult = repos[0].tags[0];
+      const tagResult = reposResource[0].tags[0];
       const tag = {
         name: tagResult.name,
         objectId: tagResult.objectId,
@@ -236,9 +281,98 @@ describe('index', () => {
         {
           git: {
             getRepositories: jest.fn().mockResolvedValue(repos),
-            getBranches: jest.fn().mockResolvedValue(repos[0].branches),
+            getBranches: jest.fn().mockResolvedValue(reposResource[0].branches),
             getRefs: jest.fn().mockResolvedValue([tag]),
             getAnnotatedTag: jest.fn().mockResolvedValue(tagResult.commit),
+          },
+        } as unknown as AzureDevOpsClient,
+        cutoffDays,
+        top,
+        logger,
+        ALL_BRANCHES_PATTERN,
+        [],
+        true
+      );
+    });
+
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams({} as any);
+
+    const repositoriesStream = streams[2];
+    const repositoryIter = repositoriesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {name: 'Project', id: 'project'}
+    );
+    const repositories = [];
+    for await (const repository of repositoryIter) {
+      repositories.push(repository);
+    }
+    expect(repositories).toMatchSnapshot();
+  });
+
+  test('streams - repositories, filter by repository', async () => {
+    AzureRepos.instance = jest.fn().mockImplementation(() => {
+      const reposResource = readTestResourceFile('repositories.json');
+      const repos = reposResource.map((repo) =>
+        omit(repo, ['branches', 'tags'])
+      );
+
+      const tagResult = reposResource[0].tags[0];
+      const tag = {
+        name: tagResult.name,
+        objectId: tagResult.objectId,
+        creator: tagResult.creator,
+        message: tagResult.message,
+        url: tagResult.url,
+        peeledObjectId: tagResult.commit.objectId,
+      };
+
+      return new AzureRepos(
+        {
+          git: {
+            getRepositories: jest.fn().mockResolvedValue(repos),
+            getBranches: jest.fn().mockResolvedValue(reposResource[0].branches),
+            getRefs: jest.fn().mockResolvedValue([tag]),
+            getAnnotatedTag: jest.fn().mockResolvedValue(tagResult.commit),
+          },
+        } as unknown as AzureDevOpsClient,
+        cutoffDays,
+        top,
+        logger,
+        ALL_BRANCHES_PATTERN,
+        ['devcube/another-test.git']
+      );
+    });
+
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams({} as any);
+
+    const repositoriesStream = streams[2];
+    const repositoryIter = repositoriesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {name: 'devcube', id: 'bca8259d-36c6-4a40-bedf-b810d54c5ceb'}
+    );
+    const repositories = [];
+    for await (const repository of repositoryIter) {
+      repositories.push(repository);
+    }
+    expect(repositories).toHaveLength(0);
+  });
+
+  test('streams - repositories, tags disabled', async () => {
+    AzureRepos.instance = jest.fn().mockImplementation(() => {
+      const reposResource = readTestResourceFile('repositories.json');
+      const repos = reposResource.map((repo) =>
+        omit(repo, ['branches', 'tags'])
+      );
+
+      return new AzureRepos(
+        {
+          git: {
+            getRepositories: jest.fn().mockResolvedValue(repos),
+            getBranches: jest.fn().mockResolvedValue(reposResource[0].branches),
           },
         } as unknown as AzureDevOpsClient,
         cutoffDays,

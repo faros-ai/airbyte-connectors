@@ -12,7 +12,6 @@ export class Repositories extends AzureReposConverter {
     'vcs_Organization',
     'vcs_Repository',
     'vcs_Branch',
-    'vcs_Tag',
   ];
 
   private readonly seenOrganizations = new Set<string>();

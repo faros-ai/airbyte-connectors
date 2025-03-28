@@ -52,10 +52,13 @@ export class PullRequests extends AzureReposStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.instance(
+    const azureRepos = await AzureRepos.instance<AzureRepos>(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
     );
     // TODO: Should use project slices or repository slices
     yield* azureRepos.getPullRequests(since, this.config.projects);

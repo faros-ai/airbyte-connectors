@@ -26,7 +26,15 @@ export class Repositories extends AzureReposStreamBase {
     cursorField?: string[],
     streamSlice?: TeamProject
   ): AsyncGenerator<Repository> {
-    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    this.logger.info(`Branch pattern: ${this.config.branch_pattern}`);
+    const azureRepos = await AzureRepos.instance<AzureRepos>(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
     yield* azureRepos.getRepositories(streamSlice);
   }
 }
