@@ -55,7 +55,10 @@ export class PullRequests extends AzureReposStreamBase {
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
     );
     // TODO: Should use project slices or repository slices
     yield* azureRepos.getPullRequests(since, this.config.projects);

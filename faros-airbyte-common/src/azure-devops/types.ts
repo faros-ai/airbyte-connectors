@@ -89,8 +89,9 @@ export interface Repository extends GitInterfaces.GitRepository {
 }
 
 export interface PullRequest
-  extends Omit<GitInterfaces.GitPullRequest, 'status'> {
+  extends Omit<GitInterfaces.GitPullRequest, 'status' | 'mergeStatus'> {
   status: string;
+  mergeStatus: string;
   threads: GitInterfaces.GitPullRequestCommentThread[];
 }
 

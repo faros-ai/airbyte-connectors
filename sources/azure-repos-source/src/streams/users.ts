@@ -27,7 +27,14 @@ export class Users extends AzureReposStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<User> {
-    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
     yield* azureRepos.getUsers();
   }
 }
