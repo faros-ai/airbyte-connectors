@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganizationFromUrl, getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {UserTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
@@ -14,7 +14,7 @@ export class Users extends AzureReposConverter {
   ];
 
   private checkUserItemValidity(userItem: User): boolean {
-    return Boolean(this.getUniqueName(userItem));
+    return Boolean(getUniqueName(userItem));
   }
 
   async convert(
@@ -35,7 +35,7 @@ export class Users extends AzureReposConverter {
       detail: 'subjectKind' in userItem ? userItem.subjectKind : null,
     };
 
-    const uniqueName = this.getUniqueName(userItem);
+    const uniqueName = getUniqueName(userItem);
     const uid = uniqueName.toLowerCase();
     res.push({
       model: 'vcs_Membership',
@@ -57,16 +57,5 @@ export class Users extends AzureReposConverter {
     });
     this.uidsFromUsersStream.add(uid);
     return res;
-  }
-
-  // Support both principalName and uniqueName for AzureDevOps Server
-  private getUniqueName(userItem: User): string | undefined {
-    if ('principalName' in userItem && Boolean(userItem.principalName)) {
-      return userItem.principalName;
-    }
-    if ('uniqueName' in userItem && Boolean(userItem.uniqueName)) {
-      return userItem.uniqueName;
-    }
-    return undefined;
   }
 }

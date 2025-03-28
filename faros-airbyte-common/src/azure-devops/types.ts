@@ -13,6 +13,10 @@ import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
+import {
+  WorkItem,
+  WorkItemClassificationNode,
+} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
@@ -93,4 +97,42 @@ export interface PullRequest
 export interface Commit extends GitInterfaces.GitCommitRef {
   repository?: Repository;
   branch?: string;
+}
+
+export interface WorkItemState {
+  name: string;
+  category: string;
+}
+
+export interface WorkItemStateRevision {
+  readonly state: WorkItemState;
+  readonly changedDate: string;
+}
+
+export interface WorkItemAssigneeRevision {
+  readonly assignee: IdentityRef;
+  readonly changedDate: string;
+}
+
+export interface WorkItemIterationRevision {
+  readonly iteration: number;
+  readonly addedAt: string;
+  readonly removedAt?: string;
+}
+
+export interface WorkItemRevisions {
+  readonly states: ReadonlyArray<WorkItemStateRevision>;
+  readonly assignees: ReadonlyArray<WorkItemAssigneeRevision>;
+  readonly iterations: ReadonlyArray<WorkItemIterationRevision>;
+}
+
+export interface WorkItemWithRevisions extends WorkItem {
+  revisions: WorkItemRevisions;
+  additionalFields: ReadonlyArray<AdditionalField>;
+  projectId: string;
+}
+
+export interface AdditionalField {
+  name: string;
+  value: string;
 }
