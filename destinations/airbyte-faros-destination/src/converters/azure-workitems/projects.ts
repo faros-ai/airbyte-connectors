@@ -1,9 +1,9 @@
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {Project} from './models';
 
 export class Projects extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Project'];
@@ -11,7 +11,7 @@ export class Projects extends AzureWorkitemsConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const project = record.record.data as Project;
+    const project = record.record.data as TeamProject;
     return [
       {
         model: 'tms_Project',

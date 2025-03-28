@@ -19,9 +19,6 @@ export class Projects extends StreamBase {
       this.config,
       this.logger
     );
-    const projects = await azureWorkitem.getProjects(this.config.projects);
-    for (const project of projects) {
-      yield project;
-    }
+    yield* await azureWorkitem.getProjects(this.config.projects);
   }
 }
