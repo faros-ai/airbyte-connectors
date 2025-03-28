@@ -1,7 +1,7 @@
 import {GitRepository} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {OrgKey,RepoKey} from '../common/vcs';
+import {OrgKey, RepoKey} from '../common/vcs';
 import {Converter} from '../converter';
 
 export const MAX_DESCRIPTION_LENGTH = 1000;

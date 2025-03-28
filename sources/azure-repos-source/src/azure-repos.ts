@@ -6,6 +6,7 @@ import {
   GitPullRequestSearchCriteria,
   GitQueryCommitsCriteria,
   GitRepository,
+  PullRequestAsyncStatus,
   PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
@@ -29,15 +30,33 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 
 export class AzureRepos extends AzureDevOps {
   private readonly branchPattern: RegExp;
+  private readonly fetchTags: boolean;
+  private readonly fetchBranchCommits: boolean;
+  private readonly repositoriesByProject: Map<string, Set<string>>;
   constructor(
     protected readonly client: AzureDevOpsClient,
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger,
-    branchPattern: string
+    branchPattern: string,
+    repositories?: ReadonlyArray<string>,
+    fetchTags: boolean = false,
+    fetchBranchCommits: boolean = false
   ) {
     super(client, cutoffDays, top, logger);
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
+    this.fetchTags = fetchTags;
+    this.fetchBranchCommits = fetchBranchCommits;
+    this.repositoriesByProject = new Map();
+    for (const repository of repositories ?? []) {
+      const [project, repo] = repository.split('/');
+      const projectName = project.toLowerCase();
+      const repoName = repo.toLowerCase();
+      this.repositoriesByProject.set(
+        projectName,
+        (this.repositoriesByProject.get(projectName) || new Set()).add(repoName)
+      );
+    }
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -54,10 +73,13 @@ export class AzureRepos extends AzureDevOps {
   }
 
   async *getRepositories(project: TeamProject): AsyncGenerator<Repository> {
-    const repos = await this.listRepositories(project.id);
+    const repos = await this.listRepositories(project.id, project.name);
     for (const repository of repos) {
       const branches = await this.listBranches(project.id, repository);
-      const tags = await this.listRepositoryTags(project.id, repository);
+      const tags = this.fetchTags
+        ? await this.listRepositoryTags(project.id, repository)
+        : [];
+
       yield {
         ...repository,
         project,
@@ -77,7 +99,10 @@ export class AzureRepos extends AzureDevOps {
 
     for (const project of await this.getProjects(projects)) {
       this.logger.info(`Fetching pull requests for project ${project.name}`);
-      for (const repository of await this.listRepositories(project.id)) {
+      for (const repository of await this.listRepositories(
+        project.id,
+        project.name
+      )) {
         if (repository.isDisabled) {
           this.logger.info(
             `Repository ${repository.name}:${repository.id} in project ` +
@@ -107,7 +132,10 @@ export class AzureRepos extends AzureDevOps {
 
     for (const project of await this.getProjects(projects)) {
       this.logger.info(`Fetching commits for project ${project.name}`);
-      for (const repository of await this.listRepositories(project.id)) {
+      for (const repository of await this.listRepositories(
+        project.id,
+        project.name
+      )) {
         if (repository.isDisabled) {
           this.logger.info(
             `Repository ${repository.name}:${repository.id} in project ` +
@@ -115,37 +143,65 @@ export class AzureRepos extends AzureDevOps {
           );
           continue;
         }
+        const branchNames = new Set<string>();
         const branch = getQueryableDefaultBranch(repository.defaultBranch);
-        if (!branch) {
+        if (branch) {
+          branchNames.add(branch);
+        }
+        if (this.fetchBranchCommits) {
+          for (const branch of await this.listBranches(
+            project.id,
+            repository
+          )) {
+            branchNames.add(branch.name);
+          }
+        }
+
+        if (!branchNames.size) {
           this.logger.error(
-            `No default branch found for repository ${repository.name}. ` +
-              `Will not fetch any commits.`
+            `No default branch and/or branches matching the branch pattern ` +
+              `found for repository ${repository.name}. Will not fetch any commits.`
           );
           continue;
         }
-        const commits = this.listCommits(
-          project.id,
-          repository,
-          branch,
-          sinceDate
-        );
-        for await (const commit of commits) {
-          yield {
-            ...commit,
-            branch,
-            repository: {
-              ...repository,
-              project,
-            },
-          };
+
+        for (const branchName of branchNames) {
+          const commits = this.listCommits(
+            project.id,
+            repository,
+            branchName,
+            sinceDate
+          );
+          for await (const commit of commits) {
+            yield {
+              ...commit,
+              branch,
+              repository: {
+                ...repository,
+                project,
+              },
+            };
+          }
         }
       }
     }
   }
 
   @Memoize((project: string) => project)
-  private async listRepositories(project: string): Promise<GitRepository[]> {
-    return await this.client.git.getRepositories(project);
+  private async listRepositories(
+    project: string,
+    projectName: string
+  ): Promise<GitRepository[]> {
+    const repositories = await this.client.git.getRepositories(project);
+    const filterRepos = this.repositoriesByProject.get(
+      projectName.toLowerCase()
+    );
+    if (!filterRepos?.size) {
+      return repositories;
+    }
+    return repositories.filter((repository) =>
+      filterRepos.has(repository.name.toLowerCase())
+    );
   }
 
   /**
@@ -297,7 +353,9 @@ export class AzureRepos extends AzureDevOps {
     )) {
       const closedDate = DateTime.fromJSDate(pullRequest.closedDate);
       if (
-        pullRequest.status === PullRequestStatus.Completed &&
+        [PullRequestStatus.Completed, PullRequestStatus.Abandoned].includes(
+          pullRequest.status
+        ) &&
         closedDate <= since
       ) {
         continue;
@@ -309,7 +367,8 @@ export class AzureRepos extends AzureDevOps {
         project
       );
       const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
-      yield {...pullRequest, status, threads};
+      const mergeStatus = PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
+      yield {...pullRequest, status, mergeStatus, threads};
     }
   }
 }
