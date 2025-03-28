@@ -40,7 +40,7 @@ export class Commits extends AzureReposStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.instance<AzureRepos>(
+    const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
       this.config.branch_pattern,
