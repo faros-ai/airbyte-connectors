@@ -33,7 +33,7 @@
         "description": "Updated LICENSE",
         "sourceRefName": "refs/heads/staging",
         "targetRefName": "refs/heads/main",
-        "mergeStatus": "succeeded",
+        "mergeStatus": 3,
         "isDraft": false,
         "mergeId": "4c8d0c0c-57e6-4657-985e-0b14bbb5de2d",
         "lastMergeSourceCommit": {
@@ -380,7 +380,7 @@
         "description": "Updated README.md",
         "sourceRefName": "refs/heads/dev",
         "targetRefName": "refs/heads/main",
-        "mergeStatus": "succeeded",
+        "mergeStatus": 3,
         "isDraft": false,
         "mergeId": "f21b18c3-8b82-4bfb-8547-aa42ab246bc2",
         "lastMergeSourceCommit": {
