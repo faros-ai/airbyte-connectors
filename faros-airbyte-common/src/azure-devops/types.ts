@@ -13,10 +13,7 @@ import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {
-  WorkItem,
-  WorkItemClassificationNode,
-} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
+import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
