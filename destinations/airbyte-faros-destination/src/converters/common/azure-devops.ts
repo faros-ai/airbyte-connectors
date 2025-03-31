@@ -1,3 +1,5 @@
+import {User} from 'faros-airbyte-common/azure-devops';
+
 // TODO: Make it return OrgKey
 export function getOrganizationFromUrl(url: string): string | undefined {
   try {
@@ -27,4 +29,15 @@ export function getProjectFromUrl(url: string): string | undefined {
   } catch (error) {
     return undefined;
   }
+}
+
+// Support both principalName and uniqueName for AzureDevOps Server
+export function getUniqueName(userItem: User): string | undefined {
+  if ('principalName' in userItem && Boolean(userItem.principalName)) {
+    return userItem.principalName;
+  }
+  if ('uniqueName' in userItem && Boolean(userItem.uniqueName)) {
+    return userItem.uniqueName;
+  }
+  return undefined;
 }
