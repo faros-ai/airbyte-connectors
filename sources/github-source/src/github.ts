@@ -143,7 +143,6 @@ export abstract class GitHub {
   protected readonly fetchPullRequestReviews: boolean;
   protected readonly copilotMetricsPreviewAPI: boolean;
   protected readonly copilotMetricsTeams: ReadonlyArray<string>;
-  protected readonly copilotMetricsEnterpriseTeams: ReadonlyArray<string>;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -167,8 +166,6 @@ export abstract class GitHub {
     this.copilotMetricsPreviewAPI =
       config.copilot_metrics_preview_api ?? DEFAULT_COPILOT_METRICS_PREVIEW_API;
     this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
-    this.copilotMetricsEnterpriseTeams =
-      config.copilot_metrics_enterprise_teams ?? [];
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -1987,8 +1984,8 @@ export abstract class GitHub {
   ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
     let teamSlugs: ReadonlyArray<string>;
     try {
-      if (this.copilotMetricsEnterpriseTeams.length > 0) {
-        teamSlugs = this.copilotMetricsEnterpriseTeams;
+      if (this.copilotMetricsTeams.length > 0) {
+        teamSlugs = this.copilotMetricsTeams;
       } else {
         const teamsResponse = await this.getEnterpriseTeams(enterprise);
         teamSlugs = teamsResponse.map((team) => team.slug);

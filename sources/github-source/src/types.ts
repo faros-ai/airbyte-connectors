@@ -23,7 +23,6 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly copilot_licenses_dates_fix?: boolean;
   readonly copilot_metrics_preview_api?: boolean;
   readonly copilot_metrics_teams?: ReadonlyArray<string>;
-  readonly copilot_metrics_enterprise_teams?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly api_url?: string;
   readonly api_key?: string;
