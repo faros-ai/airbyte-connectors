@@ -352,6 +352,24 @@
         "description": "Fetch public organizations",
         "default": false,
         "order": 34
+      },
+      "copilot_metrics_teams": {
+        "type": "array",
+        "title": "Copilot Metrics Teams",
+        "description": "List of teams to fetch Copilot metrics for. If not specified, all teams for the organization will be fetched.",
+        "items": {
+          "type": "string"
+        },
+        "order": 35
+      },
+      "copilot_metrics_enterprise_teams": {
+        "type": "array",
+        "title": "Copilot Metrics Enterprise Teams",
+        "description": "List of enterprise teams to fetch Copilot metrics for. If not specified, all teams for the enterprise will be fetched.",
+        "items": {
+          "type": "string"
+        },
+        "order": 36
       }
     }
   }
