@@ -1,10 +1,10 @@
+import {WorkItemClassificationNode} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {Iteration} from './models';
 
 export class Iterations extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
@@ -12,7 +12,7 @@ export class Iterations extends AzureWorkitemsConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const Iteration = record.record.data as Iteration;
+    const Iteration = record.record.data as WorkItemClassificationNode;
     const startedAt = Iteration.attributes?.startDate
       ? Utils.toDate(Iteration.attributes.startDate)
       : null;

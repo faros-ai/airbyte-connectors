@@ -1,22 +1,11 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepoConfig, AzureRepos} from '../azure-repos';
-import {Commit} from '../models';
+import {AzureRepos} from '../azure-repos';
+import {AzureReposStreamBase} from './common';
 
-export class Commits extends AirbyteStreamBase {
-  constructor(
-    private readonly config: AzureRepoConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
+export class Commits extends AzureReposStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/commits.json');
   }
@@ -51,7 +40,20 @@ export class Commits extends AirbyteStreamBase {
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
 
-    const azureRepos = await AzureRepos.make(this.config, this.logger);
-    yield* azureRepos.getCommits(since);
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
+    this.logger.debug(
+      this.config.fetch_branch_commits
+        ? `Fetching commits from branches matching pattern ${this.config.branch_pattern}`
+        : `Fetching commits from default branch only`
+    );
+    // TODO: Should use project slices
+    yield* azureRepos.getCommits(since, this.config.projects);
   }
 }

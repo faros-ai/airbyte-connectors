@@ -1,4 +1,5 @@
 import {
+  _Object,
   GetObjectCommand,
   ListObjectsV2Command,
   S3Client,
@@ -11,6 +12,9 @@ export enum FileProcessingStrategy {
   IMMUTABLE_LEXICOGRAPHICAL_ORDER = 'IMMUTABLE_LEXICOGRAPHICAL_ORDER',
 }
 
+const DEFAULT_MAX_REQUEST_LENGTH = 1048576; // 1MB
+const DEFAULT_BYTES_LIMIT = 1073741824; // 1GB
+
 type S3 = {
   source_type: 'S3';
   path: string;
@@ -19,11 +23,15 @@ type S3 = {
   aws_secret_access_key: string;
   aws_session_token?: string;
   file_processing_strategy?: FileProcessingStrategy;
+  files?: string[];
+  max_request_length?: number;
+  bytes_limit?: number;
 };
 
 export interface OutputRecord {
   filesSource: string;
   fileName: string;
+  chunkNumber: number;
   lastModified: number;
   contents: string;
 }
@@ -69,7 +77,9 @@ export class S3Reader {
     readonly config: FilesConfig,
     private readonly s3Client: S3Client,
     private readonly bucketName: string,
-    private readonly prefix: string
+    private readonly prefix: string,
+    private readonly maxRequestLength?: number,
+    private readonly bytesLimit?: number
   ) {}
 
   static async instance(
@@ -107,7 +117,14 @@ export class S3Reader {
     }
     const s3Client = S3Reader.getS3Client(config);
     const {bucketName, prefix} = S3Reader.parseS3Path(config);
-    return new S3Reader(config, s3Client, bucketName, prefix);
+    return new S3Reader(
+      config,
+      s3Client,
+      bucketName,
+      prefix,
+      config.files_source.max_request_length || DEFAULT_MAX_REQUEST_LENGTH,
+      config.files_source.bytes_limit || DEFAULT_BYTES_LIMIT
+    );
   }
 
   async checkConnection(): Promise<void> {
@@ -125,35 +142,98 @@ export class S3Reader {
   ): AsyncGenerator<OutputRecord> {
     let isTruncated = true;
     let continuationToken: string;
+    const objects: _Object[] = [];
     while (isTruncated) {
-      const {Contents, IsTruncated, NextContinuationToken} =
-        await this.s3Client.send(
-          new ListObjectsV2Command({
+      const {
+        Contents: Objects,
+        IsTruncated,
+        NextContinuationToken,
+      } = await this.s3Client.send(
+        new ListObjectsV2Command({
+          Bucket: this.bucketName,
+          Prefix: this.prefix,
+          ...(continuationToken && {ContinuationToken: continuationToken}),
+          ...(lastFileName && {StartAfter: lastFileName}),
+        })
+      );
+      objects.push(...Objects);
+      isTruncated = IsTruncated;
+      continuationToken = NextContinuationToken;
+    }
+
+    const sortedObjects =
+      objects?.sort((a, b) => {
+        if (!this.config.files_source.files?.length) return 0;
+        const aIndex = this.config.files_source.files.indexOf(
+          a.Key.split('/').pop()
+        );
+        const bIndex = this.config.files_source.files.indexOf(
+          b.Key.split('/').pop()
+        );
+        return aIndex - bIndex;
+      }) || [];
+
+    const maxRequestLength = this.maxRequestLength;
+    for (const object of sortedObjects) {
+      if (object.Key.slice(-1) === '/') continue;
+
+      const fileName = object.Key.split('/').pop();
+      if (
+        this.config.files_source.files?.length &&
+        !this.config.files_source.files.includes(fileName)
+      ) {
+        logger?.info(
+          `Skipping File: ${object.Key} - Size: ${object.Size} - Last Modified: ${object.LastModified}`
+        );
+        continue;
+      }
+      logger?.info(
+        `Reading File: ${object.Key} - Size: ${object.Size} - Last Modified: ${object.LastModified}`
+      );
+      let currentByte = 0;
+      let chunkNumber = 0;
+      while (currentByte < object.Size) {
+        if (this.bytesLimit && currentByte >= this.bytesLimit) {
+          if (currentByte != object.Size) {
+            logger?.warn(
+              `File ${object.Key} surpassed the configured bytes limit of ${this.bytesLimit}. Skipping remaining bytes.`
+            );
+          }
+          break;
+        }
+        const range =
+          maxRequestLength > 0
+            ? `bytes=${currentByte}-${Math.min(currentByte + maxRequestLength, object.Size) - 1}`
+            : undefined;
+        const res = await this.s3Client.send(
+          new GetObjectCommand({
             Bucket: this.bucketName,
-            Prefix: this.prefix,
-            ...(continuationToken && {ContinuationToken: continuationToken}),
-            ...(lastFileName && {StartAfter: lastFileName}),
+            Key: object.Key,
+            IfMatch: object.ETag, // make sure file has not been modified since the beginning of the sync
+            ...(range && {Range: range}),
           })
         );
-
-      for (const object of Contents || []) {
-        if (object.Key.slice(-1) === '/') continue;
-        logger?.info(`Reading file: ${object.Key}`);
-
-        const res = await this.s3Client.send(
-          new GetObjectCommand({Bucket: this.bucketName, Key: object.Key})
+        logger?.debug(
+          `Range: ${range} - Content Length: ${res.ContentLength} - Content Range: ${res.ContentRange}`
         );
+        if (
+          res.ContentLength !== maxRequestLength &&
+          res.ContentLength + currentByte !== object.Size
+        ) {
+          throw new Error(
+            'Content Length does not match with the expected value'
+          );
+        }
+        currentByte += res.ContentLength;
         const contents = await res.Body.transformToString('base64');
         yield {
           filesSource: 'S3',
           fileName: object.Key,
+          chunkNumber: ++chunkNumber,
           lastModified: object.LastModified.getTime(),
           contents,
         };
       }
-
-      isTruncated = IsTruncated;
-      continuationToken = NextContinuationToken;
     }
   }
 

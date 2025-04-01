@@ -1,4 +1,7 @@
-import {OctokitResponse} from '@octokit/types';
+import {
+  GetResponseDataTypeFromEndpointMethod,
+  OctokitResponse,
+} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -139,6 +142,7 @@ export abstract class GitHub {
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
   protected readonly copilotMetricsPreviewAPI: boolean;
+  protected readonly copilotMetricsTeams: ReadonlyArray<string>;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -161,6 +165,7 @@ export abstract class GitHub {
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
     this.copilotMetricsPreviewAPI =
       config.copilot_metrics_preview_api ?? DEFAULT_COPILOT_METRICS_PREVIEW_API;
+    this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -249,7 +254,7 @@ export abstract class GitHub {
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
         }
-        repos.push({
+        const repository: Repository = {
           org,
           ...pick(repo, [
             'name',
@@ -265,6 +270,31 @@ export abstract class GitHub {
             'updated_at',
             'archived',
           ]),
+        };
+        let languagesResponse:
+          | GetResponseDataTypeFromEndpointMethod<
+              typeof this.baseOctokit.repos.listLanguages
+            >
+          | undefined;
+        try {
+          languagesResponse = (
+            await this.octokit(org).repos.listLanguages({
+              owner: org,
+              repo: repo.name,
+            })
+          ).data;
+        } catch (error: any) {
+          this.logger.warn(
+            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status} $`
+          );
+        }
+        repos.push({
+          ...repository,
+          ...(languagesResponse && {
+            languages: Object.entries(languagesResponse).map(
+              ([language, bytes]) => ({language, bytes})
+            ),
+          }),
         });
       }
     }
@@ -1125,9 +1155,14 @@ export abstract class GitHub {
   async *getCopilotUsageTeams(
     org: string
   ): AsyncGenerator<CopilotUsageSummary> {
-    let teams: ReadonlyArray<Team>;
+    let teamSlugs: ReadonlyArray<string>;
     try {
-      teams = await this.getTeams(org);
+      if (this.copilotMetricsTeams.length > 0) {
+        teamSlugs = this.copilotMetricsTeams;
+      } else {
+        const teamsResponse = await this.getTeams(org);
+        teamSlugs = teamsResponse.map((team) => team.slug);
+      }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
@@ -1137,33 +1172,33 @@ export abstract class GitHub {
       }
       throw err;
     }
-    for (const team of teams) {
+    for (const teamSlug of teamSlugs) {
       let data: CopilotUsageResponse;
       if (!this.copilotMetricsPreviewAPI) {
         const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
           org
         ).request(this.octokit(org).copilotMetricsForTeam, {
           org,
-          team_slug: team.slug,
+          team_slug: teamSlug,
         });
         data = transformCopilotMetricsResponse(res.data);
       } else {
         const res = await this.octokit(org).copilot.usageMetricsForTeam({
           org,
-          team_slug: team.slug,
+          team_slug: teamSlug,
         });
         data = res.data;
       }
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
-          `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
+          `No GitHub Copilot usage found for org ${org} - team ${teamSlug}.`
         );
         continue;
       }
       for (const usage of data) {
         yield {
           org,
-          team: team.slug,
+          team: teamSlug,
           ...usage,
         };
       }
@@ -1947,27 +1982,43 @@ export abstract class GitHub {
   async *getEnterpriseCopilotUsageTeams(
     enterprise: string
   ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
-    const teams = await this.getEnterpriseTeams(enterprise);
-    for (const team of teams) {
+    let teamSlugs: ReadonlyArray<string>;
+    try {
+      if (this.copilotMetricsTeams.length > 0) {
+        teamSlugs = this.copilotMetricsTeams;
+      } else {
+        const teamsResponse = await this.getEnterpriseTeams(enterprise);
+        teamSlugs = teamsResponse.map((team) => team.slug);
+      }
+    } catch (err: any) {
+      if (err.status >= 400 && err.status < 500) {
+        this.logger.warn(
+          `Failed to fetch teams for enterprise ${enterprise}. Ensure Teams permissions are given. Skipping pulling GitHub Copilot usage by teams.`
+        );
+        return;
+      }
+      throw err;
+    }
+    for (const teamSlug of teamSlugs) {
       const res: OctokitResponse<CopilotMetricsResponse> =
         await this.baseOctokit.request(
           this.baseOctokit.enterpriseCopilotMetricsForTeam,
           {
             enterprise,
-            team_slug: team.slug,
+            team_slug: teamSlug,
           }
         );
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
-          `No GitHub Copilot usage found for enterprise ${enterprise} - team ${team.slug}.`
+          `No GitHub Copilot usage found for enterprise ${enterprise} - team ${teamSlug}.`
         );
         continue;
       }
       for (const usage of data) {
         yield {
           enterprise,
-          team: team.slug,
+          team: teamSlug,
           ...usage,
         };
       }

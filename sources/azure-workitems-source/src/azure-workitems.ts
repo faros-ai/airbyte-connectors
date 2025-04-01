@@ -1,38 +1,15 @@
-import {AxiosInstance} from 'axios';
-import {getPersonalAccessTokenHandler, WebApi} from 'azure-devops-node-api';
-import {ICoreApi} from 'azure-devops-node-api/CoreApi';
-import {
-  IdentityRef,
-  TeamMember,
-} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
-import {
-  TeamProject,
-  TeamProjectReference,
-  WebApiTeam,
-} from 'azure-devops-node-api/interfaces/CoreInterfaces';
-import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {
   TreeStructureGroup,
   WorkItemClassificationNode,
   WorkItemExpand,
   WorkItemUpdate,
 } from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
-import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
-import {AirbyteLogger, base64Encode, wrapApiError} from 'faros-airbyte-cdk';
-import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import * as types from 'faros-airbyte-common/azure-devops';
 import {chunk, flatten} from 'lodash';
-import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import * as models from './models';
-
-const CLOUD_API_URL = 'https://dev.azure.com';
-const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
-const DEFAULT_GRAPH_VERSION = '7.1-preview.1';
 const MAX_BATCH_SIZE = 200;
-const DEFAULT_REQUEST_TIMEOUT = 300_000;
-const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_PAGE_SIZE = 100;
 
 // Curated list of work item types from Azure DevOps
 // https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-item-types/list
@@ -50,147 +27,17 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
-export interface AzureWorkitemsClient {
-  readonly core: ICoreApi;
-  readonly wit: IWorkItemTrackingApi;
-  readonly graph?: AxiosInstance;
-}
-
-export class AzureWorkitems {
-  private static azure_Workitems: AzureWorkitems = null;
-
+export class AzureWorkitems extends types.AzureDevOps {
+  private additionalFieldReferences: Map<string, string>;
   constructor(
-    private readonly client: AzureWorkitemsClient,
-    private readonly instance: models.AzureInstance,
-    private readonly additionalFieldReferences: Map<string, string>,
-    private readonly top: number = DEFAULT_PAGE_SIZE,
-    private readonly logger: AirbyteLogger
-  ) {}
-
-  static async instance(
-    config: models.AzureWorkitemsConfig,
-    logger: AirbyteLogger
-  ): Promise<AzureWorkitems> {
-    if (AzureWorkitems.azure_Workitems) return AzureWorkitems.azure_Workitems;
-
-    if (config.instance?.type) {
-      logger.info(`Azure DevOps instance type: ${config.instance.type}`);
-    } else {
-      logger.info(
-        'No Azure DevOps instance type provided, defaulting to cloud'
-      );
-    }
-
-    AzureWorkitems.validateConfig(config);
-
-    const apiUrl =
-      config.instance.type === 'server'
-        ? config.instance.api_url
-        : CLOUD_API_URL;
-
-    const baseUrl = `${apiUrl}/${config.organization}`;
-    const accessToken = base64Encode(`:${config.access_token}`);
-
-    const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
-    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
-    // Graph API is only available in Azure DevOps Cloud for users, groups, and group memberships
-    // https://learn.microsoft.com/en-us/rest/api/azure/devops/graph
-    const graphClient =
-      config.instance.type !== 'server'
-        ? makeAxiosInstanceWithRetry(
-            {
-              baseURL: `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
-              timeout,
-              maxContentLength: Infinity,
-              maxBodyLength: Infinity,
-              params: {'api-version': DEFAULT_GRAPH_VERSION},
-              headers: {Authorization: `Basic ${accessToken}`},
-            },
-            logger.asPino(),
-            maxRetries,
-            1000
-          )
-        : undefined;
-
-    // Create Azure DevOps API client
-    const authHandler = getPersonalAccessTokenHandler(config.access_token);
-    const connection = new WebApi(baseUrl, authHandler, {
-      socketTimeout: timeout,
-      allowRetries: true,
-      maxRetries,
-      globalAgentOptions: {
-        keepAlive: true,
-        timeout,
-      },
-    });
-
-    const witApiClient = await connection.getWorkItemTrackingApi();
-    const fieldNameReferences = new Map<string, string>();
-    const fields = await witApiClient.getFields();
-    for (const field of fields) {
-      fieldNameReferences.set(field.name, field.referenceName);
-    }
-
-    const additionalFieldReferences = new Map<string, string>();
-    const additionalFields =
-      config.additional_fields?.filter(Boolean).map((f) => f.trim()) ?? [];
-
-    for (const field of additionalFields) {
-      const referenceName = fieldNameReferences.get(field);
-      if (referenceName) {
-        additionalFieldReferences.set(referenceName, field);
-      } else {
-        logger.warn(`Field ${field} not found, will not be included`);
-      }
-    }
-
-    logger.debug(
-      `Additional field references: ${JSON.stringify(
-        Object.fromEntries(additionalFieldReferences)
-      )}`
-    );
-
-    const client = {
-      core: await connection.getCoreApi(),
-      wit: witApiClient,
-      graph: graphClient,
-    };
-
-    AzureWorkitems.azure_Workitems = new AzureWorkitems(
-      client,
-      config.instance,
-      additionalFieldReferences,
-      config.page_size ?? DEFAULT_PAGE_SIZE,
-      logger
-    );
-    return AzureWorkitems.azure_Workitems;
-  }
-
-  static validateConfig(config: models.AzureWorkitemsConfig): void {
-    if (!config.access_token) {
-      throw new VError('access_token must not be an empty string');
-    }
-
-    if (!config.organization) {
-      throw new VError('organization must not be an empty string');
-    }
-
-    if (config.instance?.type === 'cloud' || !config.instance?.type) {
-      return;
-    }
-
-    // Validate Server instance URL
-    if (!config.instance?.api_url?.trim()) {
-      throw new VError(
-        'api_url must not be an empty string if instance is server'
-      );
-    }
-
-    try {
-      new URL(config.instance.api_url.trim());
-    } catch (error) {
-      throw new VError(`Invalid URL: ${config.instance.api_url}`);
-    }
+    protected readonly client: types.AzureDevOpsClient,
+    protected readonly cutoffDays: number,
+    protected readonly top: number,
+    protected readonly logger: AirbyteLogger,
+    private readonly additionalFields?: ReadonlyArray<string>
+  ) {
+    super(client, cutoffDays, top, logger);
+    this.additionalFields = additionalFields;
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -217,25 +64,48 @@ export class AzureWorkitems {
     }
   }
 
-  private async *getPaginated<T>(
-    getFn: (top: number, skip: number) => Promise<Array<T>>
-  ): AsyncGenerator<T> {
-    let resCount = 0;
-    let skip = 0;
-    const top = this.top;
+  async initializeFieldReferences(): Promise<void> {
+    if (this.additionalFieldReferences) {
+      return;
+    }
+    const additionalFieldReferences = new Map<string, string>();
+    const additionalFields =
+      this.additionalFields?.filter(Boolean).map((f) => f.trim()) ?? [];
 
-    do {
-      const res = await getFn(top, skip);
-      if (res.length) yield* res;
-      resCount = res.length;
-      skip += resCount;
-    } while (resCount >= top);
+    if (!additionalFields.length) {
+      this.additionalFieldReferences = additionalFieldReferences;
+      return;
+    }
+
+    const fieldNameReferences = new Map<string, string>();
+    const fields = await this.client.wit.getFields();
+    for (const field of fields) {
+      fieldNameReferences.set(field.name, field.referenceName);
+    }
+
+    for (const field of additionalFields) {
+      const referenceName = fieldNameReferences.get(field);
+      if (referenceName) {
+        additionalFieldReferences.set(referenceName, field);
+      } else {
+        this.logger.warn(`Field ${field} not found, will not be included`);
+      }
+    }
+
+    this.logger.debug(
+      `Additional field references: ${JSON.stringify(
+        Object.fromEntries(additionalFieldReferences)
+      )}`
+    );
+    this.additionalFieldReferences = additionalFieldReferences;
   }
 
   async *getWorkitems(
     project: string,
     projectId: string
-  ): AsyncGenerator<models.WorkItemWithRevisions> {
+  ): AsyncGenerator<types.WorkItemWithRevisions> {
+    await this.initializeFieldReferences();
+
     const stateCategories = await this.getStateCategories(project);
     const stateCategoriesObj = Object.fromEntries(
       Array.from(stateCategories.entries()).map(([type, states]) => [
@@ -297,7 +167,7 @@ export class AzureWorkitems {
     id: number,
     project: string,
     states: Map<string, string>
-  ): Promise<models.WorkItemRevisions> {
+  ): Promise<types.WorkItemRevisions> {
     const updates = await this.getWorkItemUpdates(id, project);
     return {
       states: this.getStateRevisions(states, updates),
@@ -312,9 +182,9 @@ export class AzureWorkitems {
   ): Promise<ReadonlyArray<WorkItemUpdate>> {
     const getUpdatesFn = (
       top: number,
-      skip: number
+      skipOrToken: string | number
     ): Promise<WorkItemUpdate[]> =>
-      this.client.wit.getUpdates(id, top, skip, project);
+      this.client.wit.getUpdates(id, top, skipOrToken as number, project);
 
     const updates = [];
     for await (const update of this.getPaginated(getUpdatesFn)) {
@@ -346,7 +216,7 @@ export class AzureWorkitems {
   private getStateRevisions(
     states: Map<string, string>,
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<models.WorkItemStateRevision> {
+  ): ReadonlyArray<types.WorkItemStateRevision> {
     const changes = this.getFieldChanges('System.State', updates);
     return changes.map((change) => ({
       state: this.getStateCategory(change.value, states),
@@ -356,7 +226,7 @@ export class AzureWorkitems {
 
   private getIterationRevisions(
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<models.WorkItemIterationRevision> {
+  ): ReadonlyArray<types.WorkItemIterationRevision> {
     const changes = this.getFieldChanges('System.IterationId', updates);
     return changes.map((change, index) => ({
       iteration: change.value,
@@ -369,7 +239,7 @@ export class AzureWorkitems {
   private getStateCategory(
     state: string,
     states: Map<string, string>
-  ): models.WorkItemState {
+  ): types.WorkItemState {
     const category = states?.get(state);
     if (!category) {
       this.logger.debug(`Unknown category for state: ${state}`);
@@ -382,7 +252,7 @@ export class AzureWorkitems {
 
   private getAssigneeRevisions(
     updates: ReadonlyArray<WorkItemUpdate>
-  ): ReadonlyArray<models.WorkItemAssigneeRevision> {
+  ): ReadonlyArray<types.WorkItemAssigneeRevision> {
     const changes = this.getFieldChanges('System.AssignedTo', updates);
     return changes.map((change) => ({
       assignee: change.value,
@@ -412,76 +282,6 @@ export class AzureWorkitems {
       19999 // max items allowed
     );
     return result.workItems.map((workItem) => workItem.id);
-  }
-
-  async *getUsers(
-    projects?: ReadonlyArray<string>
-  ): AsyncGenerator<models.User> {
-    if (this.instance?.type === 'server') {
-      yield* this.getServerUsers(projects);
-      return;
-    }
-    yield* this.getCloudUsers();
-  }
-
-  async *getCloudUsers(): AsyncGenerator<GraphUser> {
-    let continuationToken: string;
-    do {
-      const res = await this.client.graph.get<models.UserResponse>('users', {
-        params: {subjectTypes: 'msa,aad,imp', continuationToken},
-      });
-      continuationToken = res?.headers?.['X-MS-ContinuationToken'];
-      for (const item of res?.data?.value ?? []) {
-        yield item;
-      }
-    } while (continuationToken);
-  }
-
-  async *getServerUsers(
-    projects?: ReadonlyArray<string>
-  ): AsyncGenerator<IdentityRef> {
-    const seenUsers = new Set<string>();
-    let teams = 0;
-
-    for (const project of await this.getProjects(projects)) {
-      for await (const team of this.getTeams(project.id)) {
-        teams++;
-        for await (const member of this.getTeamMembers(project.id, team.id)) {
-          if (!seenUsers.has(member.uniqueName)) {
-            seenUsers.add(member.uniqueName);
-            yield member;
-          }
-        }
-      }
-    }
-    this.logger.debug(`Fetched members from ${teams} teams`);
-  }
-
-  async *getTeams(projectId: string): AsyncGenerator<WebApiTeam> {
-    const getTeamsFn = (
-      pageSize: number,
-      skip: number
-    ): Promise<WebApiTeam[]> =>
-      this.client.core.getTeams(projectId, false, pageSize, skip);
-
-    yield* this.getPaginated<WebApiTeam>(getTeamsFn);
-  }
-
-  async *getTeamMembers(
-    projectId: string,
-    teamId: string
-  ): AsyncGenerator<IdentityRef> {
-    const getMembersFn = (top: number, skip: number): Promise<TeamMember[]> =>
-      this.client.core.getTeamMembersWithExtendedProperties(
-        projectId,
-        teamId,
-        top,
-        skip
-      );
-
-    for await (const member of this.getPaginated(getMembersFn)) {
-      yield member.identity;
-    }
   }
 
   /**
@@ -547,42 +347,6 @@ export class AzureWorkitems {
     }
   }
 
-  @Memoize()
-  async getProjects(
-    projects?: ReadonlyArray<string>
-  ): Promise<ReadonlyArray<TeamProject>> {
-    if (!projects?.length) {
-      return await this.getAllProjects();
-    }
-
-    const allProjects = [];
-    for (const project of projects) {
-      const res = await this.client.core.getProject(project);
-      if (res) {
-        allProjects.push(res);
-      } else {
-        this.logger.warn(`Project ${project} in config not found. Skipping`);
-      }
-    }
-    return allProjects;
-  }
-
-  private async getAllProjects(): Promise<ReadonlyArray<TeamProjectReference>> {
-    const projects = [];
-    const getProjectsFn = async (
-      top: number,
-      skip: number
-    ): Promise<Array<TeamProjectReference>> => {
-      const res = await this.client.core.getProjects('wellFormed', top, skip);
-      return Array.from(res.values());
-    };
-
-    for await (const project of this.getPaginated(getProjectsFn)) {
-      projects.push(project);
-    }
-    return projects;
-  }
-
   private async getStateCategories(
     project: string
   ): Promise<Map<string, Map<string, string>>> {
@@ -608,7 +372,7 @@ export class AzureWorkitems {
 
   private extractAdditionalFields(fields?: {
     [key: string]: any;
-  }): ReadonlyArray<models.AdditionalField> {
+  }): ReadonlyArray<types.AdditionalField> {
     const additionalFields = [];
     if (!fields) {
       return additionalFields;

@@ -1,8 +1,9 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {AzureWorkitemsConfig, User} from '../models';
+import {AzureWorkitemsConfig} from '../types';
 
 export class Users extends AirbyteStreamBase {
   constructor(

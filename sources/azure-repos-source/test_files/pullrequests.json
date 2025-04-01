@@ -14,7 +14,7 @@
         },
         "pullRequestId": 9,
         "codeReviewId": 9,
-        "status": "active",
+        "status": 1,
         "createdBy": {
             "displayName": "tran ngoc huong",
             "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
@@ -33,7 +33,7 @@
         "description": "Updated LICENSE",
         "sourceRefName": "refs/heads/staging",
         "targetRefName": "refs/heads/main",
-        "mergeStatus": "succeeded",
+        "mergeStatus": 3,
         "isDraft": false,
         "mergeId": "4c8d0c0c-57e6-4657-985e-0b14bbb5de2d",
         "lastMergeSourceCommit": {
@@ -361,7 +361,7 @@
         },
         "pullRequestId": 8,
         "codeReviewId": 8,
-        "status": "completed",
+        "status": 3,
         "createdBy": {
             "displayName": "tran ngoc huong",
             "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
@@ -380,7 +380,7 @@
         "description": "Updated README.md",
         "sourceRefName": "refs/heads/dev",
         "targetRefName": "refs/heads/main",
-        "mergeStatus": "succeeded",
+        "mergeStatus": 3,
         "isDraft": false,
         "mergeId": "f21b18c3-8b82-4bfb-8547-aa42ab246bc2",
         "lastMergeSourceCommit": {

@@ -12,6 +12,35 @@ export interface VcsDiffStats {
   filesChanged: number;
 }
 
+export enum OrgTypeCategory {
+  Organization = 'Organization',
+  Workspace = 'Workspace',
+  Group = 'Group',
+  Custom = 'Custom',
+}
+
+export enum PullRequestStateCategory {
+  Closed = 'Closed',
+  Merged = 'Merged',
+  Open = 'Open',
+  Custom = 'Custom',
+}
+
+export enum PullRequestReviewStateCategory {
+  Approved = 'Approved',
+  Commented = 'Commented',
+  ChangesRequested = 'ChangesRequested',
+  Dismissed = 'Dismissed',
+  Custom = 'Custom',
+}
+
+export enum UserTypeCategory {
+  Bot = 'Bot',
+  Organization = 'Organization',
+  User = 'User',
+  Custom = 'Custom',
+}
+
 export type OrgKey = {uid: string; source: string};
 export type RepoKey = {uid: string; name: string; organization: OrgKey};
 export type PullRequestKey = {
@@ -29,6 +58,12 @@ export type FileKey = {
 
 export type File = FileKey & {
   path: string;
+};
+
+export type BranchKey = {
+  uid: string;
+  name: string;
+  repository: RepoKey;
 };
 
 export function fileKey(filePath: string, repoKey: RepoKey): FileKey {
@@ -136,6 +171,44 @@ export class FileCollector {
       model: 'vcs_File',
       record: file,
     }));
+  }
+}
+
+export class BranchCollector {
+  private readonly collectedBranches = new Map<string, BranchKey>();
+
+  collectBranch(branchName: string, repoKey: RepoKey): BranchKey | null {
+    if (!branchName) {
+      return null;
+    }
+
+    const key = this.branchKey(branchName, repoKey);
+    const keyStr = this.branchKeyToString(key);
+
+    if (!this.collectedBranches.has(keyStr)) {
+      this.collectedBranches.set(keyStr, key);
+    }
+
+    return key;
+  }
+
+  convertBranches(): DestinationRecord[] {
+    return Array.from(this.collectedBranches.values()).map((branch) => ({
+      model: 'vcs_Branch',
+      record: branch,
+    }));
+  }
+
+  private branchKey(branchName: string, repository: RepoKey): BranchKey {
+    return {
+      uid: branchName,
+      name: branchName,
+      repository,
+    };
+  }
+
+  private branchKeyToString(branchKey: BranchKey): string {
+    return `${branchKey.repository.organization.uid}/${branchKey.repository.name}/${branchKey.name}`;
   }
 }
 

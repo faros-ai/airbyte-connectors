@@ -410,6 +410,52 @@ Array [
 ]
 `;
 
+exports[`faros_jira process faros_issues record with update additional fields 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 3 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"tms_Task__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_jira process faros_issues record with update additional fields 2`] = `
+Array [
+  Object {
+    "tms_Task__Update": Object {
+      "mask": Array [
+        "additionalFields",
+      ],
+      "patch": Object {
+        "additionalFields": Array [
+          Object {
+            "name": "Components",
+            "value": "[]",
+          },
+        ],
+      },
+      "source": "Jira",
+      "where": Object {
+        "source": "Jira",
+        "uid": "PLAYG-1",
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Jira",
+    },
+  },
+]
+`;
+
 exports[`faros_jira process records from all streams 1`] = `
 Array [
   "Processed 17 records",
