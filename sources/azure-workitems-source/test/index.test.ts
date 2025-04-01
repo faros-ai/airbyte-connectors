@@ -163,7 +163,7 @@ describe('index', () => {
             ),
           },
         } as unknown as AzureDevOpsClient,
-        null,
+        90,
         100,
         logger,
         additionalFields
@@ -176,7 +176,12 @@ describe('index', () => {
     const workitemsIter = workitemsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {name: 'test', id: '123'}
+      {name: 'test', id: '123'},
+      {
+        '123': {
+          cutoff: new Date('2021-01-01').getTime(),
+        },
+      }
     );
     const workitems = [];
     for await (const workitem of workitemsIter) {
@@ -185,5 +190,81 @@ describe('index', () => {
 
     expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
     expect(workitems).toMatchSnapshot();
+  });
+
+  test('streams - workitems, use incremental sync mode', async () => {
+    const dateT = new Date('2025-04-01').getTime();
+    const workitemIdsFunc = jest.fn();
+
+    const additionalFields = [
+      'Area Path',
+      'Effort',
+      'Remaining Work',
+      'Test Name',
+    ];
+
+    const fieldReferences = [
+      {referenceName: 'System.AreaPath', name: 'Area Path'},
+      {referenceName: 'Microsoft.VSTS.Scheduling.Effort', name: 'Effort'},
+      {
+        referenceName: 'Microsoft.VSTS.Scheduling.RemainingWork',
+        name: 'Remaining Work',
+      },
+      {referenceName: 'Custom.TestName', name: 'Test Name'},
+    ];
+
+    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
+      return new AzureWorkitems(
+        {
+          wit: {
+            getFields: jest.fn().mockResolvedValue(fieldReferences),
+            getWorkItems: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('workitems.json').value),
+            getWorkItemTypeStates: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('workitem_states.json').value
+              ),
+            getUpdates: jest
+              .fn()
+              .mockResolvedValue(
+                readTestResourceFile('workitem_updates.json').value
+              ),
+            queryByWiql: workitemIdsFunc.mockResolvedValue(
+              readTestResourceFile('workitem_ids.json')
+            ),
+          },
+        } as unknown as AzureDevOpsClient,
+        null,
+        100,
+        logger,
+        additionalFields
+      );
+    });
+    const source = new sut.AzureWorkitemsSource(logger);
+    const streams = source.streams({} as any);
+
+    const workitemsStream = streams[1];
+    const workitemsIter = workitemsStream.readRecords(
+      SyncMode.INCREMENTAL,
+      undefined,
+      {name: 'test', id: '123'},
+      {
+        '123': {
+          cutoff: dateT,
+        },
+      }
+    );
+    const workitems = [];
+    for await (const workitem of workitemsIter) {
+      workitems.push(workitem);
+    }
+
+    expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
+    const call = workitemIdsFunc.mock.calls[0][0];
+    expect(call.query).toMatch(
+      `[System.ChangedDate] >= '2025-04-01T00:00:00.000Z'`
+    );
   });
 });

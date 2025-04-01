@@ -6,9 +6,12 @@ import {
 } from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import * as types from 'faros-airbyte-common/azure-devops';
+import {calculateDateRange} from 'faros-airbyte-common/common';
+import {Utils} from 'faros-js-client';
 import {chunk, flatten} from 'lodash';
 import {VError} from 'verror';
 
+const MAX_WIQL_ITEMS = 19999;
 const MAX_BATCH_SIZE = 200;
 
 // Curated list of work item types from Azure DevOps
@@ -102,23 +105,23 @@ export class AzureWorkitems extends types.AzureDevOps {
 
   async *getWorkitems(
     project: string,
-    projectId: string
+    projectId: string,
+    since: number
   ): AsyncGenerator<types.WorkItemWithRevisions> {
     await this.initializeFieldReferences();
-
     const stateCategories = await this.getStateCategories(project);
-    const stateCategoriesObj = Object.fromEntries(
-      Array.from(stateCategories.entries()).map(([type, states]) => [
-        type,
-        Object.fromEntries(states),
-      ])
-    );
+
+    const dateRange = calculateDateRange({
+      start_date: Utils.toDate(since)?.toISOString(),
+      cutoff_days: this.cutoffDays,
+      logger: this.logger.info.bind(this.logger),
+    });
     this.logger.debug(
-      `State categories: ${JSON.stringify(stateCategoriesObj)}`
+      `Fetching workitems for project ${project} from ${dateRange.startDate} to ${dateRange.endDate}`
     );
 
     const promises = WORK_ITEM_TYPES.map((type) =>
-      this.getIdsFromAWorkItemType(project, type)
+      this.getIdsFromAWorkItemType(project, type, dateRange)
     );
 
     const results = await Promise.all(promises);
@@ -260,28 +263,89 @@ export class AzureWorkitems extends types.AzureDevOps {
     }));
   }
 
-  // TODO - Fetch all work items instead of only max 20000
+  /**
+   * Fetches all work item IDs from a given project and work item type within a specified date range.
+   *
+   * @param project - The name of the project to fetch work items from.
+   * @param workItemsType - The type of work items to fetch.
+   * @param dateRange - An object containing start and end dates for the date range.
+   * @returns A promise that resolves to an array of work item IDs.
+   */
   async getIdsFromAWorkItemType(
     project: string,
-    workItemsType: string
+    workItemsType: string,
+    dateRange: {startDate: Date; endDate: Date}
   ): Promise<ReadonlyArray<number>> {
+    // Watermark to ensure when we get the changed date to use for next iteration,
+    // we fetch as of the start of the sync incase it gets updated during the sync
+    const asOfWatermark = new Date();
+
+    const minChangeAt = dateRange.startDate;
+    let maxChangedAt = dateRange.endDate;
+    let hasMore = false;
+    const workTypeIds = new Set<number>();
+
     const quotedProject = `'${project}'`;
-    const data = {
-      query:
-        'Select [System.Id], [System.ChangedDate] From WorkItems WHERE [System.WorkItemType] = ' +
-        workItemsType +
-        ' AND [System.ChangedDate] >= @Today-180 AND [System.TeamProject] = ' +
-        quotedProject +
-        ' ORDER BY [System.ChangedDate] DESC',
-    };
-    // Azure API has a limit of 20000 items per request.
-    const result = await this.client.wit.queryByWiql(
-      data,
-      undefined,
-      true, // time precision to get timestamp and not date
-      19999 // max items allowed
+
+    do {
+      const data = {
+        query:
+          'Select [System.Id] From WorkItems' +
+          ' WHERE [System.WorkItemType] = ' +
+          workItemsType +
+          ' AND [System.TeamProject] = ' +
+          quotedProject +
+          ` AND [System.ChangedDate] >= '${minChangeAt.toISOString()}'` +
+          ` AND [System.ChangedDate] <= '${maxChangedAt.toISOString()}'` +
+          ' ORDER BY [System.ChangedDate] DESC',
+      };
+      // Azure API has a limit of 20000 items per request.
+      const result = await this.client.wit.queryByWiql(
+        data,
+        undefined,
+        true, // time precision to get timestamp and not date
+        MAX_WIQL_ITEMS // max items allowed
+      );
+      result.workItems.forEach((workItem) => workTypeIds.add(workItem.id));
+
+      if (result.workItems.length === MAX_WIQL_ITEMS) {
+        const lastItem = result.workItems.at(-1);
+        const lastItemDetails = await this.client.wit.getWorkItem(
+          lastItem.id,
+          ['System.ChangedDate'],
+          asOfWatermark,
+          undefined,
+          project
+        );
+        maxChangedAt = Utils.toDate(
+          lastItemDetails.fields['System.ChangedDate']
+        );
+
+        hasMore = maxChangedAt !== null;
+        if (!hasMore) {
+          this.logger.warn(
+            `Fetching workitems for project: ${project}, workType: ` +
+              `${workItemsType} has more than ${MAX_WIQL_ITEMS} items but ` +
+              `failed to get next page 'System.ChangedDate' from workitem ` +
+              `id: ${lastItem.id}`
+          );
+        }
+      } else {
+        hasMore = false;
+      }
+      this.logger.debug(
+        hasMore
+          ? `Fetching next page of ${MAX_WIQL_ITEMS} workitems for project ` +
+              `${quotedProject} workType ${workItemsType} from ${minChangeAt} ` +
+              `until ${maxChangedAt}`
+          : `No more workitems for ${quotedProject}, workType: ${workItemsType}`
+      );
+    } while (hasMore);
+    this.logger.info(
+      `Total workitems fetched for project ${quotedProject} workType ` +
+        `${workItemsType}: ${workTypeIds.size}`
     );
-    return result.workItems.map((workItem) => workItem.id);
+    return Array.from(workTypeIds);
   }
 
   /**
@@ -365,6 +429,16 @@ export class AzureWorkitems extends types.AzureDevOps {
         }
         stateCategories.set(cleanType, typeCategories);
       })
+    );
+
+    const stateCategoriesObj = Object.fromEntries(
+      Array.from(stateCategories.entries()).map(([type, states]) => [
+        type,
+        Object.fromEntries(states),
+      ])
+    );
+    this.logger.debug(
+      `State categories: ${JSON.stringify(stateCategoriesObj)}`
     );
 
     return stateCategories;
