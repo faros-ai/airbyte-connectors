@@ -22,11 +22,11 @@ export class Workitems extends StreamWithProjectSlices {
       this.config,
       this.logger
     );
-    const {name, id} = streamSlice;
+    const {id} = streamSlice;
     const since =
       syncMode === SyncMode.INCREMENTAL ? streamState?.[id]?.cutoff : undefined;
 
-    yield* azureWorkitem.getWorkitems(name, id, since);
+    yield* azureWorkitem.getWorkitems(streamSlice, since);
   }
 
   getUpdatedState(

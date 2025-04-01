@@ -1,3 +1,4 @@
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {
   TreeStructureGroup,
   WorkItemClassificationNode,
@@ -104,12 +105,11 @@ export class AzureWorkitems extends types.AzureDevOps {
   }
 
   async *getWorkitems(
-    project: string,
-    projectId: string,
+    project: ProjectReference,
     since: number
   ): AsyncGenerator<types.WorkItemWithRevisions> {
     await this.initializeFieldReferences();
-    const stateCategories = await this.getStateCategories(project);
+    const stateCategories = await this.getStateCategories(project.id);
 
     const dateRange = calculateDateRange({
       start_date: Utils.toDate(since)?.toISOString(),
@@ -117,11 +117,11 @@ export class AzureWorkitems extends types.AzureDevOps {
       logger: this.logger.info.bind(this.logger),
     });
     this.logger.debug(
-      `Fetching workitems for project ${project} from ${dateRange.startDate} to ${dateRange.endDate}`
+      `Fetching workitems for project ${project.name} from ${dateRange.startDate} to ${dateRange.endDate}`
     );
 
     const promises = WORK_ITEM_TYPES.map((type) =>
-      this.getIdsFromAWorkItemType(project, type, dateRange)
+      this.getIdsFromAWorkItemType(project.name, type, dateRange)
     );
 
     const results = await Promise.all(promises);
@@ -134,7 +134,7 @@ export class AzureWorkitems extends types.AzureDevOps {
         undefined,
         WorkItemExpand.All,
         undefined,
-        project
+        project.id
       );
 
       for (const item of workitems ?? []) {
@@ -147,7 +147,7 @@ export class AzureWorkitems extends types.AzureDevOps {
         const additionalFields = this.extractAdditionalFields(item.fields);
         const revisions = await this.getWorkItemRevisions(
           item.id,
-          project,
+          project.id,
           states
         );
         yield {
@@ -160,7 +160,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           },
           revisions,
           additionalFields,
-          projectId,
+          projectId: project.id,
         };
       }
     }
@@ -341,7 +341,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           : `No more workitems for ${quotedProject}, workType: ${workItemsType}`
       );
     } while (hasMore);
-    this.logger.info(
+    this.logger.debug(
       `Total workitems fetched for project ${quotedProject} workType ` +
         `${workItemsType}: ${workTypeIds.size}`
     );
