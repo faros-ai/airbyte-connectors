@@ -61,7 +61,7 @@ export class Users extends AzureActiveDirectoryConverter {
         fullName: `${user.givenName} ${user.surname}`,
         lastName: user.surname,
         primaryEmail: user.mail,
-        emails: [user.mail],
+        emails: user.mail ? [user.mail] : [],
       },
     });
 
