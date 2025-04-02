@@ -1,9 +1,9 @@
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Repository} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {Repository} from '../models';
 import {AzureReposStreamBase} from './common';
 
 export class Repositories extends AzureReposStreamBase {
@@ -16,7 +16,14 @@ export class Repositories extends AzureReposStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<TeamProject> {
-    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    )
     const projects = await azureRepos.getProjects(this.config.projects);
     yield* projects;
   }
@@ -26,7 +33,14 @@ export class Repositories extends AzureReposStreamBase {
     cursorField?: string[],
     streamSlice?: TeamProject
   ): AsyncGenerator<Repository> {
-    const azureRepos = await AzureRepos.instance(this.config, this.logger);
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
     yield* azureRepos.getRepositories(streamSlice);
   }
 }

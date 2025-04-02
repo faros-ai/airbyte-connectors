@@ -1,9 +1,8 @@
-import {PullRequestStatus} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {PullRequest} from '../models';
 import {AzureReposStreamBase} from './common';
 
 export class PullRequests extends AzureReposStreamBase {
@@ -31,7 +30,7 @@ export class PullRequests extends AzureReposStreamBase {
   ): Dictionary<any> {
     const newStreamState = currentStreamState;
 
-    if (latestPR.status === PullRequestStatus.Completed) {
+    if (latestPR.status === 'completed') {
       return {
         cutoff:
           new Date(latestPR.closedDate) >
@@ -56,7 +55,10 @@ export class PullRequests extends AzureReposStreamBase {
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
     );
     // TODO: Should use project slices or repository slices
     yield* azureRepos.getPullRequests(since, this.config.projects);

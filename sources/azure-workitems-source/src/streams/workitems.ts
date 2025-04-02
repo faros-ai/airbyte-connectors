@@ -1,9 +1,10 @@
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {SyncMode} from 'faros-airbyte-cdk';
+import {WorkItemWithRevisions} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {WorkItemWithRevisions} from '../models';
-import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
+import {StreamWithProjectSlices} from './common';
 
 export class Workitems extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -13,12 +14,13 @@ export class Workitems extends StreamWithProjectSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: ProjectStreamSlice
+    streamSlice?: ProjectReference
   ): AsyncGenerator<WorkItemWithRevisions> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger
     );
+
     const {name, id} = streamSlice;
     yield* azureWorkitem.getWorkitems(name, id);
   }

@@ -35,3 +35,8 @@ export class Common {
     return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input);
   }
 }
+
+export interface Tag {
+  readonly name: string;
+  readonly value: string;
+}

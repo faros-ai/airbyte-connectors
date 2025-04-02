@@ -1,16 +1,16 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  WorkItemAssigneeRevision,
+  WorkItemIterationRevision,
+  WorkItemStateRevision,
+  WorkItemWithRevisions,
+} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
+import {CategoryDetail} from '../common/common';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureWorkitemsConverter} from './common';
-import {
-  CategoryDetail,
-  fields,
-  TaskKey,
-  TaskStatusChange,
-  WorkItem,
-} from './models';
-
+import {TaskKey, TaskStatusChange} from './models';
 export class Workitems extends AzureWorkitemsConverter {
   private readonly projectAreaPaths = new Map<string, Set<string>>();
   private readonly areaPathIterations = new Map<string, Set<string>>();
@@ -32,7 +32,7 @@ export class Workitems extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
-    const WorkItem = record.record.data as WorkItem;
+    const WorkItem = record.record.data as WorkItemWithRevisions;
     const taskKey = {uid: String(WorkItem.id), source};
 
     const areaPath = this.collectAreaPath(
@@ -205,7 +205,7 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private convertAssigneeRevisions(
     task: TaskKey,
-    assigneeRevisions: any[]
+    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>
   ): ReadonlyArray<DestinationRecord> {
     return assigneeRevisions.map((revision) => ({
       model: 'tms_TaskAssignment',
@@ -217,7 +217,9 @@ export class Workitems extends AzureWorkitemsConverter {
     }));
   }
 
-  private convertStateRevisions(stateRevisions: any[]): TaskStatusChange[] {
+  private convertStateRevisions(
+    stateRevisions: ReadonlyArray<WorkItemStateRevision>
+  ): TaskStatusChange[] {
     return stateRevisions.map((revision) => ({
       status: this.getStatusMapping(revision.state),
       changedAt: Utils.toDate(revision.changedDate),
@@ -226,7 +228,7 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private convertIterationRevisions(
     task: TaskKey,
-    iterations: any[],
+    iterations: ReadonlyArray<WorkItemIterationRevision>,
     areaPath: string
   ): ReadonlyArray<DestinationRecord> {
     if (!iterations?.length) {
@@ -260,7 +262,9 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private getEpic(
     key: {uid: string; source: string},
-    fields: fields,
+    fields: {
+      [key: string]: any;
+    },
     status: CategoryDetail,
     projectId: string
   ): ReadonlyArray<DestinationRecord> {

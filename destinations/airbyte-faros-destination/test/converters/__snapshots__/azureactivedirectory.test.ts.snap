@@ -15,9 +15,7 @@ exports[`azureactivedirectory process records from all streams - geocoded 2`] = 
 Array [
   Object {
     "identity_Identity": Object {
-      "emails": Array [
-        null,
-      ],
+      "emails": Array [],
       "fullName": "huong tester",
       "lastName": "tester",
       "primaryEmail": null,
@@ -180,9 +178,7 @@ exports[`azureactivedirectory process records from all streams 2`] = `
 Array [
   Object {
     "identity_Identity": Object {
-      "emails": Array [
-        null,
-      ],
+      "emails": Array [],
       "fullName": "huong tester",
       "lastName": "tester",
       "primaryEmail": null,

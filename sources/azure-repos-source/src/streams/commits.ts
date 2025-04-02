@@ -1,8 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Commit} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {Commit} from '../models';
 import {AzureReposStreamBase} from './common';
 
 export class Commits extends AzureReposStreamBase {
@@ -43,7 +43,15 @@ export class Commits extends AzureReposStreamBase {
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
+    this.logger.debug(
+      this.config.fetch_branch_commits
+        ? `Fetching commits from branches matching pattern ${this.config.branch_pattern}`
+        : `Fetching commits from default branch only`
     );
     // TODO: Should use project slices
     yield* azureRepos.getCommits(since, this.config.projects);
