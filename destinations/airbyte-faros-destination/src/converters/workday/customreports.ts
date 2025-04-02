@@ -311,17 +311,17 @@ export class Customreports extends Converter {
   private initializeTeamToParentWithInput(
     ctx: StreamContext
   ): Record<string, string> {
-    const team_to_parent_list: Record<string, string> | null =
+    const team_to_parent_map: Record<string, string> | null =
       ctx.config.source_specific_configs?.workday?.additional_team_info
         ?.team_id_to_parent_id;
-    if (!team_to_parent_list) {
+    if (!team_to_parent_map) {
       ctx.logger.info('No team to parent map provided in config');
       return {};
     }
     // Check if team to parent is a record:
-    if (typeof team_to_parent_list !== 'object') {
+    if (typeof team_to_parent_map !== 'object') {
       throw new Error(
-        `team_to_parent_list is not an object. Instead: ${typeof team_to_parent_list}`
+        `team_to_parent_list is not an object. Instead: ${typeof team_to_parent_map}`
       );
     }
     const teamIDToTeamName: Record<string, string> =
@@ -333,10 +333,16 @@ export class Customreports extends Converter {
       }
     }
     const map: Record<string, string> = {};
-    for (const [team_id, parent_id] of Object.entries(team_to_parent_list)) {
+    for (const [team_id, parent_id] of Object.entries(team_to_parent_map)) {
       this.teamToParentListInputTeams.add(team_id);
       this.teamToParentListInputTeams.add(parent_id);
       map[team_id] = parent_id;
+      if (!(team_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_id;
+      }
+      if (!(parent_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[parent_id] = parent_id;
+      }
     }
     // For every parent team, if it does not appear as a child to another team,
     // then it is assumed to be a root team
