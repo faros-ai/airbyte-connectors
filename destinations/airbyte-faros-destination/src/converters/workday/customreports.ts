@@ -311,44 +311,32 @@ export class Customreports extends Converter {
   private initializeTeamToParentWithInput(
     ctx: StreamContext
   ): Record<string, string> {
-    const team_to_parent_list: string[] | null =
-      ctx.config.source_specific_configs?.workday?.team_to_parent_list;
+    const team_to_parent_list: Record<string, string> | null =
+      ctx.config.source_specific_configs?.workday?.additional_team_info
+        ?.team_id_to_parent_id;
     if (!team_to_parent_list) {
-      ctx.logger.warn('No team to parent list provided in config');
+      ctx.logger.info('No team to parent map provided in config');
       return {};
     }
-    if (!Array.isArray(team_to_parent_list)) {
+    // Check if team to parent is a record:
+    if (typeof team_to_parent_list !== 'object') {
       throw new Error(
-        `team_to_parent_list is not an array. Instead: ${team_to_parent_list}`
+        `team_to_parent_list is not an object. Instead: ${typeof team_to_parent_list}`
       );
     }
+    const teamIDToTeamName: Record<string, string> =
+      ctx.config.source_specific_configs?.workday?.additional_team_info
+        ?.team_id_to_name;
+    if (teamIDToTeamName) {
+      for (const [team_id, team_name] of Object.entries(teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_name;
+      }
+    }
     const map: Record<string, string> = {};
-    for (const team_parent_str of team_to_parent_list) {
-      // check if team_parent_str is a string:
-      if (typeof team_parent_str !== 'string') {
-        throw new Error(
-          `Expected each element in team_to_parent_list to be a string, but received: ${team_parent_str}`
-        );
-      }
-      // If it does not contain one colon, it is an error:
-      const team_parent_tuple: string[] = team_parent_str.split(':');
-      if (team_parent_tuple.length != 2) {
-        throw new Error(
-          `Team to Parent Tuple must have length 2, instead: ${team_parent_tuple}, from string: ${team_parent_str}`
-        );
-      }
-      const team_id = team_parent_tuple[0];
-      const parent_id = team_parent_tuple[1];
-      if (team_id in map) {
-        throw new Error(
-          `Team ID ${team_id} appears twice in input team to parent list.`
-        );
-      }
-      map[team_id] = parent_id;
-      this.teamIDToTeamName[team_id] = team_id;
-      this.teamIDToTeamName[parent_id] = parent_id;
+    for (const [team_id, parent_id] of Object.entries(team_to_parent_list)) {
       this.teamToParentListInputTeams.add(team_id);
       this.teamToParentListInputTeams.add(parent_id);
+      map[team_id] = parent_id;
     }
     // For every parent team, if it does not appear as a child to another team,
     // then it is assumed to be a root team
