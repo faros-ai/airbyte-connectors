@@ -1924,6 +1924,7 @@ export abstract class GitHub {
         yield {
           enterprise,
           user: seat.assignee.login as string,
+          team: seat.assigning_team?.slug,
           ...pick(seat, [
             'created_at',
             'updated_at',
