@@ -76,6 +76,12 @@
             "team_id_to_parent_id": {},
             "team_id_to_name": {}
           }
+        },
+        "use_parent_team_id": {
+          "type": "boolean",
+          "title": "Use Parent Team ID",
+          "description": "If true, the Parent_Team_ID field will be used to create org structure",
+          "default": false
         }
       }
     }
