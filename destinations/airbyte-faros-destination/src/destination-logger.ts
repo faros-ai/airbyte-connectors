@@ -12,7 +12,9 @@ import {
 } from 'faros-airbyte-cdk';
 import fs from 'fs';
 import os from 'os';
+import path from 'path';
 import readline from 'readline';
+import {VError} from 'verror';
 
 export interface LogContent {
   content: string;
@@ -30,7 +32,19 @@ export class LogFiles {
   private readonly dstWriteQueue: pQueue = new pQueue({concurrency: 1});
 
   constructor(private readonly logger: FarosDestinationLogger) {
-    const logDir = os.tmpdir();
+    const tmpDir = os.tmpdir();
+    const logDir = path.join(tmpDir, `faros-sync-logs-${Date.now()}`);
+    if (fs.existsSync(logDir)) {
+      throw new VError(
+        `Logs directory ${logDir} already exists. Please wait a few seconds and try again.`
+      );
+    }
+    fs.mkdirSync(logDir);
+    const deleteLogDir = () => {
+      fs.rmSync(logDir, {recursive: true, force: true});
+    };
+    process.on('exit', deleteLogDir);
+    process.on('SIGINT', deleteLogDir);
     this.srcPath = `${logDir}/src.log`;
     this.dstPath = `${logDir}/dst.log`;
     this.srcStream = fs.createWriteStream(this.srcPath, {
