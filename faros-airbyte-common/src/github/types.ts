@@ -411,6 +411,7 @@ export type EnterpriseCopilotSeat = {
   empty?: never;
   enterprise: string;
   user: string;
+  team?: string;
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<
     typeof octokit.copilot.listCopilotSeats

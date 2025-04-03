@@ -556,7 +556,7 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestLabel[]> {
-    const {nodes, pageInfo} = pr.labels || {};
+    const {nodes, pageInfo} = pr.labels ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -601,7 +601,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestFiles) {
       return [];
     }
-    const {nodes, pageInfo} = pr.files || {};
+    const {nodes, pageInfo} = pr.files ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -659,7 +659,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {nodes, pageInfo} = pr.reviews || {};
+    const {nodes, pageInfo} = pr.reviews ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -778,7 +778,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {nodes, pageInfo} = pr.reviewRequests || {};
+    const {nodes, pageInfo} = pr.reviewRequests ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -1271,7 +1271,7 @@ export abstract class GitHub {
       `action:team.add_member action:team.remove_member created:>${cutoff.toISOString()}`,
       context
     );
-    for await (const log of logs) {
+    for (const log of logs) {
       if (!users[log.user]) {
         users[log.user] = {};
       }
@@ -1727,7 +1727,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         per_page: this.pageSize,
-        created: `${createdSince?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+        created: `${createdSince?.toISOString() ?? '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
       }
     );
     for await (const res of iter) {
@@ -1924,6 +1924,7 @@ export abstract class GitHub {
         yield {
           enterprise,
           user: seat.assignee.login as string,
+          team: seat.assigning_team?.slug,
           ...pick(seat, [
             'created_at',
             'updated_at',
