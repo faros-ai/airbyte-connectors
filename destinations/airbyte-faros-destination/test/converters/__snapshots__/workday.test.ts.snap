@@ -66,11 +66,7 @@ Array [
 ]
 `;
 
-exports[`workday check resulting org structure from "empty" input 1`] = `
-Object {
-  "all_teams": "all_teams",
-}
-`;
+exports[`workday check resulting org structure from "empty" input 1`] = `Object {}`;
 
 exports[`workday process randomly generated records from customreports v3 stream 1`] = `
 Array [

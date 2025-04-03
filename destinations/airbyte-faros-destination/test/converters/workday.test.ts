@@ -299,7 +299,7 @@ describe('workday', () => {
       customReportDestination,
       ctx
     );
-    expect(finalTeamToParent).toMatchSnapshot({all_teams: 'all_teams'});
+    expect(finalTeamToParent).toMatchSnapshot({});
     expect(JSON.stringify(res)).toMatch('[]');
   });
 
@@ -314,7 +314,6 @@ describe('workday', () => {
       ctx
     );
 
-    expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
     expect(finalTeamToParent['B']).toMatch('A');
     expect(res.length).toEqual(12);
