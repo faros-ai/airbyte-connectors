@@ -3,9 +3,13 @@ import {Commit} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
-import {AzureReposStreamBase} from './common';
+import {
+  BranchStreamSlice,
+  BranchStreamState,
+  StreamWithBranchSlices,
+} from './common';
 
-export class Commits extends AzureReposStreamBase {
+export class Commits extends StreamWithBranchSlices {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/commits.json');
   }
@@ -19,27 +23,24 @@ export class Commits extends AzureReposStreamBase {
   }
 
   getUpdatedState(
-    currentStreamState: Dictionary<any>,
+    currentStreamState: BranchStreamState,
     latestCommit: Commit
-  ): Dictionary<any> {
-    return {
-      cutoff:
-        new Date(latestCommit.committer.date) >
-        new Date(currentStreamState?.cutoff ?? 0)
-          ? latestCommit.committer.date
-          : currentStreamState.cutoff,
-    };
+  ): BranchStreamState {
+    return this.updateState(
+      currentStreamState,
+      latestCommit.branch,
+      latestCommit.repository.name,
+      latestCommit.repository.project.name,
+      latestCommit.committer.date
+    );
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: any,
-    streamState?: any
+    streamSlice?: BranchStreamSlice,
+    streamState?: BranchStreamState
   ): AsyncGenerator<Commit> {
-    const since =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
@@ -48,12 +49,12 @@ export class Commits extends AzureReposStreamBase {
       this.config.fetch_tags,
       this.config.fetch_branch_commits
     );
-    this.logger.debug(
-      this.config.fetch_branch_commits
-        ? `Fetching commits from branches matching pattern ${this.config.branch_pattern}`
-        : `Fetching commits from default branch only`
+
+    const since = this.getCutoff(syncMode, streamSlice, streamState);
+    yield* azureRepos.getCommits(
+      streamSlice.branch,
+      streamSlice.repository,
+      since
     );
-    // TODO: Should use project slices
-    yield* azureRepos.getCommits(since, this.config.projects);
   }
 }

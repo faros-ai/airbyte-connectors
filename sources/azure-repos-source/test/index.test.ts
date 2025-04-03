@@ -54,17 +54,16 @@ describe('index', () => {
   test('check connection', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
       const usersResource: any[] = readTestResourceFile('users.json');
+      const project = {id: 'project', name: 'Project'};
       return new AzureRepos(
         {
           core: {
-            getProject: jest
-              .fn()
-              .mockResolvedValue({id: 'project', name: 'Project'}),
+            getProject: jest.fn().mockResolvedValue(project),
           },
           git: {
             getRepositories: jest
               .fn()
-              .mockResolvedValue([{id: 'repo', name: 'repo'}]),
+              .mockResolvedValue([{id: 'repo', name: 'repo', project}]),
             getBranches: jest.fn().mockResolvedValue([]),
             getRefs: jest.fn().mockResolvedValue([]),
           },
@@ -140,18 +139,13 @@ describe('index', () => {
   });
 
   test('streams - commits, use full_refresh sync mode', async () => {
+    const repos = readTestResourceFile('repositories.json');
+    const repo = {...repos[0], project: {id: 'project', name: 'project'}};
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const repos = readTestResourceFile('repositories.json');
       const commits = readTestResourceFile('commits.json');
       return new AzureRepos(
         {
-          core: {
-            getProject: jest
-              .fn()
-              .mockResolvedValueOnce({id: 'project', name: 'project'}),
-          },
           git: {
-            getRepositories: jest.fn().mockResolvedValueOnce(repos),
             getCommits: jest.fn().mockResolvedValueOnce(commits),
           },
         } as unknown as AzureDevOpsClient,
@@ -165,7 +159,11 @@ describe('index', () => {
     const streams = source.streams(config);
 
     const commitsStream = streams[0];
-    const commitIter = commitsStream.readRecords(SyncMode.FULL_REFRESH);
+    const commitIter = commitsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {repository: repo, branch: 'main'}
+    );
     const commits = [];
     for await (const pullrequest of commitIter) {
       commits.push(pullrequest);
@@ -207,31 +205,27 @@ describe('index', () => {
     const streams = source.streams(config);
 
     const commitsStream = streams[0];
-    const commitIter = commitsStream.readRecords(SyncMode.FULL_REFRESH);
     const commits = [];
-    for await (const pullrequest of commitIter) {
-      commits.push(pullrequest);
+    const syncMode = SyncMode.FULL_REFRESH;
+    for await (const slice of commitsStream.streamSlices(syncMode)) {
+      const commitIter = commitsStream.readRecords(syncMode, undefined, slice);
+      for await (const commit of commitIter) {
+        commits.push(commit);
+      }
     }
     expect(commits).toMatchSnapshot();
   });
 
   test('streams - pullrequests, use full_refresh sync mode', async () => {
+    const repos = readTestResourceFile('repositories.json');
+    const repo = {...repos[0], project: {id: 'project', name: 'project'}};
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const repos = readTestResourceFile('repositories.json');
       const rawPullrequests: any[] = readTestResourceFile('pullrequests.json');
       const pullrequests = rawPullrequests.map((p) => omit(p, 'threads'));
       const threads = rawPullrequests.map((r) => r.threads);
-      const branch = readTestResourceFile('branches.json')[0];
       return new AzureRepos(
         {
-          core: {
-            getProject: jest
-              .fn()
-              .mockResolvedValueOnce({id: 'project', name: 'project'}),
-          },
           git: {
-            getRepositories: jest.fn().mockResolvedValueOnce(repos),
-            getBranches: jest.fn().mockResolvedValueOnce([branch]),
             getPullRequests: jest.fn().mockResolvedValueOnce(pullrequests),
             getThreads: jest
               .fn()
@@ -251,7 +245,9 @@ describe('index', () => {
 
     const pullrequestsStream = streams[1];
     const pullrequestIter = pullrequestsStream.readRecords(
-      SyncMode.FULL_REFRESH
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {repository: repo, branch: 'main'}
     );
     const pullrequests = [];
     for await (const pullrequest of pullrequestIter) {
