@@ -57,7 +57,7 @@ export class Customreports extends Converter {
   writtenEmployeeIds: Set<string> = new Set<string>();
   failedRecordFields: Set<string> = new Set<string>();
   // Store all the input teams for reference in the end
-  teamToParentListInputTeams: Set<string> = new Set<string>();
+  additionalTeamToParentInputs: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
   id(record: AirbyteRecord): any {
@@ -412,8 +412,8 @@ export class Customreports extends Converter {
     }
     const map: Record<string, string> = {};
     for (const [team_id, parent_id] of Object.entries(team_to_parent_map)) {
-      this.teamToParentListInputTeams.add(team_id);
-      this.teamToParentListInputTeams.add(parent_id);
+      this.additionalTeamToParentInputs.add(team_id);
+      this.additionalTeamToParentInputs.add(parent_id);
       map[team_id] = parent_id;
       if (!(team_id in this.teamIDToTeamName)) {
         this.teamIDToTeamName[team_id] = team_id;
@@ -787,7 +787,7 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): DestinationRecord {
     // Only an input list team
-    if (this.teamToParentListInputTeams.has(teamID)) {
+    if (this.additionalTeamToParentInputs.has(teamID)) {
       return {
         model: 'org_Team',
         record: {
