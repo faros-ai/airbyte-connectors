@@ -32,6 +32,19 @@ export enum JobCategory {
   Manual = 'Manual',
 }
 
+export interface BuildKey {
+  readonly uid: string;
+  readonly pipeline: PipelineKey;
+}
+
+interface PipelineKey {
+  readonly uid: string;
+  readonly organization: {
+    readonly uid: string;
+    readonly source: string;
+  };
+}
+
 const cicdArtifactQueryByCommitSha = getQueryFromName(
   'cicdArtifactQueryByCommitSha'
 );
