@@ -17,6 +17,8 @@ export class Builds extends AzurePipelineConverter {
     'cicd_BuildStep',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
+    'cicd_BuildTag',
+    'faros_Tag',
     'qa_CodeQuality',
   ];
 
@@ -60,6 +62,30 @@ export class Builds extends AzurePipelineConverter {
         url: build.url,
       },
     });
+
+    // Add build tags
+    if (build.tags?.length > 0) {
+      for (const tag of build.tags) {
+        const tagKey = {
+          uid: `${buildKey.uid}__${tag}`,
+        };
+        res.push({
+          model: 'faros_Tag',
+          record: {
+            ...tagKey,
+            key: tag,
+            value: null,
+          },
+        });
+        res.push({
+          model: 'cicd_BuildTag',
+          record: {
+            build: buildKey,
+            tag: tagKey,
+          },
+        });
+      }
+    }
 
     if (build.sourceVersion && build.repository) {
       const vcsRepository = this.vcs_Repository(build.repository);
