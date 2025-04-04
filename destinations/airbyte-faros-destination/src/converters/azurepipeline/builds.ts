@@ -4,6 +4,7 @@ import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
 import {getOrganizationFromUrl} from '../common/azure-devops';
+import {BuildKey} from '../common/cicd';
 import {Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -17,10 +18,13 @@ export class Builds extends AzurePipelineConverter {
     'cicd_BuildStep',
     'cicd_BuildCommitAssociation',
     'cicd_Repository',
+    'cicd_BuildTag',
+    'faros_Tag',
     'qa_CodeQuality',
   ];
 
   private readonly seenRepositories = new Set<string>();
+  private readonly seenTags = new Set<string>();
 
   async convert(
     record: AirbyteRecord,
@@ -60,6 +64,8 @@ export class Builds extends AzurePipelineConverter {
         url: build.url,
       },
     });
+
+    res.push(...this.processTags(build.tags, buildKey));
 
     if (build.sourceVersion && build.repository) {
       const vcsRepository = this.vcs_Repository(build.repository);
@@ -231,5 +237,32 @@ export class Builds extends AzurePipelineConverter {
         ctx?.logger.warn(`Unsupported coverage label: ${coverage.label}`);
         return {};
     }
+  }
+
+  private processTags(tags: string[], buildKey: BuildKey): DestinationRecord[] {
+    const results = [];
+    for (const tag of tags ?? []) {
+      const tagKey = {uid: tag};
+      results.push({
+        model: 'cicd_BuildTag',
+        record: {
+          build: buildKey,
+          tag: tagKey,
+        },
+      });
+
+      if (this.seenTags.has(tag)) {
+        continue;
+      }
+      this.seenTags.add(tag);
+      results.push({
+        model: 'faros_Tag',
+        record: {
+          ...tagKey,
+          key: tag,
+        },
+      });
+    }
+    return results;
   }
 }
