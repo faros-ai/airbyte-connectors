@@ -172,8 +172,8 @@ jobs:
 
       - name: Publish connector images
         env:
-          DOCKER_BUILDKIT: 1
+          # DOCKER_BUILDKIT: 1
           TAG_VERSION: windows-v0.14.11-rc0
         shell: bash
         run: |
-          ./scripts/publish-connector-win.sh example-source ${{ env.TAG_VERSION }}
+          ./scripts/publish-connector-win.sh sources/example-source ${{ env.TAG_VERSION }}
