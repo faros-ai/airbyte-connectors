@@ -84,7 +84,7 @@ jobs:
           path: .turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-    
+            ${{ runner.os }}-turbo-
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -153,3 +153,26 @@ jobs:
         run: |
           cd destinations/airbyte-faros-destination && \
           npm publish --dry-run
+
+  test-publish-windows-image:
+    if: ${{ github.ref == 'refs/heads/jg/windows-test-images' }}
+    name: Publish connectors
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Docker login
+        uses: docker/login-action@v3.4.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Publish connector images
+        env:
+          DOCKER_BUILDKIT: 1
+          TAG_VERSION: windows-v0.14.11-rc0
+        shell: bash
+        run: |
+          ./scripts/publish-connector-win.sh example-source ${{ env.TAG_VERSION }}
