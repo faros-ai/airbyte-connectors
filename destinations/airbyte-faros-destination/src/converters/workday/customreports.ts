@@ -7,6 +7,7 @@ import {
   Converter,
   DestinationModel,
   DestinationRecord,
+  parseObjectConfig,
   StreamContext,
 } from '../converter';
 import {
@@ -386,12 +387,24 @@ export class Customreports extends Converter {
     }
     return allRecords;
   }
+  private getAdditionalTeamInfo(
+    ctx: StreamContext
+  ): Record<string, Record<string, string> | null> {
+    const team_id_to_parent_id: Record<string, string> | null =
+      ctx.config.source_specific_configs?.workday?.team_id_to_parent_id;
+    const team_id_to_name: Record<string, string> | null =
+      ctx.config.source_specific_configs?.workday?.team_id_to_name;
+    return {
+      team_id_to_parent_id,
+      team_id_to_name,
+    };
+  }
   private initializeTeamToParentWithInput(
     ctx: StreamContext
   ): Record<string, string> {
+    const additionalTeamInfo = this.getAdditionalTeamInfo(ctx);
     const team_to_parent_map: Record<string, string> | null =
-      ctx.config.source_specific_configs?.workday?.additional_team_info
-        ?.team_id_to_parent_id;
+      additionalTeamInfo?.team_id_to_parent_id;
     if (!team_to_parent_map) {
       ctx.logger.info('No team to parent map provided in config');
       return {};
@@ -403,8 +416,7 @@ export class Customreports extends Converter {
       );
     }
     const teamIDToTeamName: Record<string, string> =
-      ctx.config.source_specific_configs?.workday?.additional_team_info
-        ?.team_id_to_name;
+      additionalTeamInfo?.team_id_to_name;
     if (teamIDToTeamName) {
       for (const [team_id, team_name] of Object.entries(teamIDToTeamName)) {
         this.teamIDToTeamName[team_id] = team_name;
