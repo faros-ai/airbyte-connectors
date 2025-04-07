@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {BuildKey} from '../common/cicd';
 import {Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
@@ -34,7 +34,7 @@ export class Builds extends AzurePipelineConverter {
     const build = record.record.data as Build;
     const uid = String(build.id);
 
-    const organizationName = getOrganizationFromUrl(build.url);
+    const organizationName = getOrganization(build.url, ctx, 'build');
     if (!organizationName) {
       ctx?.logger.warn(`Build ${uid} has no organization name`);
       return [];
