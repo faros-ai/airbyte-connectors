@@ -53,6 +53,30 @@
           "description": "If true, will resolve location information with Faros Geocoding API.",
           "default": false
         },
+        "additional_team_info": {
+          "title": "Additional Team Info",
+          "type": "object",
+          "properties": {
+            "team_id_to_parent_id": {
+              "type": "object",
+              "title": "Team To Parent",
+              "description": "A dictionary with team ids as keys and their parent team ids as values.",
+              "additionalProperties": true,
+              "default": {}
+            },
+            "team_id_to_name": {
+              "type": "object",
+              "title": "Team Id To Name",
+              "description": "A dictionary with team ids as keys and their names as values.",
+              "additionalProperties": true,
+              "default": {}
+            }
+          },
+          "default": {
+            "team_id_to_parent_id": {},
+            "team_id_to_name": {}
+          }
+        },
         "use_parent_team_id": {
           "type": "boolean",
           "title": "Use Parent Team ID",
