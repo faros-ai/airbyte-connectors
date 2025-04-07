@@ -45,8 +45,7 @@ function updateCustomReportWithFields(
 function getCustomReportandCtxGivenKey(
   mockttp: Mockttp,
   k: string,
-  fail_on_cycles: boolean = false,
-  team_to_parent_list: string[] = []
+  fail_on_cycles: boolean = false
 ): [Customreports, StreamContext] {
   const customReportDestination = new Customreports();
   const orgs_to_keep = [];
@@ -61,7 +60,6 @@ function getCustomReportandCtxGivenKey(
         orgs_to_keep,
         orgs_to_ignore,
         fail_on_cycles,
-        team_to_parent_list,
       },
     },
   });
@@ -106,7 +104,12 @@ describe('workday', () => {
           orgs_to_ignore,
           keep_terminated_employees,
           resolve_locations,
-          additional_team_info,
+          team_id_to_parent_id: JSON.stringify(
+            additional_team_info.team_id_to_parent_id
+          ),
+          team_id_to_name: JSON.stringify(
+            additional_team_info?.team_id_to_name
+          ),
         },
       },
       log_records,
