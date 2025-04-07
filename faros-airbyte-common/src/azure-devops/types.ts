@@ -10,7 +10,7 @@ import {
 import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
-import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
+import {Pipeline as BasePipeline, Run as BaseRun} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
@@ -68,6 +68,13 @@ export interface Build extends Omit<BaseBuild, 'reason' | 'status' | 'result'> {
   reason: string;
   status: string;
   result: string;
+}
+
+export interface Run extends Omit<BaseRun, 'result' | 'state'> {
+  project: ProjectReference;
+  pipeline: Pipeline;
+  result: string;
+  state: string;
 }
 
 export interface TimelineRecord

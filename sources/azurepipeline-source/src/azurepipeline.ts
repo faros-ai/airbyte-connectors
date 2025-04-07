@@ -8,6 +8,10 @@ import {
   TimelineRecordState,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {
+  RunResult,
+  RunState,
+} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
+import {
   ProjectReference,
   Release,
   ReleaseQueryOrder,
@@ -21,11 +25,13 @@ import {
   AzureDevOps,
   Build,
   Pipeline,
+  Run,
   TimelineRecord,
 } from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
+import {Memoize} from 'typescript-memoize';
 
 export class AzurePipelines extends AzureDevOps {
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -34,8 +40,7 @@ export class AzurePipelines extends AzureDevOps {
       if (!allProjects.length) {
         throw new VError('Failed to fetch projects');
       }
-      const iter = this.getPipelines(allProjects[0]);
-      await iter.next();
+      await this.getPipelines(allProjects[0]);
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
       if (err.error_code || err.error_info) {
@@ -51,14 +56,17 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
-  async *getPipelines(project: ProjectReference): AsyncGenerator<Pipeline> {
-    const pipelines = await this.client.pipelines.listPipelines(project.id);
-    for (const pipeline of pipelines) {
-      yield {
+  @Memoize((project: ProjectReference) => project.id)
+  async getPipelines(project: ProjectReference): Promise<Pipeline[]> {
+    const pipelines = [];
+    const result = await this.client.pipelines.listPipelines(project.id);
+    for (const pipeline of result) {
+      pipelines.push({
         project,
         ...pipeline,
-      };
+      });
     }
+    return pipelines;
   }
 
   // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds
@@ -202,5 +210,21 @@ export class AzurePipelines extends AzureDevOps {
       useContinuationToken: true,
       continuationTokenParam: 'id',
     });
+  }
+
+  // TODO: Validate pagination and size
+  async *getPipelineRuns(
+    project: ProjectReference,
+    pipelineId: number
+  ): AsyncGenerator<Run> {
+    const runs = await this.client.pipelines.listRuns(project.id, pipelineId);
+    for (const run of runs) {
+      yield {
+        ...run,
+        state: RunState[run.state]?.toLowerCase(),
+        result: RunResult[run.result]?.toLowerCase(),
+        project,
+      };
+    }
   }
 }

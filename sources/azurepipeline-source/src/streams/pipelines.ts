@@ -19,6 +19,6 @@ export class Pipelines extends AzurePipelinesStreamBase {
       this.config,
       this.logger
     );
-    yield* azurePipeline.getPipelines(streamSlice);
+    yield* await azurePipeline.getPipelines(streamSlice);
   }
 }
