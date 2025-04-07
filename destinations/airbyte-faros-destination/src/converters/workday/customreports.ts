@@ -391,9 +391,14 @@ export class Customreports extends Converter {
     ctx: StreamContext
   ): Record<string, Record<string, string> | null> {
     const team_id_to_parent_id: Record<string, string> | null =
-      ctx.config.source_specific_configs?.workday?.team_id_to_parent_id;
-    const team_id_to_name: Record<string, string> | null =
-      ctx.config.source_specific_configs?.workday?.team_id_to_name;
+      parseObjectConfig(
+        ctx.config.source_specific_configs?.workday?.team_id_to_parent_id,
+        'team_id_to_parent_id'
+      );
+    const team_id_to_name: Record<string, string> | null = parseObjectConfig(
+      ctx.config.source_specific_configs?.workday?.team_id_to_name,
+      'team_id_to_name'
+    );
     return {
       team_id_to_parent_id,
       team_id_to_name,

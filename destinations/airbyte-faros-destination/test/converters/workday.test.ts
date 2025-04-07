@@ -106,7 +106,12 @@ describe('workday', () => {
           orgs_to_ignore,
           keep_terminated_employees,
           resolve_locations,
-          additional_team_info,
+          team_id_to_parent_id: JSON.stringify(
+            additional_team_info.team_id_to_parent_id
+          ),
+          team_id_to_name: JSON.stringify(
+            additional_team_info?.team_id_to_name
+          ),
         },
       },
       log_records,
