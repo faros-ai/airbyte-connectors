@@ -4,15 +4,15 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 SHELL ["powershell", "-Command"]
 
 # Install Node.js 18 (using the Node.js installer)
-RUN Invoke-WebRequest -Uri https://nodejs.org/dist/v18.19.1/node-v18.19.1-x64.msi -OutFile node.msi ; \
-    Start-Process msiexec.exe -ArgumentList '/qn', '/i', 'node.msi' -NoNewWindow -Wait ; \
+RUN Invoke-WebRequest -Uri https://nodejs.org/dist/v18.19.1/node-v18.19.1-x64.msi -OutFile node.msi ; `
+    Start-Process msiexec.exe -ArgumentList '/qn', '/i', 'node.msi' -NoNewWindow -Wait ; `
     Remove-Item -Force node.msi
 
 # Set working directory
-WORKDIR C:\airbyte
+WORKDIR C:/airbyte
 
 # Copy configs
-COPY turbo.json .tsconfig.json package.json package-lock.json .\
+COPY turbo.json .tsconfig.json package.json package-lock.json ./ 
 
 # Remove unwanted deps (simulate sed)
 RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
@@ -24,7 +24,7 @@ COPY ./sources ./sources
 COPY ./destinations ./destinations
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
-RUN npm ci --no-audit --no-fund --ignore-scripts ; \
+RUN npm ci --no-audit --no-fund --ignore-scripts ; `
     npm run build
 
 # Copy Docker scripts
@@ -38,8 +38,8 @@ ARG path
 ENV CONNECTOR_PATH=$path
 
 # Symlink using mklink
-RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
+RUN cmd /c "mklink C:/airbyte/main C:/airbyte/%CONNECTOR_PATH%/bin/main"
 
 # Set entrypoint (PowerShell version assumed)
-ENV AIRBYTE_ENTRYPOINT="C:\airbyte\docker\entrypoint.ps1"
-ENTRYPOINT ["powershell", "-File", "C:\\airbyte\\docker\\entrypoint.ps1"]
+ENV AIRBYTE_ENTRYPOINT="C:/airbyte/docker/entrypoint.ps1"
+ENTRYPOINT ["powershell", "-File", "C:/airbyte/docker/entrypoint.ps1"]
