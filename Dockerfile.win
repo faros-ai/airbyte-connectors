@@ -4,9 +4,7 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022 as installer
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';$ProgressPreference='silentlyContinue';"]
 
 # Install Node.js 18 (using the Node.js installer)
-RUN Invoke-WebRequest -OutFile nodejs.zip -UseBasicParsing https://nodejs.org/dist/v18.19.1/node-v18.19.1-win-x64.zip; `
-    Expand-Archive nodejs.zip -DestinationPath C:/; `
-    Rename-Item "C:/node-v18.19.1-win-x64" C:/nodejs
+RUN Invoke-WebRequest -OutFile nodejs.zip -UseBasicParsing https://nodejs.org/dist/v18.19.1/node-v18.19.1-win-x64.zip; Expand-Archive nodejs.zip -DestinationPath C:/; Rename-Item "C:/node-v18.19.1-win-x64" C:/nodejs
     
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
@@ -30,8 +28,7 @@ COPY ./sources ./sources
 COPY ./destinations ./destinations
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
-RUN npm ci --no-audit --no-fund --ignore-scripts; `
-    npm run build
+RUN npm ci --no-audit --no-fund --ignore-scripts; npm run build
 
 # Copy Docker scripts
 COPY ./docker ./docker
