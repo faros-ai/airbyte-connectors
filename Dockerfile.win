@@ -5,7 +5,7 @@ SHELL ["powershell", "-Command"]
 
 # Install Node.js 18 (using the Node.js installer)
 RUN Invoke-WebRequest -Uri https://nodejs.org/dist/v18.19.1/node-v18.19.1-x64.msi -OutFile node.msi ; `
-    Start-Process msiexec.exe -ArgumentList '/qn', '/i', 'node.msi' -NoNewWindow -Wait ; `
+    msiexec.exe /qn /i node.msi ; `
     Remove-Item -Force node.msi
 
 # Set working directory
