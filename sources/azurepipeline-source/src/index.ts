@@ -11,6 +11,7 @@ import VError from 'verror';
 import {AzurePipelines} from './azurepipeline';
 import {Builds, Pipelines, Releases} from './streams';
 import {AzurePipelineConfig} from './types';
+import {Runs} from './streams/runs';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -42,6 +43,7 @@ export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> 
   streams(config: AzurePipelineConfig): AirbyteStreamBase[] {
     return [
       new Pipelines(config, this.logger),
+      new Runs(config, this.logger),
       new Builds(config, this.logger),
       new Releases(config, this.logger),
     ];

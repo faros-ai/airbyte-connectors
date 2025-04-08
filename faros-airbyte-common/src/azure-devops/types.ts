@@ -72,7 +72,6 @@ export interface Build extends Omit<BaseBuild, 'reason' | 'status' | 'result'> {
 
 export interface Run extends Omit<BaseRun, 'result' | 'state'> {
   project: ProjectReference;
-  pipeline: Pipeline;
   result: string;
   state: string;
 }

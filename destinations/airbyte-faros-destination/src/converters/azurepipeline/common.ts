@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
 import {
-  getOrganizationFromUrl,
+  getOrganization,
   getProjectFromUrl,
 } from '../common/azure-devops';
 import {BuildStateCategory, JobCategory} from '../common/cicd';
@@ -61,7 +61,7 @@ export abstract class AzurePipelineConverter extends Converter {
     const repoType = toLower(repo.type);
 
     if (repoType === 'tfsgit') {
-      const orgName = getOrganizationFromUrl(repo.url);
+      const orgName = getOrganization(repo.url);
       const projectName = getProjectFromUrl(repo.url);
 
       if (!orgName || !projectName) {
