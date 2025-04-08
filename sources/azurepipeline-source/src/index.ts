@@ -44,7 +44,6 @@ export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> 
     return [
       new Pipelines(config, this.logger),
       new Runs(config, this.logger),
-      new Builds(config, this.logger),
       new Releases(config, this.logger),
     ];
   }
