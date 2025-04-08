@@ -3,10 +3,10 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
 import {
-  getOrganization,
-  getProjectFromUrl,
+  getOrganizationFromUrl,
+  getVcsOrgProjectFromUrl,
 } from '../common/azure-devops';
-import {BuildStateCategory, JobCategory} from '../common/cicd';
+import {BuildStateCategory, CicdOrgKey, JobCategory} from '../common/cicd';
 import {CategoryDetail} from '../common/common';
 import {RepoKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
@@ -61,8 +61,7 @@ export abstract class AzurePipelineConverter extends Converter {
     const repoType = toLower(repo.type);
 
     if (repoType === 'tfsgit') {
-      const orgName = getOrganization(repo.url);
-      const projectName = getProjectFromUrl(repo.url);
+      const {orgName, projectName} = getVcsOrgProjectFromUrl(repo.url);
 
       if (!orgName || !projectName) {
         return undefined;
@@ -72,7 +71,7 @@ export abstract class AzurePipelineConverter extends Converter {
         uid: name,
         name,
         organization: {
-          uid: orgName,
+          uid: orgName.toLowerCase(),
           source: 'Azure-Repos',
         },
       };
@@ -140,5 +139,12 @@ export abstract class AzurePipelineConverter extends Converter {
       return;
     }
     return {category: JobCategory.Custom, detail: type};
+  }
+
+  protected getOrgKey(name: string): CicdOrgKey {
+    return {
+      uid: name.toLowerCase(),
+      source: this.streamName.source,
+    };
   }
 }

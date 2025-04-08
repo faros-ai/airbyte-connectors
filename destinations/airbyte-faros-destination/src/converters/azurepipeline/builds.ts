@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganization} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {BuildKey} from '../common/cicd';
 import {Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
@@ -30,19 +30,19 @@ export class Builds extends AzurePipelineConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const build = record.record.data as Build;
     const uid = String(build.id);
 
-    const organizationName = getOrganization(build.url, ctx, 'build');
+    const organizationName = getOrganizationFromUrl(build.url);
     if (!organizationName) {
       ctx?.logger.warn(`Build ${uid} has no organization name`);
       return [];
     }
 
+    const organization = this.getOrgKey(organizationName);
     const pipelineKey = {
       uid: String(build.definition?.id),
-      organization: {uid: organizationName, source},
+      organization,
     };
 
     const buildKey = {uid, pipeline: pipelineKey};
@@ -90,7 +90,7 @@ export class Builds extends AzurePipelineConverter {
       const cicdRepoUid = `${build.repository.type}:${build.repository.id}`;
       const cicdRepoKey = {
         uid: cicdRepoUid,
-        organization: {uid: organizationName, source},
+        organization,
       };
       if (!this.seenRepositories.has(cicdRepoUid)) {
         this.seenRepositories.add(cicdRepoUid);

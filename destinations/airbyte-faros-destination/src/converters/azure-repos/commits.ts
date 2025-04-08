@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Commit} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganization} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureReposConverter, MAX_DESCRIPTION_LENGTH} from './common';
 
@@ -20,8 +20,8 @@ export class Commits extends AzureReposConverter {
     const source = this.streamName.source;
     const commitItem = record.record.data as Commit;
     const res: DestinationRecord[] = [];
-    const organizationName = getOrganization(commitItem.url, ctx, 'commit');
-    const organization = {uid: organizationName, source};
+    const organizationName = getOrganizationFromUrl(commitItem.url);
+    const organization = this.getOrgKey(organizationName);
 
     if (!commitItem.repository) {
       ctx.logger.error('No repository found for commit', commitItem.commitId);
