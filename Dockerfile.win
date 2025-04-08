@@ -1,12 +1,12 @@
 # Use Windows Server Core with Node.js pre-installed
 FROM mcr.microsoft.com/windows/servercore:ltsc2022 as installer
-
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';$ProgressPreference='silentlyContinue';"]
+SHELL ["powershell", "-Command"]
 
 # Install Node.js 18 (using the Node.js installer)
 RUN Invoke-WebRequest -OutFile nodejs.zip -UseBasicParsing https://nodejs.org/dist/v18.19.1/node-v18.19.1-win-x64.zip; Expand-Archive nodejs.zip -DestinationPath C:/; Rename-Item "C:/node-v18.19.1-win-x64" C:/nodejs
     
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
+SHELL ["powershell", "-Command"]
 
 # Set working directory
 WORKDIR C:/airbyte
@@ -14,6 +14,10 @@ WORKDIR C:/airbyte
 # Copy Node.js from the installer stage
 COPY --from=installer C:/nodejs/ .
 RUN SETX PATH "C:/nodejs;%PATH%"
+
+# Check Node.js and npm versions
+RUN Get-ChildItem -Path C:/nodejs
+RUN npm --version
 
 # Copy configs
 COPY turbo.json .tsconfig.json package.json package-lock.json ./ 
