@@ -9,7 +9,7 @@ export function getOrganization(
   // Attempt to use the organization from the source config if available
   const sourceOrg = ctx?.getSourceConfig()?.organization;
   if (sourceOrg && url.includes(sourceOrg)) {
-    return sourceOrg.toLowerCase();
+    return sourceOrg;
   }
 
   try {
@@ -18,7 +18,7 @@ export function getOrganization(
     // Handle Azure DevOps Services (Cloud) URLs
     if (['dev.azure.com', 'vssps.dev.azure.com'].includes(parsed.hostname)) {
       const parts = parsed.pathname.split('/');
-      return parts[1]?.toLowerCase();
+      return parts[1];
     }
 
     // Handle Azure DevOps Server URLs like:
@@ -31,7 +31,7 @@ export function getOrganization(
     const apisIndex = nonEmptyParts.indexOf('_apis');
     if (apisIndex > 1) {
       const lookBack = userEntity ? 1 : 2;
-      return nonEmptyParts[apisIndex - lookBack].toLowerCase();
+      return nonEmptyParts[apisIndex - lookBack];
     }
 
     return undefined;

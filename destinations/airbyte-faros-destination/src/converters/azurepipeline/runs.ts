@@ -64,6 +64,7 @@ export class Runs extends AzurePipelineConverter {
       case 'failed':
         return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
+        return {category: BuildStateCategory.Success, detail: result};
       default:
         return {category: BuildStateCategory.Custom, detail: result};
     }

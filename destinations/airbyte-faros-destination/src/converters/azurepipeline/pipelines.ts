@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Pipeline} from 'faros-airbyte-common/azure-devops';
+import {ConfigurationType} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 
 import {getOrganization} from '../common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -29,16 +30,15 @@ export class Pipelines extends AzurePipelineConverter {
       return [];
     }
 
-    const organization = {uid: organizationName, source};
+    const orgKey = {uid: organizationName.toLowerCase(), source};
 
     if (!this.seenOrganizations.has(organizationName)) {
       this.seenOrganizations.add(organizationName);
       res.push({
         model: 'cicd_Organization',
         record: {
-          uid: organizationName,
+          ...orgKey,
           name: organizationName,
-          source,
         },
       });
     }
@@ -48,8 +48,9 @@ export class Pipelines extends AzurePipelineConverter {
       record: {
         uid: String(pipeline.id),
         name: `${pipeline.project?.name}:${pipeline.name}`,
+        description: ConfigurationType[pipeline.configuration?.type],
         url: pipeline.url,
-        organization,
+        organization: orgKey,
       },
     });
 
