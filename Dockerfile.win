@@ -13,11 +13,11 @@ WORKDIR C:/airbyte
 
 # Copy Node.js from the installer stage
 COPY --from=installer C:/nodejs/ .
-RUN cmd /c "SETX PATH C:/nodejs;%PATH%"
+RUN cmd /c "setx /M PATH \"%PATH%;C:/nodejs\""
 RUN $env:PATH = 'C:/nodejs;' + $env:PATH
 
 # Check Node.js and npm versions
-RUN Get-ChildItem -Path C:/nodejs
+RUN Write-Output $env:PATH
 RUN npm --version
 
 # Copy configs
