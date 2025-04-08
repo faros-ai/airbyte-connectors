@@ -48,8 +48,8 @@ export class Pipelines extends AzurePipelineConverter {
       record: {
         uid: String(pipeline.id),
         name: `${pipeline.project?.name}:${pipeline.name}`,
-        description: ConfigurationType[pipeline.configuration?.type],
         url: pipeline.url,
+        description: pipeline.folder,
         organization: orgKey,
       },
     });
