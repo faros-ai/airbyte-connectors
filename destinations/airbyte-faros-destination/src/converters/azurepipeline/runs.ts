@@ -27,7 +27,7 @@ export class Runs extends AzurePipelineConverter {
 
     const pipeline = {
       uid: String(run.pipeline?.id),
-      organization: {uid: organizationName, source},
+      organization: {uid: organizationName.toLowerCase(), source},
     };
 
     const runKey = {
