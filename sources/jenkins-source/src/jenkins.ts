@@ -119,7 +119,8 @@ export class Jenkins {
       jenkinsUrl.password = config.token;
     }
 
-    const client = jenkinsClient({
+    // It should be 'JenkinsPromisifiedAPI' instead of any, but we could not make it work
+    const client = new (jenkinsClient as any)({
       baseUrl: jenkinsUrl.toString(),
       crumbIssuer: true,
       promisify: true,
