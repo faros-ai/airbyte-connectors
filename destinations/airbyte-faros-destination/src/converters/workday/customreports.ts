@@ -7,6 +7,7 @@ import {
   Converter,
   DestinationModel,
   DestinationRecord,
+  parseObjectConfig,
   StreamContext,
 } from '../converter';
 import {
@@ -56,6 +57,8 @@ export class Customreports extends Converter {
   employees_with_more_than_one_record_by_id: Record<string, number> = {};
   writtenEmployeeIds: Set<string> = new Set<string>();
   failedRecordFields: Set<string> = new Set<string>();
+  // Store all the input teams for reference in the end
+  additionalTeamToParentInputs: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
   id(record: AirbyteRecord): any {
@@ -327,13 +330,16 @@ export class Customreports extends Converter {
   }
 
   private computeTeamToParentTeamMappingFromManagers(
-    ctx: StreamContext
+    ctx: StreamContext,
+    teamIDToParentTeamID: Record<string, string>
   ): Record<string, string> {
     ctx.logger.info('Computing team to parent mapping from managers');
-    const teamIDToParentTeamID: Record<string, string> = {};
-    teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const potential_root_teams: string[] = [];
     for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
+      if (teamID in teamIDToParentTeamID) {
+        // This is the case where the team is already in the input list
+        continue;
+      }
       const manager_id: string | null = this.getManagerIDFromList(recs, ctx);
       if (!manager_id) {
         this.generalLogCollection.push(
@@ -350,6 +356,7 @@ export class Customreports extends Converter {
           // Expected case - one record per employee
           parent_team_uid = records[0].Team_ID;
         } else if (records.length > 1) {
+          // Hacky
           parent_team_uid = this.determineTeamParentId(records, teamID, ctx);
         }
       } else {
@@ -380,19 +387,82 @@ export class Customreports extends Converter {
     }
     return allRecords;
   }
+  private getAdditionalTeamInfo(
+    ctx: StreamContext
+  ): Record<string, Record<string, string> | null> {
+    const team_id_to_parent_id: Record<string, string> | null =
+      parseObjectConfig(
+        ctx.config.source_specific_configs?.workday?.team_id_to_parent_id,
+        'team_id_to_parent_id'
+      );
+    const team_id_to_name: Record<string, string> | null = parseObjectConfig(
+      ctx.config.source_specific_configs?.workday?.team_id_to_name,
+      'team_id_to_name'
+    );
+    return {
+      team_id_to_parent_id,
+      team_id_to_name,
+    };
+  }
 
-  private computeTeamToParentTeamMappingUsingParentIDField(
+  private initializeTeamToParentWithInput(
     ctx: StreamContext
   ): Record<string, string> {
+    const additionalTeamInfo = this.getAdditionalTeamInfo(ctx);
+    const team_to_parent_map: Record<string, string> | null =
+      additionalTeamInfo?.team_id_to_parent_id;
+    if (!team_to_parent_map) {
+      ctx.logger.info('No team to parent map provided in config');
+      return {};
+    }
+    // Check if team to parent is a record:
+    if (typeof team_to_parent_map !== 'object') {
+      throw new Error(
+        `team_to_parent_map is not an object. Instead: ${typeof team_to_parent_map}`
+      );
+    }
+    const teamIDToTeamName: Record<string, string> =
+      additionalTeamInfo?.team_id_to_name;
+    if (teamIDToTeamName) {
+      for (const [team_id, team_name] of Object.entries(teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_name;
+      }
+    }
+    const map: Record<string, string> = {};
+    for (const [team_id, parent_id] of Object.entries(team_to_parent_map)) {
+      this.additionalTeamToParentInputs.add(team_id);
+      this.additionalTeamToParentInputs.add(parent_id);
+      map[team_id] = parent_id;
+      if (!(team_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_id;
+      }
+      if (!(parent_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[parent_id] = parent_id;
+      }
+    }
+    // For every parent team, if it does not appear as a child to another team,
+    // then it is assumed to be a root team
+    for (const parentTeamID of Object.values(map)) {
+      if (!(parentTeamID in map)) {
+        map[parentTeamID] = this.FAROS_TEAM_ROOT;
+      }
+    }
+    map[this.FAROS_TEAM_ROOT] = null;
+    return map;
+  }
+
+  private computeTeamToParentTeamMappingUsingParentIDField(
+    ctx: StreamContext,
+    teamIDToParentTeamID: Record<string, string>
+  ): Record<string, string> {
     ctx.logger.info('Computing team to parent mapping via Parent_Team_ID');
-    const teamIDToParentTeamID: Record<string, string> = {};
-    teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
     const all_employee_records = this.getAllEmployeeRecords();
     const all_parent_team_ids = new Set<string>();
     for (const employeeRecord of all_employee_records) {
       if (!employeeRecord.Parent_Team_ID) {
-        teamIDToParentTeamID[employeeRecord.Team_ID] = this.FAROS_TEAM_ROOT;
-        continue;
+        throw new Error(
+          `Parent_Team_ID is missing for employee with ID ${employeeRecord.Employee_ID}`
+        );
       }
       const TeamID = employeeRecord.Team_ID;
       const parentTeamID = employeeRecord.Parent_Team_ID;
@@ -424,10 +494,19 @@ export class Customreports extends Converter {
   private computeTeamToParentTeamMapping(
     ctx: StreamContext
   ): Record<string, string> {
+    // initialize team To Parent Team ID mapping
+    const teamIDToParentTeamID: Record<string, string> =
+      this.initializeTeamToParentWithInput(ctx);
     if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
-      return this.computeTeamToParentTeamMappingUsingParentIDField(ctx);
+      return this.computeTeamToParentTeamMappingUsingParentIDField(
+        ctx,
+        teamIDToParentTeamID
+      );
     } else {
-      return this.computeTeamToParentTeamMappingFromManagers(ctx);
+      return this.computeTeamToParentTeamMappingFromManagers(
+        ctx,
+        teamIDToParentTeamID
+      );
     }
   }
   private computeOwnershipChain(
@@ -725,6 +804,18 @@ export class Customreports extends Converter {
     teamIDToParentID: Record<string, string>,
     ctx: StreamContext
   ): DestinationRecord {
+    // Only an input list team
+    if (this.additionalTeamToParentInputs.has(teamID)) {
+      return {
+        model: 'org_Team',
+        record: {
+          uid: teamID,
+          name: this.teamIDToTeamName[teamID],
+          parentTeam: {uid: teamIDToParentID[teamID]},
+        },
+      };
+    }
+    // Standard teams
     const manager_id = this.getManagerIDFromList(
       this.teamIDToManagerIDs[teamID],
       ctx
