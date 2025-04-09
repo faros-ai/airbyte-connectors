@@ -38,7 +38,6 @@ RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
 RUN npm ci --no-audit --no-fund --ignore-scripts
-RUN Get-ChildItem -Path node_modules
 RUN Write-Output $env:NODE_ENV
 
 RUN npm run build
