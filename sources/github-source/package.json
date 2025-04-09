@@ -24,7 +24,6 @@
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
@@ -40,6 +39,7 @@
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "typescript-memoize": "^1.1.0",
+    "undici": "^6.21.2",
     "verror": "^1.10.1"
   },
   "jest": {
