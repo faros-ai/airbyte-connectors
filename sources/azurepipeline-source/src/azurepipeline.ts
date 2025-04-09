@@ -8,6 +8,7 @@ import {
   TimelineRecordState,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {
+  Run as AzureRun,
   RunResult,
   RunState,
 } from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
@@ -23,7 +24,6 @@ import {
 import {wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
-  Build,
   Pipeline,
   Run,
   TimelineRecord,
@@ -32,6 +32,7 @@ import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 import {VError} from 'verror';
 import {Memoize} from 'typescript-memoize';
+import {Build} from './types';
 
 export class AzurePipelines extends AzureDevOps {
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -73,7 +74,7 @@ export class AzurePipelines extends AzureDevOps {
   async *getBuilds(
     project: ProjectReference,
     lastFinishTime?: number
-  ): AsyncGenerator<Build> {
+  ): AsyncGenerator<any> {
     const minTime = lastFinishTime
       ? Utils.toDate(lastFinishTime)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
@@ -131,6 +132,57 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
+  // TODO: Validate pagination and size
+  async *getRuns(
+    project: ProjectReference,
+    pipelineId: number
+  ): AsyncGenerator<Run> {
+    const response = (await this.client.pipelines.listRuns(
+      project.id,
+      pipelineId
+    )) as any;
+    // Handle Azure DevOps Server (2020) which can have JSON with a value property
+    const runs: AzureRun[] = Array.isArray(response)
+      ? response
+      : response.value || [];
+    for (const run of runs) {
+      const build = await this.getBuild(project.id, run.id);
+      yield {
+        ...run,
+        state: RunState[run.state]?.toLowerCase(),
+        result: RunResult[run.result]?.toLowerCase(),
+        project,
+        artifacts: build.artifacts,
+        coverageStats: build.coverageStats,
+        stages: build.stages,
+        queueTime: build.queueTime,
+        repository: build.repository,
+        reason: BuildReason[build.reason]?.toLowerCase(),
+        sourceBranch: build.sourceBranch,
+        sourceVersion: build.sourceVersion,
+        tags: build.tags,
+        triggerInfo: build.triggerInfo,
+      };
+    }
+  }
+
+  async getBuild(projectId: string, buildId: number): Promise<Build> {
+    const build = await this.client.build.getBuild(projectId, buildId);
+    const coverageStats = await this.getCoverageStats(projectId, build);
+
+    // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
+    const artifacts =
+      (await this.client.build.getArtifacts(projectId, build.id)) ?? [];
+
+    const stages = await this.getJobs(projectId, build.id);
+    return {
+      ...build,
+      coverageStats,
+      artifacts,
+      stages,
+    };
+  }
+
   private async getCoverageStats(
     projectId: string,
     build: AzureBuild
@@ -170,13 +222,11 @@ export class AzurePipelines extends AzureDevOps {
       this.logger.warn(`No timeline records found for build ${buildId}`);
       return [];
     }
-    return timeline.records
-      .filter((r) => r.type === 'Job')
-      .map((r) => ({
-        ...r,
-        state: TimelineRecordState[r.state]?.toLowerCase(),
-        result: TaskResult[r.result]?.toLowerCase(),
-      }));
+    return timeline.records.map((r) => ({
+      ...r,
+      state: TimelineRecordState[r.state]?.toLowerCase(),
+      result: TaskResult[r.result]?.toLowerCase(),
+    }));
   }
 
   async *getReleases(
@@ -210,21 +260,5 @@ export class AzurePipelines extends AzureDevOps {
       useContinuationToken: true,
       continuationTokenParam: 'id',
     });
-  }
-
-  // TODO: Validate pagination and size
-  async *getPipelineRuns(
-    project: ProjectReference,
-    pipelineId: number
-  ): AsyncGenerator<Run> {
-    const runs = await this.client.pipelines.listRuns(project.id, pipelineId);
-    for (const run of runs) {
-      yield {
-        ...run,
-        state: RunState[run.state]?.toLowerCase(),
-        result: RunResult[run.result]?.toLowerCase(),
-        project,
-      };
-    }
   }
 }

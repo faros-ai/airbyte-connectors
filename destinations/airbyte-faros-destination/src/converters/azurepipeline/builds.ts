@@ -1,6 +1,5 @@
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Build} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
 import {getOrganization} from '../common/azure-devops';
@@ -31,7 +30,7 @@ export class Builds extends AzurePipelineConverter {
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const build = record.record.data as Build;
+    const build = record.record.data;
     const uid = String(build.id);
 
     const organizationName = getOrganization(build.url, ctx);
@@ -168,7 +167,7 @@ export class Builds extends AzurePipelineConverter {
   }
 
   private processCoverageStats(
-    build: Build,
+    build: any,
     repoKey: RepoKey,
     commitKey: CommitKey,
     ctx?: StreamContext

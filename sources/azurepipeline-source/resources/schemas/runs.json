@@ -38,11 +38,50 @@
     "finishedDate": {
       "type": "string"
     },
+    "queueTime": {
+      "type": "string"
+    },
     "result": {
       "type": "string"
     },
     "state": {
       "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "sourceBranch": {
+      "type": "string"
+    },
+    "sourceVersion": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {}
+    },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "clean": {
+          "type": ["string", "null"]
+        },
+        "checkoutSubmodules": {
+          "type": "boolean"
+        }
+      }
     },
     "project": {
       "type": "object",
@@ -52,6 +91,173 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": ["object", "null"]
+          },
+          "resource": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "string"
+              },
+              "downloadUrl": {
+                "type": "string"
+              },
+              "properties": {
+                "type": ["object", "null"]
+              },
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "_links": {
+                "type": ["object", "null"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "previousAttempts": {
+            "type": "array",
+            "items": {}
+          },
+          "id": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": ["string", "null"]
+          },
+          "finishTime": {
+            "type": ["string", "null"]
+          },
+          "currentOperation": {
+            "type": ["string", "null"]
+          },
+          "percentComplete": {
+            "type": ["string", "null"]
+          },
+          "state": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "resultCode": {
+            "type": ["string", "null"]
+          },
+          "changeId": {
+            "type": "number"
+          },
+          "lastModified": {
+            "type": "string"
+          },
+          "workerName": {
+            "type": ["string", "null"]
+          },
+          "queueId": {
+            "type": "number"
+          },
+          "order": {
+            "type": "number"
+          },
+          "details": {
+            "type": ["string", "null"]
+          },
+          "errorCount": {
+            "type": "number"
+          },
+          "warningCount": {
+            "type": "number"
+          },
+          "url": {
+            "type": ["string", "null"]
+          },
+          "log": {
+            "type": ["object", "null"]
+          },
+          "task": {
+            "type": ["string", "null"]
+          },
+          "attempt": {
+            "type": "number"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": ["string", "null"]
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "coverageStats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "position": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "covered": {
+            "type": "number"
+          },
+          "isDeltaAvailable": {
+            "type": "boolean"
+          },
+          "delta": {
+            "type": "number"
+          }
         }
       }
     }

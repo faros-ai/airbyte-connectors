@@ -75,6 +75,6 @@ export class Runs extends AirbyteStreamBase {
     );
 
     const {project, pipeline} = streamSlice;
-    yield* azurePipelines.getPipelineRuns(project, pipeline.id);
+    yield* azurePipelines.getRuns(project, pipeline.id);
   }
 }
