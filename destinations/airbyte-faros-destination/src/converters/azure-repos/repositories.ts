@@ -4,7 +4,7 @@ import {Repository} from 'faros-airbyte-common/azure-devops';
 
 import {getOrganizationFromUrl} from '../common/azure-devops';
 import {OrgTypeCategory} from '../common/vcs';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
 
 export class Repositories extends AzureReposConverter {

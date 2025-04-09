@@ -2,10 +2,7 @@ import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces'
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {
-  getOrganizationFromUrl,
-  getVcsOrgProjectFromUrl,
-} from '../common/azure-devops';
+import {getVcsOrgProjectFromUrl} from '../common/azure-devops';
 import {BuildStateCategory, CicdOrgKey, JobCategory} from '../common/cicd';
 import {CategoryDetail} from '../common/common';
 import {RepoKey} from '../common/vcs';
