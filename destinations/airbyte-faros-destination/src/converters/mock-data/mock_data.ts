@@ -13,7 +13,7 @@ import {FarosFeed as OriginalFarosFeed} from '../faros-feeds/faros_feed';
  * It is just a wrapper to use the appropriate source/stream name.
  */
 export class MockData extends Converter {
-  source = 'MockData';
+  source = 'Mock-Data';
   private alias = new OriginalFarosFeed();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> =
