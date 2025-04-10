@@ -2,7 +2,7 @@ import {User} from 'faros-airbyte-common/azure-devops';
 
 export function getOrganizationFromUrl(
   url: string,
-  lookBack = 2
+  lookBack: 1 | 2 = 2
 ): string | undefined {
   try {
     const {hostname, pathNameParts} = parseUrl(url);

@@ -67,10 +67,7 @@ export abstract class AzurePipelineConverter extends Converter {
       return {
         uid: name,
         name,
-        organization: {
-          uid: orgName.toLowerCase(),
-          source: 'Azure-Repos',
-        },
+        organization: this.getOrgKey(orgName, 'Azure-Repos'),
       };
     }
 
@@ -85,10 +82,7 @@ export abstract class AzurePipelineConverter extends Converter {
       return {
         uid: name,
         name,
-        organization: {
-          uid: toLower(parts[0]),
-          source: 'GitHub',
-        },
+        organization: this.getOrgKey(parts[0], 'GitHub'),
       };
     }
 
@@ -138,10 +132,10 @@ export abstract class AzurePipelineConverter extends Converter {
     return {category: JobCategory.Custom, detail: type};
   }
 
-  protected getOrgKey(name: string): CicdOrgKey {
+  protected getOrgKey(name: string, source?: string): CicdOrgKey {
     return {
       uid: name.toLowerCase(),
-      source: this.streamName.source,
+      source: source ?? this.streamName.source,
     };
   }
 }

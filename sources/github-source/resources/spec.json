@@ -361,6 +361,12 @@
           "type": "string"
         },
         "order": 35
+      },
+      "proxy_url": {
+        "type": "string",
+        "title": "Proxy URL",
+        "description": "Proxy URL to use for the GitHub API",
+        "order": 36
       }
     }
   }

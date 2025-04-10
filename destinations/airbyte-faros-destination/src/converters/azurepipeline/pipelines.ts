@@ -43,7 +43,6 @@ export class Pipelines extends AzurePipelineConverter {
       });
     }
 
-    // TODO: Add pipeline folder support
     res.push({
       model: 'cicd_Pipeline',
       record: {
