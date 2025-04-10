@@ -10,7 +10,7 @@ import {FarosFeed as OriginalFarosFeed} from '../faros-feeds/faros_feed';
 
 /**
  * This converter is identical to FarosFeed converter.
- * It is here to allow users specifying 'faros_feed' as stream prefix in their source.
+ * It is just a wrapper to use the appropriate source/stream name.
  */
 export class MockData extends Converter {
   source = 'MockData';
