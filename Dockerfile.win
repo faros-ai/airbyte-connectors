@@ -36,9 +36,9 @@ RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
 RUN npm ci --no-audit --no-fund --ignore-scripts
-RUN Write-Output $env:NODE_ENV
+RUN Get-ChildItem -Path C:/airbyte/node_modules
 
-RUN npm run build
+RUN npm run build --debug
 
 # Copy Docker scripts
 COPY ./docker ./docker
