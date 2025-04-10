@@ -133,15 +133,15 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
-  // TODO: Validate pagination and size
   async *getRuns(
     project: ProjectReference,
     pipelineId: number,
-    lastFinishTime?: number
+    lastFinishDate?: number
   ): AsyncGenerator<Run> {
-    const minTime = lastFinishTime
-      ? Utils.toDate(lastFinishTime)
+    const cutoff = lastFinishDate
+      ? Utils.toDate(lastFinishDate)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
+
     const response = (await this.client.pipelines.listRuns(
       project.id,
       pipelineId
@@ -152,7 +152,7 @@ export class AzurePipelines extends AzureDevOps {
       : response.value || [];
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
-      if (run.state === RunState.Completed && minTime >= finishedDate) {
+      if (run.state === RunState.Completed && cutoff >= finishedDate) {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);

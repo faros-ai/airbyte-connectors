@@ -1,17 +1,12 @@
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
 import {Run} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import {AzurePipelineConfig} from '../types';
+import {AzurePipelinesStreamBase} from './common';
 
-interface PipelineStreamSlice {
+interface PipelineSlice {
   project: ProjectReference;
   pipeline: {
     id: number;
@@ -19,35 +14,24 @@ interface PipelineStreamSlice {
   };
 }
 
-interface RunState {
-  readonly [p: string]: {
-    cutoff: number;
+interface RunsState {
+  [projectName: string]: {
+    [pipelineName: string]: {
+      cutoff: number;
+    };
   };
 }
 
-// TODO: Use shared one
-export class Runs extends AirbyteStreamBase {
-  constructor(
-    protected readonly config: AzurePipelineConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
-  }
-
-  // TODO: Create full schema
+export class Runs extends AzurePipelinesStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/runs.json');
-  }
-
-  get primaryKey(): StreamKey {
-    return 'id';
   }
 
   get cursorField(): string | string[] {
     return 'finishedDate';
   }
 
-  override async *streamSlices(): AsyncGenerator<PipelineStreamSlice> {
+  override async *streamSlices(): AsyncGenerator<PipelineSlice> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
       this.logger
@@ -73,7 +57,8 @@ export class Runs extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: PipelineStreamSlice
+    streamSlice?: PipelineSlice,
+    streamState?: RunsState
   ): AsyncGenerator<Run> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
@@ -81,6 +66,25 @@ export class Runs extends AirbyteStreamBase {
     );
 
     const {project, pipeline} = streamSlice;
-    yield* azurePipelines.getRuns(project, pipeline.id);
+    const state = streamState?.[project.name]?.[pipeline.name]?.cutoff;
+    yield* azurePipelines.getRuns(project, pipeline.id, state);
+  }
+
+  getUpdatedState(
+    currentStreamState: RunsState,
+    latestRecord: Run,
+    slice: PipelineSlice
+  ): RunsState {
+    const projectName = slice.project.name;
+    const pipelineState = currentStreamState[projectName];
+    const updatedPipelineState = calculateUpdatedStreamState(
+      latestRecord.finishedDate,
+      pipelineState,
+      slice.pipeline.name
+    );
+    return {
+      ...currentStreamState,
+      [projectName]: updatedPipelineState,
+    };
   }
 }
