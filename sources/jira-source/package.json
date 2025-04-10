@@ -29,7 +29,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.7.4",
+    "axios": "^1.8.4",
     "axios-cache-interceptor": "^1.4.1",
     "git-url-parse": "^13.1.0",
     "commander": "^9.3.0",
