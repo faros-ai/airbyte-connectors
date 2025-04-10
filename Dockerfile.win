@@ -27,13 +27,11 @@ RUN npm --version
 COPY turbo.json .tsconfig.json package.json package-lock.json ./
 
 # Remove unwanted deps (simulate sed)
-RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
+# RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
 
 # Copy monorepo packages
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
-COPY ./faros-airbyte-common ./faros-airbyte-common
-COPY ./sources ./sources
-COPY ./destinations ./destinations
+COPY ./sources/example-source ./sources/example-source
 RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
