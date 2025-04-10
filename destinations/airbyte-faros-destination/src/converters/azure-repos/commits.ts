@@ -21,7 +21,7 @@ export class Commits extends AzureReposConverter {
     const commitItem = record.record.data as Commit;
     const res: DestinationRecord[] = [];
     const organizationName = getOrganizationFromUrl(commitItem.url);
-    const organization = {uid: organizationName, source};
+    const organization = this.getOrgKey(organizationName);
 
     if (!commitItem.repository) {
       ctx.logger.error('No repository found for commit', commitItem.commitId);

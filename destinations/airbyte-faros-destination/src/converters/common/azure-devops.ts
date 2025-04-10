@@ -1,31 +1,61 @@
 import {User} from 'faros-airbyte-common/azure-devops';
 
-// TODO: Make it return OrgKey
-export function getOrganizationFromUrl(url: string): string | undefined {
+export function getOrganizationFromUrl(
+  url: string,
+  lookBack: 1 | 2 = 2
+): string | undefined {
   try {
-    const parsed = new URL(url);
-    const parts = parsed.pathname.split('/');
+    const {hostname, pathNameParts} = parseUrl(url);
 
-    if (parts.length < 2 || parts[1] === '') {
-      return undefined;
+    // Azure DevOps Services (Cloud) URLs are like:
+    // https://dev.azure.com/{organization}/{project}/_apis/entityPath
+    if (['dev.azure.com', 'vssps.dev.azure.com'].includes(hostname)) {
+      return pathNameParts[0];
     }
 
-    return parts[1];
+    // Azure DevOps Server URLs like:
+    // https://{instance}/{organization}/{project}/_apis/entityPath
+    const apisIndex = pathNameParts.indexOf('_apis');
+    if (apisIndex >= 1) {
+      return pathNameParts[apisIndex - lookBack];
+    }
+
+    return undefined;
   } catch (error) {
     return undefined;
   }
 }
 
-export function getProjectFromUrl(url: string): string | undefined {
+// Currently only validated to get the project name from a Build's git repository webUrl
+export function getVcsOrgProjectFromUrl(url: string):
+  | {
+      orgName: string;
+      projectName: string;
+    }
+  | undefined {
   try {
-    const parsed = new URL(url);
-    const parts = parsed.pathname.split('/');
+    const {hostname, pathNameParts} = parseUrl(url);
 
-    if (parts.length < 3 || parts[2] === '') {
-      return undefined;
+    // Azure DevOps Services (Cloud) URLs are like:
+    // https://dev.azure.com/{organization}/{project}/_apis/entityPath
+    if (['dev.azure.com', 'vssps.dev.azure.com'].includes(hostname)) {
+      return {
+        orgName: pathNameParts[0],
+        projectName: pathNameParts[1],
+      };
     }
 
-    return parts[2];
+    // Azure DevOps Server URLs for webUrl
+    // https://{instance}/{organization}/{project}/_git/{entityPath}
+    const gitIndex = pathNameParts.indexOf('_git');
+    if (gitIndex > 1) {
+      return {
+        orgName: pathNameParts[gitIndex - 2],
+        projectName: pathNameParts[gitIndex - 1],
+      };
+    }
+
+    return undefined;
   } catch (error) {
     return undefined;
   }
@@ -40,4 +70,16 @@ export function getUniqueName(userItem: User): string | undefined {
     return userItem.uniqueName;
   }
   return undefined;
+}
+
+// Parse a URL, split on '/' and filter out empty segments
+function parseUrl(url: string): {
+  hostname: string;
+  pathNameParts: ReadonlyArray<string>;
+} {
+  const parsed = new URL(url);
+  return {
+    hostname: parsed.hostname,
+    pathNameParts: parsed.pathname.split('/').filter(Boolean),
+  };
 }

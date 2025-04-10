@@ -2,11 +2,8 @@ import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces'
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {toLower} from 'lodash';
 
-import {
-  getOrganizationFromUrl,
-  getProjectFromUrl,
-} from '../common/azure-devops';
-import {BuildStateCategory, JobCategory} from '../common/cicd';
+import {getVcsOrgProjectFromUrl} from '../common/azure-devops';
+import {BuildStateCategory, CicdOrgKey, JobCategory} from '../common/cicd';
 import {CategoryDetail} from '../common/common';
 import {RepoKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
@@ -61,8 +58,7 @@ export abstract class AzurePipelineConverter extends Converter {
     const repoType = toLower(repo.type);
 
     if (repoType === 'tfsgit') {
-      const orgName = getOrganizationFromUrl(repo.url);
-      const projectName = getProjectFromUrl(repo.url);
+      const {orgName, projectName} = getVcsOrgProjectFromUrl(repo.url);
 
       if (!orgName || !projectName) {
         return undefined;
@@ -71,10 +67,7 @@ export abstract class AzurePipelineConverter extends Converter {
       return {
         uid: name,
         name,
-        organization: {
-          uid: orgName,
-          source: 'Azure-Repos',
-        },
+        organization: this.getOrgKey(orgName, 'Azure-Repos'),
       };
     }
 
@@ -89,10 +82,7 @@ export abstract class AzurePipelineConverter extends Converter {
       return {
         uid: name,
         name,
-        organization: {
-          uid: toLower(parts[0]),
-          source: 'GitHub',
-        },
+        organization: this.getOrgKey(parts[0], 'GitHub'),
       };
     }
 
@@ -140,5 +130,12 @@ export abstract class AzurePipelineConverter extends Converter {
       return;
     }
     return {category: JobCategory.Custom, detail: type};
+  }
+
+  protected getOrgKey(name: string, source?: string): CicdOrgKey {
+    return {
+      uid: name.toLowerCase(),
+      source: source ?? this.streamName.source,
+    };
   }
 }

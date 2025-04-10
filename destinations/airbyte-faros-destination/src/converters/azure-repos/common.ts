@@ -62,4 +62,8 @@ export abstract class AzureReposConverter extends Converter {
     const onlyNumbers = lastString.replace(/[^\d.-]/g, '');
     return Number(onlyNumbers);
   }
+
+  getOrgKey(name: string): OrgKey {
+    return {uid: name.toLowerCase(), source: this.source};
+  }
 }

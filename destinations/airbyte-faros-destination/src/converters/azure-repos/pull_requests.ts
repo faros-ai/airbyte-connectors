@@ -122,16 +122,17 @@ export class PullRequests extends AzureReposConverter {
     const source = this.streamName.source;
 
     const pullRequestItem = record.record.data as PullRequest;
-    const organizationName = getOrganizationFromUrl(
-      pullRequestItem.repository.url
-    );
-    const organization = {uid: organizationName, source};
     if (!pullRequestItem.repository) {
       ctx.logger.error(
         `No repository found for pull request ${pullRequestItem.pullRequestId}`
       );
       return [];
     }
+
+    const organizationName = getOrganizationFromUrl(
+      pullRequestItem.repository.url
+    );
+    const organization = this.getOrgKey(organizationName);
 
     const repository = this.getProjectRepo(
       pullRequestItem.repository,
@@ -185,8 +186,7 @@ export class PullRequests extends AzureReposConverter {
     );
 
     const prRecord = {
-      number: pullRequestItem.pullRequestId,
-      uid: pullRequestItem.pullRequestId.toString(),
+      ...pullRequest,
       title: pullRequestItem.title,
       state: convertPullRequestState(pullRequestItem.status, mergeCommitId),
       htmlUrl: pullRequestItem.url,
@@ -201,7 +201,6 @@ export class PullRequests extends AzureReposConverter {
       sourceBranch,
       targetBranchName,
       targetBranch,
-      repository,
     };
     const diffStats = this.getDiffStats(mergeCommitId);
     if (diffStats) {

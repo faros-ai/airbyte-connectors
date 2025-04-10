@@ -30,7 +30,6 @@ export class Builds extends AzurePipelineConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const build = record.record.data as Build;
     const uid = String(build.id);
 
@@ -40,9 +39,10 @@ export class Builds extends AzurePipelineConverter {
       return [];
     }
 
+    const organization = this.getOrgKey(organizationName);
     const pipelineKey = {
       uid: String(build.definition?.id),
-      organization: {uid: organizationName, source},
+      organization,
     };
 
     const buildKey = {uid, pipeline: pipelineKey};
@@ -90,7 +90,7 @@ export class Builds extends AzurePipelineConverter {
       const cicdRepoUid = `${build.repository.type}:${build.repository.id}`;
       const cicdRepoKey = {
         uid: cicdRepoUid,
-        organization: {uid: organizationName, source},
+        organization,
       };
       if (!this.seenRepositories.has(cicdRepoUid)) {
         this.seenRepositories.add(cicdRepoUid);

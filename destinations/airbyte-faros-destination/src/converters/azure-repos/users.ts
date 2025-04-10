@@ -28,8 +28,8 @@ export class Users extends AzureReposConverter {
     }
 
     const url = userItem._links?.self?.href ?? userItem.url;
-    const organizationName = getOrganizationFromUrl(url);
-    const organization = {uid: organizationName, source};
+    const organizationName = getOrganizationFromUrl(url, 1);
+    const organization = this.getOrgKey(organizationName);
     const type: CategoryDetail = {
       category: UserTypeCategory.User,
       detail: 'subjectKind' in userItem ? userItem.subjectKind : null,

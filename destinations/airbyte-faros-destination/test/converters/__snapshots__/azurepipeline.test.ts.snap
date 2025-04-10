@@ -389,7 +389,7 @@ Array [
           "name": "Test Project:test",
           "organization": Object {
             "source": "Azure-Repos",
-            "uid": "Test-Org",
+            "uid": "test-org",
           },
           "uid": "Test Project:test",
         },
