@@ -5,12 +5,22 @@ import {retry} from '@octokit/plugin-retry';
 import {throttling, ThrottlingOptions} from '@octokit/plugin-throttling';
 import {RequestError} from '@octokit/request-error';
 import {Octokit as OctokitRest} from '@octokit/rest';
-import {EndpointDefaults, OctokitResponse} from '@octokit/types';
+import {
+  EndpointDefaults,
+  OctokitResponse,
+  RequestRequestOptions,
+} from '@octokit/types';
 import Bottleneck from 'bottleneck';
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
 import {getOperationAST, parse} from 'graphql';
 import https from 'https';
 import {Dictionary} from 'ts-essentials';
+import {
+  fetch as undiciFetch,
+  ProxyAgent,
+  RequestInfo,
+  RequestInit,
+} from 'undici';
 import url from 'url';
 import template from 'url-template';
 import VError from 'verror';
@@ -52,12 +62,22 @@ export function makeOctokitClient(
   const baseUrl = cfg.url ?? DEFAULT_GITHUB_API_URL;
   // Check whether the protocol matches 'https:'
   const isHttps = new url.URL(baseUrl).protocol.startsWith('https');
-  const request = {
+  const request: RequestRequestOptions = {
     ...(isHttps && {
       agent: new https.Agent({
         rejectUnauthorized:
           cfg.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
       }),
+    }),
+    ...(cfg.proxy_url && {
+      fetch: (url: RequestInfo, opts: RequestInit) => {
+        return undiciFetch(url, {
+          ...opts,
+          dispatcher: new ProxyAgent({
+            uri: cfg.proxy_url,
+          }),
+        });
+      },
     }),
   };
 

@@ -1,37 +1,23 @@
 import {User} from 'faros-airbyte-common/azure-devops';
-import {StreamContext} from '../converter';
 
-export function getOrganization(
+export function getOrganizationFromUrl(
   url: string,
-  ctx?: StreamContext,
-  userEntity = false
+  lookBack: 1 | 2 = 2
 ): string | undefined {
-  // Attempt to use the organization from the source config if available
-  const sourceOrg = ctx?.getSourceConfig()?.organization;
-  if (sourceOrg && url.includes(sourceOrg)) {
-    return sourceOrg;
-  }
-
   try {
-    const parsed = new URL(url);
+    const {hostname, pathNameParts} = parseUrl(url);
 
-    // Handle Azure DevOps Services (Cloud) URLs
-    if (['dev.azure.com', 'vssps.dev.azure.com'].includes(parsed.hostname)) {
-      const parts = parsed.pathname.split('/');
-      return parts[1];
+    // Azure DevOps Services (Cloud) URLs are like:
+    // https://dev.azure.com/{organization}/{project}/_apis/entityPath
+    if (['dev.azure.com', 'vssps.dev.azure.com'].includes(hostname)) {
+      return pathNameParts[0];
     }
 
-    // Handle Azure DevOps Server URLs like:
-    // https://{instance}/{collection}/{project}/_apis/git/repositories/{repositoryId}
-    const parts = parsed.pathname.split('/');
-    // Remove empty segments
-    const nonEmptyParts = parts.filter(Boolean);
-
-    // Collection segment based on the entity type
-    const apisIndex = nonEmptyParts.indexOf('_apis');
-    if (apisIndex > 1) {
-      const lookBack = userEntity ? 1 : 2;
-      return nonEmptyParts[apisIndex - lookBack];
+    // Azure DevOps Server URLs like:
+    // https://{instance}/{organization}/{project}/_apis/entityPath
+    const apisIndex = pathNameParts.indexOf('_apis');
+    if (apisIndex >= 1) {
+      return pathNameParts[apisIndex - lookBack];
     }
 
     return undefined;
@@ -40,16 +26,36 @@ export function getOrganization(
   }
 }
 
-export function getProjectFromUrl(url: string): string | undefined {
+// Currently only validated to get the project name from a Build's git repository webUrl
+export function getVcsOrgProjectFromUrl(url: string):
+  | {
+      orgName: string;
+      projectName: string;
+    }
+  | undefined {
   try {
-    const parsed = new URL(url);
-    const parts = parsed.pathname.split('/');
+    const {hostname, pathNameParts} = parseUrl(url);
 
-    if (parts.length < 3 || parts[2] === '') {
-      return undefined;
+    // Azure DevOps Services (Cloud) URLs are like:
+    // https://dev.azure.com/{organization}/{project}/_apis/entityPath
+    if (['dev.azure.com', 'vssps.dev.azure.com'].includes(hostname)) {
+      return {
+        orgName: pathNameParts[0],
+        projectName: pathNameParts[1],
+      };
     }
 
-    return parts[2];
+    // Azure DevOps Server URLs for webUrl
+    // https://{instance}/{organization}/{project}/_git/{entityPath}
+    const gitIndex = pathNameParts.indexOf('_git');
+    if (gitIndex > 1) {
+      return {
+        orgName: pathNameParts[gitIndex - 2],
+        projectName: pathNameParts[gitIndex - 1],
+      };
+    }
+
+    return undefined;
   } catch (error) {
     return undefined;
   }
@@ -64,4 +70,16 @@ export function getUniqueName(userItem: User): string | undefined {
     return userItem.uniqueName;
   }
   return undefined;
+}
+
+// Parse a URL, split on '/' and filter out empty segments
+function parseUrl(url: string): {
+  hostname: string;
+  pathNameParts: ReadonlyArray<string>;
+} {
+  const parsed = new URL(url);
+  return {
+    hostname: parsed.hostname,
+    pathNameParts: parsed.pathname.split('/').filter(Boolean),
+  };
 }

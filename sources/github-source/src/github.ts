@@ -1035,7 +1035,7 @@ export abstract class GitHub {
     );
     try {
       for await (const res of iter) {
-        for (const seat of res.data.seats) {
+        for (const seat of (res.data as any).seats) {
           seatsFound = true;
           const userAssignee = seat.assignee.login as string;
           const teamAssignee = seat.assigning_team?.slug;
@@ -1910,7 +1910,7 @@ export abstract class GitHub {
     enterprise: string
   ): AsyncGenerator<EnterpriseCopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
-    const iter: AsyncIterableIterator<{data: EnterpriseCopilotSeatsResponse}> =
+    const iter: AsyncIterable<{data: EnterpriseCopilotSeatsResponse}> =
       this.baseOctokit.paginate.iterator<any>(
         this.baseOctokit.enterpriseCopilotSeats,
         {

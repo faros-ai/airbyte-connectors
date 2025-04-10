@@ -2,12 +2,11 @@ import {Run} from 'faros-airbyte-common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {getOrganization} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {CategoryDetail, Tag} from '../common/common';
 import {BuildKey, BuildStateCategory} from '../common/cicd';
 import {Utils} from 'faros-js-client';
-import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {CommitKey, OrgKey, RepoKey} from '../common/vcs';
+import {CommitKey, RepoKey} from '../common/vcs';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 export class Runs extends AzurePipelineConverter {
   private readonly seenRepositories = new Set<string>();
@@ -18,11 +17,10 @@ export class Runs extends AzurePipelineConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const run = record.record.data as Run;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganization(run.url, ctx);
+    const organizationName = getOrganizationFromUrl(run.url);
     if (!organizationName) {
       ctx.logger.error(
         `No organization found for run ${run.id}. URL: ${run.url}`
@@ -30,10 +28,11 @@ export class Runs extends AzurePipelineConverter {
       return [];
     }
 
+    const organization = this.getOrgKey(organizationName);
     // TODO: Merge with orgKey alignment
     const pipeline = {
       uid: String(run.pipeline?.id),
-      organization: {uid: organizationName.toLowerCase(), source},
+      organization,
     };
 
     const runKey = {
@@ -62,9 +61,7 @@ export class Runs extends AzurePipelineConverter {
     return res;
   }
 
-  // Read more on Azure pipeline run result:
-  // https://learn.microsoft.com/en-us/rest/api/azure/devops/pipelines/runs/list?view=azure-devops-rest-7.1#runresult
-
+  // https://learn.microsoft.com/en-us/rest/api/azure/devops/pipelines/runs/list#runresult
   private convertRunState(result: string | undefined): CategoryDetail {
     if (!result) {
       return;

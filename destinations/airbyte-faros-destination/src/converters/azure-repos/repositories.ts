@@ -2,7 +2,7 @@ import {ProjectVisibility} from 'azure-devops-node-api/interfaces/CoreInterfaces
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganization} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {OrgTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
@@ -19,19 +19,18 @@ export class Repositories extends AzureReposConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const repositoryItem = record.record.data as Repository;
     const res: DestinationRecord[] = [];
-    const organizationName = getOrganization(repositoryItem.url);
-    const organization = {uid: organizationName, source};
+    const organizationName = getOrganizationFromUrl(repositoryItem.url);
+    const organization = this.getOrgKey(organizationName);
     const repository = this.getProjectRepo(repositoryItem, organization);
 
-    if (!this.seenOrganizations.has(organizationName)) {
-      this.seenOrganizations.add(organizationName);
+    if (!this.seenOrganizations.has(organization.uid)) {
+      this.seenOrganizations.add(organization.uid);
       res.push({
         model: 'vcs_Organization',
         record: {
-          uid: organizationName,
+          ...organization,
           name: organizationName,
           htmlUrl: this.getOrganizationUrl(
             repositoryItem.url,
@@ -39,7 +38,6 @@ export class Repositories extends AzureReposConverter {
           ),
           type: {category: OrgTypeCategory.Organization, organizationName},
           description: organizationName,
-          source,
         },
       });
     }

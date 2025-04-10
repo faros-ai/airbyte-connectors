@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganization, getUniqueName} from '../common/azure-devops';
+import {getOrganizationFromUrl, getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {UserTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
@@ -28,8 +28,8 @@ export class Users extends AzureReposConverter {
     }
 
     const url = userItem._links?.self?.href ?? userItem.url;
-    const organizationName = getOrganization(url);
-    const organization = {uid: organizationName, source};
+    const organizationName = getOrganizationFromUrl(url, 1);
+    const organization = this.getOrgKey(organizationName);
     const type: CategoryDetail = {
       category: UserTypeCategory.User,
       detail: 'subjectKind' in userItem ? userItem.subjectKind : null,

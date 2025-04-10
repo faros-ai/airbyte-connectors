@@ -1,8 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Pipeline} from 'faros-airbyte-common/azure-devops';
-import {ConfigurationType} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 
-import {getOrganization} from '../common/azure-devops';
+import {getOrganizationFromUrl} from '../common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 
@@ -18,11 +17,10 @@ export class Pipelines extends AzurePipelineConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganization(pipeline.url, ctx);
+    const organizationName = getOrganizationFromUrl(pipeline.url);
     if (!organizationName) {
       ctx.logger.error(
         `No organization found for pipeline ${pipeline.id}. URL: ${pipeline.url}`
@@ -30,10 +28,10 @@ export class Pipelines extends AzurePipelineConverter {
       return [];
     }
 
-    const orgKey = {uid: organizationName.toLowerCase(), source};
+    const orgKey = this.getOrgKey(organizationName);
 
-    if (!this.seenOrganizations.has(organizationName)) {
-      this.seenOrganizations.add(organizationName);
+    if (!this.seenOrganizations.has(orgKey.uid)) {
+      this.seenOrganizations.add(orgKey.uid);
       res.push({
         model: 'cicd_Organization',
         record: {
