@@ -30,8 +30,9 @@ import {
 } from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
-import {VError} from 'verror';
 import {Memoize} from 'typescript-memoize';
+import {VError} from 'verror';
+
 import {Build} from './types';
 
 export class AzurePipelines extends AzureDevOps {
@@ -151,7 +152,7 @@ export class AzurePipelines extends AzureDevOps {
       : response.value || [];
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
-      if (run.state === RunState.Completed && finishedDate < minTime) {
+      if (run.state === RunState.Completed && minTime >= finishedDate) {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);

@@ -7,8 +7,8 @@ import {CategoryDetail, Tag} from '../common/common';
 import {BuildKey, BuildStateCategory} from '../common/cicd';
 import {Utils} from 'faros-js-client';
 import {BuildRepository} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import { CommitKey, OrgKey, RepoKey } from '../common/vcs';
-import { CodeCoverageStatistics } from 'azure-devops-node-api/interfaces/TestInterfaces';
+import {CommitKey, OrgKey, RepoKey} from '../common/vcs';
+import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 export class Runs extends AzurePipelineConverter {
   private readonly seenRepositories = new Set<string>();
   private readonly seenTags = new Set<string>();
@@ -43,7 +43,9 @@ export class Runs extends AzurePipelineConverter {
 
     res.push(...this.processTags(run.tags, runKey));
     res.push(...this.processCommit(run, runKey));
+    res.push(...this.processStages(run, runKey));
 
+    // Add build number revision???
     const status = this.convertRunState(run.result);
     res.push({
       model: 'cicd_Build',
@@ -54,7 +56,7 @@ export class Runs extends AzurePipelineConverter {
         startedAt: Utils.toDate(run.createdDate),
         endedAt: Utils.toDate(run.finishedDate),
         status,
-        url: run.url,
+        url: run._links?.web?.href ?? run.url,
       },
     });
     return res;
@@ -258,5 +260,33 @@ export class Runs extends AzurePipelineConverter {
         ctx?.logger.warn(`Unsupported coverage label: ${coverage.label}`);
         return {};
     }
+  }
+
+  private processStages(run: Run, buildKey: BuildKey): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    for (const job of run.stages ?? []) {
+      const jobCreatedAt = Utils.toDate(job.startTime);
+      const jobStartedAt = Utils.toDate(job.startTime);
+      const jobEndedAt = Utils.toDate(job.finishTime);
+      const jobStatus = this.convertBuildStepState(job.result);
+      const jobType = this.convertBuildStepType(job.type);
+
+      res.push({
+        model: 'cicd_BuildStep',
+        record: {
+          uid: String(job.id),
+          build: buildKey,
+          name: job.name,
+          command: job.name,
+          type: jobType,
+          createdAt: jobCreatedAt,
+          startedAt: jobStartedAt,
+          endedAt: jobEndedAt,
+          status: jobStatus,
+          url: job.url,
+        },
+      });
+    }
+    return res;
   }
 }

@@ -9,9 +9,8 @@ import {
 import VError from 'verror';
 
 import {AzurePipelines} from './azurepipeline';
-import {Builds, Pipelines, Releases} from './streams';
+import {Pipelines, Releases, Runs} from './streams';
 import {AzurePipelineConfig} from './types';
-import {Runs} from './streams/runs';
 /** The main entry point. */
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();

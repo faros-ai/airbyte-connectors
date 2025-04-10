@@ -1,14 +1,14 @@
-import {Dictionary} from 'ts-essentials';
-import {AzurePipelinesStreamBase} from './common';
-import {AzurePipelines} from '../azurepipeline';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
-import {Run} from 'faros-airbyte-common/azure-devops';
 import {
   AirbyteLogger,
   AirbyteStreamBase,
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {Run} from 'faros-airbyte-common/azure-devops';
+import {Dictionary} from 'ts-essentials';
+
+import {AzurePipelines} from '../azurepipeline';
 import {AzurePipelineConfig} from '../types';
 
 interface PipelineStreamSlice {
@@ -16,6 +16,12 @@ interface PipelineStreamSlice {
   pipeline: {
     id: number;
     name: string;
+  };
+}
+
+interface RunState {
+  readonly [p: string]: {
+    cutoff: number;
   };
 }
 
