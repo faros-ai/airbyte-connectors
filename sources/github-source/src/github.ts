@@ -12,6 +12,7 @@ import {
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsEmpty,
+  CopilotSeatsResponse,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   CoverageReport,
@@ -1035,7 +1036,8 @@ export abstract class GitHub {
     );
     try {
       for await (const res of iter) {
-        for (const seat of (res.data as any).seats) {
+        for (const seat of (res.data as any)
+          .seats as CopilotSeatsResponse['seats']) {
           seatsFound = true;
           const userAssignee = seat.assignee.login as string;
           const teamAssignee = seat.assigning_team?.slug;
@@ -1064,6 +1066,13 @@ export abstract class GitHub {
           yield {
             org,
             user: userAssignee,
+            assignee: pick(seat.assignee, [
+              'login',
+              'name',
+              'email',
+              'html_url',
+              'type',
+            ]),
             team: teamAssignee,
             teamJoinedAt: teamJoinedAt?.toISOString(),
             ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
@@ -1924,6 +1933,13 @@ export abstract class GitHub {
         yield {
           enterprise,
           user: seat.assignee.login as string,
+          assignee: pick(seat.assignee, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
           team: seat.assigning_team?.slug,
           ...pick(seat, [
             'created_at',
