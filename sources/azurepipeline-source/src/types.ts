@@ -8,7 +8,14 @@ import {
   TimelineRecord,
 } from 'faros-airbyte-common/azure-devops';
 
-export interface AzurePipelineConfig extends AzureDevOpsConfig {}
+export interface AzurePipelineConfig extends AzureDevOpsConfig {
+  pipelines?: string[];
+}
+
+export interface PipelineReference {
+  id: number;
+  name: string;
+}
 
 export interface Build extends AzureBuild {
   artifacts: BuildArtifact[];

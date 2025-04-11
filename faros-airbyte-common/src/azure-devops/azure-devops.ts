@@ -83,6 +83,14 @@ export abstract class AzureDevOps {
       logger
     );
 
+    const restApi = AzureDevOps.createRestAPI(
+      apiUrl,
+      config.organization,
+      config.access_token,
+      timeout,
+      maxRetries,
+      logger
+    );
     const client = {
       build: await webApi.getBuildApi(),
       core: await webApi.getCoreApi(),
@@ -92,6 +100,7 @@ export abstract class AzureDevOps {
       release: await webApi.getReleaseApi(),
       test: await webApi.getTestApi(),
       graph: graphApi,
+      rest: restApi,
     };
 
     const pageSize = isNaN(config.page_size) ? undefined : config.page_size;
@@ -184,6 +193,30 @@ export abstract class AzureDevOps {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         params: {'api-version': DEFAULT_GRAPH_API_VERSION},
+        headers: {Authorization: `Basic ${base64EncodedToken}`},
+      },
+      logger.asPino(),
+      maxRetries,
+      1000 // Default retry delay
+    );
+  }
+
+  static createRestAPI(
+    apiUrl: string,
+    organization: string,
+    access_token: string,
+    timeout: number,
+    maxRetries: number,
+    logger: AirbyteLogger
+  ): AxiosInstance {
+    const baseUrl = `${apiUrl}/${organization}`;
+    const base64EncodedToken = base64Encode(`:${access_token}`);
+    return makeAxiosInstanceWithRetry(
+      {
+        baseURL: baseUrl,
+        timeout,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
         headers: {Authorization: `Basic ${base64EncodedToken}`},
       },
       logger.asPino(),

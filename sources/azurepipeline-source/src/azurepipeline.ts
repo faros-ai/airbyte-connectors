@@ -1,6 +1,5 @@
 import {
   Build as AzureBuild,
-  BuildQueryOrder,
   BuildReason,
   BuildResult,
   BuildStatus,
@@ -33,7 +32,7 @@ import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Build} from './types';
+import {Build, PipelineReference} from './types';
 
 export class AzurePipelines extends AzureDevOps {
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -71,85 +70,61 @@ export class AzurePipelines extends AzureDevOps {
     return pipelines;
   }
 
-  // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds
-  async *getBuilds(
-    project: ProjectReference,
-    lastFinishTime?: number
-  ): AsyncGenerator<any> {
-    const minTime = lastFinishTime
-      ? Utils.toDate(lastFinishTime)
-      : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
-
-    const getBuildsFn = (
-      top: number,
-      continuationToken: string | number
-    ): Promise<AzureBuild[]> => {
-      // API field 'finishTime' is a Date object, but actual token should be a string
-      const token = continuationToken
-        ? Utils.toDate(continuationToken)?.toISOString()
-        : undefined;
-      return this.client.build.getBuilds(
-        project.id, // project id
-        undefined, // definitions - array of definition ids
-        undefined, // queues - array of queue ids
-        undefined, // buildNumber - build number to search for
-        minTime, // minTime - minimum build finish time
-        undefined, // maxTime - maximum build finish time
-        undefined, // requestedFor - team project ID
-        undefined, // reasonFilter - build reason
-        undefined, // statusFilter - build status
-        undefined, // resultFilter - build result
-        undefined, // tagFilters - build tags
-        undefined, // properties - build properties
-        top, // top - number of builds to return
-        token, // continuationToken - token for pagination
-        undefined, // maxBuildsPerDefinition - max builds per def
-        undefined, // deletedFilter - include deleted builds
-        BuildQueryOrder.FinishTimeAscending // queryOrder - sort order
-      );
-    };
-
-    for await (const build of this.getPaginated(getBuildsFn, {
-      useContinuationToken: true,
-      continuationTokenParam: 'finishTime',
-    }) ?? []) {
-      const coverageStats = await this.getCoverageStats(project.id, build);
-
-      // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
-      const artifacts =
-        (await this.client.build.getArtifacts(project.id, build.id)) ?? [];
-
-      const jobs = await this.getJobs(project.id, build.id);
-      yield {
-        ...build,
-        // Convert enum values to strings
-        reason: BuildReason[build.reason]?.toLowerCase(),
-        status: BuildStatus[build.status]?.toLowerCase(),
-        result: BuildResult[build.result]?.toLowerCase(),
-        artifacts,
-        jobs,
-        coverageStats,
-      };
-    }
-  }
-
+  // https://learn.microsoft.com/en-us/rest/api/azure/devops/pipelines/runs/list
   async *getRuns(
     project: ProjectReference,
-    pipelineId: number,
+    pipeline: PipelineReference,
     lastFinishDate?: number
   ): AsyncGenerator<Run> {
     const cutoff = lastFinishDate
       ? Utils.toDate(lastFinishDate)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
 
-    const response = (await this.client.pipelines.listRuns(
-      project.id,
-      pipelineId
-    )) as any;
+    let response;
+    try {
+      response = (await this.client.pipelines.listRuns(
+        project.id,
+        pipeline.id
+      )) as any;
+      this.logger.debug(
+        `Fetch result using client: Runs: ${JSON.stringify(response)}`
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error fetching runs for pipeline ${pipeline.name}: ${error}`
+      );
+    }
+
+    if (!response) {
+      this.logger.warn(
+        `Attempting to fetch runs using rest api: ${pipeline.name}`
+      );
+      try {
+        const res = await this.client.rest.get<AzureRun[]>(
+          `/${project.id}/_apis/pipelines/${pipeline.id}/runs`
+        );
+        response = res?.data;
+        this.logger.debug(
+          `Fetch result using rest api: Runs: ${JSON.stringify(response)}`
+        );
+      } catch (error) {
+        this.logger.error(
+          `Error fetching runs for pipeline ${pipeline.name}: ${error}`
+        );
+      }
+    }
+
+    if (!response) {
+      throw new VError(
+        `Failed to fetch runs for pipeline ${pipeline.name} in project ${project.name}`
+      );
+    }
+
     // Handle Azure DevOps Server (2020) which can have JSON with a value property
     const runs: AzureRun[] = Array.isArray(response)
       ? response
       : response.value || [];
+
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
       if (run.state === RunState.Completed && cutoff >= finishedDate) {

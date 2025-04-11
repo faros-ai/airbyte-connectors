@@ -5,13 +5,11 @@ import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
 import {AzurePipelinesStreamBase} from './common';
+import {PipelineReference} from '../types';
 
 interface PipelineSlice {
   project: ProjectReference;
-  pipeline: {
-    id: number;
-    name: string;
-  };
+  pipeline: PipelineReference;
 }
 
 interface RunsState {
@@ -36,10 +34,14 @@ export class Runs extends AzurePipelinesStreamBase {
       this.config,
       this.logger
     );
+    const pipelines = this.config.pipelines?.map((p) => p.toLowerCase());
     for (const project of await azurePipelines.getProjects(
       this.config.projects
     )) {
       for (const pipeline of await azurePipelines.getPipelines(project)) {
+        if (!pipelines?.includes(pipeline.name.toLowerCase())) {
+          continue;
+        }
         yield {
           pipeline: {
             id: pipeline.id,
@@ -67,7 +69,7 @@ export class Runs extends AzurePipelinesStreamBase {
 
     const {project, pipeline} = streamSlice;
     const state = streamState?.[project.name]?.[pipeline.name]?.cutoff;
-    yield* azurePipelines.getRuns(project, pipeline.id, state);
+    yield* azurePipelines.getRuns(project, pipeline, state);
   }
 
   getUpdatedState(

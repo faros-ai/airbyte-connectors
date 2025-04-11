@@ -52,6 +52,7 @@ export interface AzureDevOpsClient {
   readonly release: IReleaseApi;
   readonly test: ITestApi;
   readonly graph?: AxiosInstance;
+  readonly rest: AxiosInstance;
 }
 
 export type User = GraphUser | IdentityRef;
