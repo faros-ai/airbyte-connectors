@@ -16,9 +16,6 @@
     "lib/",
     "resources/"
   ],
-  "engines": {
-    "node": ">=18"
-  },
   "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
