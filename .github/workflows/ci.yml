@@ -159,7 +159,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/jg/windows-test-images' }}
     name: Publish connectors
     runs-on: windows-latest
-    timeout-minutes: 20
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -183,11 +182,11 @@ jobs:
           # docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
 
       - name: Test example source
-        shell: bash
+        shell: pwsh
         run: |
-          docker run --init -v "$(pwd -W)/sources/example-source/resources/cliConfig:/configs" -a stdout -a stderr \
-            "farosai/airbyte-example-source:windows-v0.14.11-rc0" \
-            read \
-            --config "/configs/faros_airbyte_cli_src_config.json" \
-            --catalog "/configs/faros_airbyte_cli_src_catalog.json" \
+          docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:/configs" -a stdout -a stderr `
+            "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
+            read `
+            --config "/configs/faros_airbyte_cli_src_config.json" `
+            --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
             --state "/configs/state.json"
