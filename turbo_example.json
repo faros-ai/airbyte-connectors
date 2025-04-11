@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "resources/**"],
+      "inputs": ["faros-airbyte-cdk/**", "sources/example-source/**"],
       "outputs": ["lib/**"]
     },
     "clean": {

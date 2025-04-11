@@ -27,7 +27,8 @@ RUN Get-ChildItem -Path C:/airbyte/nodejs
 RUN npm --version
 
 # Copy configs
-COPY turbo.json .tsconfig.json package.json package-lock.json ./
+COPY .tsconfig.json package.json package-lock.json ./
+COPY turbo_example.json turbo.json
 
 # Remove unwanted deps (simulate sed)
 # RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
@@ -48,13 +49,12 @@ COPY ./docker ./docker
 ARG version
 ENV CONNECTOR_VERSION=$version
 
-ARG path
-ENV CONNECTOR_PATH=$path
+ENV CONNECTOR_PATH="sources/example-source"
 RUN Write-Output $env:CONNECTOR_PATH
 
 # Symlink using mklink
-RUN Get-ChildItem -Path C:/airbyte/%CONNECTOR_PATH%/bin
-RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
+RUN Get-ChildItem -Path C:/airbyte/sources/example-source/bin
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\sources\example-source\bin\main"
 
 # Set entrypoint (PowerShell version assumed)
 ENV AIRBYTE_ENTRYPOINT="C:/airbyte/docker/entrypoint.ps1"
