@@ -184,7 +184,7 @@ jobs:
       - name: Test example source
         shell: pwsh
         run: |
-          docker run --init -v "${{ github.workspace }}/sources/example-source/resources/cliConfig:/configs" -a stdout -a stderr `
+          docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:\configs" -a stdout -a stderr `
             "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
             read `
             --config "/configs/faros_airbyte_cli_src_config.json" `
