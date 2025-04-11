@@ -61,6 +61,7 @@ export class FarosCopilotSeats extends GitHubConverter {
 
     const activeSeat = record.record.data as CopilotSeat;
     this.currentAssigneesByOrg.get(org).add(activeSeat.user);
+    this.collectUser(activeSeat.assignee);
 
     const res: DestinationRecord[] = [];
     res.push({
@@ -126,6 +127,7 @@ export class FarosCopilotSeats extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
+    res.push(...this.convertUsers());
     for (const org of this.currentAssigneesByOrg.keys()) {
       res.push({
         model: 'vcs_OrganizationTool',

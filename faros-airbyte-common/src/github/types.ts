@@ -208,19 +208,27 @@ export type CopilotSeatsStreamRecord =
   | CopilotSeatEnded
   | CopilotSeatsEmpty;
 
+export type CopilotSeatsResponse = GetResponseDataTypeFromEndpointMethod<
+  typeof octokit.copilot.listCopilotSeats
+>;
+
+export type CopilotSeatAssignee = Pick<
+  CopilotSeatsResponse['seats'][0]['assignee'],
+  'login' | 'name' | 'email' | 'html_url' | 'type'
+>;
+
 export type CopilotSeat = {
   empty?: never;
   org: string;
   user: string;
+  assignee: CopilotSeatAssignee;
   team?: string;
   teamJoinedAt?: string;
   teamLeftAt?: never;
   startedAt?: string;
   endedAt?: never;
 } & Pick<
-  GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.copilot.listCopilotSeats
-  >['seats'][0],
+  CopilotSeatsResponse['seats'][0],
   'pending_cancellation_date' | 'last_activity_at'
 >;
 
@@ -411,11 +419,10 @@ export type EnterpriseCopilotSeat = {
   empty?: never;
   enterprise: string;
   user: string;
+  assignee: CopilotSeatAssignee;
   team?: string;
 } & Pick<
-  GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.copilot.listCopilotSeats
-  >['seats'][0],
+  EnterpriseCopilotSeatsResponse['seats'][0],
   'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
 >;
 

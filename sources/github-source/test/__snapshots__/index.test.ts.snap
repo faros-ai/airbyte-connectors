@@ -351,6 +351,11 @@ exports[`index streams - copilot seats (empty) 1`] = `
 exports[`index streams - copilot seats with audit logs API 1`] = `
 [
   {
+    "assignee": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": null,
@@ -360,6 +365,11 @@ exports[`index streams - copilot seats with audit logs API 1`] = `
     "user": "octocat",
   },
   {
+    "assignee": {
+      "html_url": "https://github.com/octokitten",
+      "login": "octokitten",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
@@ -381,6 +391,11 @@ exports[`index streams - copilot seats with audit logs API 1`] = `
 exports[`index streams - copilot seats with audit logs API but licenses dates fix disabled 1`] = `
 [
   {
+    "assignee": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": null,
@@ -390,6 +405,11 @@ exports[`index streams - copilot seats with audit logs API but licenses dates fi
     "user": "octocat",
   },
   {
+    "assignee": {
+      "html_url": "https://github.com/octokitten",
+      "login": "octokitten",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
@@ -404,6 +424,11 @@ exports[`index streams - copilot seats with audit logs API but licenses dates fi
 exports[`index streams - copilot seats without audit logs API 1`] = `
 [
   {
+    "assignee": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": null,
@@ -413,6 +438,11 @@ exports[`index streams - copilot seats without audit logs API 1`] = `
     "user": "octocat",
   },
   {
+    "assignee": {
+      "html_url": "https://github.com/octokitten",
+      "login": "octokitten",
+      "type": "User",
+    },
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
@@ -1104,6 +1134,11 @@ exports[`index streams - enterprise copilot seats (empty) 1`] = `
 exports[`index streams - enterprise copilot seats 1`] = `
 [
   {
+    "assignee": {
+      "html_url": "https://github.com/octocat",
+      "login": "octocat",
+      "type": "User",
+    },
     "created_at": "2021-08-03T18:00:00-06:00",
     "enterprise": "github",
     "last_activity_at": "2021-10-14T00:53:32-06:00",
@@ -1113,6 +1148,11 @@ exports[`index streams - enterprise copilot seats 1`] = `
     "user": "octocat",
   },
   {
+    "assignee": {
+      "html_url": "https://github.com/octokitten",
+      "login": "octokitten",
+      "type": "User",
+    },
     "created_at": "2021-09-23T18:00:00-06:00",
     "enterprise": "github",
     "last_activity_at": "2021-10-13T00:53:32-06:00",
