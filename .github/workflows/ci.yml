@@ -180,7 +180,7 @@ jobs:
             --file Dockerfile.example-source.win \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
-          docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+          # docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
 
       - name: Test example source
         shell: bash
