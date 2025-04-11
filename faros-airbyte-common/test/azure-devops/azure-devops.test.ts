@@ -243,6 +243,7 @@ describe('client', () => {
               .mockResolvedValueOnce(readTestResourceAsJSON('projects.json')),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -263,6 +264,7 @@ describe('client', () => {
               .mockResolvedValueOnce(readTestResourceAsJSON('projects.json')),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -285,6 +287,7 @@ describe('client', () => {
               .mockResolvedValueOnce(projects.at(1)),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -309,6 +312,7 @@ describe('client', () => {
               .mockResolvedValueOnce(undefined),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger

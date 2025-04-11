@@ -38,6 +38,7 @@ export abstract class AzureDevOps {
 
   constructor(
     protected readonly client: types.AzureDevOpsClient,
+    protected readonly instanceType: 'cloud' | 'server',
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger
@@ -47,7 +48,7 @@ export abstract class AzureDevOps {
     this: new (...args: any[]) => T,
     config: types.AzureDevOpsConfig,
     logger: AirbyteLogger,
-    ...rest: any[]
+    ...additionalArgs: any[]
   ): Promise<T> {
     if (AzureDevOps.azureDevOps) {
       return AzureDevOps.azureDevOps as T;
@@ -59,24 +60,25 @@ export abstract class AzureDevOps {
       logger.info(`Azure DevOps instance type: ${config.instance.type}`);
     } else {
       logger.info(
-        'No Azure DevOps instance type provided, will attempt to use ' +
+        'No Azure DevOps instance type provided, defaulting to ' +
           'Azure DevOps Services (cloud)'
       );
     }
 
-    const apiUrl = AzureDevOps.getApiUrl(config?.instance);
+    const baseUrl = AzureDevOps.getBaseUrl(
+      config?.instance,
+      config.organization
+    );
     const timeout = config.request_timeout ?? DEFAULT_REQUEST_TIMEOUT;
     const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
     const webApi = await AzureDevOps.createWebAPI(
-      apiUrl,
-      config.organization,
+      baseUrl,
       config.access_token,
       timeout,
       maxRetries
     );
-    const graphApi = AzureDevOps.createGraphAPI(
-      config.instance,
-      config.organization,
+    const restApi = AzureDevOps.createRestAPI(
+      baseUrl,
       config.access_token,
       timeout,
       maxRetries,
@@ -91,7 +93,7 @@ export abstract class AzureDevOps {
       pipelines: await webApi.getPipelinesApi(),
       release: await webApi.getReleaseApi(),
       test: await webApi.getTestApi(),
-      graph: graphApi,
+      rest: restApi,
     };
 
     const pageSize = isNaN(config.page_size) ? undefined : config.page_size;
@@ -106,20 +108,26 @@ export abstract class AzureDevOps {
 
     AzureDevOps.azureDevOps = new this(
       client,
+      config.instance?.type,
       cutoffDays,
       top,
       logger,
-      ...rest
+      ...additionalArgs
     );
     return AzureDevOps.azureDevOps as T;
   }
 
-  static getApiUrl(instance: types.AzureDevOpsInstance): string {
-    if (instance?.type !== 'server') {
-      return CLOUD_API_URL;
+  static getBaseUrl(
+    instance: types.AzureDevOpsInstance,
+    organization: string
+  ): string {
+    if (instance?.type?.toLowerCase() !== 'server') {
+      return `${CLOUD_API_URL}/${organization}`;
     }
 
-    const apiUrl = instance?.api_url?.trim();
+    // Type assertion since we've verified it's a server instance
+    const serverInstance = instance as types.DevOpsServer;
+    const apiUrl = serverInstance.api_url?.trim();
     if (!apiUrl) {
       throw new VError(
         'api_url must not be an empty string for server instance type'
@@ -129,9 +137,9 @@ export abstract class AzureDevOps {
     try {
       new URL(apiUrl);
     } catch (error) {
-      throw new VError(`Invalid URL: ${instance?.api_url}`);
+      throw new VError(`Invalid URL: ${serverInstance.api_url}`);
     }
-    return apiUrl;
+    return `${apiUrl}/${organization}`;
   }
 
   static validateAuth(config: types.AzureDevOpsConfig): void {
@@ -145,13 +153,11 @@ export abstract class AzureDevOps {
 
   // Create Azure DevOps Node API clients
   static async createWebAPI(
-    apiUrl: string,
-    organization: string,
+    baseUrl: string,
     accessToken: string,
     timeout: number = DEFAULT_REQUEST_TIMEOUT,
     maxRetries: number = DEFAULT_MAX_RETRIES
   ): Promise<WebApi> {
-    const baseUrl = `${apiUrl}/${organization}`;
     const authHandler = getPersonalAccessTokenHandler(accessToken);
     return new WebApi(baseUrl, authHandler, {
       socketTimeout: timeout,
@@ -164,26 +170,20 @@ export abstract class AzureDevOps {
     });
   }
 
-  static createGraphAPI(
-    instance: types.AzureDevOpsInstance,
-    organization: string,
+  static createRestAPI(
+    baseUrl: string,
     access_token: string,
     timeout: number,
     maxRetries: number,
     logger: AirbyteLogger
   ): AxiosInstance | undefined {
-    if (instance?.type === 'server') {
-      return undefined;
-    }
-
     const base64EncodedToken = base64Encode(`:${access_token}`);
     return makeAxiosInstanceWithRetry(
       {
-        baseURL: `${DEFAULT_GRAPH_API_URL}/${organization}/_apis/graph`,
+        baseURL: baseUrl,
         timeout,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        params: {'api-version': DEFAULT_GRAPH_API_VERSION},
         headers: {Authorization: `Basic ${base64EncodedToken}`},
       },
       logger.asPino(),
@@ -345,13 +345,12 @@ export abstract class AzureDevOps {
     }
   }
 
-  // If graph API is available, i.e. Azure DevOps Services (cloud) instance,
-  // use it to fetch users. Otherwise, fetch users through teams and
-  // team members (Azure DevOps Server)
+  // For Azure DevOps Services (cloud) instance, use the graph API to fetch users.
+  // For Azure DevOps Server instance, fetch users through teams and team members.
   async *getUsers(
     projects?: ReadonlyArray<string>
   ): AsyncGenerator<types.User> {
-    if (this.client.graph) {
+    if (this.instanceType?.toLowerCase() !== 'server') {
       yield* this.getGraphUsers();
       return;
     }
@@ -361,10 +360,14 @@ export abstract class AzureDevOps {
   private async *getGraphUsers(): AsyncGenerator<GraphUser> {
     let continuationToken: string;
     do {
-      const res = await this.client.graph.get<types.GraphUserResponse>(
-        'users',
+      const res = await this.client.rest.get<types.GraphUserResponse>(
+        `${DEFAULT_GRAPH_API_URL}/_apis/graph/users`,
         {
-          params: {subjectTypes: 'msa,aad,imp', continuationToken},
+          params: {
+            'api-version': DEFAULT_GRAPH_API_VERSION,
+            subjectTypes: 'msa,aad,imp',
+            continuationToken,
+          },
         }
       );
       continuationToken = res?.headers?.['X-MS-ContinuationToken'];
