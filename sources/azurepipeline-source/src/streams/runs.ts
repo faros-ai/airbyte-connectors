@@ -39,7 +39,7 @@ export class Runs extends AzurePipelinesStreamBase {
       this.config.projects
     )) {
       for (const pipeline of await azurePipelines.getPipelines(project)) {
-        if (!pipelines?.includes(pipeline.name.toLowerCase())) {
+        if (pipelines?.length && !pipelines.includes(pipeline.name.toLowerCase())) {
           continue;
         }
         yield {
