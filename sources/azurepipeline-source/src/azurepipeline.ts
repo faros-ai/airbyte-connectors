@@ -81,6 +81,7 @@ export class AzurePipelines extends AzureDevOps {
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
 
     let response;
+    let restResponse = false;
     try {
       response = (await this.client.pipelines.listRuns(
         project.id,
@@ -104,6 +105,7 @@ export class AzurePipelines extends AzureDevOps {
           `/${project.id}/_apis/pipelines/${pipeline.id}/runs`
         );
         response = res?.data;
+        restResponse = true;
         this.logger.debug(
           `Fetch result using rest api: Runs: ${JSON.stringify(response)}`
         );
@@ -131,10 +133,16 @@ export class AzurePipelines extends AzureDevOps {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);
+      const state = restResponse
+        ? (run.state as any as string).toLowerCase()
+        : RunState[run.state]?.toLowerCase();
+      const result = restResponse
+        ? (run.result as any as string).toLowerCase()
+        : RunResult[run.result]?.toLowerCase();
       yield {
         ...run,
-        state: RunState[run.state]?.toLowerCase(),
-        result: RunResult[run.result]?.toLowerCase(),
+        state,
+        result,
         project,
         artifacts: build.artifacts,
         coverageStats: build.coverageStats,
