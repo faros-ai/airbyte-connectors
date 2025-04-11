@@ -129,14 +129,14 @@ export class AzurePipelines extends AzureDevOps {
 
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
-      if (run.state === RunState.Completed && cutoff >= finishedDate) {
-        continue;
-      }
-      const build = await this.getBuild(project.id, run.id);
       const state =
         restResponse && run.state
           ? (run.state as any as string)?.toLowerCase()
           : RunState[run.state]?.toLowerCase();
+      if (state === 'completed' && cutoff >= finishedDate) {
+        continue;
+      }
+      const build = await this.getBuild(project.id, run.id);
       const result =
         restResponse && run.result
           ? (run.result as any as string)?.toLowerCase()
