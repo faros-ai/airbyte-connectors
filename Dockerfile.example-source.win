@@ -57,4 +57,4 @@ RUN Write-Output $env:CONNECTOR_PATH
 RUN Get-ChildItem -Path C:/airbyte/sources/example-source/bin
 RUN cmd /c "mklink C:\airbyte\main C:\airbyte\sources\example-source\bin\main"
 
-ENTRYPOINT ["powershell", "-Command", "Start-Process -FilePath 'C:/airbyte/main' -ArgumentList $args -NoNewWindow -Wait"]
+ENTRYPOINT ["powershell", "-Command", "& 'C:\\airbyte\\main' $args"]

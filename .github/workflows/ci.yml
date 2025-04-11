@@ -175,10 +175,10 @@ jobs:
           TAG_VERSION: windows-v0.14.11-rc0
         shell: bash
         run: |
-          # docker build . \
-          #   --file Dockerfile.example-source.win \
-          #   --build-arg version=${{ env.TAG_VERSION }} \
-          #   -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+          docker build . \
+            --file Dockerfile.example-source.win \
+            --build-arg version=${{ env.TAG_VERSION }} \
+            -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
           docker pull farosai/airbyte-example-source:${{ env.TAG_VERSION }}
 
       - name: Test example source
