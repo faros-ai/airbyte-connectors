@@ -7,11 +7,11 @@ COPY turbo.json .tsconfig.json package.json package-lock.json ./
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
 COPY ./sources/example-source ./sources/example-source
 
-RUN apk -U upgrade && \
-    apk add --no-cache --virtual .gyp python3 py3-setuptools make g++ && \
-    npm ci --no-audit --no-fund --ignore-scripts && \
-    npm run build && \
-    apk del .gyp
+# RUN apk -U upgrade && \
+#     apk add --no-cache --virtual .gyp python3 py3-setuptools make g++ && \
+RUN npm ci --no-audit --no-fund --ignore-scripts && \
+    npm run build --debug
+    # && apk del .gyp
 
 COPY ./docker ./docker
 
