@@ -19,9 +19,9 @@ WORKDIR C:/airbyte
 
 # Set build args
 ARG version
-ENV CONNECTOR_VERSION=$version
+ENV CONNECTOR_VERSION=${version}
 ARG connector_path
-ENV CONNECTOR_PATH=$connector_path
+ENV CONNECTOR_PATH=${connector_path}
 
 # Copy Node.js from the installer stage
 COPY --from=installer C:/nodejs C:/airbyte/nodejs
@@ -39,7 +39,7 @@ COPY turbo_example.json turbo.json
 
 # Copy monorepo packages
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
-COPY CONNECTOR_PATH CONNECTOR_PATH
+COPY ${connector_path} ./connector
 RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
@@ -47,6 +47,6 @@ RUN npm ci --no-audit --no-fund --ignore-scripts
 RUN npm run build --debug
 
 # Symlink using mklink
-RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\connector\bin\main"
 
 ENTRYPOINT ["powershell", "-Command", "node 'C:\\airbyte\\main' $args"]
