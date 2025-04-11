@@ -56,6 +56,4 @@ RUN Write-Output $env:CONNECTOR_PATH
 RUN Get-ChildItem -Path C:/airbyte/sources/example-source/bin
 RUN cmd /c "mklink C:\airbyte\main C:\airbyte\sources\example-source\bin\main"
 
-# Set entrypoint (PowerShell version assumed)
-ENV AIRBYTE_ENTRYPOINT="C:/airbyte/docker/entrypoint.ps1"
-ENTRYPOINT ["powershell", "-File", "C:/airbyte/docker/entrypoint.ps1"]
+ENTRYPOINT ["powershell", "-Command", "Start-Process -FilePath 'C:/airbyte/main' -ArgumentList $args -NoNewWindow -Wait"]

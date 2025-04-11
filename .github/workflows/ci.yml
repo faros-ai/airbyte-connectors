@@ -170,7 +170,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Publish connector images
+      - name: Build connector images
         env:
           # DOCKER_BUILDKIT: 1
           TAG_VERSION: windows-v0.14.11-rc0
@@ -180,3 +180,12 @@ jobs:
             --file Dockerfile.example-source.win \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+
+      - name: Test example source
+        run: |
+          docker run --init -v "$(pwd)/sources/example-source/resources/cliConfig:/configs" -a stdout -a stderr \
+            "farosai/airbyte-example-source:windows-v0.14.11-rc0" \
+            read \
+            --config "/configs/faros_airbyte_cli_src_config.json" \
+            --catalog "/configs/faros_airbyte_cli_src_catalog.json" \
+            --state "/configs/state.json"
