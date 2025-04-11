@@ -133,12 +133,14 @@ export class AzurePipelines extends AzureDevOps {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);
-      const state = restResponse
-        ? (run.state as any as string).toLowerCase()
-        : RunState[run.state]?.toLowerCase();
-      const result = restResponse
-        ? (run.result as any as string).toLowerCase()
-        : RunResult[run.result]?.toLowerCase();
+      const state =
+        restResponse && run.state
+          ? (run.state as any as string)?.toLowerCase()
+          : RunState[run.state]?.toLowerCase();
+      const result =
+        restResponse && run.result
+          ? (run.result as any as string)?.toLowerCase()
+          : RunResult[run.result]?.toLowerCase();
       yield {
         ...run,
         state,
