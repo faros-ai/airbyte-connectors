@@ -177,6 +177,7 @@ jobs:
         run: |
           docker build . \
             --file Dockerfile.example-source.win \
+            --build-arg connector_path="sources/example-source" \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
           docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
@@ -187,6 +188,6 @@ jobs:
           docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
             "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
             read `
-            --config "C:\configs\faros_airbyte_cli_src_config.json" `
-            --catalog "C:\configs\faros_airbyte_cli_src_catalog.json" `
-            --state "C:\configs\state.json"
+            --config "/configs/faros_airbyte_cli_src_config.json" `
+            --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
+            --state "/configs/state.json"

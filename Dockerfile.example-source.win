@@ -17,6 +17,12 @@ RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFi
 # Set working directory
 WORKDIR C:/airbyte
 
+# Set build args
+ARG version
+ENV CONNECTOR_VERSION=$version
+ARG connector_path
+ENV CONNECTOR_PATH=$connector_path
+
 # Copy Node.js from the installer stage
 COPY --from=installer C:/nodejs C:/airbyte/nodejs
 RUN cmd /c "setx /M PATH \"%PATH%;C:\airbyte\nodejs\""
@@ -31,30 +37,16 @@ RUN npm --version
 COPY .tsconfig.json package.json package-lock.json ./
 COPY turbo_example.json turbo.json
 
-# Remove unwanted deps (simulate sed)
-# RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
-
 # Copy monorepo packages
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
-COPY ./sources/example-source ./sources/example-source
+COPY CONNECTOR_PATH CONNECTOR_PATH
 RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
 RUN npm ci --no-audit --no-fund --ignore-scripts
 RUN npm run build --debug
 
-# Copy Docker scripts
-COPY ./docker ./docker
-
-# Set build args
-ARG version
-ENV CONNECTOR_VERSION=$version
-
-ENV CONNECTOR_PATH="sources/example-source"
-RUN Write-Output $env:CONNECTOR_PATH
-
 # Symlink using mklink
-RUN Get-ChildItem -Path C:/airbyte/sources/example-source/bin
-RUN cmd /c "mklink C:\airbyte\main C:\airbyte\sources\example-source\bin\main"
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
 
-ENTRYPOINT ["powershell", "-Command", "& 'C:\\airbyte\\main' $args"]
+ENTRYPOINT ["powershell", "-Command", "node 'C:\\airbyte\\main' $args"]
