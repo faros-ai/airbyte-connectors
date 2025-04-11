@@ -11,6 +11,7 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 SHELL ["powershell", "-Command"]
 
 # Install Visual C++ Redistributable for running turbo
+# https://turbo.build/docs/getting-started/support-policy#platforms
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc_redist.x64.exe ; Start-Process -FilePath ./vc_redist.x64.exe -ArgumentList '/install', '/quiet', '/norestart' -NoNewWindow -Wait ; Remove-Item vc_redist.x64.exe
 
 # Set working directory
