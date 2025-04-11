@@ -39,8 +39,6 @@ RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
 RUN npm ci --no-audit --no-fund --ignore-scripts
-RUN Get-ChildItem -Path C:/airbyte/node_modules
-
 RUN npm run build --debug
 
 # Copy Docker scripts
@@ -52,9 +50,11 @@ ENV CONNECTOR_VERSION=$version
 
 ARG path
 ENV CONNECTOR_PATH=$path
+RUN Write-Output $env:CONNECTOR_PATH
 
 # Symlink using mklink
-RUN cmd /c "mklink C:/airbyte/main C:/airbyte/%CONNECTOR_PATH%/bin/main"
+RUN Get-ChildItem -Path C:/airbyte/%CONNECTOR_PATH%/bin
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
 
 # Set entrypoint (PowerShell version assumed)
 ENV AIRBYTE_ENTRYPOINT="C:/airbyte/docker/entrypoint.ps1"
