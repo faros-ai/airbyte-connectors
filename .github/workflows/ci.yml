@@ -169,9 +169,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build connector images
+      - name: Build example source
         env:
-          # DOCKER_BUILDKIT: 1
           TAG_VERSION: windows-v0.14.11-rc0
         shell: bash
         run: |
@@ -190,3 +189,24 @@ jobs:
             --config "/configs/faros_airbyte_cli_src_config.json" `
             --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
             --state "/configs/state.json"
+
+      - name: Build graphql source
+        env:
+          TAG_VERSION: windows-v0.14.11-rc0
+        shell: bash
+        run: |
+          docker build . \
+            --file Dockerfile.faros-graphql-source.win \
+            --build-arg version=${{ env.TAG_VERSION }} \
+            -t farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
+          docker push farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
+
+      # - name: Test graphql source
+      #   shell: pwsh
+      #   run: |
+      #     docker run --init -v "${{ github.workspace }}\sources\faros-graphql-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
+      #       "farosai/airbyte-faros-graphql-source:windows-v0.14.11-rc0" `
+      #       read `
+      #       --config "/configs/faros_airbyte_cli_src_config.json" `
+      #       --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
+      #       --state "/configs/state.json"

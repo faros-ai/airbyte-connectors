@@ -27,37 +27,21 @@ RUN Get-ChildItem -Path C:/airbyte/nodejs
 RUN npm --version
 
 # Copy configs
-COPY .tsconfig.json package.json package-lock.json ./
-COPY turbo_graphql.json turbo.json
-
-# Remove unwanted deps (simulate sed)
-# RUN (Get-Content package.json) -replace '.*jest.*', '' -replace '.*mockttp.*', '' | Set-Content package.json
-
-# Copy monorepo packages
+COPY turbo.json .tsconfig.json package.json package-lock.json ./
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
 COPY ./faros-airbyte-common ./faros-airbyte-common
-COPY ./sources/example-source ./sources/example-source
+COPY ./sources ./sources
+COPY ./destinations ./destinations
 RUN Get-ChildItem -Path .
 
 # Install build dependencies using Chocolatey (if needed) or skip native deps
 RUN npm ci --no-audit --no-fund --ignore-scripts
-RUN npm run build --debug
-
-# Copy Docker scripts
-COPY ./docker ./docker
+RUN npm run build
 
 # Set build args
 ARG version
 ENV CONNECTOR_VERSION=$version
 
-ARG path
-ENV CONNECTOR_PATH=$path
-RUN Write-Output $env:CONNECTOR_PATH
-
 # Symlink using mklink
-RUN Get-ChildItem -Path C:/airbyte/%CONNECTOR_PATH%/bin
-RUN cmd /c "mklink C:\airbyte\main C:\airbyte\%CONNECTOR_PATH%\bin\main"
-
-# Set entrypoint (PowerShell version assumed)
-ENV AIRBYTE_ENTRYPOINT="C:/airbyte/docker/entrypoint.ps1"
-ENTRYPOINT ["powershell", "-File", "C:/airbyte/docker/entrypoint.ps1"]
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\sources\faros-graphql-source\bin\main"
+ENTRYPOINT ["powershell", "-Command", "node 'C:\\airbyte\\main' $args"]
