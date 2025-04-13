@@ -1,5 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {Papa} from 'papaparse';
 import {VError} from 'verror';
 
 import {WorkdayConfig} from '.';
@@ -157,7 +158,10 @@ export class Workday {
     );
   }
 
-  async *customReports(customReportName: string): AsyncGenerator<any> {
+  async *customReports(
+    customReportName: string,
+    reportFormat: string
+  ): AsyncGenerator<any> {
     const finalPathURL = ccxUrl(
       `/service/customreport2/${this.tenant}/${customReportName}`,
       this.baseUrl
@@ -167,9 +171,19 @@ export class Workday {
       `Fetching Custom Report '${customReportName}' from - ${finalPath}`
     );
 
-    const res = await this.api.get(finalPath, {params: {format: 'json'}});
-    for (const item of res.data?.Report_Entry ?? []) {
-      yield item;
+    const res = await this.api.get(finalPath, {params: {format: reportFormat}});
+    if (reportFormat === 'json') {
+      for (const item of res.data?.Report_Entry ?? []) {
+        yield item;
+      }
+    } else if (reportFormat === 'csv') {
+      const parsedCsvByLines = Papa.parse(res.data, {
+        header: true, // Treat first row as column names
+        skipEmptyLines: true,
+      });
+      for (const item of parsedCsvByLines ?? []) {
+        yield item;
+      }
     }
   }
 
