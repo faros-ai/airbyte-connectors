@@ -1,6 +1,6 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Papa} from 'papaparse';
+import Papa from 'papaparse';
 import {VError} from 'verror';
 
 import {WorkdayConfig} from '.';
@@ -178,10 +178,10 @@ export class Workday {
       }
     } else if (reportFormat === 'csv') {
       const parsedCsvByLines = Papa.parse(res.data, {
-        header: true, // Treat first row as column names
+        header: true, // Treats first row as column names
         skipEmptyLines: true,
       });
-      for (const item of parsedCsvByLines ?? []) {
+      for (const item of parsedCsvByLines.data ?? []) {
         yield item;
       }
     }
