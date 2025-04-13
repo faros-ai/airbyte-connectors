@@ -160,7 +160,7 @@ export class Workday {
 
   async *customReports(
     customReportName: string,
-    reportFormat: string
+    reportFormat: string | null
   ): AsyncGenerator<any> {
     const finalPathURL = ccxUrl(
       `/service/customreport2/${this.tenant}/${customReportName}`,
@@ -170,6 +170,10 @@ export class Workday {
     this.logger.info(
       `Fetching Custom Report '${customReportName}' from - ${finalPath}`
     );
+
+    if (!reportFormat) {
+      reportFormat = 'json';
+    }
 
     const res = await this.api.get(finalPath, {params: {format: reportFormat}});
     if (reportFormat === 'json') {
