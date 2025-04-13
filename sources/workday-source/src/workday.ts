@@ -184,6 +184,10 @@ export class Workday {
       for (const item of parsedCsvByLines.data ?? []) {
         yield item;
       }
+    } else {
+      throw new VError(
+        `Invalid report format '${reportFormat}' for custom report '${customReportName}'`
+      );
     }
   }
 
