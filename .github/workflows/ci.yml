@@ -211,23 +211,23 @@ jobs:
       #       --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
       #       --state "/configs/state.json"
 
-      # - name: Build faros destination
-      #   env:
-      #     TAG_VERSION: windows-v0.14.11-rc0
-      #   shell: bash
-      #   run: |
-      #     docker build . \
-      #       --file Dockerfile.faros-graphql-source.win \
-      #       --build-arg version=${{ env.TAG_VERSION }} \
-      #       -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
-      #     docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+      - name: Build faros destination
+        env:
+          TAG_VERSION: windows-v0.14.11-rc0
+        shell: bash
+        run: |
+          docker build . \
+            --file Dockerfile.faros-dst.win \
+            --build-arg version=${{ env.TAG_VERSION }} \
+            -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+          docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
 
       # - name: Test destination
       #   shell: bash
       #   run: |
       #     cat test/faros_destination/faros_airbyte_cli_src_output | docker run `
       #       -i --init --rm `
-      #       -v "$(pwd)\test\faros_destination:C:\configs" `
+      #       -v "${pwd}\test\faros_destination:C:\configs" `
       #       -a stdout -a stderr -a stdin `
       #       "farosai/airbyte-faros-destination:windows-v0.14.11-rc0" `
       #       write `
