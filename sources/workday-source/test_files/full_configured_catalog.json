@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "orgcharts",
+        "name": "org_charts",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh"
