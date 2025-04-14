@@ -5,12 +5,16 @@ import {IGitApi} from 'azure-devops-node-api/GitApi';
 import {
   Build as BaseBuild,
   BuildArtifact,
+  BuildRepository,
   TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
-import {Pipeline as BasePipeline} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
+import {
+  Pipeline as BasePipeline,
+  Run as BaseRun,
+} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
@@ -47,7 +51,7 @@ export interface AzureDevOpsClient {
   readonly pipelines: IPipelinesApi;
   readonly release: IReleaseApi;
   readonly test: ITestApi;
-  readonly graph?: AxiosInstance;
+  readonly rest: AxiosInstance;
 }
 
 export type User = GraphUser | IdentityRef;
@@ -68,6 +72,28 @@ export interface Build extends Omit<BaseBuild, 'reason' | 'status' | 'result'> {
   reason: string;
   status: string;
   result: string;
+}
+
+// Ensure enums are strings
+export interface Run extends Omit<BaseRun, 'result' | 'state'> {
+  project: ProjectReference;
+  result: string;
+  state: string;
+
+  // Enherited from Build interface
+  artifacts: BuildArtifact[];
+  coverageStats: CodeCoverageStatistics[];
+  jobs: TimelineRecord[];
+  stages: TimelineRecord[];
+  queueTime?: Date;
+  repository: BuildRepository;
+  reason: string;
+  sourceBranch?: string;
+  sourceVersion: string;
+  tags: string[];
+  triggerInfo?: {
+    [key: string]: string;
+  };
 }
 
 export interface TimelineRecord

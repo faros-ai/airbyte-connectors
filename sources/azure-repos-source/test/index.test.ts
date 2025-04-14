@@ -26,6 +26,7 @@ describe('index', () => {
 
   const cutoffDays = 3;
   const top = 100;
+  const instanceType = 'cloud';
   const config = {
     access_token: 'token',
     organization: 'organization',
@@ -67,12 +68,13 @@ describe('index', () => {
             getBranches: jest.fn().mockResolvedValue([]),
             getRefs: jest.fn().mockResolvedValue([]),
           },
-          graph: {
+          rest: {
             get: jest.fn().mockResolvedValue({
               data: {value: usersResource},
             }),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -95,6 +97,7 @@ describe('index', () => {
             getProject: jest.fn().mockResolvedValue(null),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -124,6 +127,7 @@ describe('index', () => {
               .mockRejectedValue(new Error('Failed to fetch repositories')),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -149,6 +153,7 @@ describe('index', () => {
             getCommits: jest.fn().mockResolvedValueOnce(commits),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -192,6 +197,7 @@ describe('index', () => {
             getBranches: jest.fn().mockResolvedValueOnce(branches),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -233,6 +239,7 @@ describe('index', () => {
               .mockResolvedValueOnce(threads[1]),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -282,6 +289,7 @@ describe('index', () => {
             getAnnotatedTag: jest.fn().mockResolvedValue(tagResult.commit),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -333,6 +341,7 @@ describe('index', () => {
             getAnnotatedTag: jest.fn().mockResolvedValue(tagResult.commit),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,
@@ -371,6 +380,7 @@ describe('index', () => {
             getBranches: jest.fn().mockResolvedValue(reposResource[0].branches),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger,

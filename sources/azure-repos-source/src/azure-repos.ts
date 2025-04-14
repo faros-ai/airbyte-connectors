@@ -37,6 +37,7 @@ export class AzureRepos extends AzureDevOps {
   private readonly repositoriesByProject: Map<string, Set<string>>;
   constructor(
     protected readonly client: AzureDevOpsClient,
+    protected readonly instanceType: 'cloud' | 'server',
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger,
@@ -45,7 +46,7 @@ export class AzureRepos extends AzureDevOps {
     fetchTags: boolean = false,
     fetchBranchCommits: boolean = false
   ) {
-    super(client, cutoffDays, top, logger);
+    super(client, instanceType, cutoffDays, top, logger);
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
     this.logger.debug(
       `Fetching commits and pull requests from branches matching pattern: ` +

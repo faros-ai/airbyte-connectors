@@ -22,6 +22,7 @@ describe('index', () => {
       ? AirbyteLogLevel.DEBUG
       : AirbyteLogLevel.INFO
   );
+  const instanceType = 'cloud';
 
   const source = new sut.AzureWorkitemsSource(logger);
 
@@ -55,6 +56,7 @@ describe('index', () => {
             }),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         null,
         null,
         logger
@@ -98,6 +100,7 @@ describe('index', () => {
               ]),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         null,
         100,
         logger
@@ -163,6 +166,7 @@ describe('index', () => {
             ),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         90,
         100,
         logger,
@@ -236,6 +240,7 @@ describe('index', () => {
             ),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         null,
         100,
         logger,
