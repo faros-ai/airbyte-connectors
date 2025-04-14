@@ -108,8 +108,8 @@ export class LogFiles {
       this.dstStream.end();
 
       await Promise.all([
-        new Promise((resolve) => this.srcStream.once('close', resolve)),
-        new Promise((resolve) => this.dstStream.once('close', resolve)),
+        new Promise<void>((resolve) => this.srcStream.once('close', () => resolve())),
+        new Promise<void>((resolve) => this.dstStream.once('close', () => resolve())),
       ]);
 
       const srcLogs: AirbyteSourceLog[] = [];

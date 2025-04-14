@@ -23,9 +23,6 @@
     "resources/"
   ],
   "main": "./lib",
-  "engines": {
-    "node": ">=18"
-  },
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",

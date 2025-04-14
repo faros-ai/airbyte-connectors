@@ -1,7 +1,10 @@
 {
   "name": "root",
   "private": true,
-  "packageManager": "^npm@9.6.0",
+  "packageManager": "^npm@10.9.2",
+  "engines": {
+    "node": ">=22"
+  },
   "workspaces": [
     "faros-airbyte-cdk",
     "faros-airbyte-common",
@@ -29,7 +32,7 @@
     "@types/jsonwebtoken": "^9.0.1",
     "@types/lodash": "^4.14.173",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^18.11.9",
+    "@types/node": "^22.14.0",
     "@types/parse-link-header": "^2.0.0",
     "@types/toposort": "^2.0.3",
     "@types/traverse": "^0.6.32",
