@@ -169,37 +169,37 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build example source
-        env:
-          TAG_VERSION: windows-v0.14.11-rc0
-        shell: bash
-        run: |
-          docker build . \
-            --file Dockerfile.example-source.win \
-            --build-arg version=${{ env.TAG_VERSION }} \
-            -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
-          docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+      # - name: Build example source
+      #   env:
+      #     TAG_VERSION: windows-v0.14.11-rc0
+      #   shell: bash
+      #   run: |
+      #     docker build . \
+      #       --file Dockerfile.example-source.win \
+      #       --build-arg version=${{ env.TAG_VERSION }} \
+      #       -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+      #     docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
 
-      - name: Test example source
-        shell: pwsh
-        run: |
-          docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
-            "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
-            read `
-            --config "/configs/faros_airbyte_cli_src_config.json" `
-            --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
-            --state "/configs/state.json"
+      # - name: Test example source
+      #   shell: pwsh
+      #   run: |
+      #     docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
+      #       "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
+      #       read `
+      #       --config "/configs/faros_airbyte_cli_src_config.json" `
+      #       --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
+      #       --state "/configs/state.json"
 
-      - name: Build graphql source
-        env:
-          TAG_VERSION: windows-v0.14.11-rc0
-        shell: bash
-        run: |
-          docker build . \
-            --file Dockerfile.faros-graphql-source.win \
-            --build-arg version=${{ env.TAG_VERSION }} \
-            -t farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
-          docker push farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
+      # - name: Build graphql source
+      #   env:
+      #     TAG_VERSION: windows-v0.14.11-rc0
+      #   shell: bash
+      #   run: |
+      #     docker build . \
+      #       --file Dockerfile.faros-graphql-source.win \
+      #       --build-arg version=${{ env.TAG_VERSION }} \
+      #       -t farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
+      #     docker push farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
 
       # - name: Test graphql source
       #   shell: pwsh
@@ -210,3 +210,14 @@ jobs:
       #       --config "/configs/faros_airbyte_cli_src_config.json" `
       #       --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
       #       --state "/configs/state.json"
+
+      - name: Build faros destination source
+        env:
+          TAG_VERSION: windows-v0.14.11-rc0
+        shell: bash
+        run: |
+          docker build . \
+            --file Dockerfile.faros-graphql-source.win \
+            --build-arg version=${{ env.TAG_VERSION }} \
+            -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+          docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}

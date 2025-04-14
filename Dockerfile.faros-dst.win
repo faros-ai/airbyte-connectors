@@ -1,0 +1,47 @@
+# Use Windows Server Core with Node.js pre-installed
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 as installer
+SHELL ["powershell", "-Command"]
+
+# Install Node.js 18 (using the Node.js installer)
+RUN Invoke-WebRequest -OutFile nodejs.zip -UseBasicParsing https://nodejs.org/dist/v18.19.1/node-v18.19.1-win-x64.zip; Expand-Archive nodejs.zip -DestinationPath C:/; Rename-Item "C:/node-v18.19.1-win-x64" C:/nodejs
+RUN Get-ChildItem -Path .
+RUN Get-ChildItem -Path C:/nodejs
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+SHELL ["powershell", "-Command"]
+
+# Install Visual C++ Redistributable for running turbo
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc_redist.x64.exe ; Start-Process -FilePath ./vc_redist.x64.exe -ArgumentList '/install', '/quiet', '/norestart' -NoNewWindow -Wait ; Remove-Item vc_redist.x64.exe
+
+# Set working directory
+WORKDIR C:/airbyte
+
+# Copy Node.js from the installer stage
+COPY --from=installer C:/nodejs C:/airbyte/nodejs
+RUN cmd /c "setx /M PATH \"%PATH%;C:\airbyte\nodejs\""
+RUN $env:PATH = 'C:\airbyte\nodejs;' + $env:PATH
+
+# Check Node.js and npm versions
+RUN Write-Output $env:PATH
+RUN Get-ChildItem -Path C:/airbyte/nodejs
+RUN npm --version
+
+# Copy configs
+COPY turbo.json .tsconfig.json package.json package-lock.json ./
+COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
+COPY ./faros-airbyte-common ./faros-airbyte-common
+COPY ./sources ./sources
+COPY ./destinations ./destinations
+RUN Get-ChildItem -Path .
+
+# Install build dependencies using Chocolatey (if needed) or skip native deps
+RUN npm ci --no-audit --no-fund --ignore-scripts
+RUN npm run build
+
+# Set build args
+ARG version
+ENV CONNECTOR_VERSION=$version
+
+# Symlink using mklink
+RUN cmd /c "mklink C:\airbyte\main C:\airbyte\destinations\airbyte-faros-destination\bin\main"
+ENTRYPOINT ["powershell", "-Command", "node 'C:\\airbyte\\main' $args"]
