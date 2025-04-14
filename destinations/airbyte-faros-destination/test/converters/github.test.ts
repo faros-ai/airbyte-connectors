@@ -4,14 +4,14 @@ import os from 'os';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {GitHubCommon} from '../../src/converters/github/common';
-import {CLI, read} from '../cli';
+import {CLI, read} from '../../src/testing-tools/cli';
 import {
   initMockttp,
   tempConfig,
   testLogger,
-} from '../testing-tools';
+} from '../../src/testing-tools/testing-tools';
 import {githubLog, githubPGRawLog} from './data';
-import {destinationWriteTest} from './utils';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('github', () => {
   const logger = testLogger();

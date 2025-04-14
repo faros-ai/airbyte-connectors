@@ -6,9 +6,9 @@ import {
   MetricsConfig,
 } from '../../src/converters/aws-cloudwatch-metrics/metrics';
 import {DestinationRecord, StreamContext} from '../../src/converters/converter';
-import {initMockttp, sourceSpecificTempConfig} from '../testing-tools';
+import {initMockttp, sourceSpecificTempConfig} from '../../src/testing-tools/testing-tools';
 import {awsCloudwatchMetricsStreamsInput} from './data';
-import {generateBasicTestSuite} from './utils';
+import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 describe('AWS Cloudwatch Metrics', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
