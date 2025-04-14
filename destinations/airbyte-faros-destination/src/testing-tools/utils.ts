@@ -7,8 +7,7 @@ import {getLocal} from 'mockttp';
 import {Dictionary} from 'ts-essentials';
 
 import {CLI, read, readLines} from './cli';
-import {initMockttp, tempConfig} from './testing-tools';
-import {readTestResourceFile} from './testing-tools';
+import {initMockttp, readTestResourceFile, tempConfig} from './testing-tools';
 
 export interface DestinationWriteTestOptions {
   configPath: string;
@@ -62,7 +61,7 @@ export const destinationWriteTest = async (
 
     const matchedLine = regexes.find((regex) => regex.test(line));
     if (matchedLine) {
-      matches.push(matchedLine.exec(line)![0]);
+      matches.push(matchedLine.exec(line)[0]);
     }
   });
 
