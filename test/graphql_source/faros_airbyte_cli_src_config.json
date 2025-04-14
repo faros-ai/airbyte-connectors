@@ -1,0 +1,8 @@
+{
+  "api_url": "https://dev.api.faros.ai",
+  "api_key": "test",
+  "graph": "faros",
+  "graphql_api": "v2",
+  "result_model": "Flat",
+  "models_filter": ["org_Team"]
+}

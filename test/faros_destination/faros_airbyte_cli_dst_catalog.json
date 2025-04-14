@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "myfarosgraphqlsrc__faros_graphql__faros_graph",
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "json_schema": {}
+      },
+      "sync_mode": "incremental",
+      "destination_sync_mode": "append"
+    }
+  ]
+}

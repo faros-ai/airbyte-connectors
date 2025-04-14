@@ -183,7 +183,7 @@ jobs:
       # - name: Test example source
       #   shell: pwsh
       #   run: |
-      #     docker run --init -v "${{ github.workspace }}\sources\example-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
+      #     docker run --init -v "${{ github.workspace }}\test\example_source:C:\configs" -a stdout -a stderr `
       #       "farosai/airbyte-example-source:windows-v0.14.11-rc0" `
       #       read `
       #       --config "/configs/faros_airbyte_cli_src_config.json" `
@@ -204,20 +204,32 @@ jobs:
       # - name: Test graphql source
       #   shell: pwsh
       #   run: |
-      #     docker run --init -v "${{ github.workspace }}\sources\faros-graphql-source\resources\cliConfig:C:\configs" -a stdout -a stderr `
+      #     docker run --init -v "${{ github.workspace }}\test\graphql_source:C:\configs" -a stdout -a stderr `
       #       "farosai/airbyte-faros-graphql-source:windows-v0.14.11-rc0" `
       #       read `
       #       --config "/configs/faros_airbyte_cli_src_config.json" `
       #       --catalog "/configs/faros_airbyte_cli_src_catalog.json" `
       #       --state "/configs/state.json"
 
-      - name: Build faros destination source
-        env:
-          TAG_VERSION: windows-v0.14.11-rc0
-        shell: bash
-        run: |
-          docker build . \
-            --file Dockerfile.faros-graphql-source.win \
-            --build-arg version=${{ env.TAG_VERSION }} \
-            -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
-          docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+      # - name: Build faros destination
+      #   env:
+      #     TAG_VERSION: windows-v0.14.11-rc0
+      #   shell: bash
+      #   run: |
+      #     docker build . \
+      #       --file Dockerfile.faros-graphql-source.win \
+      #       --build-arg version=${{ env.TAG_VERSION }} \
+      #       -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+      #     docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+
+      # - name: Test destination
+      #   shell: bash
+      #   run: |
+      #     cat test/faros_destination/faros_airbyte_cli_src_output | docker run `
+      #       -i --init --rm `
+      #       -v "$(pwd)\test\faros_destination:C:\configs" `
+      #       -a stdout -a stderr -a stdin `
+      #       "farosai/airbyte-faros-destination:windows-v0.14.11-rc0" `
+      #       write `
+      #       --config "/configs/faros_airbyte_cli_dst_config.json" `
+      #       --catalog "/configs/faros_airbyte_cli_dst_catalog.json"
