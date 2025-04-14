@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /home/node/airbyte
 
@@ -19,13 +19,15 @@ COPY ./docker ./docker
 
 ARG version
 RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg version=x.y.z" && false)
-ENV CONNECTOR_VERSION $version
+ENV CONNECTOR_VERSION=$version
 
 ARG path
-RUN test -n "$path" || (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)
-ENV CONNECTOR_PATH $path
+RUN test -n "$path" && \
+    echo "path argument is set to: $path" || \
+    (echo "'path' argument is not set, e.g --build-arg path=destinations/airbyte-faros-destination" && false)
+ENV CONNECTOR_PATH=$path
 
 RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
-ENV AIRBYTE_ENTRYPOINT "/home/node/airbyte/docker/entrypoint.sh"
+ENV AIRBYTE_ENTRYPOINT="/home/node/airbyte/docker/entrypoint.sh"
 ENTRYPOINT ["/home/node/airbyte/docker/entrypoint.sh"]

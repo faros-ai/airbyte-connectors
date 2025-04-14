@@ -22,9 +22,6 @@
     "resources/"
   ],
   "main": "./lib",
-  "engines": {
-    "node": ">=18"
-  },
   "exports": {
     "./azurepipeline": "./lib/azurepipeline/index.js",
     "./azure-devops": "./lib/azure-devops/index.js",
