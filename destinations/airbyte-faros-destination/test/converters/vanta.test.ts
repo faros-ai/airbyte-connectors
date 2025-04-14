@@ -4,8 +4,8 @@ import {
   initMockttp,
   readTestResourceAsJSON,
   tempConfig,
-} from '../testing-tools';
-import {destinationWriteTest} from './utils';
+} from '../../src/testing-tools/testing-tools';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'vanta/mockQueryNamesToObjects.json'

@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Boards} from '../../src/converters/trello/boards';
 import {Users} from '../../src/converters/trello/users';
-import {generateBasicTestSuite} from './utils';
+import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 generateBasicTestSuite({sourceName: 'trello'});
 

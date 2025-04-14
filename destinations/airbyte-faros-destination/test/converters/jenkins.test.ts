@@ -1,8 +1,8 @@
 import {getLocal} from 'mockttp';
 
-import {initMockttp, tempConfig} from '../testing-tools';
-import {destinationWriteTest} from './utils';
-import {generateBasicTestSuite} from './utils';
+import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 generateBasicTestSuite({sourceName: 'jenkins'});
 
