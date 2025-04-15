@@ -538,7 +538,7 @@ export class Jira {
     return pulls;
   }
 
-  @Memoize()
+  @Memoize((keys?: Set<string>) => JSON.stringify(Array.from(keys ?? [])))
   async getProjects(
     keys?: Set<string>
   ): Promise<ReadonlyArray<Version2Models.Project>> {
