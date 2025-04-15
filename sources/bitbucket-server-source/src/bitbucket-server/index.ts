@@ -697,7 +697,9 @@ export class BitbucketServer {
       } catch (err) {
         attempt++;
         if (attempt >= retries || !shouldRetry(err)) {
-          this.logger.error('Exceeded maximum rate-limit retries');
+          this.logger.error(
+            `Exceeded maximum rate-limit retries after ${retries} attempts`
+          );
           throw err;
         }
         this.logger.warn(
