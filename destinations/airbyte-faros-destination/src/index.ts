@@ -42,4 +42,4 @@ export {
 } from './converters/converter';
 export {FarosDestinationRunner} from './destination-runner';
 
-export * from './testing-tools/testing-tools';
+export * from './testing-tools';
