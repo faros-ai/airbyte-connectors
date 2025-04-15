@@ -361,8 +361,10 @@ export class BitbucketServer {
       );
       for (const pr of await prs) {
         try {
-          const response = await this.streamableClient.get<Readable>(
-            `projects/${projectKey}/repos/${repositorySlug}/pull-requests/${pr.id}.diff`
+          const response = await this.retry(() =>
+            this.streamableClient.get<Readable>(
+              `projects/${projectKey}/repos/${repositorySlug}/pull-requests/${pr.id}.diff`
+            )
           );
 
           const files = await this.parseRawDiff(response.data);
