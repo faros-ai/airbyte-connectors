@@ -698,7 +698,9 @@ export class BitbucketServer {
         return await fn();
       } catch (err) {
         attempt++;
-        if (attempt >= retries || !shouldRetry(err)) {
+        if (!shouldRetry(err)) {
+          throw err;
+        } else if (attempt >= retries) {
           this.logger.error(
             `Exceeded maximum rate-limit retries after ${retries} attempts`
           );
