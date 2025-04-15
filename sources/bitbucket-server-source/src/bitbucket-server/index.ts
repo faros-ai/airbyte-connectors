@@ -570,7 +570,7 @@ export class BitbucketServer {
     }
   }
 
-  @Memoize((projects?: ReadonlyArray<string>) => JSON.stringify(projects))
+  @Memoize((projects?: ReadonlyArray<string>) => JSON.stringify(projects || []))
   async projects(
     projects?: ReadonlyArray<string>
   ): Promise<ReadonlyArray<Project>> {
