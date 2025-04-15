@@ -795,6 +795,26 @@ export class Customreports extends Converter {
       }
     );
     this.writtenEmployeeIds.add(employee_record.Employee_ID);
+    if (employee_record.Vendor) {
+      const tagUid = `vendor__${employee_record.Vendor}`;
+      records.push(
+        {
+          model: 'faros_Tag',
+          record: {
+            uid: tagUid,
+            key: 'vendor',
+            value: employee_record.Vendor,
+          },
+        },
+        {
+          model: 'org_EmployeeTag',
+          record: {
+            employee: {uid: employee_record.Employee_ID},
+            tag: {uid: tagUid},
+          },
+        }
+      );
+    }
 
     return records;
   }

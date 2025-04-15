@@ -21,6 +21,7 @@ Expecting fields (? implies optional):
   Employee_Type?: string;
   Job_Title?: string;
   Parent_Team_ID?: string
+  Vendor?: string
 ```
 
 Source Specific Configs:
