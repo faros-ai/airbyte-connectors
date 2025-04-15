@@ -3,7 +3,7 @@ FROM node:22-alpine
 WORKDIR /home/node/airbyte
 
 COPY turbo.json .tsconfig.json package.json package-lock.json ./
-RUN sed -i "/jest\|mockttp/d" package.json
+RUN sed -i "/jest/d" package.json
 COPY ./faros-airbyte-cdk ./faros-airbyte-cdk
 COPY ./faros-airbyte-common ./faros-airbyte-common
 COPY ./sources ./sources
