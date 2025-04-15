@@ -178,6 +178,8 @@ jobs:
             --file Dockerfile.example-source.win \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-example-source:${{ env.TAG_VERSION }}
+            --label "io.airbyte.version=${{ env.TAG_VERSION }}" \
+            --label "io.airbyte.name=farosai/airbyte-example-source" 
           docker push farosai/airbyte-example-source:${{ env.TAG_VERSION }}
 
       - name: Build graphql source
@@ -189,6 +191,8 @@ jobs:
             --file Dockerfile.faros-graphql-source.win \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
+            --label "io.airbyte.version=${{ env.TAG_VERSION }}" \
+            --label "io.airbyte.name=farosai/airbyte-faros-graphql-source" 
           docker push farosai/airbyte-faros-graphql-source:${{ env.TAG_VERSION }}
 
       - name: Build faros destination
@@ -200,6 +204,8 @@ jobs:
             --file Dockerfile.faros-dst.win \
             --build-arg version=${{ env.TAG_VERSION }} \
             -t farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
+            --label "io.airbyte.version=${{ env.TAG_VERSION }}" \
+            --label "io.airbyte.name=farosai/airbyte-faros-destination" 
           docker push farosai/airbyte-faros-destination:${{ env.TAG_VERSION }}
 
       - name: Test example source
