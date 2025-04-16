@@ -120,8 +120,6 @@ export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
-type CopilotAssignedTeams = {[team: string]: {created_at: string}};
-
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
