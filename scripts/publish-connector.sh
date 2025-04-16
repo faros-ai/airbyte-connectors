@@ -34,6 +34,6 @@ if [ "$?" == 1 ]; then
     -t $version_tag \
     --label "io.airbyte.version=$connector_version" \
     --label "io.airbyte.name=$image"
-  # docker push $latest_tag
-  # docker push $version_tag
+  docker push $latest_tag
+  docker push $version_tag
 fi
