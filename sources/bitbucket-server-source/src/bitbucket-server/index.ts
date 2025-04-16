@@ -386,7 +386,7 @@ export class BitbucketServer {
           this.logger.error(
             `Failed to parse raw diff for repository ${fullName} pull request ${
               pr.id
-            }: ${error.message || JSON.stringify(error)}`,
+            }: ${error.message || JSON.stringify(filterEmptyValues(error))}`,
             error.stack
           );
         }
