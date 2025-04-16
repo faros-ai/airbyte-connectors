@@ -382,11 +382,12 @@ export class BitbucketServer {
             },
           };
         } catch (err: any) {
+          const error = wrapApiError(err);
           this.logger.error(
             `Failed to parse raw diff for repository ${fullName} pull request ${
               pr.id
-            }: ${JSON.stringify(err)}`,
-            err.stack
+            }: ${error.message || JSON.stringify(error)}`,
+            error.stack
           );
         }
       }
@@ -687,7 +688,10 @@ export class BitbucketServer {
       retries = this.maxRetries,
       delay = 1,
       factor = 2,
-      shouldRetry = (err: any) => err?.code === 429,
+      shouldRetry = (err: any) =>
+        err?.code === 429 ||
+        err?.status === 429 ||
+        (err?.message as string)?.includes('connect ECONNREFUSED'),
     } = options;
 
     let attempt = 0;
@@ -696,18 +700,19 @@ export class BitbucketServer {
     while (attempt < retries) {
       try {
         return await fn();
-      } catch (err) {
+      } catch (err: any) {
         attempt++;
         if (!shouldRetry(err)) {
           throw err;
         } else if (attempt >= retries) {
           this.logger.error(
-            `Exceeded maximum rate-limit retries after ${retries} attempts`
+            `Exceeded maximum retries after ${retries} attempts`
           );
           throw err;
         }
-        this.logger.warn(
-          `Received rate limit error, retrying after ${currentDelay}s`
+        this.logger.info(
+          `Retrying request due to an error: ${err.message || `Response code ${err.code}`} ` +
+            `(attempt ${attempt} of ${retries})`
         );
         await new Promise((resolve) =>
           setTimeout(resolve, currentDelay * 1000)

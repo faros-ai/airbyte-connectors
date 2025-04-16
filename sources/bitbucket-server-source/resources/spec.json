@@ -69,7 +69,7 @@
       "max_retries": {
         "type": "integer",
         "title": "Max Retries",
-        "description": "Maximum number of retries for rate-limited requests to Bitbucket Server API",
+        "description": "Maximum number of retries for requests to Bitbucket Server API that get rate limited or encounter connection issues",
         "default": 5
       },
       "reject_unauthorized": {
