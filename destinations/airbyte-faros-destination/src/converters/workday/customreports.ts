@@ -451,6 +451,20 @@ export class Customreports extends Converter {
     return map;
   }
 
+  private cleanVendor(vendor: string): string {
+    // We only take the first line of many if it's a multiline string
+    // We take any grouping of more than one space and make it one space
+    // We remove any leading or trailing spaces
+    // We take away any non-alphanumeric characters (other than spaces)
+    // We lowercase the string
+
+    vendor = vendor.split('\n')[0];
+    vendor = vendor.replace(/\s+/g, ' ').trim();
+    vendor = vendor.replace(/[^a-zA-Z0-9\s]/g, '');
+    vendor = vendor.toLowerCase();
+    return vendor;
+  }
+
   private computeTeamToParentTeamMappingUsingParentIDField(
     ctx: StreamContext,
     teamIDToParentTeamID: Record<string, string>
@@ -796,14 +810,15 @@ export class Customreports extends Converter {
     );
     this.writtenEmployeeIds.add(employee_record.Employee_ID);
     if (employee_record.Vendor) {
-      const tagUid = `vendor__${employee_record.Vendor}`;
+      const vendor: string = this.cleanVendor(employee_record.Vendor);
+      const tagUid = `vendor__${vendor}`;
       records.push(
         {
           model: 'faros_Tag',
           record: {
             uid: tagUid,
             key: 'vendor',
-            value: employee_record.Vendor,
+            value: vendor,
           },
         },
         {
