@@ -453,14 +453,14 @@ export class Customreports extends Converter {
 
   private cleanVendor(vendor: string): string {
     // We only take the first line of many if it's a multiline string
+    // We take away any non-alphanumeric characters (other than spaces)
     // We take any grouping of more than one space and make it one space
     // We remove any leading or trailing spaces
-    // We take away any non-alphanumeric characters (other than spaces)
     // We lowercase the string
 
     vendor = vendor.split('\n')[0];
-    vendor = vendor.replace(/\s+/g, ' ').trim();
     vendor = vendor.replace(/[^a-zA-Z0-9\s]/g, '');
+    vendor = vendor.replace(/\s+/g, ' ').trim();
     vendor = vendor.toLowerCase();
     return vendor;
   }
