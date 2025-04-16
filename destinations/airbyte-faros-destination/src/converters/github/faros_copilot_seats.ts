@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
-  CopilotSeatEnded,
   CopilotSeatsStreamRecord,
   GitHubTool,
 } from 'faros-airbyte-common/github';
@@ -43,23 +42,12 @@ export class FarosCopilotSeats extends GitHubConverter {
       return [];
     }
 
-    const seat = record.record.data as CopilotSeat | CopilotSeatEnded;
-    const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
-    if (seat.endedAt) {
-      this.endedSeatsByOrg.get(org).add(seat.user);
-      return [
-        {
-          model: 'vcs_UserTool',
-          record: {
-            ...userTool,
-            inactive: true,
-            endedAt: seat.endedAt,
-          },
-        },
-      ];
-    }
-
     const activeSeat = record.record.data as CopilotSeat;
+    const userTool = userToolKey(
+      activeSeat.user,
+      activeSeat.org,
+      this.streamName.source
+    );
     this.currentAssigneesByOrg.get(org).add(activeSeat.user);
     this.collectUser(activeSeat.assignee);
 

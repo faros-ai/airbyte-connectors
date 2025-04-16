@@ -14,19 +14,7 @@
     "team": {
       "type": "string"
     },
-    "teamJoinedAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "teamLeftAt": {
-      "type": "string",
-      "format": "date-time"
-    },
     "startedAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "endedAt": {
       "type": "string",
       "format": "date-time"
     },
