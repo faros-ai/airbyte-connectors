@@ -134,6 +134,10 @@ export class AzurePipelines extends AzureDevOps {
         restResponse && run.result
           ? run.result?.toString().toLowerCase()
           : RunResult[run.result]?.toLowerCase();
+
+      const reason = build.reason
+        ? BuildReason[build.reason]?.toLowerCase()
+        : undefined;
       yield {
         ...run,
         state,
@@ -144,7 +148,7 @@ export class AzurePipelines extends AzureDevOps {
         stages: build.stages,
         startTime: build.startTime,
         repository: build.repository,
-        reason: BuildReason[build.reason]?.toLowerCase(),
+        reason,
         sourceBranch: build.sourceBranch,
         sourceVersion: build.sourceVersion,
         tags: build.tags,
