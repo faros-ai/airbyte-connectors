@@ -31,7 +31,6 @@ export class Runs extends AzurePipelineConverter {
     }
 
     const organization = this.getOrgKey(organizationName);
-    // TODO: Merge with orgKey alignment
     const pipeline = {
       uid: String(run.pipeline?.id),
       organization,

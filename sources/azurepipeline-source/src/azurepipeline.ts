@@ -76,7 +76,7 @@ export class AzurePipelines extends AzureDevOps {
     pipeline: PipelineReference,
     lastFinishDate?: number
   ): AsyncGenerator<Run> {
-    const cutoff = lastFinishDate
+    const minFinishedDate = lastFinishDate
       ? Utils.toDate(lastFinishDate)
       : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
 
@@ -87,9 +87,10 @@ export class AzurePipelines extends AzureDevOps {
         project.id,
         pipeline.id
       )) as any;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
-        `Error fetching runs for pipeline ${pipeline.name}: ${error}`
+        `Error fetching runs pipeline using client: ` +
+          `${pipeline.name}: ${wrapApiError(error)}`
       );
     }
 
@@ -103,9 +104,10 @@ export class AzurePipelines extends AzureDevOps {
         );
         response = res?.data;
         restResponse = true;
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(
-          `Error fetching runs for pipeline ${pipeline.name}: ${error}`
+          `Error fetching runs for pipeline using rest api: ` +
+            `${pipeline.name}: ${wrapApiError(error)}`
         );
       }
     }
@@ -119,14 +121,14 @@ export class AzurePipelines extends AzureDevOps {
     // Handle Azure DevOps Server (2020) will return JSON with a value property
     const runs: AzureRun[] = Array.isArray(response)
       ? response
-      : response.value || [];
+      : response.value ?? [];
 
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
       const state = restResponse
         ? run.state?.toString().toLowerCase()
         : RunState[run.state]?.toLowerCase();
-      if (state === 'completed' && cutoff >= finishedDate) {
+      if (state === 'completed' && minFinishedDate >= finishedDate) {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);
