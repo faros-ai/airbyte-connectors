@@ -82,7 +82,8 @@ export function WithRetry<T extends Retryable>(
         status >= 500 ||
         errorCode === 'ETIMEDOUT' ||
         errorCode === 'ECONNABORTED' ||
-        errorCode === 'ECONNRESET'
+        errorCode === 'ECONNRESET' ||
+        errorCode === 'ECONNREFUSED'
       );
     }
 

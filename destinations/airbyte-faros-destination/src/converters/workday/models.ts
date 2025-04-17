@@ -13,6 +13,7 @@ export declare type EmployeeRecord = {
   Employee_Type?: string;
   Job_Title?: string;
   Parent_Team_ID?: string;
+  Vendor?: string;
 };
 
 export declare type ManagerTimeRecord = {
@@ -37,5 +38,7 @@ export const recordKeyTyping = {
   location: 'Location',
   email: 'Email',
   employeetype: 'Employee_Type',
+  jobtitle: 'Job_Title',
   parentteamid: 'Parent_Team_ID',
+  vendor: 'Vendor',
 };

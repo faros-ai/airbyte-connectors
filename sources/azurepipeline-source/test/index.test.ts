@@ -37,6 +37,7 @@ describe('index', () => {
   const WATERMARK = '2023-03-03T18:18:11.592Z';
   const cutoffDays = 365;
   const top = 100;
+  const instanceType = 'cloud';
   const project = {id: '1', name: 'proj1'};
 
   beforeEach(() => (AzurePipelines.instance = azurePipelines));
@@ -73,6 +74,7 @@ describe('index', () => {
               .mockResolvedValue(readTestResourceFile('pipelines.json')),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
@@ -134,6 +136,7 @@ describe('index', () => {
               .mockResolvedValue(readTestResourceFile('runs.json')),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
@@ -188,6 +191,7 @@ describe('index', () => {
             listRuns: jest.fn().mockResolvedValue(runs),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
@@ -216,6 +220,7 @@ describe('index', () => {
             getReleases: jest.fn().mockResolvedValue(releasesData),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger

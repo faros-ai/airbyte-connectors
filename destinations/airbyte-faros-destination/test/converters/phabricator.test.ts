@@ -1,3 +1,3 @@
-import {generateBasicTestSuite} from './utils';
+import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 generateBasicTestSuite({sourceName: 'phabricator'});

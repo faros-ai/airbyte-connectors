@@ -28,4 +28,10 @@ export class FarosEnterpriseCopilotSeats extends GitHubConverter {
     } as CopilotSeatsStreamRecord;
     return this.alias.convert(record, ctx);
   }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.alias.onProcessingComplete(ctx);
+  }
 }

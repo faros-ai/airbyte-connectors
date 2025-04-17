@@ -41,6 +41,7 @@ describe('index', () => {
 
   const config_tkn = readTestResourceFile('config_tokens.json');
   const config_unpw = readTestResourceFile('config_unpw.json');
+  const config_unpw_csv = readTestResourceFile('config_unpw_csv.json');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -191,7 +192,7 @@ describe('index', () => {
     expect(fnListOrgs).toHaveBeenCalledTimes(limit);
     expect(items).toStrictEqual([...expected.data, ...expected.data]);
   });
-  test('streams - customReports', async () => {
+  test('streams - customReports (json)', async () => {
     const fnCustomreports = jest.fn();
     const expected = readTestResourceFile('customreports.json');
 
@@ -210,6 +211,35 @@ describe('index', () => {
 
     const source = new sut.WorkdaySource(logger);
     const workers = source.streams(config_unpw)[4];
+    const iter = workers.readRecords(SyncMode.FULL_REFRESH);
+    const items = [];
+    for await (const item of iter) {
+      items.push(item);
+    }
+    expect(fnCustomreports).toHaveBeenCalledTimes(1);
+    expect(items).toStrictEqual(expected.Report_Entry);
+  });
+
+  test('streams - customReports (csv)', async () => {
+    const fnCustomreports = jest.fn();
+    const expected = readTestResourceFile('customreports.json');
+    const csv_data = readTestResourceFile('customreports_csv.json');
+
+    Workday.instance = jest.fn().mockImplementation(() => {
+      return new Workday(
+        logger,
+        {
+          get: fnCustomreports.mockResolvedValue(csv_data),
+        } as any,
+        0,
+        test_base_url,
+        'my_tenant',
+        true
+      );
+    });
+
+    const source = new sut.WorkdaySource(logger);
+    const workers = source.streams(config_unpw_csv)[4];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {

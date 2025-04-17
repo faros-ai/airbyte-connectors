@@ -13,8 +13,8 @@ import {
   initMockttp,
   readTestResourceFile,
   tempConfig,
-} from '../testing-tools';
-import {destinationWriteTest} from './utils';
+} from '../../src/testing-tools/testing-tools';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,

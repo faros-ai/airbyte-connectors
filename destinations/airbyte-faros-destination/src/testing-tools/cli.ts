@@ -18,7 +18,7 @@ export interface CLIOptions {
 
 /** A convenience class for testing CLI inputs and outputs. */
 export class CLI {
-  constructor(private cp: ChildProcess) {}
+  constructor(private readonly cp: ChildProcess) {}
 
   get stderr(): Readable {
     // `stderr` is always defined with the options in `runWith`.

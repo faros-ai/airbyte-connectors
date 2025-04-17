@@ -1,0 +1,10 @@
+{
+  "tenant": "acme",
+  "credentials": {
+    "username": "foo",
+    "password": "bar"
+  },
+  "baseUrl": "https://testurl.com",
+  "customReportName": "CR",
+  "reportFormat": "CSV"
+}

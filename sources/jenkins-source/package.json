@@ -15,9 +15,6 @@
     "lib/",
     "resources/"
   ],
-  "engines": {
-    "node": ">=18"
-  },
   "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
@@ -29,7 +26,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.7.4",
+    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "jenkins": "^1.1.0",
     "typescript-memoize": "^1.1.0",

@@ -35,12 +35,13 @@ export class AzureWorkitems extends types.AzureDevOps {
   private additionalFieldReferences: Map<string, string>;
   constructor(
     protected readonly client: types.AzureDevOpsClient,
+    protected readonly instanceType: 'cloud' | 'server',
     protected readonly cutoffDays: number,
     protected readonly top: number,
     protected readonly logger: AirbyteLogger,
     private readonly additionalFields?: ReadonlyArray<string>
   ) {
-    super(client, cutoffDays, top, logger);
+    super(client, instanceType, cutoffDays, top, logger);
     this.additionalFields = additionalFields;
   }
 

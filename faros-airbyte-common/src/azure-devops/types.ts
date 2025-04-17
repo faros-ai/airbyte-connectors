@@ -3,10 +3,9 @@ import {IBuildApi} from 'azure-devops-node-api/BuildApi';
 import {ICoreApi} from 'azure-devops-node-api/CoreApi';
 import {IGitApi} from 'azure-devops-node-api/GitApi';
 import {
-  Build as BaseBuild,
   BuildArtifact,
-  TimelineRecord as BaseTimelineRecord,
   BuildRepository,
+  TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
@@ -51,7 +50,6 @@ export interface AzureDevOpsClient {
   readonly pipelines: IPipelinesApi;
   readonly release: IReleaseApi;
   readonly test: ITestApi;
-  readonly graph?: AxiosInstance;
   readonly rest: AxiosInstance;
 }
 
@@ -75,6 +73,28 @@ export interface Run extends Omit<BaseRun, 'result' | 'state'> {
   // Enherited from Build interface
   artifacts: BuildArtifact[];
   coverageStats: CodeCoverageStatistics[];
+  stages: TimelineRecord[];
+  queueTime?: Date;
+  repository: BuildRepository;
+  reason: string;
+  sourceBranch?: string;
+  sourceVersion: string;
+  tags: string[];
+  triggerInfo?: {
+    [key: string]: string;
+  };
+}
+
+// Ensure enums are strings
+export interface Run extends Omit<BaseRun, 'result' | 'state'> {
+  project: ProjectReference;
+  result: string;
+  state: string;
+
+  // Enherited from Build interface
+  artifacts: BuildArtifact[];
+  coverageStats: CodeCoverageStatistics[];
+  jobs: TimelineRecord[];
   stages: TimelineRecord[];
   queueTime?: Date;
   repository: BuildRepository;

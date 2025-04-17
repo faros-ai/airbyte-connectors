@@ -7,7 +7,8 @@
         "required": [
             "tenant",
             "credentials",
-            "baseUrl"
+            "baseUrl",
+            "customReportName"
         ],
         "additionalProperties": true,
         "properties": {
@@ -101,7 +102,17 @@
             "customReportName": {
                 "type": "string",
                 "title": "Custom Report Name",
-                "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=json"
+                "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=$FORMAT"
+            },
+            "reportFormat": {
+                "type": "string",
+                "title": "Report Format (json/csv)",
+                "default": "json",
+                "description": "The format of the report. Can be either json or csv.",
+                "enum": [
+                    "json",
+                    "csv"
+                ]
             },
             "timeout": {
                 "type": "number",

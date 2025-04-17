@@ -4,8 +4,8 @@ import pino from 'pino';
 import tmp from 'tmp-promise';
 import {Dictionary} from 'ts-essentials';
 import util from 'util';
+import { Edition, InvalidRecordStrategy } from '../common/types';
 
-import {Edition, InvalidRecordStrategy} from '../src';
 
 const TEST_SOURCE_ID = 'mytestsource';
 
