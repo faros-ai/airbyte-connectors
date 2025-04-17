@@ -1028,7 +1028,12 @@ export abstract class GitHub {
             ]),
             team: seat.assigning_team?.slug,
             startedAt: Utils.toDate(seat.created_at).toISOString(),
-            ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
+            ...pick(seat, [
+              'created_at',
+              'updated_at',
+              'pending_cancellation_date',
+              'last_activity_at',
+            ]),
           } as CopilotSeat;
         }
       }

@@ -223,7 +223,7 @@ export type CopilotSeat = {
   startedAt?: string;
 } & Pick<
   CopilotSeatsResponse['seats'][0],
-  'pending_cancellation_date' | 'last_activity_at'
+  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
 >;
 
 export type CopilotSeatsEmpty = {

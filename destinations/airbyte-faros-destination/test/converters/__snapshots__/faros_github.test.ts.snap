@@ -22,7 +22,7 @@ Array [
         "uid": "github",
       },
       "source": "GitHub",
-      "startedAt": "2024-07-15T17:43:12.098Z",
+      "startedAt": "2021-08-04T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },
@@ -85,7 +85,7 @@ Array [
         "uid": "github",
       },
       "source": "GitHub",
-      "startedAt": "2021-07-15T17:43:12.098Z",
+      "startedAt": "2021-09-24T00:00:00.000Z",
       "tool": Object {
         "category": "GitHubCopilot",
       },

@@ -18,6 +18,14 @@
       "type": "string",
       "format": "date-time"
     },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "pending_cancellation_date": {
       "type": "string",
       "format": "date"
