@@ -15,7 +15,9 @@ export abstract class AzurePipelinesStreamBase extends AirbyteStreamBase {
   get primaryKey(): StreamKey {
     return 'id';
   }
+}
 
+export abstract class ProjectsStreamBase extends AzurePipelinesStreamBase {
   async *streamSlices(): AsyncGenerator<ProjectReference> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,

@@ -12,107 +12,7 @@
         "id": 2,
         "revision": 1,
         "name": "coonglinh.medee_dms",
-        "folder": "\\",
-        "runs": [
-            {
-                "_links": {
-                    "self": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/24"
-                    },
-                    "web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=24"
-                    },
-                    "pipeline.web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2"
-                    },
-                    "pipeline": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1"
-                    }
-                },
-                "pipeline": {
-                    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
-                    "id": 2,
-                    "revision": 1,
-                    "name": "coonglinh.medee_dms",
-                    "folder": "\\"
-                },
-                "state": "completed",
-                "result": "failed",
-                "createdDate": "2022-02-14T02:35:32.5194025Z",
-                "finishedDate": "2022-02-14T02:35:38.7767368Z",
-                "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/24",
-                "id": 24,
-                "name": "20220214.1"
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/21"
-                    },
-                    "web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=21"
-                    },
-                    "pipeline.web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2"
-                    },
-                    "pipeline": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1"
-                    }
-                },
-                "pipeline": {
-                    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
-                    "id": 2,
-                    "revision": 1,
-                    "name": "coonglinh.medee_dms",
-                    "folder": "\\"
-                },
-                "state": "completed",
-                "result": "failed",
-                "createdDate": "2022-02-11T14:53:02.0556022Z",
-                "finishedDate": "2022-02-11T14:53:07.6747517Z",
-                "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/21",
-                "id": 21,
-                "name": "20220211.2"
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/17"
-                    },
-                    "web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=17"
-                    },
-                    "pipeline.web": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2"
-                    },
-                    "pipeline": {
-                        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1"
-                    }
-                },
-                "variables": {
-                    "system.debug": {
-                        "value": "true"
-                    },
-                    "agent.diagnostic": {
-                        "value": "true"
-                    }
-                },
-                "pipeline": {
-                    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
-                    "id": 2,
-                    "revision": 1,
-                    "name": "coonglinh.medee_dms",
-                    "folder": "\\"
-                },
-                "state": "completed",
-                "result": "failed",
-                "createdDate": "2022-02-10T06:20:34.4483472Z",
-                "finishedDate": "2022-02-10T06:20:38.522628Z",
-                "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2/runs/17",
-                "id": 17,
-                "name": "20220210.5"
-            }
-        ]
+        "folder": "\\"
     },
     {
         "_links": {
@@ -127,7 +27,6 @@
         "id": 6,
         "revision": 1,
         "name": "devcube",
-        "folder": "\\",
-        "runs": []
+        "folder": "\\"
     }
 ]

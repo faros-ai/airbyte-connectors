@@ -17,7 +17,6 @@ export class Pipelines extends AzurePipelineConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
@@ -29,16 +28,15 @@ export class Pipelines extends AzurePipelineConverter {
       return [];
     }
 
-    const organization = {uid: organizationName, source};
+    const orgKey = this.getOrgKey(organizationName);
 
-    if (!this.seenOrganizations.has(organizationName)) {
-      this.seenOrganizations.add(organizationName);
+    if (!this.seenOrganizations.has(orgKey.uid)) {
+      this.seenOrganizations.add(orgKey.uid);
       res.push({
         model: 'cicd_Organization',
         record: {
-          uid: organizationName,
+          ...orgKey,
           name: organizationName,
-          source,
         },
       });
     }
@@ -49,7 +47,8 @@ export class Pipelines extends AzurePipelineConverter {
         uid: String(pipeline.id),
         name: `${pipeline.project?.name}:${pipeline.name}`,
         url: pipeline.url,
-        organization,
+        description: pipeline.folder,
+        organization: orgKey,
       },
     });
 
