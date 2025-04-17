@@ -19,7 +19,6 @@ interface UserToolKey {
 
 export class FarosCopilotSeats extends GitHubConverter {
   private readonly currentAssigneesByOrg = new Map<string, Set<string>>();
-  private readonly endedSeatsByOrg = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
@@ -36,7 +35,6 @@ export class FarosCopilotSeats extends GitHubConverter {
     const org = toLower(data.org);
     if (!this.currentAssigneesByOrg.has(org)) {
       this.currentAssigneesByOrg.set(org, new Set());
-      this.endedSeatsByOrg.set(org, new Set());
     }
     if (data.empty) {
       return [];
@@ -149,10 +147,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         );
         for await (const previousAssignee of previousAssigneesQuery) {
           if (
-            !this.currentAssigneesByOrg
-              .get(org)
-              .has(previousAssignee.user.uid) &&
-            !this.endedSeatsByOrg.get(org).has(previousAssignee.user.uid)
+            !this.currentAssigneesByOrg.get(org).has(previousAssignee.user.uid)
           ) {
             res.push({
               model: 'vcs_UserTool',
