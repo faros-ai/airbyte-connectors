@@ -74,29 +74,7 @@ export interface Run extends Omit<BaseRun, 'result' | 'state'> {
   artifacts: BuildArtifact[];
   coverageStats: CodeCoverageStatistics[];
   stages: TimelineRecord[];
-  queueTime?: Date;
-  repository: BuildRepository;
-  reason: string;
-  sourceBranch?: string;
-  sourceVersion: string;
-  tags: string[];
-  triggerInfo?: {
-    [key: string]: string;
-  };
-}
-
-// Ensure enums are strings
-export interface Run extends Omit<BaseRun, 'result' | 'state'> {
-  project: ProjectReference;
-  result: string;
-  state: string;
-
-  // Enherited from Build interface
-  artifacts: BuildArtifact[];
-  coverageStats: CodeCoverageStatistics[];
-  jobs: TimelineRecord[];
-  stages: TimelineRecord[];
-  queueTime?: Date;
+  startTime?: Date;
   repository: BuildRepository;
   reason: string;
   sourceBranch?: string;

@@ -4,8 +4,8 @@ import {Run} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import {AzurePipelinesStreamBase} from './common';
 import {PipelineReference} from '../types';
+import {AzurePipelinesStreamBase} from './common';
 
 interface PipelineSlice {
   project: ProjectReference;
@@ -39,7 +39,10 @@ export class Runs extends AzurePipelinesStreamBase {
       this.config.projects
     )) {
       for (const pipeline of await azurePipelines.getPipelines(project)) {
-        if (pipelines?.length && !pipelines.includes(pipeline.name.toLowerCase())) {
+        if (
+          pipelines?.length &&
+          !pipelines.includes(pipeline.name.toLowerCase())
+        ) {
           continue;
         }
         yield {

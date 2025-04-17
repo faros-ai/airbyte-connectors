@@ -87,28 +87,22 @@ export class AzurePipelines extends AzureDevOps {
         project.id,
         pipeline.id
       )) as any;
-      this.logger.debug(
-        `Fetch result using client: Runs: ${JSON.stringify(response)}`
-      );
     } catch (error) {
       this.logger.error(
         `Error fetching runs for pipeline ${pipeline.name}: ${error}`
       );
     }
 
+    // Azure DevOps Server (2020) returns empty response when using client
+    // revert to rest api
     if (!response) {
-      this.logger.warn(
-        `Attempting to fetch runs using rest api: ${pipeline.name}`
-      );
+      this.logger.warn(`Fetching runs using rest api: ${pipeline.name}`);
       try {
         const res = await this.client.rest.get<AzureRun[]>(
           `/${project.id}/_apis/pipelines/${pipeline.id}/runs`
         );
         response = res?.data;
         restResponse = true;
-        this.logger.debug(
-          `Fetch result using rest api: Runs: ${JSON.stringify(response)}`
-        );
       } catch (error) {
         this.logger.error(
           `Error fetching runs for pipeline ${pipeline.name}: ${error}`
@@ -122,24 +116,23 @@ export class AzurePipelines extends AzureDevOps {
       );
     }
 
-    // Handle Azure DevOps Server (2020) which can have JSON with a value property
+    // Handle Azure DevOps Server (2020) will return JSON with a value property
     const runs: AzureRun[] = Array.isArray(response)
       ? response
       : response.value || [];
 
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);
-      const state =
-        restResponse && run.state
-          ? (run.state as any as string)?.toLowerCase()
-          : RunState[run.state]?.toLowerCase();
+      const state = restResponse
+        ? run.state?.toString().toLowerCase()
+        : RunState[run.state]?.toLowerCase();
       if (state === 'completed' && cutoff >= finishedDate) {
         continue;
       }
       const build = await this.getBuild(project.id, run.id);
       const result =
         restResponse && run.result
-          ? (run.result as any as string)?.toLowerCase()
+          ? run.result?.toString().toLowerCase()
           : RunResult[run.result]?.toLowerCase();
       yield {
         ...run,
@@ -149,7 +142,7 @@ export class AzurePipelines extends AzureDevOps {
         artifacts: build.artifacts,
         coverageStats: build.coverageStats,
         stages: build.stages,
-        queueTime: build.queueTime,
+        startTime: build.startTime,
         repository: build.repository,
         reason: BuildReason[build.reason]?.toLowerCase(),
         sourceBranch: build.sourceBranch,

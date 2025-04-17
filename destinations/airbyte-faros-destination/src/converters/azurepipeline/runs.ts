@@ -1,13 +1,15 @@
+import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Run} from 'faros-airbyte-common/azure-devops';
+import {Utils} from 'faros-js-client';
+
+import {getOrganizationFromUrl} from '../common/azure-devops';
+import {BuildKey, BuildStateCategory} from '../common/cicd';
+import {CategoryDetail, Tag} from '../common/common';
+import {CommitKey, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
-import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {getOrganizationFromUrl} from '../common/azure-devops';
-import {CategoryDetail, Tag} from '../common/common';
-import {BuildKey, BuildStateCategory} from '../common/cicd';
-import {Utils} from 'faros-js-client';
-import {CommitKey, RepoKey} from '../common/vcs';
-import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
+
 export class Runs extends AzurePipelineConverter {
   private readonly seenRepositories = new Set<string>();
   private readonly seenTags = new Set<string>();
@@ -51,8 +53,8 @@ export class Runs extends AzurePipelineConverter {
       record: {
         ...runKey,
         name: run.name,
-        createdAt: Utils.toDate(run.queueTime),
-        startedAt: Utils.toDate(run.createdDate),
+        createdAt: Utils.toDate(run.createdDate),
+        startedAt: Utils.toDate(run.startTime),
         endedAt: Utils.toDate(run.finishedDate),
         status,
         url: run._links?.web?.href ?? run.url,

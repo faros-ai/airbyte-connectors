@@ -187,7 +187,6 @@ Array [
       "id": "1",
       "name": "proj1",
     },
-    "queueTime": "2022-02-14T02:35:32.5194025Z",
     "reason": "pullrequest",
     "repository": Object {
       "checkoutSubmodules": false,
@@ -268,6 +267,7 @@ Array [
         "workerName": null,
       },
     ],
+    "startTime": "2022-02-14T02:35:38.7767368Z",
     "state": "completed",
     "tags": Array [],
     "triggerInfo": Object {},
@@ -310,7 +310,6 @@ Array [
       "id": "1",
       "name": "proj1",
     },
-    "queueTime": "2022-02-14T02:35:32.5194025Z",
     "reason": "manual",
     "repository": Object {
       "checkoutSubmodules": false,
@@ -391,6 +390,7 @@ Array [
         "workerName": null,
       },
     ],
+    "startTime": "2022-02-14T02:35:38.7767368Z",
     "state": "completed",
     "tags": Array [],
     "triggerInfo": Object {},
@@ -453,7 +453,6 @@ Array [
       "id": "1",
       "name": "proj1",
     },
-    "queueTime": "2022-02-11T14:53:02.0556022Z",
     "reason": "manual",
     "repository": Object {
       "checkoutSubmodules": false,
@@ -534,6 +533,7 @@ Array [
         "workerName": null,
       },
     ],
+    "startTime": "2022-02-11T14:53:07.6747517Z",
     "state": "completed",
     "tags": Array [],
     "triggerInfo": Object {},
@@ -571,7 +571,6 @@ Array [
       "id": "1",
       "name": "proj1",
     },
-    "queueTime": "2022-02-10T06:20:34.4483472Z",
     "reason": "manual",
     "repository": Object {
       "checkoutSubmodules": false,
@@ -618,6 +617,7 @@ Array [
         "workerName": null,
       },
     ],
+    "startTime": "2022-02-10T06:20:38.522628Z",
     "state": "completed",
     "tags": Array [],
     "triggerInfo": Object {},
