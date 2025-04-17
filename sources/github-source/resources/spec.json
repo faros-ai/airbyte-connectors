@@ -204,35 +204,35 @@
         "default": true
       },
       "cutoff_days": {
-        "order": 16,
+        "order": 14,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "bucket_id": {
-        "order": 17,
+        "order": 15,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of organization and repositories to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 18,
+        "order": 16,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute organizations and repositories across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "round_robin_bucket_execution": {
-        "order": 19,
+        "order": 17,
         "type": "boolean",
         "title": "Round Robin Bucket Execution",
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
       "bucket_ranges": {
-        "order": 20,
+        "order": 18,
         "type": "array",
         "items": {
           "type": "string"
@@ -245,114 +245,114 @@
         ]
       },
       "api_url": {
-        "order": 21,
+        "order": 19,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 22,
+        "order": 20,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 23,
+        "order": 21,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "page_size": {
-        "order": 24,
+        "order": 22,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "commits_page_size": {
-        "order": 25,
+        "order": 23,
         "type": "integer",
         "title": "Commits Page Size",
         "description": "Maximum number of items in a paginated response for commits",
         "default": 100
       },
       "pull_requests_page_size": {
-        "order": 26,
+        "order": 24,
         "type": "integer",
         "title": "Pull Requests Page Size",
         "description": "Maximum number of items in a paginated response for pull requests",
         "default": 25
       },
       "timeout": {
-        "order": 27,
+        "order": 25,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitHub API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 28,
+        "order": 26,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 29,
+        "order": 27,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 30,
+        "order": 28,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 31,
+        "order": 29,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
       },
       "fetch_pull_request_diff_coverage": {
+        "order": 30,
         "type": "boolean",
         "title": "Fetch Pull Request diff coverage",
-        "default": false,
-        "order": 32
+        "default": false
       },
       "pull_request_cutoff_lag_seconds": {
+        "order": 31,
         "title": "Pull Request Cutoff Lag (seconds)",
         "description": "Apply lag to the end cutoff saved in the state. PRs updated after this will be rewritten during the next sync.",
         "type": "integer",
-        "default": 0,
-        "order": 33
+        "default": 0
       },
       "fetch_public_organizations": {
+        "order": 32,
         "type": "boolean",
         "title": "Fetch Public Organizations",
         "description": "Fetch public organizations",
-        "default": false,
-        "order": 34
+        "default": false
       },
       "copilot_metrics_teams": {
+        "order": 33,
         "type": "array",
         "title": "Copilot Metrics Teams",
         "description": "List of teams to fetch Copilot metrics for. If not specified, all teams for the organization/enterprise will be fetched.",
         "items": {
           "type": "string"
-        },
-        "order": 35
+        }
       },
       "proxy_url": {
+        "order": 34,
         "type": "string",
         "title": "Proxy URL",
-        "description": "Proxy URL to use for the GitHub API",
-        "order": 36
+        "description": "Proxy URL to use for the GitHub API"
       }
     }
   }
