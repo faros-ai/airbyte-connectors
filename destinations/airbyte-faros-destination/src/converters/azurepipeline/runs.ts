@@ -230,34 +230,32 @@ export class Runs extends AzurePipelineConverter {
     coverage: CodeCoverageStatistics,
     ctx?: StreamContext
   ): any {
-    switch (coverage.label) {
-      case 'Lines':
-        return {
-          linesToCover: {
-            category: 'Coverage',
-            name: 'Lines to Cover',
-            type: 'Int',
-            value: String(coverage.total),
-          },
-          uncoveredLines: {
-            category: 'Coverage',
-            name: 'Uncovered Lines',
-            type: 'Int',
-            value: String(coverage.total - coverage.covered),
-          },
-          lineCoverage: {
-            category: 'Coverage',
-            name: 'Line Coverage',
-            type: 'Percent',
-            value: String(
-              coverage.total ? (coverage.covered / coverage.total) * 100 : 0
-            ),
-          },
-        };
-      default:
-        ctx?.logger.warn(`Unsupported coverage label: ${coverage.label}`);
-        return {};
+    if (coverage.label === 'Lines') {
+      return {
+        linesToCover: {
+          category: 'Coverage',
+          name: 'Lines to Cover',
+          type: 'Int',
+          value: String(coverage.total),
+        },
+        uncoveredLines: {
+          category: 'Coverage',
+          name: 'Uncovered Lines',
+          type: 'Int',
+          value: String(coverage.total - coverage.covered),
+        },
+        lineCoverage: {
+          category: 'Coverage',
+          name: 'Line Coverage',
+          type: 'Percent',
+          value: String(
+            coverage.total ? (coverage.covered / coverage.total) * 100 : 0
+          ),
+        },
+      };
     }
+    ctx?.logger.warn(`Unsupported coverage label: ${coverage.label}`);
+    return {};
   }
 
   private processStages(run: Run, buildKey: BuildKey): DestinationRecord[] {
