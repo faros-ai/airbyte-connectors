@@ -1,12 +1,8 @@
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 
 import {AzureWorkitems} from '../azure-workitems';
-import {AzureWorkitemsConfig} from '../models';
-export type ProjectStreamSlice = {
-  name: string;
-  id: string;
-};
-
+import {AzureWorkitemsConfig} from '../types';
 export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: AzureWorkitemsConfig,
@@ -21,7 +17,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
-  async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
+  async *streamSlices(): AsyncGenerator<ProjectReference> {
     const azureWorkitems = await AzureWorkitems.instance(
       this.config,
       this.logger

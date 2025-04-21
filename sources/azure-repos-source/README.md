@@ -18,7 +18,7 @@ section.**
 From the root repository directory (NOT this folder), run:
 
 ```
-npm run prepare
+npm i
 ```
 
 This will install all required dependencies and build all included connectors,
@@ -40,6 +40,23 @@ conforming to the `resources/spec.json` file. Note that any directory named
 `secrets` is gitignored across the entire `airbyte-connectors` repos, so there is
 no danger of accidentally checking in sensitive information. See
 `test_files/config.json` for a sample config file.
+
+
+#### Required Permissions
+
+The Azure-Repos source connector requires the following permissions:
+
+- vso.code,vso.profile,vso.project
+
+
+### Streams
+
+| Name     | Full | Incremental | Required Permissions |
+|-----------|---|---|---|
+| Commits | ✅ | ✅ | vso.code,vso.profile,vso.project |
+| Pull Requests | ✅ | ✅ | vso.code,vso.profile,vso.project |
+| Repositories | ✅ |  | vso.code,vso.profile,vso.project |
+| Users     | ✅ |   | Cloud - vso.graph / Server - vso.profile,vso.project |
 
 ### Locally running the connector
 

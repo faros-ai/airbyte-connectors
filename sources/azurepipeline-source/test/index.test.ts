@@ -1,10 +1,4 @@
 import {
-  BuildReason,
-  BuildResult,
-  BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {CoverageDetailedSummaryStatus} from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
@@ -14,10 +8,10 @@ import {
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 import fs from 'fs-extra';
 import {omit} from 'lodash';
+import {DateTime} from 'luxon';
 
 import {AzurePipelines} from '../src/azurepipeline';
 import * as sut from '../src/index';
-import {Build} from '../src/types';
 
 const azurePipelines = AzurePipelines.instance;
 
@@ -29,8 +23,12 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const source = new sut.AzurePipelineSource(logger);
-  const [pipelinesStream, buildsStream, releasesStream] = source.streams({
+  const [pipelinesStream, runsStream, releasesStream] = source.streams({
     access_token: 'XYZ',
     organization: 'org1',
     projects: ['proj1'],
@@ -39,6 +37,7 @@ describe('index', () => {
   const WATERMARK = '2023-03-03T18:18:11.592Z';
   const cutoffDays = 365;
   const top = 100;
+  const instanceType = 'cloud';
   const project = {id: '1', name: 'proj1'};
 
   beforeEach(() => (AzurePipelines.instance = azurePipelines));
@@ -75,6 +74,7 @@ describe('index', () => {
               .mockResolvedValue(readTestResourceFile('pipelines.json')),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
@@ -95,17 +95,30 @@ describe('index', () => {
     expect(pipelines).toMatchSnapshot();
   });
 
-  test('streams - builds', async () => {
-    const buildsResource: Build[] = readTestResourceFile('builds.json');
-    const rawBuilds = buildsResource.map((b) => omit(b, ['artifacts', 'jobs']));
-    const artifacts = buildsResource.map((b) => b.artifacts);
-    const jobs = buildsResource.map((b) => ({records: b.jobs}));
+  test('streams - runs, use full_refresh sync mode', async () => {
+    jest
+      .spyOn(DateTime, 'now')
+      .mockReturnValue(
+        DateTime.fromISO('2022-01-01T00:00:00.000Z').setZone(
+          'UTC'
+        ) as DateTime<true>
+      );
 
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
+      const buildsResource: any[] = readTestResourceFile('builds.json');
+      const rawBuilds = buildsResource.map((b) =>
+        omit(b, ['artifacts', 'jobs'])
+      );
+      const artifacts = buildsResource.map((b) => b.artifacts);
+      const jobs = buildsResource.map((b) => ({records: b.jobs}));
       return new AzurePipelines(
         {
           build: {
-            getBuilds: jest.fn().mockResolvedValue(rawBuilds),
+            getBuild: jest
+              .fn()
+              .mockResolvedValueOnce(rawBuilds[0])
+              .mockResolvedValueOnce(rawBuilds[1])
+              .mockResolvedValueOnce(rawBuilds[2]),
             getArtifacts: jest
               .fn()
               .mockResolvedValueOnce(artifacts[0])
@@ -117,80 +130,85 @@ describe('index', () => {
               .mockResolvedValueOnce(jobs[1])
               .mockResolvedValueOnce(jobs[2]),
           },
+          pipelines: {
+            listRuns: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('runs.json')),
+          },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
       );
     });
 
-    const buildIter = buildsStream.readRecords(
-      SyncMode.INCREMENTAL,
-      undefined,
+    const runIter = runsStream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       project,
-      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
-    );
+      pipeline: {id: 1, name: 'pipeline1'},
+    });
 
-    const builds = [];
-    for await (const build of buildIter) {
-      builds.push(build);
+    const runs = [];
+    for await (const run of runIter) {
+      runs.push(run);
     }
 
-    expect(builds).toMatchSnapshot();
+    expect(runs).toMatchSnapshot();
   });
 
-  test('streams - builds with coverage', async () => {
-    const buildsResource: Build[] = readTestResourceFile(
-      'builds_eligible_for_coverage.json'
-    );
-    const build = {
-      ...buildsResource[0],
-      reason: BuildReason.PullRequest,
-      status: BuildStatus.Completed,
-      result: BuildResult.Succeeded,
-      jobs: undefined,
-      artifacts: undefined,
-    };
-
-    const artifacts = buildsResource.flatMap((b) => b.artifacts);
-    const timeline = {records: buildsResource[0].jobs};
-    const coverage = {
-      ...readTestResourceFile('builds_coverage.json'),
-      coverageDetailedSummaryStatus:
-        CoverageDetailedSummaryStatus.CodeCoverageSuccess,
-    };
+  test('streams - runs, fetch build with coverage', async () => {
+    jest
+      .spyOn(DateTime, 'now')
+      .mockReturnValue(
+        DateTime.fromISO('2022-01-01T00:00:00.000Z').setZone(
+          'UTC'
+        ) as DateTime<true>
+      );
 
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
+      const runs = [readTestResourceFile('runs.json')[0]];
+      const buildsResource: any[] = readTestResourceFile(
+        'builds_eligible_for_coverage.json'
+      );
+      const rawBuilds = buildsResource.map((b) =>
+        omit(b, ['artifacts', 'jobs'])
+      );
+      const artifacts = buildsResource.map((b) => b.artifacts);
+      const jobs = buildsResource.map((b) => ({records: b.jobs}));
       return new AzurePipelines(
         {
           build: {
-            getBuilds: jest.fn().mockResolvedValueOnce([build]),
-            getArtifacts: jest.fn().mockResolvedValueOnce(artifacts),
-            getBuildTimeline: jest.fn().mockResolvedValueOnce(timeline),
+            getBuild: jest.fn().mockResolvedValueOnce(rawBuilds[0]),
+            getArtifacts: jest.fn().mockResolvedValueOnce(artifacts[0]),
+            getBuildTimeline: jest.fn().mockResolvedValueOnce(jobs[0]),
           },
           test: {
-            getCodeCoverageSummary: jest.fn().mockResolvedValue(coverage),
+            getCodeCoverageSummary: jest
+              .fn()
+              .mockResolvedValue(readTestResourceFile('builds_coverage.json')),
+          },
+          pipelines: {
+            listRuns: jest.fn().mockResolvedValue(runs),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger
       );
     });
 
-    const buildIter = buildsStream.readRecords(
-      SyncMode.INCREMENTAL,
-      undefined,
+    const runIter = runsStream.readRecords(SyncMode.FULL_REFRESH, undefined, {
       project,
-      {proj1: {cutoff: new Date(WATERMARK).getTime()}}
-    );
+      pipeline: {id: 1, name: 'pipeline1'},
+    });
 
-    const builds = [];
-    for await (const build of buildIter) {
-      builds.push(build);
+    const runs = [];
+    for await (const run of runIter) {
+      runs.push(run);
     }
 
-    expect(builds).toMatchSnapshot();
+    expect(runs).toMatchSnapshot();
   });
 
   test('streams - releases', async () => {
@@ -202,6 +220,7 @@ describe('index', () => {
             getReleases: jest.fn().mockResolvedValue(releasesData),
           },
         } as unknown as AzureDevOpsClient,
+        instanceType,
         cutoffDays,
         top,
         logger

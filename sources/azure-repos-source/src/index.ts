@@ -35,7 +35,11 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureReposConfig> {
     try {
       const azureRepos = await AzureRepos.instance<AzureRepos>(
         config,
-        this.logger
+        this.logger,
+        config.branch_pattern,
+        config.repositories,
+        config.fetch_tags,
+        config.fetch_branch_commits
       );
       await azureRepos.checkConnection(config.projects);
     } catch (err: any) {

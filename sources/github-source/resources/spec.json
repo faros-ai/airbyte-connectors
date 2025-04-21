@@ -352,6 +352,21 @@
         "description": "Fetch public organizations",
         "default": false,
         "order": 34
+      },
+      "copilot_metrics_teams": {
+        "type": "array",
+        "title": "Copilot Metrics Teams",
+        "description": "List of teams to fetch Copilot metrics for. If not specified, all teams for the organization/enterprise will be fetched.",
+        "items": {
+          "type": "string"
+        },
+        "order": 35
+      },
+      "proxy_url": {
+        "type": "string",
+        "title": "Proxy URL",
+        "description": "Proxy URL to use for the GitHub API",
+        "order": 36
       }
     }
   }

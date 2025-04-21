@@ -1,11 +1,16 @@
 import {
   Build as AzureBuild,
-  BuildQueryOrder,
   BuildReason,
   BuildResult,
   BuildStatus,
   TaskResult,
+  TimelineRecordState,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
+  Run as AzureRun,
+  RunResult,
+  RunState,
+} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {
   ProjectReference,
   Release,
@@ -16,12 +21,18 @@ import {
   CoverageDetailedSummaryStatus,
 } from 'azure-devops-node-api/interfaces/TestInterfaces';
 import {wrapApiError} from 'faros-airbyte-cdk';
-import {AzureDevOps} from 'faros-airbyte-common/azure-devops';
+import {
+  AzureDevOps,
+  Pipeline,
+  Run,
+  TimelineRecord,
+} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
+import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import * as types from './types';
+import {Build, PipelineReference} from './types';
 
 export class AzurePipelines extends AzureDevOps {
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -30,8 +41,7 @@ export class AzurePipelines extends AzureDevOps {
       if (!allProjects.length) {
         throw new VError('Failed to fetch projects');
       }
-      const iter = this.getPipelines(allProjects[0]);
-      await iter.next();
+      await this.getPipelines(allProjects[0]);
     } catch (err: any) {
       let errorMessage = 'Please verify your access token is correct. Error: ';
       if (err.error_code || err.error_info) {
@@ -47,78 +57,126 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
-  async *getPipelines(
-    project: ProjectReference
-  ): AsyncGenerator<types.Pipeline> {
-    const pipelines = await this.client.pipelines.listPipelines(project.id);
-    for (const pipeline of pipelines) {
-      yield {
-        projectName: project.name,
+  // Not paginating as client is return all pipelines in one call
+  // If we need pagination, we need to use rest api as client is not returning continuation token
+  @Memoize((project: ProjectReference) => project.id)
+  async getPipelines(project: ProjectReference): Promise<Pipeline[]> {
+    const pipelines = [];
+    const result = await this.client.pipelines.listPipelines(project.id);
+    for (const pipeline of result) {
+      pipelines.push({
+        project,
         ...pipeline,
+      });
+    }
+    return pipelines;
+  }
+
+  // https://learn.microsoft.com/en-us/rest/api/azure/devops/pipelines/runs/list
+  // Return top 10000 runs for a particular pipeline only
+  async *getRuns(
+    project: ProjectReference,
+    pipeline: PipelineReference,
+    lastFinishDate?: number
+  ): AsyncGenerator<Run> {
+    const minFinishedDate = lastFinishDate
+      ? Utils.toDate(lastFinishDate)
+      : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
+
+    let response;
+    let restResponse = false;
+    try {
+      response = (await this.client.pipelines.listRuns(
+        project.id,
+        pipeline.id
+      )) as any;
+    } catch (error: any) {
+      this.logger.error(
+        `Error fetching runs pipeline using client: ` +
+          `${pipeline.name}: ${wrapApiError(error)}`
+      );
+    }
+
+    // Azure DevOps Server (2020) returns empty response when using client
+    // revert to rest api
+    if (!response) {
+      this.logger.warn(`Fetching runs using rest api: ${pipeline.name}`);
+      try {
+        const res = await this.client.rest.get<AzureRun[]>(
+          `/${project.id}/_apis/pipelines/${pipeline.id}/runs`
+        );
+        response = res?.data;
+        restResponse = true;
+      } catch (error: any) {
+        this.logger.error(
+          `Error fetching runs for pipeline using rest api: ` +
+            `${pipeline.name}: ${wrapApiError(error)}`
+        );
+      }
+    }
+
+    if (!response) {
+      throw new VError(
+        `Failed to fetch runs for pipeline ${pipeline.name} in project ${project.name}`
+      );
+    }
+
+    // Handle Azure DevOps Server (2020) will return JSON with a value property
+    const runs: AzureRun[] = Array.isArray(response)
+      ? response
+      : response.value ?? [];
+
+    for (const run of runs) {
+      const finishedDate = Utils.toDate(run.finishedDate);
+      const state = restResponse
+        ? run.state?.toString().toLowerCase()
+        : RunState[run.state]?.toLowerCase();
+      if (state === 'completed' && minFinishedDate >= finishedDate) {
+        continue;
+      }
+      const build = await this.getBuild(project.id, run.id);
+      const result =
+        restResponse && run.result
+          ? run.result?.toString().toLowerCase()
+          : RunResult[run.result]?.toLowerCase();
+
+      const reason = build.reason
+        ? BuildReason[build.reason]?.toLowerCase()
+        : undefined;
+      yield {
+        ...run,
+        state,
+        result,
+        project,
+        artifacts: build.artifacts,
+        coverageStats: build.coverageStats,
+        stages: build.stages,
+        startTime: build.startTime,
+        repository: build.repository,
+        reason,
+        sourceBranch: build.sourceBranch,
+        sourceVersion: build.sourceVersion,
+        tags: build.tags,
+        triggerInfo: build.triggerInfo,
       };
     }
   }
 
-  // https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds
-  async *getBuilds(
-    project: ProjectReference,
-    lastFinishTime?: number
-  ): AsyncGenerator<types.Build> {
-    const minTime = lastFinishTime
-      ? Utils.toDate(lastFinishTime)
-      : DateTime.now().minus({days: this.cutoffDays}).toJSDate();
+  async getBuild(projectId: string, buildId: number): Promise<Build> {
+    const build = await this.client.build.getBuild(projectId, buildId);
+    const coverageStats = await this.getCoverageStats(projectId, build);
 
-    const getBuildsFn = (
-      top: number,
-      continuationToken: string | number
-    ): Promise<AzureBuild[]> => {
-      // API field 'finishTime' is a Date object, but actual token should be a string
-      const token = continuationToken
-        ? Utils.toDate(continuationToken)?.toISOString()
-        : undefined;
-      return this.client.build.getBuilds(
-        project.id, // project id
-        undefined, // definitions - array of definition ids
-        undefined, // queues - array of queue ids
-        undefined, // buildNumber - build number to search for
-        minTime, // minTime - minimum build finish time
-        undefined, // maxTime - maximum build finish time
-        undefined, // requestedFor - team project ID
-        undefined, // reasonFilter - build reason
-        undefined, // statusFilter - build status
-        undefined, // resultFilter - build result
-        undefined, // tagFilters - build tags
-        undefined, // properties - build properties
-        top, // top - number of builds to return
-        token, // continuationToken - token for pagination
-        undefined, // maxBuildsPerDefinition - max builds per def
-        undefined, // deletedFilter - include deleted builds
-        BuildQueryOrder.FinishTimeAscending // queryOrder - sort order
-      );
+    // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
+    const artifacts =
+      (await this.client.build.getArtifacts(projectId, build.id)) ?? [];
+
+    const stages = await this.getJobs(projectId, build.id);
+    return {
+      ...build,
+      coverageStats,
+      artifacts,
+      stages,
     };
-
-    for await (const build of this.getPaginated(getBuildsFn, {
-      useContinuationToken: true,
-      continuationTokenParam: 'finishTime',
-    }) ?? []) {
-      const coverageStats = await this.getCoverageStats(project.id, build);
-
-      // https://learn.microsoft.com/en-us/rest/api/azure/devops/build/artifacts/list
-      const artifacts =
-        (await this.client.build.getArtifacts(project.id, build.id)) ?? [];
-
-      const jobs = await this.getJobs(project.id, build.id);
-      yield {
-        ...build,
-        // Convert enum values to strings
-        reason: BuildReason[build.reason]?.toLowerCase(),
-        status: BuildStatus[build.status]?.toLowerCase(),
-        result: BuildResult[build.result]?.toLowerCase(),
-        artifacts,
-        jobs,
-        coverageStats,
-      };
-    }
   }
 
   private async getCoverageStats(
@@ -151,7 +209,7 @@ export class AzurePipelines extends AzureDevOps {
   private async getJobs(
     projectId: string,
     buildId: number
-  ): Promise<types.TimelineRecord[]> {
+  ): Promise<TimelineRecord[]> {
     const timeline = await this.client.build.getBuildTimeline(
       projectId,
       buildId
@@ -160,12 +218,11 @@ export class AzurePipelines extends AzureDevOps {
       this.logger.warn(`No timeline records found for build ${buildId}`);
       return [];
     }
-    return timeline.records
-      .filter((r) => r.type === 'Job')
-      .map((r) => ({
-        ...r,
-        result: r.result ? TaskResult[r.result].toLowerCase() : undefined,
-      }));
+    return timeline.records.map((r) => ({
+      ...r,
+      state: TimelineRecordState[r.state]?.toLowerCase(),
+      result: TaskResult[r.result]?.toLowerCase(),
+    }));
   }
 
   async *getReleases(

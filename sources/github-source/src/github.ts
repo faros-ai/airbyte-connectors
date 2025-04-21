@@ -12,6 +12,7 @@ import {
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsEmpty,
+  CopilotSeatsResponse,
   CopilotSeatsStreamRecord,
   CopilotUsageSummary,
   CoverageReport,
@@ -142,6 +143,7 @@ export abstract class GitHub {
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
   protected readonly copilotMetricsPreviewAPI: boolean;
+  protected readonly copilotMetricsTeams: ReadonlyArray<string>;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -164,6 +166,7 @@ export abstract class GitHub {
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
     this.copilotMetricsPreviewAPI =
       config.copilot_metrics_preview_api ?? DEFAULT_COPILOT_METRICS_PREVIEW_API;
+    this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -554,7 +557,7 @@ export abstract class GitHub {
     org: string,
     repo: string
   ): Promise<PullRequestLabel[]> {
-    const {nodes, pageInfo} = pr.labels || {};
+    const {nodes, pageInfo} = pr.labels ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -599,7 +602,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestFiles) {
       return [];
     }
-    const {nodes, pageInfo} = pr.files || {};
+    const {nodes, pageInfo} = pr.files ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -657,7 +660,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {nodes, pageInfo} = pr.reviews || {};
+    const {nodes, pageInfo} = pr.reviews ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -776,7 +779,7 @@ export abstract class GitHub {
     if (!this.fetchPullRequestReviews) {
       return [];
     }
-    const {nodes, pageInfo} = pr.reviewRequests || {};
+    const {nodes, pageInfo} = pr.reviewRequests ?? {};
     if (nodes && pageInfo && !pageInfo.hasNextPage) {
       return nodes;
     }
@@ -1033,7 +1036,8 @@ export abstract class GitHub {
     );
     try {
       for await (const res of iter) {
-        for (const seat of res.data.seats) {
+        for (const seat of (res.data as any)
+          .seats as CopilotSeatsResponse['seats']) {
           seatsFound = true;
           const userAssignee = seat.assignee.login as string;
           const teamAssignee = seat.assigning_team?.slug;
@@ -1062,6 +1066,13 @@ export abstract class GitHub {
           yield {
             org,
             user: userAssignee,
+            assignee: pick(seat.assignee, [
+              'login',
+              'name',
+              'email',
+              'html_url',
+              'type',
+            ]),
             team: teamAssignee,
             teamJoinedAt: teamJoinedAt?.toISOString(),
             ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
@@ -1153,9 +1164,14 @@ export abstract class GitHub {
   async *getCopilotUsageTeams(
     org: string
   ): AsyncGenerator<CopilotUsageSummary> {
-    let teams: ReadonlyArray<Team>;
+    let teamSlugs: ReadonlyArray<string>;
     try {
-      teams = await this.getTeams(org);
+      if (this.copilotMetricsTeams.length > 0) {
+        teamSlugs = this.copilotMetricsTeams;
+      } else {
+        const teamsResponse = await this.getTeams(org);
+        teamSlugs = teamsResponse.map((team) => team.slug);
+      }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
         this.logger.warn(
@@ -1165,33 +1181,33 @@ export abstract class GitHub {
       }
       throw err;
     }
-    for (const team of teams) {
+    for (const teamSlug of teamSlugs) {
       let data: CopilotUsageResponse;
       if (!this.copilotMetricsPreviewAPI) {
         const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
           org
         ).request(this.octokit(org).copilotMetricsForTeam, {
           org,
-          team_slug: team.slug,
+          team_slug: teamSlug,
         });
         data = transformCopilotMetricsResponse(res.data);
       } else {
         const res = await this.octokit(org).copilot.usageMetricsForTeam({
           org,
-          team_slug: team.slug,
+          team_slug: teamSlug,
         });
         data = res.data;
       }
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
-          `No GitHub Copilot usage found for org ${org} - team ${team.slug}.`
+          `No GitHub Copilot usage found for org ${org} - team ${teamSlug}.`
         );
         continue;
       }
       for (const usage of data) {
         yield {
           org,
-          team: team.slug,
+          team: teamSlug,
           ...usage,
         };
       }
@@ -1264,7 +1280,7 @@ export abstract class GitHub {
       `action:team.add_member action:team.remove_member created:>${cutoff.toISOString()}`,
       context
     );
-    for await (const log of logs) {
+    for (const log of logs) {
       if (!users[log.user]) {
         users[log.user] = {};
       }
@@ -1720,7 +1736,7 @@ export abstract class GitHub {
         owner: org,
         repo,
         per_page: this.pageSize,
-        created: `${createdSince?.toISOString() || '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
+        created: `${createdSince?.toISOString() ?? '*'}..${(this.backfill && endDate?.toISOString()) || '*'}`,
       }
     );
     for await (const res of iter) {
@@ -1903,7 +1919,7 @@ export abstract class GitHub {
     enterprise: string
   ): AsyncGenerator<EnterpriseCopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
-    const iter: AsyncIterableIterator<{data: EnterpriseCopilotSeatsResponse}> =
+    const iter: AsyncIterable<{data: EnterpriseCopilotSeatsResponse}> =
       this.baseOctokit.paginate.iterator<any>(
         this.baseOctokit.enterpriseCopilotSeats,
         {
@@ -1917,6 +1933,14 @@ export abstract class GitHub {
         yield {
           enterprise,
           user: seat.assignee.login as string,
+          assignee: pick(seat.assignee, [
+            'login',
+            'name',
+            'email',
+            'html_url',
+            'type',
+          ]),
+          team: seat.assigning_team?.slug,
           ...pick(seat, [
             'created_at',
             'updated_at',
@@ -1975,27 +1999,43 @@ export abstract class GitHub {
   async *getEnterpriseCopilotUsageTeams(
     enterprise: string
   ): AsyncGenerator<EnterpriseCopilotUsageSummary> {
-    const teams = await this.getEnterpriseTeams(enterprise);
-    for (const team of teams) {
+    let teamSlugs: ReadonlyArray<string>;
+    try {
+      if (this.copilotMetricsTeams.length > 0) {
+        teamSlugs = this.copilotMetricsTeams;
+      } else {
+        const teamsResponse = await this.getEnterpriseTeams(enterprise);
+        teamSlugs = teamsResponse.map((team) => team.slug);
+      }
+    } catch (err: any) {
+      if (err.status >= 400 && err.status < 500) {
+        this.logger.warn(
+          `Failed to fetch teams for enterprise ${enterprise}. Ensure Teams permissions are given. Skipping pulling GitHub Copilot usage by teams.`
+        );
+        return;
+      }
+      throw err;
+    }
+    for (const teamSlug of teamSlugs) {
       const res: OctokitResponse<CopilotMetricsResponse> =
         await this.baseOctokit.request(
           this.baseOctokit.enterpriseCopilotMetricsForTeam,
           {
             enterprise,
-            team_slug: team.slug,
+            team_slug: teamSlug,
           }
         );
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
-          `No GitHub Copilot usage found for enterprise ${enterprise} - team ${team.slug}.`
+          `No GitHub Copilot usage found for enterprise ${enterprise} - team ${teamSlug}.`
         );
         continue;
       }
       for (const usage of data) {
         yield {
           enterprise,
-          team: team.slug,
+          team: teamSlug,
           ...usage,
         };
       }

@@ -62,11 +62,17 @@ export class ConfigurationItems extends WolkenConverter {
 
     const appKey = JSON.stringify(application);
     if (!this.seenServices.has(appKey)) {
-      res.push({model: 'compute_Application', record: application});
       this.seenServices.add(appKey);
 
       const applicationDisplayName = configurationItem.ciName;
       res.push(
+        {
+          model: 'compute_Application',
+          record: {
+            ...application,
+            displayName: applicationDisplayName,
+          },
+        },
         ...this.applicationTag(
           'Application Display Name',
           applicationDisplayName,

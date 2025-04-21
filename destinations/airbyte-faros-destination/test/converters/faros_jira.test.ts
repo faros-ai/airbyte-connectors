@@ -1,7 +1,7 @@
 import {getLocal} from 'mockttp';
 
-import {initMockttp, tempConfig} from '../testing-tools';
-import {destinationWriteTest} from './utils';
+import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('faros_jira', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
@@ -61,6 +61,15 @@ describe('faros_jira', () => {
       configPath: projectAsBoardsConfigPath,
       catalogPath: 'test/resources/faros_jira/catalog.json',
       inputRecordsPath: 'faros_jira/with-use-projects-as-boards.log',
+      checkRecordsData: (records) => expect(records).toMatchSnapshot(),
+    });
+  });
+
+  test('process faros_issues record with update additional fields', async () => {
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/faros_jira/catalog.json',
+      inputRecordsPath: 'faros_jira/with_update_additional_fields.log',
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });

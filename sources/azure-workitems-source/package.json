@@ -14,9 +14,6 @@
     "lib/",
     "resources/"
   ],
-  "engines": {
-    "node": ">=18"
-  },
   "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
@@ -29,9 +26,9 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.7.4",
+    "axios": "^1.8.4",
     "commander": "^9.3.0",
-    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "verror": "^1.10.1"
   },
   "jest": {

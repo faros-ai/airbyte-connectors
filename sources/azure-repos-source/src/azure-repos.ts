@@ -6,18 +6,24 @@ import {
   GitPullRequestSearchCriteria,
   GitQueryCommitsCriteria,
   GitRepository,
+  GitVersionType,
+  PullRequestAsyncStatus,
   PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
   AzureDevOpsClient,
+  Commit,
+  PullRequest,
+  Repository,
+  Tag,
 } from 'faros-airbyte-common/azure-devops';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-import {Commit, PullRequest, Repository, Tag} from './models';
 export const DEFAULT_BRANCH_PATTERN = '^main$';
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
@@ -26,15 +32,39 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 
 export class AzureRepos extends AzureDevOps {
   private readonly branchPattern: RegExp;
+  private readonly fetchTags: boolean;
+  private readonly fetchBranchCommits: boolean;
+  private readonly repositoriesByProject: Map<string, Set<string>>;
   constructor(
     protected readonly client: AzureDevOpsClient,
+    protected readonly instanceType: 'cloud' | 'server',
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger,
-    branchPattern: string
+    branchPattern: string,
+    repositories?: ReadonlyArray<string>,
+    fetchTags: boolean = false,
+    fetchBranchCommits: boolean = false
   ) {
-    super(client, cutoffDays, top, logger);
+    super(client, instanceType, cutoffDays, top, logger);
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
+    this.logger.debug(
+      `Fetching commits and pull requests from branches matching pattern: ` +
+        `${this.branchPattern}`
+    );
+
+    this.fetchTags = fetchTags;
+    this.fetchBranchCommits = fetchBranchCommits;
+    this.repositoriesByProject = new Map();
+    for (const repository of repositories ?? []) {
+      const [project, repo] = repository.split('/');
+      const projectName = project.toLowerCase();
+      const repoName = repo.toLowerCase();
+      this.repositoriesByProject.set(
+        projectName,
+        (this.repositoriesByProject.get(projectName) || new Set()).add(repoName)
+      );
+    }
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -51,10 +81,13 @@ export class AzureRepos extends AzureDevOps {
   }
 
   async *getRepositories(project: TeamProject): AsyncGenerator<Repository> {
-    const repos = await this.listRepositories(project.id);
+    const repos = await this.listRepositories(project);
     for (const repository of repos) {
-      const branches = await this.listBranches(project.id, repository);
-      const tags = await this.listRepositoryTags(project.id, repository);
+      const branches = await this.listBranches(repository);
+      const tags = this.fetchTags
+        ? await this.listRepositoryTags(project.id, repository)
+        : [];
+
       yield {
         ...repository,
         project,
@@ -65,111 +98,79 @@ export class AzureRepos extends AzureDevOps {
   }
 
   async *getPullRequests(
-    since?: string,
-    projects?: ReadonlyArray<string>
+    branch: string,
+    repository: GitRepository,
+    since?: string
   ): AsyncGenerator<PullRequest> {
     const sinceDate = since
       ? DateTime.fromISO(since)
       : DateTime.now().minus({days: this.cutoffDays});
 
-    for (const project of await this.getProjects(projects)) {
-      this.logger.info(`Fetching pull requests for project ${project.name}`);
-      for (const repository of await this.listRepositories(project.id)) {
-        if (repository.isDisabled) {
-          this.logger.info(
-            `Repository ${repository.name}:${repository.id} in project ` +
-              `${project.name} is disabled, skipping`
-          );
-          continue;
-        }
-        for (const branch of await this.listBranches(project.id, repository)) {
-          yield* this.listPullRequests(
-            project.id,
-            repository,
-            branch,
-            sinceDate
-          );
-        }
-      }
-    }
+    yield* this.listPullRequests(repository, branch, sinceDate);
   }
 
   async *getCommits(
-    since?: string,
-    projects?: ReadonlyArray<string>
+    branch: string,
+    repository: GitRepository,
+    since?: string
   ): AsyncGenerator<Commit> {
     const sinceDate = since
       ? DateTime.fromISO(since)
       : DateTime.now().minus({day: this.cutoffDays});
 
-    for (const project of await this.getProjects(projects)) {
-      this.logger.info(`Fetching commits for project ${project.name}`);
-      for (const repository of await this.listRepositories(project.id)) {
-        if (repository.isDisabled) {
-          this.logger.info(
-            `Repository ${repository.name}:${repository.id} in project ` +
-              `${project.name} is disabled, skipping`
-          );
-          continue;
-        }
-        const branch = getQueryableDefaultBranch(repository.defaultBranch);
-        if (!branch) {
-          this.logger.error(
-            `No default branch found for repository ${repository.name}. ` +
-              `Will not fetch any commits.`
-          );
-          continue;
-        }
-        const commits = this.listCommits(
-          project.id,
-          repository,
-          branch,
-          sinceDate
-        );
-        for await (const commit of commits) {
-          yield {
-            ...commit,
-            branch,
-            repository: {
-              ...repository,
-              project,
-            },
-          };
-        }
-      }
+    const commits = this.listCommits(repository, branch, sinceDate);
+    for await (const commit of commits) {
+      yield {
+        ...commit,
+        branch,
+        repository,
+      };
     }
   }
 
-  @Memoize((project: string) => project)
-  private async listRepositories(project: string): Promise<GitRepository[]> {
-    return await this.client.git.getRepositories(project);
+  @Memoize((project: ProjectReference) => project.id)
+  async listRepositories(project: ProjectReference): Promise<GitRepository[]> {
+    const repositories = await this.client.git.getRepositories(project.id);
+    const filterRepos = this.repositoriesByProject.get(
+      project.name.toLowerCase()
+    );
+    if (!filterRepos?.size) {
+      return repositories;
+    }
+    return repositories.filter((repository) =>
+      filterRepos.has(repository.name.toLowerCase())
+    );
   }
 
   /**
    * List all of the commits for a branch within a given repository and project.
    * If 'since' provided, only commits after the specified date will be returned.
    *
-   * @param project The project containing the repository
    * @param repo    The repository containing the branch
    * @param branch  The branch containing the commits
    * @param since   Commits will be ignored before this date
    * @returns       An AsyncGenerator of commits
    */
   private async *listCommits(
-    project: string,
     repo: GitRepository,
     branch: string,
     since: DateTime
   ): AsyncGenerator<GitCommitRef> {
     const searchCriteria: GitQueryCommitsCriteria = {
-      itemVersion: {version: branch},
+      itemVersion: {version: branch, versionType: GitVersionType.Branch},
       fromDate: since.toISO(),
     };
     const getCommitsFn = (
       top: number,
       skip: number | string
     ): Promise<GitCommitRef[]> =>
-      this.client.git.getCommits(repo.id, searchCriteria, project, skip as number, top);
+      this.client.git.getCommits(
+        repo.id,
+        searchCriteria,
+        repo.project.id,
+        skip as number,
+        top
+      );
 
     yield* this.getPaginated<GitCommitRef>(getCommitsFn);
   }
@@ -178,18 +179,17 @@ export class AzureRepos extends AzureDevOps {
    * Lists all of the branches within a repository. If a branch pattern is provided then
    * only those that match the pattern are returned.
    *
-   * @param project The project containing the repository
    * @param repo    The repository containing the branches
    * @returns       The branches
    */
-  @Memoize((project: string, repo: GitRepository) => `${project};${repo.id}`)
-  private async listBranches(
-    project: string,
-    repo: GitRepository
-  ): Promise<GitBranchStats[]> {
+  @Memoize((repo: GitRepository) => `${repo.project.id};${repo.id}`)
+  private async listBranches(repo: GitRepository): Promise<GitBranchStats[]> {
     const branches = [];
     try {
-      const branchesRes = await this.client.git.getBranches(repo.id, project);
+      const branchesRes = await this.client.git.getBranches(
+        repo.id,
+        repo.project.id
+      );
       for (const branch of branchesRes ?? []) {
         if (!this.branchPattern.test(branch.name)) {
           this.logger.info(
@@ -253,21 +253,19 @@ export class AzureRepos extends AzureDevOps {
    * Lists 'all' of the pull requests within a given project and repository
    * whose target branch is the given branch.
    *
-   * @param project         The project whose pull requests should be retrieved
    * @param repo            The repository whose pull requests should be retrieved
    * @param branch          The target branch of pull requests that should be retrieved
    * @param completedSince  The date after which 'completed' pull requests are considered
    * @returns               An AsyncGenerator of pull requests
    */
   private async *listPullRequests(
-    project: string,
     repo: GitRepository,
-    branch: GitBranchStats,
+    branch: string,
     since?: DateTime
   ): AsyncGenerator<PullRequest> {
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: PullRequestStatus.All,
-      targetRefName: `refs/heads/${branch.name}`,
+      targetRefName: `refs/heads/${branch}`,
     };
 
     const getPullRequestsFn = (
@@ -277,7 +275,7 @@ export class AzureRepos extends AzureDevOps {
       this.client.git.getPullRequests(
         repo.id,
         searchCriteria,
-        project,
+        repo.project.id,
         undefined,
         skip as number,
         top
@@ -288,7 +286,9 @@ export class AzureRepos extends AzureDevOps {
     )) {
       const closedDate = DateTime.fromJSDate(pullRequest.closedDate);
       if (
-        pullRequest.status === PullRequestStatus.Completed &&
+        [PullRequestStatus.Completed, PullRequestStatus.Abandoned].includes(
+          pullRequest.status
+        ) &&
         closedDate <= since
       ) {
         continue;
@@ -297,14 +297,42 @@ export class AzureRepos extends AzureDevOps {
       const threads = await this.client.git.getThreads(
         repo.id,
         pullRequest.pullRequestId,
-        project
+        repo.project.id
       );
-      yield {...pullRequest, threads};
+      const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
+      const mergeStatus =
+        PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
+      yield {...pullRequest, status, mergeStatus, threads};
     }
+  }
+
+  @Memoize(
+    (repository: GitRepository, fetchNonDefaultBranches: boolean) =>
+      `${repository.id};${fetchNonDefaultBranches}`
+  )
+  async getBranchNamesToQuery(repository: GitRepository): Promise<Set<string>> {
+    const branchNames = new Set<string>();
+    const defaultBranch = getQueryableDefaultBranch(repository.defaultBranch);
+    if (defaultBranch) {
+      branchNames.add(defaultBranch);
+    }
+    if (this.fetchBranchCommits) {
+      for (const branch of await this.listBranches(repository)) {
+        branchNames.add(branch.name);
+      }
+    }
+
+    if (!branchNames.size) {
+      this.logger.warn(
+        `No default branch and/or branches matching the branch pattern ` +
+          `found for repository ${repository.name}:${repository.id}`
+      );
+    }
+    return branchNames;
   }
 }
 
-function getQueryableDefaultBranch(
+export function getQueryableDefaultBranch(
   defaultBranch?: string,
   prefixToRemove = 'refs/heads/'
 ): string | undefined {

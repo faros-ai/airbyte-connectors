@@ -1,12 +1,15 @@
-import {PullRequestStatus} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepos} from '../azure-repos';
-import {PullRequest} from '../models';
-import {AzureReposStreamBase} from './common';
+import {AzureRepos, getQueryableDefaultBranch} from '../azure-repos';
+import {
+  BranchStreamSlice,
+  BranchStreamState,
+  StreamWithBranchSlices,
+} from './common';
 
-export class PullRequests extends AzureReposStreamBase {
+export class PullRequests extends StreamWithBranchSlices {
   // Run commits stream first to get the changeCounts for populating
   // vcs_PullRequest.diffStats
   get dependencies(): string[] {
@@ -26,39 +29,38 @@ export class PullRequests extends AzureReposStreamBase {
   }
 
   getUpdatedState(
-    currentStreamState: Dictionary<any>,
+    currentStreamState: BranchStreamState,
     latestPR: PullRequest
-  ): Dictionary<any> {
-    const newStreamState = currentStreamState;
-
-    if (latestPR.status === PullRequestStatus.Completed) {
-      return {
-        cutoff:
-          new Date(latestPR.closedDate) >
-          new Date(currentStreamState?.cutoff ?? 0)
-            ? latestPR.closedDate
-            : currentStreamState.cutoff,
-      };
-    }
-
-    return newStreamState;
+  ): BranchStreamState {
+    return this.updateState(
+      currentStreamState,
+      getQueryableDefaultBranch(latestPR.targetRefName),
+      latestPR.repository.name,
+      latestPR.repository.project.name,
+      latestPR.closedDate
+    );
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: any,
-    streamState?: any
+    streamSlice?: BranchStreamSlice,
+    streamState?: BranchStreamState
   ): AsyncGenerator<PullRequest> {
-    const since =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.cutoff : undefined;
-
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
-      this.config.branch_pattern
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
     );
-    // TODO: Should use project slices or repository slices
-    yield* azureRepos.getPullRequests(since, this.config.projects);
+
+    const since = this.getCutoff(syncMode, streamSlice, streamState);
+    yield* azureRepos.getPullRequests(
+      streamSlice.branch,
+      streamSlice.repository,
+      since
+    );
   }
 }

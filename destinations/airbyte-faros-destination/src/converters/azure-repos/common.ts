@@ -1,7 +1,8 @@
+import {GitRepository} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {OrgKey, RepoKey} from '../common/vcs';
 import {Converter} from '../converter';
-import {CommitRepository} from './models';
 
 export const MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -23,10 +24,6 @@ export abstract class AzureReposConverter extends Converter {
   /** Almost every Azurerepos record have id property */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
-  }
-
-  getOrganizationFromUrl(url: string): string {
-    return url.split('/')[3];
   }
 
   // Records from Users stream have more populated fields than user objects from
@@ -51,13 +48,22 @@ export abstract class AzureReposConverter extends Converter {
    * @param repository  The repository info which contains project info
    * @returns           The identifier for a repo unique across projects
    */
-  getProjectRepo(repository: CommitRepository): string {
-    return `${repository?.project?.name}:${repository?.name}`;
+  getProjectRepo(repository: GitRepository, organization: OrgKey): RepoKey {
+    const name = `${repository?.project?.name}:${repository?.name}`;
+    return {
+      name,
+      uid: name,
+      organization,
+    };
   }
 
   convertStringToNumber(str: string): number {
     const lastString = str.split('-')[str.split('-').length - 1];
     const onlyNumbers = lastString.replace(/[^\d.-]/g, '');
     return Number(onlyNumbers);
+  }
+
+  getOrgKey(name: string): OrgKey {
+    return {uid: name.toLowerCase(), source: this.source};
   }
 }

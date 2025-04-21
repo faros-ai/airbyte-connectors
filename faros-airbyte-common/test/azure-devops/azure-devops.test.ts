@@ -151,7 +151,9 @@ describe('client', () => {
 
   test('paginate with continuation token', async () => {
     const getPage = (pageSize: number, continuationToken?: number) => {
-      const startIndex = continuationToken ? continuationToken - 1 : 0;
+      const startIndex = continuationToken
+        ? paginationItems.findIndex((item) => item.id === continuationToken)
+        : 0;
       return paginationItems.slice(startIndex, startIndex + pageSize);
     };
 
@@ -241,6 +243,7 @@ describe('client', () => {
               .mockResolvedValueOnce(readTestResourceAsJSON('projects.json')),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -261,6 +264,7 @@ describe('client', () => {
               .mockResolvedValueOnce(readTestResourceAsJSON('projects.json')),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -283,6 +287,7 @@ describe('client', () => {
               .mockResolvedValueOnce(projects.at(1)),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger
@@ -307,6 +312,7 @@ describe('client', () => {
               .mockResolvedValueOnce(undefined),
           },
         } as unknown as AzureDevOpsClient,
+        'cloud',
         90,
         100,
         logger

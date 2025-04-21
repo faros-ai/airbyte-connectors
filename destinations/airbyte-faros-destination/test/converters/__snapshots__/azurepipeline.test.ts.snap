@@ -3,9 +3,9 @@
 exports[`azurepipeline basic test process records from all streams 1`] = `
 Array [
   "Processed 7 records",
-  "Processed records by stream: {\\\\\\"mytestsource__azurepipeline__builds\\\\\\":4,\\\\\\"mytestsource__azurepipeline__pipelines\\\\\\":2,\\\\\\"mytestsource__azurepipeline__releases\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 22 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"qa_CodeQuality\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed records by stream: {\\\\\\"mytestsource__azurepipeline__pipelines\\\\\\":2,\\\\\\"mytestsource__azurepipeline__releases\\\\\\":1,\\\\\\"mytestsource__azurepipeline__runs\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 27 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_Build\\\\\\":4,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":6,\\\\\\"cicd_BuildTag\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":2,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"faros_Tag\\\\\\":2,\\\\\\"qa_CodeQuality\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -22,6 +22,7 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "description": "\\\\",
       "name": "devcube:coonglinh.medee_dms",
       "organization": Object {
         "source": "AzurePipeline",
@@ -29,11 +30,12 @@ Array [
       },
       "source": "AzurePipeline",
       "uid": "2",
-      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+      "url": "https://my-azure-server.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
     },
   },
   Object {
     "cicd_Pipeline": Object {
+      "description": "\\\\",
       "name": "devcube:devcube",
       "organization": Object {
         "source": "AzurePipeline",
@@ -45,25 +47,53 @@ Array [
     },
   },
   Object {
-    "cicd_Build": Object {
-      "createdAt": "2022-02-14T02:35:32.519Z",
-      "endedAt": "2022-02-14T02:35:38.776Z",
-      "name": "20220214.1",
-      "pipeline": Object {
-        "organization": Object {
-          "source": "AzurePipeline",
-          "uid": "huongkstn",
+    "cicd_BuildTag": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "AzurePipeline",
+            "uid": "huongkstn",
+          },
+          "uid": "2",
         },
-        "uid": "2",
+        "uid": "24",
       },
       "source": "AzurePipeline",
-      "startedAt": "2022-02-14T02:35:38.776Z",
-      "status": Object {
-        "category": "Failed",
-        "detail": "failed",
+      "tag": Object {
+        "uid": "build-tag1",
       },
-      "uid": "24",
-      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/24",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "build-tag1",
+      "source": "AzurePipeline",
+      "uid": "build-tag1",
+    },
+  },
+  Object {
+    "cicd_BuildTag": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "AzurePipeline",
+            "uid": "huongkstn",
+          },
+          "uid": "2",
+        },
+        "uid": "24",
+      },
+      "source": "AzurePipeline",
+      "tag": Object {
+        "uid": "pipeline-test",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "pipeline-test",
+      "source": "AzurePipeline",
+      "uid": "pipeline-test",
     },
   },
   Object {
@@ -141,9 +171,9 @@ Array [
   },
   Object {
     "cicd_Build": Object {
-      "createdAt": "2022-02-11T14:53:02.055Z",
-      "endedAt": "2022-02-11T14:53:07.674Z",
-      "name": "20220211.2",
+      "createdAt": "2022-02-14T02:35:32.519Z",
+      "endedAt": "2022-02-14T02:35:38.776Z",
+      "name": "20220214.1",
       "pipeline": Object {
         "organization": Object {
           "source": "AzurePipeline",
@@ -152,13 +182,31 @@ Array [
         "uid": "2",
       },
       "source": "AzurePipeline",
-      "startedAt": "2022-02-11T14:53:07.674Z",
+      "startedAt": "2022-02-14T02:35:38.776Z",
       "status": Object {
         "category": "Failed",
         "detail": "failed",
       },
-      "uid": "21",
-      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/21",
+      "uid": "24",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=24",
+    },
+  },
+  Object {
+    "cicd_BuildTag": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "AzurePipeline",
+            "uid": "huongkstn",
+          },
+          "uid": "2",
+        },
+        "uid": "21",
+      },
+      "source": "AzurePipeline",
+      "tag": Object {
+        "uid": "pipeline-test",
+      },
     },
   },
   Object {
@@ -284,9 +332,9 @@ Array [
   },
   Object {
     "cicd_Build": Object {
-      "createdAt": "2022-02-10T06:20:34.448Z",
-      "endedAt": "2022-02-10T06:20:38.522Z",
-      "name": "20220210.5",
+      "createdAt": "2022-02-11T14:53:02.055Z",
+      "endedAt": "2022-02-11T14:53:07.674Z",
+      "name": "20220211.2",
       "pipeline": Object {
         "organization": Object {
           "source": "AzurePipeline",
@@ -295,13 +343,13 @@ Array [
         "uid": "2",
       },
       "source": "AzurePipeline",
-      "startedAt": "2022-02-10T06:20:38.522Z",
+      "startedAt": "2022-02-11T14:53:07.674Z",
       "status": Object {
         "category": "Failed",
         "detail": "failed",
       },
-      "uid": "17",
-      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/build/Builds/17",
+      "uid": "21",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=21",
     },
   },
   Object {
@@ -321,7 +369,7 @@ Array [
           "name": "Test Project:test",
           "organization": Object {
             "source": "Azure-Repos",
-            "uid": "Test-Org",
+            "uid": "test-org",
           },
           "uid": "Test Project:test",
         },
@@ -341,7 +389,7 @@ Array [
       },
       "source": "AzurePipeline",
       "uid": "TfsGit:123",
-      "url": "https://dev.azure.com/Test-Org/Test%20Project/_git/Repository.Test",
+      "url": "https://my-azure-server.com/Test-Org/Test%20Project/_git/Repository.Test",
     },
   },
   Object {
@@ -375,6 +423,28 @@ Array [
     },
   },
   Object {
+    "cicd_Build": Object {
+      "createdAt": "2022-02-10T06:20:38.522Z",
+      "endedAt": "2022-02-10T06:20:38.522Z",
+      "name": "20220210.5",
+      "pipeline": Object {
+        "organization": Object {
+          "source": "AzurePipeline",
+          "uid": "huongkstn",
+        },
+        "uid": "2",
+      },
+      "source": "AzurePipeline",
+      "startedAt": null,
+      "status": Object {
+        "category": "Failed",
+        "detail": "failed",
+      },
+      "uid": "17",
+      "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/results?buildId=17",
+    },
+  },
+  Object {
     "cicd_Release": Object {
       "createdAt": "2022-02-14T03:35:24.140Z",
       "description": "",
@@ -383,28 +453,6 @@ Array [
       "releasedAt": "2022-02-14T03:35:24.140Z",
       "source": "AzurePipeline",
       "uid": "1",
-    },
-  },
-  Object {
-    "cicd_Build": Object {
-      "createdAt": "2023-05-31T14:22:08.279Z",
-      "endedAt": "2023-05-31T14:22:53.426Z",
-      "name": "20230531.2",
-      "pipeline": Object {
-        "organization": Object {
-          "source": "AzurePipeline",
-          "uid": "ypc1",
-        },
-        "uid": "2",
-      },
-      "source": "AzurePipeline",
-      "startedAt": "2023-05-31T14:22:16.598Z",
-      "status": Object {
-        "category": "Success",
-        "detail": "succeeded",
-      },
-      "uid": "7",
-      "url": "https://dev.azure.com/ypc1/f095ee55-7f79-4ad1-a941-171c6d11e17e/_apis/build/Builds/7",
     },
   },
   Object {
@@ -532,6 +580,28 @@ Array [
       },
       "uid": "12f1170f-54f2-53f3-20dd-22fc7dff55f9",
       "url": null,
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2023-05-31T14:22:08.279Z",
+      "endedAt": "2023-05-31T14:22:53.426Z",
+      "name": "20230531.2",
+      "pipeline": Object {
+        "organization": Object {
+          "source": "AzurePipeline",
+          "uid": "ypc1",
+        },
+        "uid": "2",
+      },
+      "source": "AzurePipeline",
+      "startedAt": "2023-05-31T14:22:16.598Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "succeeded",
+      },
+      "uid": "7",
+      "url": "https://dev.azure.com/ypc1/f095ee55-7f79-4ad1-a941-171c6d11e17e/_build/results?buildId=7",
     },
   },
 ]

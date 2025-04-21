@@ -66,6 +66,12 @@
         "description": "Page size to use when requesting records from Bitbucket Server API",
         "default": 25
       },
+      "max_retries": {
+        "type": "integer",
+        "title": "Max Retries",
+        "description": "Maximum number of retries for requests to Bitbucket Server API that get rate limited or encounter connection issues",
+        "default": 5
+      },
       "reject_unauthorized": {
         "type": "boolean",
         "title": "Enforce Certificate Validation",

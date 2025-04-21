@@ -15,16 +15,12 @@
     "lib/",
     "resources/"
   ],
-  "engines": {
-    "node": ">=18"
-  },
   "main": "./lib",
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
@@ -35,11 +31,11 @@
     "@octokit/plugin-paginate-graphql": "^4.0.1",
     "@octokit/plugin-retry": "^6.0.1",
     "@octokit/plugin-throttling": "^8.2.0",
-    "@octokit/rest": "^20.1.1",
-    "@octokit/types": "^13.5.0",
+    "@octokit/rest": "^20.1.2",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "typescript-memoize": "^1.1.0",
+    "undici": "^6.21.2",
     "verror": "^1.10.1"
   },
   "jest": {

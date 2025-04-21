@@ -22,9 +22,6 @@
     "resources/"
   ],
   "main": "./lib",
-  "engines": {
-    "node": ">=18"
-  },
   "exports": {
     "./azurepipeline": "./lib/azurepipeline/index.js",
     "./azure-devops": "./lib/azure-devops/index.js",
@@ -43,9 +40,6 @@
   },
   "typesVersions": {
     "*": {
-      "azurepipeline": [
-        "./lib/azurepipeline/index.d.ts"
-      ],
       "azure-devops": [
         "./lib/azure-devops/index.d.ts"
       ],
@@ -99,7 +93,7 @@
   },
   "dependencies": {
     "@datadog/datadog-api-client": "1.32.0",
-    "@octokit/rest": "^20.1.1",
+    "@octokit/rest": "^20.1.2",
     "azure-devops-node-api": "^14.1.0",
     "faros-airbyte-cdk": "*",
     "jira.js": "^4.0.0",

@@ -154,7 +154,7 @@ export class ClickUp {
     }
   }
 
-  @Memoize()
+  @Memoize((include: ReadonlyArray<string> = []) => JSON.stringify(include))
   async workspaces(
     include: ReadonlyArray<string> = []
   ): Promise<ReadonlyArray<Workspace>> {

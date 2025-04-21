@@ -29,6 +29,7 @@ export interface WorkdayConfig extends AirbyteConfig {
   readonly skipConnectionCheck?: boolean;
   readonly limit?: number;
   readonly customReportName?: string;
+  readonly reportFormat?: string;
   readonly timeout?: number;
 }
 

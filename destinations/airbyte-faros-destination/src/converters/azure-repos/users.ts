@@ -1,8 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/azure-devops';
 
+import {getOrganizationFromUrl, getUniqueName} from '../common/azure-devops';
+import {CategoryDetail} from '../common/common';
+import {UserTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
-import {User, UserType, UserTypeCategory} from './models';
 
 export class Users extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -11,8 +14,7 @@ export class Users extends AzureReposConverter {
   ];
 
   private checkUserItemValidity(userItem: User): boolean {
-    // Add checks to record in this function
-    return !!userItem.principalName || !!userItem.uniqueName;
+    return Boolean(getUniqueName(userItem));
   }
 
   async convert(
@@ -26,14 +28,14 @@ export class Users extends AzureReposConverter {
     }
 
     const url = userItem._links?.self?.href ?? userItem.url;
-    const organizationName = this.getOrganizationFromUrl(url);
-    const organization = {uid: organizationName, source};
-    const type: UserType = {
+    const organizationName = getOrganizationFromUrl(url, 1);
+    const organization = this.getOrgKey(organizationName);
+    const type: CategoryDetail = {
       category: UserTypeCategory.User,
-      detail: userItem.subjectKind,
+      detail: 'subjectKind' in userItem ? userItem.subjectKind : null,
     };
-    // Support both principalName and uniqueName for AzureDevOps Server
-    const uniqueName = userItem.principalName ?? userItem.uniqueName;
+
+    const uniqueName = getUniqueName(userItem);
     const uid = uniqueName.toLowerCase();
     res.push({
       model: 'vcs_Membership',
@@ -47,7 +49,7 @@ export class Users extends AzureReposConverter {
       record: {
         uid,
         name: userItem.displayName,
-        email: userItem.mailAddress,
+        email: 'mailAddress' in userItem ? userItem.mailAddress : undefined,
         type,
         htmlUrl: userItem.url,
         source,

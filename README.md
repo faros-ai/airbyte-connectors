@@ -48,7 +48,7 @@ See the READMEs inside `destinations/` and `sources/` subfolders for more inform
 # Development
 
 1. Install [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Install Node.js `nvm install 18 && nvm use 18`
+2. Install Node.js `nvm install 22 && nvm use 22`
 3. Install [`Turborepo`](https://turbo.build/repo) by running `npm install turbo --global`
 4. Run `npm i` to install dependencies for all projects (`turbo clean` to clean all)
 5. Run `turbo build` to build all projects (for a single project add scope, e.g `turbo build --filter=airbyte-faros-destination`)

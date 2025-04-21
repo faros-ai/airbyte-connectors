@@ -1,44 +1,43 @@
+import {ProjectVisibility} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Repository} from 'faros-airbyte-common/azure-devops';
 
+import {getOrganizationFromUrl} from '../common/azure-devops';
+import {OrgTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {AzureReposConverter} from './common';
-import {OrgTypeCategory, Repository} from './models';
 
 export class Repositories extends AzureReposConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
     'vcs_Repository',
     'vcs_Branch',
-    'vcs_Tag',
   ];
 
-  private seenOrganizations = new Set<string>();
+  private readonly seenOrganizations = new Set<string>();
 
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const source = this.streamName.source;
     const repositoryItem = record.record.data as Repository;
     const res: DestinationRecord[] = [];
-    const organizationName = this.getOrganizationFromUrl(repositoryItem.url);
-    const organization = {uid: organizationName, source};
-    const projectRepo = this.getProjectRepo(repositoryItem);
-    const repository = {
-      name: projectRepo,
-      uid: projectRepo,
-      organization,
-    };
-    if (!this.seenOrganizations.has(organizationName)) {
-      this.seenOrganizations.add(organizationName);
+    const organizationName = getOrganizationFromUrl(repositoryItem.url);
+    const organization = this.getOrgKey(organizationName);
+    const repository = this.getProjectRepo(repositoryItem, organization);
+
+    if (!this.seenOrganizations.has(organization.uid)) {
+      this.seenOrganizations.add(organization.uid);
       res.push({
         model: 'vcs_Organization',
         record: {
-          uid: organizationName,
+          ...organization,
           name: organizationName,
-          htmlUrl: `https://dev.azure.com/${organizationName}`,
+          htmlUrl: this.getOrganizationUrl(
+            repositoryItem.url,
+            organizationName
+          ),
           type: {category: OrgTypeCategory.Organization, organizationName},
           description: organizationName,
-          source,
         },
       });
     }
@@ -49,7 +48,8 @@ export class Repositories extends AzureReposConverter {
         ...repository,
         fullName: repositoryItem.name,
         description: repositoryItem.name,
-        private: repositoryItem.project.visibility == 'private',
+        private:
+          repositoryItem.project?.visibility !== ProjectVisibility.Public,
         size: repositoryItem.size,
         mainBranch: repositoryItem.defaultBranch,
         htmlUrl: repositoryItem.webUrl,
@@ -83,5 +83,20 @@ export class Repositories extends AzureReposConverter {
       }
     }
     return res;
+  }
+
+  private getOrganizationUrl(
+    repoUrl: string,
+    organizationName: string
+  ): string {
+    if (!repoUrl) {
+      return;
+    }
+    try {
+      const url = new URL(repoUrl);
+      return `${url.origin}/${organizationName}`;
+    } catch (e) {
+      return;
+    }
   }
 }

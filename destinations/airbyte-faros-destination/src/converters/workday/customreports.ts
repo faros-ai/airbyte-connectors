@@ -7,6 +7,7 @@ import {
   Converter,
   DestinationModel,
   DestinationRecord,
+  parseObjectConfig,
   StreamContext,
 } from '../converter';
 import {
@@ -46,13 +47,18 @@ export class Customreports extends Converter {
   generalLogCollection: string[] = [];
   terminatedEmployees: EmployeeRecord[] = [];
   currentDate: Date = new Date();
-  // These are set in setOrgsToKeepAndIgnore
+  // These variables are populated in setOrgsToKeepAndIgnore
   org_ids_to_keep = null;
   org_ids_to_ignore = null;
+  // Logging variables
   skipped_due_to_missing_fields = 0;
   skipped_due_to_termination = 0;
-  employees_with_more_than_one_record: Record<string, number> = {};
+  // employees that appear in more than one record belong to more than one team
+  employees_with_more_than_one_record_by_id: Record<string, number> = {};
+  writtenEmployeeIds: Set<string> = new Set<string>();
   failedRecordFields: Set<string> = new Set<string>();
+  // Store all the input teams for reference in the end
+  additionalTeamToParentInputs: Set<string> = new Set<string>();
 
   /** Every workday record should have this property */
   id(record: AirbyteRecord): any {
@@ -87,10 +93,10 @@ export class Customreports extends Converter {
     // We might have more than one record per employee (hopefully not many)
     if (rec.Employee_ID in this.employeeIDToRecords) {
       this.employeeIDToRecords[rec.Employee_ID].push(rec);
-      if (rec.Full_Name in this.employees_with_more_than_one_record) {
-        this.employees_with_more_than_one_record[rec.Full_Name] += 1;
+      if (rec.Employee_ID in this.employees_with_more_than_one_record_by_id) {
+        this.employees_with_more_than_one_record_by_id[rec.Employee_ID] += 1;
       } else {
-        this.employees_with_more_than_one_record[rec.Full_Name] = 2;
+        this.employees_with_more_than_one_record_by_id[rec.Employee_ID] = 2;
       }
     } else {
       this.employeeIDToRecords[rec.Employee_ID] = [rec];
@@ -202,6 +208,17 @@ export class Customreports extends Converter {
         return false;
       }
     }
+    if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+      // Despite setting the flag to use parent team ids, record is missing parent team id
+      if (!rec.Parent_Team_ID) {
+        this.generalLogCollection.push(
+          `Missing Parent_Team_ID for record with Employee_ID: ${rec.Employee_ID}`
+        );
+        this.failedRecordFields.add(this.getSortedRecordFields(rec));
+        this.skipped_due_to_missing_fields += 1;
+        return false;
+      }
+    }
     return true;
   }
 
@@ -223,8 +240,14 @@ export class Customreports extends Converter {
     return sorted_keys_str;
   }
 
-  private getManagerIDFromList(recs: ManagerTimeRecord[]): string {
+  private getManagerIDFromList(
+    recs: ManagerTimeRecord[],
+    ctx: StreamContext
+  ): string | null {
     if (!recs) {
+      if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+        return null;
+      }
       throw new Error('Missing recs');
     }
     const last_record: ManagerTimeRecord = recs[recs.length - 1];
@@ -306,15 +329,18 @@ export class Customreports extends Converter {
     return topTeamID;
   }
 
-  private computeTeamToParentTeamMapping(
-    ctx: StreamContext
+  private computeTeamToParentTeamMappingFromManagers(
+    ctx: StreamContext,
+    teamIDToParentTeamID: Record<string, string>
   ): Record<string, string> {
-    ctx.logger.info('Computing team to parent mapping');
-    const teamIDToParentTeamID: Record<string, string> = {};
-    teamIDToParentTeamID[this.FAROS_TEAM_ROOT] = null;
+    ctx.logger.info('Computing team to parent mapping from managers');
     const potential_root_teams: string[] = [];
     for (const [teamID, recs] of Object.entries(this.teamIDToManagerIDs)) {
-      const manager_id = this.getManagerIDFromList(recs);
+      if (teamID in teamIDToParentTeamID) {
+        // This is the case where the team is already in the input list
+        continue;
+      }
+      const manager_id: string | null = this.getManagerIDFromList(recs, ctx);
       if (!manager_id) {
         this.generalLogCollection.push(
           `Failed to get manager id for team ${teamID}`
@@ -330,6 +356,7 @@ export class Customreports extends Converter {
           // Expected case - one record per employee
           parent_team_uid = records[0].Team_ID;
         } else if (records.length > 1) {
+          // Hacky
           parent_team_uid = this.determineTeamParentId(records, teamID, ctx);
         }
       } else {
@@ -351,6 +378,150 @@ export class Customreports extends Converter {
     }
 
     return teamIDToParentTeamID;
+  }
+
+  private getAllEmployeeRecords(): EmployeeRecord[] {
+    const allRecords: EmployeeRecord[] = [];
+    for (const employeeID of Object.keys(this.employeeIDToRecords)) {
+      allRecords.push(...this.employeeIDToRecords[employeeID]);
+    }
+    return allRecords;
+  }
+  private getAdditionalTeamInfo(
+    ctx: StreamContext
+  ): Record<string, Record<string, string> | null> {
+    const team_id_to_parent_id: Record<string, string> | null =
+      parseObjectConfig(
+        ctx.config.source_specific_configs?.workday?.team_id_to_parent_id,
+        'team_id_to_parent_id'
+      );
+    const team_id_to_name: Record<string, string> | null = parseObjectConfig(
+      ctx.config.source_specific_configs?.workday?.team_id_to_name,
+      'team_id_to_name'
+    );
+    return {
+      team_id_to_parent_id,
+      team_id_to_name,
+    };
+  }
+
+  private initializeTeamToParentWithInput(
+    ctx: StreamContext
+  ): Record<string, string> {
+    const additionalTeamInfo = this.getAdditionalTeamInfo(ctx);
+    const team_to_parent_map: Record<string, string> | null =
+      additionalTeamInfo?.team_id_to_parent_id;
+    if (!team_to_parent_map) {
+      ctx.logger.info('No team to parent map provided in config');
+      return {};
+    }
+    // Check if team to parent is a record:
+    if (typeof team_to_parent_map !== 'object') {
+      throw new Error(
+        `team_to_parent_map is not an object. Instead: ${typeof team_to_parent_map}`
+      );
+    }
+    const teamIDToTeamName: Record<string, string> =
+      additionalTeamInfo?.team_id_to_name;
+    if (teamIDToTeamName) {
+      for (const [team_id, team_name] of Object.entries(teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_name;
+      }
+    }
+    const map: Record<string, string> = {};
+    for (const [team_id, parent_id] of Object.entries(team_to_parent_map)) {
+      this.additionalTeamToParentInputs.add(team_id);
+      this.additionalTeamToParentInputs.add(parent_id);
+      map[team_id] = parent_id;
+      if (!(team_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[team_id] = team_id;
+      }
+      if (!(parent_id in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[parent_id] = parent_id;
+      }
+    }
+    // For every parent team, if it does not appear as a child to another team,
+    // then it is assumed to be a root team
+    for (const parentTeamID of Object.values(map)) {
+      if (!(parentTeamID in map)) {
+        map[parentTeamID] = this.FAROS_TEAM_ROOT;
+      }
+    }
+    map[this.FAROS_TEAM_ROOT] = null;
+    return map;
+  }
+
+  private cleanVendor(vendor: string): string {
+    // We only take the first line of many if it's a multiline string
+    // We take away any non-alphanumeric characters (other than spaces)
+    // We take any grouping of more than one space and make it one space
+    // We remove any leading or trailing spaces
+    // We lowercase the string
+
+    vendor = vendor.split('\n')[0];
+    vendor = vendor.replace(/[^a-zA-Z0-9\s]/g, '');
+    vendor = vendor.replace(/\s+/g, ' ').trim();
+    vendor = vendor.toLowerCase();
+    return vendor;
+  }
+
+  private computeTeamToParentTeamMappingUsingParentIDField(
+    ctx: StreamContext,
+    teamIDToParentTeamID: Record<string, string>
+  ): Record<string, string> {
+    ctx.logger.info('Computing team to parent mapping via Parent_Team_ID');
+    const all_employee_records = this.getAllEmployeeRecords();
+    const all_parent_team_ids = new Set<string>();
+    for (const employeeRecord of all_employee_records) {
+      if (!employeeRecord.Parent_Team_ID) {
+        throw new Error(
+          `Parent_Team_ID is missing for employee with ID ${employeeRecord.Employee_ID}`
+        );
+      }
+      const TeamID = employeeRecord.Team_ID;
+      const parentTeamID = employeeRecord.Parent_Team_ID;
+      all_parent_team_ids.add(parentTeamID);
+      if (TeamID in teamIDToParentTeamID) {
+        if (parentTeamID != teamIDToParentTeamID[TeamID]) {
+          const err_str = `More than one parent team ID for team ${TeamID}: ${parentTeamID} & ${teamIDToParentTeamID[TeamID]}`;
+          ctx.logger.error(err_str);
+          this.generalLogCollection.push(err_str);
+        }
+      } else {
+        teamIDToParentTeamID[TeamID] = parentTeamID;
+      }
+    }
+    for (const parentTeamID of all_parent_team_ids) {
+      if (!(parentTeamID in teamIDToParentTeamID)) {
+        teamIDToParentTeamID[parentTeamID] = this.FAROS_TEAM_ROOT;
+      }
+      if (!(parentTeamID in this.teamIDToTeamName)) {
+        this.teamIDToTeamName[parentTeamID] = parentTeamID;
+        const err_str = `Parent team ID ${parentTeamID} not found in team ID to team name mapping`;
+        ctx.logger.error(err_str);
+        this.generalLogCollection.push(err_str);
+      }
+    }
+    return teamIDToParentTeamID;
+  }
+
+  private computeTeamToParentTeamMapping(
+    ctx: StreamContext
+  ): Record<string, string> {
+    // initialize team To Parent Team ID mapping
+    const teamIDToParentTeamID: Record<string, string> =
+      this.initializeTeamToParentWithInput(ctx);
+    if (ctx.config.source_specific_configs?.workday?.use_parent_team_id) {
+      return this.computeTeamToParentTeamMappingUsingParentIDField(
+        ctx,
+        teamIDToParentTeamID
+      );
+    } else {
+      return this.computeTeamToParentTeamMappingFromManagers(
+        ctx,
+        teamIDToParentTeamID
+      );
+    }
   }
   private computeOwnershipChain(
     elementId: string,
@@ -485,6 +656,15 @@ export class Customreports extends Converter {
 
   private printReport(ctx: StreamContext, acceptableTeams: Set<string>): void {
     const teamIDs = Object.keys(this.teamIDToManagerIDs);
+    // Preparing to list employees with more than one record by their name
+    const employees_with_more_than_one_record_by_name: Record<string, number> =
+      {};
+    for (const [employeeID, count] of Object.entries(
+      this.employees_with_more_than_one_record_by_id
+    )) {
+      const employeeName = this.employeeIDToRecords[employeeID][0].Full_Name;
+      employees_with_more_than_one_record_by_name[employeeName] = count;
+    }
     const report_obj = {
       nAcceptableTeams: acceptableTeams.size,
       nOriginalTeams: teamIDs ? teamIDs.length : 0,
@@ -494,9 +674,10 @@ export class Customreports extends Converter {
       numRecordsSkippedDueToTermination: this.skipped_due_to_termination,
       records_stored: this.recordCount.storedRecords,
       nCycleChains: this.cycleChains ? this.cycleChains.length : 0,
+      employees_with_more_than_one_record_by_id:
+        this.employees_with_more_than_one_record_by_id,
+      employees_with_more_than_one_record_by_name,
       generalLogs: this.generalLogCollection,
-      employees_with_more_than_one_record:
-        this.employees_with_more_than_one_record,
     };
     ctx.logger.info('Report:');
     ctx.logger.info(JSON.stringify(report_obj));
@@ -532,6 +713,47 @@ export class Customreports extends Converter {
     return {category, detail: employeeType};
   }
 
+  getRecordsForDuplicateEmployee(
+    employee_record: EmployeeRecord
+  ): DestinationRecord[] {
+    // When a single employee has several records associated with them (e.g. they are on multiple teams)
+    // we need to handle this properly
+    const all_employee_records: EmployeeRecord[] =
+      this.employeeIDToRecords[employee_record.Employee_ID];
+    const firstRecord = all_employee_records[0];
+    const errors_log: string[] = [];
+
+    // We don't error out because we don't want to stop the process
+    // We just want to log the errors
+    for (const record of all_employee_records) {
+      if (record.Start_Date !== firstRecord.Start_Date) {
+        errors_log.push(
+          `Start Date mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Start_Date} vs ${firstRecord.Start_Date}`
+        );
+      }
+      if (record.Location !== firstRecord.Location) {
+        errors_log.push(
+          `Location mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Location} vs ${firstRecord.Location}`
+        );
+      }
+      if (record.Email !== firstRecord.Email) {
+        errors_log.push(
+          `Email mismatch for employee with duplicate records ${record.Employee_ID} (${record.Full_Name}): ${record.Email} vs ${firstRecord.Email}`
+        );
+      }
+    }
+    this.generalLogCollection.push(...errors_log);
+    return [
+      {
+        model: 'org_TeamMembership',
+        record: {
+          team: {uid: employee_record.Team_ID},
+          member: {uid: employee_record.Employee_ID},
+        },
+      },
+    ];
+  }
+
   private async createEmployeeRecordList(
     employee_record: EmployeeRecord,
     isTerminated: boolean = false
@@ -547,6 +769,10 @@ export class Customreports extends Converter {
       teamUid = this.FAROS_UNASSIGNED_TEAM;
       managerKey = null;
       terminatedAt = this.getTerminationDate(employee_record);
+    }
+    if (employee_record.Employee_ID in this.writtenEmployeeIds) {
+      // We only return the team membership record
+      return this.getRecordsForDuplicateEmployee(employee_record);
     }
     records.push(
       {
@@ -582,23 +808,59 @@ export class Customreports extends Converter {
         },
       }
     );
+    this.writtenEmployeeIds.add(employee_record.Employee_ID);
+    if (employee_record.Vendor) {
+      const vendor: string = this.cleanVendor(employee_record.Vendor);
+      const tagUid = `vendor__${vendor}`;
+      records.push(
+        {
+          model: 'faros_Tag',
+          record: {
+            uid: tagUid,
+            key: 'vendor',
+            value: vendor,
+          },
+        },
+        {
+          model: 'org_EmployeeTag',
+          record: {
+            employee: {uid: employee_record.Employee_ID},
+            tag: {uid: tagUid},
+          },
+        }
+      );
+    }
 
     return records;
   }
 
   private createOrgTeamRecord(
     teamID: string,
-    teamIDToParentID: Record<string, string>
+    teamIDToParentID: Record<string, string>,
+    ctx: StreamContext
   ): DestinationRecord {
+    // Only an input list team
+    if (this.additionalTeamToParentInputs.has(teamID)) {
+      return {
+        model: 'org_Team',
+        record: {
+          uid: teamID,
+          name: this.teamIDToTeamName[teamID],
+          parentTeam: {uid: teamIDToParentID[teamID]},
+        },
+      };
+    }
+    // Standard teams
     const manager_id = this.getManagerIDFromList(
-      this.teamIDToManagerIDs[teamID]
+      this.teamIDToManagerIDs[teamID],
+      ctx
     );
     return {
       model: 'org_Team',
       record: {
         uid: teamID,
         name: this.teamIDToTeamName[teamID],
-        lead: {uid: manager_id},
+        lead: manager_id ? {uid: manager_id} : null,
         parentTeam: {uid: teamIDToParentID[teamID]},
       },
     };
@@ -671,7 +933,7 @@ export class Customreports extends Converter {
 
     for (const team of acceptable_teams) {
       if (team != 'all_teams') {
-        res.push(this.createOrgTeamRecord(team, newTeamToParent));
+        res.push(this.createOrgTeamRecord(team, newTeamToParent, ctx));
       }
     }
     for (const employeeID of Object.keys(this.employeeIDToRecords)) {

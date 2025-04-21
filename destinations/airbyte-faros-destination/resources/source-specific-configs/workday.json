@@ -52,6 +52,32 @@
           "title": "Resolve Locations",
           "description": "If true, will resolve location information with Faros Geocoding API.",
           "default": false
+        },
+        "team_id_to_parent_id": {
+          "type": "string",
+          "title": "Team To Parent Mapping",
+          "description": "A dictionary with team ids as keys and their parent team ids as values.",
+          "multiline": true,
+          "default": "{}",
+          "examples": [
+            "{ \"child1\": \"parent1\", \"child2\": \"parent2\" }"
+          ]
+        },
+        "team_id_to_name": {
+          "type": "string",
+          "title": "Team Id To Name Mapping",
+          "description": "A dictionary with team ids as keys and their names as values.",
+          "multiline": true,
+          "default": "{}",
+          "examples": [
+            "{ \"child1\": \"Child Team 1\", \"child2\": \"Child Team 2\" }"
+          ]
+        },
+        "use_parent_team_id": {
+          "type": "boolean",
+          "title": "Use Parent Team ID",
+          "description": "If true, the Parent_Team_ID field will be used to create org structure",
+          "default": false
         }
       }
     }

@@ -1,5 +1,5 @@
 import {Incidents} from '../../src/converters/servicenow/incidents';
-import {generateBasicTestSuite} from './utils';
+import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 generateBasicTestSuite({sourceName: 'servicenow'});
 

@@ -45,6 +45,7 @@ jobs:
         run: |
           cd faros-airbyte-cdk && \
           npm i && \
+          npm run build && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
@@ -54,6 +55,7 @@ jobs:
         run: |
           cd faros-airbyte-common && \
           npm i && \
+          npm run build && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
@@ -65,6 +67,7 @@ jobs:
           cat package.json | jq --arg V "${{ env.TAG_VERSION }}" '(.dependencies."faros-airbyte-cdk",.dependencies."faros-airbyte-common") = $V' > package.tmp && \
           mv package.tmp package.json && \
           npm i && \
+          npm run build && \
           npm version ${{ env.TAG_VERSION }} && \
           npm publish --access public --tag latest
         env:
@@ -86,7 +89,7 @@ jobs:
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Docker login
-        uses: docker/login-action@v3.3.0
+        uses: docker/login-action@v3.4.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

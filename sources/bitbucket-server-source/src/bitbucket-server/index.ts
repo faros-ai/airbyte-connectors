@@ -36,6 +36,7 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly repositories?: ReadonlyArray<string>;
   readonly page_size?: number;
   readonly cutoff_days?: number;
+  readonly max_retries?: number;
   readonly reject_unauthorized?: boolean;
   readonly repo_bucket_id?: number;
   readonly repo_bucket_total?: number;
@@ -60,6 +61,13 @@ interface PaginatedProjects extends Dict {
   [k: string]: any;
 }
 
+type RetryOptions = {
+  retries?: number;
+  delay?: number;
+  factor?: number;
+  shouldRetry?: (err: unknown) => boolean;
+};
+
 export class BitbucketServer {
   private static bitbucket: BitbucketServer = null;
 
@@ -67,6 +75,7 @@ export class BitbucketServer {
     private readonly client: ExtendedClient,
     private readonly streamableClient: AxiosInstance,
     private readonly pageSize: number,
+    private readonly maxRetries: number,
     private readonly logger: AirbyteLogger,
     private readonly startDate: Date,
     private readonly repoBucketId: number,
@@ -120,6 +129,7 @@ export class BitbucketServer {
       client,
       streamableClient,
       pageSize,
+      config.max_retries ?? 5,
       logger,
       startDate,
       config.repo_bucket_id ?? 1,
@@ -160,7 +170,7 @@ export class BitbucketServer {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.client.api.getUsers({limit: 1});
+      await this.retry(() => this.client.api.getUsers({limit: 1}));
     } catch (error: any) {
       let errorMessage;
       try {
@@ -181,7 +191,7 @@ export class BitbucketServer {
       return {shouldEmit: true, shouldBreakEarly: false};
     }
   ): AsyncGenerator<U> {
-    let {data: page} = await fetch(0);
+    let {data: page} = await this.retry(() => fetch(0));
     if (!page) return;
     if (!Array.isArray(page.values)) {
       yield toStreamData(page);
@@ -197,7 +207,9 @@ export class BitbucketServer {
           return;
         }
       }
-      page = page.nextPageStart ? (await fetch(page.nextPageStart)).data : null;
+      page = page.nextPageStart
+        ? (await this.retry(() => fetch(page.nextPageStart))).data
+        : null;
     } while (page);
   }
 
@@ -349,8 +361,10 @@ export class BitbucketServer {
       );
       for (const pr of await prs) {
         try {
-          const response = await this.streamableClient.get<Readable>(
-            `projects/${projectKey}/repos/${repositorySlug}/pull-requests/${pr.id}.diff`
+          const response = await this.retry(() =>
+            this.streamableClient.get<Readable>(
+              `projects/${projectKey}/repos/${repositorySlug}/pull-requests/${pr.id}.diff`
+            )
           );
 
           const files = await this.parseRawDiff(response.data);
@@ -368,11 +382,12 @@ export class BitbucketServer {
             },
           };
         } catch (err: any) {
+          const error = wrapApiError(err);
           this.logger.error(
             `Failed to parse raw diff for repository ${fullName} pull request ${
               pr.id
-            }: ${JSON.stringify(err)}`,
-            err.stack
+            }: ${error.message || JSON.stringify(filterEmptyValues(error))}`,
+            error.stack
           );
         }
       }
@@ -500,11 +515,12 @@ export class BitbucketServer {
           const fullName = repoFullName(projectKey, data.slug);
           let mainBranch: string = undefined;
           try {
-            const {data: defaultBranch} =
-              await this.client.repos.getDefaultBranch({
+            const {data: defaultBranch} = await this.retry(() =>
+              this.client.repos.getDefaultBranch({
                 projectKey,
                 repositorySlug: data.slug,
-              });
+              })
+            );
             mainBranch = defaultBranch?.displayId;
           } catch (err) {
             this.logger.warn(
@@ -548,14 +564,16 @@ export class BitbucketServer {
   @Memoize()
   async project(projectKey: string): Promise<Project> {
     try {
-      const {data} = await this.client[MEP].projects.getProject({projectKey});
+      const {data} = await this.retry<Dict>(() =>
+        this.client[MEP].projects.getProject({projectKey})
+      );
       return data;
     } catch (err) {
       throw new VError(innerError(err), `Error fetching project ${projectKey}`);
     }
   }
 
-  @Memoize()
+  @Memoize((projects?: ReadonlyArray<string>) => JSON.stringify(projects || []))
   async projects(
     projects?: ReadonlyArray<string>
   ): Promise<ReadonlyArray<Project>> {
@@ -664,6 +682,47 @@ export class BitbucketServer {
       throw new VError(innerError(err), `Error fetching users`);
     }
   }
+
+  async retry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
+    const {
+      retries = this.maxRetries,
+      delay = 1,
+      factor = 2,
+      shouldRetry = (err: any) =>
+        err?.code === 429 ||
+        err?.status === 429 ||
+        (err?.message as string)?.includes('connect ECONNREFUSED'),
+    } = options;
+
+    let attempt = 0;
+    let currentDelay = delay;
+
+    while (attempt < retries) {
+      try {
+        return await fn();
+      } catch (err: any) {
+        attempt++;
+        if (!shouldRetry(err)) {
+          throw err;
+        } else if (attempt >= retries) {
+          this.logger.error(
+            `Exceeded maximum retries after ${retries} attempts`
+          );
+          throw err;
+        }
+        this.logger.info(
+          `Retrying request due to an error: ${err.message || `Response code ${err.code}`} ` +
+            `(attempt ${attempt} of ${retries})`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, currentDelay * 1000)
+        );
+        currentDelay *= factor;
+      }
+    }
+
+    throw new VError('Retry function exited unexpectedly');
+  }
 }
 
 function repoFullName(projectKey: string, repoSlug: string): string {
@@ -671,6 +730,15 @@ function repoFullName(projectKey: string, repoSlug: string): string {
 }
 
 function innerError(err: any): VError {
-  const {message, error, status} = err;
-  return new VError({info: {status, error: error?.error?.message}}, message);
+  const {code, message, error, status} = err;
+  const info = {code, status, error: error?.error?.message};
+  return new VError({info}, message || JSON.stringify(filterEmptyValues(info)));
+}
+
+function filterEmptyValues(obj: any): any {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, v]) => v !== undefined && v !== null && v !== ''
+    )
+  );
 }

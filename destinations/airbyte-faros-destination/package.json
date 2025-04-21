@@ -19,9 +19,6 @@
     "resources/"
   ],
   "main": "./lib",
-  "engines": {
-    "node": ">=18"
-  },
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
@@ -34,7 +31,7 @@
   "dependencies": {
     "@esm2cjs/p-queue": "^7.3.0",
     "@segment/analytics-node": "^2.0.0",
-    "axios": "^1.7.4",
+    "axios": "^1.8.4",
     "date-format": "^4.0.6",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
@@ -43,8 +40,10 @@
     "graphql": "^16.8.1",
     "json-to-graphql-query": "^2.2.0",
     "jsonata": "^1.8.7",
+    "mockttp": "^3.9.2",
     "object-sizeof": "^1.6.1",
     "redact-pii": "^3.4.0",
+    "tmp-promise": "^3.0.3",
     "toposort": "^2.0.2",
     "traverse": "^0.6.6",
     "turndown": "^7.1.1",

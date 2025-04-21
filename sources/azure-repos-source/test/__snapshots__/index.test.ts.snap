@@ -29,6 +29,139 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - commits, fetch branch commits 1`] = `
+[
+  {
+    "author": {
+      "date": "2023-01-07T01:20:33Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "branch": "main",
+    "changeCounts": {
+      "Add": 0,
+      "Delete": 0,
+      "Edit": 1,
+    },
+    "comment": "Merged PR 2: Updated AnotherFile.md",
+    "commentTruncated": true,
+    "commitId": "00000000-0000-0000-0000-000000000003",
+    "committer": {
+      "date": "2023-01-07T01:20:33Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000003",
+    "repository": {
+      "defaultBranch": "refs/heads/main",
+      "id": "bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+      "name": "sample-test.git",
+      "project": {
+        "id": "project",
+        "name": "project",
+      },
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000003",
+  },
+  {
+    "author": {
+      "date": "2023-01-05T18:05:31Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "branch": "main",
+    "changeCounts": {
+      "Add": 1,
+      "Delete": 0,
+      "Edit": 1,
+    },
+    "comment": "Merged PR 1: Test PR 1",
+    "commentTruncated": true,
+    "commitId": "00000000-0000-0000-0000-000000000004",
+    "committer": {
+      "date": "2023-01-05T18:05:31Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000004",
+    "repository": {
+      "defaultBranch": "refs/heads/main",
+      "id": "bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+      "name": "sample-test.git",
+      "project": {
+        "id": "project",
+        "name": "project",
+      },
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000004",
+  },
+  {
+    "author": {
+      "date": "2023-01-07T01:20:33Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "branch": "staging",
+    "changeCounts": {
+      "Add": 0,
+      "Delete": 0,
+      "Edit": 1,
+    },
+    "comment": "Merged PR 2: Updated AnotherFile.md",
+    "commentTruncated": true,
+    "commitId": "00000000-0000-0000-0000-000000000003",
+    "committer": {
+      "date": "2023-01-07T01:20:33Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000003",
+    "repository": {
+      "defaultBranch": "refs/heads/main",
+      "id": "bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+      "name": "sample-test.git",
+      "project": {
+        "id": "project",
+        "name": "project",
+      },
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000003",
+  },
+  {
+    "author": {
+      "date": "2023-01-05T18:05:31Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "branch": "staging",
+    "changeCounts": {
+      "Add": 1,
+      "Delete": 0,
+      "Edit": 1,
+    },
+    "comment": "Merged PR 1: Test PR 1",
+    "commentTruncated": true,
+    "commitId": "00000000-0000-0000-0000-000000000004",
+    "committer": {
+      "date": "2023-01-05T18:05:31Z",
+      "email": "test@test.com",
+      "name": "Test Tester",
+    },
+    "remoteUrl": "https://dev.azure.com/test/test/_git/test/commit/00000000-0000-0000-0000-000000000004",
+    "repository": {
+      "defaultBranch": "refs/heads/main",
+      "id": "bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+      "name": "sample-test.git",
+      "project": {
+        "id": "project",
+        "name": "project",
+      },
+    },
+    "url": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000001/_apis/git/repositories/00000000-0000-0000-0000-000000000002/commits/00000000-0000-0000-0000-000000000004",
+  },
+]
+`;
+
 exports[`index streams - commits, use full_refresh sync mode 1`] = `
 [
   {
@@ -1406,6 +1539,275 @@ Updated README.md",
     ],
     "title": "Updated README.md",
     "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/pullRequests/8",
+  },
+]
+`;
+
+exports[`index streams - repositories, tags disabled 1`] = `
+[
+  {
+    "branches": [
+      {
+        "aheadCount": 0,
+        "behindCount": 0,
+        "commit": {
+          "author": {
+            "date": "2022-02-22T02:43:08Z",
+            "email": "huongkstn@gmail.com",
+            "name": "tran ngoc huong",
+          },
+          "comment": "Merged PR 8: Updated README.md
+
+Updated README.md",
+          "commitId": "6f422c61aa2b24f6f7af3636e6b5604885771158",
+          "committer": {
+            "date": "2022-02-22T02:43:08Z",
+            "email": "huongkstn@gmail.com",
+            "name": "tran ngoc huong",
+          },
+          "parents": [
+            "ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+            "a8d4a4d97c28e888c0673dd356761410a937cb86",
+          ],
+          "treeId": "96dac18f4cecc77de147c77ce09e607d4ee558ec",
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/6f422c61aa2b24f6f7af3636e6b5604885771158",
+        },
+        "commits": [
+          {
+            "author": {
+              "date": "2022-02-22T02:43:08Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Merged PR 8: Updated README.md",
+            "commentTruncated": true,
+            "commitId": "6f422c61aa2b24f6f7af3636e6b5604885771158",
+            "committer": {
+              "date": "2022-02-22T02:43:08Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/6f422c61aa2b24f6f7af3636e6b5604885771158",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/6f422c61aa2b24f6f7af3636e6b5604885771158",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:42:52Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Updated README.md",
+            "commitId": "a8d4a4d97c28e888c0673dd356761410a937cb86",
+            "committer": {
+              "date": "2022-02-22T02:42:52Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/a8d4a4d97c28e888c0673dd356761410a937cb86",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/a8d4a4d97c28e888c0673dd356761410a937cb86",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:40:55Z",
+              "email": "huongkstn@gmail.com",
+              "name": "huongtn",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Update LICENSE",
+            "commentTruncated": true,
+            "commitId": "ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+            "committer": {
+              "date": "2022-02-22T02:40:55Z",
+              "email": "noreply@github.com",
+              "name": "GitHub",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:40:15Z",
+              "email": "huongkstn@gmail.com",
+              "name": "huongtn",
+            },
+            "changeCounts": {
+              "Add": 3,
+              "Delete": 0,
+              "Edit": 0,
+            },
+            "comment": "Initial commit",
+            "commitId": "5c85518354ba118862ce576513283cc13fb280ae",
+            "committer": {
+              "date": "2022-02-22T02:40:15Z",
+              "email": "noreply@github.com",
+              "name": "GitHub",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/5c85518354ba118862ce576513283cc13fb280ae",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/5c85518354ba118862ce576513283cc13fb280ae",
+          },
+        ],
+        "isBaseVersion": true,
+        "name": "main",
+      },
+      {
+        "aheadCount": 1,
+        "behindCount": 0,
+        "commit": {
+          "author": {
+            "date": "2022-02-22T02:43:31Z",
+            "email": "huongkstn@gmail.com",
+            "name": "tran ngoc huong",
+          },
+          "comment": "Updated LICENSE",
+          "commitId": "3001eb774b51cb3dd0b77a303e6307aa29f9a9ca",
+          "committer": {
+            "date": "2022-02-22T02:43:31Z",
+            "email": "huongkstn@gmail.com",
+            "name": "tran ngoc huong",
+          },
+          "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/3001eb774b51cb3dd0b77a303e6307aa29f9a9ca",
+        },
+        "commits": [
+          {
+            "author": {
+              "date": "2022-02-22T02:43:31Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Updated LICENSE",
+            "commitId": "3001eb774b51cb3dd0b77a303e6307aa29f9a9ca",
+            "committer": {
+              "date": "2022-02-22T02:43:31Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/3001eb774b51cb3dd0b77a303e6307aa29f9a9ca",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/3001eb774b51cb3dd0b77a303e6307aa29f9a9ca",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:43:08Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Merged PR 8: Updated README.md",
+            "commentTruncated": true,
+            "commitId": "6f422c61aa2b24f6f7af3636e6b5604885771158",
+            "committer": {
+              "date": "2022-02-22T02:43:08Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/6f422c61aa2b24f6f7af3636e6b5604885771158",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/6f422c61aa2b24f6f7af3636e6b5604885771158",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:42:52Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Updated README.md",
+            "commitId": "a8d4a4d97c28e888c0673dd356761410a937cb86",
+            "committer": {
+              "date": "2022-02-22T02:42:52Z",
+              "email": "huongkstn@gmail.com",
+              "name": "tran ngoc huong",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/a8d4a4d97c28e888c0673dd356761410a937cb86",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/a8d4a4d97c28e888c0673dd356761410a937cb86",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:40:55Z",
+              "email": "huongkstn@gmail.com",
+              "name": "huongtn",
+            },
+            "changeCounts": {
+              "Add": 0,
+              "Delete": 0,
+              "Edit": 1,
+            },
+            "comment": "Update LICENSE",
+            "commentTruncated": true,
+            "commitId": "ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+            "committer": {
+              "date": "2022-02-22T02:40:55Z",
+              "email": "noreply@github.com",
+              "name": "GitHub",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/ca9a0613a94a50c067793296ef48aaa33ceaa8af",
+          },
+          {
+            "author": {
+              "date": "2022-02-22T02:40:15Z",
+              "email": "huongkstn@gmail.com",
+              "name": "huongtn",
+            },
+            "changeCounts": {
+              "Add": 3,
+              "Delete": 0,
+              "Edit": 0,
+            },
+            "comment": "Initial commit",
+            "commitId": "5c85518354ba118862ce576513283cc13fb280ae",
+            "committer": {
+              "date": "2022-02-22T02:40:15Z",
+              "email": "noreply@github.com",
+              "name": "GitHub",
+            },
+            "remoteUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git/commit/5c85518354ba118862ce576513283cc13fb280ae",
+            "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb/commits/5c85518354ba118862ce576513283cc13fb280ae",
+          },
+        ],
+        "isBaseVersion": false,
+        "name": "staging",
+      },
+    ],
+    "defaultBranch": "refs/heads/main",
+    "id": "bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+    "isDisabled": false,
+    "name": "sample-test.git",
+    "project": {
+      "id": "project",
+      "name": "Project",
+    },
+    "remoteUrl": "https://huongkstn@dev.azure.com/huongkstn/devcube/_git/sample-test.git",
+    "size": 5561,
+    "sshUrl": "git@ssh.dev.azure.com:v3/huongkstn/devcube/sample-test.git",
+    "tags": [],
+    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/git/repositories/bca8259d-36c6-4a40-bedf-b810d54c5ceb",
+    "webUrl": "https://dev.azure.com/huongkstn/devcube/_git/sample-test.git",
   },
 ]
 `;

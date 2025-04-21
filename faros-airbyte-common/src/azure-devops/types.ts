@@ -2,8 +2,21 @@ import {AxiosInstance} from 'axios';
 import {IBuildApi} from 'azure-devops-node-api/BuildApi';
 import {ICoreApi} from 'azure-devops-node-api/CoreApi';
 import {IGitApi} from 'azure-devops-node-api/GitApi';
+import {
+  BuildArtifact,
+  BuildRepository,
+  TimelineRecord as BaseTimelineRecord,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
+import {
+  Pipeline as BasePipeline,
+  Run as BaseRun,
+} from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
+import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
+import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
+import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
@@ -37,7 +50,7 @@ export interface AzureDevOpsClient {
   readonly pipelines: IPipelinesApi;
   readonly release: IReleaseApi;
   readonly test: ITestApi;
-  readonly graph?: AxiosInstance;
+  readonly rest: AxiosInstance;
 }
 
 export type User = GraphUser | IdentityRef;
@@ -45,4 +58,94 @@ export type User = GraphUser | IdentityRef;
 export interface GraphUserResponse {
   count: number;
   value: GraphUser[];
+}
+
+export interface Pipeline extends BasePipeline {
+  project: ProjectReference;
+}
+
+// Ensure enums are strings
+export interface Run extends Omit<BaseRun, 'result' | 'state'> {
+  project: ProjectReference;
+  result: string;
+  state: string;
+
+  // Enherited from Build interface
+  artifacts: BuildArtifact[];
+  coverageStats: CodeCoverageStatistics[];
+  stages: TimelineRecord[];
+  startTime?: Date;
+  repository: BuildRepository;
+  reason: string;
+  sourceBranch?: string;
+  sourceVersion: string;
+  tags: string[];
+  triggerInfo?: {
+    [key: string]: string;
+  };
+}
+
+export interface TimelineRecord
+  extends Omit<BaseTimelineRecord, 'result' | 'state'> {
+  result: string;
+  state: string;
+}
+
+export interface Tag extends GitInterfaces.GitRef {
+  commit?: GitInterfaces.GitAnnotatedTag;
+}
+
+export interface Repository extends GitInterfaces.GitRepository {
+  branches?: GitInterfaces.GitBranchStats[];
+  tags?: Tag[];
+}
+
+export interface PullRequest
+  extends Omit<GitInterfaces.GitPullRequest, 'status' | 'mergeStatus'> {
+  status: string;
+  mergeStatus: string;
+  threads: GitInterfaces.GitPullRequestCommentThread[];
+}
+
+export interface Commit extends GitInterfaces.GitCommitRef {
+  repository?: Repository;
+  branch?: string;
+}
+
+export interface WorkItemState {
+  name: string;
+  category: string;
+}
+
+export interface WorkItemStateRevision {
+  readonly state: WorkItemState;
+  readonly changedDate: string;
+}
+
+export interface WorkItemAssigneeRevision {
+  readonly assignee: IdentityRef;
+  readonly changedDate: string;
+}
+
+export interface WorkItemIterationRevision {
+  readonly iteration: number;
+  readonly addedAt: string;
+  readonly removedAt?: string;
+}
+
+export interface WorkItemRevisions {
+  readonly states: ReadonlyArray<WorkItemStateRevision>;
+  readonly assignees: ReadonlyArray<WorkItemAssigneeRevision>;
+  readonly iterations: ReadonlyArray<WorkItemIterationRevision>;
+}
+
+export interface WorkItemWithRevisions extends WorkItem {
+  revisions: WorkItemRevisions;
+  additionalFields: ReadonlyArray<AdditionalField>;
+  projectId: string;
+}
+
+export interface AdditionalField {
+  name: string;
+  value: string;
 }

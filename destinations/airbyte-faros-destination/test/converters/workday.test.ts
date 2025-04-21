@@ -13,8 +13,8 @@ import {
   initMockttp,
   readTestResourceFile,
   tempConfig,
-} from '../testing-tools';
-import {destinationWriteTest} from './utils';
+} from '../../src/testing-tools/testing-tools';
+import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,
@@ -56,7 +56,11 @@ function getCustomReportandCtxGivenKey(
     edition: Edition.CLOUD,
     edition_configs: {},
     source_specific_configs: {
-      workday: {orgs_to_keep, orgs_to_ignore, fail_on_cycles},
+      workday: {
+        orgs_to_keep,
+        orgs_to_ignore,
+        fail_on_cycles,
+      },
     },
   });
 
@@ -86,7 +90,8 @@ describe('workday', () => {
     orgs_to_ignore,
     keep_terminated_employees = false,
     resolve_locations = false,
-    log_records = false
+    log_records = false,
+    additional_team_info: Record<string, Record<string, string>> = {}
   ): Promise<string> => {
     return await tempConfig({
       api_url: mockttp.url,
@@ -99,6 +104,12 @@ describe('workday', () => {
           orgs_to_ignore,
           keep_terminated_employees,
           resolve_locations,
+          team_id_to_parent_id: JSON.stringify(
+            additional_team_info.team_id_to_parent_id
+          ),
+          team_id_to_name: JSON.stringify(
+            additional_team_info?.team_id_to_name
+          ),
         },
       },
       log_records,
@@ -246,6 +257,42 @@ describe('workday', () => {
     });
   });
 
+  test('Combine input team parent arrays with the rest v7 stream', async () => {
+    const configPath = await getTempConfig([], [], false, false, false, {
+      team_id_to_parent_id: {
+        A: 'B',
+        B: 'D',
+        C: 'D',
+      },
+    });
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v7.log',
+    });
+  });
+
+  test('Combine input team parent arrays with the rest v7 stream with id to name', async () => {
+    const configPath = await getTempConfig([], [], false, false, false, {
+      team_id_to_parent_id: {
+        a: 'b',
+        b: 'd',
+        c: 'd',
+      },
+      team_id_to_name: {
+        a: 'A',
+        b: 'B',
+        c: 'C',
+        d: 'D',
+      },
+    });
+    await destinationWriteTest({
+      configPath,
+      catalogPath: 'test/resources/workday/catalog.json',
+      inputRecordsPath: 'workday/stream_v7.log',
+    });
+  });
+
   test('check resulting org structure from "empty" input', async () => {
     const [customReportDestination, ctx] = getCustomReportandCtxGivenKey(
       mockttp,
@@ -255,7 +302,7 @@ describe('workday', () => {
       customReportDestination,
       ctx
     );
-    expect(finalTeamToParent).toMatchSnapshot({all_teams: 'all_teams'});
+    expect(finalTeamToParent).toMatchSnapshot({});
     expect(JSON.stringify(res)).toMatch('[]');
   });
 
@@ -270,7 +317,6 @@ describe('workday', () => {
       ctx
     );
 
-    expect(finalTeamToParent['all_teams']).toMatch('all_teams');
     expect(finalTeamToParent['A']).toMatch('all_teams');
     expect(finalTeamToParent['B']).toMatch('A');
     expect(res.length).toEqual(12);
