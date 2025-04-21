@@ -57,6 +57,8 @@ export class AzurePipelines extends AzureDevOps {
     }
   }
 
+  // Not paginating as client is return all pipelines in one call
+  // If we need pagination, we need to use rest api as client is not returning continuation token
   @Memoize((project: ProjectReference) => project.id)
   async getPipelines(project: ProjectReference): Promise<Pipeline[]> {
     const pipelines = [];
@@ -71,6 +73,7 @@ export class AzurePipelines extends AzureDevOps {
   }
 
   // https://learn.microsoft.com/en-us/rest/api/azure/devops/pipelines/runs/list
+  // Return top 10000 runs for a particular pipeline only
   async *getRuns(
     project: ProjectReference,
     pipeline: PipelineReference,
