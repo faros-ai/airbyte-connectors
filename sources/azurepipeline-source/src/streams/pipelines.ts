@@ -4,8 +4,9 @@ import {Pipeline} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import {AzurePipelinesStreamBase} from './common';
-export class Pipelines extends AzurePipelinesStreamBase {
+import {ProjectsStreamBase} from './common';
+
+export class Pipelines extends ProjectsStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/pipelines.json');
   }
@@ -19,6 +20,6 @@ export class Pipelines extends AzurePipelinesStreamBase {
       this.config,
       this.logger
     );
-    yield* azurePipeline.getPipelines(streamSlice);
+    yield* await azurePipeline.getPipelines(streamSlice);
   }
 }

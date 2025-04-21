@@ -8,7 +8,7 @@
     },
     {
       "stream": {
-        "name": "mytestsource__azurepipeline__builds"
+        "name": "mytestsource__azurepipeline__runs"
       },
       "destination_sync_mode": "append"
     },

@@ -6,7 +6,7 @@ import {calculateUpdatedStreamState, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AzurePipelines} from '../azurepipeline';
-import {AzurePipelinesStreamBase} from './common';
+import {ProjectsStreamBase} from './common';
 
 interface ReleaseState {
   readonly [p: string]: {
@@ -14,7 +14,7 @@ interface ReleaseState {
   };
 }
 
-export class Releases extends AzurePipelinesStreamBase {
+export class Releases extends ProjectsStreamBase {
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/releases.json');
   }
