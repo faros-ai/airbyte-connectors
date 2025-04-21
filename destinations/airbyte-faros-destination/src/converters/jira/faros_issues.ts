@@ -319,8 +319,8 @@ export class FarosIssues extends JiraConverter {
           },
         },
       });
-
-      return results;
     }
+
+    return results;
   }
 }
