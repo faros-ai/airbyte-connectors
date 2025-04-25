@@ -31,7 +31,7 @@ if [ "$?" == 1 ]; then
     --build-arg version=$connector_version \
     --pull \
     --platform linux/amd64,linux/arm64 \
-    -t $latest_tag \
+    # -t $latest_tag \
     -t $version_tag \
     --label "io.airbyte.version=$connector_version" \
     --label "io.airbyte.name=$image" \

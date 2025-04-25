@@ -176,7 +176,6 @@ jobs:
 
       - name: Publish connector images
         env:
-          DOCKER_BUILDKIT: 1
           TAG_VERSION: v0.16.9-rc0
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
