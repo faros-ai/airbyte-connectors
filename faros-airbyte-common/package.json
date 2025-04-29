@@ -96,7 +96,7 @@
     "@octokit/rest": "^20.1.2",
     "azure-devops-node-api": "^14.1.0",
     "faros-airbyte-cdk": "*",
-    "jira.js": "^4.0.0",
+    "jira.js": "^4.1.3",
     "luxon": "^3.4.4",
     "typescript-memoize": "^1.0.0"
   },
