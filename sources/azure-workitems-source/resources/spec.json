@@ -5,7 +5,7 @@
     "title": "Azure Workitems Spec",
     "type": "object",
     "required": [
-      "instance_type",
+      "instance",
       "access_token",
       "organization"
     ],
