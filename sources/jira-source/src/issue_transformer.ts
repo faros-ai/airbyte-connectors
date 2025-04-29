@@ -75,6 +75,7 @@ export class IssueTransformer {
       }
 
       for (const change of assigneeChanges) {
+        // TODO: Review handling unassignment
         const assignee = {uid: change.value, assignedAt: change.changed};
         assigneeChangelog.push(assignee);
       }
@@ -407,7 +408,7 @@ export class IssueTransformer {
       item.fields.assignee?.key ||
       item.fields.assignee?.name;
 
-    const changelog: any[] = item.changelog?.histories || [];
+    const changelog: any[] = item.changelog?.histories ?? [];
     changelog.sort((e1, e2) => {
       // Sort changes from least to most recent
       const created1 = +(Utils.toDate(e1.created) || new Date(0));
