@@ -5,7 +5,7 @@
     "title": "Azure Pipeline Spec",
     "type": "object",
     "required": [
-      "instance_type",
+      "instance",
       "access_token",
       "organization"
     ],
