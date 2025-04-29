@@ -159,7 +159,7 @@ const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
 const MAX_SPRINTS_RESULTS = 50;
 //https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
 const MAX_TEAMS_RESULTS = 50;
-// Dcoumented in the migration notes of enhanced JQL
+// Documented in the migration notes of enhanced JQL
 const MAX_CHANGELOG_RESULTS = 40;
 
 export class Jira {
