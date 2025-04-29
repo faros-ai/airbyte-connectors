@@ -2111,7 +2111,21 @@ export class GitHubToken extends GitHub {
   }
 
   async checkConnection(): Promise<void> {
-    await this.baseOctokit.users.getAuthenticated();
+    const response = await this.baseOctokit.users.getAuthenticated();
+    const tokenType = this.determineTokenType(response.headers);
+    this.logger.info(`Using ${tokenType} GitHub token`);
+  }
+
+  private determineTokenType(headers: any): 'classic' | 'fine-grained' {
+    const oauthScopes = headers['x-oauth-scopes'];
+
+    if (oauthScopes && oauthScopes.trim().length > 0) {
+      // Classic token has scopes listed
+      return 'classic';
+    }
+
+    // Fine-grained token has empty or missing 'x-oauth-scopes'
+    return 'fine-grained';
   }
 
   async *getOrganizationsIterator(): AsyncGenerator<string> {
