@@ -82,7 +82,11 @@ export function makeOctokitClient(
   };
 
   const auth = getOctokitAuth(cfg, installationId);
-
+  const logFn = (message: string, additionalInfo?: object) =>
+    logger.debug(
+      message,
+      additionalInfo ? JSON.stringify(additionalInfo) : undefined
+    );
   const kit = new ExtendedOctokitConstructor({
     auth,
     authStrategy: cfg.authentication.type === 'app' ? createAppAuth : undefined,
@@ -92,17 +96,12 @@ export function makeOctokitClient(
     timeout: {
       ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
     },
-    log: (() => {
-      const logFn = (message: string, additionalInfo?: object) =>
-        logger.debug(message, additionalInfo ? JSON.stringify(additionalInfo) : undefined);
-
-      return {
-        info: logFn,
-        warn: logFn,
-        error: logFn,
-        debug: logFn,
-      };
-    })(),
+    log: {
+      info: logFn,
+      warn: logFn,
+      error: logFn,
+      debug: logFn,
+    },
   });
 
   kit.hook.before('request', (request) => {
