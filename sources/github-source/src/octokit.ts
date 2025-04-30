@@ -92,12 +92,17 @@ export function makeOctokitClient(
     timeout: {
       ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
     },
-    log: {
-      info: logger.debug.bind(logger),
-      warn: logger.debug.bind(logger),
-      error: logger.debug.bind(logger),
-      debug: logger.debug.bind(logger),
-    },
+    log: (() => {
+      const logFn = (message: string, additionalInfo?: object) =>
+        logger.debug(message, additionalInfo ? JSON.stringify(additionalInfo) : undefined);
+
+      return {
+        info: logFn,
+        warn: logFn,
+        error: logFn,
+        debug: logFn,
+      };
+    })(),
   });
 
   kit.hook.before('request', (request) => {
