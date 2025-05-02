@@ -68,7 +68,7 @@ describe('index', () => {
             getBranches: jest.fn().mockResolvedValue([]),
             getRefs: jest.fn().mockResolvedValue([]),
           },
-          rest: {
+          graph: {
             get: jest.fn().mockResolvedValue({
               data: {value: usersResource},
             }),

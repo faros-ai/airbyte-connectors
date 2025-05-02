@@ -196,7 +196,7 @@ export class AzureWorkitems extends types.AzureDevOps {
     }
     if (!updates.length) {
       this.logger.warn(
-        `Failed to get updates found for work item ${id} in project ${project}`
+        `Failed to get updates for work item ${id} in project ${project}`
       );
     }
     return updates;
