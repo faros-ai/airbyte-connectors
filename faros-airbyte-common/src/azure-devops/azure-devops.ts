@@ -85,6 +85,14 @@ export abstract class AzureDevOps {
       logger
     );
 
+    const graphApi = AzureDevOps.createRestAPI(
+      `${DEFAULT_GRAPH_API_URL}/${config.organization}/_apis/graph`,
+      config.access_token,
+      timeout,
+      maxRetries,
+      logger
+    );
+
     const client = {
       build: await webApi.getBuildApi(),
       core: await webApi.getCoreApi(),
@@ -94,6 +102,7 @@ export abstract class AzureDevOps {
       release: await webApi.getReleaseApi(),
       test: await webApi.getTestApi(),
       rest: restApi,
+      graph: graphApi,
     };
 
     const pageSize = isNaN(config.page_size) ? undefined : config.page_size;
@@ -184,7 +193,9 @@ export abstract class AzureDevOps {
         timeout,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        headers: {Authorization: `Basic ${base64EncodedToken}`},
+        headers: {
+          Authorization: `Basic ${base64EncodedToken}`,
+        },
       },
       logger.asPino(),
       maxRetries,
@@ -218,8 +229,8 @@ export abstract class AzureDevOps {
 
     do {
       const result = await getFn(top, skip);
-      if (result.length) yield* result;
-      resCount = result.length;
+      if (result?.length) yield* result;
+      resCount = result?.length ?? 0;
       skip += resCount;
     } while (resCount >= top);
   }
@@ -360,16 +371,13 @@ export abstract class AzureDevOps {
   private async *getGraphUsers(): AsyncGenerator<GraphUser> {
     let continuationToken: string;
     do {
-      const res = await this.client.rest.get<types.GraphUserResponse>(
-        `${DEFAULT_GRAPH_API_URL}/_apis/graph/users`,
-        {
-          params: {
-            'api-version': DEFAULT_GRAPH_API_VERSION,
-            subjectTypes: 'msa,aad,imp',
-            continuationToken,
-          },
-        }
-      );
+      const res = await this.client.graph.get<types.GraphUserResponse>(`users`, {
+        params: {
+          'api-version': DEFAULT_GRAPH_API_VERSION,
+          subjectTypes: 'msa,aad,imp',
+          continuationToken,
+        },
+      });
       continuationToken = res?.headers?.['X-MS-ContinuationToken'];
       for (const item of res?.data?.value ?? []) {
         yield item;

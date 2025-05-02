@@ -256,7 +256,7 @@ describe('index', () => {
       undefined,
       {name: 'test', id: '123'},
       {
-        '123': {
+        'test': {
           cutoff: dateT,
         },
       }

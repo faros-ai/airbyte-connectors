@@ -22,9 +22,11 @@ export class Workitems extends StreamWithProjectSlices {
       this.config,
       this.logger
     );
-    const {id} = streamSlice;
+    const {name} = streamSlice;
     const since =
-      syncMode === SyncMode.INCREMENTAL ? streamState?.[id]?.cutoff : undefined;
+      syncMode === SyncMode.INCREMENTAL
+        ? streamState?.[name]?.cutoff
+        : undefined;
 
     yield* azureWorkitem.getWorkitems(streamSlice, since);
   }
@@ -33,7 +35,8 @@ export class Workitems extends StreamWithProjectSlices {
     currentStreamState: StreamState,
     latestRecord: WorkItemWithRevisions
   ): StreamState {
-    const currentState = currentStreamState?.[latestRecord.projectId]?.cutoff;
+    const currentState =
+      currentStreamState?.[latestRecord.project.name]?.cutoff ?? 0;
     const newState = Math.max(
       currentState,
       Utils.toDate(latestRecord.fields['System.ChangedDate']).getTime()
@@ -41,7 +44,7 @@ export class Workitems extends StreamWithProjectSlices {
 
     return {
       ...currentStreamState,
-      [latestRecord.projectId]: {
+      [latestRecord.project.name]: {
         cutoff: newState,
       },
     };
