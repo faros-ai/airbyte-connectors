@@ -51,6 +51,7 @@ export interface AzureDevOpsClient {
   readonly release: IReleaseApi;
   readonly test: ITestApi;
   readonly rest: AxiosInstance;
+  readonly graph: AxiosInstance;
 }
 
 export type User = GraphUser | IdentityRef;
@@ -142,7 +143,7 @@ export interface WorkItemRevisions {
 export interface WorkItemWithRevisions extends WorkItem {
   revisions: WorkItemRevisions;
   additionalFields: ReadonlyArray<AdditionalField>;
-  projectId: string;
+  project: ProjectReference;
 }
 
 export interface AdditionalField {

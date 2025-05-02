@@ -81,6 +81,8 @@ function convertPullRequestState(
   }
 }
 
+// GitInterfaces.IdentityRefWithVote
+// https://github.com/microsoft/azure-devops-node-api/blob/master/api/interfaces/GitInterfaces.ts#L2987-L2990
 function convertPullRequestReviewState(vote: number): CategoryDetail {
   if (vote > 5)
     return {

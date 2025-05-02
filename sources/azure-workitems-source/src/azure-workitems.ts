@@ -161,7 +161,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           },
           revisions,
           additionalFields,
-          projectId: project.id,
+          project,
         };
       }
     }
@@ -193,6 +193,11 @@ export class AzureWorkitems extends types.AzureDevOps {
     const updates = [];
     for await (const update of this.getPaginated(getUpdatesFn)) {
       updates.push(update);
+    }
+    if (!updates.length) {
+      this.logger.warn(
+        `Failed to get updates found for work item ${id} in project ${project}`
+      );
     }
     return updates;
   }

@@ -145,7 +145,10 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "WEF_6CB513B6E70E43499D9FC94E5BBFB784_Kanban.Column": "New",
     },
     "id": 297,
-    "projectId": "123",
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
     "rev": 1,
     "revisions": {
       "assignees": [
@@ -275,7 +278,10 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "System.WorkItemType": "Task",
     },
     "id": 299,
-    "projectId": "123",
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
     "rev": 7,
     "revisions": {
       "assignees": [
@@ -396,7 +402,10 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "System.WorkItemType": "Task",
     },
     "id": 300,
-    "projectId": "123",
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
     "rev": 1,
     "revisions": {
       "assignees": [
