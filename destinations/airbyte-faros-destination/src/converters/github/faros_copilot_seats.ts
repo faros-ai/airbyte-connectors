@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
-  CopilotSeatEnded,
   CopilotSeatsStreamRecord,
   GitHubTool,
 } from 'faros-airbyte-common/github';
@@ -20,7 +19,6 @@ interface UserToolKey {
 
 export class FarosCopilotSeats extends GitHubConverter {
   private readonly currentAssigneesByOrg = new Map<string, Set<string>>();
-  private readonly endedSeatsByOrg = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
@@ -37,29 +35,17 @@ export class FarosCopilotSeats extends GitHubConverter {
     const org = toLower(data.org);
     if (!this.currentAssigneesByOrg.has(org)) {
       this.currentAssigneesByOrg.set(org, new Set());
-      this.endedSeatsByOrg.set(org, new Set());
     }
     if (data.empty) {
       return [];
     }
 
-    const seat = record.record.data as CopilotSeat | CopilotSeatEnded;
-    const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
-    if (seat.endedAt) {
-      this.endedSeatsByOrg.get(org).add(seat.user);
-      return [
-        {
-          model: 'vcs_UserTool',
-          record: {
-            ...userTool,
-            inactive: true,
-            endedAt: seat.endedAt,
-          },
-        },
-      ];
-    }
-
     const activeSeat = record.record.data as CopilotSeat;
+    const userTool = userToolKey(
+      activeSeat.user,
+      activeSeat.org,
+      this.streamName.source
+    );
     this.currentAssigneesByOrg.get(org).add(activeSeat.user);
     this.collectUser(activeSeat.assignee);
 
@@ -161,10 +147,7 @@ export class FarosCopilotSeats extends GitHubConverter {
         );
         for await (const previousAssignee of previousAssigneesQuery) {
           if (
-            !this.currentAssigneesByOrg
-              .get(org)
-              .has(previousAssignee.user.uid) &&
-            !this.endedSeatsByOrg.get(org).has(previousAssignee.user.uid)
+            !this.currentAssigneesByOrg.get(org).has(previousAssignee.user.uid)
           ) {
             res.push({
               model: 'vcs_UserTool',

@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Commit, CopilotUsageSummary} from 'faros-airbyte-common/github';
+import {CopilotUsageSummary} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
