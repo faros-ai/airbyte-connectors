@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "axios": "^1.8.4",
-    "commander": "^9.3.0",
     "faros-airbyte-common": "*",
     "typescript-memoize": "^1.1.0",
     "nock": "^13.1.0",

@@ -20,7 +20,6 @@
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
@@ -28,7 +27,6 @@
   "dependencies": {
     "@gitbeaker/node": "^35.6.0",
     "axios": "^1.8.4",
-    "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },

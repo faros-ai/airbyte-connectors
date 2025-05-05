@@ -23,7 +23,6 @@
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
     "watch": "tsc -b -w src test"
@@ -32,7 +31,6 @@
     "axios": "^1.8.4",
     "axios-cache-interceptor": "^1.4.1",
     "git-url-parse": "^13.1.0",
-    "commander": "^9.3.0",
     "faros-airbyte-common": "*",
     "moment": "^2.29.1",
     "typescript-memoize": "^1.1.0",
@@ -49,9 +47,12 @@
     "testEnvironment": "node",
     "testTimeout": 10000,
     "transform": {
-      "\\.ts?$": [ "ts-jest", {
-        "tsconfig": "test/tsconfig.json"
-      }]
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     }
   }
 }
