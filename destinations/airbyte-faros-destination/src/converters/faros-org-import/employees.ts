@@ -61,7 +61,7 @@ export class Employees extends FarosOrgImportConverter {
 
     const row = record.record.data as OrgRow;
     const source: Source =
-      ctx.config.source_specific_configs.faros_org_import?.source ?? {};
+      ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
 
     const empId = row.employeeId;
     if (!empId || this.seenEmployees.has(empId)) {

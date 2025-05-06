@@ -118,7 +118,7 @@ export class Teams extends FarosOrgImportConverter {
 
     const team = record.record.data as TeamRow;
     const source: Source =
-      ctx.config.source_specific_configs.faros_org_import?.source ?? {};
+      ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
 
     // Skip team if teamId is DEFAULT_ROOT_TEAM_ID
     if (team.teamId === DEFAULT_ROOT_TEAM_ID) {
@@ -167,7 +167,7 @@ export class Teams extends FarosOrgImportConverter {
     const syncedTeams = new Set<string>();
 
     const source: Source =
-      ctx.config.source_specific_configs.faros_org_import?.source ?? {};
+      ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
 
     // Log aggregated warnings
     const teamsWithCycle = this.checkTeamsCycle();

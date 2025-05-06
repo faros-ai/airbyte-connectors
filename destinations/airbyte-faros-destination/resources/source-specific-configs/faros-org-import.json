@@ -34,6 +34,12 @@
               "description": "The VCS source"
             }
           }
+        },
+        "resolve_locations": {
+          "type": "boolean",
+          "title": "Resolve Locations",
+          "description": "Resolve employee locations using the location field.",
+          "default": false
         }
       }
     }

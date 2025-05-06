@@ -51,6 +51,9 @@
         "docker": {
           "$ref": "docker.json"
         },
+        "faros-org-import": {
+          "$ref": "faros-org-import.json"
+        },
         "firehydrant": {
           "$ref": "firehydrant.json"
         },
