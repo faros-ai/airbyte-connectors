@@ -1,8 +1,8 @@
-export interface OrgRow {
+export interface EmployeeRow {
   readonly employeeId: string;
   readonly fullName?: string;
   readonly email?: string;
-  readonly teamId?: string;
+  readonly teamId?: string; // Comma separated list of team IDs
   readonly level?: string;
   readonly joinedAt?: string;
   readonly terminatedAt?: string;
@@ -13,15 +13,15 @@ export interface OrgRow {
   readonly title?: string;
   readonly role?: string;
   readonly type?: string;
-  readonly amsId?: string;
-  readonly calId?: string;
-  readonly imsId?: string;
-  readonly surveyId?: string;
-  readonly tmsId?: string;
-  readonly tmsId_Jira?: string;
-  readonly vcsId?: string;
-  readonly vcsId_GitHub?: string;
-  readonly vcsId_BitBucket?: string;
+  readonly amsId?: string; // Comma separated list of IDs
+  readonly calId?: string; // Comma separated list of IDs
+  readonly imsId?: string; // Comma separated list of IDs
+  readonly surveyId?: string; // Comma separated list of IDs
+  readonly tmsId?: string; // Comma separated list of IDs
+  readonly tmsId_Jira?: string; // Comma separated list of IDs
+  readonly vcsId?: string; // Comma separated list of IDs
+  readonly vcsId_GitHub?: string; // Comma separated list of IDs
+  readonly vcsId_BitBucket?: string; // Comma separated list of IDs
 }
 
 export interface TeamRow {

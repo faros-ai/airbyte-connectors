@@ -2,14 +2,9 @@ import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {LocationCollector} from '../common/geo';
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-  StreamName,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FarosOrgImportConverter, lift} from './common';
-import {EmployeeTypeMap, IdentityNamespace, OrgRow, Source} from './types';
+import {EmployeeRow, EmployeeTypeMap, IdentityNamespace, Source} from './types';
 
 export class Employees extends FarosOrgImportConverter {
   private locationCollector: LocationCollector = undefined;
@@ -59,7 +54,7 @@ export class Employees extends FarosOrgImportConverter {
     this.initialize(ctx);
     const models = [];
 
-    const row = record.record.data as OrgRow;
+    const row = record.record.data as EmployeeRow;
     const source: Source =
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
 

@@ -108,6 +108,7 @@ export class Teams extends FarosOrgImportConverter {
     'org_Team',
     'survey_OrgTeam',
     'org_CommunicationChannel',
+    'org_TeamMembership',
   ];
 
   async convert(
@@ -119,6 +120,11 @@ export class Teams extends FarosOrgImportConverter {
     const team = record.record.data as TeamRow;
     const source: Source =
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
+
+    if (!team.teamId) {
+      ctx.logger?.error('Missing teamId: ' + JSON.stringify(team));
+      return [];
+    }
 
     // Skip team if teamId is DEFAULT_ROOT_TEAM_ID
     if (team.teamId === DEFAULT_ROOT_TEAM_ID) {
@@ -218,6 +224,17 @@ export class Teams extends FarosOrgImportConverter {
         },
       });
       syncedTeams.add(team.teamId);
+
+      // Sync team lead membership
+      if (team.teamLeadId) {
+        models.push({
+          model: 'org_TeamMembership',
+          record: {
+            team: {uid: team.teamId},
+            member: {uid: team.teamLeadId},
+          },
+        });
+      }
 
       // Sync team communication channels
       if (team.communicationChannel_Discord) {
