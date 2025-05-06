@@ -1,7 +1,3 @@
-import {
-  AirbyteLogger,
-  AirbyteLogLevel,
-} from 'faros-airbyte-cdk';
 import {IssueTransformer} from '../src/issue_transformer';
 
 describe('IssueTransformer', () => {
