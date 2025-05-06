@@ -1,0 +1,41 @@
+{
+  "title": "Faros Org Data Import",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source": {
+          "type": "object",
+          "properties": {
+            "ams": {
+              "type": "string",
+              "description": "The AMS source"
+            },
+            "cal": {
+              "type": "string",
+              "description": "The Cal source"
+            },
+            "ims": {
+              "type": "string",
+              "description": "The IMS source"
+            },
+            "survey": {
+              "type": "string",
+              "description": "The Survey source"
+            },
+            "tms": {
+              "type": "string",
+              "description": "The TMS source"
+            },
+            "vcs": {
+              "type": "string",
+              "description": "The VCS source"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

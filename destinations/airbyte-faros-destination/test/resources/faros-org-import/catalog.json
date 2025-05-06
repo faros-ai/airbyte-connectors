@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros-org-import__employees"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "faros-org-import__teams"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "faros-org-import__tools"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

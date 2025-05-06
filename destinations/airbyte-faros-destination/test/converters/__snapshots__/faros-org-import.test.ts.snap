@@ -1,0 +1,1382 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros-org-import process records from all streams 1`] = `
+Array [
+  "Processed 23 records",
+  "Processed records by stream: {\\\\\\"faros-org-import__employees\\\\\\":15,\\\\\\"faros-org-import__teams\\\\\\":5,\\\\\\"faros-org-import__tools\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 108 records",
+  "Would write records by model: {\\\\\\"ams_UserIdentity\\\\\\":14,\\\\\\"cal_UserIdentity\\\\\\":14,\\\\\\"geo_Address\\\\\\":3,\\\\\\"geo_Location\\\\\\":3,\\\\\\"identity_Identity\\\\\\":15,\\\\\\"ims_UserIdentity\\\\\\":4,\\\\\\"org_CommunicationChannel\\\\\\":4,\\\\\\"org_Employee\\\\\\":15,\\\\\\"org_EmployeeTool\\\\\\":3,\\\\\\"org_Team\\\\\\":5,\\\\\\"org_TeamMembership\\\\\\":18,\\\\\\"survey_OrgTeam\\\\\\":1,\\\\\\"survey_UserIdentity\\\\\\":1,\\\\\\"tms_UserIdentity\\\\\\":3,\\\\\\"vcs_UserIdentity\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros-org-import process records from all streams 2`] = `
+Array [
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2019-01-02T08:00:00.000Z",
+      "deactivatedAt": "2022-01-02T08:00:00.000Z",
+      "employee": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "GitHub Codepilot",
+      },
+    },
+  },
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2018-02-02T08:00:00.000Z",
+      "deactivatedAt": null,
+      "employee": Object {
+        "uid": "pam",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "GitHub Codepilot",
+      },
+    },
+  },
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2021-02-02T08:00:00.000Z",
+      "deactivatedAt": null,
+      "employee": Object {
+        "uid": "creed",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "Grammarly",
+      },
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "all_teams",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "michael@dm.com",
+      ],
+      "fullName": "Michael Scott",
+      "primaryEmail": "michael@dm.com",
+      "source": "faros-org-import",
+      "uid": "michael",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "michael",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2007-01-04T08:00:00.000Z",
+      "level": 4,
+      "location": Object {
+        "uid": "Seattle, WA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": "2013-05-16T07:00:00.000Z",
+      "title": null,
+      "uid": "michael",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "dwite@dm.com",
+      ],
+      "fullName": "Dwite Schrute",
+      "primaryEmail": "dwite@dm.com",
+      "source": "faros-org-import",
+      "uid": "dwite",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2007-01-04T08:00:00.000Z",
+      "level": 3,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "dwite",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "jim",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "api",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "jim@dm.com",
+      ],
+      "fullName": "Jim Halpert",
+      "primaryEmail": "jim@dm.com",
+      "source": "faros-org-import",
+      "uid": "jim",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "jim",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2009-01-02T08:00:00.000Z",
+      "level": 2,
+      "location": Object {
+        "uid": "Seattle, WA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "jim",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "pam",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "back-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "pam@dm.com",
+      ],
+      "fullName": "Pam Beesly",
+      "primaryEmail": "pam@dm.com",
+      "source": "faros-org-import",
+      "uid": "pam",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "pam",
+      },
+      "ignored": false,
+      "inactive": true,
+      "joinedAt": "2010-01-01T08:00:00.000Z",
+      "level": 3,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "pam",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "phyllis",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "back-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "phyllis@dm.com",
+      ],
+      "fullName": "Phyllis Lapin",
+      "primaryEmail": "phyllis@dm.com",
+      "source": "faros-org-import",
+      "uid": "phyllis",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "phyllis",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2018-04-01T07:00:00.000Z",
+      "level": 3,
+      "location": Object {
+        "uid": "New York City, NY",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "phyllis",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "stanley",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "back-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "stanley@dm.com",
+      ],
+      "fullName": "Stanley Hudson",
+      "primaryEmail": "stanley@dm.com",
+      "source": "faros-org-import",
+      "uid": "stanley",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "stanley",
+      },
+      "ignored": false,
+      "inactive": true,
+      "joinedAt": "2018-04-01T07:00:00.000Z",
+      "level": 2,
+      "location": Object {
+        "uid": "Seattle, WA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "stanley",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "merideth",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "front-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "merideth@dm.com",
+      ],
+      "fullName": "Merideth Palmer",
+      "primaryEmail": "merideth@dm.com",
+      "source": "faros-org-import",
+      "uid": "merideth",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "merideth",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2010-01-01T08:00:00.000Z",
+      "level": 2,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "merideth",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "kelly",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "front-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "kelly@dm.com",
+      ],
+      "fullName": "Kelly Kapoor",
+      "primaryEmail": "kelly@dm.com",
+      "source": "faros-org-import",
+      "uid": "kelly",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "kelly",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": null,
+      "level": 3,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": "2008-05-31T07:00:00.000Z",
+      "title": null,
+      "uid": "kelly",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "creed",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "front-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "creed@dm.com",
+      ],
+      "fullName": "Creed Bratton",
+      "primaryEmail": "creed@dm.com",
+      "source": "faros-org-import",
+      "uid": "creed",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "creed",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2010-01-01T08:00:00.000Z",
+      "level": 3,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "creed",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "toby",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "api",
+      },
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "toby",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "front-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "toby@dm.com",
+      ],
+      "fullName": "Toby Flenderson",
+      "primaryEmail": "toby@dm.com",
+      "source": "faros-org-import",
+      "uid": "toby",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "toby",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2007-01-04T08:00:00.000Z",
+      "level": 4,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": "2008-01-04T08:00:00.000Z",
+      "title": null,
+      "uid": "toby",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "darryl",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "api",
+      },
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "darryl",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "back-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "darryl@dm.com",
+      ],
+      "fullName": "Darryl Philbin",
+      "primaryEmail": "darryl@dm.com",
+      "source": "faros-org-import",
+      "uid": "darryl",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "darryl",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2022-03-29T07:00:00.000Z",
+      "level": 4,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "darryl",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "angela",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "data-science",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "angela@dm.com",
+      ],
+      "fullName": "Angela Martin",
+      "primaryEmail": "angela@dm.com",
+      "source": "faros-org-import",
+      "uid": "angela",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "angela",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": null,
+      "level": 3,
+      "location": Object {
+        "uid": "San Francisco, CA",
+      },
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "angela",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "oscar",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "data-science",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "oscar@dm.com",
+      ],
+      "fullName": "Oscar Martinez",
+      "primaryEmail": "oscar@dm.com",
+      "source": "faros-org-import",
+      "uid": "oscar",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "oscar",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2010-01-01T08:00:00.000Z",
+      "level": null,
+      "location": null,
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "oscar",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "kevin",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "data-science",
+      },
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "kevin",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "kevin@dm.com",
+      ],
+      "fullName": "Kevin Malone",
+      "primaryEmail": "kevin@dm.com",
+      "source": "faros-org-import",
+      "uid": "kevin",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "kevin",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2022-03-29T07:00:00.000Z",
+      "level": 2,
+      "location": null,
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": null,
+      "title": null,
+      "uid": "kevin",
+    },
+  },
+  Object {
+    "org_TeamMembership": Object {
+      "member": Object {
+        "uid": "andy",
+      },
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "back-end",
+      },
+    },
+  },
+  Object {
+    "identity_Identity": Object {
+      "emails": Array [
+        "andy@dm.com",
+      ],
+      "fullName": "Andy Bernard",
+      "primaryEmail": "andy@dm.com",
+      "source": "faros-org-import",
+      "uid": "andy",
+    },
+  },
+  Object {
+    "org_Employee": Object {
+      "employmentType": null,
+      "identity": Object {
+        "uid": "andy",
+      },
+      "ignored": false,
+      "inactive": false,
+      "joinedAt": "2022-03-20T00:00:00.000Z",
+      "level": null,
+      "location": null,
+      "role": null,
+      "source": "faros-org-import",
+      "terminatedAt": "2009-01-02T08:00:00.000Z",
+      "title": null,
+      "uid": "andy",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "michael@dm.com",
+      },
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "dwite@dm.com",
+      },
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "jim@dm.com",
+      },
+      "identity": Object {
+        "uid": "jim",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "pam@dm.com",
+      },
+      "identity": Object {
+        "uid": "pam",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "phyllis@dm.com",
+      },
+      "identity": Object {
+        "uid": "phyllis",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "stanley@dm.com",
+      },
+      "identity": Object {
+        "uid": "stanley",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "merideth@dm.com",
+      },
+      "identity": Object {
+        "uid": "merideth",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "kelly@dm.com",
+      },
+      "identity": Object {
+        "uid": "kelly",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "creed@dm.com",
+      },
+      "identity": Object {
+        "uid": "creed",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "toby@dm.com",
+      },
+      "identity": Object {
+        "uid": "toby",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "darryl@dm.com",
+      },
+      "identity": Object {
+        "uid": "darryl",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "angela@dm.com",
+      },
+      "identity": Object {
+        "uid": "angela",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "oscar@dm.com",
+      },
+      "identity": Object {
+        "uid": "oscar",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ams_UserIdentity": Object {
+      "amsUser": Object {
+        "source": "test-ams",
+        "uid": "kevin@dm.com",
+      },
+      "identity": Object {
+        "uid": "kevin",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "michael@dm.com",
+      },
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "dwite@dm.com",
+      },
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "jim@dm.com",
+      },
+      "identity": Object {
+        "uid": "jim",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "pam@dm.com",
+      },
+      "identity": Object {
+        "uid": "pam",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "phyllis@dm.com",
+      },
+      "identity": Object {
+        "uid": "phyllis",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "stanley@dm.com",
+      },
+      "identity": Object {
+        "uid": "stanley",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "merideth@dm.com",
+      },
+      "identity": Object {
+        "uid": "merideth",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "kelly@dm.com",
+      },
+      "identity": Object {
+        "uid": "kelly",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "creed@dm.com",
+      },
+      "identity": Object {
+        "uid": "creed",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "toby@dm.com",
+      },
+      "identity": Object {
+        "uid": "toby",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "darryl@dm.com",
+      },
+      "identity": Object {
+        "uid": "darryl",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "angela@dm.com",
+      },
+      "identity": Object {
+        "uid": "angela",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "oscar@dm.com",
+      },
+      "identity": Object {
+        "uid": "oscar",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "cal_UserIdentity": Object {
+      "calUser": Object {
+        "source": "test-cal",
+        "uid": "kevin@dm.com",
+      },
+      "identity": Object {
+        "uid": "kevin",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ims_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "imsUser": Object {
+        "source": "test-ims",
+        "uid": "mscott-pagerduty",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ims_UserIdentity": Object {
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "imsUser": Object {
+        "source": "test-ims",
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ims_UserIdentity": Object {
+      "identity": Object {
+        "uid": "jim",
+      },
+      "imsUser": Object {
+        "source": "test-ims",
+        "uid": "jimbo123",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "ims_UserIdentity": Object {
+      "identity": Object {
+        "uid": "pam",
+      },
+      "imsUser": Object {
+        "source": "test-ims",
+        "uid": "pamPD",
+      },
+      "source": "faros-org-import",
+    },
+  },
+  Object {
+    "survey_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "surveyUser": Object {
+        "source": "test-survey",
+        "uid": "michael",
+      },
+    },
+  },
+  Object {
+    "tms_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "tmsUser": Object {
+        "source": "test-tms",
+        "uid": "mscott-jira",
+      },
+    },
+  },
+  Object {
+    "tms_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "tmsUser": Object {
+        "source": "test-tms",
+        "uid": "mscott2-jira",
+      },
+    },
+  },
+  Object {
+    "tms_UserIdentity": Object {
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+      "tmsUser": Object {
+        "source": "test-tms",
+        "uid": "dwite",
+      },
+    },
+  },
+  Object {
+    "vcs_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "vcsUser": Object {
+        "source": "GitHub",
+        "uid": "mscott2-github",
+      },
+    },
+  },
+  Object {
+    "vcs_UserIdentity": Object {
+      "identity": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "vcsUser": Object {
+        "source": "GitHub",
+        "uid": "mscott2-github",
+      },
+    },
+  },
+  Object {
+    "vcs_UserIdentity": Object {
+      "identity": Object {
+        "uid": "dwite",
+      },
+      "source": "faros-org-import",
+      "vcsUser": Object {
+        "source": "test-vcs",
+        "uid": "dwite-bitbucket",
+      },
+    },
+  },
+  Object {
+    "vcs_UserIdentity": Object {
+      "identity": Object {
+        "uid": "jim",
+      },
+      "source": "faros-org-import",
+      "vcsUser": Object {
+        "source": "test-vcs",
+        "uid": "jimbo",
+      },
+    },
+  },
+  Object {
+    "vcs_UserIdentity": Object {
+      "identity": Object {
+        "uid": "phyllis",
+      },
+      "source": "faros-org-import",
+      "vcsUser": Object {
+        "source": "test-vcs",
+        "uid": "plapin",
+      },
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "fullAddress": "Seattle, WA",
+      "source": "faros-org-import",
+      "uid": "Seattle, WA",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "Seattle, WA",
+      },
+      "coordinates": null,
+      "raw": "Seattle, WA",
+      "source": "faros-org-import",
+      "uid": "Seattle, WA",
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "fullAddress": "San Francisco, CA",
+      "source": "faros-org-import",
+      "uid": "San Francisco, CA",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "San Francisco, CA",
+      },
+      "coordinates": null,
+      "raw": "San Francisco, CA",
+      "source": "faros-org-import",
+      "uid": "San Francisco, CA",
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "fullAddress": "New York City, NY",
+      "source": "faros-org-import",
+      "uid": "New York City, NY",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "New York City, NY",
+      },
+      "coordinates": null,
+      "raw": "New York City, NY",
+      "source": "faros-org-import",
+      "uid": "New York City, NY",
+    },
+  },
+  Object {
+    "org_Team": Object {
+      "description": "An Engineering team",
+      "leader": Object {
+        "uid": "dwite",
+      },
+      "name": "Engineering",
+      "parentTeamId": "all_teams",
+      "source": "faros-org-import",
+      "uid": "engineering",
+    },
+  },
+  Object {
+    "org_CommunicationChannel": Object {
+      "name": "engineering : Discord communication channel",
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+      "type": "Discord",
+      "uid": "Discord__#engineering",
+      "value": "#engineering",
+    },
+  },
+  Object {
+    "org_CommunicationChannel": Object {
+      "name": "engineering : Email communication channel",
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+      "type": "Email",
+      "uid": "Email__eng@dm.com",
+      "value": "eng@dm.com",
+    },
+  },
+  Object {
+    "org_CommunicationChannel": Object {
+      "name": "engineering : Slack communication channel",
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+      "type": "Slack",
+      "uid": "Slack__#engineering",
+      "value": "#engineering",
+    },
+  },
+  Object {
+    "org_CommunicationChannel": Object {
+      "name": "engineering : Teams communication channel",
+      "source": "faros-org-import",
+      "team": Object {
+        "uid": "engineering",
+      },
+      "type": "Teams",
+      "uid": "Teams__Eng eng eng eng",
+      "value": "Eng eng eng eng",
+    },
+  },
+  Object {
+    "org_Team": Object {
+      "description": null,
+      "leader": Object {
+        "uid": "angela",
+      },
+      "name": "Data Science",
+      "parentTeamId": "all_teams",
+      "source": "faros-org-import",
+      "uid": "data-science",
+    },
+  },
+  Object {
+    "org_Team": Object {
+      "description": null,
+      "leader": Object {
+        "uid": "merideth",
+      },
+      "name": "Front End",
+      "parentTeamId": "engineering",
+      "source": "faros-org-import",
+      "uid": "front-end",
+    },
+  },
+  Object {
+    "org_Team": Object {
+      "description": null,
+      "leader": Object {
+        "uid": "pam",
+      },
+      "name": "Back End",
+      "parentTeamId": "engineering",
+      "source": "faros-org-import",
+      "uid": "back-end",
+    },
+  },
+  Object {
+    "org_Team": Object {
+      "description": null,
+      "leader": Object {
+        "uid": "jim",
+      },
+      "name": "API",
+      "parentTeamId": "engineering",
+      "source": "faros-org-import",
+      "uid": "api",
+    },
+  },
+  Object {
+    "survey_OrgTeam": Object {
+      "orgTeam": Object {
+        "uid": "engineering",
+      },
+      "source": "faros-org-import",
+      "surveyTeam": Object {
+        "source": "test-survey",
+        "uid": "engineering",
+      },
+    },
+  },
+]
+`;
