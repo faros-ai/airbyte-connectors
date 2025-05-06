@@ -4,19 +4,19 @@
       "stream": {
         "name": "faros-org-import__employees"
       },
-      "destination_sync_mode": "append"
+      "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
         "name": "faros-org-import__teams"
       },
-      "destination_sync_mode": "append"
+      "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
         "name": "faros-org-import__tools"
       },
-      "destination_sync_mode": "append"
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

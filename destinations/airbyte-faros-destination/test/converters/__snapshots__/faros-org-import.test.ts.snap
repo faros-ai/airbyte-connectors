@@ -14,48 +14,6 @@ Array [
 exports[`faros-org-import process records from all streams 2`] = `
 Array [
   Object {
-    "org_EmployeeTool": Object {
-      "activatedAt": "2019-01-02T08:00:00.000Z",
-      "deactivatedAt": "2022-01-02T08:00:00.000Z",
-      "employee": Object {
-        "uid": "michael",
-      },
-      "source": "faros-org-import",
-      "tool": Object {
-        "category": "Custom",
-        "detail": "GitHub Codepilot",
-      },
-    },
-  },
-  Object {
-    "org_EmployeeTool": Object {
-      "activatedAt": "2018-02-02T08:00:00.000Z",
-      "deactivatedAt": null,
-      "employee": Object {
-        "uid": "pam",
-      },
-      "source": "faros-org-import",
-      "tool": Object {
-        "category": "Custom",
-        "detail": "GitHub Codepilot",
-      },
-    },
-  },
-  Object {
-    "org_EmployeeTool": Object {
-      "activatedAt": "2021-02-02T08:00:00.000Z",
-      "deactivatedAt": null,
-      "employee": Object {
-        "uid": "creed",
-      },
-      "source": "faros-org-import",
-      "tool": Object {
-        "category": "Custom",
-        "detail": "Grammarly",
-      },
-    },
-  },
-  Object {
     "org_TeamMembership": Object {
       "member": Object {
         "uid": "michael",
@@ -710,6 +668,48 @@ Array [
       "terminatedAt": "2009-01-02T08:00:00.000Z",
       "title": null,
       "uid": "andy",
+    },
+  },
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2019-01-02T08:00:00.000Z",
+      "deactivatedAt": "2022-01-02T08:00:00.000Z",
+      "employee": Object {
+        "uid": "michael",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "GitHub Codepilot",
+      },
+    },
+  },
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2018-02-02T08:00:00.000Z",
+      "deactivatedAt": null,
+      "employee": Object {
+        "uid": "pam",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "GitHub Codepilot",
+      },
+    },
+  },
+  Object {
+    "org_EmployeeTool": Object {
+      "activatedAt": "2021-02-02T08:00:00.000Z",
+      "deactivatedAt": null,
+      "employee": Object {
+        "uid": "creed",
+      },
+      "source": "faros-org-import",
+      "tool": Object {
+        "category": "Custom",
+        "detail": "Grammarly",
+      },
     },
   },
   Object {

@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {DEFAULT_ROOT_TEAM_ID, FarosOrgImportConverter} from './common';
+import {DEFAULT_ROOT_TEAM_ID, FarosOrgImportConverter, lift} from './common';
 import {Source, TeamRow} from './types';
 
 interface TeamOwnersip {
@@ -98,6 +98,7 @@ export class Teams extends FarosOrgImportConverter {
 
   private teamsMissingTeamName: string[] = [];
   private teamsMissingParentTeamId: string[] = [];
+  private teamsMissingTeamLeadId: string[] = [];
 
   id(record: AirbyteRecord): any {
     return record?.record?.data?.teamId;
@@ -130,6 +131,11 @@ export class Teams extends FarosOrgImportConverter {
     // Missing teamName
     if (!team.teamName) {
       this.teamsMissingTeamName.push(team.teamId);
+    }
+
+    // Missing teamLeadId
+    if (!team.teamLeadId) {
+      this.teamsMissingTeamLeadId.push(team.teamId);
     }
 
     // Missing parentTeamId
@@ -179,6 +185,13 @@ export class Teams extends FarosOrgImportConverter {
         )}`
       );
     }
+    if (this.teamsMissingTeamLeadId.length) {
+      ctx.logger?.warn(
+        `The following teams are missing teamLeadId: ${this.teamsMissingTeamLeadId.join(
+          ', '
+        )}`
+      );
+    }
     if (teamsWithCycle.length) {
       ctx.logger?.warn(
         `The following teams have a cycle in their parent-child relationship: ${Array.from(
@@ -201,7 +214,7 @@ export class Teams extends FarosOrgImportConverter {
           name: team.teamName,
           parentTeamId: team.parentTeamId,
           description: team.teamDescription,
-          leader: {uid: team.teamLeadId},
+          leader: lift(team.teamLeadId, (leadId) => ({uid: leadId})),
         },
       });
       syncedTeams.add(team.teamId);

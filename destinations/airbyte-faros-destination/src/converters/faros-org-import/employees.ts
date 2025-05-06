@@ -8,7 +8,7 @@ import {
   StreamContext,
   StreamName,
 } from '../converter';
-import {DEFAULT_ROOT_TEAM_ID, FarosOrgImportConverter, lift} from './common';
+import {FarosOrgImportConverter, lift} from './common';
 import {EmployeeTypeMap, IdentityNamespace, OrgRow, Source} from './types';
 
 export class Employees extends FarosOrgImportConverter {
@@ -40,12 +40,6 @@ export class Employees extends FarosOrgImportConverter {
     'geo_Coordinates',
   ];
 
-  private readonly teamStream = new StreamName(this.source, 'teams');
-
-  override get dependencies(): readonly StreamName[] {
-    return [this.teamStream];
-  }
-
   private initialize(ctx: StreamContext): void {
     if (this.locationCollector) {
       return;
@@ -64,12 +58,6 @@ export class Employees extends FarosOrgImportConverter {
 
     this.initialize(ctx);
     const models = [];
-
-    const syncedTeams = new Set(
-      Object.values(ctx.getAll(this.teamStream.asString)).map(
-        (record) => record.record.data.teamId
-      )
-    );
 
     const row = record.record.data as OrgRow;
     const source: Source =
@@ -143,20 +131,13 @@ export class Employees extends FarosOrgImportConverter {
     if (teamIds) {
       for (const untrimmed of teamIds.split(',')) {
         const teamId = untrimmed.trim();
-        if (
-          teamId !== '' &&
-          (syncedTeams.size === 0 || // No teams were synced
-            syncedTeams.has(teamId) || // Team was synced
-            teamId === DEFAULT_ROOT_TEAM_ID) // Team is root team
-        ) {
-          models.push({
-            model: 'org_TeamMembership',
-            record: {
-              team: {uid: teamId},
-              member: {uid: empId},
-            },
-          });
-        }
+        models.push({
+          model: 'org_TeamMembership',
+          record: {
+            team: {uid: teamId},
+            member: {uid: empId},
+          },
+        });
       }
     }
 
