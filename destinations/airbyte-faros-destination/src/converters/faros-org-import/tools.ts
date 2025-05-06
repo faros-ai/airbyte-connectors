@@ -8,7 +8,7 @@ import {ToolMap, ToolRow} from './types';
 export class Tools extends FarosOrgImportConverter {
   id(record: AirbyteRecord): any {
     const tool = record?.record?.data;
-    return `${tool.tool}__${tool?.employeeId}`;
+    return `${tool.tool}__${tool.employeeId}`;
   }
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
