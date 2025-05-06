@@ -49,8 +49,6 @@ export class Employees extends FarosOrgImportConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    ctx.logger?.debug(JSON.stringify(record));
-
     this.initialize(ctx);
     const models = [];
 

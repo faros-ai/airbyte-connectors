@@ -19,7 +19,6 @@ export class Tools extends FarosOrgImportConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    ctx.logger?.debug(JSON.stringify(record));
     const models = [];
 
     const tool = record.record.data as ToolRow;

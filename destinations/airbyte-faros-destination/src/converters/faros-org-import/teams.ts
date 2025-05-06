@@ -115,8 +115,6 @@ export class Teams extends FarosOrgImportConverter {
     record: AirbyteRecord,
     ctx?: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    ctx.logger?.debug('Syncing team: ' + JSON.stringify(record));
-
     const team = record.record.data as TeamRow;
     const source: Source =
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
