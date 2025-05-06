@@ -543,15 +543,25 @@ export class IssueTransformer {
   /**
    * Check for existence of the members 'value', 'name' and then
    * 'displayName'in that order and return when one is found
-   * (or undefined if none).
+   * (or undefined if none). For cascading fields, returns both parent
+   * and child values as a structured object.
    *
    * @param jsonValue The object whose members should be considered
-   * @returns         The value, name or displayName within the object
+   * @returns         The value, name or displayName within the object,
+   *                  or a structured object for cascading fields
    */
   retrieveFieldValue(jsonValue: any): any | undefined {
     let val;
     if (jsonValue?.value != null) {
       val = jsonValue.value;
+      
+      // Check for child value in cascading fields
+      if (jsonValue.child?.value != null) {
+        return {
+          parent: jsonValue.value,
+          child: jsonValue.child.value
+        };
+      }
     } else if (jsonValue?.name != null) {
       val = jsonValue.name;
     } else if (jsonValue?.displayName != null) {
