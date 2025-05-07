@@ -1654,6 +1654,7 @@ Add any other context about the changes here.
     },
     "reviewRequests": [
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "html_url": "https://github.com/nehanda",
           "login": "nehanda",
@@ -1844,7 +1845,7 @@ N/A
     },
     "reviewRequests": [
       {
-        "asCodeOwner": false,
+        "asCodeOwner": true,
         "requestedReviewer": {
           "html_url": "https://github.com/user1",
           "login": "user1",
@@ -2004,6 +2005,7 @@ Add any other context about the changes here.
     },
     "reviewRequests": [
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "html_url": "https://github.com/nehanda",
           "login": "nehanda",
@@ -2167,7 +2169,7 @@ N/A
     },
     "reviewRequests": [
       {
-        "asCodeOwner": false,
+        "asCodeOwner": true,
         "requestedReviewer": {
           "html_url": "https://github.com/user1",
           "login": "user1",
