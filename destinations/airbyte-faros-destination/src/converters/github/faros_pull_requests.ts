@@ -40,6 +40,7 @@ export class FarosPullRequests extends GitHubConverter {
     'vcs_PullRequestFile',
     'vcs_PullRequestLabel',
     'vcs_PullRequestReview',
+    'vcs_PullRequestReviewRequest',
     'qa_CodeQuality',
   ];
 
