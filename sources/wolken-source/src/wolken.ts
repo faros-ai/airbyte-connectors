@@ -90,17 +90,14 @@ export class WolkenTokenManager implements TokenManager {
 export class Wolken {
   private static wolken: Wolken;
   private readonly userLookupRefs: Set<string> = new Set();
-  private readonly limiter: Bottleneck;
-
   constructor(
     private readonly logger: AirbyteLogger,
     private readonly httpClient: AxiosInstance,
     private readonly tokenManager: TokenManager,
     private readonly pageSize: number,
     private readonly flexFieldUserLookupNames: string[],
-    limiter: Bottleneck
+    private readonly limiter: Bottleneck
   ) {
-    this.limiter = limiter;
     // Add response interceptor to handle token refresh on 401
     this.httpClient.interceptors.response.use(
       (response) => response,
