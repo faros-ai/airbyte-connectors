@@ -1,4 +1,5 @@
 import {AxiosInstance} from 'axios';
+import Bottleneck from 'bottleneck';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {ConfigurationItem, Incident, User} from 'faros-airbyte-common/wolken';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
@@ -9,6 +10,7 @@ const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
 const DEFAULT_RETRIES = 3;
 export const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_RATE_LIMIT_PER_MINUTE = 200;
 
 export interface WolkenConfig {
   readonly base_url: string;
@@ -28,6 +30,7 @@ export interface WolkenConfig {
   endDate?: Date;
   readonly configuration_items_type_ids?: number[];
   readonly flex_field_user_lookup_names?: string[];
+  readonly rate_limit_per_minute?: number;
 }
 
 interface TokenResponse {
@@ -87,13 +90,13 @@ export class WolkenTokenManager implements TokenManager {
 export class Wolken {
   private static wolken: Wolken;
   private readonly userLookupRefs: Set<string> = new Set();
-
   constructor(
     private readonly logger: AirbyteLogger,
     private readonly httpClient: AxiosInstance,
     private readonly tokenManager: TokenManager,
     private readonly pageSize: number,
-    private readonly flexFieldUserLookupNames: string[]
+    private readonly flexFieldUserLookupNames: string[],
+    private readonly limiter: Bottleneck
   ) {
     // Add response interceptor to handle token refresh on 401
     this.httpClient.interceptors.response.use(
@@ -161,12 +164,20 @@ export class Wolken {
       config.domain
     );
 
+    const rateLimit = config.rate_limit_per_minute ?? DEFAULT_RATE_LIMIT_PER_MINUTE;
+    const limiter = new Bottleneck({
+      reservoir: rateLimit,
+      reservoirRefreshAmount: rateLimit,
+      reservoirRefreshInterval: 60 * 1000, // every 60 seconds
+    });
+
     Wolken.wolken = new Wolken(
       logger,
       httpClient,
       tokenManager,
       config.page_size ?? DEFAULT_PAGE_SIZE,
-      config.flex_field_user_lookup_names ?? []
+      config.flex_field_user_lookup_names ?? [],
+      limiter
     );
 
     return Wolken.wolken;
@@ -186,13 +197,13 @@ export class Wolken {
     try {
       let done = false;
       while (!done) {
-        const response = await this.httpClient.get(
+        const response = await this.limiter.schedule(async () => this.httpClient.get(
           `${endpoint}/${this.pageSize}/${offset}`,
           {
             headers: {Authorization: `Bearer ${token}`},
             params,
           }
-        );
+        ));
 
         const items = response?.data?.data ?? [];
 
@@ -221,14 +232,14 @@ export class Wolken {
         yield user;
       } else {
         try {
-          const response = await this.httpClient.get(
+          const response = await this.limiter.schedule(async () => this.httpClient.get(
             `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
             {
               headers: {
                 Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
               },
             }
-          );
+          ));
           const responseData = get(response, 'data.data');
           if (Array.isArray(responseData) && responseData.length > 0) {
             yield responseData[0];
@@ -260,14 +271,14 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.httpClient.get(
+        const response = await this.limiter.schedule(async () => this.httpClient.get(
           `/api/incidents/${incident.ticketId}`,
           {
             headers: {
               Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
             },
           }
-        );
+        ));
         const responseData = get(response, 'data.data');
         if (Array.isArray(responseData) && responseData.length > 0) {
           yield responseData[0];
@@ -294,14 +305,14 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.httpClient.get(`/api/ci/get_ci`, {
+        const response = await this.limiter.schedule(async () => this.httpClient.get(`/api/ci/get_ci`, {
           headers: {
             Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
           },
           params: {
             ciId: ci.ciId,
           },
-        });
+        }));
         const responseData = response?.data?.data;
         if (Array.isArray(responseData) && responseData.length > 0) {
           const ci = responseData[0] as ConfigurationItem;
