@@ -10,6 +10,7 @@ const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_API_TIMEOUT_MS = 0; // 0 means no timeout
 const DEFAULT_RETRIES = 3;
 export const DEFAULT_CUTOFF_DAYS = 90;
+const DEFAULT_RATE_LIMIT_PER_MINUTE = 200;
 
 export interface WolkenConfig {
   readonly base_url: string;
@@ -97,8 +98,9 @@ export class Wolken {
     private readonly tokenManager: TokenManager,
     private readonly pageSize: number,
     private readonly flexFieldUserLookupNames: string[],
-    private readonly limiter: Bottleneck
+    limiter: Bottleneck
   ) {
+    this.limiter = limiter;
     // Add response interceptor to handle token refresh on 401
     this.httpClient.interceptors.response.use(
       (response) => response,
@@ -165,7 +167,7 @@ export class Wolken {
       config.domain
     );
 
-    const rateLimit = config.rate_limit_per_minute ?? 200;
+    const rateLimit = config.rate_limit_per_minute ?? DEFAULT_RATE_LIMIT_PER_MINUTE;
     const limiter = new Bottleneck({
       reservoir: rateLimit,
       reservoirRefreshAmount: rateLimit,
@@ -198,7 +200,7 @@ export class Wolken {
     try {
       let done = false;
       while (!done) {
-        const response = await this.limiter.schedule(() => this.httpClient.get(
+        const response = await this.limiter.schedule(async () => this.httpClient.get(
           `${endpoint}/${this.pageSize}/${offset}`,
           {
             headers: {Authorization: `Bearer ${token}`},
@@ -233,7 +235,7 @@ export class Wolken {
         yield user;
       } else {
         try {
-          const response = await this.limiter.schedule(() => this.httpClient.get(
+          const response = await this.limiter.schedule(async () => this.httpClient.get(
             `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
             {
               headers: {
@@ -272,7 +274,7 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.limiter.schedule(() => this.httpClient.get(
+        const response = await this.limiter.schedule(async () => this.httpClient.get(
           `/api/incidents/${incident.ticketId}`,
           {
             headers: {
@@ -306,7 +308,7 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.limiter.schedule(() => this.httpClient.get(`/api/ci/get_ci`, {
+        const response = await this.limiter.schedule(async () => this.httpClient.get(`/api/ci/get_ci`, {
           headers: {
             Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
           },
