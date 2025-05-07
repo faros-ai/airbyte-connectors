@@ -96,7 +96,7 @@ describe('index', () => {
     const projectsIter = projectsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_slugs[0]}
+      {projectSlug: sourceConfig.project_slugs[0]}
     );
     const projects = [];
     for await (const project of projectsIter) {
@@ -134,7 +134,7 @@ describe('index', () => {
     const pipelinesIter = pipelinesStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_slugs[0]}
+      {projectSlug: sourceConfig.project_slugs[0]}
     );
     const pipelines = [];
     let state: Dictionary<{lastUpdatedAt?: string}> = {};
@@ -149,46 +149,55 @@ describe('index', () => {
 
   test('streams - tests, use full_refresh sync mode', async () => {
     const fnTestsList = jest.fn();
-    CircleCI.instance = jest.fn().mockImplementation(() => {
-      return new CircleCI(sourceConfig, logger, null, {
-        get: fnTestsList
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('pipeline_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          })
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('workflows_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          })
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('jobs_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          })
-          .mockResolvedValueOnce({
-            data: {
-              items: readTestResourceFile('tests_input.json'),
-              next_page_token: null,
-            },
-            status: 200,
-          }),
-      } as any);
-    });
+    const instance = new CircleCI(sourceConfig, logger, null, {
+      get: fnTestsList
+        .mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('pipeline_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        })
+        .mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('workflows_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        })
+        .mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('jobs_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        })
+        .mockResolvedValueOnce({
+          data: {
+            items: readTestResourceFile('tests_input.json'),
+            next_page_token: null,
+          },
+          status: 200,
+        }),
+    } as any);
+    CircleCI.instance = jest.fn().mockImplementation(() => instance);
     const source = new sut.CircleCISource(logger);
     const streams = source.streams(sourceConfig);
+    // tests stream depends on pipelines stream, so we read it first
+    const pipelinesStream = streams[1];
+    const pipelinesIter = pipelinesStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {projectSlug: sourceConfig.project_slugs[0]}
+    );
+    for await (const _ of pipelinesIter) {
+      // do nothing
+    }
     const testsStream = streams[2];
     const testsIter = testsStream.readRecords(
       SyncMode.FULL_REFRESH,
       undefined,
-      {projectName: sourceConfig.project_slugs[0]}
+      {projectSlug: sourceConfig.project_slugs[0]}
     );
     const tests = [];
     for await (const test of testsIter) {
