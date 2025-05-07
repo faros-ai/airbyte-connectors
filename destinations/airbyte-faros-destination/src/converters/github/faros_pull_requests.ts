@@ -225,7 +225,7 @@ export class FarosPullRequests extends GitHubConverter {
             : null,
           state: getReviewState(review.state),
           submittedAt: Utils.toDate(review.submittedAt),
-          asCodeOwner: review.asCodeOwner
+          asCodeOwner: (review as any).asCodeOwner
         },
       })),
       ...requestedReviewers.map((reviewer) => ({
