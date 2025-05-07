@@ -150,6 +150,9 @@
           "body": {
             "type": "string"
           },
+          "asCodeOwner": {
+            "type": "boolean"
+          },
           "comments": {
             "type": "object",
             "properties": {

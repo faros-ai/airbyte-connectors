@@ -27,6 +27,7 @@ fragment reviewFields on PullRequestReview {
   databaseId
   url
   body
+  asCodeOwner
   comments {
     totalCount
   }
