@@ -108,6 +108,7 @@
             },
             "nodes": [
               {
+                "asCodeOwner": false,
                 "requestedReviewer": {
                   "login": "nehanda",
                   "type": "User",
@@ -312,7 +313,7 @@
             },
             "nodes": [
               {
-                "asCodeOwner": false,
+                "asCodeOwner": true,
                 "requestedReviewer": {
                   "login": "user1",
                   "type": "User",
