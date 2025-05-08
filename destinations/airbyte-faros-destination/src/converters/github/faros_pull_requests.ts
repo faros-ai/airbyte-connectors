@@ -246,26 +246,25 @@ export class FarosPullRequests extends GitHubConverter {
   ): string[] {
     const reviewers: Set<string> = new Set<string>();
 
-    reviewRequests.forEach((reviewRequest) => {
-      const {requestedReviewer} = reviewRequest;
-      if (!requestedReviewer) {
-        return;
-      }
+    reviewRequests
+      .filter((reviewRequest) => reviewRequest?.requestedReviewer?.type)
+      .forEach((reviewRequest) => {
+        const {requestedReviewer} = reviewRequest;
 
-      if (
-        requestedReviewer.type === 'Team' &&
-        requestedReviewer.members?.nodes
-      ) {
-        requestedReviewer.members.nodes.forEach((member) =>
-          this.addReviewer(reviewers, member)
-        );
-      } else if (
-        requestedReviewer.type === 'User' ||
-        requestedReviewer.type === 'Mannequin'
-      ) {
-        this.addReviewer(reviewers, requestedReviewer);
-      }
-    });
+        if (
+          requestedReviewer.type === 'Team' &&
+          requestedReviewer.members?.nodes
+        ) {
+          requestedReviewer.members.nodes.forEach((member) =>
+            this.addReviewer(reviewers, member)
+          );
+        } else if (
+          requestedReviewer.type === 'User' ||
+          requestedReviewer.type === 'Mannequin'
+        ) {
+          this.addReviewer(reviewers, requestedReviewer);
+        }
+      });
 
     return Array.from(reviewers.values());
   }
