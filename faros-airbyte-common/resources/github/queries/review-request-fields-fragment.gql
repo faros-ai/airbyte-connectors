@@ -1,4 +1,5 @@
 fragment reviewRequestFields on ReviewRequest {
+  asCodeOwner
   requestedReviewer {
     type: __typename
     ... on Mannequin {
