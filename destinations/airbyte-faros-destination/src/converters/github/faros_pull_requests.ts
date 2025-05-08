@@ -232,7 +232,8 @@ export class FarosPullRequests extends GitHubConverter {
         model: 'vcs_PullRequestReviewRequest',
         record: {
           pullRequest: prKey,
-          requestedReviewer: {uid: reviewer, source: this.streamName.source},
+          requestedReviewer: {uid: reviewer.login, source: this.streamName.source},
+          asCodeOwner: reviewer.asCodeOwner,
         },
       })),
       ...reviewSubmissionComments,
@@ -240,14 +241,14 @@ export class FarosPullRequests extends GitHubConverter {
     ];
   }
 
-  // Collects users and returns a list containing reviewers login
+  // Collects users and returns a list containing reviewers with login and asCodeOwner status
   private collectReviewRequestReviewers(
     reviewRequests: PullRequestReviewRequest[]
-  ): string[] {
-    const reviewers: Set<string> = new Set<string>();
+  ): {login: string; asCodeOwner: boolean}[] {
+    const reviewers: Map<string, {login: string; asCodeOwner: boolean}> = new Map();
 
     reviewRequests.forEach((reviewRequest) => {
-      const {requestedReviewer} = reviewRequest;
+      const {requestedReviewer, asCodeOwner = false} = reviewRequest;
       if (!requestedReviewer) {
         return;
       }
@@ -257,21 +258,25 @@ export class FarosPullRequests extends GitHubConverter {
         requestedReviewer.members?.nodes
       ) {
         requestedReviewer.members.nodes.forEach((member) =>
-          this.addReviewer(reviewers, member)
+          this.addReviewer(reviewers, member, asCodeOwner)
         );
       } else if (
         requestedReviewer.type === 'User' ||
         requestedReviewer.type === 'Mannequin'
       ) {
-        this.addReviewer(reviewers, requestedReviewer);
+        this.addReviewer(reviewers, requestedReviewer, asCodeOwner);
       }
     });
 
     return Array.from(reviewers.values());
   }
 
-  private addReviewer(reviewers: Set<string>, reviewer: PartialUser): void {
-    reviewers.add(reviewer.login);
+  private addReviewer(
+    reviewers: Map<string, {login: string; asCodeOwner: boolean}>, 
+    reviewer: PartialUser, 
+    asCodeOwner: boolean
+  ): void {
+    reviewers.set(reviewer.login, {login: reviewer.login, asCodeOwner});
     this.collectUser(reviewer);
   }
 
