@@ -376,19 +376,50 @@ export class Teams extends FarosOrgImportConverter {
 
   private checkTeamsCycle(): string[] {
     const teamsWithCycle = new Set<string>();
+
+    // A map of teams to if they were part of a cycle
+    const checkedTeams = new Map<string, boolean>();
     for (const teamId of this.teamToParentMapping.keys()) {
+      if (checkedTeams.has(teamId)) {
+        continue;
+      }
       let team = teamId;
       if (team === DEFAULT_ROOT_TEAM_ID) {
         continue;
       }
+
       let parent;
-      while (parent !== DEFAULT_ROOT_TEAM_ID) {
+      const teamSteps = new Set<string>();
+
+      // Maximum number of steps to prevent infinite loop
+      for (let i = 0; i <= this.teamToParentMapping.size; i++) {
+        teamSteps.add(team);
         parent = this.teamToParentMapping.get(team);
         if (!parent) {
+          for (const teamStep of teamSteps) {
+            checkedTeams.set(teamStep, false);
+          }
           break;
         }
-        if (parent === teamId) {
-          teamsWithCycle.add(teamId);
+        if (teamSteps.has(parent)) {
+          // If the parent team is already in the steps, we have a cycle
+          for (const teamStep of teamSteps) {
+            checkedTeams.set(teamStep, true);
+            teamsWithCycle.add(teamStep);
+          }
+          break;
+        }
+        const parentOutcome = checkedTeams.get(parent);
+        if (typeof parentOutcome !== 'undefined') {
+          // If the parent team has already been checked, we can stop
+          // checking this team and mark all teams in the path as checked
+          // with the same outcome as the parent
+          for (const teamStep of teamSteps) {
+            if (parentOutcome) {
+              teamsWithCycle.add(teamStep);
+            }
+            checkedTeams.set(teamStep, parentOutcome);
+          }
           break;
         }
         team = parent;
