@@ -276,7 +276,11 @@ export class FarosPullRequests extends GitHubConverter {
     reviewer: PartialUser, 
     asCodeOwner: boolean
   ): void {
-    reviewers.set(reviewer.login, {login: reviewer.login, asCodeOwner});
+    const existingReviewer = reviewers.get(reviewer.login);
+    // We might see the same reviewer requested as a code owner and as a member of a team (with asCodeOwner = false)
+    if (!existingReviewer || (!existingReviewer.asCodeOwner && asCodeOwner)) {
+      reviewers.set(reviewer.login, {login: reviewer.login, asCodeOwner});
+    }
     this.collectUser(reviewer);
   }
 
