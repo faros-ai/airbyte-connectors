@@ -251,7 +251,7 @@ export class FarosPullRequests extends GitHubConverter {
       .filter((reviewRequest) => reviewRequest?.requestedReviewer?.type)
       .forEach((reviewRequest) => {
         const requestedReviewer = reviewRequest.requestedReviewer;
-        const asCodeOwner = reviewRequest.asCodeOwner || false;
+        const asCodeOwner = reviewRequest?.asCodeOwner ?? false;
 
         if (
           requestedReviewer.type === 'Team' &&
