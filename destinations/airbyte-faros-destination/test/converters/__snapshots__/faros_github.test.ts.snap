@@ -8991,6 +8991,7 @@ Add any other context about the changes here.
   },
   Object {
     "vcs_PullRequestReviewRequest": Object {
+      "asCodeOwner": true,
       "pullRequest": Object {
         "number": 48,
         "repository": Object {
@@ -9012,6 +9013,7 @@ Add any other context about the changes here.
   },
   Object {
     "vcs_PullRequestReviewRequest": Object {
+      "asCodeOwner": false,
       "pullRequest": Object {
         "number": 48,
         "repository": Object {
@@ -9033,6 +9035,7 @@ Add any other context about the changes here.
   },
   Object {
     "vcs_PullRequestReviewRequest": Object {
+      "asCodeOwner": false,
       "pullRequest": Object {
         "number": 48,
         "repository": Object {
