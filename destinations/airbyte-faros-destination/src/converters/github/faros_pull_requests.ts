@@ -247,26 +247,25 @@ export class FarosPullRequests extends GitHubConverter {
   ): {login: string; asCodeOwner: boolean}[] {
     const reviewers: Map<string, {login: string; asCodeOwner: boolean}> = new Map();
 
-    reviewRequests.forEach((reviewRequest) => {
-      const {requestedReviewer, asCodeOwner = false} = reviewRequest;
-      if (!requestedReviewer) {
-        return;
-      }
+    reviewRequests
+      .filter((reviewRequest) => reviewRequest?.requestedReviewer?.type)
+      .forEach((reviewRequest) => {
+        const {requestedReviewer, asCodeOwner = false} = reviewRequest;
 
-      if (
-        requestedReviewer.type === 'Team' &&
-        requestedReviewer.members?.nodes
-      ) {
-        requestedReviewer.members.nodes.forEach((member) =>
-          this.addReviewer(reviewers, member, asCodeOwner)
-        );
-      } else if (
-        requestedReviewer.type === 'User' ||
-        requestedReviewer.type === 'Mannequin'
-      ) {
-        this.addReviewer(reviewers, requestedReviewer, asCodeOwner);
-      }
-    });
+        if (
+          requestedReviewer.type === 'Team' &&
+          requestedReviewer.members?.nodes
+        ) {
+          requestedReviewer.members.nodes.forEach((member) =>
+            this.addReviewer(reviewers, member, asCodeOwner)
+          );
+        } else if (
+          requestedReviewer.type === 'User' ||
+          requestedReviewer.type === 'Mannequin'
+        ) {
+          this.addReviewer(reviewers, requestedReviewer, asCodeOwner);
+        }
+      });
 
     return Array.from(reviewers.values());
   }
