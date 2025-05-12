@@ -368,7 +368,7 @@ export abstract class AbstractSurveys extends Converter {
       const questionResponse = AbstractSurveys.getColumnValue(
         row,
         question
-      )
+      );
 
       if (questionResponse) {
         const questionResponseRecord = {

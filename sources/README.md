@@ -12,7 +12,7 @@ The [Airbyte Specification
 doc](https://docs.airbyte.com/connector-development/#the-airbyte-specification)
 describes each step of an Airbyte Source in detail. Also read [Airbyte's
 development
-guide](https://docs.airbyte.io/connector-development#adding-a-new-connector).
+guide](https://docs.airbyte.com/connector-development#adding-a-new-connector).
 This repository will automatically release the sources as Docker images via
 Github Actions.
 
@@ -91,7 +91,7 @@ outputted and persisted. For example, if the interval is 100, the stream's state
 will be persisted after reading every 100 records. It is undefined by default,
 meaning the state is only persisted after all streams in the source have
 finished reading records. Alternatively, you can implement [Stream
-Slicing](https://docs.airbyte.io/connector-development/cdk-python/stream-slices)
+Slicing](https://docs.airbyte.com/connector-development/cdk-python/stream-slices)
 by overriding the `streamSlices()` method, but for most cases, setting a
 checkpoint interval should be sufficient.
 
@@ -127,7 +127,7 @@ as a Github Repository Secret with the environment variable name
 
 The `acceptance-test-config.yml` points to several other json files that enable
 the tests for each of the source commands. See the [Source Acceptance Tests
-Reference](https://docs.airbyte.io/connector-development/testing-connectors/source-acceptance-tests-reference)
+Reference](https://docs.airbyte.com/connector-development/testing-connectors/source-acceptance-tests-reference)
 for how those files are used. These files should be committed to the repo.
 
 Run the tests with the provided script from the
