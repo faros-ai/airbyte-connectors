@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "visibility": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "namespace": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "full_path": {
+          "type": "string"
+        }
+      }
+    },
+    "default_branch": {
+      "type": ["string", "null"]
+    }
+  }
+}

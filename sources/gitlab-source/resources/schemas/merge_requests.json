@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "project_id": {
+      "type": "integer"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "merged_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "closed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "target_branch": {
+      "type": "string"
+    },
+    "source_branch": {
+      "type": "string"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "assignee": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "merge_status": {
+      "type": "string"
+    }
+  }
+}

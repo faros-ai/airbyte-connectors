@@ -1,0 +1,11 @@
+{
+  "extends": "../../../.tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../lib",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "target": "es2019",
+    "downlevelIteration": true
+  }
+}

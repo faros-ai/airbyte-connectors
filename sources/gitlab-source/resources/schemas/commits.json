@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "short_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "authored_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "committer_name": {
+      "type": "string"
+    },
+    "committer_email": {
+      "type": "string"
+    },
+    "committed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "web_url": {
+      "type": "string"
+    }
+  }
+}

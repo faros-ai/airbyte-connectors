@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["token"],
+  "additionalProperties": true,
+  "properties": {
+    "api_url": {
+      "type": "string",
+      "title": "API URL",
+      "description": "GitLab API URL",
+      "default": "https://gitlab.com/api/v4"
+    },
+    "token": {
+      "type": "string",
+      "title": "Access Token",
+      "description": "GitLab personal access token with api scope",
+      "airbyte_secret": true
+    },
+    "use_faros_graph_repos_selection": {
+      "type": "boolean",
+      "title": "Use Faros Graph for Repositories selection",
+      "description": "Use Faros Graph for selecting which repositories should be fetched (Faros credentials are required).",
+      "default": false
+    },
+    "api_key": {
+      "title": "Faros API Key",
+      "type": "string",
+      "description": "The Faros API key to use to access the API.",
+      "airbyte_secret": true
+    },
+    "api_url": {
+      "type": "string",
+      "title": "Faros API URL",
+      "description": "The Faros API URL.",
+      "default": "https://prod.api.faros.ai"
+    },
+    "graph": {
+      "type": "string",
+      "title": "Graph name",
+      "description": "The Faros graph name.",
+      "default": "default"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Groups",
+      "description": "List of GitLab groups to sync. If not provided, all accessible groups will be synced."
+    },
+    "excluded_groups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Excluded Groups",
+      "description": "List of GitLab groups to exclude from sync. If groups list is specified, this list will be ignored."
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Projects",
+      "description": "List of GitLab projects to sync in the format 'group/project'. If not provided, all projects in the specified groups will be synced."
+    },
+    "excluded_projects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Excluded Projects",
+      "description": "List of GitLab projects to exclude from sync in the format 'group/project'. If projects list is specified, this list will be ignored."
+    },
+    "cutoff_days": {
+      "type": "integer",
+      "title": "Cutoff Days",
+      "description": "Only fetch data updated in the last N days",
+      "default": 90
+    },
+    "run_mode": {
+      "type": "string",
+      "enum": ["Minimum", "Full", "Custom"],
+      "title": "Run Mode",
+      "description": "Determines which streams to sync",
+      "default": "Full"
+    },
+    "custom_streams": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Custom Streams",
+      "description": "List of streams to run when selected Run Mode is Custom"
+    },
+    "page_size": {
+      "type": "integer",
+      "title": "Page Size",
+      "description": "Number of records to fetch per page for REST API requests",
+      "default": 100
+    },
+    "graphql_page_size": {
+      "type": "integer",
+      "title": "GraphQL Page Size",
+      "description": "Number of records to fetch per page for GraphQL API requests",
+      "default": 40
+    },
+    "graphql_timeout": {
+      "type": "integer",
+      "title": "GraphQL Timeout",
+      "description": "Timeout in milliseconds for GraphQL API requests",
+      "default": 60000
+    },
+    "graphql_retries": {
+      "type": "integer",
+      "title": "GraphQL Retries",
+      "description": "Number of retries for GraphQL API requests",
+      "default": 3
+    },
+    "concurrency_limit": {
+      "type": "integer",
+      "title": "Concurrency Limit",
+      "description": "Maximum number of concurrent API requests",
+      "default": 5
+    },
+    "bucket_id": {
+      "type": "integer",
+      "title": "Bucket ID",
+      "description": "ID of the bucket to process",
+      "default": 1
+    },
+    "bucket_total": {
+      "type": "integer",
+      "title": "Total Buckets",
+      "description": "Total number of buckets",
+      "default": 1
+    },
+    "round_robin_bucket_execution": {
+      "type": "boolean",
+      "title": "Round Robin Bucket Execution",
+      "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+      "default": false
+    },
+    "bucket_ranges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Bucket Ranges",
+      "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'."
+    },
+    "start_date": {
+      "type": "string",
+      "title": "Start Date",
+      "description": "The date from which to start syncing data."
+    },
+    "end_date": {
+      "type": "string",
+      "title": "End Date",
+      "description": "The date at which to stop syncing data."
+    }
+  }
+}
