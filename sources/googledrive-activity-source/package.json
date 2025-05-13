@@ -1,0 +1,55 @@
+{
+  "name": "@faros-ai/airbyte-googledrive-activity-source",
+  "version": "0.1.0",
+  "description": "Source implementation for Google Drive Activity API",
+  "keywords": [
+    "airbyte",
+    "source",
+    "faros-ai",
+    "googledrive",
+    "activity"
+  ],
+  "homepage": "https://docs.faros.ai",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "main": "bin/main"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "resources"
+  ],
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "faros-airbyte-cdk": "*",
+    "faros-js-client": "^0.7.1",
+    "googleapis": "^128.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "ts-essentials": "^9.4.1",
+    "typescript-memoize": "^1.1.1",
+    "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.4",
+    "@types/lodash": "^4.14.198",
+    "@types/node": "^20.5.8",
+    "@types/verror": "^1.10.6",
+    "fs-extra": "^11.1.1",
+    "jest": "^29.6.4",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "typescript": "~5.2.2"
+  }
+}
