@@ -63,7 +63,12 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   async checkConnection(config: JiraConfig): Promise<[boolean, VError]> {
     try {
-      await Jira.instance(config, this.logger);
+      const jira = await Jira.instance(config, this.logger);
+      const projectKeys = config.projects ? new Set(config.projects) : undefined;
+      const projects = await jira.getProjects(projectKeys);
+      if (projects.length === 0) {
+        throw new VError('No accessible projects found in Jira instance');
+      }
     } catch (err: any) {
       return [false, err];
     }
