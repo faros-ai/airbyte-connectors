@@ -78,11 +78,22 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
-    const mockGetProjects = jest.fn().mockResolvedValue([{ key: 'TEST', name: 'Test Project' }]);
+    const searchProjects = paginate(
+      readTestResourceAsJSON('projects/projects.json'),
+      'values',
+      50
+    );
     
     Jira.instance = jest.fn().mockImplementation(() => {
       return {
-        getProjects: mockGetProjects
+        api: {
+          v2: {
+            projects: {
+              searchProjects
+            }
+          }
+        },
+        isProjectInBucket: jest.fn().mockReturnValue(true)
       };
     });
     
@@ -91,7 +102,7 @@ describe('index', () => {
       configOrPath: 'check_connection/valid.json',
     });
     
-    expect(mockGetProjects).toHaveBeenCalled();
+    expect(searchProjects).toHaveBeenCalled();
   });
 
   const getIssuePullRequestsMockedImplementation = () => ({
