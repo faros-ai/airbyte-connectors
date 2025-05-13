@@ -31,9 +31,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "commander": "^11.0.0",
     "faros-airbyte-cdk": "*",
-    "faros-js-client": "^0.7.1",
     "googleapis": "^128.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
