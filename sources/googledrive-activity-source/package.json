@@ -49,5 +49,18 @@
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
     "typescript": "~5.2.2"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "transform": {
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
   }
 }
