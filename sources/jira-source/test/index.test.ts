@@ -78,10 +78,20 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
+    const mockGetProjects = jest.fn().mockResolvedValue([{ key: 'TEST', name: 'Test Project' }]);
+    
+    Jira.instance = jest.fn().mockImplementation(() => {
+      return {
+        getProjects: mockGetProjects
+      };
+    });
+    
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/valid.json',
     });
+    
+    expect(mockGetProjects).toHaveBeenCalled();
   });
 
   const getIssuePullRequestsMockedImplementation = () => ({
