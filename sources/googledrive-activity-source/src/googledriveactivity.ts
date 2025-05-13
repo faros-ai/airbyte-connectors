@@ -145,15 +145,9 @@ export class GoogleDriveActivity {
       
       const params: driveactivity_v2.Params$Resource$Activity$Query = {
         requestBody: {
-          ancestorName: 'root', // Query for all activities
+          ancestorName: 'items/root',
           pageToken,
-          filter: JSON.stringify({
-            timeFilter: {
-              [timeFilterType]: {
-                time: formattedStartTime
-              }
-            }
-          })
+          filter: `time >= "${formattedStartTime}"`
         }
       };
       
