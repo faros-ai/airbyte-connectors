@@ -6,6 +6,11 @@
       "type": "object",
       "title": "Configuration",
       "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Faros Org Import",
+          "order": 0
+        },
         "source": {
           "type": "object",
           "properties": {
