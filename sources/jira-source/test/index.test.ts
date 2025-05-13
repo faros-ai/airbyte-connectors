@@ -78,11 +78,17 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
+    // Mock for api.v2.projects.searchProjects
     const searchProjects = paginate(
       readTestResourceAsJSON('projects/projects.json'),
       'values',
       50
     );
+    
+    // Return empty lists for both getFields and getStatuses
+    const getFields = jest.fn().mockResolvedValue([]);
+    
+    const getStatuses = jest.fn().mockResolvedValue([]);
     
     Jira.instance = jest.fn().mockImplementation(() => {
       return {
@@ -90,10 +96,19 @@ describe('index', () => {
           v2: {
             projects: {
               searchProjects
+            },
+            issueFields: {
+              getFields
+            },
+            workflowStatuses: {
+              getStatuses
             }
           }
         },
-        isProjectInBucket: jest.fn().mockReturnValue(true)
+        isProjectInBucket: jest.fn().mockReturnValue(true),
+        getProjects: jest.fn().mockImplementation(async () => {
+          return readTestResourceAsJSON('projects/projects.json');
+        })
       };
     });
     
@@ -103,6 +118,8 @@ describe('index', () => {
     });
     
     expect(searchProjects).toHaveBeenCalled();
+    expect(getFields).toHaveBeenCalled();
+    expect(getStatuses).toHaveBeenCalled();
   });
 
   const getIssuePullRequestsMockedImplementation = () => ({
