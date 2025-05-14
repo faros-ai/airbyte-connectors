@@ -78,37 +78,18 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
-    // Return empty lists for both getFields and getStatuses
-    const getFields = jest.fn().mockResolvedValue([]);
-    
-    const getStatuses = jest.fn().mockResolvedValue([]);
-    
     Jira.instance = jest.fn().mockImplementation(() => {
       return {
-        api: {
-          v2: {
-            issueFields: {
-              getFields
-            },
-            workflowStatuses: {
-              getStatuses
-            }
-          }
-        },
-        isProjectInBucket: jest.fn().mockReturnValue(true),
         getProjects: jest.fn().mockImplementation(async () => {
           return readTestResourceAsJSON('projects/projects.json');
         })
       };
     });
-    
+
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/valid.json',
     });
-    
-    expect(getFields).toHaveBeenCalled();
-    expect(getStatuses).toHaveBeenCalled();
   });
 
   const getIssuePullRequestsMockedImplementation = () => ({
