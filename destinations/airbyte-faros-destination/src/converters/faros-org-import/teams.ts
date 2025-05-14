@@ -216,9 +216,9 @@ export class Teams extends FarosOrgImportConverter {
         record: {
           uid: team.teamId,
           name: team.teamName,
-          parentTeamId: team.parentTeamId,
+          parentTeam: lift(team.parentTeamId, (uid) => ({uid})),
           description: team.teamDescription,
-          leader: lift(team.teamLeadId, (leadId) => ({uid: leadId})),
+          leader: lift(team.teamLeadId, (uid) => ({uid})),
         },
       });
       syncedTeams.add(team.teamId);
