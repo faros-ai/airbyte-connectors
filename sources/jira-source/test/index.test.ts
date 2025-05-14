@@ -78,13 +78,6 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
-    // Mock for api.v2.projects.searchProjects
-    const searchProjects = paginate(
-      readTestResourceAsJSON('projects/projects.json'),
-      'values',
-      50
-    );
-    
     // Return empty lists for both getFields and getStatuses
     const getFields = jest.fn().mockResolvedValue([]);
     
@@ -94,9 +87,6 @@ describe('index', () => {
       return {
         api: {
           v2: {
-            projects: {
-              searchProjects
-            },
             issueFields: {
               getFields
             },
@@ -117,7 +107,6 @@ describe('index', () => {
       configOrPath: 'check_connection/valid.json',
     });
     
-    expect(searchProjects).toHaveBeenCalled();
     expect(getFields).toHaveBeenCalled();
     expect(getStatuses).toHaveBeenCalled();
   });
