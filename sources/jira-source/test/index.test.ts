@@ -78,6 +78,14 @@ describe('index', () => {
   });
 
   test('check connection', async () => {
+    Jira.instance = jest.fn().mockImplementation(() => {
+      return {
+        getProjects: jest.fn().mockImplementation(async () => {
+          return readTestResourceAsJSON('projects/projects.json');
+        })
+      };
+    });
+
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/valid.json',
