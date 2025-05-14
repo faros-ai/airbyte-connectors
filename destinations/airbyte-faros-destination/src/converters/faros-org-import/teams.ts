@@ -296,7 +296,7 @@ export class Teams extends FarosOrgImportConverter {
       TEAM_OWNERSHIP_QUERY,
       undefined,
       undefined,
-      new Map([['origin', ctx.config.origin]])
+      new Map([['origin', ctx.getOrigin()]])
     );
 
     for await (const team of teamsIter) {
