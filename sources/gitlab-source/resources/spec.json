@@ -1,0 +1,131 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GitLab Spec",
+    "type": "object",
+    "required": [
+      "token"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "token": {
+        "order": 0,
+        "type": "string",
+        "title": "Token",
+        "description": "GitLab API token",
+        "airbyte_secret": true
+      },
+      "api_url": {
+        "order": 1,
+        "type": "string",
+        "title": "API URL",
+        "default": "https://gitlab.com",
+        "description": "GitLab API URL"
+      },
+      "api_version": {
+        "order": 2,
+        "type": "string",
+        "title": "API version",
+        "default": "4",
+        "description": "GitLab API version number"
+      },
+      "reject_unauthorized": {
+        "order": 3,
+        "type": "boolean",
+        "title": "Enable certificate validation",
+        "description": "Enable certificate validation for the GitLab server",
+        "default": true
+      },
+      "groups": {
+        "order": 4,
+        "title": "Groups list",
+        "description": "List of GitLab groups from which to fetch data. If none passed, all visible groups for the authenticated user will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org",
+          "gitlab-com"
+        ]
+      },
+      "excluded_groups": {
+        "order": 5,
+        "title": "Excluded Groups list",
+        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded. If groups list is specified, this list will be ignored.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org",
+          "gitlab-com"
+        ]
+      },
+      "use_faros_graph_repos_selection": {
+        "order": 6,
+        "type": "boolean",
+        "title": "Use Faros Graph for Repositories selection",
+        "description": "Use Faros Graph for selecting which repositories should be fetched (Faros credentials are required).",
+        "default": false
+      },
+      "cutoff_days": {
+        "order": 7,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated in the last number of days"
+      },
+      "page_size": {
+        "order": 8,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Page size to use when querying GitLab REST APIs",
+        "default": 100
+      },
+      "api_url_faros": {
+        "order": 9,
+        "type": "string",
+        "title": "Faros API URL",
+        "description": "The Faros API URL.",
+        "default": "https://prod.api.faros.ai"
+      },
+      "api_key": {
+        "order": 10,
+        "title": "Faros API Key",
+        "type": "string",
+        "description": "The Faros API key to use to access the API.",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "order": 11,
+        "type": "string",
+        "title": "Graph name",
+        "description": "The Faros graph name.",
+        "default": "default"
+      },
+      "bucket_id": {
+        "order": 12,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of groups to pull. Use it when distributing the load between multiple sources.",
+        "default": 1
+      },
+      "bucket_total": {
+        "order": 13,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute groups across. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "concurrency_limit": {
+        "order": 14,
+        "type": "integer",
+        "title": "Concurrency limit",
+        "description": "Maximum concurrency to run with",
+        "default": 4
+      }
+    }
+  }
+}

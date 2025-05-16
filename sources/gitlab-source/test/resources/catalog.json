@@ -1,0 +1,44 @@
+{
+  "streams": [
+    {
+      "name": "faros_groups",
+      "json_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "description": {
+            "type": ["string", "null"]
+          },
+          "visibility": {
+            "type": "string"
+          },
+          "web_url": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": ["string", "null"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "parent_id": {
+            "type": ["integer", "null"]
+          }
+        }
+      }
+    }
+  ]
+}
