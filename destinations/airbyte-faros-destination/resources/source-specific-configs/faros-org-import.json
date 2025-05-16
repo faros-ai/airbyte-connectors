@@ -50,7 +50,7 @@
           "type": "integer",
           "title": "Minimum Team Size",
           "description": "Teams with fewer members than this will be skipped and their members reassigned to parent teams (for German compliance). Set to 0 to disable.",
-          "default": 6
+          "default": 10
         }
       }
     }
