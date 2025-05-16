@@ -45,6 +45,12 @@
           "title": "Resolve Locations",
           "description": "Resolve employee locations using the location field.",
           "default": false
+        },
+        "min_team_size": {
+          "type": "integer",
+          "title": "Minimum Team Size",
+          "description": "Teams with fewer members than this will be skipped and their members reassigned to parent teams (for German compliance). Set to 0 to disable.",
+          "default": 6
         }
       }
     }

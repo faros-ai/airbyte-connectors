@@ -5,9 +5,11 @@ import {LocationCollector} from '../common/geo';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FarosOrgImportConverter, lift} from './common';
 import {EmployeeRow, EmployeeTypeMap, IdentityNamespace, Source} from './types';
+import {Teams} from './teams';
 
 export class Employees extends FarosOrgImportConverter {
   private locationCollector: LocationCollector = undefined;
+  private teamsConverter: Teams | undefined;
   private collectedTmsUsers = new Map<[string, string], Set<string>>();
   private collectedVcsUsers = new Map<[string, string], Set<string>>();
   private collectedImsUsers = new Map<[string, string], Set<string>>();
@@ -43,6 +45,10 @@ export class Employees extends FarosOrgImportConverter {
       ctx?.config?.source_specific_configs?.faros_org_import?.resolve_locations,
       ctx.farosClient
     );
+  }
+  
+  setTeamsConverter(teamsConverter: Teams): void {
+    this.teamsConverter = teamsConverter;
   }
 
   async convert(
@@ -131,6 +137,10 @@ export class Employees extends FarosOrgImportConverter {
             member: {uid: empId},
           },
         });
+        
+        if (this.teamsConverter) {
+          this.teamsConverter.addTeamMembership(teamId);
+        }
       }
     }
 

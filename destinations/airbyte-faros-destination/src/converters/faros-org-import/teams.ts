@@ -95,6 +95,9 @@ export class Teams extends FarosOrgImportConverter {
   private teamsToSync: TeamRow[] = [];
   private teamToParentMapping = new Map<string, string>();
   private surveyTeamMap = new Map<string, string[]>();
+  private teamSizes = new Map<string, number>();
+  private skippedTeamToValidParent = new Map<string, string>();
+  private skippedTeams: string[] = [];
 
   private teamsMissingTeamName: string[] = [];
   private teamsMissingParentTeamId: string[] = [];
@@ -172,6 +175,27 @@ export class Teams extends FarosOrgImportConverter {
 
     const source: Source =
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
+    
+    const minTeamSize: number =
+      ctx?.config?.source_specific_configs?.faros_org_import?.min_team_size ?? 6;
+
+    // Skip teams below minimum size
+    if (minTeamSize > 0) {
+      for (const team of this.teamsToSync) {
+        const teamSize = this.teamSizes.get(team.teamId) || 0;
+        
+        if (teamSize < minTeamSize && team.teamId !== DEFAULT_ROOT_TEAM_ID) {
+          const validParentId = this.findValidParentTeam(team.parentTeamId, minTeamSize);
+          this.skippedTeams.push(team.teamId);
+          this.skippedTeamToValidParent.set(team.teamId, validParentId);
+          
+          ctx.logger?.info(
+            `Skipped team ${team.teamId} (size=${teamSize}) below minimum size of ${minTeamSize}; ` +
+            (validParentId ? `reassigned to ${validParentId}` : 'no valid parent found')
+          );
+        }
+      }
+    }
 
     // Log aggregated warnings
     const teamsWithCycle = this.checkTeamsCycle();
@@ -203,11 +227,21 @@ export class Teams extends FarosOrgImportConverter {
         ).join(', ')}`
       );
     }
+    if (this.skippedTeams.length) {
+      ctx.logger?.info(
+        `Skipped ${this.skippedTeams.length} teams due to size threshold (${minTeamSize}): ${this.skippedTeams.join(', ')}`
+      );
+    }
 
     // Sync teams
     for (const team of this.teamsToSync) {
       if (syncedTeams.has(team.teamId)) {
         ctx.logger?.warn(`Duplicate teamId: ${team.teamId}`);
+        continue;
+      }
+      
+      // Skip teams below minTeamSize
+      if (this.skippedTeams.includes(team.teamId)) {
         continue;
       }
 
@@ -354,7 +388,56 @@ export class Teams extends FarosOrgImportConverter {
       );
     }
 
+    await this.createRedirectedMemberships(ctx, models);
+
     return models;
+  }
+
+  private async createRedirectedMemberships(
+    ctx: StreamContext,
+    models: DestinationRecord[]
+  ): Promise<void> {
+    // For each skipped team, find all team memberships and create new ones for the valid parent
+    for (const skippedTeamId of this.skippedTeams) {
+      const validParentId = this.skippedTeamToValidParent.get(skippedTeamId);
+      if (!validParentId) {
+        ctx.logger?.info(
+          `No valid parent found for skipped team ${skippedTeamId}, members will not be reassigned`
+        );
+        continue;
+      }
+      
+      const reassignedMembers = new Set<string>();
+      
+      for (const model of models) {
+        if (
+          model.model === 'org_TeamMembership' && 
+          model.record?.team?.uid === skippedTeamId &&
+          model.record?.member?.uid
+        ) {
+          const memberId = model.record.member.uid;
+          
+          if (reassignedMembers.has(memberId)) {
+            continue;
+          }
+          
+          // Create a new membership for the valid parent
+          models.push({
+            model: 'org_TeamMembership',
+            record: {
+              team: {uid: validParentId},
+              member: {uid: memberId},
+            },
+          });
+          
+          reassignedMembers.add(memberId);
+        }
+      }
+      
+      ctx.logger?.info(
+        `Reassigned ${reassignedMembers.size} members from skipped team ${skippedTeamId} to parent team ${validParentId}`
+      );
+    }
   }
 
   private getTeamCommunicationChannel(
@@ -426,5 +509,42 @@ export class Teams extends FarosOrgImportConverter {
       }
     }
     return Array.from(teamsWithCycle);
+  }
+
+  private findValidParentTeam(teamId: string, minTeamSize: number): string | undefined {
+    if (!teamId || teamId === DEFAULT_ROOT_TEAM_ID) {
+      return undefined;
+    }
+
+    const visitedTeams = new Set<string>();
+    let currentTeamId = teamId;
+
+    // Maximum number of steps to prevent infinite loop
+    for (let i = 0; i <= this.teamToParentMapping.size; i++) {
+      visitedTeams.add(currentTeamId);
+      const parentTeamId = this.teamToParentMapping.get(currentTeamId);
+      
+      if (!parentTeamId) {
+        return undefined; // No parent found
+      }
+      
+      if (visitedTeams.has(parentTeamId)) {
+        return undefined; // Cycle detected
+      }
+      
+      const parentTeamSize = this.teamSizes.get(parentTeamId) || 0;
+      if (parentTeamSize >= minTeamSize || parentTeamId === DEFAULT_ROOT_TEAM_ID) {
+        return parentTeamId; // Found valid parent
+      }
+      
+      currentTeamId = parentTeamId;
+    }
+    
+    return undefined; // No valid parent found within reasonable steps
+  }
+
+  addTeamMembership(teamId: string): void {
+    const currentSize = this.teamSizes.get(teamId) || 0;
+    this.teamSizes.set(teamId, currentSize + 1);
   }
 }
