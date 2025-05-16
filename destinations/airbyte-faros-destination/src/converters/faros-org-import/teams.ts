@@ -95,9 +95,9 @@ export class Teams extends FarosOrgImportConverter {
   private teamsToSync: TeamRow[] = [];
   private teamToParentMapping = new Map<string, string>();
   private surveyTeamMap = new Map<string, string[]>();
-  private teamSizes = new Map<string, number>();
-  private skippedTeamToValidParent = new Map<string, string>();
-  private skippedTeams: string[] = [];
+  private readonly teamSizes = new Map<string, number>();
+  private readonly skippedTeamToValidParent = new Map<string, string>();
+  private readonly skippedTeams: string[] = [];
 
   private teamsMissingTeamName: string[] = [];
   private teamsMissingParentTeamId: string[] = [];
