@@ -24,12 +24,13 @@ export class GitLab {
     logger: AirbyteLogger
   ): Promise<GitLab> {
     const apiUrl = config.api_url ?? DEFAULT_API_URL;
-    const key = `${apiUrl}:${config.token}`;
+    const token = config.authentication?.token ?? config.token;
+    const key = `${apiUrl}:${token}`;
 
     if (!GitLab.gitlabInstances[key]) {
       const client = new GitLabClient({
         host: apiUrl,
-        token: config.token,
+        token: token,
         rejectUnauthorized: config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
       });
 

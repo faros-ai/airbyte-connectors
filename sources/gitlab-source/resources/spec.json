@@ -5,16 +5,39 @@
     "title": "GitLab Spec",
     "type": "object",
     "required": [
-      "token"
+      "authentication"
     ],
     "additionalProperties": true,
     "properties": {
-      "token": {
+      "authentication": {
+        "title": "Authentication",
+        "description": "Choose your GitLab authentication method",
+        "type": "object",
         "order": 0,
-        "type": "string",
-        "title": "Token",
-        "description": "GitLab API token",
-        "airbyte_secret": true
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Personal Access Token",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "token",
+                "order": 0
+              },
+              "token": {
+                "type": "string",
+                "title": "Token",
+                "description": "GitLab API token",
+                "airbyte_secret": true,
+                "order": 1
+              }
+            },
+            "required": [
+              "type",
+              "token"
+            ]
+          }
+        ]
       },
       "api_url": {
         "order": 1,
@@ -63,64 +86,57 @@
           "gitlab-com"
         ]
       },
-      "use_faros_graph_repos_selection": {
-        "order": 6,
-        "type": "boolean",
-        "title": "Use Faros Graph for Repositories selection",
-        "description": "Use Faros Graph for selecting which repositories should be fetched (Faros credentials are required).",
-        "default": false
-      },
       "cutoff_days": {
-        "order": 7,
+        "order": 6,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated in the last number of days"
       },
       "page_size": {
-        "order": 8,
+        "order": 7,
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when querying GitLab REST APIs",
         "default": 100
       },
       "api_url_faros": {
-        "order": 9,
+        "order": 8,
         "type": "string",
         "title": "Faros API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai"
       },
       "api_key": {
-        "order": 10,
+        "order": 9,
         "title": "Faros API Key",
         "type": "string",
         "description": "The Faros API key to use to access the API.",
         "airbyte_secret": true
       },
       "graph": {
-        "order": 11,
+        "order": 10,
         "type": "string",
         "title": "Graph name",
         "description": "The Faros graph name.",
         "default": "default"
       },
       "bucket_id": {
-        "order": 12,
+        "order": 11,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of groups to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 13,
+        "order": 12,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute groups across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "concurrency_limit": {
-        "order": 14,
+        "order": 13,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",

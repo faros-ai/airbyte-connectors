@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('../dist/index').mainCommand().parse(process.argv);
+const {mainCommand} = require('../lib');
+
+mainCommand().parseAsync(process.argv);

@@ -1,26 +1,35 @@
 {
   "name": "gitlab-source",
-  "version": "0.1.0",
-  "description": "Airbyte Source for GitLab",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/faros-ai/airbyte-connectors.git"
-  },
+  "version": "0.0.1",
+  "description": "GitLab Airbyte source",
+  "homepage": "https://www.faros.ai",
+  "keywords": [
+    "airbyte",
+    "source",
+    "faros",
+    "gitlab"
+  ],
+  "author": "Faros AI, Inc.",
   "license": "Apache-2.0",
-  "private": true,
+  "files": [
+    "lib/",
+    "resources/"
+  ],
+  "main": "./lib",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "clean": "rm -rf dist",
-    "lint": "eslint --ext .ts,.js .",
-    "prepare": "npm run build",
-    "test": "jest --passWithNoTests",
-    "watch": "tsc -p tsconfig.json --watch"
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
   },
   "dependencies": {
     "@gitbeaker/rest": "^39.16.0",
     "commander": "^9.4.1",
-    "faros-airbyte-cdk": "^0.1.0",
-    "faros-airbyte-common": "^0.1.0",
+    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
     "faros-js-client": "^0.1.0",
     "ts-essentials": "^9.3.0",
     "verror": "^1.10.1"
@@ -40,18 +49,20 @@
     "typescript": "^4.9.3"
   },
   "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ],
     "testEnvironment": "node",
+    "testTimeout": 10000,
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
   }
 }

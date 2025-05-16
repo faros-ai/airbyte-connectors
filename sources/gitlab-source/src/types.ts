@@ -1,11 +1,14 @@
 export interface GitLabConfig {
-  token: string;
+  authentication?: {
+    type: string;
+    token: string;
+  };
+  token?: string; // For backward compatibility
   api_url?: string;
   api_version?: string;
   reject_unauthorized?: boolean;
   groups?: ReadonlyArray<string>;
   excluded_groups?: ReadonlyArray<string>;
-  use_faros_graph_repos_selection?: boolean;
   cutoff_days?: number;
   page_size?: number;
   api_url_faros?: string;
@@ -17,6 +20,8 @@ export interface GitLabConfig {
   
   startDate?: Date;
   endDate?: Date;
+  start_date?: string;
+  end_date?: string;
 }
 
 export interface Group {

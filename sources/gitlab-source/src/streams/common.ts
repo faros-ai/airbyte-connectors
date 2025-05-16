@@ -1,11 +1,8 @@
 import {
   AirbyteLogger,
   AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
 } from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
 import {GitLabConfig} from '../types';
@@ -46,9 +43,9 @@ export class GroupRepoFilter {
   private static groupRepoFilters: Record<string, GroupRepoFilter> = {};
 
   constructor(
-    private readonly config: GitLabConfig,
-    private readonly logger: AirbyteLogger,
-    private readonly farosClient?: FarosClient
+    protected readonly config: GitLabConfig,
+    protected readonly logger: AirbyteLogger,
+    protected readonly farosClient?: FarosClient
   ) {}
 
   static async instance(
@@ -56,15 +53,22 @@ export class GroupRepoFilter {
     logger: AirbyteLogger,
     farosClient?: FarosClient
   ): Promise<GroupRepoFilter> {
-    const key = `${config.api_url ?? ''}:${config.token}`;
-    if (!GroupRepoFilter.groupRepoFilters[key]) {
-      GroupRepoFilter.groupRepoFilters[key] = new GroupRepoFilter(
-        config,
-        logger,
-        farosClient
-      );
+    const key = `${config.api_url ?? ''}:${this.getToken(config)}`;
+    return this.getOrCreateInstance(key, () => new GroupRepoFilter(config, logger, farosClient));
+  }
+
+  private static getOrCreateInstance(
+    key: string, 
+    factory: () => GroupRepoFilter
+  ): GroupRepoFilter {
+    if (!this.groupRepoFilters[key]) {
+      this.groupRepoFilters[key] = factory();
     }
-    return GroupRepoFilter.groupRepoFilters[key];
+    return this.groupRepoFilters[key];
+  }
+  
+  private static getToken(config: GitLabConfig): string {
+    return config.authentication?.token ?? '';
   }
 
   async getGroups(): Promise<ReadonlyArray<string>> {
