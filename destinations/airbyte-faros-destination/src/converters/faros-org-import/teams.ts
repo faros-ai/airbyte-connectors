@@ -177,7 +177,7 @@ export class Teams extends FarosOrgImportConverter {
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
     
     const minTeamSize: number =
-      ctx?.config?.source_specific_configs?.faros_org_import?.min_team_size ?? 6;
+      ctx?.config?.source_specific_configs?.faros_org_import?.min_team_size ?? 10;
 
     // Skip teams below minimum size
     if (minTeamSize > 0) {
