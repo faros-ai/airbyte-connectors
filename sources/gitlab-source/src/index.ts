@@ -11,6 +11,7 @@ import {
 import {
   applyRoundRobinBucketing,
   calculateDateRange,
+  validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
@@ -42,15 +43,18 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
       await GitLab.instance(config, this.logger);
+      if (config.round_robin_bucket_execution) {
+        validateBucketingConfig(config, (message: string) => this.logger.info(message));
+      }
       await GroupRepoFilter.instance(
         config,
         this.logger,
         this.makeFarosClient(config)
       ).getGroups();
+      return [true, undefined];
     } catch (err: any) {
       return [false, err];
     }
-    return [true, undefined];
   }
 
   makeFarosClient(config: GitLabConfig): FarosClient | undefined {
@@ -58,7 +62,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       return undefined;
     }
     return new FarosClient({
-      url: config.api_url_faros ?? 'https://prod.api.faros.ai',
+      url: config.api_url ?? 'https://prod.api.faros.ai',
       apiKey: config.api_key,
     });
   }

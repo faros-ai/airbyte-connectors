@@ -2,6 +2,10 @@ import {
   AirbyteLogger,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {
+  applyRoundRobinBucketing,
+  calculateDateRange,
+} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 
 import {GitLab} from '../gitlab';
@@ -18,6 +22,17 @@ export abstract class StreamWithGroupSlices extends AirbyteStreamBase {
     protected readonly farosClient?: FarosClient
   ) {
     super(logger);
+    
+    if (!config.startDate || !config.endDate) {
+      const {startDate, endDate} = calculateDateRange({
+        start_date: config.start_date,
+        end_date: config.end_date,
+        cutoff_days: config.cutoff_days,
+        logger: (message: string) => this.logger.info(message),
+      });
+      config.startDate = startDate;
+      config.endDate = endDate;
+    }
   }
 
   protected async getGroupsToSync(): Promise<ReadonlyArray<string>> {
@@ -51,9 +66,17 @@ export class GroupRepoFilter {
   static async instance(
     config: GitLabConfig,
     logger: AirbyteLogger,
-    farosClient?: FarosClient
+    farosClient?: FarosClient,
+    state?: any
   ): Promise<GroupRepoFilter> {
-    const key = `${config.api_url ?? ''}:${this.getToken(config)}`;
+    if (config.round_robin_bucket_execution) {
+      const {config: updatedConfig, state: updatedState} = applyRoundRobinBucketing(
+        config, state, (message: string) => logger.info(message)
+      );
+      config = updatedConfig;
+    }
+    
+    const key = `${config.url ?? ''}:${this.getToken(config)}`;
     return this.getOrCreateInstance(key, () => new GroupRepoFilter(config, logger, farosClient));
   }
 

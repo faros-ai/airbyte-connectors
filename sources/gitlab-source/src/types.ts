@@ -1,4 +1,7 @@
-export interface GitLabConfig {
+import {AirbyteConfig} from 'faros-airbyte-cdk';
+import {RoundRobinConfig} from 'faros-airbyte-common/common';
+
+export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   authentication?: {
     type: string;
     token: string;
@@ -14,9 +17,8 @@ export interface GitLabConfig {
   api_url?: string;
   api_key?: string;
   graph?: string;
-  bucket_id?: number;
-  bucket_total?: number;
   concurrency_limit?: number;
+  backfill?: boolean;
   
   startDate?: Date;
   endDate?: Date;

@@ -135,12 +135,51 @@
         "description": "Total number of buckets to distribute groups across. Use it when distributing the load between multiple sources",
         "default": 1
       },
-      "concurrency_limit": {
+      "round_robin_bucket_execution": {
         "order": 13,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "bucket_ranges": {
+        "order": 14,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "3-5",
+          "7"
+        ]
+      },
+      "concurrency_limit": {
+        "order": 15,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
+      },
+      "backfill": {
+        "order": 16,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 17,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "order": 18,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
       }
     }
   }
