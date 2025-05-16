@@ -1,5 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {Gitlab as GitLabClient} from '@gitbeaker/rest';
+import {Gitlab} from '@gitbeaker/rest';
 import VError from 'verror';
 
 import {GitLabConfig, Group} from './types';
@@ -11,10 +11,10 @@ export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
 
 export class GitLab {
-  private static gitlabInstances: Record<string, GitLab> = {};
+  private static gitlab: GitLab;
 
   constructor(
-    private readonly client: GitLabClient,
+    private readonly client: any,
     private readonly config: GitLabConfig,
     private readonly logger: AirbyteLogger
   ) {}
@@ -23,30 +23,30 @@ export class GitLab {
     config: GitLabConfig,
     logger: AirbyteLogger
   ): Promise<GitLab> {
-    const apiUrl = config.url ?? DEFAULT_API_URL;
-    const token = config.authentication?.token ?? config.token;
-    const key = `${apiUrl}:${token}`;
-
-    if (!GitLab.gitlabInstances[key]) {
-      const client = new GitLabClient({
-        host: apiUrl,
-        token: token,
-        rejectUnauthorized: config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
-      });
-
-      try {
-        await client.Users.current();
-      } catch (err: any) {
-        throw new VError(
-          err,
-          `Failed to connect to GitLab API at ${apiUrl}. Error: ${err.message}`
-        );
-      }
-
-      GitLab.gitlabInstances[key] = new GitLab(client, config, logger);
+    if (GitLab.gitlab) {
+      return GitLab.gitlab;
     }
 
-    return GitLab.gitlabInstances[key];
+    const apiUrl = config.url ?? DEFAULT_API_URL;
+    const token = config.authentication?.token ?? config.token;
+
+    const client = new Gitlab({
+      host: apiUrl,
+      token: token as any,
+      rejectUnauthorized: config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+    });
+
+    try {
+      await (client.Users as any).current();
+    } catch (err: any) {
+      throw new VError(
+        err,
+        `Failed to connect to GitLab API at ${apiUrl}. Error: ${err.message}`
+      );
+    }
+
+    GitLab.gitlab = new GitLab(client, config, logger);
+    return GitLab.gitlab;
   }
 
   async getGroup(groupId: string): Promise<Group> {
