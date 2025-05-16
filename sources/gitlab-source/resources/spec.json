@@ -39,7 +39,7 @@
           }
         ]
       },
-      "api_url": {
+      "url": {
         "order": 1,
         "type": "string",
         "title": "API URL",
@@ -100,7 +100,7 @@
         "description": "Page size to use when querying GitLab REST APIs",
         "default": 100
       },
-      "api_url_faros": {
+      "api_url": {
         "order": 8,
         "type": "string",
         "title": "Faros API URL",

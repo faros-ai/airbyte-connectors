@@ -80,14 +80,18 @@ export class GroupRepoFilter {
     const groups: string[] = [];
     
     for await (const group of gitlab.listGroups()) {
-      if (
-        !this.config.excluded_groups?.includes(group.path) &&
-        !this.config.excluded_groups?.includes(group.name)
-      ) {
+      if (!this.isGroupExcluded(group)) {
         groups.push(group.path);
       }
     }
     
     return groups;
+  }
+
+  private isGroupExcluded(group: {path: string; name: string}): boolean {
+    return !!(
+      this.config.excluded_groups?.includes(group.path) ||
+      this.config.excluded_groups?.includes(group.name)
+    );
   }
 }

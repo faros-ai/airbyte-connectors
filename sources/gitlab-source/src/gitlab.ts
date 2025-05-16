@@ -23,7 +23,7 @@ export class GitLab {
     config: GitLabConfig,
     logger: AirbyteLogger
   ): Promise<GitLab> {
-    const apiUrl = config.api_url ?? DEFAULT_API_URL;
+    const apiUrl = config.url ?? DEFAULT_API_URL;
     const token = config.authentication?.token ?? config.token;
     const key = `${apiUrl}:${token}`;
 

@@ -27,10 +27,8 @@
   },
   "dependencies": {
     "@gitbeaker/rest": "^39.16.0",
-    "commander": "^9.4.1",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "faros-js-client": "^0.1.0",
     "ts-essentials": "^9.3.0",
     "verror": "^1.10.1"
   },

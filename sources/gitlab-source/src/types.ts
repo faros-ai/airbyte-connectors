@@ -4,14 +4,14 @@ export interface GitLabConfig {
     token: string;
   };
   token?: string; // For backward compatibility
-  api_url?: string;
+  url?: string;
   api_version?: string;
   reject_unauthorized?: boolean;
   groups?: ReadonlyArray<string>;
   excluded_groups?: ReadonlyArray<string>;
   cutoff_days?: number;
   page_size?: number;
-  api_url_faros?: string;
+  api_url?: string;
   api_key?: string;
   graph?: string;
   bucket_id?: number;
