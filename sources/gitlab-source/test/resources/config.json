@@ -1,0 +1,9 @@
+{
+  "authentication": {
+    "type": "token",
+    "personal_access_token": "test-token"
+  },
+  "url": "https://gitlab.com/api/v4",
+  "reject_unauthorized": true,
+  "run_mode": "Full"
+}

@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "path": "test-group",
+  "name": "Test Group",
+  "description": "Test group description",
+  "web_url": "https://gitlab.com/groups/test-group",
+  "created_at": "2022-01-01T00:00:00.000Z",
+  "updated_at": "2022-01-02T00:00:00.000Z"
+}
