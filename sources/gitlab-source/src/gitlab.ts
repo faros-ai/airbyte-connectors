@@ -7,7 +7,7 @@ import VError from 'verror';
 import {RunMode} from './streams/common';
 import {GitLabToken, GitLabConfig, Group} from './types';
 
-export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com/api/v4';
+export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_CUTOFF_DAYS = 90;

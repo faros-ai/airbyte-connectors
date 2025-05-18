@@ -42,8 +42,8 @@
         "order": 1,
         "type": "string",
         "title": "GitLab API URL",
-        "description": "GitLab API URL, e.g for GitLab Enterprise: https://my-gitlab-host.com/api/v4",
-        "default": "https://gitlab.com/api/v4"
+        "description": "GitLab API URL, e.g for GitLab Enterprise: https://my-gitlab-host.com",
+        "default": "https://gitlab.com"
       },
       "reject_unauthorized": {
         "order": 2,
