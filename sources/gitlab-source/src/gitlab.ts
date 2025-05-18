@@ -1,13 +1,11 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-import {Utils} from 'faros-js-client';
-import {pick, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {RunMode} from './streams/common';
-import {GitLabAuth, GitLabConfig, Group} from './types';
+import {GitLabToken, GitLabConfig, Group} from './types';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com/api/v4';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -122,7 +120,7 @@ export class GitLab {
     return auth.personal_access_token;
   }
 
-  private getAuth(): GitLabAuth {
+  private getAuth(): GitLabToken {
     if (!this.config.authentication) {
       throw new VError('Authentication configuration is required');
     }

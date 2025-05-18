@@ -4,7 +4,7 @@ import {RoundRobinConfig} from 'faros-airbyte-common/common';
 import {RunMode} from './streams/common';
 
 export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
-  readonly authentication: GitLabAuth;
+  readonly authentication: GitLabToken;
   readonly reject_unauthorized?: boolean;
   readonly url?: string;
   readonly groups?: ReadonlyArray<string>;
@@ -23,12 +23,10 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   endDate?: Date;
 }
 
-type GitLabToken = {
+export type GitLabToken = {
   type: 'token';
   personal_access_token: string;
 };
-
-export type GitLabAuth = GitLabToken;
 
 export interface Group {
   id: string;
