@@ -2,7 +2,8 @@
   "extends": "../../../.tsconfig.json",
   "compilerOptions": {
     "outDir": "../out/test",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "types": ["node", "jest"]
   },
   "references": [
     {

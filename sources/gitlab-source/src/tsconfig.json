@@ -3,6 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "../lib",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "types": ["node", "jest"]
   }
 }

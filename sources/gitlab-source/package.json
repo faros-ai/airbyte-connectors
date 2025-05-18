@@ -32,6 +32,14 @@
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"
   },
+  "devDependencies": {
+    "@types/jest": "^29.5.10",
+    "@types/node": "^22.14.0",
+    "@types/verror": "^1.10.5",
+    "fs-extra": "^11.1.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1"
+  },
   "jest": {
     "coverageDirectory": "out/coverage",
     "preset": "ts-jest",
