@@ -1,6 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {FarosClient} from 'faros-js-client';
-import {isEmpty, isString} from 'lodash';
+import {isEmpty} from 'lodash';
 import VError from 'verror';
 
 import {GitLab} from './gitlab';
