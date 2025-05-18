@@ -66,6 +66,7 @@ export class GitLab {
         perPage: this.pageSize,
         withProjects: false,
         allAvailable: this.fetchPublicGroups,
+        topLevelOnly: true,
       };
 
       let page = 1;
