@@ -1,0 +1,10 @@
+{
+  "id": 1,
+  "name": "GitLab",
+  "path": "gitlab",
+  "web_url": "https://gitlab.com/groups/gitlab",
+  "description": "A great group",
+  "visibility": "public",
+  "created_at": "2020-01-14T04:33:35Z",
+  "updated_at": "2020-03-03T18:58:10Z"
+}
