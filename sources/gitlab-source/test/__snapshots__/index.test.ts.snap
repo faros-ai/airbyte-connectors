@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - token valid 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;

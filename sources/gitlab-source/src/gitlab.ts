@@ -21,7 +21,7 @@ export const DEFAULT_FETCH_PUBLIC_GROUPS = false;
 
 export class GitLab {
   private static gitlab: GitLab;
-  private readonly client: GitlabClient;
+  private readonly client: any;
   protected readonly pageSize: number;
   protected readonly fetchPublicGroups: boolean;
 
