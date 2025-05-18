@@ -35,13 +35,6 @@ export function mainCommand(): Command {
 }
 
 export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
-  protected readonly logger: AirbyteSourceLogger;
-  
-  constructor(logger: AirbyteSourceLogger) {
-    super(logger);
-    this.logger = logger;
-  }
-  
   get type(): string {
     return 'gitlab';
   }

@@ -1,7 +1,3 @@
-import fs from 'fs-extra';
-import {merge} from 'lodash';
-import VError from 'verror';
-
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
@@ -9,6 +5,9 @@ import {
   sourceCheckTest,
   sourceSchemaTest,
 } from 'faros-airbyte-cdk';
+import fs from 'fs-extra';
+import {merge} from 'lodash';
+import VError from 'verror';
 
 import {GitLab} from '../src/gitlab';
 import * as sut from '../src/index';
