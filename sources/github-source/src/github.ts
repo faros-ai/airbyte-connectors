@@ -109,7 +109,7 @@ export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
 export const DEFAULT_COPILOT_METRICS_PREVIEW_API = false;
-export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = 0;
+export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -155,7 +155,8 @@ export abstract class GitHub {
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
-  protected readonly skipReposWithoutRecentPush: number;
+  protected readonly skipReposWithoutRecentPush: boolean;
+  protected readonly startDate?: Date;
 
   constructor(
     config: GitHubConfig,
@@ -186,6 +187,7 @@ export abstract class GitHub {
     this.skipReposWithoutRecentPush =
       config.skip_repos_without_recent_push ??
       DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
+    this.startDate = config.startDate;
   }
 
   static async instance(
@@ -246,7 +248,6 @@ export abstract class GitHub {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
-    const now = Date.now();
     const reposWithoutRecentPush: string[] = [];
     const repos: Repository[] = [];
     const iter = this.octokit(org).paginate.iterator(
@@ -265,8 +266,8 @@ export abstract class GitHub {
         const recentPush =
           !this.skipReposWithoutRecentPush ||
           (repo.pushed_at &&
-            now - Utils.toDate(repo.pushed_at).getTime() <
-              this.skipReposWithoutRecentPush * 24 * 60 * 60 * 1000);
+            this.startDate &&
+            Utils.toDate(repo.pushed_at).getTime() >= this.startDate.getTime());
         if (!recentPush) {
           reposWithoutRecentPush.push(repo.name);
         }
@@ -318,7 +319,7 @@ export abstract class GitHub {
     }
     if (reposWithoutRecentPush.length > 0) {
       this.logger.info(
-        `The following repositories for org ${org} haven't been pushed to in the last ${this.skipReposWithoutRecentPush} days and will not be synced: ${reposWithoutRecentPush.join(', ')}`
+        `The following repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`
       );
     }
     return repos;

@@ -481,7 +481,8 @@ describe('index', () => {
   test('streams - repositories with skip repos without recent push', async () => {
     const config = {
       ...readTestResourceAsJSON('config.json'),
-      skip_repos_without_recent_push: 1,
+      skip_repos_without_recent_push: true,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 24),
     };
     const repositories = readTestResourceAsJSON(
       'repositories/repositories-multiple.json'
