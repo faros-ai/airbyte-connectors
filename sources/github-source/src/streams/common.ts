@@ -6,7 +6,6 @@ import {
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
-import {DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH} from '../github';
 import {OrgRepoFilter} from '../org-repo-filter';
 import {GitHubConfig} from '../types';
 
