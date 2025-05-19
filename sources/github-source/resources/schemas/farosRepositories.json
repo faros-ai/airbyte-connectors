@@ -56,6 +56,9 @@
     "syncRepoData": {
       "type": "boolean"
     },
+    "recentPush": {
+      "type": "boolean"
+    },
     "languages": {
       "type": "array",
       "items": {

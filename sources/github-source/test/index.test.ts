@@ -499,8 +499,9 @@ describe('index', () => {
         );
       },
       checkRecordsData: (records) => {
-        expect(records).toHaveLength(1);
-        expect(records[0].full_name).toBe(repositories[0].full_name);
+        expect(records).toHaveLength(repositories.length);
+        expect(records[0].recentPush).toBe(true);
+        expect(records[1].recentPush).toBe(false);
       },
     });
   });

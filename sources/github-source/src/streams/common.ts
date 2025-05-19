@@ -6,6 +6,7 @@ import {
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
+import {DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH} from '../github';
 import {OrgRepoFilter} from '../org-repo-filter';
 import {GitHubConfig} from '../types';
 
@@ -179,12 +180,17 @@ export abstract class StreamWithOrgSlices extends StreamBase {
 export abstract class StreamWithRepoSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
     for (const org of await this.orgRepoFilter.getOrganizations()) {
+      const reposWithoutRecentPush: string[] = [];
       for (const {
         repo,
         syncRepoData,
       } of await this.orgRepoFilter.getRepositories(org)) {
         if (syncRepoData) {
-          yield {org, repo: repo.name};
+          if (repo.recentPush) {
+            yield {org, repo: repo.name};
+          } else {
+            reposWithoutRecentPush.push(repo.name);
+          }
         }
       }
     }

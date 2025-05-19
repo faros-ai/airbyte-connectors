@@ -262,15 +262,11 @@ export abstract class GitHub {
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
         }
-        if (
-          this.skipReposWithoutRecentPush &&
-          (!repo.pushed_at ||
-            now - Utils.toDate(repo.pushed_at).getTime() >
-              this.skipReposWithoutRecentPush * 24 * 60 * 60 * 1000)
-        ) {
-          reposWithoutRecentPush.push(repo.name);
-          continue;
-        }
+        const recentPush =
+          !this.skipReposWithoutRecentPush ||
+          (repo.pushed_at &&
+            now - Utils.toDate(repo.pushed_at).getTime() <
+              this.skipReposWithoutRecentPush * 24 * 60 * 60 * 1000);
         const repository: Repository = {
           org,
           ...pick(repo, [
@@ -288,23 +284,26 @@ export abstract class GitHub {
             'pushed_at',
             'archived',
           ]),
+          recentPush,
         };
         let languagesResponse:
           | GetResponseDataTypeFromEndpointMethod<
               typeof this.baseOctokit.repos.listLanguages
             >
           | undefined;
-        try {
-          languagesResponse = (
-            await this.octokit(org).repos.listLanguages({
-              owner: org,
-              repo: repo.name,
-            })
-          ).data;
-        } catch (error: any) {
-          this.logger.warn(
-            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status} $`
-          );
+        if (recentPush) {
+          try {
+            languagesResponse = (
+              await this.octokit(org).repos.listLanguages({
+                owner: org,
+                repo: repo.name,
+              })
+            ).data;
+          } catch (error: any) {
+            this.logger.warn(
+              `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
+            );
+          }
         }
         repos.push({
           ...repository,
