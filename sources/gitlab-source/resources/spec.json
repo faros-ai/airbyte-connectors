@@ -53,7 +53,7 @@
         "default": true
       },
       "groups": {
-        "order": 4,
+        "order": 3,
         "title": "Groups list",
         "description": "List of GitLab groups from which to fetch data. If none passed, all visible groups for the authenticated user/app will be used.",
         "type": "array",
@@ -66,7 +66,7 @@
         ]
       },
       "excluded_groups": {
-        "order": 5,
+        "order": 4,
         "title": "Excluded Groups list",
         "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded. If groups list is specified, this list will be ignored.",
         "type": "array",
@@ -79,7 +79,7 @@
         ]
       },
       "run_mode": {
-        "order": 9,
+        "order": 5,
         "title": "Run Mode",
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
@@ -91,7 +91,7 @@
         ]
       },
       "custom_streams": {
-        "order": 10,
+        "order": 6,
         "title": "Custom Streams",
         "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
         "type": "array",
@@ -104,35 +104,35 @@
         ]
       },
       "cutoff_days": {
-        "order": 16,
+        "order": 7,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "bucket_id": {
-        "order": 17,
+        "order": 8,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of groups and projects to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 18,
+        "order": 9,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute groups and projects across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "round_robin_bucket_execution": {
-        "order": 19,
+        "order": 10,
         "type": "boolean",
         "title": "Round Robin Bucket Execution",
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
       "bucket_ranges": {
-        "order": 20,
+        "order": 11,
         "type": "array",
         "items": {
           "type": "string"
@@ -145,41 +145,41 @@
         ]
       },
       "page_size": {
-        "order": 24,
+        "order": 12,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "timeout": {
-        "order": 27,
+        "order": 13,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitLab API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 28,
+        "order": 14,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 29,
+        "order": 15,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 30,
+        "order": 16,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 31,
+        "order": 17,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
@@ -189,7 +189,7 @@
         "title": "Fetch Public Groups",
         "description": "Fetch public groups",
         "default": false,
-        "order": 34
+        "order": 18
       }
     }
   }

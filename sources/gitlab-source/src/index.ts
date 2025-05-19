@@ -48,7 +48,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   }
 
   makeFarosClient(config: GitLabConfig): FarosClient | undefined {
-    return undefined; // Not needed for the basic implementation
+    return undefined; // Not needed yet for the basic implementation
   }
 
   streams(config: GitLabConfig): AirbyteStreamBase[] {
