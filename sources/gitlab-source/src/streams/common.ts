@@ -25,21 +25,12 @@ export enum RunMode {
   Custom = 'Custom',
 }
 
-export const MinimumStreamNames = [
-  'faros_groups',
-  'faros_projects',
-];
+export const MinimumStreamNames = ['faros_groups', 'faros_projects'];
 
-export const FullStreamNames = [
-  'faros_groups',
-  'faros_projects',
-];
+export const FullStreamNames = ['faros_groups', 'faros_projects'];
 
 // fill as streams are developed
-export const CustomStreamNames = [
-  'faros_groups',
-  'faros_projects',
-];
+export const CustomStreamNames = ['faros_groups', 'faros_projects'];
 
 export const RunModeStreams: {
   [key in RunMode]: string[];

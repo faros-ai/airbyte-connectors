@@ -5,7 +5,7 @@ import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {RunMode} from './streams/common';
-import {GitLabToken, GitLabConfig, Group} from './types';
+import {GitLabConfig, GitLabToken, Group} from './types';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -30,11 +30,13 @@ export class GitLab {
     this.client = new GitlabClient({
       token: this.getToken(),
       host: this.getBaseUrl(),
-      rejectUnauthorized: config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+      rejectUnauthorized:
+        config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
     });
-    
+
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
-    this.fetchPublicGroups = config.fetch_public_groups ?? DEFAULT_FETCH_PUBLIC_GROUPS;
+    this.fetchPublicGroups =
+      config.fetch_public_groups ?? DEFAULT_FETCH_PUBLIC_GROUPS;
   }
 
   static async instance(
@@ -74,7 +76,7 @@ export class GitLab {
 
       while (hasMore) {
         const groups = await this.client.Groups.all({...options, page});
-        
+
         if (!groups || groups.length === 0) {
           hasMore = false;
           continue;
@@ -96,7 +98,7 @@ export class GitLab {
   async getGroup(groupPath: string): Promise<Group> {
     try {
       const group = await this.client.Groups.show(groupPath);
-      
+
       return {
         id: group.id.toString(),
         name: group.name,

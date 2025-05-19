@@ -15,16 +15,9 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {
-  DEFAULT_CUTOFF_DAYS,
-  DEFAULT_RUN_MODE,
-  GitLab,
-} from './gitlab';
+import {DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE, GitLab} from './gitlab';
 import {GroupFilter} from './group-filter';
-import {
-  RunMode,
-  RunModeStreams,
-} from './streams/common';
+import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
 import {GitLabConfig} from './types';
 
@@ -47,10 +40,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
       await GitLab.instance(config, this.logger);
-      await GroupFilter.instance(
-        config,
-        this.logger
-      ).getGroups();
+      await GroupFilter.instance(config, this.logger).getGroups();
     } catch (err: any) {
       return [false, err];
     }
@@ -63,9 +53,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
   streams(config: GitLabConfig): AirbyteStreamBase[] {
     const farosClient = this.makeFarosClient(config);
-    return [
-      new FarosGroups(config, this.logger, farosClient),
-    ];
+    return [new FarosGroups(config, this.logger, farosClient)];
   }
 
   async onBeforeRead(
@@ -85,7 +73,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
         !config.custom_streams?.length ||
         config.custom_streams.includes(streamName)
     );
-    
+
     const streams = catalog.streams.filter((stream) =>
       streamNames.includes(stream.stream.name)
     );
