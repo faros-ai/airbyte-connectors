@@ -7,6 +7,7 @@ import {
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-cdk';
+import {readResourceFile} from 'faros-airbyte-common/common';
 import fs from 'fs-extra';
 import {VError} from 'verror';
 
@@ -16,10 +17,6 @@ import {CustomStreamNames} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

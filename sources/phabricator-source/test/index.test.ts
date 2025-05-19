@@ -4,16 +4,13 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {readResourceFile} from 'faros-airbyte-common/common';
 import fs from 'fs-extra';
 import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Phabricator} from '../src/phabricator';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 function readTestResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));

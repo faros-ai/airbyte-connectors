@@ -8,6 +8,7 @@ import {
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-cdk';
+import {readResourceFile} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 
@@ -17,10 +18,6 @@ import {ProjectBoardFilter} from '../src/project-board-filter';
 import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 afterEach(() => {
   jest.useRealTimers();

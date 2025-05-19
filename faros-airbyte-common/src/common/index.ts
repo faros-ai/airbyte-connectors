@@ -13,6 +13,8 @@ export {
   RoundRobinConfig,
 } from './bucketing';
 
+export * from './test-utils';
+
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
   deletions: number;

@@ -3,6 +3,7 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
+import {readResourceFile} from 'faros-airbyte-common/common';
 import fs from 'fs-extra';
 import VError from 'verror';
 
@@ -10,10 +11,6 @@ import * as sut from '../src/index';
 import {Findings} from '../src/streams/findings';
 import {Tromzo} from '../src/tromzo';
 import {TromzoConfig} from '../src/types';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

@@ -4,6 +4,7 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {readResourceFile} from 'faros-airbyte-common/common';
 import fs from 'fs-extra';
 import VError from 'verror';
 
@@ -195,7 +196,3 @@ describe('index', () => {
     expect(items).toMatchSnapshot();
   });
 });
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
