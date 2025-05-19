@@ -109,6 +109,7 @@ export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
 export const DEFAULT_COPILOT_METRICS_PREVIEW_API = false;
+export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = 0;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -154,6 +155,7 @@ export abstract class GitHub {
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
+  protected readonly skipReposWithoutRecentPush: number;
 
   constructor(
     config: GitHubConfig,
@@ -181,6 +183,9 @@ export abstract class GitHub {
     this.useEnterpriseAPIs = config.enterprises?.length > 0;
     this.fetchPublicOrganizations =
       config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
+    this.skipReposWithoutRecentPush =
+      config.skip_repos_without_recent_push ??
+      DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
   }
 
   static async instance(
@@ -241,6 +246,8 @@ export abstract class GitHub {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    const now = Date.now();
+    const reposWithoutRecentPush: string[] = [];
     const repos: Repository[] = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).repos.listForOrg,
@@ -253,6 +260,15 @@ export abstract class GitHub {
     for await (const res of iter) {
       for (const repo of res.data) {
         if (!this.isRepoInBucket(org, repo.name)) {
+          continue;
+        }
+        if (
+          this.skipReposWithoutRecentPush &&
+          (!repo.pushed_at ||
+            now - Utils.toDate(repo.pushed_at).getTime() >
+              this.skipReposWithoutRecentPush * 24 * 60 * 60 * 1000)
+        ) {
+          reposWithoutRecentPush.push(repo.name);
           continue;
         }
         const repository: Repository = {
@@ -269,6 +285,7 @@ export abstract class GitHub {
             'topics',
             'created_at',
             'updated_at',
+            'pushed_at',
             'archived',
           ]),
         };
@@ -298,6 +315,11 @@ export abstract class GitHub {
           }),
         });
       }
+    }
+    if (reposWithoutRecentPush.length > 0) {
+      this.logger.info(
+        `The following repositories for org ${org} haven't been pushed to in the last ${this.skipReposWithoutRecentPush} days and will not be synced: ${reposWithoutRecentPush.join(', ')}`
+      );
     }
     return repos;
   }

@@ -42,6 +42,7 @@ export type Repository = {
   | 'topics'
   | 'created_at'
   | 'updated_at'
+  | 'pushed_at'
   | 'archived'
 >;
 

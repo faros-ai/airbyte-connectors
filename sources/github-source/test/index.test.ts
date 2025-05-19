@@ -478,6 +478,33 @@ describe('index', () => {
     });
   });
 
+  test('streams - repositories with skip repos without recent push', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      skip_repos_without_recent_push: 1,
+    };
+    const repositories = readTestResourceAsJSON(
+      'repositories/repositories-multiple.json'
+    );
+    repositories[0].pushed_at = new Date().toISOString();
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getRepositoriesMockedImplementation(repositories),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(1);
+        expect(records[0].full_name).toBe(repositories[0].full_name);
+      },
+    });
+  });
+
   test('streams - pull requests', async () => {
     await sourceReadTest({
       source,

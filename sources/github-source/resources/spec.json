@@ -353,6 +353,13 @@
         "default": false,
         "order": 34
       },
+      "skip_repos_without_recent_push": {
+        "type": "integer",
+        "title": "Skip Repositories Without Recent Push (days)",
+        "description": "Skip repositories without recent push in the last N days. If 0, all repositories will be fetched.",
+        "default": 0,
+        "order": 35
+      },
       "copilot_metrics_teams": {
         "type": "array",
         "title": "Copilot Metrics Teams",
@@ -360,13 +367,13 @@
         "items": {
           "type": "string"
         },
-        "order": 35
+        "order": 36
       },
       "proxy_url": {
         "type": "string",
         "title": "Proxy URL",
         "description": "Proxy URL to use for the GitHub API",
-        "order": 36
+        "order": 37
       }
     }
   }

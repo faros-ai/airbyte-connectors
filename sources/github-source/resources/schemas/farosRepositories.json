@@ -43,6 +43,10 @@
       "type": "string",
       "format": "date-time"
     },
+    "pushed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "archived": {
       "type": "boolean"
     },
