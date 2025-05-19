@@ -12,6 +12,7 @@ export class FarosRepositories extends GitHubConverter {
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
     'vcs_Repository',
+    'vcs_RepositoryTag',
   ];
 
   async convert(

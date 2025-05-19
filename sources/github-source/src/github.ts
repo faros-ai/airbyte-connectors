@@ -291,19 +291,17 @@ export abstract class GitHub {
               typeof this.baseOctokit.repos.listLanguages
             >
           | undefined;
-        if (recentPush) {
-          try {
-            languagesResponse = (
-              await this.octokit(org).repos.listLanguages({
-                owner: org,
-                repo: repo.name,
-              })
-            ).data;
-          } catch (error: any) {
-            this.logger.warn(
-              `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
-            );
-          }
+        try {
+          languagesResponse = (
+            await this.octokit(org).repos.listLanguages({
+              owner: org,
+              repo: repo.name,
+            })
+          ).data;
+        } catch (error: any) {
+          this.logger.warn(
+            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
+          );
         }
         repos.push({
           ...repository,
