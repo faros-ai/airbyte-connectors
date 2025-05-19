@@ -267,6 +267,9 @@ export abstract class GitHub {
           (repo.pushed_at &&
             now - Utils.toDate(repo.pushed_at).getTime() <
               this.skipReposWithoutRecentPush * 24 * 60 * 60 * 1000);
+        if (!recentPush) {
+          reposWithoutRecentPush.push(repo.name);
+        }
         const repository: Repository = {
           org,
           ...pick(repo, [
