@@ -319,7 +319,7 @@ export abstract class GitHub {
     }
     if (reposWithoutRecentPush.length > 0) {
       this.logger.info(
-        `The following repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`
+        `The following ${reposWithoutRecentPush.length} repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`
       );
     }
     return repos;
