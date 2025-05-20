@@ -6,31 +6,27 @@ import {
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
+  readTestResourceFile,
+  readTestResourceAsJSON,
+  readResourceFile,
+  readResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Vanta} from '../src/vanta';
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test/resources/${fileName}`, 'utf8'));
-}
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
 jest.mock('axios');
 
 function getResponseByPath(url: any): any {
   if (url.includes('vulnerabilities')) {
-    return readTestResourceFile('vulnerabilities_response.json');
+    return readTestResourceAsJSON('vulnerabilities_response.json', 'test/resources');
   }
   if (url.includes('vulnerability-remediations')) {
-    return readTestResourceFile('vulnerability_remediations_response.json');
+    return readTestResourceAsJSON('vulnerability_remediations_response.json', 'test/resources');
   }
   if (url.includes('vulnerable-assets')) {
-    return readTestResourceFile('vulnerable_assets_response.json');
+    return readTestResourceAsJSON('vulnerable_assets_response.json', 'test/resources');
   }
 }
 
@@ -66,7 +62,7 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const sampleConfig = readTestResourceFile('sample_cfg.json');
+  const sampleConfig = readTestResourceAsJSON('sample_cfg.json', 'test/resources');
   const source = new sut.VantaSource(logger);
 
   beforeEach(() => {

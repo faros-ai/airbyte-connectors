@@ -12,15 +12,61 @@ import {
 } from '.';
 import {Data} from './utils';
 
-export function readTestResourceFile(fileName: string): string {
-  return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
+/**
+ * Read a test resource file with path auto-detection
+ * Supports 'test/resources/', 'test_files/', and 'resources/' paths
+ * @param fileName The name of the file to read
+ * @param basePath Optional base path to use, if not provided will auto-detect
+ * @returns The content of the file as a string
+ */
+export function readTestResourceFile(fileName: string, basePath?: string): string {
+  if (basePath) {
+    return fs.readFileSync(`${basePath}/${fileName}`, 'utf8');
+  }
+
+  const possiblePaths = [
+    `test/resources/${fileName}`,
+    `test_files/${fileName}`,
+    `resources/${fileName}`,
+  ];
+
+  for (const path of possiblePaths) {
+    try {
+      return fs.readFileSync(path, 'utf8');
+    } catch (err) {
+    }
+  }
+
+  throw new Error(`Unable to find resource file: ${fileName}`);
 }
 
 /**
- * Parse a test resource into JSON
+ * Parse a test resource into JSON with path auto-detection
+ * Supports 'test/resources/', 'test_files/', and 'resources/' paths
+ * @param fileName The name of the file to read
+ * @param basePath Optional base path to use, if not provided will auto-detect
+ * @returns The parsed JSON content
  */
-export function readTestResourceAsJSON(fileName: string): any {
-  return JSON.parse(readTestResourceFile(fileName));
+export function readTestResourceAsJSON(fileName: string, basePath?: string): any {
+  return JSON.parse(readTestResourceFile(fileName, basePath));
+}
+
+/**
+ * Read a non-test resource file (from 'resources/' directory)
+ * @param fileName The name of the file to read
+ * @returns The content of the file as a string
+ */
+export function readResourceFile(fileName: string): string {
+  return readTestResourceFile(fileName, 'resources');
+}
+
+/**
+ * Parse a non-test resource into JSON
+ * @param fileName The name of the file to read
+ * @returns The parsed JSON content
+ */
+export function readResourceAsJSON(fileName: string): any {
+  return JSON.parse(readResourceFile(fileName));
 }
 
 export interface SourceCheckTestOptions {

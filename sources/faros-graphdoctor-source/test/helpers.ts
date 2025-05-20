@@ -1,13 +1,15 @@
-import fs from 'fs-extra';
+import {
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
+} from 'faros-airbyte-cdk';
 
-export function readResourceAsJSON(filename: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${filename}`, 'utf8'));
-}
+export {
+  readResourceAsJSON,
+  readTestResourceAsJSON,
+};
 
 export function readTestResource(filename: string): any {
-  return fs.readFileSync(`test/resources/${filename}`, 'utf8');
-}
-
-export function readTestResourceAsJSON(filename: string): any {
-  return JSON.parse(readTestResource(filename));
+  return readTestResourceFile(filename, 'test/resources');
 }

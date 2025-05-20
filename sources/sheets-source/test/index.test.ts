@@ -3,6 +3,10 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import path from 'path';
@@ -25,9 +29,6 @@ describe('index', () => {
     SheetsReader.instance = sheets;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
 
   test('spec', async () => {
     const source = new sut.SheetsSource(logger);

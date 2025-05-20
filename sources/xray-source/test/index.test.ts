@@ -2,16 +2,16 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Xray} from '../src/xray';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

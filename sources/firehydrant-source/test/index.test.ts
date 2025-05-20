@@ -4,19 +4,16 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 
 import {FireHydrant} from '../src/firehydrant/firehydrant';
 import * as sut from '../src/index';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

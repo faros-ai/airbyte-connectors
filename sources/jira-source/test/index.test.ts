@@ -4,6 +4,8 @@ import {
   AirbyteSpec,
   customStreamsTest,
   readTestResourceAsJSON,
+  readResourceFile,
+  readResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
@@ -18,9 +20,7 @@ import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
+// Using CDK utility functions instead of local implementation
 
 afterEach(() => {
   jest.useRealTimers();

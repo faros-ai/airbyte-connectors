@@ -4,6 +4,10 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
 import {VError} from 'verror';
@@ -15,13 +19,6 @@ import {
   UNAUTHORIZED_ERROR_MESSAGE,
 } from '../src/semaphoreci/semaphoreci';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 function generateLinkHeaders(first = 1, next = 0, last = 1): any {
   const baseLinkHeader = `<http://mock.com/api/v1alpha/pipelines?page=${first}>; rel="first", <http://mock.com/api/v1alpha/pipelines?page=${last}>; rel="last"`;

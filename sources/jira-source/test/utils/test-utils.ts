@@ -1,4 +1,10 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  readTestResourceFile,
+  readTestResourceAsJSON,
+  readResourceFile,
+  readResourceAsJSON,
+} from 'faros-airbyte-cdk';
 import {Status} from 'faros-airbyte-common/jira';
 
 import {Jira, JiraConfig} from '../../src/jira';

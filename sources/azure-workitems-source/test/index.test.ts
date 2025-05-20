@@ -4,6 +4,10 @@ import {
   AirbyteSpec,
   sourceCheckTest,
   SyncMode,
+  readResourceFile,
+  readResourceAsJSON,
+  readTestResourceFile,
+  readTestResourceAsJSON,
 } from 'faros-airbyte-cdk';
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 import fs from 'fs-extra';
@@ -30,13 +34,6 @@ describe('index', () => {
     AzureWorkitems.instance = azureWorkitem;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
-
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
 
   test('spec', async () => {
     const source = new sut.AzureWorkitemsSource(logger);

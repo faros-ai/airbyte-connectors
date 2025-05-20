@@ -3,6 +3,8 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   readTestResourceAsJSON,
+  readResourceFile,
+  readResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
@@ -14,9 +16,6 @@ import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
 import * as sut from '../src/index';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

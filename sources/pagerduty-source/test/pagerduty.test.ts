@@ -1,4 +1,11 @@
-import {AirbyteLogLevel, AirbyteSourceLogger} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogLevel,
+  AirbyteSourceLogger,
+  readTestResourceFile,
+  readTestResourceAsJSON,
+  readResourceFile,
+  readResourceAsJSON,
+} from 'faros-airbyte-cdk';
 import {DateTime} from 'luxon';
 
 import * as sut from '../src/pagerduty';
