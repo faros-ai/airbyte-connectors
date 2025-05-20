@@ -28,6 +28,7 @@ export type Repository = {
   org: string;
   tmsEnabled?: boolean;
   syncRepoData?: boolean;
+  recentPush?: boolean;
   languages?: {language: string; bytes: number}[];
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
@@ -42,6 +43,7 @@ export type Repository = {
   | 'topics'
   | 'created_at'
   | 'updated_at'
+  | 'pushed_at'
   | 'archived'
 >;
 

@@ -184,7 +184,9 @@ export abstract class StreamWithRepoSlices extends StreamBase {
         syncRepoData,
       } of await this.orgRepoFilter.getRepositories(org)) {
         if (syncRepoData) {
-          yield {org, repo: repo.name};
+          if (repo.recentPush) {
+            yield {org, repo: repo.name};
+          }
         }
       }
     }

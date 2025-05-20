@@ -109,6 +109,7 @@ export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
 export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
 export const DEFAULT_COPILOT_METRICS_PREVIEW_API = false;
+export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -154,6 +155,8 @@ export abstract class GitHub {
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
+  protected readonly skipReposWithoutRecentPush: boolean;
+  protected readonly startDate?: Date;
 
   constructor(
     config: GitHubConfig,
@@ -181,6 +184,10 @@ export abstract class GitHub {
     this.useEnterpriseAPIs = config.enterprises?.length > 0;
     this.fetchPublicOrganizations =
       config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
+    this.skipReposWithoutRecentPush =
+      config.skip_repos_without_recent_push ??
+      DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
+    this.startDate = config.startDate;
   }
 
   static async instance(
@@ -241,6 +248,7 @@ export abstract class GitHub {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    const reposWithoutRecentPush: string[] = [];
     const repos: Repository[] = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).repos.listForOrg,
@@ -254,6 +262,14 @@ export abstract class GitHub {
       for (const repo of res.data) {
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
+        }
+        const recentPush =
+          !this.skipReposWithoutRecentPush ||
+          (repo.pushed_at &&
+            this.startDate &&
+            Utils.toDate(repo.pushed_at).getTime() >= this.startDate.getTime());
+        if (!recentPush) {
+          reposWithoutRecentPush.push(repo.name);
         }
         const repository: Repository = {
           org,
@@ -269,8 +285,10 @@ export abstract class GitHub {
             'topics',
             'created_at',
             'updated_at',
+            'pushed_at',
             'archived',
           ]),
+          recentPush,
         };
         let languagesResponse:
           | GetResponseDataTypeFromEndpointMethod<
@@ -286,7 +304,7 @@ export abstract class GitHub {
           ).data;
         } catch (error: any) {
           this.logger.warn(
-            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status} $`
+            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
           );
         }
         repos.push({
@@ -298,6 +316,11 @@ export abstract class GitHub {
           }),
         });
       }
+    }
+    if (reposWithoutRecentPush.length > 0) {
+      this.logger.info(
+        `The following ${reposWithoutRecentPush.length} repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`
+      );
     }
     return repos;
   }
