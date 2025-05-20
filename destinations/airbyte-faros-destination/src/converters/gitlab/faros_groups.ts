@@ -6,7 +6,6 @@ import {GitlabCommon, GitlabConverter} from './common';
 
 export class FarosGroups extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'cicd_Organization',
     'vcs_Organization',
     'tms_TaskBoard',
   ];
@@ -26,20 +25,6 @@ export class FarosGroups extends GitlabConverter {
         htmlUrl: group.web_url,
         type: {category: 'Group', detail: 'Group'},
         createdAt: Utils.toDate(group.created_at),
-        source,
-      },
-    });
-
-    res.push({
-      model: 'cicd_Organization',
-      record: {
-        uid: group.id,
-        description: Utils.cleanAndTruncate(
-          group.description,
-          GitlabCommon.MAX_DESCRIPTION_LENGTH
-        ),
-        name: group.name,
-        url: group.web_url,
         source,
       },
     });
