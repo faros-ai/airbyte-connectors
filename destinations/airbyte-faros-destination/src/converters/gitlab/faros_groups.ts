@@ -7,7 +7,6 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class FarosGroups extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
-    'tms_TaskBoard',
   ];
 
   async convert(
@@ -28,16 +27,6 @@ export class FarosGroups extends GitlabConverter {
         source,
       },
     });
-
-    res.push(
-      GitlabCommon.tms_TaskBoard(
-        {
-          uid: group.id,
-          source,
-        },
-        group.name
-      )
-    );
 
     return res;
   }
