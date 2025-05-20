@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - authentication missing 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Only token authentication is supported",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - invalid bucketing config - non positive integer 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "bucket_total must be a positive integer",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - invalid bucketing config - out of range 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "bucket_id must be between 1 and 2",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - no groups 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "No visible groups remain after applying inclusion and exclusion filters",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - token missing 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Failed to connect to GitLab API: Response code 401 (Unauthorized)",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - token valid 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index round robin bucket execution 1`] = `
+{
+  "__bucket_execution_state": {
+    "last_executed_bucket_id": 2,
+  },
+}
+`;
+
+exports[`index streams - faros groups 1`] = `
+[
+  {
+    "created_at": "2021-01-01T00:00:00Z",
+    "description": "Test group description",
+    "id": "1",
+    "name": "Test Group",
+    "path": "test-group",
+    "updated_at": "2021-01-01T00:00:00Z",
+    "visibility": "public",
+    "web_url": "https://gitlab.com/test-group",
+  },
+]
+`;
