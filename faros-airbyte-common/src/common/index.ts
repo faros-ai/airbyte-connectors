@@ -13,6 +13,15 @@ export {
   RoundRobinConfig,
 } from './bucketing';
 
+export {
+  VCSFilter,
+  VCSFilterConfig,
+  VCSConfigFields,
+  VCSEntityNames,
+  VCSAdapter,
+  RepoInclusion,
+} from './vcs-filter';
+
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
   deletions: number;
