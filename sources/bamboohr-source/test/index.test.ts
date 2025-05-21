@@ -2,9 +2,10 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {BambooHR} from '../src/bamboohr';
@@ -26,24 +27,17 @@ describe('index', () => {
     BambooHR.instance = bambooHRInstance;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
 
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
-
-  const fieldsResource: any[] = readTestResourceFile('fields_input.json');
-  const usersResource: any = readTestResourceFile('users_input.json');
-  const userDetailsResource: any[] = readTestResourceFile(
+  const fieldsResource: any[] = readTestFileAsJSON('fields_input.json');
+  const usersResource: any = readTestFileAsJSON('users_input.json');
+  const userDetailsResource: any[] = readTestFileAsJSON(
     'user_details_input.json'
   );
 
   test('spec', async () => {
     const source = new sut.BambooHRSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

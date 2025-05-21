@@ -3,20 +3,13 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {OpsGenie} from '../src/opsgenie/opsgenie';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -37,7 +30,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.OpsGenieSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -82,7 +75,7 @@ describe('index', () => {
         {
           get: fnIncidentsList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('incidents.json'),
+              data: readTestFileAsJSON('incidents.json'),
               totalCount: 3,
             },
           }),
@@ -102,7 +95,7 @@ describe('index', () => {
       incidents.push(incident);
     }
     expect(fnIncidentsList).toHaveBeenCalledTimes(4);
-    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
   test('streams - incidents, paginate', async () => {
@@ -112,7 +105,7 @@ describe('index', () => {
         {
           get: fnIncidentsList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('incidents.json'),
+              data: readTestFileAsJSON('incidents.json'),
               totalCount: 2,
             },
           }),
@@ -141,7 +134,7 @@ describe('index', () => {
         {
           get: fnTeamsList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('teams.json'),
+              data: readTestFileAsJSON('teams.json'),
             },
           }),
         } as any,
@@ -160,7 +153,7 @@ describe('index', () => {
       teams.push(team);
     }
     expect(fnTeamsList).toHaveBeenCalledTimes(1);
-    expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
+    expect(teams).toStrictEqual(readTestFileAsJSON('teams.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
@@ -170,7 +163,7 @@ describe('index', () => {
         {
           get: fnUsersList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('users.json'),
+              data: readTestFileAsJSON('users.json'),
               totalCount: 1,
             },
           }),
@@ -190,7 +183,7 @@ describe('index', () => {
       users.push(user);
     }
     expect(fnUsersList).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 
   test('streams - users, paginate', async () => {
@@ -200,7 +193,7 @@ describe('index', () => {
         {
           get: fnUsersList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('users.json'),
+              data: readTestFileAsJSON('users.json'),
               totalCount: 2,
             },
           }),
@@ -229,7 +222,7 @@ describe('index', () => {
         {
           get: fnAlertsList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('alerts.json'),
+              data: readTestFileAsJSON('alerts.json'),
               totalCount: 2,
             },
           }),
@@ -249,7 +242,7 @@ describe('index', () => {
       alerts.push(alert);
     }
     expect(fnAlertsList).toHaveBeenCalledTimes(1);
-    expect(alerts).toStrictEqual(readTestResourceFile('alerts.json'));
+    expect(alerts).toStrictEqual(readTestFileAsJSON('alerts.json'));
   });
 
   test('streams - alerts, paginate', async () => {
@@ -259,7 +252,7 @@ describe('index', () => {
         {
           get: fnAlertsList.mockResolvedValue({
             data: {
-              data: readTestResourceFile('alerts.json'),
+              data: readTestFileAsJSON('alerts.json'),
               totalCount: 2,
             },
           }),

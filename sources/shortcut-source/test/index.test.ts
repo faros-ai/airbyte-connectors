@@ -2,22 +2,15 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Shortcut, ShortcutConfig} from '../src/shortcut';
 
 const shortcutInstance = Shortcut.instance;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -34,7 +27,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.ShortcutSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -45,7 +38,7 @@ describe('index', () => {
         {} as ShortcutConfig,
         {
           listProjects: fnProjectsFunc.mockResolvedValue({
-            data: readTestResourceFile('projects.json'),
+            data: readTestFileAsJSON('projects.json'),
           }),
           hasNextPage: jest.fn(),
         } as any
@@ -74,7 +67,7 @@ describe('index', () => {
         } as ShortcutConfig,
         {
           listProjects: fnProjectsFunc.mockResolvedValue(
-            readTestResourceFile('projects.json')
+            readTestFileAsJSON('projects.json')
           ),
           hasNextPage: jest.fn(),
         } as any
@@ -95,7 +88,7 @@ describe('index', () => {
     }
     expect(fnProjectsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(projects))).toStrictEqual(
-      readTestResourceFile('projects.json')
+      readTestFileAsJSON('projects.json')
     );
   });
 
@@ -111,7 +104,7 @@ describe('index', () => {
         } as ShortcutConfig,
         {
           listIterations: fnIterationsFunc.mockResolvedValue(
-            readTestResourceFile('iterations.json')
+            readTestFileAsJSON('iterations.json')
           ),
           hasNextPage: jest.fn(),
         } as any
@@ -132,7 +125,7 @@ describe('index', () => {
     }
     expect(fnIterationsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(iterations))).toStrictEqual(
-      readTestResourceFile('iterations.json')
+      readTestFileAsJSON('iterations.json')
     );
   });
 
@@ -149,7 +142,7 @@ describe('index', () => {
         } as ShortcutConfig,
         {
           listEpics: fnEpicsFunc.mockResolvedValue(
-            readTestResourceFile('epics.json')
+            readTestFileAsJSON('epics.json')
           ),
           hasNextPage: jest.fn(),
         } as any
@@ -171,7 +164,7 @@ describe('index', () => {
     }
     expect(fnEpicsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(epics))).toStrictEqual(
-      readTestResourceFile('epics.json')
+      readTestFileAsJSON('epics.json')
     );
   });
 
@@ -187,7 +180,7 @@ describe('index', () => {
         } as ShortcutConfig,
         {
           listMembers: fnMembersFunc.mockResolvedValue(
-            readTestResourceFile('members.json')
+            readTestFileAsJSON('members.json')
           ),
           hasNextPage: jest.fn(),
         } as any
@@ -208,7 +201,7 @@ describe('index', () => {
     }
     expect(fnMembersFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(members))).toStrictEqual(
-      readTestResourceFile('members.json')
+      readTestFileAsJSON('members.json')
     );
   });
 });

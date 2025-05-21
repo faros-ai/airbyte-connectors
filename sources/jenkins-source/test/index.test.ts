@@ -1,10 +1,11 @@
 import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import jenkinsClient from 'jenkins';
 import {mocked} from 'jest-mock';
 import {VError} from 'verror';
@@ -13,13 +14,7 @@ import * as sut from '../src/index';
 
 jest.mock('jenkins');
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -32,7 +27,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.JenkinsSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -82,7 +77,7 @@ describe('index', () => {
       info: jest.fn().mockResolvedValue({}),
       job: {
         list: fnJobList.mockImplementation(async () =>
-          readTestResourceFile('jobs.json')
+          readTestFileAsJSON('jobs.json')
         ),
       },
     } as any);
@@ -157,7 +152,7 @@ describe('index', () => {
       job: {
         list: jest
           .fn()
-          .mockImplementation(async () => readTestResourceFile('jobs.json')),
+          .mockImplementation(async () => readTestFileAsJSON('jobs.json')),
       },
     } as any);
     const source = new sut.JenkinsSource(logger);
@@ -212,7 +207,7 @@ describe('index', () => {
       job: {
         list: jest
           .fn()
-          .mockImplementation(async () => readTestResourceFile('jobs.json')),
+          .mockImplementation(async () => readTestFileAsJSON('jobs.json')),
       },
     } as any);
     const source = new sut.JenkinsSource(logger);

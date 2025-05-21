@@ -3,8 +3,9 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
+  readResourceAsJSON,
+  readTestFileAsJSON,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -12,14 +13,6 @@ import {Statuspage} from '../src/statuspage';
 import {Component, ComponentGroup, Page} from '../src/types';
 
 const statusPageInstance = Statuspage.instance;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -41,7 +34,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.StatuspageSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -116,7 +109,7 @@ describe('index', () => {
 
   test('streams - component groups, use full_refresh sync mode', async () => {
     const fnComponentGroupsFunc = jest.fn();
-    const expectedData: ReadonlyArray<ComponentGroup> = readTestResourceFile(
+    const expectedData: ReadonlyArray<ComponentGroup> = readTestFileAsJSON(
       'component_groups.json'
     );
     const sp = new Statuspage(
@@ -153,7 +146,7 @@ describe('index', () => {
   test('streams - components, use full_refresh sync mode', async () => {
     const fnComponentsFunc = jest.fn();
     const expectedData: ReadonlyArray<Component> =
-      readTestResourceFile('components.json');
+      readTestFileAsJSON('components.json');
     const sp = new Statuspage(
       {
         get: fnComponentsFunc
@@ -187,7 +180,7 @@ describe('index', () => {
 
   test('streams - incidents, use full_refresh sync mode', async () => {
     const fnIncidentsFunc = jest.fn();
-    const inputIncidents: any[] = readTestResourceFile('incidents.json');
+    const inputIncidents: any[] = readTestFileAsJSON('incidents.json');
     Statuspage.instance = jest.fn().mockImplementation(() => {
       let idx = 0;
       return new Statuspage(
@@ -218,7 +211,7 @@ describe('index', () => {
     }
 
     expect(fnIncidentsFunc).toHaveBeenCalledTimes(4);
-    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
   test('streams - pages, use full_refresh sync mode', async () => {
@@ -228,7 +221,7 @@ describe('index', () => {
       return new Statuspage(
         {
           get: fnPagesFunc.mockResolvedValue({
-            data: readTestResourceFile('pages.json'),
+            data: readTestFileAsJSON('pages.json'),
           }),
         } as any,
         new Date('1970-01-01T00:00:00-0000'),
@@ -246,7 +239,7 @@ describe('index', () => {
     }
 
     expect(fnPagesFunc).toHaveBeenCalledTimes(1);
-    expect(pages).toStrictEqual(readTestResourceFile('pages.json'));
+    expect(pages).toStrictEqual(readTestFileAsJSON('pages.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
@@ -254,7 +247,7 @@ describe('index', () => {
     const sp = new Statuspage(
       {
         get: fnUsersFunc.mockResolvedValueOnce({
-          data: readTestResourceFile('users.json'),
+          data: readTestFileAsJSON('users.json'),
         }),
       } as any,
       new Date('1970-01-01T00:00:00-0000'),
@@ -272,12 +265,12 @@ describe('index', () => {
     }
 
     expect(fnUsersFunc).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 
   test('streams - component uptimes, use full_refresh sync mode', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const componentUptime = readTestFileAsJSON('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 3);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -316,7 +309,7 @@ describe('index', () => {
 
   test('streams - component uptimes, use incremental sync mode', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const componentUptime = readTestFileAsJSON('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 90);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -389,7 +382,7 @@ describe('index', () => {
 
   test('streams - component uptimes, fetch max 90 days', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const componentUptime = readTestFileAsJSON('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 1000);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -428,7 +421,7 @@ describe('index', () => {
 
   test('streams - component uptimes, use component start date', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const componentUptime = readTestFileAsJSON('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 1000);
     Statuspage.instance = jest.fn().mockImplementation(() => {
@@ -474,9 +467,9 @@ describe('index', () => {
 
   test('streams - component showcase disabled', async () => {
     const fnStreamSlicesFunc = jest.fn();
-    const pages: ReadonlyArray<Page> = readTestResourceFile('pages.json');
+    const pages: ReadonlyArray<Page> = readTestFileAsJSON('pages.json');
     const components: ReadonlyArray<Component> =
-      readTestResourceFile('components.json');
+      readTestFileAsJSON('components.json');
 
     Statuspage.instance = jest.fn().mockImplementation(() => {
       return new Statuspage(
@@ -516,7 +509,7 @@ describe('index', () => {
 
   test('streams - component uptimes, sub-components', async () => {
     const fnComponentUptimesFunc = jest.fn();
-    const componentUptime = readTestResourceFile('component_uptimes.json');
+    const componentUptime = readTestFileAsJSON('component_uptimes.json');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 1);
     Statuspage.instance = jest.fn().mockImplementation(() => {

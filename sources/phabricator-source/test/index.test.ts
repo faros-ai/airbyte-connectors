@@ -2,22 +2,16 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Phabricator} from '../src/phabricator';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -30,7 +24,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.PhabricatorSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -83,7 +77,7 @@ describe('index', () => {
   });
 
   test('streams - repositories', async () => {
-    const repos = readTestResourceFile('repositories.json');
+    const repos = readTestFileAsJSON('repositories.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
         undefined,
@@ -120,8 +114,8 @@ describe('index', () => {
   });
 
   test('streams - revisions', async () => {
-    const repos = readTestResourceFile('repositories.json');
-    const revisions = readTestResourceFile('revisions.json');
+    const repos = readTestFileAsJSON('repositories.json');
+    const revisions = readTestFileAsJSON('revisions.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
         undefined,
@@ -161,13 +155,13 @@ describe('index', () => {
   });
 
   test('streams - revision_diffs', async () => {
-    const repos = readTestResourceFile('repositories.json');
-    const revisions = readTestResourceFile('revisions.json');
-    const revisionDiffs = readTestResourceFile('revision_diffs.json');
-    const revisionDiffsRecords = readTestResourceFile(
+    const repos = readTestFileAsJSON('repositories.json');
+    const revisions = readTestFileAsJSON('revisions.json');
+    const revisionDiffs = readTestFileAsJSON('revision_diffs.json');
+    const revisionDiffsRecords = readTestFileAsJSON(
       'revision_diffs_records.json'
     );
-    const rawDiff = readTestResourceFile('raw_diff.json');
+    const rawDiff = readTestFileAsJSON('raw_diff.json');
     Phabricator.instance = jest.fn().mockImplementation(() => {
       return new Phabricator(
         undefined,

@@ -4,22 +4,16 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   customStreamsTest,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {Datadog, DatadogClient, DatadogConfig} from '../src/datadog';
 import * as sut from '../src/index';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -32,7 +26,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -79,7 +73,7 @@ describe('index', () => {
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
-    const res = readTestResourceFile('incidents.json');
+    const res = readTestFileAsJSON('incidents.json');
     const pagination = new v2.IncidentResponseMetaPagination();
     Object.assign(pagination, res.meta.pagination);
     const incidents = {...res, meta: {pagination}};
@@ -108,7 +102,7 @@ describe('index', () => {
   });
 
   test('streams - incidents, use incremental sync mode', async () => {
-    const res = readTestResourceFile('incidents.json');
+    const res = readTestFileAsJSON('incidents.json');
     const pagination = new v2.IncidentResponseMetaPagination();
     Object.assign(pagination, res.meta.pagination);
     const incidents = {...res, meta: {pagination}};
@@ -142,7 +136,7 @@ describe('index', () => {
   });
 
   test('streams - metrics, use full_refresh sync mode', async () => {
-    const metricsResponse = readTestResourceFile('metrics.json');
+    const metricsResponse = readTestFileAsJSON('metrics.json');
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -187,7 +181,7 @@ describe('index', () => {
   });
 
   test('streams - metrics, use incremental sync mode', async () => {
-    const metricsResponse = readTestResourceFile('metrics.json');
+    const metricsResponse = readTestFileAsJSON('metrics.json');
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -237,7 +231,7 @@ describe('index', () => {
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
-    const users = readTestResourceFile('users.json');
+    const users = readTestFileAsJSON('users.json');
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -263,7 +257,7 @@ describe('index', () => {
   });
 
   test('streams - users, use incremental sync mode', async () => {
-    const users = readTestResourceFile('users.json');
+    const users = readTestFileAsJSON('users.json');
     Datadog.instance = jest.fn().mockReturnValue(
       new Datadog(
         {
@@ -294,7 +288,7 @@ describe('index', () => {
   });
 
   test('streams - slos', async () => {
-    const res = readTestResourceFile('slos.json');
+    const res = readTestFileAsJSON('slos.json');
     const pagination = new v1.SearchSLOResponseMetaPage();
     Object.assign(pagination, res.meta.pagination);
     const slos = {...res, meta: {pagination}};

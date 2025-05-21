@@ -3,8 +3,9 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
+  readResourceAsJSON,
+  readTestFileAsJSON,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -12,14 +13,6 @@ import {Incident} from '../src/victorops';
 import {Victorops} from '../src/victorops';
 
 jest.mock('axios-retry');
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -40,7 +33,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.VictoropsSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -107,7 +100,7 @@ describe('index', () => {
         {
           reporting: {
             getIncidentHistory: fnIncidentsList.mockResolvedValue({
-              incidents: readTestResourceFile('incidents.json'),
+              incidents: readTestFileAsJSON('incidents.json'),
             }),
           },
         } as any,
@@ -127,7 +120,7 @@ describe('index', () => {
       incidents.push(incident);
     }
     expect(fnIncidentsList).toHaveBeenCalledTimes(1);
-    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
   test('streams - incidents, use incremental sync mode', async () => {
@@ -140,7 +133,7 @@ describe('index', () => {
             getIncidentHistory: fnIncidentsList.mockImplementation(
               ({startedAfter}: {startedAfter: Date}) => {
                 const incidentsFile: Incident[] =
-                  readTestResourceFile('incidents.json');
+                  readTestFileAsJSON('incidents.json');
 
                 return {
                   incidents: incidentsFile.filter(
@@ -183,7 +176,7 @@ describe('index', () => {
         {
           teams: {
             getTeams: fnTeamsList.mockResolvedValue(
-              readTestResourceFile('teams.json')
+              readTestFileAsJSON('teams.json')
             ),
           },
         } as any,
@@ -203,7 +196,7 @@ describe('index', () => {
       teams.push(team);
     }
     expect(fnTeamsList).toHaveBeenCalledTimes(1);
-    expect(teams).toStrictEqual(readTestResourceFile('teams.json'));
+    expect(teams).toStrictEqual(readTestFileAsJSON('teams.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
@@ -214,7 +207,7 @@ describe('index', () => {
         {
           users: {
             getUsers: fnUsersList.mockResolvedValue({
-              users: {flat: () => readTestResourceFile('users.json')},
+              users: {flat: () => readTestFileAsJSON('users.json')},
             }),
           },
         } as any,
@@ -234,6 +227,6 @@ describe('index', () => {
       users.push(user);
     }
     expect(fnUsersList).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 });

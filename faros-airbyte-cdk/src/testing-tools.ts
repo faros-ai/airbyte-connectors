@@ -23,6 +23,28 @@ export function readTestResourceAsJSON(fileName: string): any {
   return JSON.parse(readTestResourceFile(fileName));
 }
 
+export function readTestFile(fileName: string): string {
+  return fs.readFileSync(`test_files/${fileName}`, 'utf8');
+}
+
+/**
+ * Parse a test file into JSON
+ */
+export function readTestFileAsJSON(fileName: string): any {
+  return JSON.parse(readTestFile(fileName));
+}
+
+export function readResourceFile(fileName: string): string {
+  return fs.readFileSync(`resources/${fileName}`, 'utf8');
+}
+
+/**
+ * Parse a resource into JSON
+ */
+export function readResourceAsJSON(fileName: string): any {
+  return JSON.parse(readResourceFile(fileName));
+}
+
 export interface SourceCheckTestOptions {
   source: AirbyteSourceBase<AirbyteConfig>;
   configOrPath?: string | AirbyteConfig;
