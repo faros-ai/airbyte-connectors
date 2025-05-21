@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros_gitlab process records from all streams 1`] = `
+Array [
+  "Processed 1 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 1 records",
+  "Would write records by model: {\\\\\\"vcs_Organization\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_gitlab process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_Organization": Object {
+      "createdAt": "2021-06-11T22:27:18.521Z",
+      "htmlUrl": "https://gitlab.com/groups/farosai",
+      "name": "farosai",
+      "source": "GitLab",
+      "type": Object {
+        "category": "Group",
+        "detail": "Group",
+      },
+      "uid": "12372707",
+    },
+  },
+]
+`;
