@@ -2,11 +2,12 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
-import fs from 'fs-extra';
 import {omit} from 'lodash';
 
 import {AzureRepos} from '../src/azure-repos';
@@ -37,24 +38,17 @@ describe('index', () => {
     AzureRepos.instance = azureRepo;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
-
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
 
   test('spec', async () => {
     const source = new sut.AzureRepoSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
   test('check connection', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users.json');
+      const usersResource: any[] = readTestFileAsJSON('users.json');
       const project = {id: 'project', name: 'Project'};
       return new AzureRepos(
         {
@@ -143,10 +137,10 @@ describe('index', () => {
   });
 
   test('streams - commits, use full_refresh sync mode', async () => {
-    const repos = readTestResourceFile('repositories.json');
+    const repos = readTestFileAsJSON('repositories.json');
     const repo = {...repos[0], project: {id: 'project', name: 'project'}};
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const commits = readTestResourceFile('commits.json');
+      const commits = readTestFileAsJSON('commits.json');
       return new AzureRepos(
         {
           git: {
@@ -178,12 +172,12 @@ describe('index', () => {
 
   test('streams - commits, fetch branch commits', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const reposResource = readTestResourceFile('repositories.json');
+      const reposResource = readTestFileAsJSON('repositories.json');
       const repos = reposResource.map((repo) =>
         omit(repo, ['branches', 'tags'])
       );
-      const commits = readTestResourceFile('commits.json');
-      const branches = readTestResourceFile('branches.json');
+      const commits = readTestFileAsJSON('commits.json');
+      const branches = readTestFileAsJSON('branches.json');
       return new AzureRepos(
         {
           core: {
@@ -223,10 +217,10 @@ describe('index', () => {
   });
 
   test('streams - pullrequests, use full_refresh sync mode', async () => {
-    const repos = readTestResourceFile('repositories.json');
+    const repos = readTestFileAsJSON('repositories.json');
     const repo = {...repos[0], project: {id: 'project', name: 'project'}};
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const rawPullrequests: any[] = readTestResourceFile('pullrequests.json');
+      const rawPullrequests: any[] = readTestFileAsJSON('pullrequests.json');
       const pullrequests = rawPullrequests.map((p) => omit(p, 'threads'));
       const threads = rawPullrequests.map((r) => r.threads);
       return new AzureRepos(
@@ -265,7 +259,7 @@ describe('index', () => {
 
   test('streams - repositories, use full_refresh sync mode', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const reposResource = readTestResourceFile('repositories.json');
+      const reposResource = readTestFileAsJSON('repositories.json');
       const repos = reposResource.map((repo) =>
         omit(repo, ['branches', 'tags'])
       );
@@ -317,7 +311,7 @@ describe('index', () => {
 
   test('streams - repositories, filter by repository', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const reposResource = readTestResourceFile('repositories.json');
+      const reposResource = readTestFileAsJSON('repositories.json');
       const repos = reposResource.map((repo) =>
         omit(repo, ['branches', 'tags'])
       );
@@ -368,7 +362,7 @@ describe('index', () => {
 
   test('streams - repositories, tags disabled', async () => {
     AzureRepos.instance = jest.fn().mockImplementation(() => {
-      const reposResource = readTestResourceFile('repositories.json');
+      const reposResource = readTestFileAsJSON('repositories.json');
       const repos = reposResource.map((repo) =>
         omit(repo, ['branches', 'tags'])
       );

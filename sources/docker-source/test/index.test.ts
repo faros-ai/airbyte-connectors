@@ -1,10 +1,11 @@
 import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {Docker} from '../src/docker';
@@ -12,13 +13,7 @@ import * as sut from '../src/index';
 
 const dockerInstance = Docker.instance;
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -35,7 +30,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.DockerSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -112,7 +107,7 @@ describe('index', () => {
           undefined
         ),
         getTags: fnTagsFunc.mockImplementation(async function () {
-          return readTestResourceFile('tags.json');
+          return readTestFileAsJSON('tags.json');
         }),
       };
     });
@@ -135,6 +130,6 @@ describe('index', () => {
     }
 
     expect(fnTagsFunc).toHaveBeenCalledTimes(1);
-    expect(tags).toStrictEqual(readTestResourceFile('tags.json'));
+    expect(tags).toStrictEqual(readTestFileAsJSON('tags.json'));
   });
 });

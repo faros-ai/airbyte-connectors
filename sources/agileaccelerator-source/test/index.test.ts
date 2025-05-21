@@ -3,9 +3,10 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {Agileaccelerator} from '../src/agileaccelerator/agileaccelerator';
@@ -16,14 +17,6 @@ const agileacceleratorInstance = Agileaccelerator.instance;
 jest.mock('axios');
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -43,7 +36,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.AgileacceleratorSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -116,7 +109,7 @@ describe('index', () => {
     const fnWorksFunc = jest.fn();
 
     Agileaccelerator.instance = jest.fn().mockImplementation(() => {
-      const worksResource: any[] = readTestResourceFile('works.json');
+      const worksResource: any[] = readTestFileAsJSON('works.json');
       return new Agileaccelerator(
         {
           get: fnWorksFunc.mockResolvedValue({
@@ -139,6 +132,6 @@ describe('index', () => {
     }
 
     expect(fnWorksFunc).toHaveBeenCalledTimes(1);
-    expect(works).toStrictEqual(readTestResourceFile('works.json'));
+    expect(works).toStrictEqual(readTestFileAsJSON('works.json'));
   });
 });

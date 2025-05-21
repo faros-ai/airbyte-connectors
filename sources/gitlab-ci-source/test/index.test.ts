@@ -2,9 +2,10 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 
 import {Gitlab} from '../src/gitlab';
 import * as sut from '../src/index';
@@ -17,13 +18,6 @@ const config = {
 
 const gitlabInstance = Gitlab.instance;
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -40,7 +34,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.GitlabCiSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -77,7 +71,7 @@ describe('index', () => {
         {
           Groups: {
             show: fnGroupFunc.mockResolvedValue(
-              readTestResourceFile('groups.json')
+              readTestFileAsJSON('groups.json')
             ),
           },
         },
@@ -96,7 +90,7 @@ describe('index', () => {
 
     expect(fnGroupFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(groups))).toStrictEqual(
-      readTestResourceFile('groups-response.json')
+      readTestFileAsJSON('groups-response.json')
     );
   });
   test('streams - projects, use full_refresh sync mode', async () => {
@@ -107,13 +101,13 @@ describe('index', () => {
         {
           Projects: {
             show: fnProjectsFunc.mockResolvedValue(
-              readTestResourceFile('projects.json')
+              readTestFileAsJSON('projects.json')
             ),
           },
           Groups: {
             show: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('groups.json')),
+              .mockResolvedValue(readTestFileAsJSON('groups.json')),
           },
         },
         config
@@ -131,7 +125,7 @@ describe('index', () => {
 
     expect(fnProjectsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(projects))).toStrictEqual(
-      readTestResourceFile('projects-response.json')
+      readTestFileAsJSON('projects-response.json')
     );
   });
   test('streams - pipelines, use full_refresh sync mode', async () => {
@@ -142,7 +136,7 @@ describe('index', () => {
         {
           Pipelines: {
             all: fnPipelinesFunc.mockResolvedValue({
-              data: readTestResourceFile('pipelines.json'),
+              data: readTestFileAsJSON('pipelines.json'),
             }),
           },
         },
@@ -165,7 +159,7 @@ describe('index', () => {
 
     expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(pipelines))).toStrictEqual(
-      readTestResourceFile('pipelines-response.json')
+      readTestFileAsJSON('pipelines-response.json')
     );
   });
   test('streams - pipelines, use incremental sync mode', async () => {
@@ -176,7 +170,7 @@ describe('index', () => {
         {
           Pipelines: {
             all: fnPipelinesFunc.mockResolvedValue({
-              data: readTestResourceFile('pipelines.json'),
+              data: readTestFileAsJSON('pipelines.json'),
             }),
           },
         },
@@ -201,7 +195,7 @@ describe('index', () => {
 
     expect(fnPipelinesFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(pipelines))).toStrictEqual(
-      readTestResourceFile('pipelines-response.json')
+      readTestFileAsJSON('pipelines-response.json')
     );
     expect(
       pipelinesStream.getUpdatedState(pipelinesState, {
@@ -219,7 +213,7 @@ describe('index', () => {
         {
           Jobs: {
             showPipelineJobs: fnJobsFunc.mockResolvedValue({
-              data: readTestResourceFile('jobs.json'),
+              data: readTestFileAsJSON('jobs.json'),
             }),
           },
         },
@@ -241,7 +235,7 @@ describe('index', () => {
 
     expect(fnJobsFunc).toHaveBeenCalledTimes(1);
     expect(JSON.parse(JSON.stringify(jobs))).toStrictEqual(
-      readTestResourceFile('jobs-response.json')
+      readTestFileAsJSON('jobs-response.json')
     );
   });
 });

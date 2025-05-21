@@ -1,4 +1,5 @@
 import {
+  readResourceAsJSON,
   AirbyteLogger,
   AirbyteLogLevel,
   AirbyteSpec,
@@ -18,9 +19,6 @@ import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 afterEach(() => {
   jest.useRealTimers();
@@ -42,7 +40,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

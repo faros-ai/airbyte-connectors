@@ -1,4 +1,6 @@
 import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
@@ -6,7 +8,6 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
-import fs from 'fs-extra';
 import {omit} from 'lodash';
 import {DateTime} from 'luxon';
 
@@ -48,7 +49,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -71,7 +72,7 @@ describe('index', () => {
           pipelines: {
             listPipelines: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('pipelines.json')),
+              .mockResolvedValue(readTestFileAsJSON('pipelines.json')),
           },
         } as unknown as AzureDevOpsClient,
         instanceType,
@@ -105,7 +106,7 @@ describe('index', () => {
       );
 
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
-      const buildsResource: any[] = readTestResourceFile('builds.json');
+      const buildsResource: any[] = readTestFileAsJSON('builds.json');
       const rawBuilds = buildsResource.map((b) =>
         omit(b, ['artifacts', 'jobs'])
       );
@@ -133,7 +134,7 @@ describe('index', () => {
           pipelines: {
             listRuns: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('runs.json')),
+              .mockResolvedValue(readTestFileAsJSON('runs.json')),
           },
         } as unknown as AzureDevOpsClient,
         instanceType,
@@ -166,8 +167,8 @@ describe('index', () => {
       );
 
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
-      const runs = [readTestResourceFile('runs.json')[0]];
-      const buildsResource: any[] = readTestResourceFile(
+      const runs = [readTestFileAsJSON('runs.json')[0]];
+      const buildsResource: any[] = readTestFileAsJSON(
         'builds_eligible_for_coverage.json'
       );
       const rawBuilds = buildsResource.map((b) =>
@@ -185,7 +186,7 @@ describe('index', () => {
           test: {
             getCodeCoverageSummary: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('builds_coverage.json')),
+              .mockResolvedValue(readTestFileAsJSON('builds_coverage.json')),
           },
           pipelines: {
             listRuns: jest.fn().mockResolvedValue(runs),
@@ -212,7 +213,7 @@ describe('index', () => {
   });
 
   test('streams - releases', async () => {
-    const releasesData = readTestResourceFile('releases.json');
+    const releasesData = readTestFileAsJSON('releases.json');
     AzurePipelines.instance = jest.fn().mockImplementation(() => {
       return new AzurePipelines(
         {
@@ -242,11 +243,3 @@ describe('index', () => {
     expect(releases).toMatchSnapshot();
   });
 });
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}

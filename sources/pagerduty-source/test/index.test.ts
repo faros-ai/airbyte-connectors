@@ -3,21 +3,15 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {Incident, Pagerduty} from '../src/pagerduty';
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -38,7 +32,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.PagerdutySource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -83,7 +77,7 @@ describe('index', () => {
   test('streams - incidentLogEntries, use full_refresh sync mode', async () => {
     const fnIncidentLogEntriesList = jest.fn();
 
-    const expectedEntries = readTestResourceFile('incidentLogEntries.json').map(
+    const expectedEntries = readTestFileAsJSON('incidentLogEntries.json').map(
       (entry) => {
         return {...entry, created_at: new Date().toISOString()};
       }
@@ -125,7 +119,7 @@ describe('index', () => {
         {
           get: fnIncidentsList
             .mockResolvedValueOnce({
-              resource: readTestResourceFile('incidents.json'),
+              resource: readTestFileAsJSON('incidents.json'),
             })
             .mockResolvedValue({resource: []}),
         } as unknown as PartialCall,
@@ -145,7 +139,7 @@ describe('index', () => {
     }
 
     expect(fnIncidentsList).toHaveBeenCalledTimes(90);
-    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
   test('streams - incidents, exclude services', async () => {
@@ -168,14 +162,14 @@ describe('index', () => {
               returnedIncidents = true;
               return {
                 resource: (
-                  readTestResourceFile('incidents.json') as Incident[]
+                  readTestFileAsJSON('incidents.json') as Incident[]
                 ).filter((i) => includeServices.includes(i.service.id)),
               };
             }
             const servicesPathMatch = path.match(/^\/services/);
             if (servicesPathMatch) {
               return {
-                resource: readTestResourceFile('services.json'),
+                resource: readTestFileAsJSON('services.json'),
               };
             }
           }),
@@ -198,7 +192,7 @@ describe('index', () => {
 
     expect(fnList).toHaveBeenCalledTimes(91); // list services once + 90 days
     expect(incidents).toStrictEqual(
-      (readTestResourceFile('incidents.json') as Incident[]).filter(
+      (readTestFileAsJSON('incidents.json') as Incident[]).filter(
         (i) => i.service.summary !== 'Service2'
       )
     );
@@ -215,7 +209,7 @@ describe('index', () => {
               const isPathMatch = path.match(/^\/priorities/);
               if (isPathMatch) {
                 return {
-                  resource: readTestResourceFile('prioritiesResource.json'),
+                  resource: readTestFileAsJSON('prioritiesResource.json'),
                   response: {
                     ok: true,
                   },
@@ -243,7 +237,7 @@ describe('index', () => {
 
     expect(fnPrioritiesResourceList).toHaveBeenCalledTimes(1);
     expect(priorities).toStrictEqual(
-      readTestResourceFile('prioritiesResource.json')
+      readTestFileAsJSON('prioritiesResource.json')
     );
   });
 
@@ -257,7 +251,7 @@ describe('index', () => {
             const isPathMatch = path.match(/^\/services/);
             if (isPathMatch) {
               return {
-                resource: readTestResourceFile('services.json'),
+                resource: readTestFileAsJSON('services.json'),
                 response: {
                   ok: true,
                 },
@@ -281,7 +275,7 @@ describe('index', () => {
     }
 
     expect(fnServicesList).toHaveBeenCalledTimes(1);
-    expect(service).toStrictEqual(readTestResourceFile('services.json'));
+    expect(service).toStrictEqual(readTestFileAsJSON('services.json'));
   });
 
   test('streams - teams, use full_refresh sync mode', async () => {
@@ -294,7 +288,7 @@ describe('index', () => {
             const isPathMatch = path.match(/^\/teams/);
             if (isPathMatch) {
               return {
-                resource: readTestResourceFile('teams.json'),
+                resource: readTestFileAsJSON('teams.json'),
                 response: {
                   ok: true,
                 },
@@ -318,7 +312,7 @@ describe('index', () => {
     }
 
     expect(fnTeamsList).toHaveBeenCalledTimes(1);
-    expect(priorities).toStrictEqual(readTestResourceFile('teams.json'));
+    expect(priorities).toStrictEqual(readTestFileAsJSON('teams.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
@@ -331,7 +325,7 @@ describe('index', () => {
             const isPathMatch = path.match(/^\/users/);
             if (isPathMatch) {
               return {
-                resource: readTestResourceFile('users.json'),
+                resource: readTestFileAsJSON('users.json'),
               };
             }
           }),
@@ -351,6 +345,6 @@ describe('index', () => {
       users.push(user);
     }
     expect(fnUsersList).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 });

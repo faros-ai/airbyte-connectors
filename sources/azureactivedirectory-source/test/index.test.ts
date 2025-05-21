@@ -1,10 +1,11 @@
 import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
 import {VError} from 'verror';
 
 import {AzureActiveDirectory} from '../src/azureactivedirectory';
@@ -26,18 +27,12 @@ describe('index', () => {
     AzureActiveDirectory.instance = azureActiveDirectoryInstance;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
 
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
 
   test('spec', async () => {
     const source = new sut.AzureActiveDirectorySource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -55,7 +50,7 @@ describe('index', () => {
   });
 
   test('filters groups stream when fetch_teams is false', async () => {
-    const catalog = readTestResourceFile('full_configured_catalog.json');
+    const catalog = readTestFileAsJSON('full_configured_catalog.json');
     const {catalog: newCatalog} = await source.onBeforeRead(
       {fetch_teams: false} as any,
       catalog
@@ -73,7 +68,7 @@ describe('index', () => {
     const fnUsersFunc = jest.fn();
 
     AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users.json');
+      const usersResource: any[] = readTestFileAsJSON('users.json');
       return new AzureActiveDirectory(
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -93,14 +88,14 @@ describe('index', () => {
     }
 
     expect(fnUsersFunc).toHaveBeenCalledTimes(3);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 
   test('streams - groups, use full_refresh sync mode', async () => {
     const fnGroupsFunc = jest.fn();
 
     AzureActiveDirectory.instance = jest.fn().mockImplementation(() => {
-      const groupsResource: any[] = readTestResourceFile('groups.json');
+      const groupsResource: any[] = readTestFileAsJSON('groups.json');
       return new AzureActiveDirectory(
         {
           get: fnGroupsFunc.mockResolvedValue({
@@ -120,6 +115,6 @@ describe('index', () => {
     }
 
     expect(fnGroupsFunc).toHaveBeenCalledTimes(3);
-    expect(groups).toStrictEqual(readTestResourceFile('groups.json'));
+    expect(groups).toStrictEqual(readTestFileAsJSON('groups.json'));
   });
 });
