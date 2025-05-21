@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {GitlabCommon, GitlabConverter} from './common';
+import {GitlabConverter} from './common';
 
 export class FarosGroups extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
