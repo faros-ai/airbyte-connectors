@@ -65,7 +65,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
           uid: GitHubCommon.digest(
             [
               GitHubTool.Copilot,
-              'FeatureUsage',
+              AssistantMetric.FeatureEngagement,
               day.toISOString(),
               org,
               user,
