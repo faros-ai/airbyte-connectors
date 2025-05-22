@@ -329,7 +329,7 @@ export class GitHubCommon {
   }
 
   static enterpriseUid(enterpriseSlug: string): string {
-    return `enterprise:${enterpriseSlug}`;
+    return `enterprise:${toLower(enterpriseSlug)}`;
   }
 }
 
