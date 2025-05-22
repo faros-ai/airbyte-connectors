@@ -38,6 +38,19 @@ class GitHubVCSAdapter implements VCSAdapter<Organization, Repository> {
   }
 }
 
+/**
+ * Type-safe configuration field mapping for GitHub
+ * This ensures that the values in configFields are actual keys of GitHubConfig
+ */
+type GitHubConfigFields = {
+  orgs: keyof GitHubConfig & 'organizations';
+  excludedOrgs: keyof GitHubConfig & 'excluded_organizations';
+  repos: keyof GitHubConfig & 'repositories';
+  excludedRepos: keyof GitHubConfig & 'excluded_repositories';
+  useFarosGraphReposSelection: keyof GitHubConfig & 'use_faros_graph_repos_selection';
+  graph: keyof GitHubConfig & 'graph';
+};
+
 export class OrgRepoFilter {
   private readonly vcsFilter: VCSFilter<GitHubConfig, Organization, Repository>;
   private static _instance: OrgRepoFilter;
@@ -59,18 +72,20 @@ export class OrgRepoFilter {
     private readonly farosClient?: FarosClient
   ) {
     // Initialize the VCS filter with GitHub-specific configuration
+    const configFields: GitHubConfigFields = {
+      orgs: 'organizations',
+      excludedOrgs: 'excluded_organizations',
+      repos: 'repositories',
+      excludedRepos: 'excluded_repositories',
+      useFarosGraphReposSelection: 'use_faros_graph_repos_selection',
+      graph: 'graph'
+    };
+
     this.vcsFilter = new VCSFilter({
       config,
       logger,
       farosClient,
-      configFields: {
-        orgs: 'organizations',
-        excludedOrgs: 'excluded_organizations',
-        repos: 'repositories',
-        excludedRepos: 'excluded_repositories',
-        useFarosGraphReposSelection: 'use_faros_graph_repos_selection',
-        graph: 'graph'
-      },
+      configFields,
       entityNames: {
         org: 'organization',
         orgs: 'organizations',
