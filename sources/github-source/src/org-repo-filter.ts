@@ -93,7 +93,7 @@ export class OrgRepoFilter {
       if (
         this.config.run_mode === RunMode.EnterpriseCopilotOnly &&
         error instanceof VError &&
-        error.message.includes('No visible organizations remain after applying inclusion and exclusion filters')
+        VError.info(error)?.code === 'NO_VISIBLE_ORGS'
       ) {
         return [];
       }

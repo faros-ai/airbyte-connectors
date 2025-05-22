@@ -227,6 +227,11 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
 
     if (this.orgs.size === 0) {
       throw new VError(
+        {
+          info: {
+            code: 'NO_VISIBLE_ORGS'
+          }
+        },
         `No visible ${this.options.entityNames.orgs} remain after applying inclusion and exclusion filters`
       );
     }
