@@ -139,3 +139,8 @@ export type CopilotMetricsResponse = {
     }[];
   } | null;
 }[];
+
+export type CopilotUserEngagementResponse = {
+  date: string;
+  blob_uri: string;
+}[];

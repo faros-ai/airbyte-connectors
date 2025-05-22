@@ -22,6 +22,7 @@ import {
   EnterpriseCopilotSeatsEmpty,
   EnterpriseCopilotSeatsResponse,
   EnterpriseCopilotUsageSummary,
+  EnterpriseCopilotUserEngagement,
   EnterpriseTeam,
   EnterpriseTeamMembership,
   EnterpriseTeamMembershipsResponse,
@@ -86,7 +87,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
-import {Utils} from 'faros-js-client';
+import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -97,6 +98,7 @@ import {
   AuditLogTeamMember,
   CopilotMetricsResponse,
   CopilotUsageResponse,
+  CopilotUserEngagementResponse,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -150,6 +152,7 @@ export abstract class GitHub {
   protected readonly pageSize: number;
   protected readonly commitsPageSize: number;
   protected readonly pullRequestsPageSize: number;
+  protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
   protected readonly fetchPullRequestDiffCoverage: boolean;
   protected readonly pullRequestCutoffLagSeconds: number;
@@ -176,6 +179,7 @@ export abstract class GitHub {
     this.commitsPageSize = config.commits_page_size ?? DEFAULT_COMMIT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
+    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
     this.fetchPullRequestDiffCoverage =
       config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
@@ -2060,6 +2064,54 @@ export abstract class GitHub {
           enterprise,
           team: teamSlug,
           ...usage,
+        };
+      }
+    }
+  }
+
+  async *getEnterpriseCopilotUserEngagement(
+    enterprise: string,
+    cutoffDate: number
+  ): AsyncGenerator<EnterpriseCopilotUserEngagement> {
+    const res: OctokitResponse<CopilotUserEngagementResponse> =
+      await this.baseOctokit.request(
+        this.baseOctokit.enterpriseCopilotUserEngagement,
+        {
+          enterprise,
+        }
+      );
+    const data = res.data;
+    if (isNil(data) || isEmpty(data)) {
+      this.logger.warn(
+        `No GitHub Copilot user engagement metrics found for enterprise ${enterprise}.`
+      );
+      return;
+    }
+    const latestDay = Math.max(
+      0,
+      ...data.map((record) => Utils.toDate(record.date).getTime())
+    );
+    if (latestDay <= cutoffDate) {
+      this.logger.info(
+        `GitHub Copilot user engagement metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+      );
+      return;
+    }
+    const axios = makeAxiosInstanceWithRetry({
+      maxContentLength: Infinity,
+      timeout: this.timeoutMs,
+    });
+    for (const record of data) {
+      const blob = await axios.get<string>(record.blob_uri);
+      const parsedLines = blob.data
+        .split('\n')
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line));
+      for (const parsedLine of parsedLines) {
+        yield {
+          enterprise,
+          date: record.date,
+          ...parsedLine,
         };
       }
     }

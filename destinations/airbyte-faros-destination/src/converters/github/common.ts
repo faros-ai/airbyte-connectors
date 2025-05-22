@@ -26,6 +26,7 @@ export enum AssistantMetric {
   ChatCopyEvents = 'ChatCopyEvents',
   ChatActiveUsers = 'ChatActiveUsers',
   LastActivity = 'LastActivity',
+  FeatureEngagement = 'FeatureEngagement',
 }
 
 type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;

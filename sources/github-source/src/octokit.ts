@@ -41,6 +41,7 @@ export type ExtendedOctokit = OctokitRest &
     enterpriseCopilotSeats: string;
     enterpriseCopilotMetrics: string;
     enterpriseCopilotMetricsForTeam: string;
+    enterpriseCopilotUserEngagement: string;
     enterpriseTeams: string;
     enterpriseTeamMembers: string;
   };
@@ -124,6 +125,8 @@ export function makeOctokitClient(
     enterpriseCopilotMetrics: 'GET /enterprises/{enterprise}/copilot/metrics',
     enterpriseCopilotMetricsForTeam:
       'GET /enterprises/{enterprise}/team/{team_slug}/copilot/metrics',
+    enterpriseCopilotUserEngagement:
+      'GET /enterprises/{enterprise}/copilot/user-engagement',
     enterpriseTeams: 'GET /enterprises/{enterprise}/teams',
     enterpriseTeamMembers:
       'GET /enterprises/{enterprise}/teams/{team_slug}/memberships',
