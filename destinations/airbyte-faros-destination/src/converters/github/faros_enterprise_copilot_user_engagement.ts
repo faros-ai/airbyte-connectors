@@ -77,7 +77,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
           endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
           type: {category: AssistantMetric.FeatureEngagement},
           valueType: 'String',
-          value: String(feature),
+          value: feature,
           organization: {
             uid: org,
             source: this.streamName.source,
