@@ -9,7 +9,7 @@ import {collectReposByOrg, getFarosOptions} from './index';
 /**
  * Configuration for VCS entity filtering
  */
-export interface VCSFilterConfig<TConfig> {
+export interface VCSFilterConfig<TConfig, TOrg, TRepo> {
   /** Configuration object containing entity filter arrays */
   config: TConfig;
   /** Logger instance for debug/warning messages */
@@ -21,7 +21,7 @@ export interface VCSFilterConfig<TConfig> {
   /** Entity type names for logging and API calls */
   entityNames: VCSEntityNames;
   /** VCS-specific adapter for API operations */
-  vcsAdapter: VCSAdapter<any>;
+  vcsAdapter: VCSAdapter<TOrg, TRepo>;
   /** Graph name for Faros integration (optional) */
   defaultGraph?: string;
   /** Whether to use Faros graph for repo selection */
@@ -65,11 +65,11 @@ export interface VCSEntityNames {
 /**
  * VCS-specific adapter interface for API operations
  */
-export interface VCSAdapter<TRepo> {
+export interface VCSAdapter<TOrg, TRepo> {
   /** Get all visible organization-level entities */
   getOrgs(): Promise<string[]>;
   /** Get a specific organization-level entity by name */
-  getOrg(orgName: string): Promise<any>;
+  getOrg(orgName: string): Promise<TOrg>;
   /** Get all repositories for an organization */
   getRepos(orgName: string): Promise<TRepo[]>;
   /** Extract repository name from repository object */
@@ -153,14 +153,14 @@ type FilterConfig = {
  * });
  * ```
  */
-export class VCSFilter<TConfig extends Record<string, any>, TRepo> {
+export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
   private readonly filterConfig: FilterConfig;
   private readonly useFarosGraphReposSelection: boolean;
   private orgs?: Set<string>;
   private reposByOrg: Map<string, Map<string, RepoInclusion<TRepo>>> = new Map();
   private loadedSelectedRepos: boolean = false;
 
-  constructor(private readonly options: VCSFilterConfig<TConfig>) {
+  constructor(private readonly options: VCSFilterConfig<TConfig, TOrg, TRepo>) {
     const {config, logger, configFields, entityNames} = options;
 
     this.useFarosGraphReposSelection = 

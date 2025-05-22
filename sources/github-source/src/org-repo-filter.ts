@@ -1,6 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {VCSFilter, VCSAdapter, RepoInclusion} from 'faros-airbyte-common/common';
-import {Repository} from 'faros-airbyte-common/github';
+import {Organization, Repository} from 'faros-airbyte-common/github';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -12,7 +12,7 @@ import {GitHubConfig} from './types';
 /**
  * GitHub VCS adapter implementation
  */
-class GitHubVCSAdapter implements VCSAdapter<Repository> {
+class GitHubVCSAdapter implements VCSAdapter<Organization, Repository> {
   constructor(
     private readonly config: GitHubConfig,
     private readonly logger: AirbyteLogger
@@ -23,7 +23,7 @@ class GitHubVCSAdapter implements VCSAdapter<Repository> {
     return Array.from(await github.getOrganizations());
   }
 
-  async getOrg(orgName: string): Promise<any> {
+  async getOrg(orgName: string): Promise<Organization> {
     const github = await GitHub.instance(this.config, this.logger);
     return github.getOrganization(orgName);
   }
@@ -39,7 +39,7 @@ class GitHubVCSAdapter implements VCSAdapter<Repository> {
 }
 
 export class OrgRepoFilter {
-  private readonly vcsFilter: VCSFilter<GitHubConfig, Repository>;
+  private readonly vcsFilter: VCSFilter<GitHubConfig, Organization, Repository>;
   private static _instance: OrgRepoFilter;
   
   static instance(
