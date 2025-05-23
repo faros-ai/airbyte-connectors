@@ -65,7 +65,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
           uid: GitHubCommon.digest(
             [
               GitHubTool.Copilot,
-              AssistantMetric.FeatureEngagement,
+              AssistantMetric.Engagement,
               day.toISOString(),
               org,
               user,
@@ -75,9 +75,9 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
           source: this.streamName.source,
           startedAt: day,
           endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
-          type: {category: AssistantMetric.FeatureEngagement},
-          valueType: 'String',
-          value: feature,
+          type: {category: AssistantMetric.Engagement},
+          valueType: 'Bool',
+          value: 'true',
           organization: {
             uid: org,
             source: this.streamName.source,
@@ -87,6 +87,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
             source: this.streamName.source,
           },
           tool: {category: GitHubTool.Copilot},
+          feature,
         },
       },
     ];

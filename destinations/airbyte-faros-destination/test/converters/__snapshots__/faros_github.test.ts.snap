@@ -14840,6 +14840,7 @@ N/A
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-01-02T00:00:00.000Z",
+      "feature": "Code Completion",
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14850,20 +14851,21 @@ N/A
         "category": "GitHubCopilot",
       },
       "type": Object {
-        "category": "FeatureEngagement",
+        "category": "Engagement",
       },
-      "uid": "bf9ccd863daf660b4ad6088149b323e3f806b545dbf4c70f331b582384c9f022",
+      "uid": "c9590a02cc06712aee058d8b1b2881a31eb1c323317d61ce55d335f5c7a06b71",
       "user": Object {
         "source": "GitHub",
         "uid": "github_login0",
       },
-      "value": "Code Completion",
-      "valueType": "String",
+      "value": "true",
+      "valueType": "Bool",
     },
   },
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-01-02T00:00:00.000Z",
+      "feature": "Code Completion",
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14874,15 +14876,15 @@ N/A
         "category": "GitHubCopilot",
       },
       "type": Object {
-        "category": "FeatureEngagement",
+        "category": "Engagement",
       },
-      "uid": "c679f9c3ebfd629165db6e16917e5b1f50cdd1705b0c06f9ab0026c4a3ce1205",
+      "uid": "0a757d8be500b7abfffaf362395b4db09b826473530e06d9b0aa67293e33aa0c",
       "user": Object {
         "source": "GitHub",
         "uid": "github_login1",
       },
-      "value": "Code Completion",
-      "valueType": "String",
+      "value": "true",
+      "valueType": "Bool",
     },
   },
   Object {
