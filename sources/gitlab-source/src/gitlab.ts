@@ -16,6 +16,7 @@ export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PUBLIC_GROUPS = false;
+export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_FAROS_GRAPH = 'default';
 
 export class GitLab {

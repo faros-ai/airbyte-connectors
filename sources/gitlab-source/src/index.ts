@@ -15,7 +15,12 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE, GitLab} from './gitlab';
+import {
+  DEFAULT_CUTOFF_DAYS,
+  DEFAULT_FAROS_API_URL,
+  DEFAULT_RUN_MODE,
+  GitLab,
+} from './gitlab';
 import {GroupFilter} from './group-filter';
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
@@ -57,7 +62,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       return undefined;
     }
     return new FarosClient({
-      url: config.api_url ?? 'https://api.faros.ai',
+      url: config.api_url ?? DEFAULT_FAROS_API_URL,
       apiKey: config.api_key,
     });
   }
