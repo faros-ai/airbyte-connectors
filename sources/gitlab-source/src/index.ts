@@ -19,6 +19,7 @@ import {DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE, GitLab} from './gitlab';
 import {GroupFilter} from './group-filter';
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
+import {FarosProjects} from './streams/faros_projects';
 import {GitLabConfig} from './types';
 
 export function mainCommand(): Command {
@@ -40,7 +41,11 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
       await GitLab.instance(config, this.logger);
-      await GroupFilter.instance(config, this.logger).getGroups();
+      await GroupFilter.instance(
+        config,
+        this.logger,
+        this.makeFarosClient(config)
+      ).getGroups();
     } catch (err: any) {
       return [false, err];
     }
@@ -48,12 +53,21 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   }
 
   makeFarosClient(config: GitLabConfig): FarosClient | undefined {
-    return undefined; // Not needed yet for the basic implementation
+    if (!config.api_key) {
+      return undefined;
+    }
+    return new FarosClient({
+      url: config.api_url ?? 'https://api.faros.ai',
+      apiKey: config.api_key,
+    });
   }
 
   streams(config: GitLabConfig): AirbyteStreamBase[] {
     const farosClient = this.makeFarosClient(config);
-    return [new FarosGroups(config, this.logger, farosClient)];
+    return [
+      new FarosGroups(config, this.logger, farosClient),
+      new FarosProjects(config, this.logger, farosClient),
+    ];
   }
 
   async onBeforeRead(
