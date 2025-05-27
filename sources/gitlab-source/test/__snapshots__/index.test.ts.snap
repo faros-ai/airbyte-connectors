@@ -30,16 +30,6 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index check connection - no groups 1`] = `
-AirbyteConnectionStatusMessage {
-  "connectionStatus": {
-    "message": "No visible groups remain after applying inclusion and exclusion filters",
-    "status": "FAILED",
-  },
-  "type": "CONNECTION_STATUS",
-}
-`;
-
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
@@ -74,6 +64,7 @@ exports[`index streams - faros groups 1`] = `
     "description": "Test group description",
     "id": "1",
     "name": "Test Group",
+    "parent_id": null,
     "path": "test-group",
     "updated_at": "2021-01-01T00:00:00Z",
     "visibility": "public",

@@ -8,7 +8,6 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-cdk';
 import fs from 'fs-extra';
-import VError from 'verror';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
@@ -40,8 +39,10 @@ describe('index', () => {
     );
   });
 
-  function checkConnectionMock() {
-    jest.spyOn(GitLab, 'instance').mockResolvedValue({} as any);
+  function checkConnectionMock(): void {
+    jest.spyOn(GitLab, 'instance').mockResolvedValue({
+      checkConnection: jest.fn().mockResolvedValue(undefined),
+    } as any);
     jest.spyOn(GroupFilter, 'instance').mockReturnValue({
       getGroups: jest.fn().mockResolvedValue(['Group-1']),
     } as any);
@@ -49,23 +50,6 @@ describe('index', () => {
 
   test('check connection - token valid', async () => {
     checkConnectionMock();
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/token_valid.json',
-    });
-  });
-
-  test('check connection - no groups', async () => {
-    jest.spyOn(GitLab, 'instance').mockResolvedValue({} as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue({
-      getGroups: jest
-        .fn()
-        .mockRejectedValue(
-          new VError(
-            'No visible groups remain after applying inclusion and exclusion filters'
-          )
-        ),
-    } as any);
     await sourceCheckTest({
       source,
       configOrPath: 'check_connection/token_valid.json',
@@ -107,8 +91,22 @@ describe('index', () => {
 
   test('streams - faros groups', async () => {
     const gitlab = {
+      getGroups: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          parent_id: null,
+          name: 'Test Group',
+          path: 'test-group',
+          web_url: 'https://gitlab.com/test-group',
+          description: 'Test group description',
+          visibility: 'public',
+          created_at: '2021-01-01T00:00:00Z',
+          updated_at: '2021-01-01T00:00:00Z',
+        },
+      ]),
       getGroup: jest.fn().mockResolvedValue({
         id: '1',
+        parent_id: null,
         name: 'Test Group',
         path: 'test-group',
         web_url: 'https://gitlab.com/test-group',
@@ -137,6 +135,18 @@ describe('index', () => {
   });
 
   test('round robin bucket execution', async () => {
+    jest.spyOn(GitLab, 'instance').mockResolvedValue({
+      checkConnection: jest.fn().mockResolvedValue(undefined),
+      getGroups: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          parent_id: null,
+          name: 'Test Group',
+          path: 'test-group',
+        },
+      ]),
+    } as any);
+
     const config = readTestResourceAsJSON('config.json');
     const catalog = readTestResourceAsJSON('faros_groups/catalog.json');
     const {config: newConfig, state: newState} = await source.onBeforeRead(

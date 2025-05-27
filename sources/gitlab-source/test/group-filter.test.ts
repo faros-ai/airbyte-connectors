@@ -15,11 +15,20 @@ describe('GroupFilter', () => {
   beforeEach(() => {
     // Mock GitLab.instance for all tests
     jest.spyOn(GitLab, 'instance').mockResolvedValue({
-      getGroupsIterator: jest.fn().mockImplementation(function* () {
-        for (const group of ['group-1', 'group-2', 'group-3']) {
-          yield group;
-        }
+      getGroups: jest.fn().mockResolvedValue([
+        {id: 'group-1', name: 'Group 1', path: 'group-1'},
+        {id: 'group-2', name: 'Group 2', path: 'group-2'},
+        {id: 'group-3', name: 'Group 3', path: 'group-3'},
+      ]),
+      getGroup: jest.fn().mockImplementation((groupId: string) => {
+        const groups = {
+          'group-1': {id: 'group-1', name: 'Group 1', path: 'group-1'},
+          'group-2': {id: 'group-2', name: 'Group 2', path: 'group-2'},
+          'group-3': {id: 'group-3', name: 'Group 3', path: 'group-3'},
+        };
+        return Promise.resolve(groups[groupId]);
       }),
+      getProjects: jest.fn().mockResolvedValue([]),
     } as any);
   });
 
@@ -77,11 +86,11 @@ describe('GroupFilter', () => {
     };
     const filter = new GroupFilter(configWithFilter, logger);
 
-    // Mock an empty iterator for this specific test
+    // Mock an empty array for this specific test
     (GitLab.instance as jest.Mock).mockResolvedValueOnce({
-      getGroupsIterator: jest.fn().mockImplementation(function* () {
-        // Empty iterator - no groups
-      }),
+      getGroups: jest.fn().mockResolvedValue([]),
+      getGroup: jest.fn(),
+      getProjects: jest.fn().mockResolvedValue([]),
     } as any);
 
     await expect(filter.getGroups()).rejects.toThrow(

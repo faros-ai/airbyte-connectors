@@ -1,7 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {Project} from '../types';
 import {GroupStreamSlice, StreamWithGroupSlices} from './common';
 
 export class FarosProjects extends StreamWithGroupSlices {

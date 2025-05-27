@@ -1,12 +1,12 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
+import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {RunMode} from './streams/common';
 import {GitLabConfig, GitLabToken, Group, Project} from './types';
-import { toLower } from 'lodash';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -133,7 +133,10 @@ export class GitLab {
       let hasMore = true;
 
       while (hasMore) {
-        const groupProjects = await this.client.Groups.projects(groupPath, {...options, page});
+        const groupProjects = await this.client.Groups.projects(groupPath, {
+          ...options,
+          page,
+        });
 
         if (!groupProjects || groupProjects.length === 0) {
           hasMore = false;
@@ -166,7 +169,9 @@ export class GitLab {
 
       return projects;
     } catch (err: any) {
-      this.logger.error(`Failed to fetch projects for group ${groupPath}: ${err.message}`);
+      this.logger.error(
+        `Failed to fetch projects for group ${groupPath}: ${err.message}`
+      );
       throw new VError(err, `Error fetching projects for group ${groupPath}`);
     }
   }

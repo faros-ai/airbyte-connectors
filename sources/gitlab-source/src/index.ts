@@ -21,7 +21,6 @@ import {
   DEFAULT_RUN_MODE,
   GitLab,
 } from './gitlab';
-import {GroupFilter} from './group-filter';
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
 import {FarosProjects} from './streams/faros_projects';
@@ -133,7 +132,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     // Check for intersection between groups and excluded_groups
     const groups = new Set(config.groups || []);
     const excludedGroups = new Set(config.excluded_groups || []);
-    const intersection = [...groups].filter(g => excludedGroups.has(g));
+    const intersection = [...groups].filter((g) => excludedGroups.has(g));
     if (intersection.length > 0) {
       throw new VError(
         `Groups ${intersection.join(', ')} found in both groups and excluded_groups lists`
@@ -144,17 +143,21 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       let currentId = groupId;
       while (currentId) {
         if (excludedGroups.has(currentId)) {
-          this.logger.debug(`Group ${groupId}: excluded because ancestor ${currentId} is in excluded_groups`);
+          this.logger.debug(
+            `Group ${groupId}: excluded because ancestor ${currentId} is in excluded_groups`
+          );
           return false;
         }
         if (groups.has(currentId)) {
-          this.logger.debug(`Group ${groupId}: included because ancestor ${currentId} is in groups list`);
+          this.logger.debug(
+            `Group ${groupId}: included because ancestor ${currentId} is in groups list`
+          );
           return true;
         }
         currentId = parentMap.get(currentId);
       }
       // If we reach the top of the tree, we should sync only if there were no groups to sync
-      // specified in the config (which means we should consider all visible groups except 
+      // specified in the config (which means we should consider all visible groups except
       // excluded ones)
       const shouldSync = groups.size === 0;
       this.logger.debug(
@@ -163,9 +166,13 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       return shouldSync;
     };
 
-    const groupsToSync = visibleGroups.filter(g => shouldSyncGroup(g.id)).map(g => g.id);
+    const groupsToSync = visibleGroups
+      .filter((g) => shouldSyncGroup(g.id))
+      .map((g) => g.id);
     if (groupsToSync.length === 0) {
-      throw new VError('No visible groups remain after applying inclusion and exclusion filters');
+      throw new VError(
+        'No visible groups remain after applying inclusion and exclusion filters'
+      );
     }
     this.logger.debug(`Groups to sync: ${groupsToSync.join(', ')}`);
 
