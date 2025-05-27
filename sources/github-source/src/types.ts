@@ -2,7 +2,6 @@ import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {RoundRobinConfig} from 'faros-airbyte-common/common';
 
-import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
 
 export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
