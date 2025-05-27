@@ -6,6 +6,7 @@ import VError from 'verror';
 
 import {RunMode} from './streams/common';
 import {GitLabConfig, GitLabToken, Group, Project} from './types';
+import { toLower } from 'lodash';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -64,56 +65,60 @@ export class GitLab {
     }
   }
 
-  async *getGroupsIterator(): AsyncGenerator<string> {
+  @Memoize()
+  async getGroups(): Promise<Group[]> {
     try {
       const options = {
         perPage: this.pageSize,
         withProjects: false,
         allAvailable: this.fetchPublicGroups,
-        topLevelOnly: true,
       };
 
+      const groups: Group[] = [];
       let page = 1;
       let hasMore = true;
 
       while (hasMore) {
-        const groups = await this.client.Groups.all({...options, page});
+        const pageGroups = await this.client.Groups.all({...options, page});
 
-        if (!groups || groups.length === 0) {
+        if (!pageGroups || pageGroups.length === 0) {
           hasMore = false;
           continue;
         }
 
-        for (const group of groups) {
-          yield group.path;
-        }
-
+        groups.push(...pageGroups.map(GitLab.convertGitLabGroup));
         page++;
       }
+
+      return groups;
     } catch (err: any) {
       this.logger.error(`Failed to fetch groups: ${err.message}`);
       throw new VError(err, 'Error fetching groups');
     }
   }
 
-  @Memoize()
-  async getGroup(groupPath: string): Promise<Group> {
-    try {
-      const group = await this.client.Groups.show(groupPath);
+  static convertGitLabGroup(group: any): Group {
+    return {
+      id: toLower(`${group.id}`),
+      parent_id: group.parent_id ? toLower(`${group.parent_id}`) : null,
+      name: group.name,
+      path: group.path,
+      web_url: group.web_url,
+      description: group.description,
+      visibility: group.visibility,
+      created_at: group.created_at,
+      updated_at: group.updated_at,
+    };
+  }
 
-      return {
-        id: group.id.toString(),
-        name: group.name,
-        path: group.path,
-        web_url: group.web_url,
-        description: group.description,
-        visibility: group.visibility,
-        created_at: group.created_at,
-        updated_at: group.updated_at,
-      };
+  @Memoize()
+  async getGroup(groupId: string): Promise<Group> {
+    try {
+      const group = await this.client.Groups.show(groupId);
+      return GitLab.convertGitLabGroup(group);
     } catch (err: any) {
-      this.logger.error(`Failed to fetch group ${groupPath}: ${err.message}`);
-      throw new VError(err, `Error fetching group ${groupPath}`);
+      this.logger.error(`Failed to fetch group ${groupId}: ${err.message}`);
+      throw new VError(err, `Error fetching group ${groupId}`);
     }
   }
 
@@ -121,7 +126,6 @@ export class GitLab {
     try {
       const options = {
         perPage: this.pageSize,
-        includeSubgroups: true,
       };
 
       const projects: Project[] = [];

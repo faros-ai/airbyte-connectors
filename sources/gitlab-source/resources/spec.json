@@ -68,7 +68,7 @@
       "excluded_groups": {
         "order": 4,
         "title": "Excluded Groups list",
-        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded. If groups list is specified, this list will be ignored.",
+        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded.",
         "type": "array",
         "items": {
           "type": "string"

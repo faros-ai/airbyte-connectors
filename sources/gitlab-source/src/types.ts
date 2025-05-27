@@ -36,6 +36,7 @@ export type GitLabToken = {
 
 export interface Group {
   id: string;
+  parent_id: string | null;
   name: string;
   path: string;
   web_url: string;

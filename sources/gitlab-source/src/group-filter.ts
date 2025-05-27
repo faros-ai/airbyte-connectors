@@ -19,11 +19,8 @@ class GitLabVCSAdapter implements VCSAdapter<Group, Project> {
 
   async getOrgs(): Promise<string[]> {
     const gitlab = await GitLab.instance(this.config, this.logger);
-    const groups: string[] = [];
-    for await (const groupPath of gitlab.getGroupsIterator()) {
-      groups.push(groupPath);
-    }
-    return groups;
+    const groups = await gitlab.getGroups();
+    return groups.map((group) => group.id);
   }
 
   async getOrg(orgName: string): Promise<Group> {
