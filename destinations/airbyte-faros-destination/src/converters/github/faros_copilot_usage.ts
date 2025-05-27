@@ -429,6 +429,7 @@ export class FarosCopilotUsage extends GitHubConverter {
           uid: GitHubCommon.digest(
             []
               .concat(
+                // required fields to be included in the digest
                 ...[
                   GitHubTool.Copilot,
                   assistantMetricType,
@@ -438,6 +439,7 @@ export class FarosCopilotUsage extends GitHubConverter {
                   editor,
                   language,
                 ],
+                // optional fields to be included in the digest
                 ...[{key: 'model', value: model}]
                   .filter((v) => !isNil(v.value))
                   .map((v) => `${v.key}:${v.value}`)
