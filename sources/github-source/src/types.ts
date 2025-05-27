@@ -69,10 +69,6 @@ export type AuditLogTeamMember = {
   user: string;
 };
 
-export type CopilotUsageResponse = Awaited<
-  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
->['data'];
-
 export type CopilotMetricsResponse = {
   date: string;
   total_active_users: number;
