@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "last_active": {
+      "type": "string"
+    },
+    "usage_stats": {
+      "type": "object",
+      "properties": {
+        "total_sessions": {
+          "type": "integer"
+        },
+        "total_commands": {
+          "type": "integer"
+        },
+        "total_chat_messages": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
