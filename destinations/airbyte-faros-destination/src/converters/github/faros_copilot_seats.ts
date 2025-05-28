@@ -26,7 +26,7 @@ export class FarosCopilotSeats extends GitHubConverter {
     'vcs_AssistantMetric',
     'vcs_OrganizationTool',
     'vcs_UserTool',
-    'vcs_UserToolPeriod',
+    'vcs_UserToolLicense',
     'vcs_UserToolUsage',
   ];
 
@@ -80,14 +80,14 @@ export class FarosCopilotSeats extends GitHubConverter {
     });
     if (activeSeat.startedAt) {
       res.push({
-        model: 'vcs_UserToolPeriod',
+        model: 'vcs_UserToolLicense',
         record: {
           userTool,
           startedAt: activeSeat.startedAt,
           endedAt: activeSeat.pending_cancellation_date
             ? Utils.toDate(activeSeat.pending_cancellation_date)
             : null,
-          planType: activeSeat.plan_type,
+          type: activeSeat.plan_type,
         },
       });
     }
@@ -196,7 +196,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             });
             if (previousAssignee.startedAt) {
               res.push({
-                model: 'vcs_UserToolPeriod',
+                model: 'vcs_UserToolLicense',
                 record: {
                   userTool,
                   startedAt: previousAssignee.startedAt,
