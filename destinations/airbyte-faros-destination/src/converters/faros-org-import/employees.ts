@@ -57,9 +57,15 @@ export class Employees extends FarosOrgImportConverter {
       ctx?.config?.source_specific_configs?.faros_org_import?.source ?? {};
 
     const empId = row.employeeId;
-    if (!empId || this.seenEmployees.has(empId)) {
-      ctx.logger?.warn('Duplicate employeeId: ' + empId);
+    if (!empId) {
+      ctx.logger?.warn('Missing employeeId in record: ' + JSON.stringify(row));
       return models;
+    }
+    if (this.seenEmployees.has(empId)) {
+      // Only warn if we have seen this employeeId before, don't skip the record.
+      // This can happen if the same employeeId is used in multiple rows
+      // to pass more than one team or identity.
+      ctx.logger?.warn('Duplicate employeeId: ' + empId);
     }
     this.seenEmployees.add(empId);
 
