@@ -183,6 +183,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             ['inactive', false],
           ])
         );
+        const now = new Date();
         for await (const previousAssignee of previousAssigneesQuery) {
           if (
             !this.currentAssigneesByOrg
@@ -195,7 +196,6 @@ export class FarosCopilotSeats extends GitHubConverter {
               org,
               this.streamName.source
             );
-            const now = new Date();
             res.push({
               model: 'vcs_UserTool',
               record: {
