@@ -133,6 +133,7 @@ export class Employees extends FarosOrgImportConverter {
       }
     }
 
+    // Create identity and employee only if empId has not been seen before
     if (!this.seenEmployees.has(empId)) {
       models.push({
         model: 'identity_Identity',
