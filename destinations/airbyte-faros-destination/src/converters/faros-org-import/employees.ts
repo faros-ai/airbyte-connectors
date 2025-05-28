@@ -61,13 +61,6 @@ export class Employees extends FarosOrgImportConverter {
       ctx.logger?.warn('Missing employeeId in record: ' + JSON.stringify(row));
       return models;
     }
-    if (this.seenEmployees.has(empId)) {
-      // Only warn if we have seen this employeeId before, don't skip the record.
-      // This can happen if the same employeeId is used in multiple rows
-      // to pass more than one team or identity.
-      ctx.logger?.warn('Duplicate employeeId: ' + empId);
-    }
-    this.seenEmployees.add(empId);
 
     const amsIds = row.amsId;
     if (amsIds && source?.ams) {
@@ -140,32 +133,36 @@ export class Employees extends FarosOrgImportConverter {
       }
     }
 
-    models.push({
-      model: 'identity_Identity',
-      record: {
-        uid: empId,
-        fullName: row.fullName,
-        primaryEmail: row.email,
-        emails: row.email ? [row.email] : [],
-      },
-    });
-
-    models.push({
-      model: 'org_Employee',
-      record: {
-        uid: empId,
-        identity: {uid: empId},
-        level: lift(row.level, Utils.parseInteger),
-        employmentType: this.formatEmployeeType(row.type),
-        location: await this.locationCollector.collect(row.location),
-        joinedAt: Utils.toDate(row.joinedAt),
-        terminatedAt: Utils.toDate(row.terminatedAt),
-        inactive: this.toBoolean(row.inactive),
-        ignored: this.toBoolean(row.ignored),
-        title: row.title,
-        role: row.role,
-      },
-    });
+    if (!this.seenEmployees.has(empId)) {
+      models.push({
+        model: 'identity_Identity',
+        record: {
+          uid: empId,
+          fullName: row.fullName,
+          primaryEmail: row.email,
+          emails: row.email ? [row.email] : [],
+        },
+      });
+      models.push({
+        model: 'org_Employee',
+        record: {
+          uid: empId,
+          identity: {uid: empId},
+          level: lift(row.level, Utils.parseInteger),
+          employmentType: this.formatEmployeeType(row.type),
+          location: await this.locationCollector.collect(row.location),
+          joinedAt: Utils.toDate(row.joinedAt),
+          terminatedAt: Utils.toDate(row.terminatedAt),
+          inactive: this.toBoolean(row.inactive),
+          ignored: this.toBoolean(row.ignored),
+          title: row.title,
+          role: row.role,
+        },
+      });
+      this.seenEmployees.add(empId);
+    } else {
+      ctx.logger?.warn('Duplicate employeeId: ' + empId);
+    }
 
     return models;
   }
