@@ -1103,7 +1103,11 @@ export abstract class GitHub {
             team: teamAssignee,
             teamJoinedAt: teamJoinedAt?.toISOString(),
             ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
-            ...pick(seat, ['pending_cancellation_date', 'last_activity_at']),
+            ...pick(seat, [
+              'pending_cancellation_date',
+              'last_activity_at',
+              'plan_type',
+            ]),
           } as CopilotSeat;
         }
       }
@@ -1973,6 +1977,7 @@ export abstract class GitHub {
             'updated_at',
             'pending_cancellation_date',
             'last_activity_at',
+            'plan_type',
           ]),
         } as EnterpriseCopilotSeat;
       }

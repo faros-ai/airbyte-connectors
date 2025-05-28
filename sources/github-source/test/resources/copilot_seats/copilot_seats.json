@@ -41,7 +41,8 @@
         "members_url": "https://api.github.com/teams/1/members{/member}",
         "repositories_url": "https://api.github.com/teams/1/repos",
         "parent": null
-      }
+      },
+      "plan_type": "enterprise"
     },
     {
       "created_at": "2021-09-23T18:00:00-06:00",
@@ -68,7 +69,8 @@
         "received_events_url": "https://api.github.com/users/octokitten/received_events",
         "type": "User",
         "site_admin": false
-      }
+      },
+      "plan_type": "enterprise"
     }
   ]
 }

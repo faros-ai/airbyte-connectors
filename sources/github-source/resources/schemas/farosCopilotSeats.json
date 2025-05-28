@@ -37,6 +37,9 @@
     "last_activity_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "plan_type": {
+      "type": "string"
     }
   }
 }

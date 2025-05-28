@@ -231,7 +231,7 @@ export type CopilotSeat = {
   endedAt?: never;
 } & Pick<
   CopilotSeatsResponse['seats'][0],
-  'pending_cancellation_date' | 'last_activity_at'
+  'pending_cancellation_date' | 'last_activity_at' | 'plan_type'
 >;
 
 export type CopilotSeatEnded = {
@@ -425,7 +425,11 @@ export type EnterpriseCopilotSeat = {
   team?: string;
 } & Pick<
   EnterpriseCopilotSeatsResponse['seats'][0],
-  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
+  | 'created_at'
+  | 'updated_at'
+  | 'pending_cancellation_date'
+  | 'last_activity_at'
+  | 'plan_type'
 >;
 
 export type EnterpriseCopilotSeatsEmpty = {

@@ -26,6 +26,7 @@ export class FarosCopilotSeats extends GitHubConverter {
     'vcs_AssistantMetric',
     'vcs_OrganizationTool',
     'vcs_UserTool',
+    'vcs_UserToolPeriod',
     'vcs_UserToolUsage',
   ];
 
@@ -47,16 +48,26 @@ export class FarosCopilotSeats extends GitHubConverter {
     const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
     if (seat.endedAt) {
       this.endedSeatsByOrg.get(org).add(seat.user);
-      return [
-        {
-          model: 'vcs_UserTool',
+      const res: DestinationRecord[] = [];
+      res.push({
+        model: 'vcs_UserTool',
+        record: {
+          ...userTool,
+          inactive: true,
+          endedAt: seat.endedAt,
+        },
+      });
+      if (seat.startedAt) {
+        res.push({
+          model: 'vcs_UserToolPeriod',
           record: {
             ...userTool,
-            inactive: true,
+            startedAt: seat.startedAt,
             endedAt: seat.endedAt,
           },
-        },
-      ];
+        });
+      }
+      return res;
     }
 
     const activeSeat = record.record.data as CopilotSeat;
@@ -77,6 +88,19 @@ export class FarosCopilotSeats extends GitHubConverter {
         }),
       },
     });
+    if (activeSeat.startedAt) {
+      res.push({
+        model: 'vcs_UserToolPeriod',
+        record: {
+          userTool,
+          startedAt: activeSeat.startedAt,
+          endedAt: activeSeat.pending_cancellation_date
+            ? Utils.toDate(activeSeat.pending_cancellation_date)
+            : null,
+          planType: activeSeat.plan_type,
+        },
+      });
+    }
     if (activeSeat.last_activity_at) {
       const lastActivityAt = Utils.toDate(activeSeat.last_activity_at);
       const recordedAt = Utils.toDate(record.record.emitted_at);
@@ -166,17 +190,32 @@ export class FarosCopilotSeats extends GitHubConverter {
               .has(previousAssignee.user.uid) &&
             !this.endedSeatsByOrg.get(org).has(previousAssignee.user.uid)
           ) {
+            const userTool = userToolKey(
+              previousAssignee.user.uid,
+              org,
+              this.streamName.source
+            );
+            const now = new Date();
             res.push({
               model: 'vcs_UserTool',
               record: {
-                ...userToolKey(
-                  previousAssignee.user.uid,
-                  org,
-                  this.streamName.source
-                ),
+                ...userTool,
                 inactive: true,
+                ...(!previousAssignee.endedAt && {endedAt: now.toISOString()}),
               },
             });
+            if (previousAssignee.startedAt) {
+              res.push({
+                model: 'vcs_UserToolPeriod',
+                record: {
+                  userTool,
+                  startedAt: previousAssignee.startedAt,
+                  ...(!previousAssignee.endedAt && {
+                    endedAt: now.toISOString(),
+                  }),
+                },
+              });
+            }
           }
         }
       }
@@ -217,6 +256,8 @@ const USER_TOOL_QUERY = `
       }
       toolCategory
       inactive
+      startedAt
+      endedAt
     }
   }
 `;

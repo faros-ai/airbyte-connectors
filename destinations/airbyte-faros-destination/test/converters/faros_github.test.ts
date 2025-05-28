@@ -31,6 +31,8 @@ describe('faros_github', () => {
                     },
                     toolCategory: 'GitHubCopilot',
                     inactive: false,
+                    startedAt: '2024-07-15T17:43:12.098Z',
+                    endedAt: '2024-08-15T17:43:12.098Z',
                   },
                 ],
               },
