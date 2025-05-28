@@ -127,6 +127,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       if (group.parent_id) {
         parentMap.set(group.id, group.parent_id);
       }
+      this.logger.debug(`Group ${group.id} has parent ${group.parent_id}`);
     }
 
     // Check for intersection between groups and excluded_groups

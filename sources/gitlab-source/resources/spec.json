@@ -148,7 +148,7 @@
         "type": "string",
         "title": "Faros API URL",
         "description": "Faros API URL to use when connecting to the Faros Graph to resolve VCS dependencies",
-        "default": "https://api.faros.ai"
+        "default": "https://prod.api.faros.ai"
       },
       "graph": {
         "order": 12,
