@@ -1,11 +1,12 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
+import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {RunMode} from './streams/common';
-import {GitLabConfig, GitLabToken, Group} from './types';
+import {GitLabConfig, GitLabToken, Group, Project} from './types';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -16,6 +17,8 @@ export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PUBLIC_GROUPS = false;
+export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
+export const DEFAULT_FAROS_GRAPH = 'default';
 
 export class GitLab {
   private static gitlab: GitLab;
@@ -62,56 +65,114 @@ export class GitLab {
     }
   }
 
-  async *getGroupsIterator(): AsyncGenerator<string> {
+  @Memoize()
+  async getGroups(): Promise<Group[]> {
     try {
       const options = {
         perPage: this.pageSize,
         withProjects: false,
         allAvailable: this.fetchPublicGroups,
-        topLevelOnly: true,
       };
 
+      const groups: Group[] = [];
       let page = 1;
       let hasMore = true;
 
       while (hasMore) {
-        const groups = await this.client.Groups.all({...options, page});
+        const pageGroups = await this.client.Groups.all({...options, page});
 
-        if (!groups || groups.length === 0) {
+        if (!pageGroups || pageGroups.length === 0) {
           hasMore = false;
           continue;
         }
 
-        for (const group of groups) {
-          yield group.path;
-        }
-
+        groups.push(...pageGroups.map(GitLab.convertGitLabGroup));
         page++;
       }
+
+      return groups;
     } catch (err: any) {
       this.logger.error(`Failed to fetch groups: ${err.message}`);
       throw new VError(err, 'Error fetching groups');
     }
   }
 
-  @Memoize()
-  async getGroup(groupPath: string): Promise<Group> {
-    try {
-      const group = await this.client.Groups.show(groupPath);
+  static convertGitLabGroup(group: any): Group {
+    return {
+      id: toLower(`${group.id}`),
+      parent_id: group.parent_id ? toLower(`${group.parent_id}`) : null,
+      name: group.name,
+      path: group.path,
+      web_url: group.web_url,
+      description: group.description,
+      visibility: group.visibility,
+      created_at: group.created_at,
+      updated_at: group.updated_at,
+    };
+  }
 
-      return {
-        id: group.id.toString(),
-        name: group.name,
-        path: group.path,
-        web_url: group.web_url,
-        description: group.description,
-        visibility: group.visibility,
-        created_at: group.created_at,
-        updated_at: group.updated_at,
-      };
+  @Memoize()
+  async getGroup(groupId: string): Promise<Group> {
+    try {
+      const group = await this.client.Groups.show(groupId);
+      return GitLab.convertGitLabGroup(group);
     } catch (err: any) {
-      this.logger.error(`Failed to fetch group ${groupPath}: ${err.message}`);
-      throw new VError(err, `Error fetching group ${groupPath}`);
+      this.logger.error(`Failed to fetch group ${groupId}: ${err.message}`);
+      throw new VError(err, `Error fetching group ${groupId}`);
+    }
+  }
+
+  async getProjects(groupPath: string): Promise<Project[]> {
+    try {
+      const options = {
+        perPage: this.pageSize,
+      };
+
+      const projects: Project[] = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const groupProjects = await this.client.Groups.projects(groupPath, {
+          ...options,
+          page,
+        });
+
+        if (!groupProjects || groupProjects.length === 0) {
+          hasMore = false;
+          continue;
+        }
+
+        for (const project of groupProjects) {
+          projects.push({
+            id: project.id.toString(),
+            name: project.name,
+            path: project.path,
+            path_with_namespace: project.path_with_namespace,
+            web_url: project.web_url,
+            description: project.description,
+            visibility: project.visibility,
+            created_at: project.created_at,
+            updated_at: project.updated_at,
+            namespace: {
+              id: project.namespace.id.toString(),
+              name: project.namespace.name,
+              path: project.namespace.path,
+              kind: project.namespace.kind,
+              full_path: project.namespace.full_path,
+            },
+          });
+        }
+
+        page++;
+      }
+
+      return projects;
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to fetch projects for group ${groupPath}: ${err.message}`
+      );
+      throw new VError(err, `Error fetching projects for group ${groupPath}`);
     }
   }
 

@@ -68,7 +68,7 @@
       "excluded_groups": {
         "order": 4,
         "title": "Excluded Groups list",
-        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded. If groups list is specified, this list will be ignored.",
+        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded.",
         "type": "array",
         "items": {
           "type": "string"
@@ -78,8 +78,41 @@
           "mygroup"
         ]
       },
-      "run_mode": {
+      "use_faros_graph_projects_selection": {
         "order": 5,
+        "type": "boolean",
+        "title": "Use Faros Graph for Projects selection",
+        "description": "Use Faros Graph for selecting which projects should be fetched (Faros credentials are required).",
+        "default": false
+      },
+      "projects": {
+        "order": 6,
+        "title": "Projects list",
+        "description": "List of GitLab projects from which to fetch data. If none passed for a group, all visible group projects for the authenticated user will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org/project1",
+          "mygroup/project2"
+        ]
+      },
+      "excluded_projects": {
+        "order": 7,
+        "title": "Excluded Projects list",
+        "description": "List of GitLab projects from which data won't be fetched. By default, no projects are excluded for a group. If projects list contains at least one project for a group, projects for the same group on this list will be ignored.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org/project1",
+          "mygroup/project2"
+        ]
+      },
+      "run_mode": {
+        "order": 8,
         "title": "Run Mode",
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
@@ -91,7 +124,7 @@
         ]
       },
       "custom_streams": {
-        "order": 6,
+        "order": 9,
         "title": "Custom Streams",
         "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
         "type": "array",
@@ -103,36 +136,57 @@
           "faros_projects"
         ]
       },
+      "api_key": {
+        "order": 10,
+        "type": "string",
+        "title": "Faros API Key",
+        "description": "Faros API Key to use when connecting to the Faros Graph to resolve VCS dependencies",
+        "airbyte_secret": true
+      },
+      "api_url": {
+        "order": 11,
+        "type": "string",
+        "title": "Faros API URL",
+        "description": "Faros API URL to use when connecting to the Faros Graph to resolve VCS dependencies",
+        "default": "https://prod.api.faros.ai"
+      },
+      "graph": {
+        "order": 12,
+        "type": "string",
+        "title": "Faros Graph",
+        "description": "The Faros graph to use for fetching projects selection",
+        "default": "default"
+      },
       "cutoff_days": {
-        "order": 7,
+        "order": 13,
         "type": "integer",
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
       "bucket_id": {
-        "order": 8,
+        "order": 14,
         "type": "integer",
         "title": "Bucket Number",
         "description": "Bucket number for this source to determine which portion of groups and projects to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
       "bucket_total": {
-        "order": 9,
+        "order": 15,
         "type": "integer",
         "title": "Total Number of Buckets",
         "description": "Total number of buckets to distribute groups and projects across. Use it when distributing the load between multiple sources",
         "default": 1
       },
       "round_robin_bucket_execution": {
-        "order": 10,
+        "order": 16,
         "type": "boolean",
         "title": "Round Robin Bucket Execution",
         "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
         "default": false
       },
       "bucket_ranges": {
-        "order": 11,
+        "order": 17,
         "type": "array",
         "items": {
           "type": "string"
@@ -145,41 +199,41 @@
         ]
       },
       "page_size": {
-        "order": 12,
+        "order": 18,
         "type": "integer",
         "title": "Page Size",
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
       "timeout": {
-        "order": 13,
+        "order": 19,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitLab API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 14,
+        "order": 20,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 15,
+        "order": 21,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 16,
+        "order": 22,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 17,
+        "order": 23,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
@@ -189,7 +243,7 @@
         "title": "Fetch Public Groups",
         "description": "Fetch public groups",
         "default": false,
-        "order": 18
+        "order": 24
       }
     }
   }

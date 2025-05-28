@@ -471,6 +471,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -480,6 +498,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -489,6 +525,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -498,6 +544,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
       },
     ],
@@ -523,6 +579,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -532,6 +606,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -541,6 +633,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -550,6 +652,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
       },
     ],
@@ -763,6 +875,24 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -772,6 +902,24 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -781,6 +929,16 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -790,6 +948,16 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
       },
     ],
@@ -1183,6 +1351,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -1192,6 +1378,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -1201,6 +1405,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -1210,6 +1424,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
       },
     ],
@@ -1235,6 +1459,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -1244,6 +1486,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -1253,6 +1513,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -1262,6 +1532,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
       },
     ],

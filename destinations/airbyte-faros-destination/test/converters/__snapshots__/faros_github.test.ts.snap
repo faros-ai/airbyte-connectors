@@ -4,8 +4,8 @@ exports[`faros_github process records from all streams 1`] = `
 Array [
   "Processed 62 records",
   "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":4,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_engagement\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 1021 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":140,\\\\\\"faros_MetricDefinition\\\\\\":22,\\\\\\"faros_MetricValue\\\\\\":140,\\\\\\"faros_MetricValueTag\\\\\\":390,\\\\\\"faros_Tag\\\\\\":13,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":138,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":9,\\\\\\"vcs_UserToolPeriod\\\\\\":7,\\\\\\"vcs_UserToolUsage\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 1022 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":1,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_ApplicationMetric\\\\\\":140,\\\\\\"faros_MetricDefinition\\\\\\":22,\\\\\\"faros_MetricValue\\\\\\":140,\\\\\\"faros_MetricValueTag\\\\\\":390,\\\\\\"faros_Tag\\\\\\":13,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":139,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":9,\\\\\\"vcs_UserToolPeriod\\\\\\":7,\\\\\\"vcs_UserToolUsage\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -322,6 +322,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -385,6 +386,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -492,6 +494,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -591,6 +594,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -690,6 +694,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -753,6 +758,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -844,6 +850,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -935,6 +942,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1026,6 +1034,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1089,6 +1098,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1180,6 +1190,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1271,6 +1282,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1362,6 +1374,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1425,6 +1438,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1516,6 +1530,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1607,6 +1622,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1698,6 +1714,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1761,6 +1778,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1852,6 +1870,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -1943,6 +1962,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2116,6 +2136,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2179,6 +2200,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2235,28 +2257,6 @@ Array [
       "source": "GitHub",
       "uid": "copilotOrg__github-DailySuggestionReferenceCount_Discard-python-vscode-2023-10-16",
       "value": "100",
-    },
-  },
-  Object {
-    "vcs_AssistantMetric": Object {
-      "editor": "vscode",
-      "endedAt": "2023-10-17T00:00:00.000Z",
-      "language": "python",
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "startedAt": "2023-10-16T00:00:00.000Z",
-      "tool": Object {
-        "category": "GitHubCopilot",
-      },
-      "type": Object {
-        "category": "SuggestionsDiscarded",
-      },
-      "uid": "d8a730e4e8412682f88f6a6acda9391061537385217278db14b51493f04b49db",
-      "value": "100",
-      "valueType": "Int",
     },
   },
   Object {
@@ -2333,6 +2333,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2424,6 +2425,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2515,6 +2517,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2578,6 +2581,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": "model-1",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2590,8 +2594,31 @@ Array [
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "de6fbff088c1bdc448c05e3f3b2f66901a956926459499c71c2dde8ec7f3572c",
-      "value": "200",
+      "uid": "709013f434887b09de463a73661f565467afdefa329ecdc4bb1368300cc779c3",
+      "value": "100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
+      "language": "python",
+      "model": "model-2",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "6c9f669b68e8c33fce2da3188476d63edf986ff557f1c061d0e2d410fcb0bee9",
+      "value": "100",
       "valueType": "Int",
     },
   },
@@ -2669,6 +2696,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2760,6 +2788,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2851,6 +2880,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -2907,28 +2937,6 @@ Array [
       "source": "GitHub",
       "uid": "copilotOrg__github-DailyGeneratedLineCount_Discard-python-vscode-2023-10-16",
       "value": "300",
-    },
-  },
-  Object {
-    "vcs_AssistantMetric": Object {
-      "editor": "vscode",
-      "endedAt": "2023-10-17T00:00:00.000Z",
-      "language": "python",
-      "organization": Object {
-        "source": "GitHub",
-        "uid": "github",
-      },
-      "source": "GitHub",
-      "startedAt": "2023-10-16T00:00:00.000Z",
-      "tool": Object {
-        "category": "GitHubCopilot",
-      },
-      "type": Object {
-        "category": "LinesDiscarded",
-      },
-      "uid": "10ceee87cc838e8dc8c7ba71cbf4a7d0ed7d2609d10e9aa35eeca85ee2ee6ad5",
-      "value": "300",
-      "valueType": "Int",
     },
   },
   Object {
@@ -3005,6 +3013,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3096,6 +3105,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3187,6 +3197,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3250,6 +3261,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": "model-1",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3262,8 +3274,31 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "567534b54f1a0d523bbea6cb79bf7833611f9d927c29fd8c1ceb4aa435fb0b38",
-      "value": "300",
+      "uid": "4bf2305a00dd56afbf2efa38254ddb57549d300d6d2a3c047440b598ea5fc10f",
+      "value": "150",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
+      "language": "python",
+      "model": "model-2",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "da0ff63a46d20599c08802cb0128ca231605a824c4f8aa3403c2d2beb62cf634",
+      "value": "150",
       "valueType": "Int",
     },
   },
@@ -3341,6 +3376,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3432,6 +3468,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3523,6 +3560,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3586,6 +3624,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": "model-1",
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3598,8 +3637,31 @@ Array [
       "type": Object {
         "category": "ActiveUsers",
       },
-      "uid": "73e7a3e2001db6093049698e2b6019294d63f5cae0329e85c6aada630a8ca9a7",
-      "value": "2",
+      "uid": "6a5858a4b9523f69348a0d62aa332aad9bb16e8d32686a38d26d972b353a33f3",
+      "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2023-10-17T00:00:00.000Z",
+      "language": "python",
+      "model": "model-2",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "github",
+      },
+      "source": "GitHub",
+      "startedAt": "2023-10-16T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "ActiveUsers",
+      },
+      "uid": "c8966f03493e10bc4d7bd50a2525b7952214bf3dce7257546ed571d4c667bf97",
+      "value": "1",
       "valueType": "Int",
     },
   },
@@ -3677,6 +3739,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3768,6 +3831,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3859,6 +3923,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3922,6 +3987,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -3985,6 +4051,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4048,6 +4115,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4119,6 +4187,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4199,6 +4268,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4307,6 +4377,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4415,6 +4486,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4523,6 +4595,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4603,6 +4676,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4711,6 +4785,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4819,6 +4894,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -4927,6 +5003,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5007,6 +5084,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5115,6 +5193,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5223,6 +5302,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5331,6 +5411,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5411,6 +5492,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5519,6 +5601,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5627,6 +5710,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5735,6 +5819,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5815,6 +5900,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -5923,6 +6009,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6031,6 +6118,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6249,6 +6337,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6329,6 +6418,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6409,6 +6499,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6517,6 +6608,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6625,6 +6717,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6733,6 +6826,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6813,6 +6907,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -6921,6 +7016,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7029,6 +7125,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7137,6 +7234,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7217,6 +7315,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7325,6 +7424,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7433,6 +7533,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7541,6 +7642,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7621,6 +7723,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7729,6 +7832,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7837,6 +7941,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -7945,6 +8050,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8025,6 +8131,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8133,6 +8240,7 @@ Array [
       "editor": "jetbrains",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8241,6 +8349,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8349,6 +8458,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8429,6 +8539,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8509,6 +8620,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -8589,6 +8701,7 @@ Array [
       "editor": null,
       "endedAt": "2023-10-17T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "github",
@@ -10817,6 +10930,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -10880,6 +10994,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -10987,6 +11102,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11086,6 +11202,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11185,6 +11302,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11248,6 +11366,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11339,6 +11458,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11430,6 +11550,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11521,6 +11642,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11584,6 +11706,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11675,6 +11798,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11766,6 +11890,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11857,6 +11982,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -11920,6 +12046,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12011,6 +12138,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12102,6 +12230,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12193,6 +12322,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12256,6 +12386,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12347,6 +12478,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12438,6 +12570,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12611,6 +12744,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12682,6 +12816,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12762,6 +12897,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12870,6 +13006,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -12978,6 +13115,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13086,6 +13224,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13166,6 +13305,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13274,6 +13414,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13382,6 +13523,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13490,6 +13632,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13570,6 +13713,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13678,6 +13822,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13786,6 +13931,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13894,6 +14040,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -13974,6 +14121,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14082,6 +14230,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14190,6 +14339,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14298,6 +14448,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14378,6 +14529,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14486,6 +14638,7 @@ N/A
       "editor": "jetbrains",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "python",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14594,6 +14747,7 @@ N/A
       "editor": "vscode",
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": "ruby",
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",
@@ -14812,6 +14966,7 @@ N/A
       "editor": null,
       "endedAt": "2023-10-16T00:00:00.000Z",
       "language": null,
+      "model": null,
       "organization": Object {
         "source": "GitHub",
         "uid": "enterprise:github",

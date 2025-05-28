@@ -82,6 +82,35 @@
           },
           "active_users": {
             "type": "number"
+          },
+          "model_breakdown": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "suggestions_count": {
+                "type": "number"
+              },
+              "acceptances_count": {
+                "type": "number"
+              },
+              "discards_count": {
+                "type": "number"
+              },
+              "lines_suggested": {
+                "type": "number"
+              },
+              "lines_accepted": {
+                "type": "number"
+              },
+              "lines_discarded": {
+                "type": "number"
+              },
+              "active_users": {
+                "type": "number"
+              }
+            }
           }
         }
       }

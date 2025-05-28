@@ -15,10 +15,15 @@ import {
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
-import {DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE, GitLab} from './gitlab';
-import {GroupFilter} from './group-filter';
+import {
+  DEFAULT_CUTOFF_DAYS,
+  DEFAULT_FAROS_API_URL,
+  DEFAULT_RUN_MODE,
+  GitLab,
+} from './gitlab';
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
+import {FarosProjects} from './streams/faros_projects';
 import {GitLabConfig} from './types';
 
 export function mainCommand(): Command {
@@ -39,8 +44,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
-      await GitLab.instance(config, this.logger);
-      await GroupFilter.instance(config, this.logger).getGroups();
+      const gitlab = await GitLab.instance(config, this.logger);
+      await gitlab.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
@@ -48,12 +53,21 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   }
 
   makeFarosClient(config: GitLabConfig): FarosClient | undefined {
-    return undefined; // Not needed yet for the basic implementation
+    if (!config.api_key) {
+      return undefined;
+    }
+    return new FarosClient({
+      url: config.api_url ?? DEFAULT_FAROS_API_URL,
+      apiKey: config.api_key,
+    });
   }
 
   streams(config: GitLabConfig): AirbyteStreamBase[] {
     const farosClient = this.makeFarosClient(config);
-    return [new FarosGroups(config, this.logger, farosClient)];
+    return [
+      new FarosGroups(config, this.logger, farosClient),
+      new FarosProjects(config, this.logger, farosClient),
+    ];
   }
 
   async onBeforeRead(
@@ -90,9 +104,84 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       state,
       this.logger.info.bind(this.logger)
     );
+
+    if (config.use_faros_graph_projects_selection) {
+      // No need to resolve groups, we'll use the Faros Graph to filter
+      return {
+        config: {
+          ...newConfig,
+          startDate,
+          endDate,
+        } as GitLabConfig,
+        catalog: {streams},
+        state: newState,
+      };
+    }
+
+    const gitlab = await GitLab.instance(config, this.logger);
+    const visibleGroups = await gitlab.getGroups();
+
+    // Build parent-child relationships map
+    const parentMap = new Map<string, string>();
+    for (const group of visibleGroups) {
+      if (group.parent_id) {
+        parentMap.set(group.id, group.parent_id);
+      }
+      this.logger.debug(`Group ${group.id} has parent ${group.parent_id}`);
+    }
+
+    // Check for intersection between groups and excluded_groups
+    const groups = new Set(config.groups || []);
+    const excludedGroups = new Set(config.excluded_groups || []);
+    const intersection = [...groups].filter((g) => excludedGroups.has(g));
+    if (intersection.length > 0) {
+      throw new VError(
+        `Groups ${intersection.join(', ')} found in both groups and excluded_groups lists`
+      );
+    }
+
+    const shouldSyncGroup = (groupId: string): boolean => {
+      let currentId = groupId;
+      while (currentId) {
+        if (excludedGroups.has(currentId)) {
+          this.logger.debug(
+            `Group ${groupId}: excluded because ancestor ${currentId} is in excluded_groups`
+          );
+          return false;
+        }
+        if (groups.has(currentId)) {
+          this.logger.debug(
+            `Group ${groupId}: included because ancestor ${currentId} is in groups list`
+          );
+          return true;
+        }
+        currentId = parentMap.get(currentId);
+      }
+      // If we reach the top of the tree, we should sync only if there were no groups to sync
+      // specified in the config (which means we should consider all visible groups except
+      // excluded ones)
+      const shouldSync = groups.size === 0;
+      this.logger.debug(
+        `Group ${groupId} is ${shouldSync ? 'included' : 'excluded'}: no ancestor found in either groups or excluded_groups, and the groups list is ${shouldSync ? 'empty' : 'not empty'}.`
+      );
+      return shouldSync;
+    };
+
+    const groupsToSync = visibleGroups
+      .filter((g) => shouldSyncGroup(g.id))
+      .map((g) => g.id);
+    if (groupsToSync.length === 0) {
+      throw new VError(
+        'No visible groups remain after applying inclusion and exclusion filters'
+      );
+    }
+    this.logger.debug(`Groups to sync: ${groupsToSync.join(', ')}`);
+
     return {
       config: {
-        ...newConfig,
+        ...(newConfig as GitLabConfig),
+        groups: groupsToSync,
+        excluded_groups: undefined,
         startDate,
         endDate,
       } as GitLabConfig,

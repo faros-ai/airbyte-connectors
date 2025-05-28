@@ -257,9 +257,35 @@ export enum GitHubTool {
 export type CopilotUsageSummary = {
   org: string;
   team: string | null;
-} & GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.copilot.usageMetricsForOrg
->[0];
+} & {
+  day: string;
+  total_suggestions_count: number;
+  total_acceptances_count: number;
+  total_lines_suggested: number;
+  total_lines_accepted: number;
+  total_active_users: number;
+  total_active_chat_users: number;
+  total_chats: number;
+  total_chat_insertion_events: number;
+  total_chat_copy_events: number;
+  breakdown: {
+    language: string;
+    editor: string;
+    suggestions_count: number;
+    acceptances_count: number;
+    lines_suggested: number;
+    lines_accepted: number;
+    active_users: number;
+    model_breakdown?: {
+      model: string;
+      suggestions_count: number;
+      acceptances_count: number;
+      lines_suggested: number;
+      lines_accepted: number;
+      active_users: number;
+    }[];
+  }[];
+};
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
 
@@ -440,9 +466,7 @@ export type EnterpriseCopilotSeatsEmpty = {
 export type EnterpriseCopilotUsageSummary = {
   enterprise: string;
   team: string | null;
-} & GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.copilot.usageMetricsForOrg
->[0];
+} & Omit<CopilotUsageSummary, 'org' | 'team'>;
 
 export type EnterpriseCopilotUserEngagement = {
   enterprise: string;

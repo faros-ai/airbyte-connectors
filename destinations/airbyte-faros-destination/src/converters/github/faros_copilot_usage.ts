@@ -196,17 +196,40 @@ export class FarosCopilotUsage extends GitHubConverter {
     if (!isCommunity) {
       const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
       if (assistantMetricType) {
-        res.push(
-          ...this.getAssistantMetric(
-            day,
-            assistantMetricType,
-            breakdown[breakdownMetric] as number,
-            org,
-            team,
-            breakdown.editor,
-            breakdown.language
-          )
-        );
+        if (!breakdown.model_breakdown) {
+          res.push(
+            ...this.getAssistantMetric(
+              day,
+              assistantMetricType,
+              breakdown[breakdownMetric] as number,
+              org,
+              team,
+              breakdown.editor,
+              breakdown.language
+            )
+          );
+        } else {
+          for (const modelBreakdown of breakdown.model_breakdown) {
+            if (
+              isNil(modelBreakdown[breakdownMetric]) ||
+              isNil(modelBreakdown.model)
+            ) {
+              continue;
+            }
+            res.push(
+              ...this.getAssistantMetric(
+                day,
+                assistantMetricType,
+                modelBreakdown[breakdownMetric] as number,
+                org,
+                team,
+                breakdown.editor,
+                breakdown.language,
+                modelBreakdown.model
+              )
+            );
+          }
+        }
       }
     }
 
@@ -396,22 +419,32 @@ export class FarosCopilotUsage extends GitHubConverter {
     org: string,
     team: string | null,
     editor?: string,
-    language?: string
+    language?: string,
+    model?: string
   ): DestinationRecord[] {
     return [
       {
         model: 'vcs_AssistantMetric',
         record: {
           uid: GitHubCommon.digest(
-            [
-              GitHubTool.Copilot,
-              assistantMetricType,
-              day.toISOString(),
-              org,
-              team,
-              editor,
-              language,
-            ].join('__')
+            []
+              .concat(
+                // original fields (required) to be included in the digest
+                ...[
+                  GitHubTool.Copilot,
+                  assistantMetricType,
+                  day.toISOString(),
+                  org,
+                  team,
+                  editor,
+                  language,
+                ],
+                // newer fields (optional) to be included in the digest
+                ...[{key: 'model', value: model}]
+                  .filter((v) => !isNil(v.value))
+                  .map((v) => `${v.key}:${v.value}`)
+              )
+              .join('__')
           ),
           source: this.streamName.source,
           startedAt: day,
@@ -431,6 +464,7 @@ export class FarosCopilotUsage extends GitHubConverter {
           tool: {category: GitHubTool.Copilot},
           editor,
           language,
+          model,
         },
       },
     ];
