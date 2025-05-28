@@ -48,26 +48,16 @@ export class FarosCopilotSeats extends GitHubConverter {
     const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
     if (seat.endedAt) {
       this.endedSeatsByOrg.get(org).add(seat.user);
-      const res: DestinationRecord[] = [];
-      res.push({
-        model: 'vcs_UserTool',
-        record: {
-          ...userTool,
-          inactive: true,
-          endedAt: seat.endedAt,
-        },
-      });
-      if (seat.startedAt) {
-        res.push({
-          model: 'vcs_UserToolPeriod',
+      return [
+        {
+          model: 'vcs_UserTool',
           record: {
             ...userTool,
-            startedAt: seat.startedAt,
+            inactive: true,
             endedAt: seat.endedAt,
           },
-        });
-      }
-      return res;
+        },
+      ];
     }
 
     const activeSeat = record.record.data as CopilotSeat;
