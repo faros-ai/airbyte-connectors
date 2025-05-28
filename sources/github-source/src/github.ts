@@ -97,7 +97,6 @@ import {RunMode, StreamBase} from './streams/common';
 import {
   AuditLogTeamMember,
   CopilotMetricsResponse,
-  CopilotUsageResponse,
   CopilotUserEngagementResponse,
   GitHubConfig,
   GraphQLErrorResponse,
@@ -1146,7 +1145,7 @@ export abstract class GitHub {
     org: string,
     cutoffDate: number
   ): AsyncGenerator<CopilotUsageSummary> {
-    let data: CopilotUsageResponse;
+    let data: Omit<CopilotUsageSummary, 'org' | 'team'>[];
     try {
       if (!this.copilotMetricsPreviewAPI) {
         const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
@@ -1209,7 +1208,7 @@ export abstract class GitHub {
       throw err;
     }
     for (const teamSlug of teamSlugs) {
-      let data: CopilotUsageResponse;
+      let data: Omit<CopilotUsageSummary, 'org' | 'team'>[];
       if (!this.copilotMetricsPreviewAPI) {
         const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
           org
@@ -2371,7 +2370,7 @@ function getLastCopilotTeamForUser(
 
 function transformCopilotMetricsResponse(
   data: CopilotMetricsResponse
-): CopilotUsageResponse {
+): Omit<CopilotUsageSummary, 'org' | 'team'>[] {
   return data.map((d) => {
     const breakdown =
       d.copilot_ide_code_completions?.editors?.flatMap((e) => {
@@ -2382,6 +2381,15 @@ function transformCopilotMetricsResponse(
             lines_suggested: number;
             lines_accepted: number;
             active_users: number;
+            model_breakdown: {
+              [model: string]: {
+                suggestions_count: number;
+                acceptances_count: number;
+                lines_suggested: number;
+                lines_accepted: number;
+                active_users: number;
+              };
+            };
           };
         } = {};
         for (const m of e.models) {
@@ -2392,18 +2400,30 @@ function transformCopilotMetricsResponse(
               lines_suggested: 0,
               lines_accepted: 0,
               active_users: 0,
+              model_breakdown: {},
             });
             language.suggestions_count += l.total_code_suggestions;
             language.acceptances_count += l.total_code_acceptances;
             language.lines_suggested += l.total_code_lines_suggested;
             language.lines_accepted += l.total_code_lines_accepted;
             language.active_users += l.total_engaged_users;
+            language.model_breakdown[m.name] = {
+              suggestions_count: l.total_code_suggestions,
+              acceptances_count: l.total_code_acceptances,
+              lines_suggested: l.total_code_lines_suggested,
+              lines_accepted: l.total_code_lines_accepted,
+              active_users: l.total_engaged_users,
+            };
           }
         }
         return Object.entries(languages).map(([k, v]) => ({
           ...v,
           language: k,
           editor: e.name,
+          model_breakdown: Object.entries(v.model_breakdown).map(([k, v]) => ({
+            ...v,
+            model: k,
+          })),
         }));
       }) ?? [];
     let total_chats = 0,
