@@ -5,6 +5,21 @@ import Papa from 'papaparse';
 import {CircleCI} from '../circleci/circleci';
 import {StreamSlice, StreamWithProjectSlices} from './common';
 
+interface UsageExportRow {
+  job_id: string;
+  job_run_ended_at: string;
+  compute_credits?: number;
+  dlc_credits?: number;
+  user_credits?: number;
+  storage_credits?: number;
+  network_credits?: number;
+  lease_credits?: number;
+  lease_overage_credits?: number;
+  ipranges_credits?: number;
+  total_credits?: number;
+  [key: string]: any; // Allow additional fields
+}
+
 type UsageCreditsState = Dictionary<{
   processedJobIds: string[];
   lastProcessedAt?: string;
@@ -77,7 +92,7 @@ export class UsageCredits extends StreamWithProjectSlices {
         const usageExport = await circleCI.fetchUsageExport(orgId, jobId);
         
         if (usageExport.status === 'completed' && usageExport.csv_data) {
-          const parsedCsv = Papa.parse(usageExport.csv_data, {
+          const parsedCsv = Papa.parse<UsageExportRow>(usageExport.csv_data, {
             header: true,
             skipEmptyLines: true,
           });
@@ -113,7 +128,7 @@ export class UsageCredits extends StreamWithProjectSlices {
           
           projectState.processedJobIds.push(jobId);
         }
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(`Error processing usage export job ${jobId}: ${error.message}`);
       }
     }
@@ -121,9 +136,10 @@ export class UsageCredits extends StreamWithProjectSlices {
 
   getUpdatedState(
     currentStreamState: UsageCreditsState,
-    latestRecord: any
+    latestRecord: any,
+    streamSlice?: StreamSlice
   ): UsageCreditsState {
-    const projectSlug = this.getProjectSlugFromContext();
+    const projectSlug = streamSlice?.projectSlug;
     if (!projectSlug) {
       return currentStreamState;
     }
@@ -140,9 +156,5 @@ export class UsageCredits extends StreamWithProjectSlices {
         lastProcessedAt: new Date().toISOString()
       }
     };
-  }
-
-  private getProjectSlugFromContext(): string | undefined {
-    return undefined;
   }
 }
