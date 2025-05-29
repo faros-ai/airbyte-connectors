@@ -11,6 +11,7 @@ import {
 } from 'faros-airbyte-common/common';
 import https from 'https';
 import {maxBy, toLower} from 'lodash';
+import Papa from 'papaparse';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -35,6 +36,7 @@ export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly cutoff_days?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly usage_export_job_ids?: string[];
 }
 
 export class CircleCI {
@@ -396,6 +398,17 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+  }
+
+  async fetchUsageExport(orgId: string, jobId: string): Promise<any> {
+    const path = `/organization/${orgId}/usage/export/${jobId}`;
+    try {
+      const response = await this.get({path});
+      return response.data;
+    } catch (error: any) {
+      this.logger.warn(`Failed to fetch usage export for org ${orgId}, job ${jobId}: ${error.message}`);
+      throw error;
+    }
   }
 }
 

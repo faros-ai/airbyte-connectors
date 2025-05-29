@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "uid": {
+      "type": "string",
+      "description": "Unique identifier in format {job_id}_{credit_type}"
+    },
+    "value": {
+      "type": "string",
+      "description": "String representation of credit count"
+    },
+    "computedAt": {
+      "type": "string",
+      "description": "Timestamp from job_run_ended_at"
+    },
+    "definition": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": ["uid", "value", "computedAt", "definition"]
+}
