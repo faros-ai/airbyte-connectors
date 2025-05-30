@@ -29,5 +29,9 @@ ENV CONNECTOR_PATH=$path
 
 RUN ln -s "/home/node/airbyte/$CONNECTOR_PATH/bin/main" "/home/node/airbyte/main"
 
+
+# Testing
 ENV AIRBYTE_ENTRYPOINT="/home/node/airbyte/docker/entrypoint.sh"
 ENTRYPOINT ["/home/node/airbyte/docker/entrypoint.sh"]
+
+
