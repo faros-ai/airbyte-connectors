@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 1 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 1 records",
-  "Would write records by model: {\\\\\\"vcs_Organization\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 2 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 3 records",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -24,6 +24,40 @@ Array [
         "detail": "Group",
       },
       "uid": "12372707",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "archived": false,
+      "createdAt": "2022-10-19T16:40:22.162Z",
+      "description": "",
+      "fullName": "farosai/farosce-test",
+      "htmlUrl": "https://gitlab.com/farosai/farosce-test",
+      "mainBranch": "master",
+      "name": "FarosCE test",
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "private": true,
+      "source": "GitLab",
+      "uid": "40360007",
+      "updatedAt": "2024-10-15T18:38:58.340Z",
+    },
+  },
+  Object {
+    "faros_VcsRepositoryOptions": Object {
+      "inclusion": Object {
+        "category": "Included",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "40360007",
+      },
+      "source": "GitLab",
     },
   },
 ]
