@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
+    "faros-airbyte-cdk": "*",
+    "airbyte-faros-destination": "*",
     "fs-extra": "^11.2.0",
     "mockttp": "^3.9.2",
     "pino": "^8.17.0",
