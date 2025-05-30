@@ -1,8 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Group} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
-import {Group} from '../types';
 import {GroupStreamSlice, StreamWithGroupSlices} from './common';
 
 export class FarosGroups extends StreamWithGroupSlices {

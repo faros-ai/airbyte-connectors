@@ -1,12 +1,13 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
+import {GitLabToken, Group, Project} from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {RunMode} from './streams/common';
-import {GitLabConfig, GitLabToken, Group, Project} from './types';
+import {GitLabConfig} from './types';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -122,7 +123,7 @@ export class GitLab {
     }
   }
 
-  async getProjects(groupPath: string): Promise<Project[]> {
+  async getProjects(groupId: string): Promise<Project[]> {
     try {
       const options = {
         perPage: this.pageSize,
@@ -133,7 +134,7 @@ export class GitLab {
       let hasMore = true;
 
       while (hasMore) {
-        const groupProjects = await this.client.Groups.projects(groupPath, {
+        const groupProjects = await this.client.Groups.projects(groupId, {
           ...options,
           page,
         });
@@ -145,7 +146,7 @@ export class GitLab {
 
         for (const project of groupProjects) {
           projects.push({
-            id: project.id.toString(),
+            id: toLower(`${project.id}`),
             name: project.name,
             path: project.path,
             path_with_namespace: project.path_with_namespace,
@@ -155,12 +156,15 @@ export class GitLab {
             created_at: project.created_at,
             updated_at: project.updated_at,
             namespace: {
-              id: project.namespace.id.toString(),
+              id: toLower(`${project.namespace.id}`),
               name: project.namespace.name,
               path: project.namespace.path,
               kind: project.namespace.kind,
               full_path: project.namespace.full_path,
             },
+            default_branch: project.default_branch,
+            archived: project.archived,
+            group_id: groupId,
           });
         }
 
@@ -170,9 +174,9 @@ export class GitLab {
       return projects;
     } catch (err: any) {
       this.logger.error(
-        `Failed to fetch projects for group ${groupPath}: ${err.message}`
+        `Failed to fetch projects for group ${groupId}: ${err.message}`
       );
-      throw new VError(err, `Error fetching projects for group ${groupPath}`);
+      throw new VError(err, `Error fetching projects for group ${groupId}`);
     }
   }
 
