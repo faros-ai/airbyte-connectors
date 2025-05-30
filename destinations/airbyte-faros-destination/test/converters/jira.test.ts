@@ -5,9 +5,7 @@ import {
 import {getLocal} from 'mockttp';
 import os from 'os';
 
-import {CLI, read} from '../../src/testing-tools/cli';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {CLI, read, initMockttp, tempConfig, destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 describe('jira', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

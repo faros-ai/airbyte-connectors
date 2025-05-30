@@ -13,8 +13,8 @@ import {
   initMockttp,
   readTestResourceFile,
   tempConfig,
-} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+} from '@faros-ai/airbyte-testing-tools';
+import {destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 function updateCustomReportWithFields(
   crDest: Customreports,

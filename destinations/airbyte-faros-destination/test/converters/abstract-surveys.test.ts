@@ -12,8 +12,8 @@ import {
   AbstractSurveys,
   SurveysConfig,
 } from '../../src/converters/abstract-surveys/surveys';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
+import {initMockttp, tempConfig} from '@faros-ai/airbyte-testing-tools';
+import {generateBasicTestSuite} from '@faros-ai/airbyte-testing-tools';
 
 describe('abstract-surveys', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

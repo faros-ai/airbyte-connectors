@@ -21,20 +21,14 @@ export class CLI {
   constructor(private readonly cp: ChildProcess) {}
 
   get stderr(): Readable {
-    // `stderr` is always defined with the options in `runWith`.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.cp.stderr!;
   }
 
   get stdout(): Readable {
-    // `stdout` is always defined with the options in `runWith`.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.cp.stdout!;
   }
 
   get stdin(): Writable {
-    // `stdin` is always defined with the options in `runWith`.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.cp.stdin!;
   }
 
@@ -53,8 +47,6 @@ export class CLI {
    * stdout.
    */
   respondToPrompt(prompt: string, response: string): void {
-    // Use flag to only write to stdin once, since the Enquirer library prompt
-    // triggers stdout.on() multiple times.
     let shouldRespond = true;
     this.stdout.on('data', (data: any) => {
       if (shouldRespond && data.toString().includes(prompt)) {

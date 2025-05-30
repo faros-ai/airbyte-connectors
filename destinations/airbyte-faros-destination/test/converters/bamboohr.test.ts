@@ -1,8 +1,8 @@
 import {getLocal} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {initMockttp, tempConfig} from '@faros-ai/airbyte-testing-tools';
+import {destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 describe('bamboohr', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

@@ -1,10 +1,10 @@
 {
-  "name": "faros-airbyte-cdk",
+  "name": "@faros-ai/airbyte-testing-tools",
   "version": "0.0.1",
-  "description": "Airbyte Connector Development Kit (CDK) for JavaScript/TypeScript",
+  "description": "Testing utilities for Airbyte connectors",
   "keywords": [
     "airbyte",
-    "cdk",
+    "testing",
     "faros"
   ],
   "homepage": "https://www.faros.ai",
@@ -19,8 +19,7 @@
     "test": "test"
   },
   "files": [
-    "lib/",
-    "resources/"
+    "lib/"
   ],
   "main": "./lib",
   "scripts": {
@@ -33,19 +32,16 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.9",
-    "enquirer": "^2.3.6",
-    "fast-redact": "^3.0.2",
-    "json-schema-traverse": "^1.0.0",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.1",
+    "cross-spawn": "^7.0.6",
+    "fs-extra": "^11.2.0",
+    "mockttp": "^3.9.2",
     "pino": "^8.17.0",
-    "table": "^6.8.1",
-    "toposort": "^2.0.2",
-    "verror": "^1.10.1"
+    "tmp-promise": "^3.0.3",
+    "ts-essentials": "^9.1.2"
   },
   "devDependencies": {
-    "@faros-ai/airbyte-testing-tools": "*"
+    "@types/node": "^22.14.0",
+    "@types/jest": "^29.5.10"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

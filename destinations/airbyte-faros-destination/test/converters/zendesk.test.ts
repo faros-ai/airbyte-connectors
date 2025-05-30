@@ -13,8 +13,8 @@ import {SatisfactionRatings} from '../../src/converters/zendesk/satisfaction_rat
 import {Tags} from '../../src/converters/zendesk/tags';
 import {Tickets} from '../../src/converters/zendesk/tickets';
 import {Users} from '../../src/converters/zendesk/users';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {initMockttp, tempConfig} from '@faros-ai/airbyte-testing-tools';
+import {destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 describe('zendesk', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

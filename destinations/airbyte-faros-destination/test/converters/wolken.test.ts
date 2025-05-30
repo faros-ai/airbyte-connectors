@@ -1,7 +1,6 @@
 import {getLocal} from 'mockttp';
 
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {initMockttp, tempConfig, destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 describe('wolken', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

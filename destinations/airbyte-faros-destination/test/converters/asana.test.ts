@@ -8,8 +8,7 @@ import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {TasksFull} from '../../src/converters/asana/tasks_full';
 import {Users} from '../../src/converters/asana/users';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
+import {initMockttp, tempConfig, generateBasicTestSuite} from '@faros-ai/airbyte-testing-tools';
 
 describe('asana', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

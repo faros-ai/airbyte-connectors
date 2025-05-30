@@ -23,9 +23,6 @@ export interface GenerateBasicTestSuiteOptions {
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
-// Executes the destination write command in dry-run mode and optionally checks:
-// - The processed and written records count
-// - The records data
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
@@ -88,7 +85,6 @@ function readRecordData(
         records.push(recordMessage.record.data);
       }
     } catch (error) {
-      // Not a record message. Ignore.
     }
   }
   return records;

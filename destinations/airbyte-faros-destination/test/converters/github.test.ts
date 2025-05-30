@@ -4,14 +4,14 @@ import os from 'os';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {GitHubCommon} from '../../src/converters/github/common';
-import {CLI, read} from '../../src/testing-tools/cli';
+import {CLI, read} from '@faros-ai/airbyte-testing-tools';
 import {
   initMockttp,
   tempConfig,
   testLogger,
-} from '../../src/testing-tools/testing-tools';
+} from '@faros-ai/airbyte-testing-tools';
 import {githubLog, githubPGRawLog} from './data';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {destinationWriteTest} from '@faros-ai/airbyte-testing-tools';
 
 describe('github', () => {
   const logger = testLogger();

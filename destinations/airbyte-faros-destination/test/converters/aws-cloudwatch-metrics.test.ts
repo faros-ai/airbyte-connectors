@@ -6,9 +6,9 @@ import {
   MetricsConfig,
 } from '../../src/converters/aws-cloudwatch-metrics/metrics';
 import {DestinationRecord, StreamContext} from '../../src/converters/converter';
-import {initMockttp, sourceSpecificTempConfig} from '../../src/testing-tools/testing-tools';
+import {initMockttp, sourceSpecificTempConfig} from '@faros-ai/airbyte-testing-tools';
 import {awsCloudwatchMetricsStreamsInput} from './data';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
+import {generateBasicTestSuite} from '@faros-ai/airbyte-testing-tools';
 
 describe('AWS Cloudwatch Metrics', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
