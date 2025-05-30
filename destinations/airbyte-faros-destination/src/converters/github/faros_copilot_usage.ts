@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
+  ChatBreakdown,
   CopilotUsageSummary,
   GitHubTool,
   LanguageEditorBreakdown,
@@ -160,6 +161,31 @@ export class FarosCopilotUsage extends GitHubConverter {
         );
       }
     }
+
+    if (summary.chat_breakdown) {
+      for (const [metric, farosMetric] of metrics) {
+        const breakdownMetric = metric.replace('total_', '');
+        for (const chatBreakdown of summary.chat_breakdown) {
+          if (
+            isNil(chatBreakdown[breakdownMetric]) ||
+            isNil(chatBreakdown.editor)
+          ) {
+            continue;
+          }
+
+          this.processChatBreakdownMetricValue(
+            res,
+            org,
+            team,
+            farosMetric,
+            chatBreakdown,
+            summary,
+            breakdownMetric,
+            isCommunity
+          );
+        }
+      }
+    }
   }
 
   private processBreakdownMetricValue(
@@ -294,6 +320,48 @@ export class FarosCopilotUsage extends GitHubConverter {
         },
       },
     });
+  }
+
+  private processChatBreakdownMetricValue(
+    res: DestinationRecord[],
+    org: string,
+    team: string | null,
+    farosMetric: string,
+    chatBreakdown: ChatBreakdown,
+    summary: CopilotUsageSummary,
+    breakdownMetric: string,
+    isCommunity: boolean
+  ): void {
+    if (isCommunity) {
+      return;
+    }
+
+    const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
+    if (!assistantMetricType) {
+      return;
+    }
+
+    const day = Utils.toDate(summary.day);
+    for (const modelBreakdown of chatBreakdown.model_breakdown) {
+      if (
+        isNil(modelBreakdown[breakdownMetric]) ||
+        isNil(modelBreakdown.model)
+      ) {
+        continue;
+      }
+      res.push(
+        ...this.getAssistantMetric(
+          day,
+          assistantMetricType,
+          modelBreakdown[breakdownMetric] as number,
+          org,
+          team,
+          chatBreakdown.editor,
+          undefined,
+          modelBreakdown.model
+        )
+      );
+    }
   }
 
   private processMetricValue(
