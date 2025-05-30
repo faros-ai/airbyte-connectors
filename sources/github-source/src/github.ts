@@ -2426,16 +2426,44 @@ function transformCopilotMetricsResponse(
           })),
         }));
       }) ?? [];
-    let total_chats = 0,
-      total_chat_insertion_events = 0,
-      total_chat_copy_events = 0;
-    for (const e of d.copilot_ide_chat?.editors ?? []) {
-      for (const m of e.models) {
-        total_chats += m.total_chats;
-        total_chat_insertion_events += m.total_chat_insertion_events;
-        total_chat_copy_events += m.total_chat_copy_events;
-      }
-    }
+    const chat_breakdown =
+      d.copilot_ide_chat?.editors?.map((e) => {
+        let chats = 0,
+          chat_insertion_events = 0,
+          chat_copy_events = 0,
+          active_chat_users = 0;
+        const model_breakdown: {
+          [model: string]: {
+            chats: number;
+            chat_insertion_events: number;
+            chat_copy_events: number;
+            active_chat_users: number;
+          };
+        } = {};
+        for (const m of e.models) {
+          chats += m.total_chats;
+          chat_insertion_events += m.total_chat_insertion_events;
+          chat_copy_events += m.total_chat_copy_events;
+          active_chat_users += m.total_engaged_users;
+          model_breakdown[m.name] = {
+            chats: m.total_chats,
+            chat_insertion_events: m.total_chat_insertion_events,
+            chat_copy_events: m.total_chat_copy_events,
+            active_chat_users: m.total_engaged_users,
+          };
+        }
+        return {
+          editor: e.name,
+          chats,
+          chat_insertion_events,
+          chat_copy_events,
+          active_chat_users,
+          model_breakdown: Object.entries(model_breakdown).map(([k, v]) => ({
+            ...v,
+            model: k,
+          })),
+        };
+      }) ?? [];
     return {
       day: d.date,
       total_suggestions_count: breakdown.reduce(
@@ -2455,11 +2483,18 @@ function transformCopilotMetricsResponse(
         0
       ),
       total_active_users: d.total_active_users,
-      total_chats,
-      total_chat_insertion_events,
-      total_chat_copy_events,
+      total_chats: chat_breakdown.reduce((acc, c) => acc + c.chats, 0),
+      total_chat_insertion_events: chat_breakdown.reduce(
+        (acc, c) => acc + c.chat_insertion_events,
+        0
+      ),
+      total_chat_copy_events: chat_breakdown.reduce(
+        (acc, c) => acc + c.chat_copy_events,
+        0
+      ),
       total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
       breakdown,
+      chat_breakdown,
     };
   });
 }
