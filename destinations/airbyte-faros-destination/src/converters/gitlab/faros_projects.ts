@@ -5,6 +5,7 @@ import {Utils} from 'faros-js-client';
 import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
+import {toLower} from 'lodash';
 
 export class FarosProjects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -21,12 +22,14 @@ export class FarosProjects extends GitlabConverter {
       source: this.streamName.source,
     };
 
+    const projectName = toLower(project.path);
+
     const res: DestinationRecord[] = [
       {
         model: 'vcs_Repository',
         record: {
-          name: project.id,
-          uid: project.id,
+          name: projectName,
+          uid: projectName,
           fullName: project.path_with_namespace,
           private: project.visibility === 'private',
           description: Utils.cleanAndTruncate(project.description),
@@ -48,7 +51,7 @@ export class FarosProjects extends GitlabConverter {
       res.push({
         model: 'faros_VcsRepositoryOptions',
         record: {
-          repository: {uid: project.id, name: project.id, organization},
+          repository: {uid: projectName, name: projectName, organization},
           inclusion: {category: 'Included'},
         },
       });
