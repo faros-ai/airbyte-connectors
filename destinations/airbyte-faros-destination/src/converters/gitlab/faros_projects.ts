@@ -25,7 +25,7 @@ export class FarosProjects extends GitlabConverter {
       {
         model: 'vcs_Repository',
         record: {
-          name: project.name,
+          name: project.id,
           uid: project.id,
           fullName: project.path_with_namespace,
           private: project.visibility === 'private',
@@ -48,7 +48,7 @@ export class FarosProjects extends GitlabConverter {
       res.push({
         model: 'faros_VcsRepositoryOptions',
         record: {
-          repository: {uid: project.id, organization},
+          repository: {uid: project.id, name: project.id, organization},
           inclusion: {category: 'Included'},
         },
       });

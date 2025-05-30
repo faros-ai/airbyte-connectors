@@ -34,7 +34,7 @@ Array [
       "fullName": "farosai/farosce-test",
       "htmlUrl": "https://gitlab.com/farosai/farosce-test",
       "mainBranch": "master",
-      "name": "FarosCE test",
+      "name": "40360007",
       "organization": Object {
         "source": "GitLab",
         "uid": "12372707",
@@ -51,6 +51,7 @@ Array [
         "category": "Included",
       },
       "repository": Object {
+        "name": "40360007",
         "organization": Object {
           "source": "GitLab",
           "uid": "12372707",
