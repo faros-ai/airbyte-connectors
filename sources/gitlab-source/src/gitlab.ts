@@ -146,7 +146,7 @@ export class GitLab {
 
         for (const project of groupProjects) {
           projects.push({
-            id: project.id.toString(),
+            id: toLower(`${project.id}`),
             name: project.name,
             path: project.path,
             path_with_namespace: project.path_with_namespace,
@@ -156,7 +156,7 @@ export class GitLab {
             created_at: project.created_at,
             updated_at: project.updated_at,
             namespace: {
-              id: project.namespace.id.toString(),
+              id: toLower(`${project.namespace.id}`),
               name: project.namespace.name,
               path: project.namespace.path,
               kind: project.namespace.kind,
