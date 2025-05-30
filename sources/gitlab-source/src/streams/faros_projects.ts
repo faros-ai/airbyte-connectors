@@ -1,8 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Project} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GroupStreamSlice, StreamWithGroupSlices} from './common';
-import {Project} from 'faros-airbyte-common/gitlab';
 
 export class FarosProjects extends StreamWithGroupSlices {
   getJsonSchema(): Dictionary<any, string> {

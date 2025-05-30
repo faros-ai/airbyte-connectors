@@ -1,11 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Project} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
+import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
-import {toLower} from 'lodash';
 
 export class FarosProjects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -44,7 +44,7 @@ export class FarosProjects extends GitlabConverter {
     ];
 
     const isCommunity =
-    ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
+      ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
 
     const writeInclusion = project.syncRepoData && !isCommunity;
     if (writeInclusion) {
