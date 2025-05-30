@@ -4,11 +4,12 @@ import {
   VCSAdapter,
   VCSFilter,
 } from 'faros-airbyte-common/common';
+import {Group, Project} from 'faros-airbyte-common/gitlab';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 
 import {DEFAULT_FAROS_GRAPH, GitLab} from './gitlab';
-import {GitLabConfig, Group, Project} from './types';
+import {GitLabConfig} from './types';
 
 /**
  * GitLab VCS adapter implementation

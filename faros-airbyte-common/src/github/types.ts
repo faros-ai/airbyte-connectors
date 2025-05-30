@@ -285,9 +285,24 @@ export type CopilotUsageSummary = {
       active_users: number;
     }[];
   }[];
+  chat_breakdown?: {
+    editor: string;
+    chats: number;
+    chat_insertion_events: number;
+    chat_copy_events: number;
+    model_breakdown?: {
+      model: string;
+      chats: number;
+      chat_insertion_events: number;
+      chat_copy_events: number;
+      active_chat_users: number;
+    }[];
+  }[];
 };
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
+
+export type ChatBreakdown = CopilotUsageSummary['chat_breakdown'][0];
 
 export type CodeScanningAlert = {
   org: string;

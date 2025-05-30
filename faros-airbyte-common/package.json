@@ -33,6 +33,7 @@
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
+    "./gitlab": "./lib/gitlab/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
     "./wolken": "./lib/wolken/index.js",
@@ -66,6 +67,9 @@
       ],
       "github/queries": [
         "./lib/github/queries.d.ts"
+      ],
+      "gitlab": [
+        "./lib/gitlab/index.d.ts"
       ],
       "jira": [
         "./lib/jira/index.d.ts"

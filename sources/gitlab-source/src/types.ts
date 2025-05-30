@@ -1,5 +1,6 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {RoundRobinConfig} from 'faros-airbyte-common/common';
+import {GitLabToken} from 'faros-airbyte-common/gitlab';
 
 import {RunMode} from './streams/common';
 
@@ -27,40 +28,4 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
-}
-
-export type GitLabToken = {
-  type: 'token';
-  personal_access_token: string;
-};
-
-export interface Group {
-  id: string;
-  parent_id: string | null;
-  name: string;
-  path: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  namespace: {
-    id: string;
-    name: string;
-    path: string;
-    kind: string;
-    full_path: string;
-  };
 }

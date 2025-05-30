@@ -5,6 +5,12 @@
         "name": "mytestsource__gitlab__faros_groups"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_projects"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }
