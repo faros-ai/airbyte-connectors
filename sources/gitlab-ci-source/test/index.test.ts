@@ -2,10 +2,12 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  readResourceAsJSON,
-  readTestFileAsJSON,
-  SyncMode,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import {Gitlab} from '../src/gitlab';
 import * as sut from '../src/index';

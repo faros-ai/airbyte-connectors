@@ -9,8 +9,8 @@ import {
   AirbyteSourceBase,
   AirbyteState,
   AirbyteStateMessage,
-} from '.';
-import {Data} from './utils';
+  Data,
+} from 'faros-airbyte-cdk';
 
 export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');

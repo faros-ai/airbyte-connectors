@@ -49,6 +49,7 @@
     }
   },
   "devDependencies": {
-    "@types/jest": "^29.5.10"
+    "@types/jest": "^29.5.10",
+    "faros-airbyte-testing-tools": "file:../faros-airbyte-testing-tools"
   }
 }

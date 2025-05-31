@@ -50,5 +50,8 @@
     "snapshotFormat": {
       "printBasicPrototype": true
     }
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "file:../faros-airbyte-testing-tools"
   }
 }

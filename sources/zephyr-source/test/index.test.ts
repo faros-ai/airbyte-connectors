@@ -1,9 +1,11 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec,
-  readResourceAsJSON,
+  AirbyteSpec
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 
