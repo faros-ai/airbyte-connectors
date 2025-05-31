@@ -3,12 +3,14 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  SyncMode
+} from 'faros-airbyte-cdk';
+import {
   customStreamsTest,
   readResourceAsJSON,
   readTestFileAsJSON,
-  sourceCheckTest,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+  sourceCheckTest
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {Datadog, DatadogClient, DatadogConfig} from '../src/datadog';

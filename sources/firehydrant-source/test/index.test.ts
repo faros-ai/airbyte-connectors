@@ -3,10 +3,12 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  readResourceAsJSON,
-  readTestFileAsJSON,
-  SyncMode,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import {FireHydrant} from '../src/firehydrant/firehydrant';
 import * as sut from '../src/index';

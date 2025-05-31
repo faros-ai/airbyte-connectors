@@ -1,9 +1,11 @@
 import {
-  readResourceAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec,
+  AirbyteSpec
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {DataQualityTests} from '../src/streams/data-quality-tests';

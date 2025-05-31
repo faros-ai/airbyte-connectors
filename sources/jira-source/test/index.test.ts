@@ -1,14 +1,16 @@
 import {
-  readResourceAsJSON,
   AirbyteLogger,
   AirbyteLogLevel,
-  AirbyteSpec,
+  AirbyteSpec
+} from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON,
   customStreamsTest,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest,
-} from 'faros-airbyte-cdk';
+  sourceSchemaTest
+} from 'faros-airbyte-testing-tools';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
 

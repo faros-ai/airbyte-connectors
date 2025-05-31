@@ -51,6 +51,7 @@
     }
   },
   "devDependencies": {
-    "@types/papaparse": "^5.3.15"
+    "@types/papaparse": "^5.3.15",
+    "faros-airbyte-testing-tools": "*"
   }
 }

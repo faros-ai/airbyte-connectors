@@ -1,8 +1,10 @@
 import {
   AirbyteLogger,
-  AirbyteLogLevel,
-  readTestResourceAsJSON,
+  AirbyteLogLevel
 } from 'faros-airbyte-cdk';
+import {
+  readTestResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import {Bitbucket} from '../src/bitbucket';
 import {BitbucketConfig} from '../src/types';

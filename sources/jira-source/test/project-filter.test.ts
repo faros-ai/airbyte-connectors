@@ -1,8 +1,10 @@
 import {
   AirbyteLogger,
-  AirbyteLogLevel,
-  readTestResourceAsJSON,
+  AirbyteLogLevel
 } from 'faros-airbyte-cdk';
+import {
+  readTestResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import {JiraConfig} from '../src/jira';
 import {ProjectFilter} from '../src/project-filter';

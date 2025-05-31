@@ -2,11 +2,13 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  SyncMode
+} from 'faros-airbyte-cdk';
+import {
   readResourceAsJSON,
   readTestFileAsJSON,
-  sourceCheckTest,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+  sourceCheckTest
+} from 'faros-airbyte-testing-tools';
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 
 import {AzureWorkitems} from '../src/azure-workitems';

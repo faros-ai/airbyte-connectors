@@ -1,4 +1,5 @@
-import {AirbyteLogger, readTestResourceAsJSON} from 'faros-airbyte-cdk';
+import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {readTestResourceAsJSON} from 'faros-airbyte-testing-tools';
 
 import {GitHub, GitHubToken} from '../src/github';
 import {GitHubConfig} from '../src/types';

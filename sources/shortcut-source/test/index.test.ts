@@ -2,10 +2,12 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  readResourceAsJSON,
-  readTestFileAsJSON,
-  SyncMode,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {Shortcut, ShortcutConfig} from '../src/shortcut';

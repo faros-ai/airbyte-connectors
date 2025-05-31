@@ -2,9 +2,11 @@ import fs from 'fs';
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  SyncMode,
-  readTestFileAsJSON,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readTestFileAsJSON
+} from 'faros-airbyte-testing-tools';
 import {Utils} from 'faros-js-client';
 
 import * as sut from '../src/index';

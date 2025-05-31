@@ -1,11 +1,13 @@
 import {
-  readResourceAsJSON,
-  readTestFileAsJSON,
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON
+} from 'faros-airbyte-testing-tools';
 import jenkinsClient from 'jenkins';
 import {mocked} from 'jest-mock';
 import {VError} from 'verror';

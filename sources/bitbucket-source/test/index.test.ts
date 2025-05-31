@@ -1,14 +1,16 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec,
+  AirbyteSpec
+} from 'faros-airbyte-cdk';
+import {
   customStreamsTest,
   readResourceAsJSON,
   readTestFileAsJSON,
   readTestResourceAsJSON,
   sourceReadTest,
-  sourceSchemaTest,
-} from 'faros-airbyte-cdk';
+  sourceSchemaTest
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';

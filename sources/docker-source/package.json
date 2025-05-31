@@ -49,5 +49,8 @@
         }
       ]
     }
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
   }
 }
