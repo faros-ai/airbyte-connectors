@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/google-spreadsheet": "^3.0.2",
-    "faros-airbyte-testing-tools": "file:../faros-airbyte-testing-tools"
+    "faros-airbyte-testing-tools": "*"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
