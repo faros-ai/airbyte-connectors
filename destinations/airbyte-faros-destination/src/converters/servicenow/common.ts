@@ -1,7 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
+import {
+  ApplicationMapping,
+  IncidentPriorityCategory,
+  IncidentSeverityCategory,
+} from '../common/ims';
 import {Converter, parseObjectConfig, StreamContext} from '../converter';
-import {ApplicationMapping, IncidentPriorityCategory, IncidentSeverityCategory} from '../common/ims';
 
 const DEFAULT_APPLICATION_FIELD = 'business_service';
 
@@ -38,11 +42,7 @@ export abstract class ServiceNowConverter extends Converter {
     return this.config(ctx).application_field ?? DEFAULT_APPLICATION_FIELD;
   }
 
-  protected onlyStoreCurrentIncidentsAssociations(
-    ctx: StreamContext
-  ): boolean {
-    return (
-      this.config(ctx).store_current_incidents_associations ?? false
-    );
+  protected onlyStoreCurrentIncidentsAssociations(ctx: StreamContext): boolean {
+    return this.config(ctx).store_current_incidents_associations ?? false;
   }
 }

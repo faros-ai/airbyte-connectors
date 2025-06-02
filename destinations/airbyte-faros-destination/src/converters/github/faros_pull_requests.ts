@@ -232,7 +232,10 @@ export class FarosPullRequests extends GitHubConverter {
         model: 'vcs_PullRequestReviewRequest',
         record: {
           pullRequest: prKey,
-          requestedReviewer: {uid: reviewer.login, source: this.streamName.source},
+          requestedReviewer: {
+            uid: reviewer.login,
+            source: this.streamName.source,
+          },
           asCodeOwner: reviewer.asCodeOwner,
         },
       })),
@@ -245,7 +248,8 @@ export class FarosPullRequests extends GitHubConverter {
   private collectReviewRequestReviewers(
     reviewRequests: PullRequestReviewRequest[]
   ): {login: string; asCodeOwner: boolean}[] {
-    const reviewers: Map<string, {login: string; asCodeOwner: boolean}> = new Map();
+    const reviewers: Map<string, {login: string; asCodeOwner: boolean}> =
+      new Map();
 
     reviewRequests
       .filter((reviewRequest) => reviewRequest?.requestedReviewer?.type)
@@ -272,8 +276,8 @@ export class FarosPullRequests extends GitHubConverter {
   }
 
   private addReviewer(
-    reviewers: Map<string, {login: string; asCodeOwner: boolean}>, 
-    reviewer: PartialUser, 
+    reviewers: Map<string, {login: string; asCodeOwner: boolean}>,
+    reviewer: PartialUser,
     asCodeOwner: boolean
   ): void {
     const existingReviewer = reviewers.get(reviewer.login);

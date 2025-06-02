@@ -1,11 +1,10 @@
-import {getLocal, Mockttp} from 'mockttp';
-
 import {
   initMockttp,
   readTestResourceAsJSON,
   tempConfig,
-} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+} from 'faros-airbyte-testing-tools';
+import {destinationWriteTest} from 'faros-airbyte-testing-tools';
+import {getLocal, Mockttp} from 'mockttp';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(
   'vanta/mockQueryNamesToObjects.json'

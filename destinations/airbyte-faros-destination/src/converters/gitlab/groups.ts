@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabConverter} from './common';
 import {FarosGroups} from './faros_groups';

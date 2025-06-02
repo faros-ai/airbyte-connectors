@@ -1,4 +1,6 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
+import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
 import {Utils} from 'faros-js-client';
 import {getLocal} from 'mockttp';
 
@@ -12,8 +14,6 @@ import {
   AbstractSurveys,
   SurveysConfig,
 } from '../../src/converters/abstract-surveys/surveys';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 describe('abstract-surveys', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

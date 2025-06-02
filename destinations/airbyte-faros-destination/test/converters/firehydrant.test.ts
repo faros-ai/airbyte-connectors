@@ -1,10 +1,10 @@
+import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
+import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {get} from 'lodash';
 import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {SEGMENT_KEY} from '../../src/destination';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('firehydrant', () => {
   const mockttp = getLocal({debug: false, recordTraffic: true});

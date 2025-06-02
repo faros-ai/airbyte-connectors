@@ -4,29 +4,24 @@ import pino from 'pino';
 import tmp from 'tmp-promise';
 import {Dictionary} from 'ts-essentials';
 import util from 'util';
-import { Edition, InvalidRecordStrategy } from '../common/types';
 
+// Re-export types that were in common/types.ts
+export enum Edition {
+  COMMUNITY = 'community',
+  CLOUD = 'cloud',
+}
+
+export enum InvalidRecordStrategy {
+  FAIL = 'FAIL',
+  SKIP = 'SKIP',
+}
 
 const TEST_SOURCE_ID = 'mytestsource';
 
 // Remove all controlled temporary objects on process exit
 tmp.setGracefulCleanup();
 
-/**
- * Read a test resource by name
- */
-export function readTestResourceFile(fileName: string): string {
-  return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
-}
-
 const writeFile = util.promisify(fs.write);
-
-/**
- * Parse a test resource into JSON
- */
-export function readTestResourceAsJSON(fileName: string): any {
-  return JSON.parse(readTestResourceFile(fileName));
-}
 
 /**
  * Creates a temporary file

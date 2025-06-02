@@ -392,7 +392,7 @@ export class Pages extends NotionConverter {
           resolvedAt: dateExtractor(tasks.properties.resolved_at),
           additionalProperties: additionalPropertiesExtractor(
             tasks.include_additional_properties,
-            additionalProperties,
+            additionalProperties
           ),
         },
       },
@@ -458,7 +458,7 @@ export class Pages extends NotionConverter {
             task: this.ref(page.id),
             board: this.ref(project),
           },
-        },
+        }
       );
     }
 

@@ -1,7 +1,9 @@
+import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
+import {
+  destinationWriteTest,
+  generateBasicTestSuite,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
-
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import { generateBasicTestSuite, destinationWriteTest } from '../../src/testing-tools/utils';
 
 generateBasicTestSuite({sourceName: 'jenkins'});
 

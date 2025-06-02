@@ -1,5 +1,5 @@
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
+import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
 
 generateBasicTestSuite({
-  sourceName: 'gitlab'
+  sourceName: 'gitlab',
 });

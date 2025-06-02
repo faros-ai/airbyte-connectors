@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Vcs} from 'faros-airbyte-common/circleci';
 import {toLower} from 'lodash';
 
 import {Converter, StreamContext} from '../converter';
 import {BuildKey, CommitKey} from './models';
-import {Vcs} from 'faros-airbyte-common/circleci';
 
 export interface CircleCIConfig {
   skip_writing_test_cases: boolean;

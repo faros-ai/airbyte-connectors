@@ -1,4 +1,9 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {
+  initMockttp,
+  sourceSpecificTempConfig,
+} from 'faros-airbyte-testing-tools';
+import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
 import {
@@ -6,9 +11,7 @@ import {
   MetricsConfig,
 } from '../../src/converters/aws-cloudwatch-metrics/metrics';
 import {DestinationRecord, StreamContext} from '../../src/converters/converter';
-import {initMockttp, sourceSpecificTempConfig} from '../../src/testing-tools/testing-tools';
 import {awsCloudwatchMetricsStreamsInput} from './data';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 describe('AWS Cloudwatch Metrics', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

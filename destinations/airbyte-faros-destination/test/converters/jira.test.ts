@@ -2,12 +2,11 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
 } from 'faros-airbyte-cdk';
+import {CLI, read} from 'faros-airbyte-testing-tools';
+import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
+import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 import os from 'os';
-
-import {CLI, read} from '../../src/testing-tools/cli';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('jira', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
