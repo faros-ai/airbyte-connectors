@@ -45,7 +45,10 @@ export abstract class ConverterTyped<R> {
   /** Returns a minimal version of the record suitable for context storage
    * Override this to provide a reduced representation when this stream is a dependency
    * By default returns the full record */
-  toContextStorageRecord(record: AirbyteRecord, ctx: StreamContext): AirbyteRecord {
+  toContextStorageRecord(
+    record: AirbyteRecord,
+    ctx: StreamContext
+  ): AirbyteRecord {
     return record;
   }
 

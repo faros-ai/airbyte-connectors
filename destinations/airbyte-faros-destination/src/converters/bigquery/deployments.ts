@@ -11,7 +11,7 @@ export class Deployments extends BigQueryConverter {
     'cicd_Build',
     'cicd_Deployment',
     'vcs_Commit',
-    'cicd_DeploymentChangeset'
+    'cicd_DeploymentChangeset',
   ];
 
   async convert(

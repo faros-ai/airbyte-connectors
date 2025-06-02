@@ -59,12 +59,7 @@ export class Workitems extends AzureWorkitemsConverter {
       WorkItem.fields['Faros']['WorkItemStateCategory']
     );
 
-    const epic = this.getEpic(
-      taskKey,
-      WorkItem.fields,
-      status,
-      projectId
-    );
+    const epic = this.getEpic(taskKey, WorkItem.fields, status, projectId);
 
     return [
       {

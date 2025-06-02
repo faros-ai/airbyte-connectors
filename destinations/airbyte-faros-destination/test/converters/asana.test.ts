@@ -1,4 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {generateBasicTestSuite, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';
@@ -8,8 +9,6 @@ import {Tags} from '../../src/converters/asana/tags';
 import {Tasks} from '../../src/converters/asana/tasks';
 import {TasksFull} from '../../src/converters/asana/tasks_full';
 import {Users} from '../../src/converters/asana/users';
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {generateBasicTestSuite} from '../../src/testing-tools/utils';
 
 describe('asana', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

@@ -1,7 +1,5 @@
 import {getLocal} from 'mockttp';
-
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
+import {destinationWriteTest, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 
 describe('googlecalendar', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

@@ -1,10 +1,10 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
+import {initMockttp} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';
 import {SurveysConfig} from '../../src/converters/abstract-surveys/surveys';
 import {Surveys} from '../../src/converters/sheets/surveys';
-import {initMockttp} from '../../src/testing-tools/testing-tools';
 
 describe('sheets', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

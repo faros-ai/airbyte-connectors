@@ -1,3 +1,4 @@
+import {CLI, initMockttp, read, tempConfig} from 'faros-airbyte-testing-tools';
 import {
   AirbyteConfig,
   AirbyteConnectionStatus,
@@ -10,8 +11,6 @@ import os from 'os';
 import {Edition, FarosDestinationRunner, InvalidRecordStrategy} from '../src';
 import {FarosDestination} from '../src/destination';
 import {FarosDestinationLogger} from '../src/destination-logger';
-import {CLI, read} from '../src/testing-tools/cli';
-import {initMockttp, tempConfig} from '../src/testing-tools/testing-tools';
 
 describe('index', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
