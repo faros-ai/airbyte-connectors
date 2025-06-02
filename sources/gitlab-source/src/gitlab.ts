@@ -82,8 +82,7 @@ export class GitLab {
       this.logger.error('Failed to fetch GitLab version: %s', err.message);
       throw new VError(
         err,
-        'GitLab authentication failed. Please check your API token and permissions: %s',
-        err.message
+        'GitLab authentication failed. Please check your API token and permissions'
       );
     }
   }
