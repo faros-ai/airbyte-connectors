@@ -60,9 +60,30 @@ export class GitLab {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.client.Version.show();
+      this.logger.debug(
+        'Verifying GitLab credentials by fetching version info'
+      );
+      const versionInfo = await this.client.Version.show();
+      if (versionInfo && typeof versionInfo === 'object') {
+        this.logger.debug(
+          'GitLab credentials verified. Version info: %j',
+          versionInfo
+        );
+      } else {
+        this.logger.error(
+          'GitLab version info response was not an object or was null: %s',
+          JSON.stringify(versionInfo)
+        );
+        throw new VError(
+          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid'
+        );
+      }
     } catch (err: any) {
-      throw new VError(err, 'Failed to connect to GitLab API');
+      this.logger.error('Failed to fetch GitLab version: %s', err.message);
+      throw new VError(
+        err,
+        'GitLab authentication failed. Please check your API token and permissions'
+      );
     }
   }
 
