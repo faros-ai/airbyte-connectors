@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "faros-airbyte-cdk": "*",
-    "googleapis": "^108.0.0",
+    "googleapis": "^149.0.0",
     "verror": "^1.10.1"
   },
   "jest": {
