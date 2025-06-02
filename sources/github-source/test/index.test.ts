@@ -1,15 +1,17 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec,
+  AirbyteSpec
+} from 'faros-airbyte-cdk';
+import {
   customStreamsTest,
   readResourceAsJSON,
   readTestResourceAsJSON,
   readTestResourceFile,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest,
-} from 'faros-airbyte-cdk';
+  sourceSchemaTest
+} from 'faros-airbyte-testing-tools';
 import {merge} from 'lodash';
 import VError from 'verror';
 

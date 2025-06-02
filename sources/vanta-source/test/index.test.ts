@@ -2,13 +2,15 @@ import axios, {AxiosInstance} from 'axios';
 import {
   AirbyteLogger,
   AirbyteLogLevel,
-  AirbyteSpec,
+  AirbyteSpec
+} from 'faros-airbyte-cdk';
+import {
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
   readResourceAsJSON,
-  readTestResourceAsJSON,
-} from 'faros-airbyte-cdk';
+  readTestResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {Vanta} from '../src/vanta';

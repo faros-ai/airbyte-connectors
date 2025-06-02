@@ -1,12 +1,14 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec,
+  AirbyteSpec
+} from 'faros-airbyte-cdk';
+import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest,
-} from 'faros-airbyte-cdk';
+  sourceSchemaTest
+} from 'faros-airbyte-testing-tools';
 import fs from 'fs-extra';
 
 import {GitLab} from '../src/gitlab';

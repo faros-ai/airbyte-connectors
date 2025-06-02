@@ -2,9 +2,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  readResourceAsJSON,
-  SyncMode,
+  SyncMode
 } from 'faros-airbyte-cdk';
+import {
+  readResourceAsJSON
+} from 'faros-airbyte-testing-tools';
 import path from 'path';
 import {VError} from 'verror';
 
