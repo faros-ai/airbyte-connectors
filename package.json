@@ -8,6 +8,7 @@
   "workspaces": [
     "faros-airbyte-cdk",
     "faros-airbyte-common",
+    "faros-airbyte-testing-tools",
     "destinations/*",
     "sources/*"
   ],
@@ -20,7 +21,8 @@
     "test-cov": "turbo run test-cov"
   },
   "dependencies": {
-    "faros-js-client": "^0.6.5"
+    "commander": "^13.1.0",
+    "faros-js-client": "^0.7.1"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.8",

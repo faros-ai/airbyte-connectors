@@ -1,4 +1,4 @@
-import {readTestResourceFile} from '../../src/testing-tools/testing-tools';
+import {readTestResourceFile} from 'faros-airbyte-testing-tools';
 
 export const githubLog = readTestResourceFile('github/streams.log');
 export const githubPGRawLog = readTestResourceFile('github/pg-raw.log');

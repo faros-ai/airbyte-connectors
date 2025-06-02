@@ -115,7 +115,6 @@ export abstract class AzurePipelineConverter extends Converter {
       case 'canceled':
         return {category: BuildStateCategory.Canceled, detail: result};
       case 'failed':
-      case 'skipped':
         return {category: BuildStateCategory.Failed, detail: result};
       case 'succeeded':
       case 'succeededWithIssues':

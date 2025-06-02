@@ -85,6 +85,46 @@
           }
         }
       }
+    },
+    "chat_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "editor": {
+            "type": "string"
+          },
+          "total_chats": {
+            "type": "number"
+          },
+          "total_chat_insertion_events": {
+            "type": "number"
+          },
+          "total_chat_copy_events": {
+            "type": "number"
+          },
+          "model_breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string"
+                },
+                "total_chats": {
+                  "type": "number"
+                },
+                "total_chat_insertion_events": {
+                  "type": "number"
+                },
+                "total_chat_copy_events": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -21,6 +21,7 @@ import {
   EnterpriseCopilotSeatsEmpty,
   EnterpriseCopilotSeatsResponse,
   EnterpriseCopilotUsageSummary,
+  EnterpriseCopilotUserEngagement,
   EnterpriseTeam,
   EnterpriseTeamMembership,
   EnterpriseTeamMembershipsResponse,
@@ -85,7 +86,7 @@ import {
   REVIEWS_FRAGMENT,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
-import {Utils} from 'faros-js-client';
+import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -94,7 +95,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
-  CopilotUsageResponse,
+  CopilotUserEngagementResponse,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -105,6 +106,7 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
+export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
@@ -132,12 +134,15 @@ export abstract class GitHub {
   protected readonly pageSize: number;
   protected readonly commitsPageSize: number;
   protected readonly pullRequestsPageSize: number;
+  protected readonly timeoutMs: number;
   protected readonly backfill: boolean;
   protected readonly fetchPullRequestDiffCoverage: boolean;
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
   protected readonly copilotMetricsTeams: ReadonlyArray<string>;
+  protected readonly skipReposWithoutRecentPush: boolean;
+  protected readonly startDate?: Date;
 
   constructor(
     config: GitHubConfig,
@@ -154,6 +159,7 @@ export abstract class GitHub {
     this.commitsPageSize = config.commits_page_size ?? DEFAULT_COMMIT_PAGE_SIZE;
     this.pullRequestsPageSize =
       config.pull_requests_page_size ?? DEFAULT_PR_PAGE_SIZE;
+    this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
     this.backfill = config.backfill ?? DEFAULT_BACKFILL;
     this.fetchPullRequestDiffCoverage =
       config.fetch_pull_request_diff_coverage ?? DEFAULT_FETCH_PR_DIFF_COVERAGE;
@@ -163,6 +169,10 @@ export abstract class GitHub {
     this.fetchPublicOrganizations =
       config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
     this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
+    this.skipReposWithoutRecentPush =
+      config.skip_repos_without_recent_push ??
+      DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
+    this.startDate = config.startDate;
   }
 
   static async instance(
@@ -223,6 +233,7 @@ export abstract class GitHub {
 
   @Memoize()
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
+    const reposWithoutRecentPush: string[] = [];
     const repos: Repository[] = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).repos.listForOrg,
@@ -236,6 +247,14 @@ export abstract class GitHub {
       for (const repo of res.data) {
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
+        }
+        const recentPush =
+          !this.skipReposWithoutRecentPush ||
+          (repo.pushed_at &&
+            this.startDate &&
+            Utils.toDate(repo.pushed_at).getTime() >= this.startDate.getTime());
+        if (!recentPush) {
+          reposWithoutRecentPush.push(repo.name);
         }
         const repository: Repository = {
           org,
@@ -251,8 +270,10 @@ export abstract class GitHub {
             'topics',
             'created_at',
             'updated_at',
+            'pushed_at',
             'archived',
           ]),
+          recentPush,
         };
         let languagesResponse:
           | GetResponseDataTypeFromEndpointMethod<
@@ -268,7 +289,7 @@ export abstract class GitHub {
           ).data;
         } catch (error: any) {
           this.logger.warn(
-            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status} $`
+            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
           );
         }
         repos.push({
@@ -280,6 +301,11 @@ export abstract class GitHub {
           }),
         });
       }
+    }
+    if (reposWithoutRecentPush.length > 0) {
+      this.logger.info(
+        `The following ${reposWithoutRecentPush.length} repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`
+      );
     }
     return repos;
   }
@@ -1033,6 +1059,7 @@ export abstract class GitHub {
               'updated_at',
               'pending_cancellation_date',
               'last_activity_at',
+              'plan_type',
             ]),
           } as CopilotSeat;
         }
@@ -1829,6 +1856,7 @@ export abstract class GitHub {
             'updated_at',
             'pending_cancellation_date',
             'last_activity_at',
+            'plan_type',
           ]),
         } as EnterpriseCopilotSeat;
       }
@@ -1925,6 +1953,54 @@ export abstract class GitHub {
     }
   }
 
+  async *getEnterpriseCopilotUserEngagement(
+    enterprise: string,
+    cutoffDate: number
+  ): AsyncGenerator<EnterpriseCopilotUserEngagement> {
+    const res: OctokitResponse<CopilotUserEngagementResponse> =
+      await this.baseOctokit.request(
+        this.baseOctokit.enterpriseCopilotUserEngagement,
+        {
+          enterprise,
+        }
+      );
+    const data = res.data;
+    if (isNil(data) || isEmpty(data)) {
+      this.logger.warn(
+        `No GitHub Copilot user engagement metrics found for enterprise ${enterprise}.`
+      );
+      return;
+    }
+    const latestDay = Math.max(
+      0,
+      ...data.map((record) => Utils.toDate(record.date).getTime())
+    );
+    if (latestDay <= cutoffDate) {
+      this.logger.info(
+        `GitHub Copilot user engagement metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+      );
+      return;
+    }
+    const axios = makeAxiosInstanceWithRetry({
+      maxContentLength: Infinity,
+      timeout: this.timeoutMs,
+    });
+    for (const record of data) {
+      const blob = await axios.get<string>(record.blob_uri);
+      const parsedLines = blob.data
+        .split('\n')
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line));
+      for (const parsedLine of parsedLines) {
+        yield {
+          enterprise,
+          date: record.date,
+          ...parsedLine,
+        };
+      }
+    }
+  }
+
   // GitHub GraphQL API may return partial data with a non 2xx status when
   // a particular record in a result list is not found (null) for some reason
   private async acceptPartialResponse<T>(
@@ -1994,7 +2070,21 @@ export class GitHubToken extends GitHub {
   }
 
   async checkConnection(): Promise<void> {
-    await this.baseOctokit.users.getAuthenticated();
+    const response = await this.baseOctokit.users.getAuthenticated();
+    const tokenType = this.determineTokenType(response.headers);
+    this.logger.info(`Using ${tokenType} GitHub token`);
+  }
+
+  private determineTokenType(headers: any): 'classic' | 'fine-grained' {
+    const oauthScopes = headers['x-oauth-scopes'];
+
+    if (oauthScopes && oauthScopes.trim().length > 0) {
+      // Classic token has scopes listed
+      return 'classic';
+    }
+
+    // Fine-grained token has empty or missing 'x-oauth-scopes'
+    return 'fine-grained';
   }
 
   async *getOrganizationsIterator(): AsyncGenerator<string> {
@@ -2139,7 +2229,7 @@ export class GitHubApp extends GitHub {
 
 function transformCopilotMetricsResponse(
   data: CopilotMetricsResponse
-): CopilotUsageResponse {
+): Omit<CopilotUsageSummary, 'org' | 'team'>[] {
   return data.map((d) => {
     const breakdown =
       d.copilot_ide_code_completions?.editors?.flatMap((e) => {
@@ -2150,6 +2240,15 @@ function transformCopilotMetricsResponse(
             lines_suggested: number;
             lines_accepted: number;
             active_users: number;
+            model_breakdown: {
+              [model: string]: {
+                suggestions_count: number;
+                acceptances_count: number;
+                lines_suggested: number;
+                lines_accepted: number;
+                active_users: number;
+              };
+            };
           };
         } = {};
         for (const m of e.models) {
@@ -2160,30 +2259,70 @@ function transformCopilotMetricsResponse(
               lines_suggested: 0,
               lines_accepted: 0,
               active_users: 0,
+              model_breakdown: {},
             });
             language.suggestions_count += l.total_code_suggestions;
             language.acceptances_count += l.total_code_acceptances;
             language.lines_suggested += l.total_code_lines_suggested;
             language.lines_accepted += l.total_code_lines_accepted;
             language.active_users += l.total_engaged_users;
+            language.model_breakdown[m.name] = {
+              suggestions_count: l.total_code_suggestions,
+              acceptances_count: l.total_code_acceptances,
+              lines_suggested: l.total_code_lines_suggested,
+              lines_accepted: l.total_code_lines_accepted,
+              active_users: l.total_engaged_users,
+            };
           }
         }
         return Object.entries(languages).map(([k, v]) => ({
           ...v,
           language: k,
           editor: e.name,
+          model_breakdown: Object.entries(v.model_breakdown).map(([k, v]) => ({
+            ...v,
+            model: k,
+          })),
         }));
       }) ?? [];
-    let total_chats = 0,
-      total_chat_insertion_events = 0,
-      total_chat_copy_events = 0;
-    for (const e of d.copilot_ide_chat?.editors ?? []) {
-      for (const m of e.models) {
-        total_chats += m.total_chats;
-        total_chat_insertion_events += m.total_chat_insertion_events;
-        total_chat_copy_events += m.total_chat_copy_events;
-      }
-    }
+    const chat_breakdown =
+      d.copilot_ide_chat?.editors?.map((e) => {
+        let chats = 0,
+          chat_insertion_events = 0,
+          chat_copy_events = 0,
+          active_chat_users = 0;
+        const model_breakdown: {
+          [model: string]: {
+            chats: number;
+            chat_insertion_events: number;
+            chat_copy_events: number;
+            active_chat_users: number;
+          };
+        } = {};
+        for (const m of e.models) {
+          chats += m.total_chats;
+          chat_insertion_events += m.total_chat_insertion_events;
+          chat_copy_events += m.total_chat_copy_events;
+          active_chat_users += m.total_engaged_users;
+          model_breakdown[m.name] = {
+            chats: m.total_chats,
+            chat_insertion_events: m.total_chat_insertion_events,
+            chat_copy_events: m.total_chat_copy_events,
+            active_chat_users: m.total_engaged_users,
+          };
+        }
+        return {
+          editor: e.name,
+          chats,
+          chat_insertion_events,
+          chat_copy_events,
+          active_chat_users,
+          model_breakdown: Object.entries(model_breakdown).map(([k, v]) => ({
+            ...v,
+            model: k,
+          })),
+        };
+      }) ?? [];
     return {
       day: d.date,
       total_suggestions_count: breakdown.reduce(
@@ -2203,11 +2342,18 @@ function transformCopilotMetricsResponse(
         0
       ),
       total_active_users: d.total_active_users,
-      total_chats,
-      total_chat_insertion_events,
-      total_chat_copy_events,
+      total_chats: chat_breakdown.reduce((acc, c) => acc + c.chats, 0),
+      total_chat_insertion_events: chat_breakdown.reduce(
+        (acc, c) => acc + c.chat_insertion_events,
+        0
+      ),
+      total_chat_copy_events: chat_breakdown.reduce(
+        (acc, c) => acc + c.chat_copy_events,
+        0
+      ),
       total_active_chat_users: d.copilot_ide_chat?.total_engaged_users ?? 0,
       breakdown,
+      chat_breakdown,
     };
   });
 }

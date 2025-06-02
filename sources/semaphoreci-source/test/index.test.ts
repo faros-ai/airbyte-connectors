@@ -5,7 +5,10 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
@@ -14,14 +17,6 @@ import {
   SemaphoreCI,
   UNAUTHORIZED_ERROR_MESSAGE,
 } from '../src/semaphoreci/semaphoreci';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 function generateLinkHeaders(first = 1, next = 0, last = 1): any {
   const baseLinkHeader = `<http://mock.com/api/v1alpha/pipelines?page=${first}>; rel="first", <http://mock.com/api/v1alpha/pipelines?page=${last}>; rel="last"`;
@@ -81,7 +76,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.SemaphoreCISource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -95,7 +90,7 @@ describe('index', () => {
 
       const source = new sut.SemaphoreCISource(logger);
       await expect(
-        source.checkConnection(readTestResourceFile('config.json'))
+        source.checkConnection(readTestFileAsJSON('config.json'))
       ).resolves.toStrictEqual([true, undefined]);
     });
 
@@ -108,7 +103,7 @@ describe('index', () => {
 
       const source = new sut.SemaphoreCISource(logger);
       await expect(
-        source.checkConnection(readTestResourceFile('invalid_config.json'))
+        source.checkConnection(readTestFileAsJSON('invalid_config.json'))
       ).resolves.toStrictEqual([false, new VError(UNAUTHORIZED_ERROR_MESSAGE)]);
     });
 
@@ -121,7 +116,7 @@ describe('index', () => {
 
       const source = new sut.SemaphoreCISource(logger);
       await expect(
-        source.checkConnection(readTestResourceFile('invalid_config.json'))
+        source.checkConnection(readTestFileAsJSON('invalid_config.json'))
       ).resolves.toStrictEqual([
         false,
         new VError(MISSING_OR_INVISIBLE_RESOURCE_ERROR_MESSAGE),
@@ -137,7 +132,7 @@ describe('index', () => {
 
       const source = new sut.SemaphoreCISource(logger);
       await expect(
-        source.checkConnection(readTestResourceFile('invalid_config.json'))
+        source.checkConnection(readTestFileAsJSON('invalid_config.json'))
       ).resolves.toStrictEqual([
         false,
         new VError('SemaphoreCI API request failed: Error Message'),
@@ -153,12 +148,12 @@ describe('index', () => {
         SemaphoreCI.instance = jest.fn().mockImplementation(() =>
           makeSemaphoreCI({
             get: restClient.mockResolvedValue({
-              data: readTestResourceFile('projects.json'),
+              data: readTestFileAsJSON('projects.json'),
             }),
           })
         );
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const projectsStreams = streams[0];
         const projectsIter = projectsStreams.readRecords(SyncMode.FULL_REFRESH);
@@ -169,7 +164,7 @@ describe('index', () => {
 
         expect(restClient).toHaveBeenCalledTimes(1);
         expect(JSON.parse(JSON.stringify(projects))).toStrictEqual(
-          readTestResourceFile('projects.json')
+          readTestFileAsJSON('projects.json')
         );
       });
 
@@ -180,14 +175,14 @@ describe('index', () => {
           makeSemaphoreCI(
             {
               get: restClient.mockResolvedValue({
-                data: readTestResourceFile('projects.json'),
+                data: readTestFileAsJSON('projects.json'),
               }),
             },
             ['8c3aa2ea-8c59-4b10-83f5-d078cf788adb']
           )
         );
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const projectsStreams = streams[0];
         const projectsIter = projectsStreams.readRecords(SyncMode.FULL_REFRESH);
@@ -198,7 +193,7 @@ describe('index', () => {
 
         expect(restClient).toHaveBeenCalledTimes(1);
         expect(JSON.parse(JSON.stringify(projects))).toStrictEqual(
-          readTestResourceFile('projects-filtered.json')
+          readTestFileAsJSON('projects-filtered.json')
         );
       });
     });
@@ -211,50 +206,50 @@ describe('index', () => {
           makeSemaphoreCI({
             get: restClient
               .mockResolvedValueOnce({
-                data: readTestResourceFile('projects.json'),
+                data: readTestFileAsJSON('projects.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines.json'),
+                data: readTestFileAsJSON('pipelines.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines-detailed.json'),
+                data: readTestFileAsJSON('pipelines-detailed.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[0],
+                data: readTestFileAsJSON('jobs-detailed.json')[0],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[1],
+                data: readTestFileAsJSON('jobs-detailed.json')[1],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[2],
+                data: readTestFileAsJSON('jobs-detailed.json')[2],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines-detailed.json'),
+                data: readTestFileAsJSON('pipelines-detailed.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[0],
+                data: readTestFileAsJSON('jobs-detailed.json')[0],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[1],
+                data: readTestFileAsJSON('jobs-detailed.json')[1],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[2],
+                data: readTestFileAsJSON('jobs-detailed.json')[2],
                 headers: generateLinkHeaders(),
               }),
           })
         );
 
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const pipelinesStreams = streams[1];
         const pipelineIter = pipelinesStreams.readRecords(
@@ -275,7 +270,7 @@ describe('index', () => {
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual(
-          readTestResourceFile('pipelines-converted.json')
+          readTestFileAsJSON('pipelines-converted.json')
         );
       });
 
@@ -287,27 +282,27 @@ describe('index', () => {
             {
               get: restClient
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('projects.json'),
+                  data: readTestFileAsJSON('projects.json'),
                   headers: generateLinkHeaders(),
                 })
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('pipelines.json'),
+                  data: readTestFileAsJSON('pipelines.json'),
                   headers: generateLinkHeaders(),
                 })
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('pipelines-detailed.json'),
+                  data: readTestFileAsJSON('pipelines-detailed.json'),
                   headers: generateLinkHeaders(),
                 })
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('jobs-detailed.json')[0],
+                  data: readTestFileAsJSON('jobs-detailed.json')[0],
                   headers: generateLinkHeaders(),
                 })
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('jobs-detailed.json')[1],
+                  data: readTestFileAsJSON('jobs-detailed.json')[1],
                   headers: generateLinkHeaders(),
                 })
                 .mockResolvedValueOnce({
-                  data: readTestResourceFile('jobs-detailed.json')[2],
+                  data: readTestFileAsJSON('jobs-detailed.json')[2],
                   headers: generateLinkHeaders(),
                 }),
             },
@@ -317,7 +312,7 @@ describe('index', () => {
         );
 
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const pipelinesStreams = streams[1];
         const pipelineIter = pipelinesStreams.readRecords(
@@ -338,7 +333,7 @@ describe('index', () => {
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual([
-          readTestResourceFile('pipelines-converted.json')[0],
+          readTestFileAsJSON('pipelines-converted.json')[0],
         ]);
       });
 
@@ -349,34 +344,34 @@ describe('index', () => {
           makeSemaphoreCI({
             get: restClient
               .mockResolvedValueOnce({
-                data: readTestResourceFile('projects.json'),
+                data: readTestFileAsJSON('projects.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: [readTestResourceFile('pipelines.json')[0]],
+                data: [readTestFileAsJSON('pipelines.json')[0]],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('pipelines-detailed.json'),
+                data: readTestFileAsJSON('pipelines-detailed.json'),
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[0],
+                data: readTestFileAsJSON('jobs-detailed.json')[0],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[1],
+                data: readTestFileAsJSON('jobs-detailed.json')[1],
                 headers: generateLinkHeaders(),
               })
               .mockResolvedValueOnce({
-                data: readTestResourceFile('jobs-detailed.json')[2],
+                data: readTestFileAsJSON('jobs-detailed.json')[2],
                 headers: generateLinkHeaders(),
               }),
           })
         );
 
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const pipelinesStreams = streams[1];
         const pipelineIter = pipelinesStreams.readRecords(
@@ -397,7 +392,7 @@ describe('index', () => {
           'pipelines?page=1&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86&branch_name=main'
         );
         expect(pipelines).toStrictEqual([
-          readTestResourceFile('pipelines-converted.json')[0],
+          readTestFileAsJSON('pipelines-converted.json')[0],
         ]);
       });
 
@@ -405,79 +400,79 @@ describe('index', () => {
         const restClient = jest.fn();
         const mockGet = restClient
           .mockResolvedValueOnce({
-            data: readTestResourceFile('projects.json'),
+            data: readTestFileAsJSON('projects.json'),
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines.json'),
+            data: readTestFileAsJSON('pipelines.json'),
             headers: generateLinkHeaders(1, 2, 2),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines.json'),
+            data: readTestFileAsJSON('pipelines.json'),
             headers: generateLinkHeaders(1, 0, 2),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines-detailed.json'),
+            data: readTestFileAsJSON('pipelines-detailed.json'),
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[0],
+            data: readTestFileAsJSON('jobs-detailed.json')[0],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[1],
+            data: readTestFileAsJSON('jobs-detailed.json')[1],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[2],
+            data: readTestFileAsJSON('jobs-detailed.json')[2],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines-detailed.json'),
+            data: readTestFileAsJSON('pipelines-detailed.json'),
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[0],
+            data: readTestFileAsJSON('jobs-detailed.json')[0],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[1],
+            data: readTestFileAsJSON('jobs-detailed.json')[1],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[2],
+            data: readTestFileAsJSON('jobs-detailed.json')[2],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines-detailed.json'),
+            data: readTestFileAsJSON('pipelines-detailed.json'),
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[0],
+            data: readTestFileAsJSON('jobs-detailed.json')[0],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[1],
+            data: readTestFileAsJSON('jobs-detailed.json')[1],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[2],
+            data: readTestFileAsJSON('jobs-detailed.json')[2],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('pipelines-detailed.json'),
+            data: readTestFileAsJSON('pipelines-detailed.json'),
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[0],
+            data: readTestFileAsJSON('jobs-detailed.json')[0],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[1],
+            data: readTestFileAsJSON('jobs-detailed.json')[1],
             headers: generateLinkHeaders(),
           })
           .mockResolvedValueOnce({
-            data: readTestResourceFile('jobs-detailed.json')[2],
+            data: readTestFileAsJSON('jobs-detailed.json')[2],
             headers: generateLinkHeaders(),
           });
 
@@ -488,7 +483,7 @@ describe('index', () => {
         );
 
         const source = new sut.SemaphoreCISource(logger);
-        const streams = source.streams(readTestResourceFile('config.json'));
+        const streams = source.streams(readTestFileAsJSON('config.json'));
 
         const pipelinesStreams = streams[1];
         const pipelineIter = pipelinesStreams.readRecords(
@@ -514,8 +509,8 @@ describe('index', () => {
           'pipelines?page=2&project_id=bea7e6ed-911e-4172-80f8-7ab58b541a86'
         );
         expect(pipelines).toStrictEqual([
-          ...readTestResourceFile('pipelines-converted.json'),
-          ...readTestResourceFile('pipelines-converted.json'),
+          ...readTestFileAsJSON('pipelines-converted.json'),
+          ...readTestFileAsJSON('pipelines-converted.json'),
         ]);
       });
     });

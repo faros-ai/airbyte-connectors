@@ -4,11 +4,12 @@ import {isNil} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Common} from '../common/common';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {
-  ServiceNowConverter,
-} from './common';
-import { IncidentPriorityCategory, IncidentSeverityCategory } from '../common/ims';
+  IncidentPriorityCategory,
+  IncidentSeverityCategory,
+} from '../common/ims';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {ServiceNowConverter} from './common';
 
 enum IncidentStatusCategory {
   Created = 'Created',
@@ -254,7 +255,10 @@ export class Incidents extends ServiceNowConverter {
     if (priority) {
       switch (priority) {
         case '1':
-          return {category: IncidentPriorityCategory.Critical, detail: priority};
+          return {
+            category: IncidentPriorityCategory.Critical,
+            detail: priority,
+          };
         case '2':
           return {category: IncidentPriorityCategory.High, detail: priority};
         case '3':

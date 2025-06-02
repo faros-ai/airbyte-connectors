@@ -75,6 +75,7 @@ export class IssueTransformer {
       }
 
       for (const change of assigneeChanges) {
+        // TODO: Review handling unassignment
         const assignee = {uid: change.value, assignedAt: change.changed};
         assigneeChangelog.push(assignee);
       }
@@ -407,7 +408,7 @@ export class IssueTransformer {
       item.fields.assignee?.key ||
       item.fields.assignee?.name;
 
-    const changelog: any[] = item.changelog?.histories || [];
+    const changelog: any[] = item.changelog?.histories ?? [];
     changelog.sort((e1, e2) => {
       // Sort changes from least to most recent
       const created1 = +(Utils.toDate(e1.created) || new Date(0));
@@ -542,15 +543,22 @@ export class IssueTransformer {
   /**
    * Check for existence of the members 'value', 'name' and then
    * 'displayName'in that order and return when one is found
-   * (or undefined if none).
+   * (or undefined if none). For cascading fields, returns both parent
+   * and child values formatted as "Parent - Child".
    *
    * @param jsonValue The object whose members should be considered
-   * @returns         The value, name or displayName within the object
+   * @returns         The value, name or displayName within the object,
+   *                  or a formatted string for cascading fields
    */
   retrieveFieldValue(jsonValue: any): any | undefined {
     let val;
     if (jsonValue?.value != null) {
       val = jsonValue.value;
+
+      // Check for child value in cascading fields
+      if (jsonValue.child?.value != null) {
+        val = `${val} - ${jsonValue.child.value}`; // Format as "Parent - Child"
+      }
     } else if (jsonValue?.name != null) {
       val = jsonValue.name;
     } else if (jsonValue?.displayName != null) {

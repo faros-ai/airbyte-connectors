@@ -8142,6 +8142,7 @@ export type PullRequestReviewRequestsQuery = {
       reviewRequests?: {
         pageInfo: {hasNextPage: boolean; endCursor?: string | null};
         nodes?: Array<{
+          asCodeOwner: boolean;
           requestedReviewer?:
             | {type: 'Bot'}
             | {login: string; html_url: string; type: 'Mannequin'}
@@ -8413,6 +8414,7 @@ export type PullRequestsQuery = {
         reviewRequests?: {
           pageInfo: {hasNextPage: boolean; endCursor?: string | null};
           nodes?: Array<{
+            asCodeOwner: boolean;
             requestedReviewer?:
               | {type: 'Bot'}
               | {login: string; html_url: string; type: 'Mannequin'}
@@ -8500,6 +8502,7 @@ export type ReviewFieldsFragment = {
 };
 
 export type ReviewRequestFieldsFragment = {
+  asCodeOwner: boolean;
   requestedReviewer?:
     | {type: 'Bot'}
     | {login: string; html_url: string; type: 'Mannequin'}
@@ -8522,6 +8525,7 @@ export type ReviewRequestsFragment = {
   reviewRequests?: {
     pageInfo: {hasNextPage: boolean; endCursor?: string | null};
     nodes?: Array<{
+      asCodeOwner: boolean;
       requestedReviewer?:
         | {type: 'Bot'}
         | {login: string; html_url: string; type: 'Mannequin'}

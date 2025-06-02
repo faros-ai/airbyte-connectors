@@ -1,7 +1,9 @@
+import {
+  destinationWriteTest,
+  initMockttp,
+  sourceSpecificTempConfig,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
-
-import {initMockttp, sourceSpecificTempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('clickup', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

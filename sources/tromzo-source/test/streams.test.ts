@@ -3,15 +3,12 @@ import {
   AirbyteSourceLogger,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {readTestFileAsJSON} from 'faros-airbyte-testing-tools';
 import {Utils} from 'faros-js-client';
-import fs from 'fs-extra';
+import fs from 'fs';
 
 import * as sut from '../src/index';
 import {Tromzo} from '../src/tromzo';
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 function readQueryFile(fileName: string): string {
   return fs.readFileSync(`resources/queries/${fileName}`, 'utf8');
@@ -38,7 +35,7 @@ describe('streams', () => {
     syncMode: SyncMode = SyncMode.FULL_REFRESH
   ): Promise<void> {
     const postFn = jest.fn().mockResolvedValue({
-      data: readTestResourceFile('findings.json'),
+      data: readTestFileAsJSON('findings.json'),
     });
 
     Tromzo.instance = jest.fn().mockImplementation(() => {

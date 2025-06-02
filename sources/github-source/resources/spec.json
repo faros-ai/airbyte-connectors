@@ -339,8 +339,15 @@
         "description": "Fetch public organizations",
         "default": false
       },
-      "copilot_metrics_teams": {
+      "skip_repos_without_recent_push": {
         "order": 33,
+        "type": "boolean",
+        "title": "Skip Repositories Without Recent Push",
+        "description": "Skip repositories without recent push. Being recent depends on cutoff_days / start_date configuration.",
+        "default": false
+      },
+      "copilot_metrics_teams": {
+        "order": 34,
         "type": "array",
         "title": "Copilot Metrics Teams",
         "description": "List of teams to fetch Copilot metrics for. If not specified, all teams for the organization/enterprise will be fetched.",
@@ -349,7 +356,7 @@
         }
       },
       "proxy_url": {
-        "order": 34,
+        "order": 35,
         "type": "string",
         "title": "Proxy URL",
         "description": "Proxy URL to use for the GitHub API"

@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.465.0",
-    "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
     "lodash": "^4.17.21",
     "verror": "^1.10.1"
@@ -54,5 +53,8 @@
     "snapshotFormat": {
       "printBasicPrototype": true
     }
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
   }
 }

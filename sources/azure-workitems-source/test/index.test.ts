@@ -2,11 +2,14 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  sourceCheckTest,
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+  sourceCheckTest,
+} from 'faros-airbyte-testing-tools';
 
 import {AzureWorkitems} from '../src/azure-workitems';
 import * as sut from '../src/index';
@@ -30,24 +33,16 @@ describe('index', () => {
     AzureWorkitems.instance = azureWorkitem;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
-
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
-
   test('spec', async () => {
     const source = new sut.AzureWorkitemsSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
   test('check connection - valid config', async () => {
     AzureWorkitems.instance = jest.fn().mockImplementation(() => {
-      const projectsResource: any[] = readTestResourceFile('projects.json');
+      const projectsResource: any[] = readTestFileAsJSON('projects.json');
       return new AzureWorkitems(
         {
           core: {
@@ -92,11 +87,11 @@ describe('index', () => {
           wit: {
             getClassificationNode: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('iterations_root.json')),
+              .mockResolvedValue(readTestFileAsJSON('iterations_root.json')),
             getClassificationNodes: jest
               .fn()
               .mockResolvedValueOnce([
-                readTestResourceFile('iterations_node_3.json'),
+                readTestFileAsJSON('iterations_node_3.json'),
               ]),
           },
         } as unknown as AzureDevOpsClient,
@@ -150,19 +145,19 @@ describe('index', () => {
             getFields: jest.fn().mockResolvedValue(fieldReferences),
             getWorkItems: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('workitems.json').value),
+              .mockResolvedValue(readTestFileAsJSON('workitems.json').value),
             getWorkItemTypeStates: jest
               .fn()
               .mockResolvedValue(
-                readTestResourceFile('workitem_states.json').value
+                readTestFileAsJSON('workitem_states.json').value
               ),
             getUpdates: jest
               .fn()
               .mockResolvedValue(
-                readTestResourceFile('workitem_updates.json').value
+                readTestFileAsJSON('workitem_updates.json').value
               ),
             queryByWiql: workitemIdsFunc.mockResolvedValue(
-              readTestResourceFile('workitem_ids.json')
+              readTestFileAsJSON('workitem_ids.json')
             ),
           },
         } as unknown as AzureDevOpsClient,
@@ -224,19 +219,19 @@ describe('index', () => {
             getFields: jest.fn().mockResolvedValue(fieldReferences),
             getWorkItems: jest
               .fn()
-              .mockResolvedValue(readTestResourceFile('workitems.json').value),
+              .mockResolvedValue(readTestFileAsJSON('workitems.json').value),
             getWorkItemTypeStates: jest
               .fn()
               .mockResolvedValue(
-                readTestResourceFile('workitem_states.json').value
+                readTestFileAsJSON('workitem_states.json').value
               ),
             getUpdates: jest
               .fn()
               .mockResolvedValue(
-                readTestResourceFile('workitem_updates.json').value
+                readTestFileAsJSON('workitem_updates.json').value
               ),
             queryByWiql: workitemIdsFunc.mockResolvedValue(
-              readTestResourceFile('workitem_ids.json')
+              readTestFileAsJSON('workitem_ids.json')
             ),
           },
         } as unknown as AzureDevOpsClient,
@@ -256,7 +251,7 @@ describe('index', () => {
       undefined,
       {name: 'test', id: '123'},
       {
-        '123': {
+        test: {
           cutoff: dateT,
         },
       }

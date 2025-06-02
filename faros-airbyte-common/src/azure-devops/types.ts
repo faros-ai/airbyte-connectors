@@ -3,7 +3,6 @@ import {IBuildApi} from 'azure-devops-node-api/BuildApi';
 import {ICoreApi} from 'azure-devops-node-api/CoreApi';
 import {IGitApi} from 'azure-devops-node-api/GitApi';
 import {
-  Build as BaseBuild,
   BuildArtifact,
   BuildRepository,
   TimelineRecord as BaseTimelineRecord,
@@ -52,6 +51,7 @@ export interface AzureDevOpsClient {
   readonly release: IReleaseApi;
   readonly test: ITestApi;
   readonly rest: AxiosInstance;
+  readonly graph: AxiosInstance;
 }
 
 export type User = GraphUser | IdentityRef;
@@ -64,15 +64,6 @@ export interface GraphUserResponse {
 export interface Pipeline extends BasePipeline {
   project: ProjectReference;
 }
-// Ensure Build reason, status, and result enums are strings
-export interface Build extends Omit<BaseBuild, 'reason' | 'status' | 'result'> {
-  artifacts: BuildArtifact[];
-  coverageStats: CodeCoverageStatistics[];
-  jobs: TimelineRecord[];
-  reason: string;
-  status: string;
-  result: string;
-}
 
 // Ensure enums are strings
 export interface Run extends Omit<BaseRun, 'result' | 'state'> {
@@ -83,9 +74,8 @@ export interface Run extends Omit<BaseRun, 'result' | 'state'> {
   // Enherited from Build interface
   artifacts: BuildArtifact[];
   coverageStats: CodeCoverageStatistics[];
-  jobs: TimelineRecord[];
   stages: TimelineRecord[];
-  queueTime?: Date;
+  startTime?: Date;
   repository: BuildRepository;
   reason: string;
   sourceBranch?: string;
@@ -153,7 +143,7 @@ export interface WorkItemRevisions {
 export interface WorkItemWithRevisions extends WorkItem {
   revisions: WorkItemRevisions;
   additionalFields: ReadonlyArray<AdditionalField>;
-  projectId: string;
+  project: ProjectReference;
 }
 
 export interface AdditionalField {

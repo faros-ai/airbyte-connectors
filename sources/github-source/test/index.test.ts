@@ -2,13 +2,16 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+} from 'faros-airbyte-cdk';
+import {
   customStreamsTest,
+  readResourceAsJSON,
   readTestResourceAsJSON,
+  readTestResourceFile,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
-} from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+} from 'faros-airbyte-testing-tools';
 import {merge} from 'lodash';
 import VError from 'verror';
 
@@ -21,10 +24,6 @@ import {
   graphqlMockedImplementation,
   setupGitHubInstance,
 } from './utils';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -44,7 +43,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -342,6 +341,35 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - repositories with skip repos without recent push', async () => {
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      skip_repos_without_recent_push: true,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    };
+    const repositories = readTestResourceAsJSON(
+      'repositories/repositories-multiple.json'
+    );
+    repositories[0].pushed_at = new Date().toISOString();
+    await sourceReadTest({
+      source,
+      configOrPath: config,
+      catalogOrPath: 'repositories/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getRepositoriesMockedImplementation(repositories),
+          logger,
+          config
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(repositories.length);
+        expect(records[0].recentPush).toBe(true);
+        expect(records[1].recentPush).toBe(false);
       },
     });
   });
@@ -1155,6 +1183,61 @@ describe('index', () => {
     });
   });
 
+  test('streams - enterprise copilot user engagement', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseCopilotUserEngagementMockedImplementation(
+            readTestResourceAsJSON(
+              'enterprise_copilot_user_engagement/response.json'
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
+          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot user engagement already up-to-date', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
+      stateOrPath: {
+        faros_enterprise_copilot_user_engagement: {
+          github: {cutoff: new Date('2025-01-01').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseCopilotUserEngagementMockedImplementation(
+            readTestResourceAsJSON(
+              'enterprise_copilot_user_engagement/response.json'
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
+          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(0);
+      },
+    });
+  });
+
   test('onBeforeRead with run_mode Custom streams without filtering', async () => {
     await customStreamsTest(
       source,
@@ -1362,3 +1445,18 @@ const getEnterpriseCopilotMetricsMockedImplementation = (res: any) => ({
 const getEnterpriseCopilotMetricsForTeamMockedImplementation = (res: any) => ({
   enterpriseCopilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
 });
+
+const getEnterpriseCopilotUserEngagementMockedImplementation = (res: any) => ({
+  enterpriseCopilotUserEngagement: jest.fn().mockReturnValue({data: res}),
+});
+
+const getEnterpriseCopilotUserEngagementBlobMockedImplementation = (
+  res: any
+) => {
+  const mockAxiosInstance = {
+    get: jest.fn().mockResolvedValue({data: res}),
+  };
+  jest
+    .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
+    .mockReturnValue(mockAxiosInstance);
+};

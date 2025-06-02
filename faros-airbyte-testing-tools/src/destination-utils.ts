@@ -7,7 +7,8 @@ import {getLocal} from 'mockttp';
 import {Dictionary} from 'ts-essentials';
 
 import {CLI, read, readLines} from './cli';
-import {initMockttp, readTestResourceFile, tempConfig} from './testing-tools';
+import {initMockttp, tempConfig} from './destination-testing-tools';
+import {readTestResourceFile} from './testing-tools';
 
 export interface DestinationWriteTestOptions {
   configPath: string;

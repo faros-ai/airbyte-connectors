@@ -118,6 +118,13 @@
         },
         "title": "Flex Field User Lookup Names",
         "description": "Optional list of flex field names to be treated as user lookup refs, so that the users stream fetches their full details."
+      },
+      "rate_limit_per_minute": {
+        "order": 15,
+        "type": "integer",
+        "title": "Rate Limit Per Minute",
+        "description": "Maximum number of API calls per minute to avoid overloading the Wolken API.",
+        "default": 200
       }
     }
   }

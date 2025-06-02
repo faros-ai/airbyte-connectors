@@ -1,0 +1,6 @@
+{
+  "authentication": {
+    "type": "token",
+    "personal_access_token": "test-token"
+  }
+}

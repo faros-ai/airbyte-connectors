@@ -4,19 +4,14 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import * as sut from '../src/index';
 import {Workday} from '../src/workday';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 const test_base_url = 'https://testurl.com';
 
@@ -39,9 +34,9 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const config_tkn = readTestResourceFile('config_tokens.json');
-  const config_unpw = readTestResourceFile('config_unpw.json');
-  const config_unpw_csv = readTestResourceFile('config_unpw_csv.json');
+  const config_tkn = readTestFileAsJSON('config_tokens.json');
+  const config_unpw = readTestFileAsJSON('config_unpw.json');
+  const config_unpw_csv = readTestFileAsJSON('config_unpw_csv.json');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,7 +49,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.WorkdaySource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -83,7 +78,7 @@ describe('index', () => {
         logger,
         {
           get: jest.fn().mockResolvedValue({
-            data: readTestResourceFile('workers.json'),
+            data: readTestFileAsJSON('workers.json'),
           }),
         } as any,
         20
@@ -102,7 +97,7 @@ describe('index', () => {
         logger,
         {
           get: jest.fn().mockResolvedValue({
-            data: readTestResourceFile('workers.json'),
+            data: readTestFileAsJSON('workers.json'),
           }),
         } as any,
         20
@@ -117,7 +112,7 @@ describe('index', () => {
 
   test('streams - orgs', async () => {
     const fnListOrgs = jest.fn();
-    const expected = readTestResourceFile('orgs.json');
+    const expected = readTestFileAsJSON('orgs.json');
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
@@ -143,7 +138,7 @@ describe('index', () => {
 
   test('streams - people', async () => {
     const fnListOrgs = jest.fn();
-    const expected = readTestResourceFile('people.json');
+    const expected = readTestFileAsJSON('people.json');
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
@@ -169,7 +164,7 @@ describe('index', () => {
 
   test('streams - workers', async () => {
     const fnListOrgs = jest.fn();
-    const expected = readTestResourceFile('workers.json');
+    const expected = readTestFileAsJSON('workers.json');
     const limit = 2;
 
     Workday.instance = jest.fn().mockImplementation(() => {
@@ -194,7 +189,7 @@ describe('index', () => {
   });
   test('streams - customReports (json)', async () => {
     const fnCustomreports = jest.fn();
-    const expected = readTestResourceFile('customreports.json');
+    const expected = readTestFileAsJSON('customreports.json');
 
     Workday.instance = jest.fn().mockImplementation(() => {
       return new Workday(
@@ -222,8 +217,8 @@ describe('index', () => {
 
   test('streams - customReports (csv)', async () => {
     const fnCustomreports = jest.fn();
-    const expected = readTestResourceFile('customreports.json');
-    const csv_data = readTestResourceFile('customreports_csv.json');
+    const expected = readTestFileAsJSON('customreports.json');
+    const csv_data = readTestFileAsJSON('customreports_csv.json');
 
     Workday.instance = jest.fn().mockImplementation(() => {
       return new Workday(

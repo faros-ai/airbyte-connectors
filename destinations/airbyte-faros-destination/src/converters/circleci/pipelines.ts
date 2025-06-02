@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Pipeline} from 'faros-airbyte-common/circleci';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
-import {Pipeline} from 'faros-airbyte-common/circleci';
 
 export class Pipelines extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

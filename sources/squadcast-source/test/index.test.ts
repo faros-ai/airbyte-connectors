@@ -4,7 +4,10 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+} from 'faros-airbyte-testing-tools';
 import nock from 'nock';
 import {VError} from 'verror';
 
@@ -12,14 +15,6 @@ import * as sut from '../src/index';
 import {AUTH_URL, Squadcast} from '../src/squadcast';
 
 const SquadcastInstance = Squadcast.instance;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -36,7 +31,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.SquadcastSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -100,9 +95,9 @@ describe('index', () => {
               data: {data: {events: []}, incidents: []},
             };
             if (isPathMatchEvents)
-              res.data.data.events = readTestResourceFile('events.json');
+              res.data.data.events = readTestFileAsJSON('events.json');
             if (isPathMatchIncidents)
-              res.data.incidents = readTestResourceFile('incidents.json');
+              res.data.incidents = readTestFileAsJSON('incidents.json');
             if (isPathMatchTeams) res.data.data = [{id: 'test-team-id'}];
 
             return res;
@@ -123,7 +118,7 @@ describe('index', () => {
     }
 
     expect(fnEventsFunc).toHaveBeenCalledTimes(6);
-    expect(events).toStrictEqual(readTestResourceFile('events.json'));
+    expect(events).toStrictEqual(readTestFileAsJSON('events.json'));
   });
 
   test('streams - incidents, use full_refresh sync mode', async () => {
@@ -136,7 +131,7 @@ describe('index', () => {
             const isPathMatch = /^incidents\/export/.test(path);
             if (isPathMatch) {
               return {
-                data: {incidents: readTestResourceFile('incidents.json')},
+                data: {incidents: readTestFileAsJSON('incidents.json')},
               };
             }
           }),
@@ -157,7 +152,7 @@ describe('index', () => {
     }
 
     expect(fnIncidentsFunc).toHaveBeenCalledTimes(1);
-    expect(incidents).toStrictEqual(readTestResourceFile('incidents.json'));
+    expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
   test('streams - services, use full_refresh sync mode', async () => {
@@ -167,7 +162,7 @@ describe('index', () => {
       return new Squadcast(
         {
           get: fnServicesFunc.mockResolvedValue({
-            data: {data: readTestResourceFile('services.json')},
+            data: {data: readTestFileAsJSON('services.json')},
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -186,7 +181,7 @@ describe('index', () => {
     }
 
     expect(fnServicesFunc).toHaveBeenCalledTimes(1);
-    expect(services).toStrictEqual(readTestResourceFile('services.json'));
+    expect(services).toStrictEqual(readTestFileAsJSON('services.json'));
   });
 
   test('streams - services filtered', async () => {
@@ -196,7 +191,7 @@ describe('index', () => {
       return new Squadcast(
         {
           get: fnServicesFunc.mockResolvedValue({
-            data: {data: readTestResourceFile('services.json')},
+            data: {data: readTestFileAsJSON('services.json')},
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -215,7 +210,7 @@ describe('index', () => {
     }
 
     expect(fnServicesFunc).toHaveBeenCalledTimes(1);
-    expect(services).toStrictEqual(readTestResourceFile('services.json'));
+    expect(services).toStrictEqual(readTestFileAsJSON('services.json'));
   });
 
   test('streams - services all filtered out', async () => {
@@ -225,7 +220,7 @@ describe('index', () => {
       return new Squadcast(
         {
           get: fnServicesFunc.mockResolvedValue({
-            data: {data: readTestResourceFile('services.json')},
+            data: {data: readTestFileAsJSON('services.json')},
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -254,7 +249,7 @@ describe('index', () => {
       return new Squadcast(
         {
           get: fnUsersFunc.mockResolvedValue({
-            data: {data: readTestResourceFile('users.json')},
+            data: {data: readTestFileAsJSON('users.json')},
           }),
         } as any,
         new Date('2010-03-27T14:03:51-0800'),
@@ -273,6 +268,6 @@ describe('index', () => {
     }
 
     expect(fnUsersFunc).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 });

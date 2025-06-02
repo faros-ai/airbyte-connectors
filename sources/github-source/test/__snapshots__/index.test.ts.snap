@@ -360,6 +360,7 @@ exports[`index streams - copilot seats 1`] = `
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": null,
+    "plan_type": "enterprise",
     "startedAt": "2021-08-04T00:00:00.000Z",
     "team": "justice-league",
     "updated_at": "2021-09-23T15:00:00-06:00",
@@ -375,6 +376,7 @@ exports[`index streams - copilot seats 1`] = `
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "org": "github",
     "pending_cancellation_date": "2021-11-01",
+    "plan_type": "enterprise",
     "startedAt": "2021-09-24T00:00:00.000Z",
     "team": undefined,
     "updated_at": "2021-09-23T15:00:00-06:00",
@@ -394,6 +396,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -403,6 +423,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -412,6 +450,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -421,7 +469,42 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
+      },
+    ],
+    "chat_breakdown": [
+      {
+        "active_chat_users": 13,
+        "chat_copy_events": 19,
+        "chat_insertion_events": 23,
+        "chats": 55,
+        "editor": "vscode",
+        "model_breakdown": [
+          {
+            "active_chat_users": 12,
+            "chat_copy_events": 16,
+            "chat_insertion_events": 12,
+            "chats": 45,
+            "model": "default",
+          },
+          {
+            "active_chat_users": 1,
+            "chat_copy_events": 3,
+            "chat_insertion_events": 11,
+            "chats": 10,
+            "model": "a-custom-model",
+          },
+        ],
       },
     ],
     "day": "2024-06-24",
@@ -446,6 +529,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -455,6 +556,24 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -464,6 +583,16 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -473,7 +602,42 @@ exports[`index streams - copilot usage with teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
+      },
+    ],
+    "chat_breakdown": [
+      {
+        "active_chat_users": 13,
+        "chat_copy_events": 19,
+        "chat_insertion_events": 23,
+        "chats": 55,
+        "editor": "vscode",
+        "model_breakdown": [
+          {
+            "active_chat_users": 12,
+            "chat_copy_events": 16,
+            "chat_insertion_events": 12,
+            "chats": 45,
+            "model": "default",
+          },
+          {
+            "active_chat_users": 1,
+            "chat_copy_events": 3,
+            "chat_insertion_events": 11,
+            "chats": 10,
+            "model": "a-custom-model",
+          },
+        ],
       },
     ],
     "day": "2024-06-24",
@@ -503,6 +667,24 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -512,6 +694,24 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -521,6 +721,16 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -530,7 +740,42 @@ exports[`index streams - copilot usage without teams (GA API) 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
+      },
+    ],
+    "chat_breakdown": [
+      {
+        "active_chat_users": 13,
+        "chat_copy_events": 19,
+        "chat_insertion_events": 23,
+        "chats": 55,
+        "editor": "vscode",
+        "model_breakdown": [
+          {
+            "active_chat_users": 12,
+            "chat_copy_events": 16,
+            "chat_insertion_events": 12,
+            "chats": 45,
+            "model": "default",
+          },
+          {
+            "active_chat_users": 1,
+            "chat_copy_events": 3,
+            "chat_insertion_events": 11,
+            "chats": 10,
+            "model": "a-custom-model",
+          },
+        ],
       },
     ],
     "day": "2024-06-24",
@@ -790,6 +1035,7 @@ exports[`index streams - enterprise copilot seats 1`] = `
     "enterprise": "github",
     "last_activity_at": "2021-10-14T00:53:32-06:00",
     "pending_cancellation_date": null,
+    "plan_type": "enterprise",
     "team": "justice-league",
     "updated_at": "2021-09-23T15:00:00-06:00",
     "user": "octocat",
@@ -804,6 +1050,7 @@ exports[`index streams - enterprise copilot seats 1`] = `
     "enterprise": "github",
     "last_activity_at": "2021-10-13T00:53:32-06:00",
     "pending_cancellation_date": "2021-11-01",
+    "plan_type": "enterprise",
     "team": undefined,
     "updated_at": "2021-09-23T15:00:00-06:00",
     "user": "octokitten",
@@ -822,6 +1069,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -831,6 +1096,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -840,6 +1123,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -849,7 +1142,42 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
+      },
+    ],
+    "chat_breakdown": [
+      {
+        "active_chat_users": 13,
+        "chat_copy_events": 19,
+        "chat_insertion_events": 23,
+        "chats": 55,
+        "editor": "vscode",
+        "model_breakdown": [
+          {
+            "active_chat_users": 12,
+            "chat_copy_events": 16,
+            "chat_insertion_events": 12,
+            "chats": 45,
+            "model": "default",
+          },
+          {
+            "active_chat_users": 1,
+            "chat_copy_events": 3,
+            "chat_insertion_events": 11,
+            "chats": 10,
+            "model": "a-custom-model",
+          },
+        ],
       },
     ],
     "day": "2024-06-24",
@@ -874,6 +1202,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "python",
         "lines_accepted": 270,
         "lines_suggested": 450,
+        "model_breakdown": [
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "default",
+            "suggestions_count": 249,
+          },
+          {
+            "acceptances_count": 123,
+            "active_users": 6,
+            "lines_accepted": 135,
+            "lines_suggested": 225,
+            "model": "other-model",
+            "suggestions_count": 249,
+          },
+        ],
         "suggestions_count": 498,
       },
       {
@@ -883,6 +1229,24 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "ruby",
         "lines_accepted": 540,
         "lines_suggested": 1040,
+        "model_breakdown": [
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "default",
+            "suggestions_count": 496,
+          },
+          {
+            "acceptances_count": 253,
+            "active_users": 7,
+            "lines_accepted": 270,
+            "lines_suggested": 520,
+            "model": "other-model",
+            "suggestions_count": 496,
+          },
+        ],
         "suggestions_count": 992,
       },
       {
@@ -892,6 +1256,16 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "typescript",
         "lines_accepted": 61,
         "lines_suggested": 143,
+        "model_breakdown": [
+          {
+            "acceptances_count": 56,
+            "active_users": 3,
+            "lines_accepted": 61,
+            "lines_suggested": 143,
+            "model": "a-custom-model",
+            "suggestions_count": 112,
+          },
+        ],
         "suggestions_count": 112,
       },
       {
@@ -901,7 +1275,42 @@ exports[`index streams - enterprise copilot usage 1`] = `
         "language": "go",
         "lines_accepted": 72,
         "lines_suggested": 154,
+        "model_breakdown": [
+          {
+            "acceptances_count": 67,
+            "active_users": 4,
+            "lines_accepted": 72,
+            "lines_suggested": 154,
+            "model": "a-custom-model",
+            "suggestions_count": 132,
+          },
+        ],
         "suggestions_count": 132,
+      },
+    ],
+    "chat_breakdown": [
+      {
+        "active_chat_users": 13,
+        "chat_copy_events": 19,
+        "chat_insertion_events": 23,
+        "chats": 55,
+        "editor": "vscode",
+        "model_breakdown": [
+          {
+            "active_chat_users": 12,
+            "chat_copy_events": 16,
+            "chat_insertion_events": 12,
+            "chats": 45,
+            "model": "default",
+          },
+          {
+            "active_chat_users": 1,
+            "chat_copy_events": 3,
+            "chat_insertion_events": 11,
+            "chats": 10,
+            "model": "a-custom-model",
+          },
+        ],
       },
     ],
     "day": "2024-06-24",
@@ -916,6 +1325,43 @@ exports[`index streams - enterprise copilot usage 1`] = `
     "total_lines_accepted": 943,
     "total_lines_suggested": 1787,
     "total_suggestions_count": 1734,
+  },
+]
+`;
+
+exports[`index streams - enterprise copilot user engagement 1`] = `
+[
+  {
+    "cli_engagement": 0,
+    "code_completion_engagement": 1,
+    "code_review_engagement": 0,
+    "date": "2025-01-01",
+    "day": "2025-01-01T00:00:00.0000000Z",
+    "dotcom_chat_engagement": 0,
+    "enterprise": "github",
+    "inline_chat_engagement": 0,
+    "knowledge_base_chat_engagement": 0,
+    "login": "github_login0",
+    "mobile_chat_engagement": 0,
+    "panel_chat_engagement": 0,
+    "pull_request_summary_engagement": 0,
+    "user_id": 198650010,
+  },
+  {
+    "cli_engagement": 0,
+    "code_completion_engagement": 1,
+    "code_review_engagement": 0,
+    "date": "2025-01-01",
+    "day": "2025-01-01T00:00:00.0000000Z",
+    "dotcom_chat_engagement": 0,
+    "enterprise": "github",
+    "inline_chat_engagement": 0,
+    "knowledge_base_chat_engagement": 0,
+    "login": "github_login1",
+    "mobile_chat_engagement": 0,
+    "panel_chat_engagement": 0,
+    "pull_request_summary_engagement": 0,
+    "user_id": 198650011,
   },
 ]
 `;
@@ -1301,6 +1747,7 @@ Add any other context about the changes here.
     },
     "reviewRequests": [
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "html_url": "https://github.com/nehanda",
           "login": "nehanda",
@@ -1491,6 +1938,7 @@ N/A
     },
     "reviewRequests": [
       {
+        "asCodeOwner": true,
         "requestedReviewer": {
           "html_url": "https://github.com/user1",
           "login": "user1",
@@ -1499,6 +1947,7 @@ N/A
         },
       },
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "members": {
             "nodes": [
@@ -1649,6 +2098,7 @@ Add any other context about the changes here.
     },
     "reviewRequests": [
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "html_url": "https://github.com/nehanda",
           "login": "nehanda",
@@ -1812,6 +2262,7 @@ N/A
     },
     "reviewRequests": [
       {
+        "asCodeOwner": true,
         "requestedReviewer": {
           "html_url": "https://github.com/user1",
           "login": "user1",
@@ -1820,6 +2271,7 @@ N/A
         },
       },
       {
+        "asCodeOwner": false,
         "requestedReviewer": {
           "members": {
             "nodes": [
@@ -1934,6 +2386,8 @@ exports[`index streams - repositories 1`] = `
     "name": "Hello-World",
     "org": "github",
     "private": false,
+    "pushed_at": "2011-01-26T19:06:43Z",
+    "recentPush": true,
     "size": 108,
     "syncRepoData": true,
     "tmsEnabled": false,
@@ -1961,6 +2415,8 @@ exports[`index streams - repositories with bucketing 1`] = `
     "name": "New-Repo",
     "org": "github",
     "private": false,
+    "pushed_at": "2023-06-15T14:00:00Z",
+    "recentPush": true,
     "size": 256,
     "syncRepoData": true,
     "tmsEnabled": false,
@@ -2009,6 +2465,8 @@ exports[`index streams - repositories with languages 1`] = `
     "name": "Hello-World",
     "org": "github",
     "private": false,
+    "pushed_at": "2011-01-26T19:06:43Z",
+    "recentPush": true,
     "size": 108,
     "syncRepoData": true,
     "tmsEnabled": false,

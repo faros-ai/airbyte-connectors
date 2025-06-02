@@ -365,10 +365,7 @@ export abstract class AbstractSurveys extends Converter {
 
       const res: DestinationRecord[] = [];
 
-      const questionResponse = AbstractSurveys.getColumnValue(
-        row,
-        question
-      )
+      const questionResponse = AbstractSurveys.getColumnValue(row, question);
 
       if (questionResponse) {
         const questionResponseRecord = {

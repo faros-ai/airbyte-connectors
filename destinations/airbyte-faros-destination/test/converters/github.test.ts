@@ -1,17 +1,18 @@
 import {AirbyteRecord, AirbyteSourceStatusMessage} from 'faros-airbyte-cdk';
+import {
+  CLI,
+  destinationWriteTest,
+  initMockttp,
+  read,
+  tempConfig,
+  testLogger,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 import os from 'os';
 
 import {Edition, InvalidRecordStrategy} from '../../src';
 import {GitHubCommon} from '../../src/converters/github/common';
-import {CLI, read} from '../../src/testing-tools/cli';
-import {
-  initMockttp,
-  tempConfig,
-  testLogger,
-} from '../../src/testing-tools/testing-tools';
 import {githubLog, githubPGRawLog} from './data';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('github', () => {
   const logger = testLogger();

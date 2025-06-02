@@ -11,5 +11,4 @@ export * from './sources/source-runner';
 export * from './sources/streams/stream-base';
 export * from './spec-loader';
 export * from './sync-message-tables';
-export * from './testing-tools';
 export * from './utils';

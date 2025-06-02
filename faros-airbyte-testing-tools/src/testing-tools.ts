@@ -1,6 +1,3 @@
-import fs from 'fs';
-import {Dictionary} from 'ts-essentials';
-
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -9,8 +6,10 @@ import {
   AirbyteSourceBase,
   AirbyteState,
   AirbyteStateMessage,
-} from '.';
-import {Data} from './utils';
+  Data,
+} from 'faros-airbyte-cdk';
+import fs from 'fs';
+import {Dictionary} from 'ts-essentials';
 
 export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');
@@ -21,6 +20,28 @@ export function readTestResourceFile(fileName: string): string {
  */
 export function readTestResourceAsJSON(fileName: string): any {
   return JSON.parse(readTestResourceFile(fileName));
+}
+
+export function readTestFile(fileName: string): string {
+  return fs.readFileSync(`test_files/${fileName}`, 'utf8');
+}
+
+/**
+ * Parse a test file into JSON
+ */
+export function readTestFileAsJSON(fileName: string): any {
+  return JSON.parse(readTestFile(fileName));
+}
+
+export function readResourceFile(fileName: string): string {
+  return fs.readFileSync(`resources/${fileName}`, 'utf8');
+}
+
+/**
+ * Parse a resource into JSON
+ */
+export function readResourceAsJSON(fileName: string): any {
+  return JSON.parse(readResourceFile(fileName));
 }
 
 export interface SourceCheckTestOptions {

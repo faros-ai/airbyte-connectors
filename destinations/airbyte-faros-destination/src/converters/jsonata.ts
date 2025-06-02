@@ -10,7 +10,7 @@ import {
   DestinationRecord,
   StreamContext,
 } from './converter';
-import { ALL_MODEL_NAMES } from './faros-feeds/model_names';
+import {ALL_MODEL_NAMES} from './faros-feeds/model_names';
 
 /** Record converter to convert records using provided JSONata expression */
 export class JSONataConverter extends Converter {

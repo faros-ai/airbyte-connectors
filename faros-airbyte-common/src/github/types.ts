@@ -28,6 +28,7 @@ export type Repository = {
   org: string;
   tmsEnabled?: boolean;
   syncRepoData?: boolean;
+  recentPush?: boolean;
   languages?: {language: string; bytes: number}[];
 } & Pick<
   GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.listForOrg>[0],
@@ -42,6 +43,7 @@ export type Repository = {
   | 'topics'
   | 'created_at'
   | 'updated_at'
+  | 'pushed_at'
   | 'archived'
 >;
 
@@ -223,7 +225,11 @@ export type CopilotSeat = {
   startedAt?: string;
 } & Pick<
   CopilotSeatsResponse['seats'][0],
-  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
+  | 'created_at'
+  | 'updated_at'
+  | 'pending_cancellation_date'
+  | 'last_activity_at'
+  | 'plan_type'
 >;
 
 export type CopilotSeatsEmpty = {
@@ -238,11 +244,52 @@ export enum GitHubTool {
 export type CopilotUsageSummary = {
   org: string;
   team: string | null;
-} & GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.copilot.usageMetricsForOrg
->[0];
+} & {
+  day: string;
+  total_suggestions_count: number;
+  total_acceptances_count: number;
+  total_lines_suggested: number;
+  total_lines_accepted: number;
+  total_active_users: number;
+  total_active_chat_users: number;
+  total_chats: number;
+  total_chat_insertion_events: number;
+  total_chat_copy_events: number;
+  breakdown: {
+    language: string;
+    editor: string;
+    suggestions_count: number;
+    acceptances_count: number;
+    lines_suggested: number;
+    lines_accepted: number;
+    active_users: number;
+    model_breakdown?: {
+      model: string;
+      suggestions_count: number;
+      acceptances_count: number;
+      lines_suggested: number;
+      lines_accepted: number;
+      active_users: number;
+    }[];
+  }[];
+  chat_breakdown?: {
+    editor: string;
+    chats: number;
+    chat_insertion_events: number;
+    chat_copy_events: number;
+    model_breakdown?: {
+      model: string;
+      chats: number;
+      chat_insertion_events: number;
+      chat_copy_events: number;
+      active_chat_users: number;
+    }[];
+  }[];
+};
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
+
+export type ChatBreakdown = CopilotUsageSummary['chat_breakdown'][0];
 
 export type CodeScanningAlert = {
   org: string;
@@ -406,7 +453,11 @@ export type EnterpriseCopilotSeat = {
   team?: string;
 } & Pick<
   EnterpriseCopilotSeatsResponse['seats'][0],
-  'created_at' | 'updated_at' | 'pending_cancellation_date' | 'last_activity_at'
+  | 'created_at'
+  | 'updated_at'
+  | 'pending_cancellation_date'
+  | 'last_activity_at'
+  | 'plan_type'
 >;
 
 export type EnterpriseCopilotSeatsEmpty = {
@@ -417,6 +468,21 @@ export type EnterpriseCopilotSeatsEmpty = {
 export type EnterpriseCopilotUsageSummary = {
   enterprise: string;
   team: string | null;
-} & GetResponseDataTypeFromEndpointMethod<
-  typeof octokit.copilot.usageMetricsForOrg
->[0];
+} & Omit<CopilotUsageSummary, 'org' | 'team'>;
+
+export type EnterpriseCopilotUserEngagement = {
+  enterprise: string;
+  date: string;
+  day: string;
+  login: string;
+  user_id: string;
+  cli_engagement: 0 | 1;
+  code_completion_engagement: 0 | 1;
+  code_review_engagement: 0 | 1;
+  dotcom_chat_engagement: 0 | 1;
+  inline_chat_engagement: 0 | 1;
+  knowledge_base_chat_engagement: 0 | 1;
+  mobile_chat_engagement: 0 | 1;
+  panel_chat_engagement: 0 | 1;
+  pull_request_summary_engagement: 0 | 1;
+};

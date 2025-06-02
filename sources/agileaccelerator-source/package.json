@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "axios": "^1.8.4",
-    "commander": "^9.3.0",
     "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },
@@ -50,5 +49,8 @@
         }
       ]
     }
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
   }
 }

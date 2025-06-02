@@ -34,10 +34,11 @@ export class Workitems extends AzureWorkitemsConverter {
     const source = this.source;
     const WorkItem = record.record.data as WorkItemWithRevisions;
     const taskKey = {uid: String(WorkItem.id), source};
+    const projectId = String(WorkItem.project.id);
 
     const areaPath = this.collectAreaPath(
       WorkItem.fields['System.AreaPath'],
-      WorkItem.projectId
+      projectId
     );
     const taskBoard = this.convertAreaPath(taskKey, areaPath);
     const statusChangelog = this.convertStateRevisions(
@@ -58,12 +59,7 @@ export class Workitems extends AzureWorkitemsConverter {
       WorkItem.fields['Faros']['WorkItemStateCategory']
     );
 
-    const epic = this.getEpic(
-      taskKey,
-      WorkItem.fields,
-      status,
-      WorkItem.projectId
-    );
+    const epic = this.getEpic(taskKey, WorkItem.fields, status, projectId);
 
     return [
       {
@@ -107,7 +103,7 @@ export class Workitems extends AzureWorkitemsConverter {
         model: 'tms_TaskProjectRelationship',
         record: {
           task: taskKey,
-          project: {uid: String(WorkItem.projectId), source},
+          project: {uid: projectId, source},
         },
       },
       ...assignees,

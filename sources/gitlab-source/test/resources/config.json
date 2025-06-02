@@ -1,0 +1,11 @@
+{
+  "authentication": {
+    "type": "token",
+    "personal_access_token": "gitlab_pat_1234567890"
+  },
+  "url": "https://gitlab.com",
+  "run_mode": "Full",
+  "cutoff_days": 9999,
+  "bucket_id": 1,
+  "bucket_total": 1
+}

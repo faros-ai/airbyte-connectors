@@ -1,0 +1,52 @@
+{
+  "title": "Faros Org Data Import",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Faros Org Import",
+          "order": 0
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "ams": {
+              "type": "string",
+              "description": "The AMS source"
+            },
+            "cal": {
+              "type": "string",
+              "description": "The Cal source"
+            },
+            "ims": {
+              "type": "string",
+              "description": "The IMS source"
+            },
+            "survey": {
+              "type": "string",
+              "description": "The Survey source"
+            },
+            "tms": {
+              "type": "string",
+              "description": "The TMS source"
+            },
+            "vcs": {
+              "type": "string",
+              "description": "The VCS source"
+            }
+          }
+        },
+        "resolve_locations": {
+          "type": "boolean",
+          "title": "Resolve Locations",
+          "description": "Resolve employee locations using the location field.",
+          "default": false
+        }
+      }
+    }
+  ]
+}

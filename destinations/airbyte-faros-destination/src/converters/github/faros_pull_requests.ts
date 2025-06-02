@@ -40,6 +40,7 @@ export class FarosPullRequests extends GitHubConverter {
     'vcs_PullRequestFile',
     'vcs_PullRequestLabel',
     'vcs_PullRequestReview',
+    'vcs_PullRequestReviewRequest',
     'qa_CodeQuality',
   ];
 
@@ -231,7 +232,11 @@ export class FarosPullRequests extends GitHubConverter {
         model: 'vcs_PullRequestReviewRequest',
         record: {
           pullRequest: prKey,
-          requestedReviewer: {uid: reviewer, source: this.streamName.source},
+          requestedReviewer: {
+            uid: reviewer.login,
+            source: this.streamName.source,
+          },
+          asCodeOwner: reviewer.asCodeOwner,
         },
       })),
       ...reviewSubmissionComments,
@@ -239,38 +244,47 @@ export class FarosPullRequests extends GitHubConverter {
     ];
   }
 
-  // Collects users and returns a list containing reviewers login
+  // Collects users and returns a list containing reviewers with login and asCodeOwner status
   private collectReviewRequestReviewers(
     reviewRequests: PullRequestReviewRequest[]
-  ): string[] {
-    const reviewers: Set<string> = new Set<string>();
+  ): {login: string; asCodeOwner: boolean}[] {
+    const reviewers: Map<string, {login: string; asCodeOwner: boolean}> =
+      new Map();
 
-    reviewRequests.forEach((reviewRequest) => {
-      const {requestedReviewer} = reviewRequest;
-      if (!requestedReviewer) {
-        return;
-      }
+    reviewRequests
+      .filter((reviewRequest) => reviewRequest?.requestedReviewer?.type)
+      .forEach((reviewRequest) => {
+        const requestedReviewer = reviewRequest.requestedReviewer;
+        const asCodeOwner = reviewRequest?.asCodeOwner ?? false;
 
-      if (
-        requestedReviewer.type === 'Team' &&
-        requestedReviewer.members?.nodes
-      ) {
-        requestedReviewer.members.nodes.forEach((member) =>
-          this.addReviewer(reviewers, member)
-        );
-      } else if (
-        requestedReviewer.type === 'User' ||
-        requestedReviewer.type === 'Mannequin'
-      ) {
-        this.addReviewer(reviewers, requestedReviewer);
-      }
-    });
+        if (
+          requestedReviewer.type === 'Team' &&
+          requestedReviewer.members?.nodes
+        ) {
+          requestedReviewer.members.nodes.forEach((member) =>
+            this.addReviewer(reviewers, member, asCodeOwner)
+          );
+        } else if (
+          requestedReviewer.type === 'User' ||
+          requestedReviewer.type === 'Mannequin'
+        ) {
+          this.addReviewer(reviewers, requestedReviewer, asCodeOwner);
+        }
+      });
 
     return Array.from(reviewers.values());
   }
 
-  private addReviewer(reviewers: Set<string>, reviewer: PartialUser): void {
-    reviewers.add(reviewer.login);
+  private addReviewer(
+    reviewers: Map<string, {login: string; asCodeOwner: boolean}>,
+    reviewer: PartialUser,
+    asCodeOwner: boolean
+  ): void {
+    const existingReviewer = reviewers.get(reviewer.login);
+    // We might see the same reviewer requested as a code owner and as a member of a team (with asCodeOwner = false)
+    if (!existingReviewer || (!existingReviewer.asCodeOwner && asCodeOwner)) {
+      reviewers.set(reviewer.login, {login: reviewer.login, asCodeOwner});
+    }
     this.collectUser(reviewer);
   }
 

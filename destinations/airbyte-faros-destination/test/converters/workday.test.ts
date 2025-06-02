@@ -1,4 +1,11 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
+import {
+  destinationWriteTest,
+  getConf,
+  initMockttp,
+  readTestResourceFile,
+  tempConfig,
+} from 'faros-airbyte-testing-tools';
 import {getLocal, Mockttp} from 'mockttp';
 
 import {
@@ -8,13 +15,6 @@ import {
   StreamContext,
 } from '../../src';
 import {Customreports} from '../../src/converters/workday/customreports';
-import {
-  getConf,
-  initMockttp,
-  readTestResourceFile,
-  tempConfig,
-} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 function updateCustomReportWithFields(
   crDest: Customreports,

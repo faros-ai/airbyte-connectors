@@ -41,6 +41,7 @@ export type ExtendedOctokit = OctokitRest &
     enterpriseCopilotSeats: string;
     enterpriseCopilotMetrics: string;
     enterpriseCopilotMetricsForTeam: string;
+    enterpriseCopilotUserEngagement: string;
     enterpriseTeams: string;
     enterpriseTeamMembers: string;
   };
@@ -82,7 +83,11 @@ export function makeOctokitClient(
   };
 
   const auth = getOctokitAuth(cfg, installationId);
-
+  const logFn = (message: string, additionalInfo?: object) =>
+    logger.debug(
+      message,
+      additionalInfo ? JSON.stringify(additionalInfo) : undefined
+    );
   const kit = new ExtendedOctokitConstructor({
     auth,
     authStrategy: cfg.authentication.type === 'app' ? createAppAuth : undefined,
@@ -93,10 +98,10 @@ export function makeOctokitClient(
       ms: cfg.timeout ?? DEFAULT_TIMEOUT_MS,
     },
     log: {
-      info: logger.debug.bind(logger),
-      warn: logger.debug.bind(logger),
-      error: logger.debug.bind(logger),
-      debug: logger.debug.bind(logger),
+      info: logFn,
+      warn: logFn,
+      error: logFn,
+      debug: logFn,
     },
   });
 
@@ -120,6 +125,8 @@ export function makeOctokitClient(
     enterpriseCopilotMetrics: 'GET /enterprises/{enterprise}/copilot/metrics',
     enterpriseCopilotMetricsForTeam:
       'GET /enterprises/{enterprise}/team/{team_slug}/copilot/metrics',
+    enterpriseCopilotUserEngagement:
+      'GET /enterprises/{enterprise}/copilot/user-engagement',
     enterpriseTeams: 'GET /enterprises/{enterprise}/teams',
     enterpriseTeamMembers:
       'GET /enterprises/{enterprise}/teams/{team_slug}/memberships',

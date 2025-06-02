@@ -3,14 +3,10 @@ import {
   AirbyteSourceLogger,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {readTestFileAsJSON} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {Xray} from '../src/xray';
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('streams', () => {
   const logger = new AirbyteSourceLogger(
@@ -32,7 +28,7 @@ describe('streams', () => {
     const postFn =
       typeof responseFileOrFn === 'string'
         ? jest.fn().mockResolvedValue({
-            data: {data: readTestResourceFile(responseFileOrFn)},
+            data: {data: readTestFileAsJSON(responseFileOrFn)},
           })
         : responseFileOrFn;
 
@@ -66,10 +62,10 @@ describe('streams', () => {
     const mockFn = jest
       .fn()
       .mockResolvedValueOnce({
-        data: {data: readTestResourceFile('getPlans.json')},
+        data: {data: readTestFileAsJSON('getPlans.json')},
       })
       .mockResolvedValue({
-        data: {data: readTestResourceFile('getTestPlanTests.json')},
+        data: {data: readTestFileAsJSON('getTestPlanTests.json')},
       });
     await testStream(2, mockFn);
   });

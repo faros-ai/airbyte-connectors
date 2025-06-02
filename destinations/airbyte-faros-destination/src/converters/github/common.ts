@@ -26,6 +26,7 @@ export enum AssistantMetric {
   ChatCopyEvents = 'ChatCopyEvents',
   ChatActiveUsers = 'ChatActiveUsers',
   LastActivity = 'LastActivity',
+  Engagement = 'Engagement',
 }
 
 type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
@@ -328,7 +329,7 @@ export class GitHubCommon {
   }
 
   static enterpriseUid(enterpriseSlug: string): string {
-    return `enterprise:${enterpriseSlug}`;
+    return `enterprise:${toLower(enterpriseSlug)}`;
   }
 }
 

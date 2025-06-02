@@ -82,6 +82,81 @@
           },
           "active_users": {
             "type": "number"
+          },
+          "model_breakdown": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "suggestions_count": {
+                "type": "number"
+              },
+              "acceptances_count": {
+                "type": "number"
+              },
+              "discards_count": {
+                "type": "number"
+              },
+              "lines_suggested": {
+                "type": "number"
+              },
+              "lines_accepted": {
+                "type": "number"
+              },
+              "lines_discarded": {
+                "type": "number"
+              },
+              "active_users": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "chat_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "editor": {
+            "type": "string"
+          },
+          "chats": {
+            "type": "number"
+          },
+          "chat_insertion_events": {
+            "type": "number"
+          },
+          "chat_copy_events": {
+            "type": "number"
+          },
+          "active_chat_users": {
+            "type": "number"
+          },
+          "model_breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string"
+                },
+                "chats": {
+                  "type": "number"
+                },
+                "chat_insertion_events": {
+                  "type": "number"
+                },
+                "chat_copy_events": {
+                  "type": "number"
+                },
+                "active_chat_users": {
+                  "type": "number"
+                }
+              }
+            }
           }
         }
       }

@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from 'axios';
-import {setupCache, AxiosCacheInstance} from 'axios-cache-interceptor';
+import {AxiosCacheInstance, setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   bucket,
@@ -159,6 +159,8 @@ const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
 const MAX_SPRINTS_RESULTS = 50;
 //https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
 const MAX_TEAMS_RESULTS = 50;
+// Documented in the migration notes of enhanced JQL
+const MAX_CHANGELOG_RESULTS = 40;
 
 export class Jira {
   private static jira: Jira;
@@ -357,6 +359,30 @@ export class Jira {
       const isLast = res.isLast ?? (count === res.total || items.length === 0);
       startAt = isLast ? -1 : startAt + items.length;
     } while (startAt >= 0);
+  }
+
+  private async *tokenPaginate<V>(
+    requester: (nextPageToken: string | undefined) => Promise<any>,
+    deserializer: (item: any) => Promise<V> | V | undefined,
+    itemsField: string
+  ): AsyncIterableIterator<V> {
+    let nextPageToken = undefined;
+    do {
+      const response = await requester(nextPageToken);
+      const items = response[itemsField];
+      const promises = [];
+      const limit = pLimit(this.concurrencyLimit);
+      for (const item of items) {
+        promises.push(limit(() => deserializer(item)));
+      }
+      const deserializedItems = await Promise.all(promises);
+      for (const deserializedItem of deserializedItems) {
+        if (deserializedItem) {
+          yield deserializedItem;
+        }
+      }
+      nextPageToken = response.nextPageToken;
+    } while (nextPageToken);
   }
 
   private async getPullRequestSources(
@@ -698,18 +724,38 @@ export class Jira {
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
-    // For keys and ids we can fetch upto 1000 issues at a time
-    // https://developer.atlassian.com/cloud/jira/platform/change-notice-for-get-search-max-results/
-    const maxResults = this.isCloud ? 1000 : this.maxPageSize;
+    if (this.isCloud) {
+      return this.getIssuesKeysFromCloud(jql);
+    }
+    return this.getIssuesKeysFromServer(jql);
+  }
+
+  getIssuesKeysFromServer(jql: string): AsyncIterableIterator<string> {
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
           fields: ['key'],
-          maxResults,
+          maxResults: this.maxPageSize,
         }),
       async (item: any) => item.key,
+      'issues'
+    );
+  }
+
+  // Use new Search for issues using JQL enhanced search API
+  // https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-search/#api-rest-api-2-search-jql-post
+  getIssuesKeysFromCloud(jql: string): AsyncIterableIterator<string> {
+    return this.tokenPaginate(
+      (nextPageToken) =>
+        this.api.v2.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
+          jql,
+          nextPageToken,
+          fields: ['key'],
+          maxResults: 5000, // For keys and ids we can fetch upto 5000 at a time
+        }),
+      (item: any) => item.key,
       'issues'
     );
   }
@@ -726,19 +772,70 @@ export class Jira {
       this.logger
     );
 
+    const getParams = {
+      jql,
+      fields: [...fieldIds, ...additionalFieldIds],
+    };
+
+    if (this.isCloud) {
+      return this.getIssuesFromCloud(getParams, issueTransformer);
+    }
+
     return this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
-          jql,
+          ...getParams,
           startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
-          expand: 'changelog',
+          expand: ['changelog'],
           maxResults: this.maxPageSize,
         }),
       async (item: any) => {
         this.memoizeIssue(item, jql);
 
         return issueTransformer.toIssue(item);
+      },
+      'issues'
+    );
+  }
+
+  // https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-search/#api-rest-api-2-search-jql-post
+  getIssuesFromCloud(
+    params: {jql: string; fields: string[]},
+    issueTransformer: IssueTransformer
+  ): AsyncIterableIterator<Issue> {
+    return this.tokenPaginate(
+      (nextPageToken) =>
+        this.api.v2.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
+          ...params,
+          expand: 'changelog',
+          maxResults: this.maxPageSize,
+          nextPageToken,
+        }),
+      async (item: any) => {
+        let changelogHistories = item.changelog?.histories ?? [];
+        // Enhanced JQL API returns max 40 changelogs so make extra call to
+        // fetch them all
+        if (item.changelog?.total > MAX_CHANGELOG_RESULTS) {
+          const allChangelogs = [];
+          for await (const changelog of this.iterate(
+            (startAt) =>
+              this.api.v2.issues.getChangeLogs({
+                issueIdOrKey: item.id,
+                startAt,
+                maxResults: this.maxPageSize,
+              }),
+            async (item: any) => item
+          )) {
+            allChangelogs.push(changelog);
+          }
+          changelogHistories = allChangelogs;
+        }
+        const updatedIssue = {
+          ...item,
+          changelog: {histories: changelogHistories},
+        };
+        this.memoizeIssue(updatedIssue, params.jql);
+        return issueTransformer.toIssue(updatedIssue);
       },
       'issues'
     );
@@ -769,15 +866,45 @@ export class Jira {
       return;
     }
 
+    const fields = [...fieldIds, ...additionalFieldIds];
+
+    if (this.isCloud) {
+      yield* this.getIssuesCompactFromCloud(jql, fields);
+      return;
+    }
+
     yield* this.iterate(
       (startAt) =>
         this.api.v2.issueSearch.searchForIssuesUsingJql({
           jql,
           startAt,
-          fields: [...fieldIds, ...additionalFieldIds],
+          fields,
           maxResults: this.maxPageSize,
         }),
       async (item: any) => ({
+        id: item.id,
+        key: item.key,
+        created: Utils.toDate(item.fields.created),
+        updated: Utils.toDate(item.fields.updated),
+        fields: item.fields,
+      }),
+      'issues'
+    );
+  }
+
+  getIssuesCompactFromCloud(
+    jql: string,
+    fields: string[]
+  ): AsyncIterableIterator<IssueCompact> {
+    return this.tokenPaginate(
+      (nextPageToken) =>
+        this.api.v2.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
+          jql,
+          fields,
+          nextPageToken,
+          maxResults: this.maxPageSize,
+        }),
+      (item: any) => ({
         id: item.id,
         key: item.key,
         created: Utils.toDate(item.fields.created),

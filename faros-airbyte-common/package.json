@@ -33,6 +33,7 @@
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
+    "./gitlab": "./lib/gitlab/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
     "./wolken": "./lib/wolken/index.js",
@@ -67,6 +68,9 @@
       "github/queries": [
         "./lib/github/queries.d.ts"
       ],
+      "gitlab": [
+        "./lib/gitlab/index.d.ts"
+      ],
       "jira": [
         "./lib/jira/index.d.ts"
       ],
@@ -96,14 +100,15 @@
     "@octokit/rest": "^20.1.2",
     "azure-devops-node-api": "^14.1.0",
     "faros-airbyte-cdk": "*",
-    "jira.js": "^4.0.0",
+    "jira.js": "^4.1.3",
     "luxon": "^3.4.4",
     "typescript-memoize": "^1.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/typescript": "^4.0.9",
-    "@graphql-codegen/typescript-operations": "^4.2.3"
+    "@graphql-codegen/typescript-operations": "^4.2.3",
+    "faros-airbyte-testing-tools": "*"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

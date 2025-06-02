@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {TestMetadata} from 'faros-airbyte-common/circleci';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
-import {TestMetadata} from 'faros-airbyte-common/circleci';
 
 export class Tests extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

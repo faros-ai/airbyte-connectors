@@ -1,0 +1,250 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GitLab Spec",
+    "type": "object",
+    "required": [
+      "authentication"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "authentication": {
+        "title": "Authentication",
+        "description": "Choose your GitLab authentication method",
+        "type": "object",
+        "order": 0,
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Personal Access Token",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "token",
+                "order": 0
+              },
+              "personal_access_token": {
+                "type": "string",
+                "title": "Personal Access Token",
+                "airbyte_secret": true,
+                "order": 1
+              }
+            },
+            "required": [
+              "type",
+              "personal_access_token"
+            ]
+          }
+        ]
+      },
+      "url": {
+        "order": 1,
+        "type": "string",
+        "title": "GitLab API URL",
+        "description": "GitLab API URL, e.g for GitLab Enterprise: https://my-gitlab-host.com",
+        "default": "https://gitlab.com"
+      },
+      "reject_unauthorized": {
+        "order": 2,
+        "type": "boolean",
+        "title": "Enable certificate validation",
+        "description": "Enable certificate validation for the GitLab server",
+        "default": true
+      },
+      "groups": {
+        "order": 3,
+        "title": "Groups list",
+        "description": "List of GitLab groups from which to fetch data. If none passed, all visible groups for the authenticated user/app will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org",
+          "mygroup"
+        ]
+      },
+      "excluded_groups": {
+        "order": 4,
+        "title": "Excluded Groups list",
+        "description": "List of GitLab groups from which data won't be fetched. By default, no groups are excluded.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org",
+          "mygroup"
+        ]
+      },
+      "use_faros_graph_projects_selection": {
+        "order": 5,
+        "type": "boolean",
+        "title": "Use Faros Graph for Projects selection",
+        "description": "Use Faros Graph for selecting which projects should be fetched (Faros credentials are required).",
+        "default": false
+      },
+      "projects": {
+        "order": 6,
+        "title": "Projects list",
+        "description": "List of GitLab projects from which to fetch data. If none passed for a group, all visible group projects for the authenticated user will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org/project1",
+          "mygroup/project2"
+        ]
+      },
+      "excluded_projects": {
+        "order": 7,
+        "title": "Excluded Projects list",
+        "description": "List of GitLab projects from which data won't be fetched. By default, no projects are excluded for a group. If projects list contains at least one project for a group, projects for the same group on this list will be ignored.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "gitlab-org/project1",
+          "mygroup/project2"
+        ]
+      },
+      "run_mode": {
+        "order": 8,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "Minimum",
+          "Full",
+          "Custom"
+        ]
+      },
+      "custom_streams": {
+        "order": 9,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "faros_groups",
+          "faros_projects"
+        ]
+      },
+      "api_key": {
+        "order": 10,
+        "type": "string",
+        "title": "Faros API Key",
+        "description": "Faros API Key to use when connecting to the Faros Graph to resolve VCS dependencies",
+        "airbyte_secret": true
+      },
+      "api_url": {
+        "order": 11,
+        "type": "string",
+        "title": "Faros API URL",
+        "description": "Faros API URL to use when connecting to the Faros Graph to resolve VCS dependencies",
+        "default": "https://prod.api.faros.ai"
+      },
+      "graph": {
+        "order": 12,
+        "type": "string",
+        "title": "Faros Graph",
+        "description": "The Faros graph to use for fetching projects selection",
+        "default": "default"
+      },
+      "cutoff_days": {
+        "order": 13,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "bucket_id": {
+        "order": 14,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of groups and projects to pull. Use it when distributing the load between multiple sources.",
+        "default": 1
+      },
+      "bucket_total": {
+        "order": 15,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute groups and projects across. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "round_robin_bucket_execution": {
+        "order": 16,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "bucket_ranges": {
+        "order": 17,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "3-5",
+          "7"
+        ]
+      },
+      "page_size": {
+        "order": 18,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Maximum number of items in a paginated response",
+        "default": 100
+      },
+      "timeout": {
+        "order": 19,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the GitLab API",
+        "default": 120000
+      },
+      "concurrency_limit": {
+        "order": 20,
+        "type": "integer",
+        "title": "Concurrency limit",
+        "description": "Maximum concurrency to run with",
+        "default": 4
+      },
+      "backfill": {
+        "order": 21,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 22,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "order": 23,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      },
+      "fetch_public_groups": {
+        "type": "boolean",
+        "title": "Fetch Public Groups",
+        "description": "Fetch public groups",
+        "default": false,
+        "order": 24
+      }
+    }
+  }
+}
