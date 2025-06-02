@@ -1,6 +1,5 @@
-import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
+import {destinationWriteTest, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 
 describe('zephyr', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

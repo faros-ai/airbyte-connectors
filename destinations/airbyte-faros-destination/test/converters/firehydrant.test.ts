@@ -1,6 +1,5 @@
-import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {get} from 'lodash';
+import {destinationWriteTest, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 import {getLocal, MockedEndpoint} from 'mockttp';
 
 import {Edition, InvalidRecordStrategy} from '../../src';

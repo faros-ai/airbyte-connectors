@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
-import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
+import {generateBasicTestSuite, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
 import {StreamContext} from '../../src';

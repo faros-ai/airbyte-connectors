@@ -1,8 +1,8 @@
 import {
+import {destinationWriteTest} from 'faros-airbyte-testing-tools';
   initMockttp,
   sourceSpecificTempConfig,
 } from 'faros-airbyte-testing-tools';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
 describe('notion', () => {

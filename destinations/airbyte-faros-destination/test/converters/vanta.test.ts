@@ -1,9 +1,9 @@
 import {
+import {destinationWriteTest} from 'faros-airbyte-testing-tools';
   initMockttp,
   readTestResourceAsJSON,
   tempConfig,
 } from 'faros-airbyte-testing-tools';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {getLocal, Mockttp} from 'mockttp';
 
 const mockQueryToResponse: Record<string, any> = readTestResourceAsJSON(

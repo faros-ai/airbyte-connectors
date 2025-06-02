@@ -1,6 +1,5 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
+import {destinationWriteTest, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 import _ from 'lodash';
 import {getLocal} from 'mockttp';
 
