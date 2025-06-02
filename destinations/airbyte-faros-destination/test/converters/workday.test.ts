@@ -1,6 +1,6 @@
 import {AirbyteLogger, AirbyteLogLevel} from 'faros-airbyte-cdk';
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {
+  destinationWriteTest,
   getConf,
   initMockttp,
   readTestResourceFile,

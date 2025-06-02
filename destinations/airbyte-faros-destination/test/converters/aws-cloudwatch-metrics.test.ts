@@ -1,6 +1,6 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
-import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
 import {
+  generateBasicTestSuite,
   initMockttp,
   sourceSpecificTempConfig,
 } from 'faros-airbyte-testing-tools';
