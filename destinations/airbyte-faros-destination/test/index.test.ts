@@ -1,5 +1,5 @@
-import {
 import {CLI, initMockttp, read, tempConfig} from 'faros-airbyte-testing-tools';
+import {
   AirbyteConfig,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,

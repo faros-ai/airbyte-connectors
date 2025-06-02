@@ -1,7 +1,8 @@
 import {
-import {initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
   destinationWriteTest,
   generateBasicTestSuite,
+  initMockttp,
+  tempConfig,
 } from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 

@@ -1,5 +1,5 @@
 import {
-import {destinationWriteTest} from 'faros-airbyte-testing-tools';
+  destinationWriteTest,
   initMockttp,
   readTestResourceAsJSON,
   tempConfig,
