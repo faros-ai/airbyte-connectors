@@ -177,25 +177,7 @@ Array [
       "affectedVersions": Array [
         "npm-esbuild <= 0.24.2",
       ],
-      "description": "### Summary
-
-esbuild allows any websites to send any request to the development server and read the response due to default CORS settings.
-
-### Details
-
-esbuild sets \`Access-Control-Allow-Origin: *\` header to all requests, including the SSE connection, which allows any websites to send any request to the development server and read the response.
-
-https://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L121
-https://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L363
-
-**Attack scenario**:
-
-1. The attacker serves a malicious web page (\`http://malicious.example.com\`).
-1. The user accesses the malicious web page.
-1. The attacker sends a \`fetch('http://127.0.0.1:8000/main.js')\` request by JS in that malicious web page. This request is normally blocked by same-origin policy, but that's not the case for the reasons above.
-1. The attacker gets the content of \`http://127.0.0.1:8000/main.js\`.
-
-In this sce",
+      "description": "esbuild allows any websites to send any request to the development server.",
       "discoveredAt": "2025-02-11T07:33:51.673Z",
       "severity": 5.3,
       "source": "Vanta",
@@ -239,25 +221,7 @@ In this sce",
       "affectedVersions": Array [
         "npm-esbuild <= 0.24.2",
       ],
-      "description": "### Summary
-
-esbuild allows any websites to send any request to the development server and read the response due to default CORS settings.
-
-### Details
-
-esbuild sets \`Access-Control-Allow-Origin: *\` header to all requests, including the SSE connection, which allows any websites to send any request to the development server and read the response.
-
-https://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L121
-https://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L363
-
-**Attack scenario**:
-
-1. The attacker serves a malicious web page (\`http://malicious.example.com\`).
-1. The user accesses the malicious web page.
-1. The attacker sends a \`fetch('http://127.0.0.1:8000/main.js')\` request by JS in that malicious web page. This request is normally blocked by same-origin policy, but that's not the case for the reasons above.
-1. The attacker gets the content of \`http://127.0.0.1:8000/main.js\`.
-
-In this sce",
+      "description": "esbuild allows any websites to send any request to the development server.",
       "discoveredAt": "2025-02-11T07:33:51.673Z",
       "severity": 5.3,
       "source": "Vanta",
