@@ -3,12 +3,10 @@ import {
   AirbyteRecord,
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
-import * as fs from 'fs';
 import {getLocal} from 'mockttp';
-import * as path from 'path';
 import {Dictionary} from 'ts-essentials';
 
-import {CLI, readLines} from './cli';
+import {CLI, read, readLines} from './cli';
 import {initMockttp, tempConfig} from './destination-testing-tools';
 import {readTestResourceFile} from './testing-tools';
 
@@ -17,8 +15,6 @@ export interface DestinationWriteTestOptions {
   catalogPath: string;
   inputRecordsPath: string;
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
-  // Write CLI output to files in this directory
-  outputDir?: string | null;
 }
 
 export interface GenerateBasicTestSuiteOptions {
@@ -28,62 +24,9 @@ export interface GenerateBasicTestSuiteOptions {
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
-function createLogOutputFiles(outputDir: string): {
-  stdoutPath: string;
-  stderrPath: string;
-} {
-  if (fs.existsSync(outputDir)) {
-    const stat = fs.statSync(outputDir);
-    if (!stat.isDirectory()) {
-      throw new Error(`${outputDir} exists and is not a directory`);
-    }
-  } else {
-    try {
-      fs.mkdirSync(outputDir, {recursive: true});
-    } catch (error) {
-      throw new Error(`Failed to create output directory: ${error}`);
-    }
-  }
-
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const stdoutPath = path.join(outputDir, `stdout-${timestamp}.log`);
-  const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
-
-  try {
-    // Simulate "touch" to test writability
-    fs.closeSync(fs.openSync(stdoutPath, 'w'));
-    fs.closeSync(fs.openSync(stderrPath, 'w'));
-  } catch (error) {
-    throw new Error(
-      `Failed to verify writability of log files:\n  ${stdoutPath}\n  ${stderrPath}\nError: ${error}`
-    );
-  }
-
-  return {stdoutPath, stderrPath};
-}
-
-function extractMatchLines(lines: readonly string[]): string[] {
-  const regexes = [
-    /Processed (\d+) records/,
-    /Would write (\d+) records/,
-    /Errored (\d+) records/,
-    /Skipped (\d+) records/,
-    /Processed records by stream: {(.*)}/,
-    /Would write records by model: {(.*)}/,
-  ];
-
-  return lines
-    .map((line) => {
-      const regex = regexes.find((r) => r.test(line));
-      return regex ? (regex.exec(line)?.[0] ?? null) : null;
-    })
-    .filter((line): line is string => line !== null);
-}
-
 // Executes the destination write command in dry-run mode and optionally checks:
 // - The processed and written records count
 // - The records data
-// - Optionally writes the CLI output to files in a given output directory for debugging
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
@@ -92,13 +35,7 @@ export const destinationWriteTest = async (
     catalogPath,
     inputRecordsPath,
     checkRecordsData = undefined,
-    outputDir = null,
   } = options;
-
-  const logOutputFiles = outputDir ? createLogOutputFiles(outputDir) : null;
-  if (!catalogPath || !inputRecordsPath) {
-    throw new Error('catalogPath and inputRecordsPath are required.');
-  }
   const cli = await CLI.runWith([
     'write',
     '--config',
@@ -111,24 +48,39 @@ export const destinationWriteTest = async (
   cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
   const stdoutLines = await readLines(cli.stdout);
-  const stderrLines = await readLines(cli.stderr);
-  const matchedLines = extractMatchLines(stdoutLines);
-  expect(matchedLines).toMatchSnapshot();
+  const matches: string[] = [];
+
+  stdoutLines.forEach((line) => {
+    const regexes = [
+      /Processed (\d+) records/,
+      /Would write (\d+) records/,
+      /Errored (\d+) records/,
+      /Skipped (\d+) records/,
+      /Processed records by stream: {(.*)}/,
+      /Would write records by model: {(.*)}/,
+    ];
+
+    const matchedLine = regexes.find((regex) => regex.test(line));
+    if (matchedLine) {
+      matches.push(matchedLine.exec(line)[0]);
+    }
+  });
+
+  expect(matches).toMatchSnapshot();
 
   if (checkRecordsData) {
-    checkRecordsData(readRecordData(stdoutLines));
+    const records = readRecordData(stdoutLines);
+    checkRecordsData(records);
   }
 
-  if (logOutputFiles) {
-    fs.writeFileSync(logOutputFiles.stdoutPath, stdoutLines.join('\n'));
-    fs.writeFileSync(logOutputFiles.stderrPath, stderrLines.join('\n'));
-    console.log(
-      `Test output written to:\n  ${logOutputFiles.stdoutPath}\n  ${logOutputFiles.stderrPath}`
+  if ((await cli.wait()) !== 0) {
+    const stderrLines = await readLines(cli.stderr);
+    console.log('stdout:\n\n' + stdoutLines.join('\n'));
+    console.log('stderr:\n\n' + stderrLines.join('\n'));
+    throw new Error(
+      'Destination write command failed. Stdout and Stderr provided for more details.'
     );
   }
-
-  expect(stderrLines.join('\n')).toBe('');
-  expect(await cli.wait()).toBe(0);
 };
 
 function readRecordData(
