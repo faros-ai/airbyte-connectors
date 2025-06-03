@@ -165,7 +165,10 @@ export abstract class Vulnerabilities extends VantaConverter {
     };
     records.push(repoVulnerabilityRecord);
   }
-  private extractVulnId(value: string): [string, string] | null {
+  private extractVulnId(value: string | null): [string, string] | null {
+    if (!value) {
+      return null;
+    }
     const cveMatch = value.match(/(CVE-\d{4}-\d{4,7})/);
     if (cveMatch) {
       return ['CVE', cveMatch[1]];

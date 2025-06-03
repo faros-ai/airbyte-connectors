@@ -4,10 +4,10 @@ exports[`vanta vulnerabilities 1`] = `
 Array [
   "Processed 3 records",
   "Processed records by stream: {\\\\\\"mytestsource__vanta__vulnerabilities\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 12 records",
-  "Would write records by model: {\\\\\\"cicd_ArtifactVulnerability\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":3,\\\\\\"vcs_RepositoryVulnerability\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 9 records",
+  "Would write records by model: {\\\\\\"sec_Vulnerability\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":3,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
-  "Errored 0 records",
+  "Errored 1 records",
 ]
 `;
 
@@ -143,78 +143,6 @@ Array [
       "vulnerabilityIds": Array [
         "CVE-2024-0743",
       ],
-    },
-  },
-  Object {
-    "vcs_RepositoryVulnerability": Object {
-      "createdAt": "2023-03-07T20:01:49.516Z",
-      "dueAt": "2024-01-17T15:26:43.534Z",
-      "repository": Object {
-        "name": "dolos",
-        "organization": Object {
-          "source": "github",
-          "uid": "test-org",
-        },
-      },
-      "source": "Vanta",
-      "status": Object {
-        "category": "Ignored",
-        "detail": "Not applicable",
-      },
-      "url": "https://github.com/test-org/test-repo/security/dependabot/76",
-      "vulnerability": Object {
-        "source": "Vanta",
-        "uid": "657191308e0674a0e8e62468",
-      },
-    },
-  },
-  Object {
-    "vcs_RepositoryVulnerability": Object {
-      "createdAt": "2024-05-03T19:26:15.231Z",
-      "dueAt": "2024-06-02T19:26:20.454Z",
-      "repository": Object {
-        "name": "dolos",
-        "organization": Object {
-          "source": "github",
-          "uid": "test-org",
-        },
-      },
-      "source": "Vanta",
-      "status": Object {
-        "category": "Open",
-        "detail": "",
-      },
-      "url": "https://github.com/test-org/test-repo/security/dependabot/18",
-      "vulnerability": Object {
-        "source": "Vanta",
-        "uid": "66353a575360cc947a8af658",
-      },
-    },
-  },
-  Object {
-    "cicd_ArtifactVulnerability": Object {
-      "artifact": Object {
-        "repository": Object {
-          "organization": Object {
-            "source": "github",
-            "uid": "test-org",
-          },
-          "uid": "123",
-        },
-        "uid": "e99a18c428cb38d5f260853678922e03abd8334f",
-      },
-      "createdAt": "2024-04-13T09:52:49.659Z",
-      "dueAt": "2024-05-13T09:59:10.288Z",
-      "source": "Vanta",
-      "status": Object {
-        "category": "Open",
-        "detail": "",
-      },
-      "url": "https://console.aws.amazon.com/inspector/v2/home?region=us-east-1#/findings?findingArn=arn%123456",
-      "vulnerability": Object {
-        "source": "Vanta",
-        "uid": "661a55f156ebe8ef9f74e841",
-      },
     },
   },
 ]
