@@ -24,7 +24,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2024-07-15T17:43:12.098Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -44,7 +45,8 @@ Array [
           "uid": "github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -64,7 +66,8 @@ Array [
           "uid": "github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -83,7 +86,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2024-06-20T09:54:42.836Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LastActivity",
@@ -107,7 +111,8 @@ Array [
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -126,7 +131,8 @@ Array [
           "uid": "github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -145,7 +151,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2024-06-20T09:54:42.837Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LastActivity",
@@ -169,7 +176,8 @@ Array [
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -330,7 +338,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -394,7 +403,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -502,7 +512,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -602,7 +613,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -702,7 +714,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -766,7 +779,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -858,7 +872,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -950,7 +965,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -1042,7 +1058,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -1106,7 +1123,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -1198,7 +1216,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -1290,7 +1309,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -1382,7 +1402,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -1446,7 +1467,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -1538,7 +1560,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -1630,7 +1653,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -1722,7 +1746,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -1786,7 +1811,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -1878,7 +1904,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -1970,7 +1997,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -2144,7 +2172,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -2208,7 +2237,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -2341,7 +2371,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -2433,7 +2464,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -2525,7 +2557,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -2589,7 +2622,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -2612,7 +2646,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -2704,7 +2739,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -2796,7 +2832,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -2888,7 +2925,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -3021,7 +3059,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -3113,7 +3152,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -3205,7 +3245,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -3269,7 +3310,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -3292,7 +3334,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -3384,7 +3427,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -3476,7 +3520,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -3568,7 +3613,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -3632,7 +3678,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -3655,7 +3702,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -3747,7 +3795,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -3839,7 +3888,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -3931,7 +3981,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -3995,7 +4046,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatConversations",
@@ -4059,7 +4111,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatInsertionEvents",
@@ -4123,7 +4176,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatCopyEvents",
@@ -4176,7 +4230,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -4199,7 +4254,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -4222,7 +4278,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatConversations",
@@ -4245,7 +4302,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatConversations",
@@ -4268,7 +4326,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatInsertionEvents",
@@ -4291,7 +4350,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatInsertionEvents",
@@ -4314,7 +4374,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatCopyEvents",
@@ -4337,7 +4398,8 @@ Array [
       "source": "GitHub",
       "startedAt": "2023-10-16T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatCopyEvents",
@@ -4382,7 +4444,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -4463,7 +4526,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -4572,7 +4636,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -4681,7 +4746,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -4790,7 +4856,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -4871,7 +4938,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -4980,7 +5048,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -5089,7 +5158,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -5198,7 +5268,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -5279,7 +5350,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -5388,7 +5460,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -5497,7 +5570,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -5606,7 +5680,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -5687,7 +5762,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -5796,7 +5872,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -5905,7 +5982,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -6014,7 +6092,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -6095,7 +6174,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -6204,7 +6284,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -6313,7 +6394,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -6532,7 +6614,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -6613,7 +6696,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -6694,7 +6778,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -6803,7 +6888,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -6912,7 +6998,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -7021,7 +7108,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -7102,7 +7190,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -7211,7 +7300,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -7320,7 +7410,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -7429,7 +7520,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -7510,7 +7602,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -7619,7 +7712,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -7728,7 +7822,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -7837,7 +7932,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -7918,7 +8014,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -8027,7 +8124,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -8136,7 +8234,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -8245,7 +8344,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -8326,7 +8426,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -8435,7 +8536,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -8544,7 +8646,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -8653,7 +8756,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -8734,7 +8838,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatConversations",
@@ -8815,7 +8920,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatInsertionEvents",
@@ -8896,7 +9002,8 @@ Array [
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatCopyEvents",
@@ -10814,7 +10921,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2021-08-03T18:00:00-06:00",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -10834,7 +10942,8 @@ N/A
           "uid": "enterprise:github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -10854,7 +10963,8 @@ N/A
           "uid": "enterprise:github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -10873,7 +10983,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2024-12-02T20:42:22.727Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LastActivity",
@@ -10898,7 +11009,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2021-09-23T18:00:00-06:00",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -10918,7 +11030,8 @@ N/A
           "uid": "enterprise:github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -10938,7 +11051,8 @@ N/A
           "uid": "enterprise:github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -10957,7 +11071,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2024-12-02T20:42:22.727Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LastActivity",
@@ -11124,7 +11239,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -11188,7 +11304,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -11296,7 +11413,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -11396,7 +11514,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -11496,7 +11615,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -11560,7 +11680,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -11652,7 +11773,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -11744,7 +11866,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -11836,7 +11959,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -11900,7 +12024,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -11992,7 +12117,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -12084,7 +12210,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -12176,7 +12303,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -12240,7 +12368,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -12332,7 +12461,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -12424,7 +12554,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -12516,7 +12647,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -12580,7 +12712,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -12672,7 +12805,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -12764,7 +12898,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -12938,7 +13073,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2023-10-15T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -13013,7 +13149,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -13094,7 +13231,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -13203,7 +13341,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -13312,7 +13451,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsDiscarded",
@@ -13421,7 +13561,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -13502,7 +13643,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -13611,7 +13753,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -13720,7 +13863,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "SuggestionsAccepted",
@@ -13829,7 +13973,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -13910,7 +14055,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -14019,7 +14165,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -14128,7 +14275,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesDiscarded",
@@ -14237,7 +14385,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -14318,7 +14467,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -14427,7 +14577,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -14536,7 +14687,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "LinesAccepted",
@@ -14645,7 +14797,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -14726,7 +14879,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -14835,7 +14989,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -14944,7 +15099,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ActiveUsers",
@@ -15163,7 +15319,8 @@ N/A
         "uid": "justice-league",
       },
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "ChatActiveUsers",
@@ -15252,7 +15409,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2025-01-01T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "Engagement",
@@ -15277,7 +15435,8 @@ N/A
       "source": "GitHub",
       "startedAt": "2025-01-01T00:00:00.000Z",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "type": Object {
         "category": "Engagement",
@@ -15322,7 +15481,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
     },
   },
@@ -15335,7 +15495,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
     },
   },
@@ -15348,7 +15509,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -15366,7 +15528,8 @@ N/A
           "uid": "github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -15384,7 +15547,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -15402,7 +15566,8 @@ N/A
           "uid": "github-2",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -16196,7 +16361,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
     },
   },
@@ -16209,7 +16375,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
     },
   },
@@ -16222,7 +16389,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -16240,7 +16408,8 @@ N/A
           "uid": "enterprise:github",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
@@ -16258,7 +16427,8 @@ N/A
       },
       "source": "GitHub",
       "tool": Object {
-        "category": "GitHubCopilot",
+        "category": "CodingAssistant",
+        "detail": "GitHubCopilot",
       },
       "user": Object {
         "source": "GitHub",
@@ -16276,7 +16446,8 @@ N/A
           "uid": "enterprise:github-2",
         },
         "tool": Object {
-          "category": "GitHubCopilot",
+          "category": "CodingAssistant",
+          "detail": "GitHubCopilot",
         },
         "user": Object {
           "source": "GitHub",
