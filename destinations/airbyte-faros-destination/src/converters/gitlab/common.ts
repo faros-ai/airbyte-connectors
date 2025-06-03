@@ -281,18 +281,7 @@ export abstract class GitlabConverter extends Converter {
     category: string;
     detail: string;
   } {
-    if (!user.state) {
-      return {category: 'Custom', detail: 'unknown'};
-    }
-    const stateLower = user.state.toLowerCase();
-    switch (stateLower) {
-      case 'active':
-        return {category: 'User', detail: stateLower};
-      case 'blocked':
-        return {category: 'Custom', detail: stateLower};
-      default:
-        return {category: 'Custom', detail: stateLower};
-    }
+    return {category: 'User', detail: 'user'};
   }
 
   private getFinalUser(users: Array<PartialUser>): PartialUser {
