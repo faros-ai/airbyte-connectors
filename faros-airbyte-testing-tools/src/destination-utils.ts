@@ -46,11 +46,23 @@ export const destinationWriteTest = async (
   const streams = outputDir
     ? (() => {
         if (!fs.existsSync(outputDir)) {
-          fs.mkdirSync(outputDir, {recursive: true});
+          try {
+            fs.mkdirSync(outputDir, {recursive: true});
+          } catch (error) {
+            throw new Error(`Failed to create output directory: ${error}`);
+          }
         }
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const stdoutPath = path.join(outputDir, `stdout-${timestamp}.log`);
         const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
+        try {
+          fs.createWriteStream(stdoutPath);
+          fs.createWriteStream(stderrPath);
+        } catch (error) {
+          throw new Error(
+            `Failed to create output log files (in outputDir ${outputDir}): ${error}`
+          );
+        }
         const stdout = fs.createWriteStream(stdoutPath);
         const stderr = fs.createWriteStream(stderrPath);
         return {stdout, stderr, timestamp, stdoutPath, stderrPath};
@@ -96,12 +108,11 @@ export const destinationWriteTest = async (
 
   expect(matches).toMatchSnapshot();
 
-  // Process record data if needed
   if (checkRecordsData) {
     checkRecordsData(readRecordData(stdoutLines));
   }
 
-  // Cleanup and verify
+  // Close streams and log output files
   if (streams) {
     streams.stdout.end();
     streams.stderr.end();
