@@ -28,9 +28,54 @@ export interface GenerateBasicTestSuiteOptions {
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
-// Executes the destination write command in dry-run mode and optionally checks:
-// - The processed and written records count
-// - The records data
+function createLogStreams(outputDir: string): LogStreams {
+  if (fs.existsSync(outputDir)) {
+    const stat = fs.statSync(outputDir);
+    if (!stat.isDirectory()) {
+      throw new Error(`${outputDir} exists and is not a directory`);
+    }
+  } else {
+    try {
+      fs.mkdirSync(outputDir, {recursive: true});
+    } catch (error) {
+      throw new Error(`Failed to create output directory: ${error}`);
+    }
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const stdoutPath = path.join(outputDir, `stdout-${timestamp}.log`);
+  const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
+
+  try {
+    return {
+      stdout: fs.createWriteStream(stdoutPath),
+      stderr: fs.createWriteStream(stderrPath),
+      stdoutPath,
+      stderrPath,
+    };
+  } catch (error) {
+    throw new Error(`Failed to create log file streams: ${error}`);
+  }
+}
+
+function extractMatchLines(lines: string[]): string[] {
+  const regexes = [
+    /Processed (\d+) records/,
+    /Would write (\d+) records/,
+    /Errored (\d+) records/,
+    /Skipped (\d+) records/,
+    /Processed records by stream: {(.*)}/,
+    /Would write records by model: {(.*)}/,
+  ];
+
+  return lines
+    .map((line) => {
+      const regex = regexes.find((r) => r.test(line));
+      return regex ? (regex.exec(line)?.[0] ?? null) : null;
+    })
+    .filter((line): line is string => line !== null);
+}
+
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
@@ -42,34 +87,8 @@ export const destinationWriteTest = async (
     outputDir = null,
   } = options;
 
-  // Setup file streams if output directory is specified
-  const streams = outputDir
-    ? (() => {
-        if (!fs.existsSync(outputDir)) {
-          try {
-            fs.mkdirSync(outputDir, {recursive: true});
-          } catch (error) {
-            throw new Error(`Failed to create output directory: ${error}`);
-          }
-        }
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const stdoutPath = path.join(outputDir, `stdout-${timestamp}.log`);
-        const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
-        try {
-          fs.createWriteStream(stdoutPath);
-          fs.createWriteStream(stderrPath);
-        } catch (error) {
-          throw new Error(
-            `Failed to create output log files (in outputDir ${outputDir}): ${error}`
-          );
-        }
-        const stdout = fs.createWriteStream(stdoutPath);
-        const stderr = fs.createWriteStream(stderrPath);
-        return {stdout, stderr, timestamp, stdoutPath, stderrPath};
-      })()
-    : null;
+  const streams = outputDir ? createLogStreams(outputDir) : null;
 
-  // Run CLI command
   const cli = await CLI.runWith([
     'write',
     '--config',
@@ -79,40 +98,21 @@ export const destinationWriteTest = async (
     '--dry-run',
   ]);
 
-  // Setup streams and process input
   if (streams) {
     cli.stdout.pipe(streams.stdout);
     cli.stderr.pipe(streams.stderr);
   }
+
   cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
-  // Process output
   const stdoutLines = await readLines(cli.stdout);
-  const matches: string[] = [];
-
-  stdoutLines.forEach((line) => {
-    const regexes = [
-      /Processed (\d+) records/,
-      /Would write (\d+) records/,
-      /Errored (\d+) records/,
-      /Skipped (\d+) records/,
-      /Processed records by stream: {(.*)}/,
-      /Would write records by model: {(.*)}/,
-    ];
-
-    const matchedLine = regexes.find((regex) => regex.test(line));
-    if (matchedLine) {
-      matches.push(matchedLine.exec(line)[0]);
-    }
-  });
-
-  expect(matches).toMatchSnapshot();
+  const matchedLines = extractMatchLines(stdoutLines);
+  expect(matchedLines).toMatchSnapshot();
 
   if (checkRecordsData) {
     checkRecordsData(readRecordData(stdoutLines));
   }
 
-  // Close streams and log output files
   if (streams) {
     streams.stdout.end();
     streams.stderr.end();
