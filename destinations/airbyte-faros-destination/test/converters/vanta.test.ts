@@ -6,7 +6,6 @@ import {
 } from 'faros-airbyte-testing-tools';
 import * as fs from 'fs';
 import {getLocal, Mockttp} from 'mockttp';
-import * as path from 'path';
 
 import {Vulnerabilities} from '../../src/converters/vanta/vulnerabilities';
 
@@ -129,36 +128,13 @@ describe('vanta', () => {
 
   test('vulnerabilities', async () => {
     const configPath = await getTempConfig(mockttp);
-    const outputDir = path.join(__dirname, '..', 'test-output');
-
-    // Create output directory if it doesn't exist
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, {recursive: true});
-    }
 
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/vanta/catalog.json',
       inputRecordsPath: 'vanta/vulnerability_records.log',
       checkRecordsData: (records) => {
-        // Write records to a file
-        const outputPath = path.join(
-          outputDir,
-          'vulnerability-test-output.json'
-        );
-        fs.writeFileSync(
-          outputPath,
-          JSON.stringify(
-            {
-              timestamp: new Date().toISOString(),
-              records: records,
-            },
-            null,
-            2
-          )
-        );
-        console.log(`Test output written to: ${outputPath}`);
-
+        console.log('Processed records:', JSON.stringify(records, null, 2));
         expect(records).toMatchSnapshot();
       },
     });
