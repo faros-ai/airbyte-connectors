@@ -78,20 +78,23 @@ export const destinationWriteTest = async (
 
   // Process output
   const stdoutLines = await readLines(cli.stdout);
-  const matches = stdoutLines
-    .map((line) => {
-      const regexes = [
-        /Processed (\d+) records/,
-        /Would write (\d+) records/,
-        /Errored (\d+) records/,
-        /Skipped (\d+) records/,
-        /Processed records by stream: {(.*)}/,
-        /Would write records by model: {(.*)}/,
-      ];
-      const match = regexes.find((regex) => regex.test(line));
-      return match ? match.exec(line)[0] : null;
-    })
-    .filter(Boolean);
+  const matches: string[] = [];
+
+  stdoutLines.forEach((line) => {
+    const regexes = [
+      /Processed (\d+) records/,
+      /Would write (\d+) records/,
+      /Errored (\d+) records/,
+      /Skipped (\d+) records/,
+      /Processed records by stream: {(.*)}/,
+      /Would write records by model: {(.*)}/,
+    ];
+
+    const matchedLine = regexes.find((regex) => regex.test(line));
+    if (matchedLine) {
+      matches.push(matchedLine.exec(line)[0]);
+    }
+  });
 
   expect(matches).toMatchSnapshot();
 
