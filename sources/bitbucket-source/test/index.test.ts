@@ -1,7 +1,7 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec
+  AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
   customStreamsTest,
@@ -9,7 +9,7 @@ import {
   readTestFileAsJSON,
   readTestResourceAsJSON,
   sourceReadTest,
-  sourceSchemaTest
+  sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
@@ -19,7 +19,6 @@ import {CustomStreamNames} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

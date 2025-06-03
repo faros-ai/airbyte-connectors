@@ -2,11 +2,9 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
-import {
-  readResourceAsJSON
-} from 'faros-airbyte-testing-tools';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 import path from 'path';
 import {VError} from 'verror';
 
@@ -26,7 +24,6 @@ describe('index', () => {
   beforeEach(() => {
     SheetsReader.instance = sheets;
   });
-
 
   test('spec', async () => {
     const source = new sut.SheetsSource(logger);

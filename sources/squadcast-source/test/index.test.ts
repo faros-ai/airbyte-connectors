@@ -2,11 +2,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import nock from 'nock';
 import {VError} from 'verror';
@@ -15,7 +15,6 @@ import * as sut from '../src/index';
 import {AUTH_URL, Squadcast} from '../src/squadcast';
 
 const SquadcastInstance = Squadcast.instance;
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

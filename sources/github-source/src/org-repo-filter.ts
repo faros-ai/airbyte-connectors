@@ -1,5 +1,9 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {VCSFilter, VCSAdapter, RepoInclusion} from 'faros-airbyte-common/common';
+import {
+  RepoInclusion,
+  VCSAdapter,
+  VCSFilter,
+} from 'faros-airbyte-common/common';
 import {Organization, Repository} from 'faros-airbyte-common/github';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
@@ -47,14 +51,15 @@ type GitHubConfigFields = {
   excludedOrgs: keyof GitHubConfig & 'excluded_organizations';
   repos: keyof GitHubConfig & 'repositories';
   excludedRepos: keyof GitHubConfig & 'excluded_repositories';
-  useFarosGraphReposSelection: keyof GitHubConfig & 'use_faros_graph_repos_selection';
+  useFarosGraphReposSelection: keyof GitHubConfig &
+    'use_faros_graph_repos_selection';
   graph: keyof GitHubConfig & 'graph';
 };
 
 export class OrgRepoFilter {
   private readonly vcsFilter: VCSFilter<GitHubConfig, Organization, Repository>;
   private static _instance: OrgRepoFilter;
-  
+
   static instance(
     config: GitHubConfig,
     logger: AirbyteLogger,
@@ -78,7 +83,7 @@ export class OrgRepoFilter {
       repos: 'repositories',
       excludedRepos: 'excluded_repositories',
       useFarosGraphReposSelection: 'use_faros_graph_repos_selection',
-      graph: 'graph'
+      graph: 'graph',
     };
 
     this.vcsFilter = new VCSFilter({
@@ -91,11 +96,12 @@ export class OrgRepoFilter {
         orgs: 'organizations',
         repo: 'repository',
         repos: 'repositories',
-        platform: 'GitHub'
+        platform: 'GitHub',
       },
       vcsAdapter: new GitHubVCSAdapter(config, logger),
       defaultGraph: DEFAULT_FAROS_GRAPH,
-      useFarosGraphReposSelection: config.use_faros_graph_repos_selection ?? false
+      useFarosGraphReposSelection:
+        config.use_faros_graph_repos_selection ?? false,
     });
   }
 
@@ -117,9 +123,10 @@ export class OrgRepoFilter {
     }
   }
 
-
   @Memoize()
-  async getRepositories(org: string): Promise<ReadonlyArray<RepoInclusion<Repository>>> {
+  async getRepositories(
+    org: string
+  ): Promise<ReadonlyArray<RepoInclusion<Repository>>> {
     return this.vcsFilter.getRepos(org);
   }
 

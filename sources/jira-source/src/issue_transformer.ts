@@ -554,10 +554,10 @@ export class IssueTransformer {
     let val;
     if (jsonValue?.value != null) {
       val = jsonValue.value;
-      
+
       // Check for child value in cascading fields
       if (jsonValue.child?.value != null) {
-        val = `${val} - ${jsonValue.child.value}`;  // Format as "Parent - Child"
+        val = `${val} - ${jsonValue.child.value}`; // Format as "Parent - Child"
       }
     } else if (jsonValue?.name != null) {
       val = jsonValue.name;

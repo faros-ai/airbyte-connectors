@@ -1,6 +1,3 @@
-import fs from 'fs';
-import {Dictionary} from 'ts-essentials';
-
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -11,6 +8,8 @@ import {
   AirbyteStateMessage,
   Data,
 } from 'faros-airbyte-cdk';
+import fs from 'fs';
+import {Dictionary} from 'ts-essentials';
 
 export function readTestResourceFile(fileName: string): string {
   return fs.readFileSync(`test/resources/${fileName}`, 'utf8');

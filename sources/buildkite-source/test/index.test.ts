@@ -3,16 +3,15 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 
 import {Buildkite} from '../src/buildkite/buildkite';
 import * as sut from '../src/index';
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

@@ -1,5 +1,9 @@
+import {
+  destinationWriteTest,
+  initMockttp,
+  tempConfig,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
-import {destinationWriteTest, initMockttp, tempConfig} from 'faros-airbyte-testing-tools';
 
 describe('faros_jira', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

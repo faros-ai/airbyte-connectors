@@ -4,15 +4,12 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
-import {
-  readResourceAsJSON
-} from 'faros-airbyte-testing-tools';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {CustomerIOSource} from '../src';
-
 
 describe('index', () => {
   let source: CustomerIOSource;

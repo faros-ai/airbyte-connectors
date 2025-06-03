@@ -164,7 +164,8 @@ export class Wolken {
       config.domain
     );
 
-    const rateLimit = config.rate_limit_per_minute ?? DEFAULT_RATE_LIMIT_PER_MINUTE;
+    const rateLimit =
+      config.rate_limit_per_minute ?? DEFAULT_RATE_LIMIT_PER_MINUTE;
     const limiter = new Bottleneck({
       reservoir: rateLimit,
       reservoirRefreshAmount: rateLimit,
@@ -197,13 +198,12 @@ export class Wolken {
     try {
       let done = false;
       while (!done) {
-        const response = await this.limiter.schedule(async () => this.httpClient.get(
-          `${endpoint}/${this.pageSize}/${offset}`,
-          {
+        const response = await this.limiter.schedule(async () =>
+          this.httpClient.get(`${endpoint}/${this.pageSize}/${offset}`, {
             headers: {Authorization: `Bearer ${token}`},
             params,
-          }
-        ));
+          })
+        );
 
         const items = response?.data?.data ?? [];
 
@@ -232,14 +232,16 @@ export class Wolken {
         yield user;
       } else {
         try {
-          const response = await this.limiter.schedule(async () => this.httpClient.get(
-            `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
-            {
-              headers: {
-                Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
-              },
-            }
-          ));
+          const response = await this.limiter.schedule(async () =>
+            this.httpClient.get(
+              `/api/masters/hr/user?userPsNo=${user.userPsNo}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
+                },
+              }
+            )
+          );
           const responseData = get(response, 'data.data');
           if (Array.isArray(responseData) && responseData.length > 0) {
             yield responseData[0];
@@ -271,14 +273,13 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.limiter.schedule(async () => this.httpClient.get(
-          `/api/incidents/${incident.ticketId}`,
-          {
+        const response = await this.limiter.schedule(async () =>
+          this.httpClient.get(`/api/incidents/${incident.ticketId}`, {
             headers: {
               Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
             },
-          }
-        ));
+          })
+        );
         const responseData = get(response, 'data.data');
         if (Array.isArray(responseData) && responseData.length > 0) {
           yield responseData[0];
@@ -305,14 +306,16 @@ export class Wolken {
       params
     )) {
       try {
-        const response = await this.limiter.schedule(async () => this.httpClient.get(`/api/ci/get_ci`, {
-          headers: {
-            Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
-          },
-          params: {
-            ciId: ci.ciId,
-          },
-        }));
+        const response = await this.limiter.schedule(async () =>
+          this.httpClient.get(`/api/ci/get_ci`, {
+            headers: {
+              Authorization: `Bearer ${await this.tokenManager.getAccessToken()}`,
+            },
+            params: {
+              ciId: ci.ciId,
+            },
+          })
+        );
         const responseData = response?.data?.data;
         if (Array.isArray(responseData) && responseData.length > 0) {
           const ci = responseData[0] as ConfigurationItem;

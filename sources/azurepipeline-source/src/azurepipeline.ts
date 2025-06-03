@@ -124,7 +124,7 @@ export class AzurePipelines extends AzureDevOps {
     // Handle Azure DevOps Server (2020) will return JSON with a value property
     const runs: AzureRun[] = Array.isArray(response)
       ? response
-      : response.value ?? [];
+      : (response.value ?? []);
 
     for (const run of runs) {
       const finishedDate = Utils.toDate(run.finishedDate);

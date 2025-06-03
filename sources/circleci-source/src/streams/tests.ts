@@ -1,8 +1,8 @@
 import {SyncMode} from 'faros-airbyte-cdk';
+import {TestMetadata} from 'faros-airbyte-common/circleci';
 import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../circleci/circleci';
-import {TestMetadata} from 'faros-airbyte-common/circleci';
 import {StreamSlice, StreamWithProjectSlices} from './common';
 
 type TestsState = Dictionary<{lastUpdatedAt?: string}>;

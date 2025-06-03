@@ -2,14 +2,14 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
+import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 import {
   readResourceAsJSON,
   readTestFileAsJSON,
-  sourceCheckTest
+  sourceCheckTest,
 } from 'faros-airbyte-testing-tools';
-import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 import {omit} from 'lodash';
 import {DateTime} from 'luxon';
 

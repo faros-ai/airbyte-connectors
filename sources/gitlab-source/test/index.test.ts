@@ -1,13 +1,13 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec
+  AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest
+  sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import fs from 'fs-extra';
 

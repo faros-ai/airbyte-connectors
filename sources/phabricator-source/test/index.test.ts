@@ -2,18 +2,17 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Phabricator} from '../src/phabricator';
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

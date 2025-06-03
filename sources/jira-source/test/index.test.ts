@@ -1,15 +1,11 @@
+import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
 import {
-  AirbyteLogger,
-  AirbyteLogLevel,
-  AirbyteSpec
-} from 'faros-airbyte-cdk';
-import {
-  readResourceAsJSON,
   customStreamsTest,
+  readResourceAsJSON,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest
+  sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import {FarosClient} from 'faros-js-client';
 import fs from 'fs-extra';
@@ -20,7 +16,6 @@ import {ProjectBoardFilter} from '../src/project-board-filter';
 import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
-
 
 afterEach(() => {
   jest.useRealTimers();
@@ -82,7 +77,7 @@ describe('index', () => {
       return {
         getProjects: jest.fn().mockImplementation(async () => {
           return readTestResourceAsJSON('projects/projects.json');
-        })
+        }),
       };
     });
 
@@ -337,7 +332,7 @@ describe('index', () => {
               ...agileImplementation.v2,
               ...v2,
             },
-            getAllProjects
+            getAllProjects,
           },
           false,
           res.config as JiraConfig,

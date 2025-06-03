@@ -1,5 +1,6 @@
-import {Incidents} from '../../src/converters/servicenow/incidents';
 import {generateBasicTestSuite} from 'faros-airbyte-testing-tools';
+
+import {Incidents} from '../../src/converters/servicenow/incidents';
 
 generateBasicTestSuite({sourceName: 'servicenow'});
 

@@ -2,11 +2,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
@@ -28,7 +28,6 @@ describe('index', () => {
   beforeEach(() => {
     BambooHR.instance = bambooHRInstance;
   });
-
 
   const fieldsResource: any[] = readTestFileAsJSON('fields_input.json');
   const usersResource: any = readTestFileAsJSON('users_input.json');

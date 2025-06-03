@@ -1,7 +1,7 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec
+  AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
   customStreamsTest,
@@ -10,7 +10,7 @@ import {
   readTestResourceFile,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest
+  sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import {merge} from 'lodash';
 import VError from 'verror';
