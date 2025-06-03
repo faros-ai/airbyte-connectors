@@ -268,7 +268,7 @@ export abstract class GitlabConverter extends Converter {
             name: finalUser.name,
             email: finalUser.email,
             htmlUrl: finalUser.web_url,
-            type: this.vcs_UserType(finalUser),
+            type: {category: 'User', detail: 'user'},
           },
           (value) => isNil(value) || isEmpty(value)
         ),
@@ -277,12 +277,7 @@ export abstract class GitlabConverter extends Converter {
     return res;
   }
 
-  private vcs_UserType(user: PartialUser): {
-    category: string;
-    detail: string;
-  } {
-    return {category: 'User', detail: 'user'};
-  }
+
 
   private getFinalUser(users: Array<PartialUser>): PartialUser {
     const finalUser: PartialUser = {};
