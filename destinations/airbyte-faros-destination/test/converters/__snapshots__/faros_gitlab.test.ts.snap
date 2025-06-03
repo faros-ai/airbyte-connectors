@@ -81,7 +81,7 @@ Array [
       "source": "GitLab",
       "type": Object {
         "category": "User",
-        "detail": "active",
+        "detail": "user",
       },
       "uid": "ypc-faros",
     },
