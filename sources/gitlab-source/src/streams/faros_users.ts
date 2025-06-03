@@ -11,7 +11,7 @@ export class FarosUsers extends StreamWithGroupSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['group', 'username'];
+    return ['group', 'id'];
   }
 
   // Although not actually an incremental stream, we run it in incremental mode
