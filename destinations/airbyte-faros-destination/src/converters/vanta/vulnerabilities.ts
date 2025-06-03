@@ -184,7 +184,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     return null;
   }
 
-  private grabVulnerabilityIdentifierFromOtherFields(
+  private grabVulnerabilityIdentifierFromName(
     vulnerability: Vulnerability
   ): VulnerabilityIdentifier | null {
     if (vulnerability.name) {
@@ -233,7 +233,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     }
     if (!identifierRecord) {
       identifierRecord =
-        this.grabVulnerabilityIdentifierFromOtherFields(vulnerability);
+        this.grabVulnerabilityIdentifierFromName(vulnerability);
     }
     if (!identifierRecord) {
       this.vulnerabilitiesWithoutIdentifier.add(
