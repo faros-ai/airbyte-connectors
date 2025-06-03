@@ -47,7 +47,7 @@ export class WolkenSource extends AirbyteSourceBase<WolkenConfig> {
     return [
       new ConfigurationItems(config, this.logger),
       new Incidents(config, this.logger),
-      new Users(config, this.logger)
+      new Users(config, this.logger),
     ];
   }
 

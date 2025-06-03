@@ -65,7 +65,7 @@ export class Harness {
     err?.response?.errors?.forEach((e) => {
       message += e.message;
     });
-    return message ? message : err.message ?? '';
+    return message ? message : (err.message ?? '');
   }
 
   async checkConnection(): Promise<void> {

@@ -6,6 +6,13 @@ import axios, {
 } from 'axios';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
+  Job,
+  Pipeline,
+  Project,
+  TestMetadata,
+  Workflow,
+} from 'faros-airbyte-common/circleci';
+import {
   RoundRobinConfig,
   validateBucketingConfig,
 } from 'faros-airbyte-common/common';
@@ -13,8 +20,6 @@ import https from 'https';
 import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-
-import {Job, Pipeline, Project, TestMetadata, Workflow} from 'faros-airbyte-common/circleci';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;

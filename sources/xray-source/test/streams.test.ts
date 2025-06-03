@@ -1,11 +1,9 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
-import {
-  readTestFileAsJSON
-} from 'faros-airbyte-testing-tools';
+import {readTestFileAsJSON} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {Xray} from '../src/xray';

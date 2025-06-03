@@ -30,7 +30,9 @@ export class CustomerIO {
     axiosInstance?: AxiosInstance
   ): CustomerIO {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS));
+    startDate.setDate(
+      startDate.getDate() - (config.cutoff_days ?? DEFAULT_CUTOFF_DAYS)
+    );
     return new CustomerIO(
       axiosInstance ??
         axios.create({
@@ -69,9 +71,8 @@ export class CustomerIO {
       updated ?? 0,
       this.startDate.getTime() / 1000
     );
-    const response = await this.axios.get<CustomerIOListCampaignsResponse>(
-      '/campaigns'
-    );
+    const response =
+      await this.axios.get<CustomerIOListCampaignsResponse>('/campaigns');
 
     for (const campaign of response.data.campaigns) {
       if (campaign.updated >= updatedMaxSecs) {
@@ -120,9 +121,8 @@ export class CustomerIO {
       updated ?? 0,
       this.startDate.getTime() / 1000
     );
-    const response = await this.axios.get<CustomerIOListNewsletterResponse>(
-      '/newsletters'
-    );
+    const response =
+      await this.axios.get<CustomerIOListNewsletterResponse>('/newsletters');
 
     for (const newsletter of response.data.newsletters) {
       if (newsletter.updated >= updatedMaxSecs) {

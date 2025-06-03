@@ -19,7 +19,10 @@ interface IncidentState {
 }
 
 export class Incidents extends AirbyteStreamBase {
-  constructor(readonly config: PagerdutyConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: PagerdutyConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 

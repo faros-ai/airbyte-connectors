@@ -2,11 +2,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
@@ -34,7 +34,6 @@ describe('index', () => {
   beforeEach(() => {
     Backlog.instance = backlogInstance;
   });
-
 
   test('spec', async () => {
     const source = new sut.BacklogSource(logger);

@@ -1,6 +1,14 @@
-import {CLI, destinationWriteTest, initMockttp, read, tempConfig} from 'faros-airbyte-testing-tools';
-import {AirbyteConnectionStatus, AirbyteConnectionStatusMessage} from 'faros-airbyte-cdk';
-
+import {
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+} from 'faros-airbyte-cdk';
+import {
+  CLI,
+  destinationWriteTest,
+  initMockttp,
+  read,
+  tempConfig,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 import os from 'os';
 

@@ -22,7 +22,10 @@ export class ConfigurationItems extends AirbyteStreamBase {
 
   async *readRecords(): AsyncGenerator<ConfigurationItem> {
     const wolken = Wolken.instance(this.config, this.logger);
-    if (Array.isArray(this.config.configuration_items_type_ids) && this.config.configuration_items_type_ids.length > 0) {
+    if (
+      Array.isArray(this.config.configuration_items_type_ids) &&
+      this.config.configuration_items_type_ids.length > 0
+    ) {
       for (const typeId of this.config.configuration_items_type_ids) {
         yield* wolken.getConfigurationItems(typeId);
       }

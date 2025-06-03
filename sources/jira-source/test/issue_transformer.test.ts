@@ -26,7 +26,9 @@ describe('IssueTransformer', () => {
     });
 
     test('should return displayName when only displayName is present', () => {
-      const result = transformer.retrieveFieldValue({displayName: 'test-display-name'});
+      const result = transformer.retrieveFieldValue({
+        displayName: 'test-display-name',
+      });
       expect(result).toBe('test-display-name');
     });
 
@@ -34,8 +36,8 @@ describe('IssueTransformer', () => {
       const result = transformer.retrieveFieldValue({
         value: 'Parent Value',
         child: {
-          value: 'Child Value'
-        }
+          value: 'Child Value',
+        },
       });
       expect(result).toBe('Parent Value - Child Value');
     });
@@ -43,7 +45,7 @@ describe('IssueTransformer', () => {
     test('should handle cascading fields when child is null', () => {
       const result = transformer.retrieveFieldValue({
         value: 'Parent Value',
-        child: null
+        child: null,
       });
       expect(result).toBe('Parent Value');
     });
@@ -52,8 +54,8 @@ describe('IssueTransformer', () => {
       const result = transformer.retrieveFieldValue({
         value: 'Parent Value',
         child: {
-          value: null
-        }
+          value: null,
+        },
       });
       expect(result).toBe('Parent Value');
     });

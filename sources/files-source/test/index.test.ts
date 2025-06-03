@@ -2,11 +2,9 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
-import {
-  readResourceAsJSON
-} from 'faros-airbyte-testing-tools';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {FilesConfig, S3Reader} from '../lib/files-reader';
@@ -36,7 +34,6 @@ describe('index', () => {
   beforeEach(() => {
     FilesReader.instance = files;
   });
-
 
   const source = new sut.FilesSource(logger);
 

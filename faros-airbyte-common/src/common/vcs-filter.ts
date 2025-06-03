@@ -96,16 +96,16 @@ type FilterConfig = {
 
 /**
  * Generic VCS organization/repository filter
- * 
+ *
  * This class provides a reusable filtering mechanism for VCS sources that follow
  * a two-level hierarchy (organization/group/workspace → repository). It supports:
- * 
+ *
  * - Include/exclude patterns for both levels
  * - Case-insensitive filtering
  * - Faros Graph integration for dynamic repository selection
  * - Configurable entity names and field mappings
  * - Comprehensive validation and error handling
- * 
+ *
  * @example
  * ```typescript
  * // GitHub usage
@@ -116,7 +116,7 @@ type FilterConfig = {
  *   configFields: {
  *     orgs: 'organizations',
  *     excludedOrgs: 'excluded_organizations',
- *     repos: 'repositories', 
+ *     repos: 'repositories',
  *     excludedRepos: 'excluded_repositories',
  *     useFarosGraphReposSelection: 'use_faros_graph_repos_selection',
  *     graph: 'graph'
@@ -131,7 +131,7 @@ type FilterConfig = {
  *   vcsAdapter: new GitHubAdapter(githubClient),
  *   defaultGraph: 'default-graph'
  * });
- * 
+ *
  * // GitLab usage
  * const filter = new VCSFilter({
  *   config: gitlabConfig,
@@ -144,7 +144,7 @@ type FilterConfig = {
  *   },
  *   entityNames: {
  *     org: 'group',
- *     orgs: 'groups', 
+ *     orgs: 'groups',
  *     repo: 'repository',
  *     repos: 'repositories',
  *     platform: 'GitLab'
@@ -157,19 +157,27 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
   private readonly filterConfig: FilterConfig;
   private readonly useFarosGraphReposSelection: boolean;
   private orgs?: Set<string>;
-  private reposByOrg: Map<string, Map<string, RepoInclusion<TRepo>>> = new Map();
+  private reposByOrg: Map<string, Map<string, RepoInclusion<TRepo>>> =
+    new Map();
   private loadedSelectedRepos: boolean = false;
 
   constructor(private readonly options: VCSFilterConfig<TConfig, TOrg, TRepo>) {
     const {config, logger, configFields, entityNames} = options;
 
-    this.useFarosGraphReposSelection = 
-      config[configFields.useFarosGraphReposSelection || 'use_faros_graph_repos_selection'] ?? false;
+    this.useFarosGraphReposSelection =
+      config[
+        configFields.useFarosGraphReposSelection ||
+          'use_faros_graph_repos_selection'
+      ] ?? false;
 
     const orgs = config[configFields.orgs] as string[] | undefined;
     const repos = config[configFields.repos] as string[] | undefined;
-    const excludedRepos = config[configFields.excludedRepos] as string[] | undefined;
-    let excludedOrgs = config[configFields.excludedOrgs] as string[] | undefined;
+    const excludedRepos = config[configFields.excludedRepos] as
+      | string[]
+      | undefined;
+    let excludedOrgs = config[configFields.excludedOrgs] as
+      | string[]
+      | undefined;
 
     if (orgs?.length && excludedOrgs?.length) {
       logger.warn(
@@ -229,8 +237,8 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
       throw new VError(
         {
           info: {
-            code: 'NO_VISIBLE_ORGS'
-          }
+            code: 'NO_VISIBLE_ORGS',
+          },
         },
         `No visible ${this.options.entityNames.orgs} remain after applying inclusion and exclusion filters`
       );
@@ -252,13 +260,13 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
       const repos = new Map<string, RepoInclusion<TRepo>>();
       const {vcsAdapter, logger, entityNames} = this.options;
       const visibleRepos = await vcsAdapter.getRepos(lowerOrg);
-      
+
       if (!visibleRepos.length) {
         logger.warn(
           `No visible ${entityNames.repos} found for ${entityNames.org} ${lowerOrg}`
         );
       }
-      
+
       for (const repo of visibleRepos) {
         const lowerRepoName = toLower(vcsAdapter.getRepoName(repo));
         const {included, syncRepoData} = await this.getRepoInclusion(
@@ -317,8 +325,8 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
     const {repo} = this.reposByOrg.get(lowerOrg)?.get(lowerRepoName) ?? {};
     if (!repo) {
       throw new VError(
-        `${this.options.entityNames.repo} not found: %s/%s`, 
-        lowerOrg, 
+        `${this.options.entityNames.repo} not found: %s/%s`,
+        lowerOrg,
         lowerRepoName
       );
     }
@@ -359,7 +367,7 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
     }
 
     const {vcsAdapter, logger, entityNames} = this.options;
-    
+
     try {
       await vcsAdapter.getOrg(lowerOrg);
       return true;
@@ -376,19 +384,21 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
     if (this.loadedSelectedRepos) {
       return;
     }
-    
+
     if (this.useFarosGraphReposSelection) {
-      const {farosClient, config, configFields, entityNames, defaultGraph} = this.options;
+      const {farosClient, config, configFields, entityNames, defaultGraph} =
+        this.options;
       const graphName = config[configFields.graph || 'graph'] ?? defaultGraph;
-      
+
       const farosOptions = await getFarosOptions(
         'repository',
         entityNames.platform,
         farosClient,
         graphName
       );
-      
-      const {included: repositories, excluded: excludedRepositories} = farosOptions;
+
+      const {included: repositories, excluded: excludedRepositories} =
+        farosOptions;
       const {reposByOrg, excludedReposByOrg} = this.getSelectedReposByOrg(
         Array.from(repositories),
         Array.from(excludedRepositories)
@@ -409,14 +419,14 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
     const reposByOrg = new Map<string, Set<string>>();
     const excludedReposByOrg = new Map<string, Set<string>>();
     const {logger, entityNames} = this.options;
-    
+
     if (repositories?.length) {
       collectReposByOrg(reposByOrg, repositories);
     }
     if (excludedRepositories?.length) {
       collectReposByOrg(excludedReposByOrg, excludedRepositories);
     }
-    
+
     for (const org of reposByOrg.keys()) {
       if (excludedReposByOrg.has(org)) {
         logger.warn(
@@ -425,7 +435,7 @@ export class VCSFilter<TConfig extends Record<string, any>, TOrg, TRepo> {
         excludedReposByOrg.delete(org);
       }
     }
-    
+
     return {reposByOrg, excludedReposByOrg};
   }
 

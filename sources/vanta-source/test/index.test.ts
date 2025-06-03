@@ -1,15 +1,11 @@
 import axios, {AxiosInstance} from 'axios';
+import {AirbyteLogger, AirbyteLogLevel, AirbyteSpec} from 'faros-airbyte-cdk';
 import {
-  AirbyteLogger,
-  AirbyteLogLevel,
-  AirbyteSpec
-} from 'faros-airbyte-cdk';
-import {
+  readResourceAsJSON,
+  readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
-  readResourceAsJSON,
-  readTestResourceAsJSON
 } from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';

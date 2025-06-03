@@ -371,13 +371,16 @@ export abstract class AzureDevOps {
   private async *getGraphUsers(): AsyncGenerator<GraphUser> {
     let continuationToken: string;
     do {
-      const res = await this.client.graph.get<types.GraphUserResponse>(`users`, {
-        params: {
-          'api-version': DEFAULT_GRAPH_API_VERSION,
-          subjectTypes: 'msa,aad,imp',
-          continuationToken,
-        },
-      });
+      const res = await this.client.graph.get<types.GraphUserResponse>(
+        `users`,
+        {
+          params: {
+            'api-version': DEFAULT_GRAPH_API_VERSION,
+            subjectTypes: 'msa,aad,imp',
+            continuationToken,
+          },
+        }
+      );
       continuationToken = res?.headers?.['X-MS-ContinuationToken'];
       for (const item of res?.data?.value ?? []) {
         yield item;

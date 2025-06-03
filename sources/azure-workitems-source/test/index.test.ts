@@ -2,14 +2,14 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
+import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 import {
   readResourceAsJSON,
   readTestFileAsJSON,
-  sourceCheckTest
+  sourceCheckTest,
 } from 'faros-airbyte-testing-tools';
-import {AzureDevOpsClient} from 'faros-airbyte-common/azure-devops';
 
 import {AzureWorkitems} from '../src/azure-workitems';
 import * as sut from '../src/index';
@@ -32,7 +32,6 @@ describe('index', () => {
   beforeEach(() => {
     AzureWorkitems.instance = azureWorkitem;
   });
-
 
   test('spec', async () => {
     const source = new sut.AzureWorkitemsSource(logger);
@@ -252,7 +251,7 @@ describe('index', () => {
       undefined,
       {name: 'test', id: '123'},
       {
-        'test': {
+        test: {
           cutoff: dateT,
         },
       }

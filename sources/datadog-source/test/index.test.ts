@@ -3,19 +3,18 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   customStreamsTest,
   readResourceAsJSON,
   readTestFileAsJSON,
-  sourceCheckTest
+  sourceCheckTest,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {Datadog, DatadogClient, DatadogConfig} from '../src/datadog';
 import * as sut from '../src/index';
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

@@ -2,11 +2,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
@@ -14,8 +14,6 @@ import {Docker} from '../src/docker';
 import * as sut from '../src/index';
 
 const dockerInstance = Docker.instance;
-
-
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(

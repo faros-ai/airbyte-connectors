@@ -3,11 +3,11 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
-  SyncMode
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
-  readTestFileAsJSON
+  readTestFileAsJSON,
 } from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
@@ -17,7 +17,6 @@ import {
   SemaphoreCI,
   UNAUTHORIZED_ERROR_MESSAGE,
 } from '../src/semaphoreci/semaphoreci';
-
 
 function generateLinkHeaders(first = 1, next = 0, last = 1): any {
   const baseLinkHeader = `<http://mock.com/api/v1alpha/pipelines?page=${first}>; rel="first", <http://mock.com/api/v1alpha/pipelines?page=${last}>; rel="last"`;
