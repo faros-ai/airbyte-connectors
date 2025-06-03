@@ -169,12 +169,14 @@ export abstract class Vulnerabilities extends VantaConverter {
     if (!value) {
       return null;
     }
-    const cveMatch = value.match(/(CVE-\d{4}-\d{4,7})/);
+    const cveRegex = /(CVE-\d{4}-\d{4,7})/;
+    const cveMatch = cveRegex.exec(value);
     if (cveMatch) {
       return ['CVE', cveMatch[1]];
     }
 
-    const ghsaMatch = value.match(/(GHSA-[\w]{4}-[\w]{4}-[\w]{4})/);
+    const ghsaRegex = /(GHSA-[\w]{4}-[\w]{4}-[\w]{4})/;
+    const ghsaMatch = ghsaRegex.exec(value);
     if (ghsaMatch) {
       return ['GHSA', ghsaMatch[1]];
     }

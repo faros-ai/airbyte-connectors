@@ -4,7 +4,6 @@ import {
   readTestResourceAsJSON,
   tempConfig,
 } from 'faros-airbyte-testing-tools';
-import * as fs from 'fs';
 import {getLocal, Mockttp} from 'mockttp';
 
 import {Vulnerabilities} from '../../src/converters/vanta/vulnerabilities';
