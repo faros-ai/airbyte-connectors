@@ -24,6 +24,7 @@ import {
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosGroups} from './streams/faros_groups';
 import {FarosProjects} from './streams/faros_projects';
+import {FarosUsers} from './streams/faros_users';
 import {GitLabConfig} from './types';
 
 export function mainCommand(): Command {
@@ -67,6 +68,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     return [
       new FarosGroups(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
+      new FarosUsers(config, this.logger, farosClient),
     ];
   }
 

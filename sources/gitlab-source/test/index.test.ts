@@ -1,13 +1,13 @@
 import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
-  AirbyteSpec
+  AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
-  sourceSchemaTest
+  sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import fs from 'fs-extra';
 
@@ -210,6 +210,62 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'faros_projects/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - faros users', async () => {
+    const gitlab = {
+      getGroups: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          parent_id: null,
+          name: 'Test Group',
+          path: 'test-group',
+          web_url: 'https://gitlab.com/test-group',
+          description: 'Test group description',
+          visibility: 'public',
+          created_at: '2021-01-01T00:00:00Z',
+          updated_at: '2021-01-01T00:00:00Z',
+        },
+      ]),
+      getGroupMembers: jest.fn().mockResolvedValue([
+        {
+          id: 1,
+          username: 'user1',
+          name: 'Test User 1',
+          email: 'user1@example.com',
+          state: 'active',
+          web_url: 'https://gitlab.com/user1',
+          created_at: '2021-01-01T00:00:00Z',
+          updated_at: '2021-01-01T00:00:00Z',
+        },
+        {
+          id: 2,
+          username: 'user2',
+          name: 'Test User 2',
+          email: 'user2@example.com',
+          state: 'active',
+          web_url: 'https://gitlab.com/user2',
+          created_at: '2021-02-01T00:00:00Z',
+          updated_at: '2021-02-01T00:00:00Z',
+        },
+      ]),
+    };
+
+    const groupFilter = {
+      getGroups: jest.fn().mockResolvedValue(['test-group']),
+    };
+
+    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
+    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'users/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },

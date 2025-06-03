@@ -3,6 +3,17 @@ export type GitLabToken = {
   personal_access_token: string;
 };
 
+export interface User {
+  id: number;
+  username: string;
+  name?: string;
+  email?: string;
+  state: string;
+  web_url: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Group {
   id: string;
   parent_id: string | null;
