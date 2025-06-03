@@ -4,12 +4,11 @@ import {
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
 import * as fs from 'fs';
-import {create} from 'lodash';
 import {getLocal} from 'mockttp';
 import * as path from 'path';
 import {Dictionary} from 'ts-essentials';
 
-import {CLI, read, readLines} from './cli';
+import {CLI, readLines} from './cli';
 import {initMockttp, tempConfig} from './destination-testing-tools';
 import {readTestResourceFile} from './testing-tools';
 
