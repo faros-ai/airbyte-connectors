@@ -49,13 +49,11 @@ export const destinationWriteTest = async (
           fs.mkdirSync(outputDir, {recursive: true});
         }
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const stdout = fs.createWriteStream(
-          path.join(outputDir, `stdout-${timestamp}.log`)
-        );
-        const stderr = fs.createWriteStream(
-          path.join(outputDir, `stderr-${timestamp}.log`)
-        );
-        return {stdout, stderr, timestamp};
+        const stdoutPath = path.join(outputDir, `stdout-${timestamp}.log`);
+        const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
+        const stdout = fs.createWriteStream(stdoutPath);
+        const stderr = fs.createWriteStream(stderrPath);
+        return {stdout, stderr, timestamp, stdoutPath, stderrPath};
       })()
     : null;
 
@@ -108,7 +106,7 @@ export const destinationWriteTest = async (
     streams.stdout.end();
     streams.stderr.end();
     console.log(
-      `Test output written to:\n  ${path.join(outputDir, `stdout-${streams.timestamp}.log`)}\n  ${path.join(outputDir, `stderr-${streams.timestamp}.log`)}`
+      `Test output written to:\n  ${streams.stdoutPath}\n  ${streams.stderrPath}`
     );
   }
 
