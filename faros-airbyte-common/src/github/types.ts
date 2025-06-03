@@ -250,8 +250,12 @@ export type CopilotSeatsEmpty = {
   org: string;
 };
 
-export enum GitHubTool {
-  Copilot = 'GitHubCopilot',
+export enum ToolCategory {
+  CodingAssistant = 'CodingAssistant',
+}
+
+export enum ToolDetail {
+  GitHubCopilot = 'GitHubCopilot',
 }
 
 export type CopilotUsageSummary = {

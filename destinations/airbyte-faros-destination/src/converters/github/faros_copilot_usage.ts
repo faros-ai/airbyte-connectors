@@ -2,8 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   ChatBreakdown,
   CopilotUsageSummary,
-  GitHubTool,
   LanguageEditorBreakdown,
+  ToolCategory,
+  ToolDetail,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
@@ -499,7 +500,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               .concat(
                 // original fields (required) to be included in the digest
                 ...[
-                  GitHubTool.Copilot,
+                  ToolDetail.GitHubCopilot,
                   assistantMetricType,
                   day.toISOString(),
                   org,
@@ -529,7 +530,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               uid: team,
             },
           }),
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: ToolCategory.CodingAssistant, detail: ToolDetail.GitHubCopilot},
           editor,
           language,
           model,

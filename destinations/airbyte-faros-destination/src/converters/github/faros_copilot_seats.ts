@@ -3,7 +3,8 @@ import {
   CopilotSeat,
   CopilotSeatEnded,
   CopilotSeatsStreamRecord,
-  GitHubTool,
+  ToolCategory,
+  ToolDetail,
 } from 'faros-airbyte-common/github';
 import {paginatedQueryV2, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
@@ -15,7 +16,7 @@ import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
 interface UserToolKey {
   user: {uid: string; source: string};
   organization: {uid: string; source: string};
-  tool: {category: GitHubTool};
+  tool: {category: ToolCategory, detail: string};
 }
 
 export class FarosCopilotSeats extends GitHubConverter {
@@ -108,7 +109,7 @@ export class FarosCopilotSeats extends GitHubConverter {
           record: {
             uid: GitHubCommon.digest(
               [
-                GitHubTool.Copilot,
+                ToolDetail.GitHubCopilot,
                 AssistantMetric.LastActivity,
                 recordedAt.toISOString(),
                 activeSeat.org,
@@ -129,7 +130,7 @@ export class FarosCopilotSeats extends GitHubConverter {
               uid: activeSeat.user,
               source: this.streamName.source,
             },
-            tool: {category: GitHubTool.Copilot},
+            tool: {category: ToolCategory.CodingAssistant, detail: ToolDetail.GitHubCopilot},
           },
         });
       }
@@ -150,7 +151,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             uid: org,
             source: this.streamName.source,
           },
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: ToolCategory.CodingAssistant, detail: ToolDetail.GitHubCopilot},
           inactive: false,
         },
       });
@@ -169,7 +170,7 @@ export class FarosCopilotSeats extends GitHubConverter {
           new Map<string, any>([
             ['source', 'GitHub'],
             ['organizationUid', toLower(org)],
-            ['toolCategory', GitHubTool.Copilot],
+            ['toolCategoryDetail', ToolDetail.GitHubCopilot],
             ['inactive', false],
           ])
         );
@@ -222,7 +223,7 @@ function userToolKey(
   return {
     user: {uid: userLogin, source},
     organization: {uid: toLower(orgLogin), source},
-    tool: {category: GitHubTool.Copilot},
+    tool: {category: ToolCategory.CodingAssistant, detail: ToolDetail.GitHubCopilot},
   };
 }
 
@@ -231,6 +232,7 @@ const USER_TOOL_QUERY = `
     $source: String!
     $organizationUid: String!
     $toolCategory: String!
+    $toolDetail: String!
     $inactive: Boolean!
   ) {
     vcs_UserTool(
@@ -245,6 +247,7 @@ const USER_TOOL_QUERY = `
         uid
       }
       toolCategory
+      toolDetail
       inactive
       startedAt
       endedAt

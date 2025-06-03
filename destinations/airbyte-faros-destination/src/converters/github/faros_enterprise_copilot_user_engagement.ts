@@ -1,7 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   EnterpriseCopilotUserEngagement,
-  GitHubTool,
+  ToolCategory,
+  ToolDetail,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 
@@ -64,7 +65,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
         record: {
           uid: GitHubCommon.digest(
             [
-              GitHubTool.Copilot,
+              ToolDetail.GitHubCopilot,
               AssistantMetric.Engagement,
               day.toISOString(),
               org,
@@ -86,7 +87,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
             uid: user,
             source: this.streamName.source,
           },
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: ToolCategory.CodingAssistant, detail: ToolDetail.GitHubCopilot},
           feature,
         },
       },
