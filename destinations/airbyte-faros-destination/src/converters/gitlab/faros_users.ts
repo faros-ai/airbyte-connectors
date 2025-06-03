@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/gitlab';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
@@ -14,7 +15,7 @@ export class FarosUsers extends GitlabConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const user = record.record.data as any;
+    const user = record.record.data as User & {group: string};
     this.collectUser(user);
     return [];
   }

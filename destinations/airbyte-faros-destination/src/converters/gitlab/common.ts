@@ -1,20 +1,11 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {User} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 
 import {Converter, DestinationRecord} from '../converter';
 
-export type PartialUser = Partial<{
-  id: number;
-  username: string;
-  name?: string;
-  email?: string;
-  state: string;
-  web_url: string;
-  created_at?: string;
-  updated_at?: string;
-  group: string;
-}>;
+export type PartialUser = Partial<User & {group: string}>;
 
 export interface CategoryRef {
   readonly category: string;
