@@ -165,6 +165,34 @@ export abstract class Vulnerabilities extends VantaConverter {
     };
     records.push(repoVulnerabilityRecord);
   }
+  private extractVulnId(value: string): [string, string] | null {
+    const cveMatch = value.match(/(CVE-\d{4}-\d{4,7})/);
+    if (cveMatch) {
+      return ['CVE', cveMatch[1]];
+    }
+
+    const ghsaMatch = value.match(/(GHSA-[\w]{4}-[\w]{4}-[\w]{4})/);
+    if (ghsaMatch) {
+      return ['GHSA', ghsaMatch[1]];
+    }
+
+    return null;
+  }
+
+  private grabVulnerabilityIdentifierFromOtherFields(
+    vulnerability: Vulnerability
+  ): VulnerabilityIdentifier | null {
+    if (vulnerability.name) {
+      if (this.extractVulnId(vulnerability.name)) {
+        const [type, id] = this.extractVulnId(vulnerability.name);
+        return {
+          uid: id,
+          type: VulnerabilityCommon.identifierType(type),
+        };
+      }
+    }
+    return null;
+  }
 
   private processVulnerabilityIdentifier(
     vulnerability: Vulnerability,
@@ -197,6 +225,10 @@ export abstract class Vulnerabilities extends VantaConverter {
           };
         }
         break;
+    }
+    if (!identifierRecord) {
+      identifierRecord =
+        this.grabVulnerabilityIdentifierFromOtherFields(vulnerability);
     }
     if (!identifierRecord) {
       this.vulnerabilitiesWithoutIdentifier.add(
