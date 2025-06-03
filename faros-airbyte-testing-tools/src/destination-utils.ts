@@ -3,7 +3,9 @@ import {
   AirbyteRecord,
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
+import * as fs from 'fs';
 import {getLocal} from 'mockttp';
+import * as path from 'path';
 import {Dictionary} from 'ts-essentials';
 
 import {CLI, read, readLines} from './cli';
@@ -15,6 +17,8 @@ export interface DestinationWriteTestOptions {
   catalogPath: string;
   inputRecordsPath: string;
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
+  // Write CLI output to files in this directory
+  outputDir?: string | null;
 }
 
 export interface GenerateBasicTestSuiteOptions {
@@ -35,7 +39,30 @@ export const destinationWriteTest = async (
     catalogPath,
     inputRecordsPath,
     checkRecordsData = undefined,
+    outputDir = null,
   } = options;
+
+  let stdoutStream: fs.WriteStream | undefined;
+  let stderrStream: fs.WriteStream | undefined;
+  let timestamp: string | undefined;
+
+  // Only set up file streams if outputDir is provided
+  if (outputDir) {
+    // Ensure output directory exists
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, {recursive: true});
+    }
+
+    // Create write streams for stdout and stderr
+    timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    stdoutStream = fs.createWriteStream(
+      path.join(outputDir, `stdout-${timestamp}.log`)
+    );
+    stderrStream = fs.createWriteStream(
+      path.join(outputDir, `stderr-${timestamp}.log`)
+    );
+  }
+
   const cli = await CLI.runWith([
     'write',
     '--config',
@@ -44,6 +71,12 @@ export const destinationWriteTest = async (
     catalogPath,
     '--dry-run',
   ]);
+
+  // Only pipe to files if streams were created
+  if (stdoutStream && stderrStream) {
+    cli.stdout.pipe(stdoutStream);
+    cli.stderr.pipe(stderrStream);
+  }
 
   cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
@@ -71,6 +104,15 @@ export const destinationWriteTest = async (
   if (checkRecordsData) {
     const records = readRecordData(stdoutLines);
     checkRecordsData(records);
+  }
+
+  // Close the write streams if they were created
+  if (stdoutStream && stderrStream) {
+    stdoutStream.end();
+    stderrStream.end();
+    console.log(
+      `Test output written to:\n  ${path.join(outputDir, `stdout-${timestamp}.log`)}\n  ${path.join(outputDir, `stderr-${timestamp}.log`)}`
+    );
   }
 
   expect(await read(cli.stderr)).toBe('');
