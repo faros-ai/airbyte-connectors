@@ -134,7 +134,6 @@ describe('vanta', () => {
       catalogPath: 'test/resources/vanta/catalog.json',
       inputRecordsPath: 'vanta/vulnerability_records.log',
       checkRecordsData: (records) => {
-        console.log('Processed records:', JSON.stringify(records, null, 2));
         expect(records).toMatchSnapshot();
       },
     });
