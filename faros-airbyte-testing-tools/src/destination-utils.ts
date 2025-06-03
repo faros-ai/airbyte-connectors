@@ -4,6 +4,7 @@ import {
   parseAirbyteMessage,
 } from 'faros-airbyte-cdk';
 import * as fs from 'fs';
+import {create} from 'lodash';
 import {getLocal} from 'mockttp';
 import * as path from 'path';
 import {Dictionary} from 'ts-essentials';
@@ -28,7 +29,10 @@ export interface GenerateBasicTestSuiteOptions {
   checkRecordsData?: (records: ReadonlyArray<Dictionary<any>>) => void;
 }
 
-function createLogStreams(outputDir: string): LogStreams {
+function createLogOutputFiles(outputDir: string): {
+  stdoutPath: string;
+  stderrPath: string;
+} {
   if (fs.existsSync(outputDir)) {
     const stat = fs.statSync(outputDir);
     if (!stat.isDirectory()) {
@@ -47,18 +51,19 @@ function createLogStreams(outputDir: string): LogStreams {
   const stderrPath = path.join(outputDir, `stderr-${timestamp}.log`);
 
   try {
-    return {
-      stdout: fs.createWriteStream(stdoutPath),
-      stderr: fs.createWriteStream(stderrPath),
-      stdoutPath,
-      stderrPath,
-    };
+    // Simulate "touch" to test writability
+    fs.closeSync(fs.openSync(stdoutPath, 'w'));
+    fs.closeSync(fs.openSync(stderrPath, 'w'));
   } catch (error) {
-    throw new Error(`Failed to create log file streams: ${error}`);
+    throw new Error(
+      `Failed to verify writability of log files:\n  ${stdoutPath}\n  ${stderrPath}\nError: ${error}`
+    );
   }
+
+  return {stdoutPath, stderrPath};
 }
 
-function extractMatchLines(lines: string[]): string[] {
+function extractMatchLines(lines: readonly string[]): string[] {
   const regexes = [
     /Processed (\d+) records/,
     /Would write (\d+) records/,
@@ -87,8 +92,10 @@ export const destinationWriteTest = async (
     outputDir = null,
   } = options;
 
-  const streams = outputDir ? createLogStreams(outputDir) : null;
-
+  const logOutputFiles = outputDir ? createLogOutputFiles(outputDir) : null;
+  if (!catalogPath || !inputRecordsPath) {
+    throw new Error('catalogPath and inputRecordsPath are required.');
+  }
   const cli = await CLI.runWith([
     'write',
     '--config',
@@ -98,14 +105,10 @@ export const destinationWriteTest = async (
     '--dry-run',
   ]);
 
-  if (streams) {
-    cli.stdout.pipe(streams.stdout);
-    cli.stderr.pipe(streams.stderr);
-  }
-
   cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
   const stdoutLines = await readLines(cli.stdout);
+  const stderrLines = await readLines(cli.stderr);
   const matchedLines = extractMatchLines(stdoutLines);
   expect(matchedLines).toMatchSnapshot();
 
@@ -113,15 +116,15 @@ export const destinationWriteTest = async (
     checkRecordsData(readRecordData(stdoutLines));
   }
 
-  if (streams) {
-    streams.stdout.end();
-    streams.stderr.end();
+  if (logOutputFiles) {
+    fs.writeFileSync(logOutputFiles.stdoutPath, stdoutLines.join('\n'));
+    fs.writeFileSync(logOutputFiles.stderrPath, stderrLines.join('\n'));
     console.log(
-      `Test output written to:\n  ${streams.stdoutPath}\n  ${streams.stderrPath}`
+      `Test output written to:\n  ${logOutputFiles.stdoutPath}\n  ${logOutputFiles.stderrPath}`
     );
   }
 
-  expect(await read(cli.stderr)).toBe('');
+  expect(stderrLines.join('\n')).toBe('');
   expect(await cli.wait()).toBe(0);
 };
 
