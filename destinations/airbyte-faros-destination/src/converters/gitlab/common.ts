@@ -1,7 +1,20 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
+import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 
 import {Converter, DestinationRecord} from '../converter';
+
+export type PartialUser = Partial<{
+  id: number;
+  username: string;
+  name?: string;
+  email?: string;
+  state: string;
+  web_url: string;
+  created_at?: string;
+  updated_at?: string;
+  group: string;
+}>;
 
 export interface CategoryRef {
   readonly category: string;
@@ -198,11 +211,100 @@ export class GitlabCommon {
 export abstract class GitlabConverter extends Converter {
   source = 'GitLab';
 
+  protected collectedUsers = new Map<string, Array<PartialUser>>();
+
   /** Almost every GitLab record have id property. Function will be
    * override if record doesn't have id property.
    */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected collectUser(user: PartialUser): void {
+    if (!user?.username) return;
+    if (!this.collectedUsers.has(user.username)) {
+      this.collectedUsers.set(user.username, []);
+    }
+    this.collectedUsers.get(user.username).push({
+      ...user,
+      email: isEmpty(user.email) ? null : user.email,
+    });
+  }
+
+  protected convertUsers(): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+    for (const [username, users] of this.collectedUsers.entries()) {
+      const emails = new Set(
+        users.map((user) => user.email).filter((email) => !!email)
+      );
+      for (const email of emails) {
+        res.push({
+          model: 'vcs_UserEmail',
+          record: {
+            user: {uid: username, source: this.streamName.source},
+            email,
+          },
+        });
+      }
+      const groups = new Set(
+        users.map((user) => user.group).filter((group) => !isEmpty(group))
+      );
+      for (const group of groups) {
+        res.push({
+          model: 'vcs_Membership',
+          record: {
+            user: {uid: username, source: this.streamName.source},
+            organization: {uid: toLower(group), source: this.streamName.source},
+          },
+        });
+      }
+      const finalUser = this.getFinalUser(users);
+      res.push({
+        model: 'vcs_User',
+        record: omitBy(
+          {
+            uid: username,
+            source: this.streamName.source,
+            name: finalUser.name,
+            email: finalUser.email,
+            htmlUrl: finalUser.web_url,
+            type: this.vcs_UserType(finalUser),
+          },
+          (value) => isNil(value) || isEmpty(value)
+        ),
+      });
+    }
+    return res;
+  }
+
+  private vcs_UserType(user: PartialUser): {
+    category: string;
+    detail: string;
+  } {
+    if (!user.state) {
+      return {category: 'Custom', detail: 'unknown'};
+    }
+    const stateLower = user.state.toLowerCase();
+    switch (stateLower) {
+      case 'active':
+        return {category: 'User', detail: stateLower};
+      case 'blocked':
+        return {category: 'Custom', detail: stateLower};
+      default:
+        return {category: 'Custom', detail: stateLower};
+    }
+  }
+
+  private getFinalUser(users: Array<PartialUser>): PartialUser {
+    const finalUser: PartialUser = {};
+    for (const user of users) {
+      for (const key in user) {
+        if (!finalUser[key] && user[key]) {
+          finalUser[key] = user[key];
+        }
+      }
+    }
+    return finalUser;
   }
 }
 
