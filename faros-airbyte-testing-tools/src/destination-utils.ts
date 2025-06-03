@@ -81,6 +81,10 @@ function extractMatchLines(lines: readonly string[]): string[] {
     .filter((line): line is string => line !== null);
 }
 
+// Executes the destination write command in dry-run mode and optionally checks:
+// - The processed and written records count
+// - The records data
+// - Optionally writes the CLI output to files in a given output directory for debugging
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
