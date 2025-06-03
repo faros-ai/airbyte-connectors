@@ -42,27 +42,24 @@ export const destinationWriteTest = async (
     outputDir = null,
   } = options;
 
-  let stdoutStream: fs.WriteStream | undefined;
-  let stderrStream: fs.WriteStream | undefined;
-  let timestamp: string | undefined;
+  // Setup file streams if output directory is specified
+  const streams = outputDir
+    ? (() => {
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, {recursive: true});
+        }
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const stdout = fs.createWriteStream(
+          path.join(outputDir, `stdout-${timestamp}.log`)
+        );
+        const stderr = fs.createWriteStream(
+          path.join(outputDir, `stderr-${timestamp}.log`)
+        );
+        return {stdout, stderr, timestamp};
+      })()
+    : null;
 
-  // Only set up file streams if outputDir is provided
-  if (outputDir) {
-    // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, {recursive: true});
-    }
-
-    // Create write streams for stdout and stderr
-    timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    stdoutStream = fs.createWriteStream(
-      path.join(outputDir, `stdout-${timestamp}.log`)
-    );
-    stderrStream = fs.createWriteStream(
-      path.join(outputDir, `stderr-${timestamp}.log`)
-    );
-  }
-
+  // Run CLI command
   const cli = await CLI.runWith([
     'write',
     '--config',
@@ -72,46 +69,43 @@ export const destinationWriteTest = async (
     '--dry-run',
   ]);
 
-  // Only pipe to files if streams were created
-  if (stdoutStream && stderrStream) {
-    cli.stdout.pipe(stdoutStream);
-    cli.stderr.pipe(stderrStream);
+  // Setup streams and process input
+  if (streams) {
+    cli.stdout.pipe(streams.stdout);
+    cli.stderr.pipe(streams.stderr);
   }
-
   cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
 
+  // Process output
   const stdoutLines = await readLines(cli.stdout);
-  const matches: string[] = [];
-
-  stdoutLines.forEach((line) => {
-    const regexes = [
-      /Processed (\d+) records/,
-      /Would write (\d+) records/,
-      /Errored (\d+) records/,
-      /Skipped (\d+) records/,
-      /Processed records by stream: {(.*)}/,
-      /Would write records by model: {(.*)}/,
-    ];
-
-    const matchedLine = regexes.find((regex) => regex.test(line));
-    if (matchedLine) {
-      matches.push(matchedLine.exec(line)[0]);
-    }
-  });
+  const matches = stdoutLines
+    .map((line) => {
+      const regexes = [
+        /Processed (\d+) records/,
+        /Would write (\d+) records/,
+        /Errored (\d+) records/,
+        /Skipped (\d+) records/,
+        /Processed records by stream: {(.*)}/,
+        /Would write records by model: {(.*)}/,
+      ];
+      const match = regexes.find((regex) => regex.test(line));
+      return match ? match.exec(line)[0] : null;
+    })
+    .filter(Boolean);
 
   expect(matches).toMatchSnapshot();
 
+  // Process record data if needed
   if (checkRecordsData) {
-    const records = readRecordData(stdoutLines);
-    checkRecordsData(records);
+    checkRecordsData(readRecordData(stdoutLines));
   }
 
-  // Close the write streams if they were created
-  if (stdoutStream && stderrStream) {
-    stdoutStream.end();
-    stderrStream.end();
+  // Cleanup and verify
+  if (streams) {
+    streams.stdout.end();
+    streams.stderr.end();
     console.log(
-      `Test output written to:\n  ${path.join(outputDir, `stdout-${timestamp}.log`)}\n  ${path.join(outputDir, `stderr-${timestamp}.log`)}`
+      `Test output written to:\n  ${path.join(outputDir, `stdout-${streams.timestamp}.log`)}\n  ${path.join(outputDir, `stderr-${streams.timestamp}.log`)}`
     );
   }
 
