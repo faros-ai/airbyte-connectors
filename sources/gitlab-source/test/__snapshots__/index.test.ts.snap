@@ -57,6 +57,115 @@ exports[`index round robin bucket execution 1`] = `
 }
 `;
 
+exports[`index streams - faros commits 1`] = `
+[
+  {
+    "author_email": "john.doe@example.com",
+    "author_name": "John Doe",
+    "authored_date": "2024-01-15T10:25:00Z",
+    "committed_date": "2024-01-15T10:30:00Z",
+    "committer_email": "john.doe@example.com",
+    "committer_name": "John Doe",
+    "created_at": "2024-01-15T10:30:00Z",
+    "group_id": "1",
+    "id": "abc123def456ghi789jkl012mno345pqr678stu",
+    "message": "Add new feature for user authentication
+
+This commit implements OAuth2 integration for better security.",
+    "parent_ids": [
+      "def456ghi789jkl012mno345pqr678stu901vwx",
+    ],
+    "short_id": "abc123de",
+    "title": "Add new feature for user authentication",
+    "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
+  },
+  {
+    "author_email": "jane.smith@example.com",
+    "author_name": "Jane Smith",
+    "authored_date": "2024-01-14T14:15:00Z",
+    "committed_date": "2024-01-14T14:20:00Z",
+    "committer_email": "jane.smith@example.com",
+    "committer_name": "Jane Smith",
+    "created_at": "2024-01-14T14:20:00Z",
+    "group_id": "1",
+    "id": "def456ghi789jkl012mno345pqr678stu901vwx",
+    "message": "Fix bug in payment processing
+
+Resolves issue where transactions were not properly validated.",
+    "parent_ids": [
+      "ghi789jkl012mno345pqr678stu901vwx234yz",
+    ],
+    "short_id": "def456gh",
+    "title": "Fix bug in payment processing",
+    "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
+  },
+]
+`;
+
+exports[`index streams - faros commits with state 1`] = `
+[
+  {
+    "author_email": "john.doe@example.com",
+    "author_name": "John Doe",
+    "authored_date": "2024-01-15T10:25:00Z",
+    "branch": "main",
+    "committed_date": "2024-01-15T10:30:00Z",
+    "committer_email": "john.doe@example.com",
+    "committer_name": "John Doe",
+    "created_at": "2024-01-15T10:30:00Z",
+    "group": "test-group",
+    "group_id": "1",
+    "id": "abc123def456ghi789jkl012mno345pqr678stu",
+    "message": "Add new feature for user authentication
+
+This commit implements OAuth2 integration for better security.",
+    "parent_ids": [
+      "def456ghi789jkl012mno345pqr678stu901vwx",
+    ],
+    "project": "test-group/test-project",
+    "short_id": "abc123de",
+    "title": "Add new feature for user authentication",
+    "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
+  },
+  {
+    "author_email": "jane.smith@example.com",
+    "author_name": "Jane Smith",
+    "authored_date": "2024-01-14T14:15:00Z",
+    "branch": "main",
+    "committed_date": "2024-01-14T14:20:00Z",
+    "committer_email": "jane.smith@example.com",
+    "committer_name": "Jane Smith",
+    "created_at": "2024-01-14T14:20:00Z",
+    "group": "test-group",
+    "group_id": "1",
+    "id": "def456ghi789jkl012mno345pqr678stu901vwx",
+    "message": "Fix bug in payment processing
+
+Resolves issue where transactions were not properly validated.",
+    "parent_ids": [
+      "ghi789jkl012mno345pqr678stu901vwx234yz",
+    ],
+    "project": "test-group/test-project",
+    "short_id": "def456gh",
+    "title": "Fix bug in payment processing",
+    "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
+  },
+]
+`;
+
+exports[`index streams - faros commits with state 2`] = `
+{
+  "faros_commits": {
+    "1/test-group/test-project": {
+      "cutoff": 1705314600000,
+    },
+    "test-group/test-group/test-project": {
+      "cutoff": 1642248000000,
+    },
+  },
+}
+`;
+
 exports[`index streams - faros groups 1`] = `
 [
   {
