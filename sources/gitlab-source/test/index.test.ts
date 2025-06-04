@@ -19,6 +19,95 @@ function readResourceFile(fileName: string): any {
   return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
 }
 
+// Test data factories
+const createTestGroup = (overrides = {}) => ({
+  id: '1',
+  parent_id: null,
+  name: 'Test Group',
+  path: 'test-group',
+  web_url: 'https://gitlab.com/test-group',
+  description: 'Test group description',
+  visibility: 'public',
+  created_at: '2021-01-01T00:00:00Z',
+  updated_at: '2021-01-01T00:00:00Z',
+  ...overrides,
+});
+
+const createTestProject = (overrides = {}) => ({
+  id: '123',
+  name: 'Test Project',
+  path: 'test-project',
+  path_with_namespace: 'test-group/test-project',
+  web_url: 'https://gitlab.com/test-group/test-project',
+  description: 'Test project description',
+  visibility: 'public',
+  created_at: '2021-01-01T00:00:00Z',
+  updated_at: '2021-06-01T00:00:00Z',
+  namespace: {
+    id: '1',
+    name: 'Test Group',
+    path: 'test-group',
+    kind: 'group',
+    full_path: 'test-group',
+  },
+  group_id: '1',
+  default_branch: 'main',
+  archived: false,
+  ...overrides,
+});
+
+const createTestUsers = () => [
+  {
+    id: 1,
+    username: 'user1',
+    name: 'Test User 1',
+    email: 'user1@example.com',
+    state: 'active',
+    web_url: 'https://gitlab.com/user1',
+    created_at: '2021-01-01T00:00:00Z',
+    updated_at: '2021-01-01T00:00:00Z',
+  },
+  {
+    id: 2,
+    username: 'user2',
+    name: 'Test User 2',
+    email: 'user2@example.com',
+    state: 'active',
+    web_url: 'https://gitlab.com/user2',
+    created_at: '2021-02-01T00:00:00Z',
+    updated_at: '2021-02-01T00:00:00Z',
+  },
+];
+
+// Common mock setup functions
+function setupBasicMocks() {
+  const testGroup = createTestGroup();
+  const testProject = createTestProject();
+  
+  const gitlab = {
+    getGroups: jest.fn().mockResolvedValue([testGroup]),
+    getGroup: jest.fn().mockResolvedValue(testGroup),
+    getProjects: jest.fn().mockResolvedValue([testProject]),
+    getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
+    getCommits: jest.fn().mockResolvedValue([]),
+  };
+
+  const groupFilter = {
+    getGroups: jest.fn().mockResolvedValue(['test-group']),
+    getProjects: jest.fn().mockResolvedValue([
+      {
+        repo: testProject,
+        syncRepoData: true,
+      },
+    ]),
+  };
+
+  jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
+  jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+
+  return { gitlab, groupFilter, testGroup, testProject };
+}
+
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -92,39 +181,7 @@ describe('index', () => {
   });
 
   test('streams - faros groups', async () => {
-    const gitlab = {
-      getGroups: jest.fn().mockResolvedValue([
-        {
-          id: '1',
-          parent_id: null,
-          name: 'Test Group',
-          path: 'test-group',
-          web_url: 'https://gitlab.com/test-group',
-          description: 'Test group description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-      ]),
-      getGroup: jest.fn().mockResolvedValue({
-        id: '1',
-        parent_id: null,
-        name: 'Test Group',
-        path: 'test-group',
-        web_url: 'https://gitlab.com/test-group',
-        description: 'Test group description',
-        visibility: 'public',
-        created_at: '2021-01-01T00:00:00Z',
-        updated_at: '2021-01-01T00:00:00Z',
-      }),
-    };
-
-    const groupFilter = {
-      getGroups: jest.fn().mockResolvedValue(['test-group']),
-    };
-
-    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+    setupBasicMocks();
 
     await sourceReadTest({
       source,
@@ -137,74 +194,7 @@ describe('index', () => {
   });
 
   test('streams - faros projects', async () => {
-    const gitlab = {
-      getGroups: jest.fn().mockResolvedValue([
-        {
-          id: '1',
-          parent_id: null,
-          name: 'Test Group',
-          path: 'test-group',
-          web_url: 'https://gitlab.com/test-group',
-          description: 'Test group description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-      ]),
-      getProjects: jest.fn().mockResolvedValue([
-        {
-          id: '123',
-          name: 'Test Project',
-          path: 'test-project',
-          path_with_namespace: 'test-group/test-project',
-          web_url: 'https://gitlab.com/test-group/test-project',
-          description: 'Test project description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-06-01T00:00:00Z',
-          namespace: {
-            id: '1',
-            name: 'Test Group',
-            path: 'test-group',
-            kind: 'group',
-            full_path: 'test-group',
-          },
-        },
-      ]),
-    };
-
-    const groupFilter = {
-      getGroups: jest.fn().mockResolvedValue(['test-group']),
-      getProjects: jest.fn().mockResolvedValue([
-        {
-          repo: {
-            id: '123',
-            name: 'Test Project',
-            path: 'test-project',
-            path_with_namespace: 'test-group/test-project',
-            web_url: 'https://gitlab.com/test-group/test-project',
-            description: 'Test project description',
-            visibility: 'public',
-            created_at: '2021-01-01T00:00:00Z',
-            updated_at: '2021-06-01T00:00:00Z',
-            namespace: {
-              id: '1',
-              name: 'Test Group',
-              path: 'test-group',
-              kind: 'group',
-              full_path: 'test-group',
-            },
-            group_id: '1',
-            default_branch: 'main',
-            archived: false,
-          },
-          syncRepoData: true,
-        },
-      ]),
-    };
-
-    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+    setupBasicMocks();
 
     await sourceReadTest({
       source,
@@ -217,50 +207,7 @@ describe('index', () => {
   });
 
   test('streams - faros users', async () => {
-    const gitlab = {
-      getGroups: jest.fn().mockResolvedValue([
-        {
-          id: '1',
-          parent_id: null,
-          name: 'Test Group',
-          path: 'test-group',
-          web_url: 'https://gitlab.com/test-group',
-          description: 'Test group description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-      ]),
-      getGroupMembers: jest.fn().mockResolvedValue([
-        {
-          id: 1,
-          username: 'user1',
-          name: 'Test User 1',
-          email: 'user1@example.com',
-          state: 'active',
-          web_url: 'https://gitlab.com/user1',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-        {
-          id: 2,
-          username: 'user2',
-          name: 'Test User 2',
-          email: 'user2@example.com',
-          state: 'active',
-          web_url: 'https://gitlab.com/user2',
-          created_at: '2021-02-01T00:00:00Z',
-          updated_at: '2021-02-01T00:00:00Z',
-        },
-      ]),
-    };
-
-    const groupFilter = {
-      getGroups: jest.fn().mockResolvedValue(['test-group']),
-    };
-
-    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+    setupBasicMocks();
 
     await sourceReadTest({
       source,
@@ -274,55 +221,8 @@ describe('index', () => {
 
   test('streams - faros commits', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
-    const gitlab = {
-      getGroups: jest.fn().mockResolvedValue([
-        {
-          id: '1',
-          parent_id: null,
-          name: 'Test Group',
-          path: 'test-group',
-          web_url: 'https://gitlab.com/test-group',
-          description: 'Test group description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-      ]),
-      getCommits: jest.fn().mockResolvedValue(commits),
-    };
-
-    const groupFilter = {
-      getGroups: jest.fn().mockResolvedValue(['test-group']),
-      getProjects: jest.fn().mockResolvedValue([
-        {
-          repo: {
-            id: '123',
-            name: 'Test Project',
-            path: 'test-project',
-            path_with_namespace: 'test-group/test-project',
-            web_url: 'https://gitlab.com/test-group/test-project',
-            description: 'Test project description',
-            visibility: 'public',
-            created_at: '2021-01-01T00:00:00Z',
-            updated_at: '2021-06-01T00:00:00Z',
-            namespace: {
-              id: '1',
-              name: 'Test Group',
-              path: 'test-group',
-              kind: 'group',
-              full_path: 'test-group',
-            },
-            group_id: '1',
-            default_branch: 'main',
-            archived: false,
-          },
-          syncRepoData: true,
-        },
-      ]),
-    };
-
-    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+    const { gitlab } = setupBasicMocks();
+    gitlab.getCommits.mockResolvedValue(commits);
 
     await sourceReadTest({
       source,
@@ -343,60 +243,13 @@ describe('index', () => {
 
   test('streams - faros commits with state', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
-    const gitlab = {
-      getGroups: jest.fn().mockResolvedValue([
-        {
-          id: '1',
-          parent_id: null,
-          name: 'Test Group',
-          path: 'test-group',
-          web_url: 'https://gitlab.com/test-group',
-          description: 'Test group description',
-          visibility: 'public',
-          created_at: '2021-01-01T00:00:00Z',
-          updated_at: '2021-01-01T00:00:00Z',
-        },
-      ]),
-      getCommits: jest.fn().mockResolvedValue(commits.map(commit => ({
-        ...commit,
-        group: 'test-group',
-        project: 'test-group/test-project',
-        branch: 'main',
-      }))),
-    };
-
-    const groupFilter = {
-      getGroups: jest.fn().mockResolvedValue(['test-group']),
-      getProjects: jest.fn().mockResolvedValue([
-        {
-          repo: {
-            id: '123',
-            name: 'Test Project',
-            path: 'test-project',
-            path_with_namespace: 'test-group/test-project',
-            web_url: 'https://gitlab.com/test-group/test-project',
-            description: 'Test project description',
-            visibility: 'public',
-            created_at: '2021-01-01T00:00:00Z',
-            updated_at: '2021-06-01T00:00:00Z',
-            namespace: {
-              id: '1',
-              name: 'Test Group',
-              path: 'test-group',
-              kind: 'group',
-              full_path: 'test-group',
-            },
-            group_id: '1',
-            default_branch: 'main',
-            archived: false,
-          },
-          syncRepoData: true,
-        },
-      ]),
-    };
-
-    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
-    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+    const { gitlab } = setupBasicMocks();
+    gitlab.getCommits.mockResolvedValue(commits.map(commit => ({
+      ...commit,
+      group: 'test-group',
+      project: 'test-group/test-project',
+      branch: 'main',
+    })));
 
     await sourceReadTest({
       source,
