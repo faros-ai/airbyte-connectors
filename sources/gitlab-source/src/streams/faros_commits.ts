@@ -52,14 +52,12 @@ export class FarosCommits extends StreamWithProjectSlices {
       `Fetching commits for project ${project.path_with_namespace} on branch ${project.default_branch} from ${startDate.toISOString()} to ${endDate.toISOString()}`
     );
 
-    const commits = await gitlab.getCommits(
+    for await (const commit of gitlab.getCommits(
       project.path_with_namespace,
       project.default_branch,
       startDate,
       endDate
-    );
-
-    for (const commit of commits) {
+    )) {
       yield {
         ...commit,
         group_id: groupId,

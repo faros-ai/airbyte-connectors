@@ -270,12 +270,12 @@ export class GitLab {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
   }
 
-  async getCommits(
+  async *getCommits(
     projectPath: string,
     branch: string,
     since?: Date,
     until?: Date
-  ): Promise<Omit<Commit, 'group_id' | 'project_path'>[]> {
+  ): AsyncGenerator<Omit<Commit, 'group_id' | 'project_path'>> {
     try {
       const options: any = {
         refName: branch,
@@ -290,7 +290,6 @@ export class GitLab {
         options.until = until.toISOString();
       }
 
-      const commits: Omit<Commit, 'group_id' | 'project_path'>[] = [];
       let page = 1;
       let hasMore = true;
 
@@ -306,7 +305,7 @@ export class GitLab {
         }
 
         for (const commit of pageCommits) {
-          commits.push({
+          yield {
             id: commit.id,
             short_id: commit.short_id,
             created_at: commit.created_at,
@@ -321,13 +320,11 @@ export class GitLab {
             committed_date: commit.committed_date,
             web_url: commit.web_url,
             branch: branch,
-          });
+          };
         }
 
         page++;
       }
-
-      return commits;
     } catch (err: any) {
       this.logger.error(
         `Failed to fetch commits for project ${projectPath}: ${err.message}`
