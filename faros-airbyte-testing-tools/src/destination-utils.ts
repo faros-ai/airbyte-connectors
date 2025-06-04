@@ -74,7 +74,7 @@ export const destinationWriteTest = async (
   }
 
   const exitCode = await cli.wait();
-  if (exitCode !== 0 || process.env.DEBUG_UNIT_TESTS) {
+  if (exitCode !== 0 && process.env.DEBUG_UNIT_TESTS) {
     const stderrLines = await readLines(cli.stderr);
     console.log('stdout:\n\n' + stdoutLines.join('\n'));
     console.log('stderr:\n\n' + stderrLines.join('\n'));
