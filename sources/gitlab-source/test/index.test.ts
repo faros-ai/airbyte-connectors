@@ -404,7 +404,7 @@ describe('index', () => {
       catalogOrPath: 'faros_commits/catalog.json',
       stateOrPath: {
         faros_commits: {
-          'test-group/test-group/test-project': {
+          '1/test-group/test-project': {
             cutoff: 1642248000000, // 2022-01-15T12:00:00Z
           },
         },
