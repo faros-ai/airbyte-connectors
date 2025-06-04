@@ -1,7 +1,13 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-import {Commit, GitLabToken, Group, Project, User} from 'faros-airbyte-common/gitlab';
+import {
+  Commit,
+  GitLabToken,
+  Group,
+  Project,
+  User,
+} from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -65,10 +71,7 @@ export class GitLab {
       );
       const versionInfo = await this.client.Version.show();
       if (versionInfo && typeof versionInfo === 'object') {
-        this.logger.debug(
-          'GitLab credentials verified. Version info: %j',
-          versionInfo
-        );
+        this.logger.debug('GitLab credentials verified.', versionInfo);
       } else {
         this.logger.error(
           'GitLab version info response was not an object or was null: %s',
@@ -307,7 +310,7 @@ export class GitLab {
             id: commit.id,
             short_id: commit.short_id,
             created_at: commit.created_at,
-            parent_ids: commit.parent_ids || [],
+            parent_ids: commit.parent_ids ?? [],
             title: commit.title,
             message: commit.message,
             author_name: commit.author_name,
@@ -329,7 +332,10 @@ export class GitLab {
       this.logger.error(
         `Failed to fetch commits for project ${projectPath}: ${err.message}`
       );
-      throw new VError(err, `Error fetching commits for project ${projectPath}`);
+      throw new VError(
+        err,
+        `Error fetching commits for project ${projectPath}`
+      );
     }
   }
 }
