@@ -27,6 +27,7 @@ export interface GenerateBasicTestSuiteOptions {
 // Executes the destination write command in dry-run mode and optionally checks:
 // - The processed and written records count
 // - The records data
+// If you set the DEBUG_UNIT_TESTS environment variable to any value, the command's stdout and stderr will be logged.
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
