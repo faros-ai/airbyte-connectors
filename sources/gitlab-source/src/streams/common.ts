@@ -16,7 +16,7 @@ export type GroupStreamSlice = {
 
 export type ProjectStreamSlice = {
   group_id: string;
-  project: Pick<Project, 'path_with_namespace' | 'default_branch'>;
+  project: Pick<Project, 'path_with_namespace' | 'default_branch' | 'path'>;
 };
 
 export type StreamState = {
@@ -119,6 +119,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
             project: {
               path_with_namespace: repo.path_with_namespace,
               default_branch: repo.default_branch,
+              path: repo.path,
             },
           };
         }

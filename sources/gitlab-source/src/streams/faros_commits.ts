@@ -63,6 +63,7 @@ export class FarosCommits extends StreamWithProjectSlices {
       yield {
         ...commit,
         group_id: groupId,
+        project_path: project.path,
       };
     }
   }

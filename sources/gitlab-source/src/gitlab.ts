@@ -272,7 +272,7 @@ export class GitLab {
     branch: string,
     since?: Date,
     until?: Date
-  ): Promise<Omit<Commit, 'group_id'>[]> {
+  ): Promise<Omit<Commit, 'group_id' | 'project_path'>[]> {
     try {
       const options: any = {
         refName: branch,
@@ -287,7 +287,7 @@ export class GitLab {
         options.until = until.toISOString();
       }
 
-      const commits: Omit<Commit, 'group_id'>[] = [];
+      const commits: Omit<Commit, 'group_id' | 'project_path'>[] = [];
       let page = 1;
       let hasMore = true;
 
@@ -317,7 +317,6 @@ export class GitLab {
             committer_email: commit.committer_email,
             committed_date: commit.committed_date,
             web_url: commit.web_url,
-            project: projectPath,
             branch: branch,
           });
         }
