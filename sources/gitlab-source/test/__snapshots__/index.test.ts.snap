@@ -159,9 +159,6 @@ exports[`index streams - faros commits with state 2`] = `
     "1/test-group/test-project": {
       "cutoff": 1705314600000,
     },
-    "test-group/test-group/test-project": {
-      "cutoff": 1642248000000,
-    },
   },
 }
 `;
