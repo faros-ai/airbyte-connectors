@@ -64,6 +64,6 @@ export interface Commit {
   committed_date: string;
   web_url: string;
   group_id: string;
-  project: string;
+  project_path: string;
   branch: string;
 }
