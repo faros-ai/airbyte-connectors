@@ -139,7 +139,7 @@ describe('index', () => {
     sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
-  test('streams - copilot seats without audit logs API', async () => {
+  test('streams - copilot seats', async () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
@@ -149,69 +149,9 @@ describe('index', () => {
           merge(
             getCopilotSeatsMockedImplementation(
               readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-            ),
-            getTeamAddMemberAuditLogsMockedImplementation(
-              new ErrorWithStatus(400, 'API not available')
             )
           ),
           logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - copilot seats with audit logs API', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: 'config.json',
-      catalogOrPath: 'copilot_seats/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getCopilotSeatsMockedImplementation(
-              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-            ),
-            getTeamAddMemberAuditLogsMockedImplementation(
-              readTestResourceAsJSON(
-                'copilot_seats/team_add_member_audit_logs.json'
-              )
-            )
-          ),
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - copilot seats with audit logs API but licenses dates fix disabled', async () => {
-    const config = {
-      ...readTestResourceAsJSON('config.json'),
-      copilot_licenses_dates_fix: false,
-    };
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'copilot_seats/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getCopilotSeatsMockedImplementation(
-              readTestResourceAsJSON('copilot_seats/copilot_seats.json')
-            ),
-            getTeamAddMemberAuditLogsMockedImplementation(
-              readTestResourceAsJSON(
-                'copilot_seats/team_add_member_audit_logs.json'
-              )
-            )
-          ),
-          logger,
-          config
         );
       },
       checkRecordsData: (records) => {
@@ -235,78 +175,6 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - copilot usage without teams', async () => {
-    const config = {
-      ...readTestResourceAsJSON('config.json'),
-      copilot_metrics_preview_api: true,
-    };
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'copilot_usage/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getCopilotUsageForOrgMockedImplementation(
-              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-            ),
-            getTeamsMockedImplementation(
-              new ErrorWithStatus(400, 'API not available')
-            )
-          ),
-          logger,
-          config
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-      checkFinalState: (state) => {
-        expect(state).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - copilot usage with teams', async () => {
-    const config = {
-      ...readTestResourceAsJSON('config.json'),
-      copilot_metrics_preview_api: true,
-    };
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'copilot_usage/catalog.json',
-      stateOrPath: {
-        faros_copilot_usage: {
-          github: {cutoff: new Date('2023-10-15').getTime()},
-        },
-      },
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          merge(
-            getCopilotUsageForOrgMockedImplementation(
-              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-            ),
-            getTeamsMockedImplementation(
-              readTestResourceAsJSON('teams/teams.json')
-            ),
-            getCopilotUsageForTeamMockedImplementation(
-              readTestResourceAsJSON('copilot_usage/copilot_usage.json')
-            )
-          ),
-          logger,
-          config
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-      checkFinalState: (state) => {
-        expect(state).toMatchSnapshot();
       },
     });
   });
@@ -1404,10 +1272,6 @@ const getCopilotSeatsMockedImplementation = (res: any) => ({
   copilot: {
     listCopilotSeats: jest.fn().mockReturnValue(res),
   },
-});
-
-const getTeamAddMemberAuditLogsMockedImplementation = (res: any) => ({
-  auditLogs: res instanceof Error ? res : jest.fn().mockReturnValue(res),
 });
 
 const getCopilotUsageForOrgMockedImplementation = (res: any) => ({

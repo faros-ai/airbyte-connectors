@@ -10,7 +10,6 @@ import {
   CodeScanningAlert,
   Commit,
   CopilotSeat,
-  CopilotSeatEnded,
   CopilotSeatsEmpty,
   CopilotSeatsResponse,
   CopilotSeatsStreamRecord,
@@ -95,7 +94,6 @@ import VError from 'verror';
 import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
-  AuditLogTeamMember,
   CopilotMetricsResponse,
   CopilotUserEngagementResponse,
   GitHubConfig,
@@ -108,8 +106,6 @@ export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_FETCH_TEAMS = false;
 export const DEFAULT_FETCH_PR_FILES = false;
 export const DEFAULT_FETCH_PR_REVIEWS = true;
-export const DEFAULT_COPILOT_LICENSES_DATES_FIX = true;
-export const DEFAULT_COPILOT_METRICS_PREVIEW_API = false;
 export const DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH = false;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_BUCKET_ID = 1;
@@ -126,17 +122,6 @@ export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
 export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
-type TeamMemberTimestamps = {
-  [user: string]: {
-    [team: string]: {
-      addedAt?: Date;
-      removedAt?: Date;
-    };
-  };
-};
-
-type CopilotAssignedTeams = {[team: string]: {created_at: string}};
-
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
@@ -144,8 +129,6 @@ export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
-  protected readonly copilotMetricsPreviewAPI: boolean;
-  protected readonly copilotMetricsTeams: ReadonlyArray<string>;
   protected readonly bucketId: number;
   protected readonly bucketTotal: number;
   protected readonly pageSize: number;
@@ -157,6 +140,7 @@ export abstract class GitHub {
   protected readonly pullRequestCutoffLagSeconds: number;
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
+  protected readonly copilotMetricsTeams: ReadonlyArray<string>;
   protected readonly skipReposWithoutRecentPush: boolean;
   protected readonly startDate?: Date;
 
@@ -169,9 +153,6 @@ export abstract class GitHub {
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
       config.fetch_pull_request_reviews ?? DEFAULT_FETCH_PR_REVIEWS;
-    this.copilotMetricsPreviewAPI =
-      config.copilot_metrics_preview_api ?? DEFAULT_COPILOT_METRICS_PREVIEW_API;
-    this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -187,6 +168,7 @@ export abstract class GitHub {
     this.useEnterpriseAPIs = config.enterprises?.length > 0;
     this.fetchPublicOrganizations =
       config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
+    this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
     this.skipReposWithoutRecentPush =
       config.skip_repos_without_recent_push ??
       DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
@@ -1045,14 +1027,9 @@ export abstract class GitHub {
   }
 
   async *getCopilotSeats(
-    org: string,
-    cutoffDate: Date,
-    useCopilotTeamAssignmentsFix: boolean
+    org: string
   ): AsyncGenerator<CopilotSeatsStreamRecord> {
     let seatsFound: boolean = false;
-    const assignedTeams: CopilotAssignedTeams = {};
-    const assignedUsers = new Set<string>();
-    let teamMemberTimestamps: TeamMemberTimestamps;
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).copilot.listCopilotSeats,
       {
@@ -1062,36 +1039,12 @@ export abstract class GitHub {
     );
     try {
       for await (const res of iter) {
-        for (const seat of (res.data as any)
-          .seats as CopilotSeatsResponse['seats']) {
+        const seats = (res.data as any).seats as CopilotSeatsResponse['seats'];
+        for (const seat of seats) {
           seatsFound = true;
-          const userAssignee = seat.assignee.login as string;
-          const teamAssignee = seat.assigning_team?.slug;
-          let teamJoinedAt: Date;
-          let startedAt = Utils.toDate(seat.created_at);
-          assignedUsers.add(userAssignee);
-          if (teamAssignee && useCopilotTeamAssignmentsFix) {
-            if (!assignedTeams[teamAssignee]) {
-              assignedTeams[teamAssignee] = pick(seat, ['created_at']);
-            }
-            if (!teamMemberTimestamps) {
-              // try to fetch team member timestamps only if there are seats with team assignments
-              teamMemberTimestamps = await this.getTeamMemberTimestamps(
-                org,
-                'copilot team assignments',
-                cutoffDate
-              );
-            }
-            teamJoinedAt =
-              teamMemberTimestamps?.[userAssignee]?.[teamAssignee]?.addedAt;
-            if (teamJoinedAt > startedAt) {
-              startedAt = teamJoinedAt;
-            }
-          }
-          const isStartedAtUpdated = startedAt > cutoffDate;
           yield {
             org,
-            user: userAssignee,
+            user: seat.assignee.login as string,
             assignee: pick(seat.assignee, [
               'login',
               'name',
@@ -1099,10 +1052,11 @@ export abstract class GitHub {
               'html_url',
               'type',
             ]),
-            team: teamAssignee,
-            teamJoinedAt: teamJoinedAt?.toISOString(),
-            ...(isStartedAtUpdated && {startedAt: startedAt.toISOString()}),
+            team: seat.assigning_team?.slug,
+            startedAt: Utils.toDate(seat.created_at).toISOString(),
             ...pick(seat, [
+              'created_at',
+              'updated_at',
               'pending_cancellation_date',
               'last_activity_at',
               'plan_type',
@@ -1115,55 +1069,23 @@ export abstract class GitHub {
           empty: true,
           org,
         } as CopilotSeatsEmpty;
-      } else if (teamMemberTimestamps) {
-        for (const [user, teams] of Object.entries(teamMemberTimestamps)) {
-          // user doesn't currently have assigned a copilot seat
-          if (!assignedUsers.has(user)) {
-            const lastCopilotTeam = getLastCopilotTeamForUser(
-              teams,
-              assignedTeams,
-              cutoffDate
-            );
-            if (lastCopilotTeam) {
-              const lastCopilotTeamLeftAt = teams[lastCopilotTeam].removedAt;
-              yield {
-                org,
-                user,
-                team: lastCopilotTeam,
-                teamLeftAt: lastCopilotTeamLeftAt.toISOString(),
-                endedAt: lastCopilotTeamLeftAt.toISOString(),
-              } as CopilotSeatEnded;
-            }
-          }
-        }
       }
     } catch (err: any) {
       this.handleCopilotError(err, org, 'seats');
     }
-    this.logger.debug(
-      `Found ${Object.keys(assignedTeams).length} copilot team assignments: ${Object.keys(assignedTeams).join(',')}`
-    );
   }
 
   async *getCopilotUsage(
     org: string,
     cutoffDate: number
   ): AsyncGenerator<CopilotUsageSummary> {
-    let data: Omit<CopilotUsageSummary, 'org' | 'team'>[];
     try {
-      if (!this.copilotMetricsPreviewAPI) {
-        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
-          org
-        ).request(this.octokit(org).copilotMetrics, {
-          org,
-        });
-        data = transformCopilotMetricsResponse(res.data);
-      } else {
-        const res = await this.octokit(org).copilot.usageMetricsForOrg({
-          org,
-        });
-        data = res.data;
-      }
+      const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+        org
+      ).request(this.octokit(org).copilotMetrics, {
+        org,
+      });
+      const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
         return;
@@ -1212,22 +1134,13 @@ export abstract class GitHub {
       throw err;
     }
     for (const teamSlug of teamSlugs) {
-      let data: Omit<CopilotUsageSummary, 'org' | 'team'>[];
-      if (!this.copilotMetricsPreviewAPI) {
-        const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
-          org
-        ).request(this.octokit(org).copilotMetricsForTeam, {
-          org,
-          team_slug: teamSlug,
-        });
-        data = transformCopilotMetricsResponse(res.data);
-      } else {
-        const res = await this.octokit(org).copilot.usageMetricsForTeam({
-          org,
-          team_slug: teamSlug,
-        });
-        data = res.data;
-      }
+      const res: OctokitResponse<CopilotMetricsResponse> = await this.octokit(
+        org
+      ).request(this.octokit(org).copilotMetricsForTeam, {
+        org,
+        team_slug: teamSlug,
+      });
+      const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
         this.logger.warn(
           `No GitHub Copilot usage found for org ${org} - team ${teamSlug}.`
@@ -1292,39 +1205,6 @@ export abstract class GitHub {
       throw err;
     }
     return logs;
-  }
-
-  /**
-   * Returns a map of user logins to a map of team slugs
-   * to the timestamp when the user was last added/removed to the team.
-   */
-  async getTeamMemberTimestamps(
-    org: string,
-    context: string,
-    cutoffDate: Date
-  ): Promise<TeamMemberTimestamps> {
-    const cutoff = cutoffDate;
-    const users: TeamMemberTimestamps = {};
-    const logs = await this.getAuditLogs<AuditLogTeamMember>(
-      org,
-      `action:team.add_member action:team.remove_member created:>${cutoff.toISOString()}`,
-      context
-    );
-    for (const log of logs) {
-      if (!users[log.user]) {
-        users[log.user] = {};
-      }
-      const team = log.team.split('/')[1];
-      if (!users[log.user][team]) {
-        users[log.user][team] = {};
-      }
-      if (log.action === 'team.add_member') {
-        users[log.user][team].addedAt = Utils.toDate(log.created_at);
-      } else if (log.action === 'team.remove_member') {
-        users[log.user][team].removedAt = Utils.toDate(log.created_at);
-      }
-    }
-    return users;
   }
 
   async *getOutsideCollaborators(
@@ -2345,32 +2225,6 @@ export class GitHubApp extends GitHub {
     }
     return installations;
   }
-}
-
-function getLastCopilotTeamForUser(
-  userTeams: TeamMemberTimestamps[string],
-  assignedTeams: CopilotAssignedTeams,
-  cutoffDate: Date
-): string {
-  let lastCopilotTeamLeft: string;
-  let lastCopilotTeamLeftAt: Date;
-  for (const [team, timestamps] of Object.entries(userTeams)) {
-    const {addedAt, removedAt} = timestamps;
-    if (
-      // user was removed from the team after the cutoff date
-      removedAt > cutoffDate &&
-      // user was removed from the team after the team was assigned copilot seats
-      removedAt > Utils.toDate(assignedTeams[team]?.created_at) &&
-      // user was removed from the team after the last time it was added to the same team
-      removedAt > Utils.toDate(addedAt ?? 0) &&
-      // user was removed from the team after having left other teams with copilot
-      removedAt > (lastCopilotTeamLeftAt || 0)
-    ) {
-      lastCopilotTeamLeft = team;
-      lastCopilotTeamLeftAt = removedAt;
-    }
-  }
-  return lastCopilotTeamLeft;
 }
 
 function transformCopilotMetricsResponse(

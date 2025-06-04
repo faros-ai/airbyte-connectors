@@ -205,10 +205,7 @@ export type IssueComment = {
   'id' | 'body' | 'created_at' | 'updated_at' | 'issue_url' | 'html_url'
 >;
 
-export type CopilotSeatsStreamRecord =
-  | CopilotSeat
-  | CopilotSeatEnded
-  | CopilotSeatsEmpty;
+export type CopilotSeatsStreamRecord = CopilotSeat | CopilotSeatsEmpty;
 
 export type CopilotSeatsResponse = GetResponseDataTypeFromEndpointMethod<
   typeof octokit.copilot.listCopilotSeats
@@ -225,25 +222,15 @@ export type CopilotSeat = {
   user: string;
   assignee: CopilotSeatAssignee;
   team?: string;
-  teamJoinedAt?: string;
-  teamLeftAt?: never;
   startedAt?: string;
-  endedAt?: never;
 } & Pick<
   CopilotSeatsResponse['seats'][0],
-  'pending_cancellation_date' | 'last_activity_at' | 'plan_type'
+  | 'created_at'
+  | 'updated_at'
+  | 'pending_cancellation_date'
+  | 'last_activity_at'
+  | 'plan_type'
 >;
-
-export type CopilotSeatEnded = {
-  empty?: never;
-  org: string;
-  user: string;
-  team?: string;
-  teamJoinedAt?: never;
-  teamLeftAt?: string;
-  startedAt?: never;
-  endedAt?: string;
-};
 
 export type CopilotSeatsEmpty = {
   empty: true;

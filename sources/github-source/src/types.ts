@@ -19,8 +19,6 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly fetch_teams?: boolean;
   readonly fetch_pull_request_files?: boolean;
   readonly fetch_pull_request_reviews?: boolean;
-  readonly copilot_licenses_dates_fix?: boolean;
-  readonly copilot_metrics_preview_api?: boolean;
   readonly cutoff_days?: number;
   readonly api_url?: string;
   readonly api_key?: string;
@@ -60,13 +58,6 @@ type GitHubApp = {
 export type GitHubAuth = GitHubToken | GitHubApp;
 
 export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
-
-export type AuditLogTeamMember = {
-  action: 'team.add_member' | 'team.remove_member';
-  created_at: number;
-  team: string;
-  user: string;
-};
 
 export type CopilotMetricsResponse = {
   date: string;
