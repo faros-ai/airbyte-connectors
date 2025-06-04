@@ -73,14 +73,13 @@ export const destinationWriteTest = async (
     checkRecordsData(records);
   }
 
-  if ((await cli.wait()) !== 0) {
+  const exitCode = await cli.wait();
+  if (exitCode !== 0 || process.env.DEBUG_UNIT_TESTS) {
     const stderrLines = await readLines(cli.stderr);
     console.log('stdout:\n\n' + stdoutLines.join('\n'));
     console.log('stderr:\n\n' + stderrLines.join('\n'));
-    throw new Error(
-      'Destination write command failed. Stdout and Stderr provided for more details.'
-    );
   }
+  expect(exitCode).toBe(0);
 };
 
 function readRecordData(
