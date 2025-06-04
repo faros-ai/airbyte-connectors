@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "short_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "parent_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "authored_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "committer_name": {
+      "type": "string"
+    },
+    "committer_email": {
+      "type": "string"
+    },
+    "committed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "web_url": {
+      "type": "string"
+    }
+  }
+}

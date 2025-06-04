@@ -22,6 +22,7 @@ import {
   GitLab,
 } from './gitlab';
 import {RunMode, RunModeStreams} from './streams/common';
+import {FarosCommits} from './streams/faros_commits';
 import {FarosGroups} from './streams/faros_groups';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosUsers} from './streams/faros_users';
@@ -66,6 +67,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   streams(config: GitLabConfig): AirbyteStreamBase[] {
     const farosClient = this.makeFarosClient(config);
     return [
+      new FarosCommits(config, this.logger, farosClient),
       new FarosGroups(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),

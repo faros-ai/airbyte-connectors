@@ -272,6 +272,152 @@ describe('index', () => {
     });
   });
 
+  test('streams - faros commits', async () => {
+    const commits = readTestResourceAsJSON('faros_commits/commits.json');
+    const gitlab = {
+      getGroups: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          parent_id: null,
+          name: 'Test Group',
+          path: 'test-group',
+          web_url: 'https://gitlab.com/test-group',
+          description: 'Test group description',
+          visibility: 'public',
+          created_at: '2021-01-01T00:00:00Z',
+          updated_at: '2021-01-01T00:00:00Z',
+        },
+      ]),
+      getCommits: jest.fn().mockResolvedValue(commits),
+    };
+
+    const groupFilter = {
+      getGroups: jest.fn().mockResolvedValue(['test-group']),
+      getProjects: jest.fn().mockResolvedValue([
+        {
+          repo: {
+            id: '123',
+            name: 'Test Project',
+            path: 'test-project',
+            path_with_namespace: 'test-group/test-project',
+            web_url: 'https://gitlab.com/test-group/test-project',
+            description: 'Test project description',
+            visibility: 'public',
+            created_at: '2021-01-01T00:00:00Z',
+            updated_at: '2021-06-01T00:00:00Z',
+            namespace: {
+              id: '1',
+              name: 'Test Group',
+              path: 'test-group',
+              kind: 'group',
+              full_path: 'test-group',
+            },
+            group_id: '1',
+            default_branch: 'main',
+            archived: false,
+          },
+          syncRepoData: true,
+        },
+      ]),
+    };
+
+    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
+    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_commits/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getCommits).toHaveBeenCalledWith(
+      'test-group/test-project',
+      'main',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros commits with state', async () => {
+    const commits = readTestResourceAsJSON('faros_commits/commits.json');
+    const gitlab = {
+      getGroups: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          parent_id: null,
+          name: 'Test Group',
+          path: 'test-group',
+          web_url: 'https://gitlab.com/test-group',
+          description: 'Test group description',
+          visibility: 'public',
+          created_at: '2021-01-01T00:00:00Z',
+          updated_at: '2021-01-01T00:00:00Z',
+        },
+      ]),
+      getCommits: jest.fn().mockResolvedValue(commits.map(commit => ({
+        ...commit,
+        group: 'test-group',
+        project: 'test-group/test-project',
+        branch: 'main',
+      }))),
+    };
+
+    const groupFilter = {
+      getGroups: jest.fn().mockResolvedValue(['test-group']),
+      getProjects: jest.fn().mockResolvedValue([
+        {
+          repo: {
+            id: '123',
+            name: 'Test Project',
+            path: 'test-project',
+            path_with_namespace: 'test-group/test-project',
+            web_url: 'https://gitlab.com/test-group/test-project',
+            description: 'Test project description',
+            visibility: 'public',
+            created_at: '2021-01-01T00:00:00Z',
+            updated_at: '2021-06-01T00:00:00Z',
+            namespace: {
+              id: '1',
+              name: 'Test Group',
+              path: 'test-group',
+              kind: 'group',
+              full_path: 'test-group',
+            },
+            group_id: '1',
+            default_branch: 'main',
+            archived: false,
+          },
+          syncRepoData: true,
+        },
+      ]),
+    };
+
+    jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
+    jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_commits/catalog.json',
+      stateOrPath: {
+        faros_commits: {
+          'test-group/test-group/test-project': {
+            cutoff: 1642248000000, // 2022-01-15T12:00:00Z
+          },
+        },
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+      checkFinalState: (state) => {
+        expect(state).toMatchSnapshot();
+      },
+    });
+  });
+
   test('round robin bucket execution', async () => {
     jest.spyOn(GitLab, 'instance').mockResolvedValue({
       checkConnection: jest.fn().mockResolvedValue(undefined),
