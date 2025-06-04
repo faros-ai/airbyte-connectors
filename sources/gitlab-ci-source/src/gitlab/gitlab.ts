@@ -15,7 +15,10 @@ import {
 const DEFAULT_PER_PAGE = 100;
 
 export class Gitlab {
-  constructor(private readonly client: any, readonly config: GitlabConfig) {}
+  constructor(
+    private readonly client: any,
+    readonly config: GitlabConfig
+  ) {}
 
   static instance(config: GitlabConfig): Gitlab {
     if (!config.token) {

@@ -67,7 +67,7 @@ export class Metrics extends AirbyteStreamBase {
     streamSlice?: StreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<{queryName: string} & DataPoint> {
-    this.state = syncMode === SyncMode.INCREMENTAL ? streamState ?? {} : {};
+    this.state = syncMode === SyncMode.INCREMENTAL ? (streamState ?? {}) : {};
 
     const timestamp = _.get(this.state, [
       streamSlice?.queryGroup.name,

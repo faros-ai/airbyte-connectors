@@ -4,7 +4,10 @@ import {Dictionary} from 'ts-essentials';
 import {Team, Victorops, VictoropsConfig} from '../victorops';
 
 export class Teams extends AirbyteStreamBase {
-  constructor(readonly config: VictoropsConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: VictoropsConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 

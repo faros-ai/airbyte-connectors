@@ -4,7 +4,10 @@ import {Dictionary} from 'ts-essentials';
 import {Pagerduty, PagerdutyConfig, Priority} from '../pagerduty';
 
 export class Teams extends AirbyteStreamBase {
-  constructor(readonly config: PagerdutyConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: PagerdutyConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 

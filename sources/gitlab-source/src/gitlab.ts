@@ -1,7 +1,7 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-import {GitLabToken, Group, Project} from 'faros-airbyte-common/gitlab';
+import {GitLabToken, Group, Project, User} from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -60,9 +60,30 @@ export class GitLab {
 
   async checkConnection(): Promise<void> {
     try {
-      await this.client.Version.show();
+      this.logger.debug(
+        'Verifying GitLab credentials by fetching version info'
+      );
+      const versionInfo = await this.client.Version.show();
+      if (versionInfo && typeof versionInfo === 'object') {
+        this.logger.debug(
+          'GitLab credentials verified. Version info: %j',
+          versionInfo
+        );
+      } else {
+        this.logger.error(
+          'GitLab version info response was not an object or was null: %s',
+          JSON.stringify(versionInfo)
+        );
+        throw new VError(
+          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid'
+        );
+      }
     } catch (err: any) {
-      throw new VError(err, 'Failed to connect to GitLab API');
+      this.logger.error('Failed to fetch GitLab version: %s', err.message);
+      throw new VError(
+        err,
+        'GitLab authentication failed. Please check your API token and permissions'
+      );
     }
   }
 
@@ -177,6 +198,53 @@ export class GitLab {
         `Failed to fetch projects for group ${groupId}: ${err.message}`
       );
       throw new VError(err, `Error fetching projects for group ${groupId}`);
+    }
+  }
+
+  async getGroupMembers(groupId: string): Promise<User[]> {
+    try {
+      const options = {
+        perPage: this.pageSize,
+        includeInherited: true,
+      };
+
+      const members: User[] = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const groupMembers = await this.client.GroupMembers.all(groupId, {
+          ...options,
+          page,
+        });
+
+        if (!groupMembers || groupMembers.length === 0) {
+          hasMore = false;
+          continue;
+        }
+
+        for (const member of groupMembers) {
+          members.push({
+            id: member.id,
+            username: member.username,
+            name: member.name,
+            email: member.public_email || member.email,
+            state: member.state,
+            web_url: member.web_url,
+            created_at: member.created_at,
+            updated_at: member.updated_at,
+          });
+        }
+
+        page++;
+      }
+
+      return members;
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to fetch members for group ${groupId}: ${err.message}`
+      );
+      throw new VError(err, `Error fetching members for group ${groupId}`);
     }
   }
 

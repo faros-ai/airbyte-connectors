@@ -18,7 +18,10 @@ interface CalendarsState {
 }
 
 export class Calendars extends AirbyteStreamBase {
-  constructor(readonly config: GoogleCalendarConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: GoogleCalendarConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 

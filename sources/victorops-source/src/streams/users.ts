@@ -4,7 +4,10 @@ import {Dictionary} from 'ts-essentials';
 import {User, Victorops, VictoropsConfig} from '../victorops';
 
 export class Users extends AirbyteStreamBase {
-  constructor(readonly config: VictoropsConfig, logger: AirbyteLogger) {
+  constructor(
+    readonly config: VictoropsConfig,
+    logger: AirbyteLogger
+  ) {
     super(logger);
   }
 
