@@ -31,6 +31,7 @@ export const FullStreamNames = [
   'faros_groups',
   'faros_projects',
   'faros_users',
+  'faros_commits',
 ];
 
 // fill as streams are developed
@@ -38,6 +39,7 @@ export const CustomStreamNames = [
   'faros_groups',
   'faros_projects',
   'faros_users',
+  'faros_commits',
 ];
 
 export const RunModeStreams: {

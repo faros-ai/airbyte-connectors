@@ -201,6 +201,38 @@ export class GitLab {
     }
   }
 
+  async getCommits(
+    projectId: string,
+    options: {
+      since?: Date;
+      until?: Date;
+      refName?: string;
+      withStats?: boolean;
+    } = {}
+  ): Promise<any[]> {
+    try {
+      const params: any = {
+        perPage: this.pageSize,
+        ...(options.since && { since: options.since.toISOString() }),
+        ...(options.until && { until: options.until.toISOString() }),
+        ...(options.refName && { ref_name: options.refName }),
+        with_stats: options.withStats ?? true,
+      };
+
+      const commits = [];
+      for await (const commit of this.client.Projects.allRepositoryCommits(
+        projectId,
+        params
+      )) {
+        commits.push(commit);
+      }
+      return commits;
+    } catch (error) {
+      this.logger.error(`Failed to get commits for project ${projectId}`, error as any);
+      throw error;
+    }
+  }
+
   async getGroupMembers(groupId: string): Promise<User[]> {
     try {
       const options = {
