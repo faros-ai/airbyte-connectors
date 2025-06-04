@@ -5,7 +5,7 @@
     "group_id": {
       "type": "string"
     },
-    "project": {
+    "project_path": {
       "type": "string"
     },
     "branch": {
