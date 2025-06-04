@@ -75,11 +75,13 @@ export const destinationWriteTest = async (
   }
 
   const exitCode = await cli.wait();
+  const stderrLines = await readLines(cli.stderr);
   if (exitCode !== 0 && process.env.DEBUG_UNIT_TESTS) {
-    const stderrLines = await readLines(cli.stderr);
     console.log('stdout:\n\n' + stdoutLines.join('\n'));
     console.log('stderr:\n\n' + stderrLines.join('\n'));
   }
+  // Expect the stderr joined by \n to be empty string:
+  expect(stderrLines.join('\n')).toBe('');
   expect(exitCode).toBe(0);
 };
 
