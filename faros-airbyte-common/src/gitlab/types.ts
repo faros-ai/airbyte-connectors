@@ -48,3 +48,26 @@ export interface Project {
   group_id: string;
   syncRepoData?: boolean;
 }
+
+export interface Commit {
+  org: string;
+  repo: string;
+  branch: string;
+  oid: string;
+  message: string;
+  url: string;
+  authoredDate: string;
+  author: {
+    name: string;
+    email: string;
+  };
+  committer: {
+    name: string;
+    email: string;
+  };
+  additions: number;
+  deletions: number;
+  changedFilesIfAvailable: number;
+  group_id: string;
+  project_id: string;
+}
