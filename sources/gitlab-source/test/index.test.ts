@@ -79,6 +79,13 @@ const createTestUsers = () => [
   },
 ];
 
+// Helper to create async generator mock
+async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
+  for (const item of items) {
+    yield item;
+  }
+}
+
 // Common mock setup functions
 function setupBasicMocks() {
   const testGroup = createTestGroup();
@@ -89,7 +96,7 @@ function setupBasicMocks() {
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
     getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
-    getCommits: jest.fn().mockResolvedValue([]),
+    getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
   };
 
   const groupFilter = {
@@ -222,7 +229,7 @@ describe('index', () => {
   test('streams - faros commits', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
     const { gitlab } = setupBasicMocks();
-    gitlab.getCommits.mockResolvedValue(commits);
+    gitlab.getCommits.mockReturnValue(createAsyncGeneratorMock(commits));
 
     await sourceReadTest({
       source,
@@ -244,12 +251,12 @@ describe('index', () => {
   test('streams - faros commits with state', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
     const { gitlab } = setupBasicMocks();
-    gitlab.getCommits.mockResolvedValue(commits.map(commit => ({
+    gitlab.getCommits.mockReturnValue(createAsyncGeneratorMock(commits.map(commit => ({
       ...commit,
       group: 'test-group',
       project: 'test-group/test-project',
       branch: 'main',
-    })));
+    }))));
 
     await sourceReadTest({
       source,
