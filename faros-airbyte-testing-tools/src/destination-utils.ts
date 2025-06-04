@@ -27,6 +27,7 @@ export interface GenerateBasicTestSuiteOptions {
 // Executes the destination write command in dry-run mode and optionally checks:
 // - The processed and written records count
 // - The records data
+// If you set the DEBUG_UNIT_TESTS environment variable to any value, the command's stdout and stderr will be logged.
 export const destinationWriteTest = async (
   options: DestinationWriteTestOptions
 ): Promise<void> => {
@@ -73,8 +74,15 @@ export const destinationWriteTest = async (
     checkRecordsData(records);
   }
 
-  expect(await read(cli.stderr)).toBe('');
-  expect(await cli.wait()).toBe(0);
+  const exitCode = await cli.wait();
+  const stderrLines = await readLines(cli.stderr);
+  if (process.env.DEBUG_UNIT_TESTS) {
+    console.log('stdout:\n\n' + stdoutLines.join('\n'));
+    console.log('stderr:\n\n' + stderrLines.join('\n'));
+  }
+  // Expect the stderr joined by \n to be empty string:
+  expect(stderrLines.join('\n')).toBe('');
+  expect(exitCode).toBe(0);
 };
 
 function readRecordData(
