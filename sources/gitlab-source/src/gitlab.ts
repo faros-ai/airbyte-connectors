@@ -362,8 +362,8 @@ export class GitLab {
         for (const tag of pageTags) {
           yield {
             name: tag.name,
-            title: tag.message || tag.name,
-            commit_id: tag.commit?.id || tag.target,
+            title: tag.message,
+            commit_id: tag.commit?.id,
           };
         }
 
