@@ -1,7 +1,13 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-import {GitLabToken, Group, Project, User} from 'faros-airbyte-common/gitlab';
+import {
+  Commit,
+  GitLabToken,
+  Group,
+  Project,
+  User,
+} from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -65,10 +71,7 @@ export class GitLab {
       );
       const versionInfo = await this.client.Version.show();
       if (versionInfo && typeof versionInfo === 'object') {
-        this.logger.debug(
-          'GitLab credentials verified. Version info: %j',
-          versionInfo
-        );
+        this.logger.debug('GitLab credentials verified.', versionInfo);
       } else {
         this.logger.error(
           'GitLab version info response was not an object or was null: %s',
@@ -265,5 +268,71 @@ export class GitLab {
 
   private getBaseUrl(): string {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
+  }
+
+  async *getCommits(
+    projectPath: string,
+    branch: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<Commit, 'group_id' | 'project_path'>> {
+    try {
+      const options: any = {
+        refName: branch,
+        perPage: this.pageSize,
+      };
+
+      if (since) {
+        options.since = since.toISOString();
+      }
+
+      if (until) {
+        options.until = until.toISOString();
+      }
+
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const pageCommits = await this.client.Commits.all(projectPath, {
+          ...options,
+          page,
+        });
+
+        if (!pageCommits || pageCommits.length === 0) {
+          hasMore = false;
+          continue;
+        }
+
+        for (const commit of pageCommits) {
+          yield {
+            id: commit.id,
+            short_id: commit.short_id,
+            created_at: commit.created_at,
+            parent_ids: commit.parent_ids ?? [],
+            title: commit.title,
+            message: commit.message,
+            author_name: commit.author_name,
+            author_email: commit.author_email,
+            authored_date: commit.authored_date,
+            committer_name: commit.committer_name,
+            committer_email: commit.committer_email,
+            committed_date: commit.committed_date,
+            web_url: commit.web_url,
+            branch: branch,
+          };
+        }
+
+        page++;
+      }
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to fetch commits for project ${projectPath}: ${err.message}`
+      );
+      throw new VError(
+        err,
+        `Error fetching commits for project ${projectPath}`
+      );
+    }
   }
 }

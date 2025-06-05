@@ -3,6 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
+import {Project} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -13,8 +14,13 @@ export type GroupStreamSlice = {
   group: string;
 };
 
+export type ProjectStreamSlice = {
+  group_id: string;
+  project: Pick<Project, 'path_with_namespace' | 'default_branch' | 'path'>;
+};
+
 export type StreamState = {
-  readonly [groupKey: string]: {
+  readonly [key: string]: {
     cutoff: number;
   };
 };
@@ -25,9 +31,14 @@ export enum RunMode {
   Custom = 'Custom',
 }
 
-export const MinimumStreamNames = ['faros_groups'];
+export const MinimumStreamNames = [
+  'faros_commits',
+  'faros_groups',
+  'faros_projects',
+];
 
 export const FullStreamNames = [
+  'faros_commits',
   'faros_groups',
   'faros_projects',
   'faros_users',
@@ -35,6 +46,7 @@ export const FullStreamNames = [
 
 // fill as streams are developed
 export const CustomStreamNames = [
+  'faros_commits',
   'faros_groups',
   'faros_projects',
   'faros_users',
@@ -81,12 +93,37 @@ export abstract class StreamBase extends AirbyteStreamBase {
   static groupKey(group: string): string {
     return toLower(`${group}`);
   }
+
+  static groupProjectKey(group: string, projectPath: string): string {
+    return toLower(`${group}/${projectPath}`);
+  }
 }
 
 export abstract class StreamWithGroupSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<GroupStreamSlice> {
     for (const group of await this.groupFilter.getGroups()) {
       yield {group};
+    }
+  }
+}
+
+export abstract class StreamWithProjectSlices extends StreamBase {
+  async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
+    for (const group of await this.groupFilter.getGroups()) {
+      for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
+        group
+      )) {
+        if (syncRepoData) {
+          yield {
+            group_id: repo.group_id,
+            project: {
+              path_with_namespace: repo.path_with_namespace,
+              default_branch: repo.default_branch,
+              path: repo.path,
+            },
+          };
+        }
+      }
     }
   }
 }
