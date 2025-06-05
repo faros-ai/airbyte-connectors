@@ -36,7 +36,6 @@
     "faros-airbyte-common": "*",
     "typescript-memoize": "^1.1.0",
     "undici": "^6.21.2",
-    "url-template": "^2.0.8",
     "verror": "^1.10.1"
   },
   "jest": {
