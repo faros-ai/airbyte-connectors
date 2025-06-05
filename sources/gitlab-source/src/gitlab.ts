@@ -6,6 +6,7 @@ import {
   GitLabToken,
   Group,
   Project,
+  Tag,
   User,
 } from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
@@ -333,6 +334,46 @@ export class GitLab {
         err,
         `Error fetching commits for project ${projectPath}`
       );
+    }
+  }
+
+  async *getTags(
+    projectId: string
+  ): AsyncGenerator<Omit<Tag, 'group_id' | 'project_path'>> {
+    try {
+      const options = {
+        perPage: this.pageSize,
+      };
+
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const pageTags = await this.client.Tags.all(projectId, {
+          ...options,
+          page,
+        });
+
+        if (!pageTags || pageTags.length === 0) {
+          hasMore = false;
+          continue;
+        }
+
+        for (const tag of pageTags) {
+          yield {
+            name: tag.name,
+            title: tag.message || tag.name,
+            commit_id: tag.commit?.id || tag.target,
+          };
+        }
+
+        page++;
+      }
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to fetch tags for project ${projectId}: ${err.message}`
+      );
+      throw new VError(err, `Error fetching tags for project ${projectId}`);
     }
   }
 }

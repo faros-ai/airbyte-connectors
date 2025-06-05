@@ -67,3 +67,9 @@ export interface Commit {
   project_path: string;
   branch: string;
 }
+
+export interface Tag {
+  name: string;
+  title: string;
+  commit_id: string;
+}

@@ -90,13 +90,14 @@ async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
 function setupBasicMocks() {
   const testGroup = createTestGroup();
   const testProject = createTestProject();
-  
+
   const gitlab = {
     getGroups: jest.fn().mockResolvedValue([testGroup]),
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
     getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
   };
 
   const groupFilter = {
@@ -112,7 +113,7 @@ function setupBasicMocks() {
   jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
   jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
 
-  return { gitlab, groupFilter, testGroup, testProject };
+  return {gitlab, groupFilter, testGroup, testProject};
 }
 
 describe('index', () => {
@@ -213,6 +214,23 @@ describe('index', () => {
     });
   });
 
+  test('streams - faros tags', async () => {
+    const tags = readTestResourceAsJSON('faros_tags/tags.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getTags.mockReturnValue(createAsyncGeneratorMock(tags));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_tags/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getTags).toHaveBeenCalledWith('test-group/test-project');
+  });
+
   test('streams - faros users', async () => {
     setupBasicMocks();
 
@@ -228,7 +246,7 @@ describe('index', () => {
 
   test('streams - faros commits', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
-    const { gitlab } = setupBasicMocks();
+    const {gitlab} = setupBasicMocks();
     gitlab.getCommits.mockReturnValue(createAsyncGeneratorMock(commits));
 
     await sourceReadTest({
@@ -250,13 +268,17 @@ describe('index', () => {
 
   test('streams - faros commits with state', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
-    const { gitlab } = setupBasicMocks();
-    gitlab.getCommits.mockReturnValue(createAsyncGeneratorMock(commits.map(commit => ({
-      ...commit,
-      group: 'test-group',
-      project: 'test-group/test-project',
-      branch: 'main',
-    }))));
+    const {gitlab} = setupBasicMocks();
+    gitlab.getCommits.mockReturnValue(
+      createAsyncGeneratorMock(
+        commits.map((commit) => ({
+          ...commit,
+          group: 'test-group',
+          project: 'test-group/test-project',
+          branch: 'main',
+        }))
+      )
+    );
 
     await sourceReadTest({
       source,
