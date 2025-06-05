@@ -93,34 +93,21 @@ export class GitLab {
 
   @Memoize()
   async getGroups(): Promise<Group[]> {
-    try {
-      const options = {
-        perPage: this.pageSize,
-        withProjects: false,
-        allAvailable: this.fetchPublicGroups,
-      };
+    const options = {
+      perPage: this.pageSize,
+      withProjects: false,
+      allAvailable: this.fetchPublicGroups,
+    };
 
-      const groups: Group[] = [];
-      let page = 1;
-      let hasMore = true;
+    const fetchPage = (page: number) =>
+      this.client.Groups.all({...options, page});
 
-      while (hasMore) {
-        const pageGroups = await this.client.Groups.all({...options, page});
-
-        if (!pageGroups || pageGroups.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        groups.push(...pageGroups.map(GitLab.convertGitLabGroup));
-        page++;
-      }
-
-      return groups;
-    } catch (err: any) {
-      this.logger.error(`Failed to fetch groups: ${err.message}`);
-      throw new VError(err, 'Error fetching groups');
+    const groups: Group[] = [];
+    for await (const group of this.paginate(fetchPage, 'groups')) {
+      groups.push(GitLab.convertGitLabGroup(group));
     }
+
+    return groups;
   }
 
   static convertGitLabGroup(group: any): Group {
@@ -149,107 +136,71 @@ export class GitLab {
   }
 
   async getProjects(groupId: string): Promise<Project[]> {
-    try {
-      const options = {
-        perPage: this.pageSize,
-      };
+    const options = {
+      perPage: this.pageSize,
+    };
 
-      const projects: Project[] = [];
-      let page = 1;
-      let hasMore = true;
+    const fetchPage = (page: number) =>
+      this.client.Groups.projects(groupId, {...options, page});
 
-      while (hasMore) {
-        const groupProjects = await this.client.Groups.projects(groupId, {
-          ...options,
-          page,
-        });
-
-        if (!groupProjects || groupProjects.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const project of groupProjects) {
-          projects.push({
-            id: toLower(`${project.id}`),
-            name: project.name,
-            path: project.path,
-            path_with_namespace: project.path_with_namespace,
-            web_url: project.web_url,
-            description: project.description,
-            visibility: project.visibility,
-            created_at: project.created_at,
-            updated_at: project.updated_at,
-            namespace: {
-              id: toLower(`${project.namespace.id}`),
-              name: project.namespace.name,
-              path: project.namespace.path,
-              kind: project.namespace.kind,
-              full_path: project.namespace.full_path,
-            },
-            default_branch: project.default_branch,
-            archived: project.archived,
-            group_id: groupId,
-          });
-        }
-
-        page++;
-      }
-
-      return projects;
-    } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch projects for group ${groupId}: ${err.message}`
-      );
-      throw new VError(err, `Error fetching projects for group ${groupId}`);
+    const projects: Project[] = [];
+    for await (const project of this.paginate(
+      fetchPage,
+      `projects for group ${groupId}`
+    )) {
+      projects.push({
+        id: toLower(`${project.id}`),
+        name: project.name,
+        path: project.path,
+        path_with_namespace: project.path_with_namespace,
+        web_url: project.web_url,
+        description: project.description,
+        visibility: project.visibility,
+        created_at: project.created_at,
+        updated_at: project.updated_at,
+        namespace: {
+          id: toLower(`${project.namespace.id}`),
+          name: project.namespace.name,
+          path: project.namespace.path,
+          kind: project.namespace.kind,
+          full_path: project.namespace.full_path,
+        },
+        default_branch: project.default_branch,
+        archived: project.archived,
+        group_id: groupId,
+      });
     }
+
+    return projects;
   }
 
   async getGroupMembers(groupId: string): Promise<User[]> {
-    try {
-      const options = {
-        perPage: this.pageSize,
-        includeInherited: true,
-      };
+    const options = {
+      perPage: this.pageSize,
+      includeInherited: true,
+    };
 
-      const members: User[] = [];
-      let page = 1;
-      let hasMore = true;
+    const fetchPage = (page: number) =>
+      this.client.GroupMembers.all(groupId, {...options, page});
 
-      while (hasMore) {
-        const groupMembers = await this.client.GroupMembers.all(groupId, {
-          ...options,
-          page,
-        });
-
-        if (!groupMembers || groupMembers.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const member of groupMembers) {
-          members.push({
-            id: member.id,
-            username: member.username,
-            name: member.name,
-            email: member.public_email || member.email,
-            state: member.state,
-            web_url: member.web_url,
-            created_at: member.created_at,
-            updated_at: member.updated_at,
-          });
-        }
-
-        page++;
-      }
-
-      return members;
-    } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch members for group ${groupId}: ${err.message}`
-      );
-      throw new VError(err, `Error fetching members for group ${groupId}`);
+    const members: User[] = [];
+    for await (const member of this.paginate(
+      fetchPage,
+      `members for group ${groupId}`
+    )) {
+      members.push({
+        id: member.id,
+        username: member.username,
+        name: member.name,
+        email: member.public_email || member.email,
+        state: member.state,
+        web_url: member.web_url,
+        created_at: member.created_at,
+        updated_at: member.updated_at,
+      });
     }
+
+    return members;
   }
 
   private getToken(): string {
@@ -271,109 +222,98 @@ export class GitLab {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
   }
 
+  private async *paginate(
+    fetchPage: (page: number) => Promise<Record<string, any>[]>,
+    entity: string
+  ): AsyncGenerator<Record<string, any>> {
+    try {
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const items = await fetchPage(page);
+
+        if (!items || items.length === 0) {
+          hasMore = false;
+          continue;
+        }
+
+        for (const item of items) {
+          yield item;
+        }
+
+        page++;
+      }
+    } catch (err: any) {
+      this.logger.error(`Failed to fetch ${entity}: ${err.message}`);
+      throw new VError(err, `Error fetching ${entity}`);
+    }
+  }
+
   async *getCommits(
     projectPath: string,
     branch: string,
     since?: Date,
     until?: Date
   ): AsyncGenerator<Omit<Commit, 'group_id' | 'project_path'>> {
-    try {
-      const options: any = {
-        refName: branch,
-        perPage: this.pageSize,
+    const options: any = {
+      refName: branch,
+      perPage: this.pageSize,
+    };
+
+    if (since) {
+      options.since = since.toISOString();
+    }
+
+    if (until) {
+      options.until = until.toISOString();
+    }
+
+    const fetchPage = (page: number) =>
+      this.client.Commits.all(projectPath, {...options, page});
+
+    for await (const commit of this.paginate(
+      fetchPage,
+      `commits for project ${projectPath}`
+    )) {
+      yield {
+        id: commit.id,
+        short_id: commit.short_id,
+        created_at: commit.created_at,
+        parent_ids: commit.parent_ids ?? [],
+        title: commit.title,
+        message: commit.message,
+        author_name: commit.author_name,
+        author_email: commit.author_email,
+        authored_date: commit.authored_date,
+        committer_name: commit.committer_name,
+        committer_email: commit.committer_email,
+        committed_date: commit.committed_date,
+        web_url: commit.web_url,
+        branch: branch,
       };
-
-      if (since) {
-        options.since = since.toISOString();
-      }
-
-      if (until) {
-        options.until = until.toISOString();
-      }
-
-      let page = 1;
-      let hasMore = true;
-
-      while (hasMore) {
-        const pageCommits = await this.client.Commits.all(projectPath, {
-          ...options,
-          page,
-        });
-
-        if (!pageCommits || pageCommits.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const commit of pageCommits) {
-          yield {
-            id: commit.id,
-            short_id: commit.short_id,
-            created_at: commit.created_at,
-            parent_ids: commit.parent_ids ?? [],
-            title: commit.title,
-            message: commit.message,
-            author_name: commit.author_name,
-            author_email: commit.author_email,
-            authored_date: commit.authored_date,
-            committer_name: commit.committer_name,
-            committer_email: commit.committer_email,
-            committed_date: commit.committed_date,
-            web_url: commit.web_url,
-            branch: branch,
-          };
-        }
-
-        page++;
-      }
-    } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch commits for project ${projectPath}: ${err.message}`
-      );
-      throw new VError(
-        err,
-        `Error fetching commits for project ${projectPath}`
-      );
     }
   }
 
   async *getTags(
     projectId: string
   ): AsyncGenerator<Omit<Tag, 'group_id' | 'project_path'>> {
-    try {
-      const options = {
-        perPage: this.pageSize,
+    const options = {
+      perPage: this.pageSize,
+    };
+
+    const fetchPage = (page: number) =>
+      this.client.Tags.all(projectId, {...options, page});
+
+    for await (const tag of this.paginate(
+      fetchPage,
+      `tags for project ${projectId}`
+    )) {
+      yield {
+        name: tag.name,
+        title: tag.message,
+        commit_id: tag.commit?.id,
       };
-
-      let page = 1;
-      let hasMore = true;
-
-      while (hasMore) {
-        const pageTags = await this.client.Tags.all(projectId, {
-          ...options,
-          page,
-        });
-
-        if (!pageTags || pageTags.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const tag of pageTags) {
-          yield {
-            name: tag.name,
-            title: tag.message,
-            commit_id: tag.commit?.id,
-          };
-        }
-
-        page++;
-      }
-    } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch tags for project ${projectId}: ${err.message}`
-      );
-      throw new VError(err, `Error fetching tags for project ${projectId}`);
     }
   }
 }
