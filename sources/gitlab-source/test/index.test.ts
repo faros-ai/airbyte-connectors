@@ -97,6 +97,7 @@ function setupBasicMocks() {
     getProjects: jest.fn().mockResolvedValue([testProject]),
     getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
   };
 
   const groupFilter = {
@@ -211,6 +212,23 @@ describe('index', () => {
         expect(records).toMatchSnapshot();
       },
     });
+  });
+
+  test('streams - faros tags', async () => {
+    const tags = readTestResourceAsJSON('faros_tags/tags.json');
+    const { gitlab } = setupBasicMocks();
+    gitlab.getTags.mockReturnValue(createAsyncGeneratorMock(tags));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_tags/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getTags).toHaveBeenCalledWith('test-group/test-project');
   });
 
   test('streams - faros users', async () => {
