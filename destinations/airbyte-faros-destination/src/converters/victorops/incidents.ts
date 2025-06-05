@@ -96,18 +96,20 @@ export class Incidents extends VictorOpsConverter {
         if (!acknowledgedAt || transitionTime < acknowledgedAt) {
           acknowledgedAt = transitionTime;
         }
-        if (transition.by) {
-          res.push({
-            model: 'ims_IncidentAssignment',
-            record: {
-              incident: incidentRef,
-              assignee: {
-                uid: transition.by,
-                source,
-              },
+      }
+      
+      if (transition.by) {
+        res.push({
+          model: 'ims_IncidentAssignment',
+          record: {
+            incident: incidentRef,
+            assignee: {
+              uid: transition.by,
+              source,
             },
-          });
-        }
+            assignedAt: transitionTime,
+          },
+        });
       }
 
       if (transition.name.toLowerCase() === 'resolved') {
