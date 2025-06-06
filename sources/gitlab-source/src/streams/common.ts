@@ -35,12 +35,14 @@ export const MinimumStreamNames = [
   'faros_commits',
   'faros_groups',
   'faros_projects',
+  'faros_tags',
 ];
 
 export const FullStreamNames = [
   'faros_commits',
   'faros_groups',
   'faros_projects',
+  'faros_tags',
   'faros_users',
 ];
 
@@ -49,6 +51,7 @@ export const CustomStreamNames = [
   'faros_commits',
   'faros_groups',
   'faros_projects',
+  'faros_tags',
   'faros_users',
 ];
 
