@@ -147,6 +147,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalLinesAdded",
       },
       "uid": "dc835999988ab0c8253beaa712285b319b1181ad4f8b5e4e78138e768f0e5b38",
       "user": Object {
@@ -172,6 +173,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalLinesDeleted",
       },
       "uid": "40bb3f8b70065ba9464837e8a3846b489d91ad4f2ed092794a1896e74f1f9605",
       "user": Object {
@@ -197,6 +199,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalApplies",
       },
       "uid": "081901cb179f881808e2143e7b571523428c5e72f22c3109c78e9839660b0238",
       "user": Object {
@@ -222,6 +225,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalTabsShown",
       },
       "uid": "05a1d38bf0cf9f1ca209960772162c9173f45ce75b12e1d095ff68b2fff0333d",
       "user": Object {
@@ -247,6 +251,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalTabsAccepted",
       },
       "uid": "be90c620238837d733135e9b06587f6088de8d098d86a9bd4d9279bfa3dbdf6d",
       "user": Object {
@@ -391,6 +396,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalLinesAdded",
       },
       "uid": "439429e0f8d9b5ccd3cbdc74ae0f01c24e9bb7fb5a7951aab1c3f646786e5238",
       "user": Object {
@@ -416,6 +422,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalLinesDeleted",
       },
       "uid": "81d425be64895e3b3f189e338836768034aa43b81cfed5e3cdfe3c0cb590f09a",
       "user": Object {
@@ -441,6 +448,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalApplies",
       },
       "uid": "6ffe23ee0599ddadbfb39c975b685cad4daab1342ef8e4cd2c7e0a88f69d52a1",
       "user": Object {
@@ -466,6 +474,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalTabsShown",
       },
       "uid": "8bf5efb6f394b09e97022ac1667378310722342b992b88534f6621071477667f",
       "user": Object {
@@ -491,6 +500,7 @@ Array [
       },
       "type": Object {
         "category": "Custom",
+        "detail": "totalTabsAccepted",
       },
       "uid": "bca35a2662d3b6294c690dd41b45e5dfc5a3142e71324762edc3eee850a31bc6",
       "user": Object {

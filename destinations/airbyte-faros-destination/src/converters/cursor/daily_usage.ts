@@ -123,7 +123,10 @@ export class DailyUsage extends CursorConverter {
           source: this.source,
           startedAt: day,
           endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
-          type: {category: assistantMetricType},
+          type: {
+            category: assistantMetricType,
+            ...(customMetricName && {detail: customMetricName}),
+          },
           valueType: getValueType(value),
           value: String(value),
           organization: {
