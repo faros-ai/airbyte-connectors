@@ -195,7 +195,7 @@ export class GitLab {
         id: member.id,
         username: member.username,
         name: member.name,
-        email: (member.public_email || member.email) as string,
+        email: (member.public_email ?? member.email) as string,
         state: member.state,
         web_url: member.web_url,
         created_at: member.created_at as string,
