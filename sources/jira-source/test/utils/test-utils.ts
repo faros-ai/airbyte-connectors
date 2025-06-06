@@ -48,6 +48,8 @@ export function setupJiraInstance(
       sourceConfig.bucket_total,
       logger,
       undefined,
+      undefined,
+      undefined,
       sourceConfig?.requestedStreams,
       sourceConfig?.use_sprints_reverse_search
     );
