@@ -117,6 +117,7 @@ const prRegex = new RegExp(
 
 export const JIRA_CLOUD_REGEX = /^https:\/\/(.*)\.atlassian\.net/g;
 const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
+const MAX_PREFIX_DEPTH = 4;
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
@@ -1446,7 +1447,7 @@ export class Jira {
   private findUsers(
     username: string
   ): AsyncIterableIterator<Version2Models.User> {
-    this.logger?.debug("Searching for users with username '%s'", username);
+    this.logger?.debug(`Searching for users with username '${username}'`);
     return this.iterate(
       (startAt) =>
         // use custom method searchUsers for Jira Server
@@ -1459,8 +1460,20 @@ export class Jira {
     // Keep track of seen users in order to avoid returning duplicates
     const seenUsers = new Set<string>();
 
-    // Try searching users by a single character prefix first
-    for (const prefix of PREFIX_CHARS) {
+    // Initialize stack with single-character prefixes (in reverse order so 'a' is processed first)
+    const prefixStack: string[] = [];
+    for (let i = PREFIX_CHARS.length - 1; i >= 0; i--) {
+      prefixStack.push(PREFIX_CHARS[i]);
+    }
+
+    this.logger?.debug(
+      `Starting user prefix search with ${prefixStack.length} initial prefixes, max depth: ${MAX_PREFIX_DEPTH}`
+    );
+
+    // Process stack until empty
+    while (prefixStack.length > 0) {
+      const prefix = prefixStack.pop()!;
+
       let userCount = 0;
       const res = this.findUsers(prefix);
       for await (const u of res) {
@@ -1471,22 +1484,28 @@ export class Jira {
           yield u;
         }
       }
-      // Since we got exactly 1000 results back we are probably hitting
-      // the limit of Jira search API. Let's try searching by two character prefix
-      // https://jira.atlassian.com/browse/JRASERVER-65089
-      if (userCount === 1000) {
-        for (const prefix2 of PREFIX_CHARS) {
-          const res = this.findUsers(prefix + prefix2);
-          for await (const u of res) {
-            const uid = this.userId(u);
-            if (!seenUsers.has(uid)) {
-              seenUsers.add(uid);
-              yield u;
-            }
-          }
+
+      this.logger?.debug(
+        `Prefix '${prefix}' (length ${prefix.length}): found ${userCount} users`
+      );
+
+      // If we hit the 100-user limit and haven't reached max depth, expand the search
+      if (userCount === 100 && prefix.length < MAX_PREFIX_DEPTH) {
+        this.logger?.debug(
+          `Prefix '${prefix}' hit 100-user limit, expanding to length ${prefix.length + 1}`
+        );
+
+        // Add extended prefixes to stack (in reverse order for proper DFS ordering)
+        for (let i = PREFIX_CHARS.length - 1; i >= 0; i--) {
+          const extendedPrefix = prefix + PREFIX_CHARS[i];
+          prefixStack.push(extendedPrefix);
         }
       }
     }
+
+    this.logger?.debug(
+      `User prefix search completed. Total unique users found: ${seenUsers.size}`
+    );
   }
 
   private userId(u: Version2Models.User): string {
