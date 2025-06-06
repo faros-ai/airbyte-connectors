@@ -1,4 +1,4 @@
-import {Gitlab as GitlabClient} from '@gitbeaker/node';
+import {Gitlab as GitlabClient, Types} from '@gitbeaker/node';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -99,11 +99,14 @@ export class GitLab {
       allAvailable: this.fetchPublicGroups,
     };
 
-    const fetchPage = (page: number) =>
+    const fetchPage = (page: number): Promise<Types.GroupSchema[]> =>
       this.client.Groups.all({...options, page});
 
     const groups: Group[] = [];
-    for await (const group of this.paginate(fetchPage, 'groups')) {
+    for await (const group of this.paginate<Types.GroupSchema>(
+      fetchPage,
+      'groups'
+    )) {
       groups.push(GitLab.convertGitLabGroup(group));
     }
 
@@ -140,11 +143,11 @@ export class GitLab {
       perPage: this.pageSize,
     };
 
-    const fetchPage = (page: number) =>
+    const fetchPage = (page: number): Promise<Types.ProjectSchema[]> =>
       this.client.Groups.projects(groupId, {...options, page});
 
     const projects: Project[] = [];
-    for await (const project of this.paginate(
+    for await (const project of this.paginate<Types.ProjectSchema>(
       fetchPage,
       `projects for group ${groupId}`
     )) {
@@ -155,9 +158,9 @@ export class GitLab {
         path_with_namespace: project.path_with_namespace,
         web_url: project.web_url,
         description: project.description,
-        visibility: project.visibility,
+        visibility: project.visibility as string,
         created_at: project.created_at,
-        updated_at: project.updated_at,
+        updated_at: project.updated_at as string,
         namespace: {
           id: toLower(`${project.namespace.id}`),
           name: project.namespace.name,
@@ -166,7 +169,7 @@ export class GitLab {
           full_path: project.namespace.full_path,
         },
         default_branch: project.default_branch,
-        archived: project.archived,
+        archived: project.archived as boolean,
         group_id: groupId,
       });
     }
@@ -180,11 +183,11 @@ export class GitLab {
       includeInherited: true,
     };
 
-    const fetchPage = (page: number) =>
+    const fetchPage = (page: number): Promise<Types.MemberSchema[]> =>
       this.client.GroupMembers.all(groupId, {...options, page});
 
     const members: User[] = [];
-    for await (const member of this.paginate(
+    for await (const member of this.paginate<Types.MemberSchema>(
       fetchPage,
       `members for group ${groupId}`
     )) {
@@ -192,11 +195,11 @@ export class GitLab {
         id: member.id,
         username: member.username,
         name: member.name,
-        email: member.public_email || member.email,
+        email: (member.public_email || member.email) as string,
         state: member.state,
         web_url: member.web_url,
-        created_at: member.created_at,
-        updated_at: member.updated_at,
+        created_at: member.created_at as string,
+        updated_at: member.updated_at as string,
       });
     }
 
@@ -222,10 +225,10 @@ export class GitLab {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
   }
 
-  private async *paginate(
-    fetchPage: (page: number) => Promise<Record<string, any>[]>,
+  private async *paginate<T>(
+    fetchPage: (page: number) => Promise<T[]>,
     entity: string
-  ): AsyncGenerator<Record<string, any>> {
+  ): AsyncGenerator<T> {
     try {
       let page = 1;
       let hasMore = true;
@@ -269,26 +272,35 @@ export class GitLab {
       options.until = until.toISOString();
     }
 
-    const fetchPage = (page: number) =>
+    const fetchPage = (page: number): Promise<Types.CommitSchema[]> =>
       this.client.Commits.all(projectPath, {...options, page});
 
-    for await (const commit of this.paginate(
+    for await (const commit of this.paginate<Types.CommitSchema>(
       fetchPage,
       `commits for project ${projectPath}`
     )) {
       yield {
         id: commit.id,
         short_id: commit.short_id,
-        created_at: commit.created_at,
+        created_at:
+          commit.created_at instanceof Date
+            ? commit.created_at.toISOString()
+            : commit.created_at,
         parent_ids: commit.parent_ids ?? [],
         title: commit.title,
         message: commit.message,
         author_name: commit.author_name,
         author_email: commit.author_email,
-        authored_date: commit.authored_date,
+        authored_date:
+          commit.authored_date instanceof Date
+            ? commit.authored_date.toISOString()
+            : commit.authored_date,
         committer_name: commit.committer_name,
         committer_email: commit.committer_email,
-        committed_date: commit.committed_date,
+        committed_date:
+          commit.committed_date instanceof Date
+            ? commit.committed_date.toISOString()
+            : commit.committed_date,
         web_url: commit.web_url,
         branch: branch,
       };
@@ -298,14 +310,14 @@ export class GitLab {
   async *getTags(
     projectId: string
   ): AsyncGenerator<Omit<Tag, 'group_id' | 'project_path'>> {
-    const options = {
+    const options: Types.PaginatedRequestOptions = {
       perPage: this.pageSize,
     };
 
-    const fetchPage = (page: number) =>
+    const fetchPage = (page: number): Promise<Types.TagSchema[]> =>
       this.client.Tags.all(projectId, {...options, page});
 
-    for await (const tag of this.paginate(
+    for await (const tag of this.paginate<Types.TagSchema>(
       fetchPage,
       `tags for project ${projectId}`
     )) {
