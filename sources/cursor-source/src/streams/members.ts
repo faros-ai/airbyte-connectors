@@ -1,4 +1,4 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
 import {MemberItem} from 'faros-airbyte-common/cursor';
 import {Dictionary} from 'ts-essentials';
 
