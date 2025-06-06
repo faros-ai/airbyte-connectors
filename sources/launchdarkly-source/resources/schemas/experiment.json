@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "maintainerId": {
+      "type": "string"
+    },
+    "creationDate": {
+      "type": "integer"
+    },
+    "environmentKey": {
+      "type": "string"
+    },
+    "archivedDate": {
+      "type": "integer"
+    },
+    "hypothesis": {
+      "type": "string"
+    },
+    "winningTreatment": {
+      "type": "integer"
+    },
+    "winningReason": {
+      "type": "string"
+    },
+    "baselineIdx": {
+      "type": "integer"
+    },
+    "draftIteration": {
+      "type": "object"
+    },
+    "previousIterations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "_links": {
+      "type": "object"
+    },
+    "_id": {
+      "type": "string"
+    }
+  }
+}
