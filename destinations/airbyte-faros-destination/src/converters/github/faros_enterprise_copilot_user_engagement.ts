@@ -1,12 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {
-  EnterpriseCopilotUserEngagement,
-  GitHubTool,
-} from 'faros-airbyte-common/github';
+import {EnterpriseCopilotUserEngagement} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 
+import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 const engagementFieldToFeature: Record<string, string> = {
   cli_engagement: 'CLI',
@@ -64,7 +62,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
         record: {
           uid: GitHubCommon.digest(
             [
-              GitHubTool.Copilot,
+              VCSToolCategory.GitHubCopilot,
               AssistantMetric.Engagement,
               day.toISOString(),
               org,
@@ -86,7 +84,7 @@ export class FarosEnterpriseCopilotUserEngagement extends GitHubConverter {
             uid: user,
             source: this.streamName.source,
           },
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: VCSToolCategory.GitHubCopilot},
           feature,
         },
       },

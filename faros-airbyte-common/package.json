@@ -30,6 +30,7 @@
     "./circleci": "./lib/circleci/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
+    "./cursor": "./lib/cursor/index.js",
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
@@ -58,6 +59,9 @@
       ],
       "common": [
         "./lib/common/index.d.ts"
+      ],
+      "cursor": [
+        "./lib/cursor/index.d.ts"
       ],
       "github": [
         "./lib/github/index.d.ts"

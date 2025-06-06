@@ -15,20 +15,6 @@ import {Converter, DestinationRecord} from '../converter';
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 
-export enum AssistantMetric {
-  SuggestionsDiscarded = 'SuggestionsDiscarded',
-  SuggestionsAccepted = 'SuggestionsAccepted',
-  LinesDiscarded = 'LinesDiscarded',
-  LinesAccepted = 'LinesAccepted',
-  ActiveUsers = 'ActiveUsers',
-  ChatConversations = 'ChatConversations',
-  ChatInsertionEvents = 'ChatInsertionEvents',
-  ChatCopyEvents = 'ChatCopyEvents',
-  ChatActiveUsers = 'ChatActiveUsers',
-  LastActivity = 'LastActivity',
-  Engagement = 'Engagement',
-}
-
 type SecurityAlert = CodeScanningAlert | DependabotAlert | SecretScanningAlert;
 type SecurityAlertType = 'code-scanning' | 'dependabot' | 'secret-scanning';
 
