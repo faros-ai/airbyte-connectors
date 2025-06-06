@@ -60,6 +60,8 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
+  readonly users_prefix_search_max_depth?: number;
+  readonly users_prefix_search_api_hard_limit?: number;
   readonly use_faros_graph_boards_selection?: boolean;
   readonly projects?: ReadonlyArray<string>;
   readonly excluded_projects?: ReadonlyArray<string>;
@@ -117,7 +119,6 @@ const prRegex = new RegExp(
 
 export const JIRA_CLOUD_REGEX = /^https:\/\/(.*)\.atlassian\.net/g;
 const PREFIX_CHARS = [...'abcdefghijklmnopqrstuvwxyz', ...'0123456789'];
-const MAX_PREFIX_DEPTH = 4;
 
 const MAX_SPRINT_HISTORY_FETCH_FAILURES = 5;
 
@@ -149,6 +150,8 @@ const DEFAULT_RETRY_DELAY = 5_000;
 const DEFAULT_PAGE_SIZE = 250;
 const DEFAULT_TIMEOUT = 120_000; // 2 minutes
 const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
+const DEFAULT_USERS_PREFIX_SEARCH_MAX_DEPTH = 2;
+const DEFAULT_USERS_PREFIX_SEARCH_API_HARD_LIMIT = 1000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
 const DEFAULT_BUCKET_ID = 1;
@@ -189,6 +192,8 @@ export class Jira {
     private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
+    private readonly usersPrefixSearchMaxDepth: number,
+    private readonly usersPrefixSearchApiHardLimit: number,
     private readonly requestedStreams?: Set<string>,
     private readonly useSprintsReverseSearch?: boolean,
     private readonly organizationId?: string,
@@ -312,6 +317,10 @@ export class Jira {
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
+      cfg.users_prefix_search_max_depth ??
+        DEFAULT_USERS_PREFIX_SEARCH_MAX_DEPTH,
+      cfg.users_prefix_search_api_hard_limit ??
+        DEFAULT_USERS_PREFIX_SEARCH_API_HARD_LIMIT,
       cfg.requestedStreams,
       cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH,
       cfg.organization_id,
@@ -1467,7 +1476,7 @@ export class Jira {
     }
 
     this.logger?.debug(
-      `Starting user prefix search with ${prefixStack.length} initial prefixes, max depth: ${MAX_PREFIX_DEPTH}`
+      `Starting user prefix search with ${prefixStack.length} initial prefixes, max depth: ${this.usersPrefixSearchMaxDepth}`
     );
 
     // Process stack until empty
@@ -1489,10 +1498,13 @@ export class Jira {
         `Prefix '${prefix}' (length ${prefix.length}): found ${userCount} users`
       );
 
-      // If we hit the 100-user limit and haven't reached max depth, expand the search
-      if (userCount === 100 && prefix.length < MAX_PREFIX_DEPTH) {
+      // If we hit the API hard limit and haven't reached max depth, expand the search
+      if (
+        userCount === this.usersPrefixSearchApiHardLimit &&
+        prefix.length < this.usersPrefixSearchMaxDepth
+      ) {
         this.logger?.debug(
-          `Prefix '${prefix}' hit 100-user limit, expanding to length ${prefix.length + 1}`
+          `Prefix '${prefix}' hit ${this.usersPrefixSearchApiHardLimit}-user limit, expanding to length ${prefix.length + 1}`
         );
 
         // Add extended prefixes to stack (in reverse order for proper DFS ordering)
