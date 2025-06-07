@@ -115,7 +115,16 @@ Array [
 ]
 `;
 
-exports[`launchdarkly launchdarkly basic test process records from all streams 1`] = `Array []`;
+exports[`launchdarkly launchdarkly basic test process records from all streams 1`] = `
+Array [
+  "Processed 8 records",
+  "Processed records by stream: {\\\\\\"mytestsource__launchdarkly__environments\\\\\\":2,\\\\\\"mytestsource__launchdarkly__experiments\\\\\\":1,\\\\\\"mytestsource__launchdarkly__feature_flags\\\\\\":2,\\\\\\"mytestsource__launchdarkly__projects\\\\\\":1,\\\\\\"mytestsource__launchdarkly__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 8 records",
+  "Would write records by model: {\\\\\\"ffs_Environment\\\\\\":2,\\\\\\"ffs_Experiment\\\\\\":1,\\\\\\"ffs_FeatureFlag\\\\\\":2,\\\\\\"ffs_Project\\\\\\":1,\\\\\\"ffs_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
 
 exports[`launchdarkly projects basic project 1`] = `
 Array [
