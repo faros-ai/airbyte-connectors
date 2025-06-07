@@ -1,0 +1,8 @@
+{"record":{"stream":"mytestsource__launchdarkly__projects","emitted_at":0,"data":{"key":"test-project","name":"Test Project","tags":["test","automated"]}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__environments","emitted_at":0,"data":{"key":"production","name":"Production","color":"FF0000","tags":["prod"]}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__environments","emitted_at":0,"data":{"key":"staging","name":"Staging","color":"00FF00","tags":["staging"]}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__feature_flags","emitted_at":0,"data":{"key":"test-flag","name":"Test Flag","kind":"boolean","description":"A test feature flag","tags":["test"]}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__feature_flags","emitted_at":0,"data":{"key":"multivariate-flag","name":"Multivariate Flag","kind":"multivariate","description":"A multivariate feature flag","tags":["experiment","multivariate"]}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__users","emitted_at":0,"data":{"key":"user-123","name":"John Doe","email":"john@example.com","country":"US"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__users","emitted_at":0,"data":{"key":"user-456","name":"Jane Smith","email":"jane@example.com","country":"CA"}},"type":"RECORD"}
+{"record":{"stream":"mytestsource__launchdarkly__experiments","emitted_at":0,"data":{"key":"test-experiment","name":"Test Experiment","description":"A test experiment","hypothesis":"This will improve engagement"}},"type":"RECORD"}

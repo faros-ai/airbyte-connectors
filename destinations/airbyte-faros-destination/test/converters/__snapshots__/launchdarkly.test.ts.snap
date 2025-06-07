@@ -1,0 +1,194 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`launchdarkly environments basic environment 1`] = `
+Array [
+  Object {
+    "model": "ffs_Environment",
+    "record": Object {
+      "color": "FF0000",
+      "name": "Production",
+      "source": "LaunchDarkly",
+      "tags": Array [
+        "prod",
+      ],
+      "uid": "production",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly environments environment without color and tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_Environment",
+    "record": Object {
+      "color": undefined,
+      "name": "Staging",
+      "source": "LaunchDarkly",
+      "tags": Array [],
+      "uid": "staging",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly experiments basic experiment 1`] = `
+Array [
+  Object {
+    "model": "ffs_Experiment",
+    "record": Object {
+      "description": "A test experiment",
+      "hypothesis": "This will improve engagement",
+      "name": "Test Experiment",
+      "source": "LaunchDarkly",
+      "uid": "test-experiment",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly experiments experiment without description and hypothesis 1`] = `
+Array [
+  Object {
+    "model": "ffs_Experiment",
+    "record": Object {
+      "description": undefined,
+      "hypothesis": undefined,
+      "name": "Simple Experiment",
+      "source": "LaunchDarkly",
+      "uid": "simple-experiment",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags basic feature flag 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "description": "A test feature flag",
+      "kind": "boolean",
+      "name": "Test Flag",
+      "source": "LaunchDarkly",
+      "tags": Array [
+        "test",
+      ],
+      "uid": "test-flag",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags feature flag without description and tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "description": undefined,
+      "kind": "boolean",
+      "name": "Simple Flag",
+      "source": "LaunchDarkly",
+      "tags": Array [],
+      "uid": "simple-flag",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags multivariate feature flag 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "description": "A multivariate feature flag",
+      "kind": "multivariate",
+      "name": "Multivariate Flag",
+      "source": "LaunchDarkly",
+      "tags": Array [
+        "test",
+        "multivariate",
+      ],
+      "uid": "multivariate-flag",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly launchdarkly basic test process records from all streams 1`] = `Array []`;
+
+exports[`launchdarkly projects basic project 1`] = `
+Array [
+  Object {
+    "model": "ffs_Project",
+    "record": Object {
+      "name": "Test Project",
+      "source": "LaunchDarkly",
+      "tags": Array [
+        "test",
+        "automated",
+      ],
+      "uid": "test-project",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly projects project without tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_Project",
+    "record": Object {
+      "name": "Simple Project",
+      "source": "LaunchDarkly",
+      "tags": Array [],
+      "uid": "simple-project",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users basic user 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": "US",
+      "email": "john@example.com",
+      "name": "John Doe",
+      "source": "LaunchDarkly",
+      "uid": "user-123",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users user with minimal data 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": undefined,
+      "email": undefined,
+      "name": undefined,
+      "source": "LaunchDarkly",
+      "uid": "user-456",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users user without email and country 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": undefined,
+      "email": undefined,
+      "name": "Jane Smith",
+      "source": "LaunchDarkly",
+      "uid": "user-789",
+    },
+  },
+]
+`;
