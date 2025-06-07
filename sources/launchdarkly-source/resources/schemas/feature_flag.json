@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "creationDate": {
+      "type": "integer"
+    },
+    "_lastModified": {
+      "type": "integer"
+    },
+    "maintainerId": {
+      "type": "string"
+    },
+    "maintainer": {
+      "type": "object"
+    },
+    "goalIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "experiments": {
+      "type": "object"
+    },
+    "customProperties": {
+      "type": "object"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "archivedDate": {
+      "type": "integer"
+    },
+    "deprecated": {
+      "type": "boolean"
+    },
+    "deprecatedDate": {
+      "type": "integer"
+    },
+    "defaults": {
+      "type": "object"
+    },
+    "variations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "temporary": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "_links": {
+      "type": "object"
+    },
+    "_version": {
+      "type": "integer"
+    },
+    "environments": {
+      "type": "object"
+    }
+  }
+}
