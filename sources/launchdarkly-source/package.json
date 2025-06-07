@@ -23,7 +23,7 @@
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",
-    "test-integration": "npm run build && node lib/test/integration-test.js",
+    "test-integration": "npm run build && npx tsc -p test && node out/test/integration-test.js",
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
