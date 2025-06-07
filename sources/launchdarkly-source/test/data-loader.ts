@@ -1,17 +1,17 @@
 import axios, {AxiosInstance} from 'axios';
 
 interface CreatedResources {
-  projects: string[];
-  environments: string[];
-  featureFlags: string[];
-  users: string[];
-  experiments: string[];
+  readonly projects: string[];
+  readonly environments: string[];
+  readonly featureFlags: string[];
+  readonly users: string[];
+  readonly experiments: string[];
 }
 
 export class LaunchDarklyDataLoader {
-  private client: AxiosInstance;
-  private projectKey: string;
-  private createdResources: CreatedResources = {
+  private readonly client: AxiosInstance;
+  private readonly projectKey: string;
+  private readonly createdResources: CreatedResources = {
     projects: [],
     environments: [],
     featureFlags: [],
