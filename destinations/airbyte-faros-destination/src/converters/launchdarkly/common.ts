@@ -5,6 +5,8 @@ import {Converter} from '../converter';
 export interface LaunchDarklyProject {
   key: string;
   name: string;
+  description?: string;
+  creationDate?: number;
   tags?: string[];
 }
 
@@ -12,7 +14,15 @@ export interface LaunchDarklyEnvironment {
   key: string;
   name: string;
   color?: string;
+  creationDate?: number;
   tags?: string[];
+}
+
+export interface LaunchDarklyVariation {
+  _id?: string;
+  value: string | number | boolean | object;
+  name?: string;
+  description?: string;
 }
 
 export interface LaunchDarklyFeatureFlag {
@@ -20,6 +30,14 @@ export interface LaunchDarklyFeatureFlag {
   name: string;
   kind: string;
   description?: string;
+  archived?: boolean;
+  creationDate?: number;
+  variations?: LaunchDarklyVariation[];
+  defaults?: {
+    onVariation?: number;
+    offVariation?: number;
+  };
+  environments?: Record<string, any>;
   tags?: string[];
 }
 
@@ -35,6 +53,7 @@ export interface LaunchDarklyExperiment {
   name: string;
   description?: string;
   hypothesis?: string;
+  creationDate?: number;
 }
 
 export abstract class LaunchDarklyConverter extends Converter {

@@ -16,10 +16,12 @@ export class Experiments extends LaunchDarklyConverter {
       {
         model: 'ffs_Experiment',
         record: {
-          uid: experiment.key,
+          id: experiment.key,
+          flagId: 'unknown', // LaunchDarkly experiments don't always have explicit flag association in basic API
           name: experiment.name,
-          description: experiment.description,
-          hypothesis: experiment.hypothesis,
+          status: 'running', // Default status since LaunchDarkly API doesn't provide this in basic experiment data
+          startAt: experiment.creationDate ? new Date(experiment.creationDate).toISOString() : null,
+          endAt: null, // Not provided in basic experiment data
           source,
         },
       },

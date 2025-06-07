@@ -5,13 +5,11 @@ Array [
   Object {
     "model": "ffs_Environment",
     "record": Object {
-      "color": "FF0000",
+      "createdAt": null,
+      "id": "production",
       "name": "Production",
+      "projectId": "default",
       "source": "LaunchDarkly",
-      "tags": Array [
-        "prod",
-      ],
-      "uid": "production",
     },
   },
 ]
@@ -22,11 +20,11 @@ Array [
   Object {
     "model": "ffs_Environment",
     "record": Object {
-      "color": undefined,
+      "createdAt": null,
+      "id": "staging",
       "name": "Staging",
+      "projectId": "default",
       "source": "LaunchDarkly",
-      "tags": Array [],
-      "uid": "staging",
     },
   },
 ]
@@ -37,11 +35,13 @@ Array [
   Object {
     "model": "ffs_Experiment",
     "record": Object {
-      "description": "A test experiment",
-      "hypothesis": "This will improve engagement",
+      "endAt": null,
+      "flagId": "unknown",
+      "id": "test-experiment",
       "name": "Test Experiment",
       "source": "LaunchDarkly",
-      "uid": "test-experiment",
+      "startAt": null,
+      "status": "running",
     },
   },
 ]
@@ -52,11 +52,13 @@ Array [
   Object {
     "model": "ffs_Experiment",
     "record": Object {
-      "description": undefined,
-      "hypothesis": undefined,
+      "endAt": null,
+      "flagId": "unknown",
+      "id": "simple-experiment",
       "name": "Simple Experiment",
       "source": "LaunchDarkly",
-      "uid": "simple-experiment",
+      "startAt": null,
+      "status": "running",
     },
   },
 ]
@@ -67,14 +69,14 @@ Array [
   Object {
     "model": "ffs_FeatureFlag",
     "record": Object {
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "test-flag-variation-0",
       "description": "A test feature flag",
-      "kind": "boolean",
-      "name": "Test Flag",
+      "id": "test-flag",
+      "key": "test-flag",
+      "projectId": "default",
       "source": "LaunchDarkly",
-      "tags": Array [
-        "test",
-      ],
-      "uid": "test-flag",
     },
   },
 ]
@@ -85,12 +87,14 @@ Array [
   Object {
     "model": "ffs_FeatureFlag",
     "record": Object {
-      "description": undefined,
-      "kind": "boolean",
-      "name": "Simple Flag",
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "simple-flag-variation-0",
+      "description": null,
+      "id": "simple-flag",
+      "key": "simple-flag",
+      "projectId": "default",
       "source": "LaunchDarkly",
-      "tags": Array [],
-      "uid": "simple-flag",
     },
   },
 ]
@@ -101,15 +105,14 @@ Array [
   Object {
     "model": "ffs_FeatureFlag",
     "record": Object {
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "multivariate-flag-variation-0",
       "description": "A multivariate feature flag",
-      "kind": "multivariate",
-      "name": "Multivariate Flag",
+      "id": "multivariate-flag",
+      "key": "multivariate-flag",
+      "projectId": "default",
       "source": "LaunchDarkly",
-      "tags": Array [
-        "test",
-        "multivariate",
-      ],
-      "uid": "multivariate-flag",
     },
   },
 ]
@@ -131,13 +134,11 @@ Array [
   Object {
     "model": "ffs_Project",
     "record": Object {
+      "createdAt": null,
+      "description": null,
+      "id": "test-project",
       "name": "Test Project",
       "source": "LaunchDarkly",
-      "tags": Array [
-        "test",
-        "automated",
-      ],
-      "uid": "test-project",
     },
   },
 ]
@@ -148,10 +149,11 @@ Array [
   Object {
     "model": "ffs_Project",
     "record": Object {
+      "createdAt": null,
+      "description": null,
+      "id": "simple-project",
       "name": "Simple Project",
       "source": "LaunchDarkly",
-      "tags": Array [],
-      "uid": "simple-project",
     },
   },
 ]
@@ -164,9 +166,9 @@ Array [
     "record": Object {
       "country": "US",
       "email": "john@example.com",
+      "id": "user-123",
       "name": "John Doe",
       "source": "LaunchDarkly",
-      "uid": "user-123",
     },
   },
 ]
@@ -177,11 +179,11 @@ Array [
   Object {
     "model": "ffs_User",
     "record": Object {
-      "country": undefined,
-      "email": undefined,
-      "name": undefined,
+      "country": null,
+      "email": null,
+      "id": "user-456",
+      "name": null,
       "source": "LaunchDarkly",
-      "uid": "user-456",
     },
   },
 ]
@@ -192,11 +194,11 @@ Array [
   Object {
     "model": "ffs_User",
     "record": Object {
-      "country": undefined,
-      "email": undefined,
+      "country": null,
+      "email": null,
+      "id": "user-789",
       "name": "Jane Smith",
       "source": "LaunchDarkly",
-      "uid": "user-789",
     },
   },
 ]

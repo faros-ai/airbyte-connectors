@@ -16,9 +16,10 @@ export class Projects extends LaunchDarklyConverter {
       {
         model: 'ffs_Project',
         record: {
-          uid: project.key,
+          id: project.key,
           name: project.name,
-          tags: project.tags || [],
+          description: project.description || null,
+          createdAt: project.creationDate ? new Date(project.creationDate).toISOString() : null,
           source,
         },
       },

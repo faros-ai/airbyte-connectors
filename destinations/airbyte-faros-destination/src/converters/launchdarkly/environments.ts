@@ -16,10 +16,10 @@ export class Environments extends LaunchDarklyConverter {
       {
         model: 'ffs_Environment',
         record: {
-          uid: environment.key,
+          id: environment.key,
+          projectId: 'default', // LaunchDarkly environments don't have explicit project association in API
           name: environment.name,
-          color: environment.color,
-          tags: environment.tags || [],
+          createdAt: environment.creationDate ? new Date(environment.creationDate).toISOString() : null,
           source,
         },
       },

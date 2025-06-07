@@ -16,10 +16,10 @@ export class Users extends LaunchDarklyConverter {
       {
         model: 'ffs_User',
         record: {
-          uid: user.key,
-          name: user.name,
-          email: user.email,
-          country: user.country,
+          id: user.key,
+          name: user.name || null,
+          email: user.email || null,
+          country: user.country || null,
           source,
         },
       },
