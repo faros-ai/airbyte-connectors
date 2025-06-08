@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "activity",
+        "name": "activity_stream",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
