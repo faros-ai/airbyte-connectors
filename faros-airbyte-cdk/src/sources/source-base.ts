@@ -396,7 +396,7 @@ export abstract class AirbyteSourceBase<
         this.logger.error(
           `Encountered an error while processing ${streamName} stream slice ${JSON.stringify(
             slice
-          )}: ${e.message ?? JSON.stringify(e)}`,
+          )}: ${e.message ?? JSON.stringify(e)}. Emitted ${sliceRecordCounter} records before failure.`,
           e.stack
         );
         yield this.sliceFailureState(
