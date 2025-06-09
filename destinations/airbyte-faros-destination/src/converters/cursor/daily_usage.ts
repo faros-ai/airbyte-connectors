@@ -1,4 +1,3 @@
-import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {digest} from 'faros-airbyte-common/common';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
