@@ -9,17 +9,17 @@
     ],
     "additionalProperties": true,
     "properties": {
-      "api_key": {
+      "cursor_api_key": {
         "order": 0,
-        "title": "API Key",
+        "title": "Cursor API Key",
         "type": "string",
         "description": "The Cursor API key to use to access the API.",
         "airbyte_secret": true
       },
-      "api_url": {
+      "cursor_api_url": {
         "order": 1,
         "type": "string",
-        "title": "API URL",
+        "title": "Cursor API URL",
         "description": "The Cursor API URL.",
         "default": "https://api.cursor.com"
       },

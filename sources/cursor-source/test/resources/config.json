@@ -1,5 +1,5 @@
 {
-  "api_key": "test-api-key",
-  "api_url": "https://api.cursor.com",
+  "cursor_api_key": "test-api-key",
+  "cursor_api_url": "https://api.cursor.com",
   "cutoff_days": 30
 }

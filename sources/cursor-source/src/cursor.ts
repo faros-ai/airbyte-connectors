@@ -1,12 +1,12 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {DailyUsageItem,MemberItem} from 'faros-airbyte-common/cursor';
+import {DailyUsageItem, MemberItem} from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import VError from 'verror';
 
 import {CursorConfig, DailyUsageResponse, MembersResponse} from './types';
 
-export const DEFAULT_API_URL = 'https://api.cursor.com';
+export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 90;
 
 export class Cursor {
@@ -16,14 +16,14 @@ export class Cursor {
     config: CursorConfig,
     private readonly logger: AirbyteLogger
   ) {
-    const apiUrl = config.api_url ?? DEFAULT_API_URL;
+    const apiUrl = config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
     this.api = makeAxiosInstanceWithRetry({
       baseURL: apiUrl,
       timeout: 60000,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       auth: {
-        username: config.api_key,
+        username: config.cursor_api_key,
         password: '',
       },
       headers: {

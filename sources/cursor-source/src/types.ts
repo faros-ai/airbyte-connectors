@@ -1,6 +1,6 @@
 export interface CursorConfig {
-  api_key: string;
-  api_url?: string;
+  cursor_api_key: string;
+  cursor_api_url?: string;
   cutoff_days?: number;
   start_date?: string;
   end_date?: string;
