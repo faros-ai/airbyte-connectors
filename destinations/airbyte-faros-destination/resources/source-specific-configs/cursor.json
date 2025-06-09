@@ -1,0 +1,33 @@
+{
+  "title": "Cursor",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Cursor",
+          "order": 0
+        },
+        "custom_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Custom Metrics",
+          "description": "List of daily usage fields to track as custom assistant metrics. These will be recorded with type 'Custom' in addition to the standard metrics which are always included.",
+          "default": [
+            "totalLinesAdded",
+            "totalLinesDeleted",
+            "totalApplies",
+            "totalTabsShown",
+            "totalTabsAccepted"
+          ],
+          "order": 1
+        }
+      }
+    }
+  ]
+} 

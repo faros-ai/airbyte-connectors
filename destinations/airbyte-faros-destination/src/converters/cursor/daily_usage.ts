@@ -17,7 +17,7 @@ const DailyUsageFieldToAssistantMetricType: Partial<
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
 
-const DailyUsageFieldToCustomMetrics: (keyof DailyUsageItem)[] = [
+const DEFAULT_CUSTOM_METRICS: (keyof DailyUsageItem)[] = [
   'totalLinesAdded',
   'totalLinesDeleted',
   'totalApplies',
@@ -78,7 +78,11 @@ export class DailyUsage extends CursorConverter {
       );
     }
 
-    for (const field of DailyUsageFieldToCustomMetrics) {
+    // Get custom metrics from config, fallback to default if not configured
+    const config = this.cursorConfig(ctx);
+    const customMetrics = config.custom_metrics ?? DEFAULT_CUSTOM_METRICS;
+
+    for (const field of customMetrics) {
       const value = dailyUsageItem[field];
       if (isNil(value)) {
         continue;

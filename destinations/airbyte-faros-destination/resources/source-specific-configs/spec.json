@@ -45,6 +45,9 @@
         "clickup": {
           "$ref": "clickup.json"
         },
+        "cursor": {
+          "$ref": "cursor.json"
+        },
         "datadog": {
           "$ref": "datadog.json"
         },
