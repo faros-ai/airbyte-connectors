@@ -1,5 +1,6 @@
 import {createHash} from 'crypto';
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {digest} from 'faros-airbyte-common/common';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
@@ -147,10 +148,6 @@ export class DailyUsage extends CursorConverter {
       },
     ];
   }
-}
-
-function digest(input: string): string {
-  return createHash('sha256').update(input).digest('hex');
 }
 
 function getValueType(value: number | string | boolean): string {
