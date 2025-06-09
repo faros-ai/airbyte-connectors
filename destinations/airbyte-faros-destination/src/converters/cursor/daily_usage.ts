@@ -12,7 +12,6 @@ const DailyUsageFieldToAssistantMetricType: Partial<
   Record<keyof DailyUsageItem, AssistantMetric>
 > = {
   acceptedLinesAdded: AssistantMetric.LinesAccepted,
-  acceptedLinesDeleted: AssistantMetric.LinesDiscarded,
   totalAccepts: AssistantMetric.SuggestionsAccepted,
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
@@ -24,6 +23,8 @@ const DEFAULT_CUSTOM_METRICS: (keyof DailyUsageItem)[] = [
   'totalTabsShown',
   'totalTabsAccepted',
 ];
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export class DailyUsage extends CursorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -126,7 +127,7 @@ export class DailyUsage extends CursorConverter {
           ),
           source: this.source,
           startedAt: day,
-          endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
           type: {
             category: assistantMetricType,
             ...(customMetricName && {detail: customMetricName}),
