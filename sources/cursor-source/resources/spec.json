@@ -30,14 +30,28 @@
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "start_date": {
+      "timeout": {
         "order": 3,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Cursor API",
+        "default": 60000
+      },
+      "backfill": {
+        "order": 4,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 5,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 4,
+        "order": 6,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."

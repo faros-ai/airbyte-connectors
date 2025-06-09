@@ -1,9 +1,10 @@
 export interface CursorConfig {
-  cursor_api_key: string;
-  cursor_api_url?: string;
-  cutoff_days?: number;
-  start_date?: string;
-  end_date?: string;
+  readonly cursor_api_key: string;
+  readonly cursor_api_url?: string;
+  readonly cutoff_days?: number;
+  readonly timeout?: number;
+  readonly start_date?: string;
+  readonly end_date?: string;
   startDate?: Date;
   endDate?: Date;
 }
