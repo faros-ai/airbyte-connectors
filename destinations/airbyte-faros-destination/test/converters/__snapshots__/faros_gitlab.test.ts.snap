@@ -3,9 +3,9 @@
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
   "Processed 4 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 6 records",
-  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_User\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -62,31 +62,6 @@ Array [
     },
   },
   Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitLab",
-        "uid": "12372707",
-      },
-      "source": "GitLab",
-      "user": Object {
-        "source": "GitLab",
-        "uid": "ypc-faros",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://gitlab.com/ypc-faros",
-      "name": "Yandry Perez",
-      "source": "GitLab",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "ypc-faros",
-    },
-  },
-  Object {
     "vcs_Tag": Object {
       "commit": Object {
         "repository": Object {
@@ -110,6 +85,32 @@ Array [
         },
         "uid": "faros-events-cli",
       },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "source": "GitLab",
+      "user": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://gitlab.com/ypc-faros",
+      "name": "Yandry Perez",
+      "source": "GitLab",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "ypc-faros",
     },
   },
 ]
