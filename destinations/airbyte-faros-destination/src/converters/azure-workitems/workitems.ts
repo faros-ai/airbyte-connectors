@@ -207,7 +207,7 @@ export class Workitems extends AzureWorkitemsConverter {
   private convertAssigneeRevisions(
     task: TaskKey,
     assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>,
-    logger: AirbyteLogger
+    logger?: AirbyteLogger
   ): ReadonlyArray<DestinationRecord> {
     return assigneeRevisions
       .map((revision) => {
