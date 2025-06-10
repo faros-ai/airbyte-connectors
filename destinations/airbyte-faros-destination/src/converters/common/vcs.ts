@@ -66,6 +66,30 @@ export type BranchKey = {
   repository: RepoKey;
 };
 
+export enum VCSToolCategory {
+  CodingAssistant = 'CodingAssistant',
+  GitHubCopilot = 'GitHubCopilot', // deprecated, use CodingAssistant instead for new converters
+}
+
+export enum VCSToolDetail {
+  Cursor = 'Cursor',
+}
+
+export enum AssistantMetric {
+  SuggestionsDiscarded = 'SuggestionsDiscarded',
+  SuggestionsAccepted = 'SuggestionsAccepted',
+  LinesDiscarded = 'LinesDiscarded',
+  LinesAccepted = 'LinesAccepted',
+  ActiveUsers = 'ActiveUsers',
+  ChatConversations = 'ChatConversations',
+  ChatInsertionEvents = 'ChatInsertionEvents',
+  ChatCopyEvents = 'ChatCopyEvents',
+  ChatActiveUsers = 'ChatActiveUsers',
+  LastActivity = 'LastActivity',
+  Engagement = 'Engagement',
+  Custom = 'Custom',
+}
+
 export function fileKey(filePath: string, repoKey: RepoKey): FileKey {
   return {
     uid: filePath,

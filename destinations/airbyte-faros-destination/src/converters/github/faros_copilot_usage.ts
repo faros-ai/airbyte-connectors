@@ -2,7 +2,6 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   ChatBreakdown,
   CopilotUsageSummary,
-  GitHubTool,
   LanguageEditorBreakdown,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
@@ -10,8 +9,9 @@ import {isNil, toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
 import {Common} from '../common/common';
+import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 const FarosMetricToAssistantMetricType = {
   DailySuggestionReferenceCount_Discard: AssistantMetric.SuggestionsDiscarded,
@@ -499,7 +499,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               .concat(
                 // original fields (required) to be included in the digest
                 ...[
-                  GitHubTool.Copilot,
+                  VCSToolCategory.GitHubCopilot,
                   assistantMetricType,
                   day.toISOString(),
                   org,
@@ -529,7 +529,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               uid: team,
             },
           }),
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: VCSToolCategory.GitHubCopilot},
           editor,
           language,
           model,

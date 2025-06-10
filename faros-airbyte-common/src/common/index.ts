@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
 import {toLower} from 'lodash';
@@ -189,3 +190,7 @@ const getFarosOptionsItemKey = (
     }
   }
 };
+
+export function digest(input: string): string {
+  return createHash('sha256').update(input).digest('hex');
+}

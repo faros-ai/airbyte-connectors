@@ -237,10 +237,6 @@ export type CopilotSeatsEmpty = {
   org: string;
 };
 
-export enum GitHubTool {
-  Copilot = 'GitHubCopilot',
-}
-
 export type CopilotUsageSummary = {
   org: string;
   team: string | null;
