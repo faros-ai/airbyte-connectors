@@ -80,11 +80,13 @@ exports[`index streams - members 1`] = `
 [
   {
     "email": "developer@company.com",
+    "isNew": true,
     "name": "Alex",
     "role": "member",
   },
   {
     "email": "admin@company.com",
+    "isNew": true,
     "name": "Sam",
     "role": "owner",
   },

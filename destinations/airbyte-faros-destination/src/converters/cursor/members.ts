@@ -29,7 +29,12 @@ export class Members extends CursorConverter {
   }
 
   private readonly seenUsers: {
-    [email: string]: {name?: string; minUsageDate?: number; active: boolean};
+    [email: string]: {
+      name?: string;
+      minUsageDate?: number;
+      active: boolean;
+      isNew?: boolean;
+    };
   } = {};
 
   async convert(
@@ -39,7 +44,11 @@ export class Members extends CursorConverter {
     const res: DestinationRecord[] = [];
 
     if (!this.seenUsers[member.email]) {
-      this.seenUsers[member.email] = {name: member.name, active: true};
+      this.seenUsers[member.email] = {
+        name: member.name,
+        active: true,
+        isNew: member.isNew,
+      };
     }
 
     return res;
@@ -95,9 +104,10 @@ export class Members extends CursorConverter {
               detail: VCSToolDetail.Cursor,
             },
             inactive: !user.active,
-            ...(user.minUsageDate && {
-              startedAt: Utils.toDate(user.minUsageDate).toISOString(),
-            }),
+            ...(user.isNew &&
+              user.minUsageDate && {
+                startedAt: Utils.toDate(user.minUsageDate).toISOString(),
+              }),
           },
         }
       );

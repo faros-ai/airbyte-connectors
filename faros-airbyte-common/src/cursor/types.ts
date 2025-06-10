@@ -2,6 +2,7 @@ export type MemberItem = {
   name: string;
   email: string;
   role: 'owner' | 'member' | 'free-owner';
+  isNew: boolean;
 };
 
 export type DailyUsageItem = {

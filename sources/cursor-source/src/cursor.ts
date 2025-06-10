@@ -48,9 +48,12 @@ export class Cursor {
     }
   }
 
-  async getMembers(): Promise<MemberItem[]> {
+  async getMembers(previousMembers?: string[]): Promise<MemberItem[]> {
     const res = await this.api.get<MembersResponse>('/teams/members');
-    return res.data.teamMembers;
+    return res.data.teamMembers.map((member) => ({
+      ...member,
+      isNew: !previousMembers?.includes(member.email),
+    }));
   }
 
   async getDailyUsage(

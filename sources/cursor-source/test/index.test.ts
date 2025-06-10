@@ -41,7 +41,7 @@ describe('index', () => {
 
   test('check connection - valid config', async () => {
     setupCursorInstance({
-      get: jest.fn().mockResolvedValue({data: []}),
+      get: jest.fn().mockResolvedValue({data: {teamMembers: []}}),
     });
     await sourceCheckTest({
       source,
