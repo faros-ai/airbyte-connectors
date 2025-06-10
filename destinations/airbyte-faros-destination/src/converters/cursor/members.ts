@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {DailyUsageItem, MemberItem} from 'faros-airbyte-common/cursor';
+import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {
@@ -94,6 +95,9 @@ export class Members extends CursorConverter {
               detail: VCSToolDetail.Cursor,
             },
             inactive: !user.active,
+            ...(user.minUsageDate && {
+              startedAt: Utils.toDate(user.minUsageDate).toISOString(),
+            }),
           },
         }
       );
