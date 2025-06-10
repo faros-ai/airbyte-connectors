@@ -50,7 +50,7 @@ export class Members extends CursorConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
     for (const record of Object.values(
-      ctx.getAll(Members.dailyUsageStream.name)
+      ctx.getAll(Members.dailyUsageStream.asString)
     )) {
       const dailyUsage = record.record.data as DailyUsageItem;
       if (!this.seenUsers[dailyUsage.email]) {
