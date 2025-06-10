@@ -55,6 +55,9 @@
     },
     "web_url": {
       "type": "string"
+    },
+    "author_username": {
+      "type": ["string", "null"]
     }
   }
 }

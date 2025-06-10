@@ -12,6 +12,7 @@ export interface User {
   web_url: string;
   created_at?: string;
   updated_at?: string;
+  group_id?: string;
 }
 
 export interface Group {
@@ -66,6 +67,8 @@ export interface Commit {
   group_id: string;
   project_path: string;
   branch: string;
+  // Author username resolved via UserCollector
+  author_username?: string;
 }
 
 export interface Tag {

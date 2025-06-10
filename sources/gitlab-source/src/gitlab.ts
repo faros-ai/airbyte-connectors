@@ -15,6 +15,7 @@ import VError from 'verror';
 
 import {RunMode} from './streams/common';
 import {GitLabConfig} from './types';
+import {UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -33,6 +34,7 @@ export class GitLab {
   private readonly client: any;
   protected readonly pageSize: number;
   protected readonly fetchPublicGroups: boolean;
+  public readonly userCollector: UserCollector;
 
   constructor(
     readonly config: GitLabConfig,
@@ -48,6 +50,7 @@ export class GitLab {
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     this.fetchPublicGroups =
       config.fetch_public_groups ?? DEFAULT_FETCH_PUBLIC_GROUPS;
+    this.userCollector = new UserCollector(logger);
   }
 
   static async instance(
@@ -177,7 +180,7 @@ export class GitLab {
     return projects;
   }
 
-  async getGroupMembers(groupId: string): Promise<User[]> {
+  async fetchGroupMembers(groupId: string): Promise<void> {
     const options = {
       perPage: this.pageSize,
       includeInherited: true,
@@ -186,12 +189,11 @@ export class GitLab {
     const fetchPage = (page: number): Promise<Types.MemberSchema[]> =>
       this.client.GroupMembers.all(groupId, {...options, page});
 
-    const members: User[] = [];
     for await (const member of this.paginate<Types.MemberSchema>(
       fetchPage,
       `members for group ${groupId}`
     )) {
-      members.push({
+      const user: User = {
         id: member.id,
         username: member.username,
         name: member.name,
@@ -200,10 +202,12 @@ export class GitLab {
         web_url: member.web_url,
         created_at: member.created_at as string,
         updated_at: member.updated_at as string,
-      });
-    }
+        group_id: groupId,
+      };
 
-    return members;
+      // Collect the user in UserCollector
+      this.userCollector.collectUser(user);
+    }
   }
 
   private getToken(): string {
@@ -279,6 +283,12 @@ export class GitLab {
       fetchPage,
       `commits for project ${projectPath}`
     )) {
+      // Try to resolve author username using UserCollector
+      const author = this.userCollector.getCommitAuthor(
+        commit.author_name,
+        commit.id
+      );
+
       yield {
         id: commit.id,
         short_id: commit.short_id,
@@ -303,6 +313,7 @@ export class GitLab {
             : commit.committed_date,
         web_url: commit.web_url,
         branch: branch,
+        author_username: author,
       };
     }
   }
