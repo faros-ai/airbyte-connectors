@@ -18,13 +18,7 @@
           },
           "title": "Custom Metrics",
           "description": "List of daily usage fields to track as custom assistant metrics. These will be recorded with type 'Custom' in addition to the standard metrics which are always included.",
-          "default": [
-            "totalLinesAdded",
-            "totalLinesDeleted",
-            "totalApplies",
-            "totalTabsShown",
-            "totalTabsAccepted"
-          ],
+          "default": [],
           "order": 1
         }
       }
