@@ -16,13 +16,7 @@ const DailyUsageFieldToAssistantMetricType: Partial<
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
 
-const DEFAULT_CUSTOM_METRICS: (keyof DailyUsageItem)[] = [
-  'totalLinesAdded',
-  'totalLinesDeleted',
-  'totalApplies',
-  'totalTabsShown',
-  'totalTabsAccepted',
-];
+const DEFAULT_CUSTOM_METRICS: (keyof DailyUsageItem)[] = [];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
