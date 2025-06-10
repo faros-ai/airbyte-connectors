@@ -27,7 +27,7 @@
         "order": 2,
         "type": "integer",
         "title": "Cutoff Days",
-        "default": 90,
+        "default": 365,
         "description": "Only fetch data updated after cutoff"
       },
       "timeout": {

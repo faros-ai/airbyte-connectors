@@ -7,7 +7,7 @@ import VError from 'verror';
 import {CursorConfig, DailyUsageResponse, MembersResponse} from './types';
 
 export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
-export const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 
 export class Cursor {
