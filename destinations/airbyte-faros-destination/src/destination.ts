@@ -1134,14 +1134,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
   async handleRecordProcessingError(
     stats: WriteStats,
-    processRecord: () => Promise<void>
+    processRecord: () => Promise<void>,
+    converter?: Converter
   ): Promise<void> {
     try {
       await processRecord();
     } catch (e: any) {
       stats.recordsErrored++;
+      const sourceContext = converter?.streamName?.source ? ` [Source: ${converter.streamName.source}]` : '';
       this.logger.error(
-        `Error processing input: ${e.message ?? JSON.stringify(e)}`,
+        `Error processing input${sourceContext}: ${e.message ?? JSON.stringify(e)}`,
         e.stack
       );
       switch (this.invalidRecordStrategy) {

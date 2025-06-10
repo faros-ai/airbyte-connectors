@@ -8,7 +8,7 @@ import {
 import {Utils} from 'faros-js-client';
 
 import {CategoryDetail} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {TaskKey, TaskStatusChange} from './models';
 export class Workitems extends AzureWorkitemsConverter {
@@ -29,7 +29,8 @@ export class Workitems extends AzureWorkitemsConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
     const WorkItem = record.record.data as WorkItemWithRevisions;
@@ -46,7 +47,8 @@ export class Workitems extends AzureWorkitemsConverter {
     );
     const assignees = this.convertAssigneeRevisions(
       taskKey,
-      WorkItem.revisions.assignees
+      WorkItem.revisions.assignees,
+      ctx
     );
     const sprintHistory = this.convertIterationRevisions(
       taskKey,
@@ -81,10 +83,11 @@ export class Workitems extends AzureWorkitemsConverter {
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
           updatedAt: Utils.toDate(WorkItem.fields['System.ChangedDate']),
-          creator: {
-            uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
-            source,
-          },
+          creator: WorkItem.fields['System.CreatedBy']?.['uniqueName'] ? 
+            {
+              uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
+              source,
+            } : null,
           sprint: WorkItem.fields['System.IterationId']
             ? {uid: String(WorkItem.fields['System.IterationId']), source}
             : null,
@@ -201,16 +204,28 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private convertAssigneeRevisions(
     task: TaskKey,
-    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>
+    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>,
+    ctx: StreamContext
   ): ReadonlyArray<DestinationRecord> {
-    return assigneeRevisions.map((revision) => ({
-      model: 'tms_TaskAssignment',
-      record: {
-        task,
-        assignee: {uid: revision.assignee?.uniqueName, source: this.source},
-        assignedAt: Utils.toDate(revision.changedDate),
-      },
-    }));
+    return assigneeRevisions
+      .map((revision) => {
+        if (revision.assignee?.uniqueName) {
+          return {
+            model: 'tms_TaskAssignment',
+            record: {
+              task,
+              assignee: {uid: revision.assignee.uniqueName, source: this.source},
+              assignedAt: Utils.toDate(revision.changedDate),
+            },
+          };
+        } else {
+          ctx.logger.warn(
+            `Missing assignee uniqueName in work item ${task.uid} revision. WorkItemId: ${task.uid}, Revision: ${JSON.stringify(revision)}`
+          );
+          return null;
+        }
+      })
+      .filter((record) => record !== null) as DestinationRecord[];
   }
 
   private convertStateRevisions(
