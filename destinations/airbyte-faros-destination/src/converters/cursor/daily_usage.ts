@@ -26,6 +26,10 @@ export class DailyUsage extends CursorConverter {
     'vcs_UserToolUsage',
   ];
 
+  id(record: AirbyteRecord): string {
+    return `${record.record.data.date}__${record.record.data.email}`;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
