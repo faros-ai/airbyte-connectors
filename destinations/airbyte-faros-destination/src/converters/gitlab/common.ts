@@ -268,8 +268,6 @@ export abstract class GitlabConverter extends Converter {
     return res;
   }
 
-
-
   private getFinalUser(users: Array<PartialUser>): PartialUser {
     const finalUser: PartialUser = {};
     for (const user of users) {
