@@ -33,7 +33,6 @@ export class Members extends CursorConverter {
       name?: string;
       minUsageDate?: number;
       active: boolean;
-      isNew?: boolean;
     };
   } = {};
 
@@ -47,7 +46,6 @@ export class Members extends CursorConverter {
       this.seenUsers[member.email] = {
         name: member.name,
         active: true,
-        isNew: member.isNew,
       };
     }
 
@@ -62,14 +60,17 @@ export class Members extends CursorConverter {
       ctx.getAll(Members.dailyUsageStream.asString)
     )) {
       const dailyUsage = record.record.data as DailyUsageItem;
+      if (!dailyUsage.email) {
+        continue;
+      }
       if (!this.seenUsers[dailyUsage.email]) {
         this.seenUsers[dailyUsage.email] = {active: false};
       }
       if (
         !this.seenUsers[dailyUsage.email].minUsageDate ||
-        dailyUsage.date < this.seenUsers[dailyUsage.email].minUsageDate
+        dailyUsage.minUsageDate < this.seenUsers[dailyUsage.email].minUsageDate
       ) {
-        this.seenUsers[dailyUsage.email].minUsageDate = dailyUsage.date;
+        this.seenUsers[dailyUsage.email].minUsageDate = dailyUsage.minUsageDate;
       }
     }
     for (const [email, user] of Object.entries(this.seenUsers)) {
@@ -104,10 +105,9 @@ export class Members extends CursorConverter {
               detail: VCSToolDetail.Cursor,
             },
             inactive: !user.active,
-            ...(user.isNew &&
-              user.minUsageDate && {
-                startedAt: Utils.toDate(user.minUsageDate).toISOString(),
-              }),
+            ...(user.minUsageDate && {
+              startedAt: Utils.toDate(user.minUsageDate).toISOString(),
+            }),
           },
         }
       );

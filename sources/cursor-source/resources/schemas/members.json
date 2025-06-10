@@ -10,9 +10,6 @@
     },
     "role": {
       "type": "string"
-    },
-    "isNew": {
-      "type": "boolean"
     }
   }
 }

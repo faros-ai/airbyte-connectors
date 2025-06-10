@@ -2,7 +2,6 @@ export type MemberItem = {
   name: string;
   email: string;
   role: 'owner' | 'member' | 'free-owner';
-  isNew: boolean;
 };
 
 export type DailyUsageItem = {
@@ -30,4 +29,5 @@ export type DailyUsageItem = {
   tabMostUsedExtension: string;
   clientVersion: string;
   email?: string;
+  minUsageDate?: number;
 };
