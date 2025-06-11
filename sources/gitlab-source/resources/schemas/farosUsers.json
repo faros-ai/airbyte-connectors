@@ -11,9 +11,6 @@
     "updated_at": {
       "type": "string"
     },
-    "group": {
-      "type": "string"
-    },
     "username": {
       "type": "string"
     },
@@ -28,6 +25,9 @@
     },
     "web_url": {
       "type": "string"
+    },
+    "group_id": {
+      "type": ["string", "null"]
     }
   }
 }

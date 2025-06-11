@@ -12,6 +12,15 @@ import {
 } from './common';
 
 export class FarosCommits extends StreamWithProjectSlices {
+  /**
+   * Depends on faros_users stream to ensure users are collected first.
+   * The UserCollector needs to have all users populated before we can
+   * resolve commit authors from display names to usernames.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_users'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosCommits.json');
   }
@@ -32,7 +41,7 @@ export class FarosCommits extends StreamWithProjectSlices {
   ): AsyncGenerator<Commit> {
     const groupId = streamSlice?.group_id;
     const project = streamSlice?.project;
-    
+
     if (!groupId || !project) {
       return;
     }
@@ -75,7 +84,10 @@ export class FarosCommits extends StreamWithProjectSlices {
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      StreamBase.groupProjectKey(slice.group_id, slice.project.path_with_namespace)
+      StreamBase.groupProjectKey(
+        slice.group_id,
+        slice.project.path_with_namespace
+      )
     );
   }
 }

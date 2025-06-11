@@ -62,6 +62,31 @@ Array [
     },
   },
   Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "source": "GitLab",
+      "user": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://gitlab.com/ypc-faros",
+      "name": "Yandry Perez",
+      "source": "GitLab",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "ypc-faros",
+    },
+  },
+  Object {
     "vcs_Tag": Object {
       "commit": Object {
         "repository": Object {
@@ -86,31 +111,6 @@ Array [
         "uid": "faros-events-cli",
       },
       "source": "GitLab",
-    },
-  },
-  Object {
-    "vcs_Membership": Object {
-      "organization": Object {
-        "source": "GitLab",
-        "uid": "12372707",
-      },
-      "source": "GitLab",
-      "user": Object {
-        "source": "GitLab",
-        "uid": "ypc-faros",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "htmlUrl": "https://gitlab.com/ypc-faros",
-      "name": "Yandry Perez",
-      "source": "GitLab",
-      "type": Object {
-        "category": "User",
-        "detail": "user",
-      },
-      "uid": "ypc-faros",
     },
   },
 ]

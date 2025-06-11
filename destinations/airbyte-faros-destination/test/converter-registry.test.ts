@@ -46,7 +46,7 @@ describe('converter registry', () => {
       new StreamName('jira', 'projects'),
       new StreamName('bitbucket-server', 'users'), // Include bitbucket edge case
     ];
-    
+
     let converterCount = 0;
     for (const stream of sampleStreams) {
       const converter = sut.getConverter(stream);

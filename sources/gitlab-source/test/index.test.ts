@@ -4,20 +4,16 @@ import {
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
+  readResourceAsJSON,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
-import fs from 'fs-extra';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
 import * as sut from '../src/index';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 // Test data factories
 const createTestGroup = (overrides = {}) => ({
@@ -90,14 +86,37 @@ async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
 function setupBasicMocks() {
   const testGroup = createTestGroup();
   const testProject = createTestProject();
+  const testUsers = createTestUsers();
+
+  const mockUserCollector = {
+    collectUser: jest.fn(),
+    getCommitAuthor: jest.fn(),
+    getCollectedUsers: jest
+      .fn()
+      .mockReturnValue(
+        new Map(
+          testUsers.map((user) => [
+            user.username,
+            {...user, group_id: testGroup.id},
+          ])
+        )
+      ),
+    clear: jest.fn(),
+  };
 
   const gitlab = {
     getGroups: jest.fn().mockResolvedValue([testGroup]),
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
-    getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
+    getGroupMembers: jest.fn().mockResolvedValue(testUsers),
+    fetchGroupMembers: jest.fn().mockImplementation(async (groupId: string) => {
+      for (const user of testUsers) {
+        mockUserCollector.collectUser({...user, group_id: groupId});
+      }
+    }),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    userCollector: mockUserCollector,
   };
 
   const groupFilter = {
@@ -113,7 +132,7 @@ function setupBasicMocks() {
   jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
   jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
 
-  return {gitlab, groupFilter, testGroup, testProject};
+  return {gitlab, groupFilter, testGroup, testProject, mockUserCollector};
 }
 
 describe('index', () => {
@@ -134,7 +153,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
