@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - invalid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Failed to connect to Cursor API. Please check your API key and URL.: Invalid API key",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - daily usage 1`] = `
+[
+  {
+    "acceptedLinesAdded": 1102,
+    "acceptedLinesDeleted": 645,
+    "agentRequests": 12,
+    "apiKeyReqs": 0,
+    "applyMostUsedExtension": ".tsx",
+    "bugbotUsages": 3,
+    "chatRequests": 128,
+    "clientVersion": "0.25.1",
+    "cmdkUsages": 67,
+    "composerRequests": 45,
+    "date": 1710720000000,
+    "email": "developer@company.com",
+    "isActive": true,
+    "minUsageDate": 1710720000000,
+    "mostUsedModel": "gpt-4",
+    "subscriptionIncludedReqs": 180,
+    "tabMostUsedExtension": ".ts",
+    "totalAccepts": 73,
+    "totalApplies": 87,
+    "totalLinesAdded": 1543,
+    "totalLinesDeleted": 892,
+    "totalRejects": 14,
+    "totalTabsAccepted": 289,
+    "totalTabsShown": 342,
+    "usageBasedReqs": 5,
+  },
+  {
+    "acceptedLinesAdded": 1876,
+    "acceptedLinesDeleted": 987,
+    "agentRequests": 23,
+    "apiKeyReqs": 15,
+    "applyMostUsedExtension": ".py",
+    "bugbotUsages": 5,
+    "chatRequests": 156,
+    "clientVersion": "0.25.1",
+    "cmdkUsages": 89,
+    "composerRequests": 67,
+    "date": 1710806400000,
+    "email": "developer@company.com",
+    "isActive": true,
+    "minUsageDate": 1710720000000,
+    "mostUsedModel": "claude-3-opus",
+    "subscriptionIncludedReqs": 320,
+    "tabMostUsedExtension": ".py",
+    "totalAccepts": 91,
+    "totalApplies": 102,
+    "totalLinesAdded": 2104,
+    "totalLinesDeleted": 1203,
+    "totalRejects": 11,
+    "totalTabsAccepted": 398,
+    "totalTabsShown": 456,
+    "usageBasedReqs": 0,
+  },
+]
+`;
+
+exports[`index streams - members 1`] = `
+[
+  {
+    "email": "developer@company.com",
+    "isNew": true,
+    "name": "Alex",
+    "role": "member",
+  },
+  {
+    "email": "admin@company.com",
+    "isNew": true,
+    "name": "Sam",
+    "role": "owner",
+  },
+]
+`;

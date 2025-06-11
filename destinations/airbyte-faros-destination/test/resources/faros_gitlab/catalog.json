@@ -17,6 +17,12 @@
         "name": "mytestsource__gitlab__faros_users"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_tags"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

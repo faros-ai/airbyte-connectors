@@ -1,0 +1,286 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cursor process records from all streams 1`] = `
+Array [
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 15 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`cursor process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_UserToolUsage": Object {
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "recordedAt": "2024-03-18T00:00:00.000Z",
+      "source": "Cursor",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "usedAt": "2024-03-18T00:00:00.000Z",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "9593976f19915a08a8c30e444b98f5596b8efe15231ba8fa9fe5a9a8f4c9a236",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "1102",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "3c4f828c62ae45d6049c47f5da0daf2ded0226496526cb2fad8ae213cc2d80a8",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "73",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "d62cee085e278acb12d41bc8a70055ee07842b75443a862978cfbf159a02dd2b",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "14",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "recordedAt": "2024-03-19T00:00:00.000Z",
+      "source": "Cursor",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "usedAt": "2024-03-19T00:00:00.000Z",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "1b36b4acad81e16528621bec05366aab254d685de1861f7e1460dc6d3cb74901",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "1876",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "aeee8630f25236b29572e28dd34fecd212db59ef67cdd888f8e7f2282d051911",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "91",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "cb9e36a97d4af7a1e12447ed0e9dfa95f50baf20558cebfe78bf98ccfd180bad",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "11",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "developer@company.com",
+      "name": "Alex",
+      "source": "Cursor",
+      "type": "User",
+      "uid": "developer@company.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "developer@company.com",
+      "source": "Cursor",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "admin@company.com",
+      "name": "Sam",
+      "source": "Cursor",
+      "type": "User",
+      "uid": "admin@company.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "admin@company.com",
+      "source": "Cursor",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "source": "Cursor",
+      "uid": "Cursor",
+    },
+  },
+]
+`;
