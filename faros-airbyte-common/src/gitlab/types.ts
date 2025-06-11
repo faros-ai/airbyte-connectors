@@ -47,6 +47,7 @@ export interface Project {
   default_branch: string;
   archived: boolean;
   group_id: string;
+  empty_repo: boolean;
   syncRepoData?: boolean;
 }
 
