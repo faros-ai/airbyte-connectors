@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 5 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 7 records",
-  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 8 records",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -133,6 +133,25 @@ Array [
       "sha": "8617223c1e31c8454c65c397b54bac653c32c3f4",
       "source": "GitLab",
       "uid": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": null,
+      "createdAt": "2025-06-05T10:30:00.000Z",
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/commit/123456789abcdef123456789abcdef1234567890",
+      "message": "This commit has no resolved author username",
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "sha": "123456789abcdef123456789abcdef1234567890",
+      "source": "GitLab",
+      "uid": "123456789abcdef123456789abcdef1234567890",
     },
   },
 ]
