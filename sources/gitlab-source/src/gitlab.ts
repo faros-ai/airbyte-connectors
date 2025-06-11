@@ -174,6 +174,7 @@ export class GitLab {
         default_branch: project.default_branch,
         archived: project.archived as boolean,
         group_id: groupId,
+        empty_repo: project.empty_repo as boolean,
       });
     }
 
