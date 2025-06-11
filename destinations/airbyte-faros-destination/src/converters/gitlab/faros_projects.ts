@@ -10,6 +10,9 @@ import {GitlabConverter} from './common';
 export class FarosProjects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Repository',
+    'tms_Project',
+    'tms_TaskBoard',
+    'tms_TaskBoardProjectRelationship',
   ];
 
   async convert(
@@ -42,6 +45,39 @@ export class FarosProjects extends GitlabConverter {
         },
       },
     ];
+
+    // Create TMS entities for the project
+    const projectKey = {
+      uid: `${organization.uid}/${projectName}`,
+      source: this.streamName.source,
+    };
+
+    res.push({
+      model: 'tms_Project',
+      record: {
+        ...projectKey,
+        name: project.name || projectName,
+        description: Utils.cleanAndTruncate(project.description),
+        createdAt: Utils.toDate(project.created_at),
+        updatedAt: Utils.toDate(project.updated_at),
+      },
+    });
+
+    res.push({
+      model: 'tms_TaskBoard',
+      record: {
+        ...projectKey,
+        name: project.name || projectName,
+      },
+    });
+
+    res.push({
+      model: 'tms_TaskBoardProjectRelationship',
+      record: {
+        board: projectKey,
+        project: projectKey,
+      },
+    });
 
     const isCommunity =
       ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
