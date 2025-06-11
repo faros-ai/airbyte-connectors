@@ -116,6 +116,12 @@ export abstract class StreamWithProjectSlices extends StreamBase {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
         group
       )) {
+        if (repo.empty_repo === true) {
+          this.logger.warn(
+            `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`
+          );
+          continue;
+        }
         if (syncRepoData) {
           yield {
             group_id: repo.group_id,
