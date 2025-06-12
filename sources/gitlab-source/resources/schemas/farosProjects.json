@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "name",
+    "path",
+    "path_with_namespace",
+    "web_url",
+    "visibility",
+    "created_at",
+    "namespace",
+    "group_id"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "path_with_namespace": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "visibility": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "full_path": {
+          "type": "string"
+        }
+      }
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "default_branch": {
+      "type": "string"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "syncRepoData": {
+      "type": "boolean"
+    }
+  }
+}

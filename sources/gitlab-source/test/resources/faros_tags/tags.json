@@ -1,0 +1,12 @@
+[
+  {
+    "name": "v1.0.0",
+    "title": "Release version 1.0.0",
+    "commit_id": "abc123def456"
+  },
+  {
+    "name": "v0.9.0",
+    "title": "Pre-release version 0.9.0",
+    "commit_id": "def456abc789"
+  }
+]

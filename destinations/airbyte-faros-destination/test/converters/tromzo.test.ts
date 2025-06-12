@@ -1,7 +1,9 @@
+import {
+  destinationWriteTest,
+  initMockttp,
+  tempConfig,
+} from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
-
-import {initMockttp, tempConfig} from '../../src/testing-tools/testing-tools';
-import {destinationWriteTest} from '../../src/testing-tools/utils';
 
 describe('tromzo', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});

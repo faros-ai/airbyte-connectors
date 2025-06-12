@@ -3,7 +3,7 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 
 import * as sut from '../src/index';
 import {DataQualityTests} from '../src/streams/data-quality-tests';
@@ -95,10 +95,6 @@ function getQueryResponse(query: string): Record<string, any> | null {
   return res;
 }
 
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -117,7 +113,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.FarosGraphDoctorSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

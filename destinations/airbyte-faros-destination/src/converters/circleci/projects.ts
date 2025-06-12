@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {Project} from 'faros-airbyte-common/circleci';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {CircleCICommon, CircleCIConverter} from './common';
-import {Project} from 'faros-airbyte-common/circleci';
 
 export class Projects extends CircleCIConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [

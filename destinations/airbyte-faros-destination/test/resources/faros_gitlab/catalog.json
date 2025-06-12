@@ -1,0 +1,34 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_groups"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_projects"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_users"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_tags"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_commits"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

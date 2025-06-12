@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "integer"
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "totalLinesAdded": {
+      "type": "integer"
+    },
+    "totalLinesDeleted": {
+      "type": "integer"
+    },
+    "acceptedLinesAdded": {
+      "type": "integer"
+    },
+    "acceptedLinesDeleted": {
+      "type": "integer"
+    },
+    "totalApplies": {
+      "type": "integer"
+    },
+    "totalAccepts": {
+      "type": "integer"
+    },
+    "totalRejects": {
+      "type": "integer"
+    },
+    "totalTabsShown": {
+      "type": "integer"
+    },
+    "totalTabsAccepted": {
+      "type": "integer"
+    },
+    "composerRequests": {
+      "type": "integer"
+    },
+    "chatRequests": {
+      "type": "integer"
+    },
+    "agentRequests": {
+      "type": "integer"
+    },
+    "cmdkUsages": {
+      "type": "integer"
+    },
+    "subscriptionIncludedReqs": {
+      "type": "integer"
+    },
+    "apiKeyReqs": {
+      "type": "integer"
+    },
+    "usageBasedReqs": {
+      "type": "integer"
+    },
+    "bugbotUsages": {
+      "type": "integer"
+    },
+    "mostUsedModel": {
+      "type": "string"
+    },
+    "applyMostUsedExtension": {
+      "type": "string"
+    },
+    "tabMostUsedExtension": {
+      "type": "string"
+    },
+    "clientVersion": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "minUsageDate": {
+      "type": "integer"
+    }
+  }
+}

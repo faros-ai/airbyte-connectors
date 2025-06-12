@@ -1,31 +1,30 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   CopilotSeat,
-  CopilotSeatEnded,
   CopilotSeatsStreamRecord,
-  GitHubTool,
 } from 'faros-airbyte-common/github';
 import {paginatedQueryV2, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
+import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 interface UserToolKey {
   user: {uid: string; source: string};
   organization: {uid: string; source: string};
-  tool: {category: GitHubTool};
+  tool: {category: VCSToolCategory.GitHubCopilot};
 }
 
 export class FarosCopilotSeats extends GitHubConverter {
   private readonly currentAssigneesByOrg = new Map<string, Set<string>>();
-  private readonly endedSeatsByOrg = new Map<string, Set<string>>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
     'vcs_OrganizationTool',
     'vcs_UserTool',
+    'vcs_UserToolLicense',
     'vcs_UserToolUsage',
   ];
 
@@ -37,29 +36,17 @@ export class FarosCopilotSeats extends GitHubConverter {
     const org = toLower(data.org);
     if (!this.currentAssigneesByOrg.has(org)) {
       this.currentAssigneesByOrg.set(org, new Set());
-      this.endedSeatsByOrg.set(org, new Set());
     }
     if (data.empty) {
       return [];
     }
 
-    const seat = record.record.data as CopilotSeat | CopilotSeatEnded;
-    const userTool = userToolKey(seat.user, seat.org, this.streamName.source);
-    if (seat.endedAt) {
-      this.endedSeatsByOrg.get(org).add(seat.user);
-      return [
-        {
-          model: 'vcs_UserTool',
-          record: {
-            ...userTool,
-            inactive: true,
-            endedAt: seat.endedAt,
-          },
-        },
-      ];
-    }
-
     const activeSeat = record.record.data as CopilotSeat;
+    const userTool = userToolKey(
+      activeSeat.user,
+      activeSeat.org,
+      this.streamName.source
+    );
     this.currentAssigneesByOrg.get(org).add(activeSeat.user);
     this.collectUser(activeSeat.assignee);
 
@@ -77,6 +64,19 @@ export class FarosCopilotSeats extends GitHubConverter {
         }),
       },
     });
+    if (activeSeat.startedAt) {
+      res.push({
+        model: 'vcs_UserToolLicense',
+        record: {
+          userTool,
+          startedAt: activeSeat.startedAt,
+          endedAt: activeSeat.pending_cancellation_date
+            ? Utils.toDate(activeSeat.pending_cancellation_date)
+            : null,
+          type: activeSeat.plan_type,
+        },
+      });
+    }
     if (activeSeat.last_activity_at) {
       const lastActivityAt = Utils.toDate(activeSeat.last_activity_at);
       const recordedAt = Utils.toDate(record.record.emitted_at);
@@ -94,7 +94,7 @@ export class FarosCopilotSeats extends GitHubConverter {
           record: {
             uid: GitHubCommon.digest(
               [
-                GitHubTool.Copilot,
+                VCSToolCategory.GitHubCopilot,
                 AssistantMetric.LastActivity,
                 recordedAt.toISOString(),
                 activeSeat.org,
@@ -115,7 +115,7 @@ export class FarosCopilotSeats extends GitHubConverter {
               uid: activeSeat.user,
               source: this.streamName.source,
             },
-            tool: {category: GitHubTool.Copilot},
+            tool: {category: VCSToolCategory.GitHubCopilot},
           },
         });
       }
@@ -136,7 +136,7 @@ export class FarosCopilotSeats extends GitHubConverter {
             uid: org,
             source: this.streamName.source,
           },
-          tool: {category: GitHubTool.Copilot},
+          tool: {category: VCSToolCategory.GitHubCopilot},
           inactive: false,
         },
       });
@@ -155,28 +155,40 @@ export class FarosCopilotSeats extends GitHubConverter {
           new Map<string, any>([
             ['source', 'GitHub'],
             ['organizationUid', toLower(org)],
-            ['toolCategory', GitHubTool.Copilot],
+            ['toolCategory', VCSToolCategory.GitHubCopilot],
             ['inactive', false],
           ])
         );
+        const now = new Date();
         for await (const previousAssignee of previousAssigneesQuery) {
           if (
-            !this.currentAssigneesByOrg
-              .get(org)
-              .has(previousAssignee.user.uid) &&
-            !this.endedSeatsByOrg.get(org).has(previousAssignee.user.uid)
+            !this.currentAssigneesByOrg.get(org).has(previousAssignee.user.uid)
           ) {
+            const userTool = userToolKey(
+              previousAssignee.user.uid,
+              org,
+              this.streamName.source
+            );
             res.push({
               model: 'vcs_UserTool',
               record: {
-                ...userToolKey(
-                  previousAssignee.user.uid,
-                  org,
-                  this.streamName.source
-                ),
+                ...userTool,
                 inactive: true,
+                ...(!previousAssignee.endedAt && {endedAt: now.toISOString()}),
               },
             });
+            if (previousAssignee.startedAt) {
+              res.push({
+                model: 'vcs_UserToolLicense',
+                record: {
+                  userTool,
+                  startedAt: previousAssignee.startedAt,
+                  ...(!previousAssignee.endedAt && {
+                    endedAt: now.toISOString(),
+                  }),
+                },
+              });
+            }
           }
         }
       }
@@ -193,7 +205,7 @@ function userToolKey(
   return {
     user: {uid: userLogin, source},
     organization: {uid: toLower(orgLogin), source},
-    tool: {category: GitHubTool.Copilot},
+    tool: {category: VCSToolCategory.GitHubCopilot},
   };
 }
 
@@ -217,6 +229,8 @@ const USER_TOOL_QUERY = `
       }
       toolCategory
       inactive
+      startedAt
+      endedAt
     }
   }
 `;

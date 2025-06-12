@@ -63,7 +63,16 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   async checkConnection(config: JiraConfig): Promise<[boolean, VError]> {
     try {
-      await Jira.instance(config, this.logger);
+      const jira = await Jira.instance(config, this.logger);
+      const projectKeys = config.projects
+        ? new Set(config.projects)
+        : undefined;
+      const projects = await jira.getProjects(projectKeys);
+      if (!projects.length) {
+        throw new VError(
+          'Invalid credentials or provided credentials have no browseable project access.'
+        );
+      }
     } catch (err: any) {
       return [false, err];
     }

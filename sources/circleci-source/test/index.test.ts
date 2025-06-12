@@ -5,19 +5,14 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+} from 'faros-airbyte-testing-tools';
 import {Dictionary} from 'ts-essentials';
 
 import {CircleCI, CircleCIConfig} from '../src/circleci/circleci';
 import * as sut from '../src/index';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
-
-function readTestResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -50,7 +45,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.CircleCISource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -85,7 +80,7 @@ describe('index', () => {
     CircleCI.instance = jest.fn().mockImplementation(() => {
       return new CircleCI(sourceConfig, logger, null, {
         get: fnProjectsList.mockResolvedValue({
-          data: readTestResourceFile('projects.json'),
+          data: readTestFileAsJSON('projects.json'),
           status: 200,
         }),
       } as any);
@@ -103,7 +98,7 @@ describe('index', () => {
       projects.push(project);
     }
     expect(fnProjectsList).toHaveBeenCalledTimes(1);
-    expect(projects).toStrictEqual([readTestResourceFile('projects.json')]);
+    expect(projects).toStrictEqual([readTestFileAsJSON('projects.json')]);
   });
 
   test('streams - pipelines, use full_refresh sync mode', async () => {
@@ -112,7 +107,7 @@ describe('index', () => {
       get: fnPipelinesList
         .mockResolvedValueOnce({
           data: {
-            items: readTestResourceFile('pipelines_input.json'),
+            items: readTestFileAsJSON('pipelines_input.json'),
             next_page_token: null,
           },
           status: 200,
@@ -143,8 +138,8 @@ describe('index', () => {
       state = pipelinesStream.getUpdatedState(state, pipeline);
     }
     expect(fnPipelinesList).toHaveBeenCalledTimes(5); // fetchPipelines once + 1 fetchWorkflows per pipeline
-    expect(pipelines).toStrictEqual(readTestResourceFile('pipelines.json'));
-    expect(state).toStrictEqual(readTestResourceFile('pipelines_state.json'));
+    expect(pipelines).toStrictEqual(readTestFileAsJSON('pipelines.json'));
+    expect(state).toStrictEqual(readTestFileAsJSON('pipelines_state.json'));
   });
 
   test('streams - tests, use full_refresh sync mode', async () => {
@@ -154,28 +149,28 @@ describe('index', () => {
         get: fnTestsList
           .mockResolvedValueOnce({
             data: {
-              items: readTestResourceFile('pipeline_input.json'),
+              items: readTestFileAsJSON('pipeline_input.json'),
               next_page_token: null,
             },
             status: 200,
           })
           .mockResolvedValueOnce({
             data: {
-              items: readTestResourceFile('workflows_input.json'),
+              items: readTestFileAsJSON('workflows_input.json'),
               next_page_token: null,
             },
             status: 200,
           })
           .mockResolvedValueOnce({
             data: {
-              items: readTestResourceFile('jobs_input.json'),
+              items: readTestFileAsJSON('jobs_input.json'),
               next_page_token: null,
             },
             status: 200,
           })
           .mockResolvedValueOnce({
             data: {
-              items: readTestResourceFile('tests_input.json'),
+              items: readTestFileAsJSON('tests_input.json'),
               next_page_token: null,
             },
             status: 200,
@@ -195,7 +190,7 @@ describe('index', () => {
       tests.push(test);
     }
     expect(fnTestsList).toHaveBeenCalledTimes(4);
-    expect(tests).toStrictEqual(readTestResourceFile('tests.json'));
+    expect(tests).toStrictEqual(readTestFileAsJSON('tests.json'));
   });
 
   test('filter projects', () => {

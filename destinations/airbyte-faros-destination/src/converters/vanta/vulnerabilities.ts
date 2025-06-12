@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Vulnerability} from 'faros-airbyte-common/vanta';
 import {Utils} from 'faros-js-client';
 
-import {ArtifactKey,getCICDArtifactsFromCommitShas} from '../common/cicd';
+import {ArtifactKey, getCICDArtifactsFromCommitShas} from '../common/cicd';
 import {
   Vulnerability as VulnerabilityCommon,
   VulnerabilityIdentifier,
@@ -165,6 +165,39 @@ export abstract class Vulnerabilities extends VantaConverter {
     };
     records.push(repoVulnerabilityRecord);
   }
+  private extractVulnId(value: string | null): [string, string] | null {
+    if (!value) {
+      return null;
+    }
+    const cveRegex = /(CVE-\d{4}-\d{4,7})/;
+    const cveMatch = cveRegex.exec(value);
+    if (cveMatch) {
+      return ['CVE', cveMatch[1]];
+    }
+
+    const ghsaRegex = /(GHSA-\w{4}-\w{4}-\w{4})/;
+    const ghsaMatch = ghsaRegex.exec(value);
+    if (ghsaMatch) {
+      return ['GHSA', ghsaMatch[1]];
+    }
+
+    return null;
+  }
+
+  private grabVulnerabilityIdentifierFromName(
+    vulnerability: Vulnerability
+  ): VulnerabilityIdentifier | null {
+    if (vulnerability.name) {
+      if (this.extractVulnId(vulnerability.name)) {
+        const [type, id] = this.extractVulnId(vulnerability.name);
+        return {
+          uid: id,
+          type: VulnerabilityCommon.identifierType(type),
+        };
+      }
+    }
+    return null;
+  }
 
   private processVulnerabilityIdentifier(
     vulnerability: Vulnerability,
@@ -197,6 +230,10 @@ export abstract class Vulnerabilities extends VantaConverter {
           };
         }
         break;
+    }
+    if (!identifierRecord) {
+      identifierRecord =
+        this.grabVulnerabilityIdentifierFromName(vulnerability);
     }
     if (!identifierRecord) {
       this.vulnerabilitiesWithoutIdentifier.add(

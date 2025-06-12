@@ -30,9 +30,11 @@
     "./circleci": "./lib/circleci/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
+    "./cursor": "./lib/cursor/index.js",
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
+    "./gitlab": "./lib/gitlab/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
     "./wolken": "./lib/wolken/index.js",
@@ -58,6 +60,9 @@
       "common": [
         "./lib/common/index.d.ts"
       ],
+      "cursor": [
+        "./lib/cursor/index.d.ts"
+      ],
       "github": [
         "./lib/github/index.d.ts"
       ],
@@ -66,6 +71,9 @@
       ],
       "github/queries": [
         "./lib/github/queries.d.ts"
+      ],
+      "gitlab": [
+        "./lib/gitlab/index.d.ts"
       ],
       "jira": [
         "./lib/jira/index.d.ts"
@@ -103,7 +111,8 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/typescript": "^4.0.9",
-    "@graphql-codegen/typescript-operations": "^4.2.3"
+    "@graphql-codegen/typescript-operations": "^4.2.3",
+    "faros-airbyte-testing-tools": "*"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

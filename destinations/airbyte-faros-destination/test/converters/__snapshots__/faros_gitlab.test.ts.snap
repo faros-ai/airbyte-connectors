@@ -1,0 +1,188 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros_gitlab process records from all streams 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 11 records",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros_gitlab process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_Organization": Object {
+      "createdAt": "2021-06-11T22:27:18.521Z",
+      "htmlUrl": "https://gitlab.com/groups/farosai",
+      "name": "farosai",
+      "source": "GitLab",
+      "type": Object {
+        "category": "Group",
+        "detail": "Group",
+      },
+      "uid": "12372707",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "archived": false,
+      "createdAt": "2022-10-19T16:40:22.162Z",
+      "description": "Test project for FarosCE GitLab integration",
+      "fullName": "farosai/farosce-test",
+      "htmlUrl": "https://gitlab.com/farosai/farosce-test",
+      "mainBranch": "master",
+      "name": "farosce-test",
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "private": true,
+      "source": "GitLab",
+      "uid": "farosce-test",
+      "updatedAt": "2024-10-15T18:38:58.340Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "createdAt": "2022-10-19T16:40:22.162Z",
+      "description": "Test project for FarosCE GitLab integration",
+      "name": "FarosCE test",
+      "source": "GitLab",
+      "uid": "12372707/farosce-test",
+      "updatedAt": "2024-10-15T18:38:58.340Z",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "FarosCE test",
+      "source": "GitLab",
+      "uid": "12372707/farosce-test",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "GitLab",
+        "uid": "12372707/farosce-test",
+      },
+      "project": Object {
+        "source": "GitLab",
+        "uid": "12372707/farosce-test",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "faros_VcsRepositoryOptions": Object {
+      "inclusion": Object {
+        "category": "Included",
+      },
+      "repository": Object {
+        "name": "farosce-test",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "farosce-test",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "vcs_Membership": Object {
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "source": "GitLab",
+      "user": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "htmlUrl": "https://gitlab.com/ypc-faros",
+      "name": "Yandry Perez",
+      "source": "GitLab",
+      "type": Object {
+        "category": "User",
+        "detail": "user",
+      },
+      "uid": "ypc-faros",
+    },
+  },
+  Object {
+    "vcs_Tag": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "faros-events-cli",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "faros-events-cli",
+        },
+        "sha": "06a959fe1025f8eaa8ca7a6db1ac812ef1116e6d",
+        "uid": "06a959fe1025f8eaa8ca7a6db1ac812ef1116e6d",
+      },
+      "message": "Release version 0.4.0",
+      "name": "v0.4.0",
+      "repository": Object {
+        "name": "faros-events-cli",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "faros-events-cli",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "createdAt": "2025-06-04T18:12:02.000Z",
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/commit/8617223c1e31c8454c65c397b54bac653c32c3f4",
+      "message": "ypc test commit 1",
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "sha": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+      "source": "GitLab",
+      "uid": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": null,
+      "createdAt": "2025-06-05T10:30:00.000Z",
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/commit/123456789abcdef123456789abcdef1234567890",
+      "message": "This commit has no resolved author username",
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "sha": "123456789abcdef123456789abcdef1234567890",
+      "source": "GitLab",
+      "uid": "123456789abcdef123456789abcdef1234567890",
+    },
+  },
+]
+`;

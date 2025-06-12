@@ -1,3 +1,4 @@
+import {createHash} from 'crypto';
 import {FarosClient, paginatedQueryV2} from 'faros-js-client';
 import fs from 'fs';
 import {toLower} from 'lodash';
@@ -12,6 +13,15 @@ export {
   applyRoundRobinBucketing,
   RoundRobinConfig,
 } from './bucketing';
+
+export {
+  VCSFilter,
+  VCSFilterConfig,
+  VCSConfigFields,
+  VCSEntityNames,
+  VCSAdapter,
+  RepoInclusion,
+} from './vcs-filter';
 
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
@@ -180,3 +190,7 @@ const getFarosOptionsItemKey = (
     }
   }
 };
+
+export function digest(input: string): string {
+  return createHash('sha256').update(input).digest('hex');
+}

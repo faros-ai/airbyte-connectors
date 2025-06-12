@@ -26,7 +26,10 @@ export class CustomerIOSource extends AirbyteSourceBase<CustomerIOConfig> {
     return 'customerio';
   }
 
-  constructor(logger: AirbyteLogger, private readonly axios?: AxiosInstance) {
+  constructor(
+    logger: AirbyteLogger,
+    private readonly axios?: AxiosInstance
+  ) {
     super(logger);
   }
 

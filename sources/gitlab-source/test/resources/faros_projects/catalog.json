@@ -1,0 +1,25 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_projects",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_cursor": false,
+        "source_defined_primary_key": [
+          [
+            "group"
+          ],
+          [
+            "path"
+          ]
+        ],
+        "namespace": null
+      },
+      "destination_sync_mode": "overwrite",
+      "sync_mode": "full_refresh"
+    }
+  ]
+}

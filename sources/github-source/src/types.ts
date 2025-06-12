@@ -2,7 +2,6 @@ import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {RoundRobinConfig} from 'faros-airbyte-common/common';
 
-import {ExtendedOctokit} from './octokit';
 import {RunMode} from './streams/common';
 
 export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
@@ -20,8 +19,6 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly fetch_teams?: boolean;
   readonly fetch_pull_request_files?: boolean;
   readonly fetch_pull_request_reviews?: boolean;
-  readonly copilot_licenses_dates_fix?: boolean;
-  readonly copilot_metrics_preview_api?: boolean;
   readonly cutoff_days?: number;
   readonly api_url?: string;
   readonly api_key?: string;
@@ -36,6 +33,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly fetch_pull_request_diff_coverage?: boolean;
   readonly pull_request_cutoff_lag_seconds?: number;
   readonly fetch_public_organizations?: boolean;
+  readonly skip_repos_without_recent_push?: boolean;
   readonly copilot_metrics_teams?: ReadonlyArray<string>;
   readonly proxy_url?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
@@ -60,17 +58,6 @@ type GitHubApp = {
 export type GitHubAuth = GitHubToken | GitHubApp;
 
 export type GraphQLErrorResponse<T> = Pick<GraphqlResponseError<T>, 'response'>;
-
-export type AuditLogTeamMember = {
-  action: 'team.add_member' | 'team.remove_member';
-  created_at: number;
-  team: string;
-  user: string;
-};
-
-export type CopilotUsageResponse = Awaited<
-  ReturnType<ExtendedOctokit['copilot']['usageMetricsForOrg']>
->['data'];
 
 export type CopilotMetricsResponse = {
   date: string;
@@ -137,4 +124,9 @@ export type CopilotMetricsResponse = {
       }[];
     }[];
   } | null;
+}[];
+
+export type CopilotUserEngagementResponse = {
+  date: string;
+  blob_uri: string;
 }[];

@@ -4,7 +4,7 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 import path from 'path';
 import {VError} from 'verror';
 
@@ -25,14 +25,10 @@ describe('index', () => {
     SheetsReader.instance = sheets;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
-
   test('spec', async () => {
     const source = new sut.SheetsSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

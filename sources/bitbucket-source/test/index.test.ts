@@ -2,12 +2,15 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+} from 'faros-airbyte-cdk';
+import {
   customStreamsTest,
+  readResourceAsJSON,
+  readTestFileAsJSON,
   readTestResourceAsJSON,
   sourceReadTest,
   sourceSchemaTest,
-} from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {Bitbucket} from '../src/bitbucket';
@@ -16,10 +19,6 @@ import {CustomStreamNames} from '../src/streams/common';
 import {setupBitbucketInstance} from './utils';
 
 const bitbucketInstance = Bitbucket.instance;
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -37,7 +36,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

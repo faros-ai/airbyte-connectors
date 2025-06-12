@@ -60,6 +60,8 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly page_size?: number;
   readonly timeout?: number;
   readonly use_users_prefix_search?: boolean;
+  readonly users_prefix_search_max_depth?: number;
+  readonly users_prefix_search_api_hard_limit?: number;
   readonly use_faros_graph_boards_selection?: boolean;
   readonly projects?: ReadonlyArray<string>;
   readonly excluded_projects?: ReadonlyArray<string>;
@@ -148,6 +150,8 @@ const DEFAULT_RETRY_DELAY = 5_000;
 const DEFAULT_PAGE_SIZE = 250;
 const DEFAULT_TIMEOUT = 120_000; // 2 minutes
 const DEFAULT_USE_USERS_PREFIX_SEARCH = false;
+const DEFAULT_USERS_PREFIX_SEARCH_MAX_DEPTH = 2;
+const DEFAULT_USERS_PREFIX_SEARCH_API_HARD_LIMIT = 1000;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_CUTOFF_LAG_DAYS = 0;
 const DEFAULT_BUCKET_ID = 1;
@@ -188,6 +192,8 @@ export class Jira {
     private readonly bucketTotal: number,
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
+    private readonly usersPrefixSearchMaxDepth?: number,
+    private readonly usersPrefixSearchApiHardLimit?: number,
     private readonly requestedStreams?: Set<string>,
     private readonly useSprintsReverseSearch?: boolean,
     private readonly organizationId?: string,
@@ -311,6 +317,10 @@ export class Jira {
       cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
+      cfg.users_prefix_search_max_depth ??
+        DEFAULT_USERS_PREFIX_SEARCH_MAX_DEPTH,
+      cfg.users_prefix_search_api_hard_limit ??
+        DEFAULT_USERS_PREFIX_SEARCH_API_HARD_LIMIT,
       cfg.requestedStreams,
       cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH,
       cfg.organization_id,
@@ -1446,7 +1456,7 @@ export class Jira {
   private findUsers(
     username: string
   ): AsyncIterableIterator<Version2Models.User> {
-    this.logger?.debug("Searching for users with username '%s'", username);
+    this.logger?.debug(`Searching for users with username '${username}'`);
     return this.iterate(
       (startAt) =>
         // use custom method searchUsers for Jira Server
@@ -1459,8 +1469,20 @@ export class Jira {
     // Keep track of seen users in order to avoid returning duplicates
     const seenUsers = new Set<string>();
 
-    // Try searching users by a single character prefix first
-    for (const prefix of PREFIX_CHARS) {
+    // Initialize stack with single-character prefixes (in reverse order so 'a' is processed first)
+    const prefixStack: string[] = [];
+    for (let i = PREFIX_CHARS.length - 1; i >= 0; i--) {
+      prefixStack.push(PREFIX_CHARS[i]);
+    }
+
+    this.logger?.debug(
+      `Starting user prefix search with ${prefixStack.length} initial prefixes, max depth: ${this.usersPrefixSearchMaxDepth}`
+    );
+
+    // Process stack until empty
+    while (prefixStack.length > 0) {
+      const prefix = prefixStack.pop()!;
+
       let userCount = 0;
       const res = this.findUsers(prefix);
       for await (const u of res) {
@@ -1471,22 +1493,31 @@ export class Jira {
           yield u;
         }
       }
-      // Since we got exactly 1000 results back we are probably hitting
-      // the limit of Jira search API. Let's try searching by two character prefix
-      // https://jira.atlassian.com/browse/JRASERVER-65089
-      if (userCount === 1000) {
-        for (const prefix2 of PREFIX_CHARS) {
-          const res = this.findUsers(prefix + prefix2);
-          for await (const u of res) {
-            const uid = this.userId(u);
-            if (!seenUsers.has(uid)) {
-              seenUsers.add(uid);
-              yield u;
-            }
-          }
+
+      this.logger?.debug(
+        `Prefix '${prefix}' (length ${prefix.length}): found ${userCount} users`
+      );
+
+      // If we hit the API hard limit and haven't reached max depth, expand the search
+      if (
+        userCount === this.usersPrefixSearchApiHardLimit &&
+        prefix.length < this.usersPrefixSearchMaxDepth
+      ) {
+        this.logger?.debug(
+          `Prefix '${prefix}' hit ${this.usersPrefixSearchApiHardLimit}-user limit, expanding to length ${prefix.length + 1}`
+        );
+
+        // Add extended prefixes to stack (in reverse order for proper DFS ordering)
+        for (let i = PREFIX_CHARS.length - 1; i >= 0; i--) {
+          const extendedPrefix = prefix + PREFIX_CHARS[i];
+          prefixStack.push(extendedPrefix);
         }
       }
     }
+
+    this.logger?.debug(
+      `User prefix search completed. Total unique users found: ${seenUsers.size}`
+    );
   }
 
   private userId(u: Version2Models.User): string {

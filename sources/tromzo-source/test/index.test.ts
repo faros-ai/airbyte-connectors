@@ -3,17 +3,13 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {readResourceAsJSON} from 'faros-airbyte-testing-tools';
 import VError from 'verror';
 
 import * as sut from '../src/index';
 import {Findings} from '../src/streams/findings';
 import {Tromzo} from '../src/tromzo';
 import {TromzoConfig} from '../src/types';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
 
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
@@ -31,7 +27,7 @@ describe('index', () => {
   test('spec', async () => {
     const source = new sut.TromzoSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 

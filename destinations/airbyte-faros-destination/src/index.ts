@@ -41,5 +41,3 @@ export {
   StreamName,
 } from './converters/converter';
 export {FarosDestinationRunner} from './destination-runner';
-
-export * from './testing-tools';

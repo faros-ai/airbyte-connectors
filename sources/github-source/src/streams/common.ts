@@ -91,6 +91,7 @@ export const CustomStreamNames = [
   'faros_enterprises',
   'faros_enterprise_copilot_seats',
   'faros_enterprise_copilot_usage',
+  'faros_enterprise_copilot_user_engagement',
   'faros_enterprise_teams',
   'faros_enterprise_team_memberships',
   'faros_issues',
@@ -184,7 +185,9 @@ export abstract class StreamWithRepoSlices extends StreamBase {
         syncRepoData,
       } of await this.orgRepoFilter.getRepositories(org)) {
         if (syncRepoData) {
-          yield {org, repo: repo.name};
+          if (repo.recentPush) {
+            yield {org, repo: repo.name};
+          }
         }
       }
     }

@@ -1,8 +1,5 @@
-import {
-  AirbyteLogLevel,
-  AirbyteSourceLogger,
-  readTestResourceAsJSON,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogLevel, AirbyteSourceLogger} from 'faros-airbyte-cdk';
+import {readTestResourceAsJSON} from 'faros-airbyte-testing-tools';
 
 import {AzureDevOps} from '../../src/azure-devops/azure-devops';
 import {

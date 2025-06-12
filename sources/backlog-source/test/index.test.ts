@@ -4,7 +4,10 @@ import {
   AirbyteSpec,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import fs from 'fs-extra';
+import {
+  readResourceAsJSON,
+  readTestFileAsJSON,
+} from 'faros-airbyte-testing-tools';
 import {VError} from 'verror';
 
 import {Backlog, BacklogConfig} from '../src/backlog';
@@ -32,18 +35,10 @@ describe('index', () => {
     Backlog.instance = backlogInstance;
   });
 
-  function readResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-  }
-
-  function readTestResourceFile(fileName: string): any {
-    return JSON.parse(fs.readFileSync(`test_files/${fileName}`, 'utf8'));
-  }
-
   test('spec', async () => {
     const source = new sut.BacklogSource(logger);
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -63,7 +58,7 @@ describe('index', () => {
     const fnIssuesFunc = jest.fn();
 
     Backlog.instance = jest.fn().mockImplementation(() => {
-      const issuesResource: any[] = readTestResourceFile('issues.json');
+      const issuesResource: any[] = readTestFileAsJSON('issues.json');
       return new Backlog(
         {
           get: fnIssuesFunc.mockResolvedValue({
@@ -85,18 +80,18 @@ describe('index', () => {
     }
 
     expect(fnIssuesFunc).toHaveBeenCalledTimes(4);
-    expect(issues).toStrictEqual(readTestResourceFile('issues.json'));
+    expect(issues).toStrictEqual(readTestFileAsJSON('issues.json'));
   });
 
   test('streams - projects, use full_refresh sync mode', async () => {
     const fnProjectsFunc = jest.fn();
 
     Backlog.instance = jest.fn().mockImplementation(() => {
-      const projecjtsResource: any[] = readTestResourceFile('projects.json');
+      const projectsResource: any[] = readTestFileAsJSON('projects.json');
       return new Backlog(
         {
           get: fnProjectsFunc.mockResolvedValue({
-            data: projecjtsResource,
+            data: projectsResource,
           }),
         } as any,
         {} as BacklogConfig,
@@ -114,14 +109,14 @@ describe('index', () => {
     }
 
     expect(fnProjectsFunc).toHaveBeenCalledTimes(2);
-    expect(projects).toStrictEqual(readTestResourceFile('projects.json'));
+    expect(projects).toStrictEqual(readTestFileAsJSON('projects.json'));
   });
 
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersFunc = jest.fn();
 
     Backlog.instance = jest.fn().mockImplementation(() => {
-      const usersResource: any[] = readTestResourceFile('users.json');
+      const usersResource: any[] = readTestFileAsJSON('users.json');
       return new Backlog(
         {
           get: fnUsersFunc.mockResolvedValue({
@@ -143,6 +138,6 @@ describe('index', () => {
     }
 
     expect(fnUsersFunc).toHaveBeenCalledTimes(1);
-    expect(users).toStrictEqual(readTestResourceFile('users.json'));
+    expect(users).toStrictEqual(readTestFileAsJSON('users.json'));
   });
 });
