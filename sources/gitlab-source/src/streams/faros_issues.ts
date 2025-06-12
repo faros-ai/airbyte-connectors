@@ -17,7 +17,7 @@ export class FarosIssues extends StreamWithProjectSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['group_id', 'project_path', 'id'];
+    return 'id';
   }
 
   get cursorField(): string {
@@ -46,19 +46,12 @@ export class FarosIssues extends StreamWithProjectSlices {
       `Syncing GitLab issues for project ${project.path_with_namespace} from ${since.toISOString()} to ${until.toISOString()}`
     );
 
-    let latestUpdatedAt: Date | undefined;
-
     try {
       for await (const issue of gitlab.getIssues(
         project.path_with_namespace,
         since,
         until
       )) {
-        const updatedAt = Utils.toDate(issue.updated_at);
-        if (!latestUpdatedAt || (updatedAt && updatedAt > latestUpdatedAt)) {
-          latestUpdatedAt = updatedAt;
-        }
-
         yield {
           ...issue,
           group_id: streamSlice.group_id,
