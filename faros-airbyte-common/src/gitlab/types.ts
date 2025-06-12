@@ -79,47 +79,14 @@ export interface Tag {
 
 export interface Issue {
   id: number;
-  iid: number;
-  project_id: number;
   title: string;
   description?: string;
   state: string;
   created_at: string;
   updated_at: string;
-  closed_at?: string;
-  closed_by?: User;
   labels: string[];
-  milestone?: any;
-  assignees: User[];
-  author: User;
-  assignee?: User;
-  user_notes_count: number;
-  merge_requests_count: number;
-  upvotes: number;
-  downvotes: number;
-  due_date?: string;
-  confidential: boolean;
-  discussion_locked?: boolean;
-  web_url: string;
-  time_stats?: {
-    time_estimate: number;
-    total_time_spent: number;
-    human_time_estimate?: string;
-    human_total_time_spent?: string;
-  };
-  task_completion_status?: {
-    count: number;
-    completed_count: number;
-  };
-  blocking_issues_count?: number;
-  has_tasks?: boolean;
-  references?: {
-    short: string;
-    relative: string;
-    full: string;
-  };
-  moved_to_id?: number;
-  service_desk_reply_to?: string;
+  assignees: {username: string}[];
+  author: {username: string};
   group_id: string;
   project_path: string;
 }

@@ -396,48 +396,20 @@ export class GitLab {
         }
       }
 
-      const convertUser = (user: any): User => ({
-        id: user.id as number,
-        username: user.username as string,
-        name: user.name as string,
-        email: (user.public_email ?? user.email) as string,
-        state: user.state as string,
-        web_url: user.web_url as string,
-        created_at: user.created_at as string,
-        updated_at: user.updated_at as string,
-      });
-
       yield {
         id: issue.id,
-        iid: issue.iid,
-        project_id: issue.project_id,
         title: issue.title,
         description: issue.description,
         state: issue.state,
         created_at: issue.created_at,
         updated_at: issue.updated_at,
-        closed_at: issue.closed_at,
-        closed_by: issue.closed_by ? convertUser(issue.closed_by) : undefined,
         labels: issue.labels || [],
-        milestone: issue.milestone,
-        assignees: issue.assignees ? issue.assignees.map(convertUser) : [],
-        author: convertUser(issue.author),
-        assignee: issue.assignee ? convertUser(issue.assignee) : undefined,
-        user_notes_count: issue.user_notes_count,
-        merge_requests_count: issue.merge_requests_count,
-        upvotes: issue.upvotes,
-        downvotes: issue.downvotes,
-        due_date: issue.due_date,
-        confidential: issue.confidential,
-        discussion_locked: issue.discussion_locked,
-        web_url: issue.web_url,
-        time_stats: issue.time_stats,
-        task_completion_status: issue.task_completion_status,
-        blocking_issues_count: issue.blocking_issues_count as number,
-        has_tasks: issue.has_tasks,
-        references: issue.references,
-        moved_to_id: issue.moved_to_id ? Number(issue.moved_to_id) : undefined,
-        service_desk_reply_to: issue.service_desk_reply_to as string,
+        assignees: issue.assignees
+          ? issue.assignees.map((assignee) => ({
+              username: assignee.username as string,
+            }))
+          : [],
+        author: {username: issue.author.username as string},
       };
     }
   }
