@@ -1,0 +1,124 @@
+[
+  {
+    "id": 79927767,
+    "iid": 1,
+    "project_id": 24715581,
+    "title": "Setup Required!",
+    "description": "The repository needs to be set up.",
+    "state": "opened",
+    "created_at": "2021-02-27T15:50:47.923Z",
+    "updated_at": "2021-03-02T15:38:01.088Z",
+    "closed_at": null,
+    "closed_by": null,
+    "labels": ["Enhancement", "Project Setup"],
+    "milestone": null,
+    "assignees": [
+      {
+        "id": 250973,
+        "name": "Abdul-Hakeem Shaibu",
+        "username": "hkmshb",
+        "state": "active",
+        "avatar_url": "https://secure.gravatar.com/avatar/10de36a041c56dc69765eb171d303583?s=80&d=identicon",
+        "web_url": "https://gitlab.com/hkmshb"
+      }
+    ],
+    "author": {
+      "id": 250973,
+      "name": "Abdul-Hakeem Shaibu",
+      "username": "hkmshb",
+      "state": "active",
+      "avatar_url": "https://secure.gravatar.com/avatar/10de36a041c56dc69765eb171d303583?s=80&d=identicon",
+      "web_url": "https://gitlab.com/hkmshb"
+    },
+    "assignee": {
+      "id": 250973,
+      "name": "Abdul-Hakeem Shaibu",
+      "username": "hkmshb",
+      "state": "active",
+      "avatar_url": "https://secure.gravatar.com/avatar/10de36a041c56dc69765eb171d303583?s=80&d=identicon",
+      "web_url": "https://gitlab.com/hkmshb"
+    },
+    "user_notes_count": 0,
+    "merge_requests_count": 0,
+    "upvotes": 0,
+    "downvotes": 0,
+    "due_date": null,
+    "confidential": false,
+    "discussion_locked": null,
+    "web_url": "https://gitlab.com/faros-ai/faros-test/-/issues/1",
+    "time_stats": {
+      "time_estimate": 0,
+      "total_time_spent": 0,
+      "human_time_estimate": null,
+      "human_total_time_spent": null
+    },
+    "task_completion_status": {
+      "count": 0,
+      "completed_count": 0
+    },
+    "blocking_issues_count": 0,
+    "has_tasks": false,
+    "references": {
+      "short": "#1",
+      "relative": "#1",
+      "full": "faros-ai/faros-test#1"
+    },
+    "moved_to_id": null,
+    "service_desk_reply_to": null,
+    "group_id": "13083",
+    "project_path": "faros-test"
+  },
+  {
+    "id": 80103938,
+    "iid": 3,
+    "project_id": 24715581,
+    "title": "Update README file",
+    "description": "The README.md file is to spare. Add more contents.",
+    "state": "opened",
+    "created_at": "2021-03-02T15:35:31.706Z",
+    "updated_at": "2021-03-02T15:37:42.090Z",
+    "closed_at": null,
+    "closed_by": null,
+    "labels": ["Enhancement"],
+    "milestone": null,
+    "assignees": [],
+    "author": {
+      "id": 250973,
+      "name": "Abdul-Hakeem Shaibu",
+      "username": "hkmshb",
+      "state": "active",
+      "avatar_url": "https://secure.gravatar.com/avatar/10de36a041c56dc69765eb171d303583?s=80&d=identicon",
+      "web_url": "https://gitlab.com/hkmshb"
+    },
+    "assignee": null,
+    "user_notes_count": 0,
+    "merge_requests_count": 0,
+    "upvotes": 0,
+    "downvotes": 0,
+    "due_date": null,
+    "confidential": false,
+    "discussion_locked": null,
+    "web_url": "https://gitlab.com/faros-ai/faros-test/-/issues/3",
+    "time_stats": {
+      "time_estimate": 0,
+      "total_time_spent": 0,
+      "human_time_estimate": null,
+      "human_total_time_spent": null
+    },
+    "task_completion_status": {
+      "count": 0,
+      "completed_count": 0
+    },
+    "blocking_issues_count": 0,
+    "has_tasks": false,
+    "references": {
+      "short": "#3",
+      "relative": "#3",
+      "full": "faros-ai/faros-test#3"
+    },
+    "moved_to_id": null,
+    "service_desk_reply_to": null,
+    "group_id": "13083",
+    "project_path": "faros-test"
+  }
+]

@@ -5,6 +5,7 @@ import {
   Commit,
   GitLabToken,
   Group,
+  Issue,
   Project,
   Tag,
   User,
@@ -336,6 +337,107 @@ export class GitLab {
         name: tag.name,
         title: tag.message,
         commit_id: tag.commit?.id,
+      };
+    }
+  }
+
+  async *getIssues(
+    projectId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<Issue, 'group_id' | 'project_path'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    const fetchPage = (page: number): Promise<Types.IssueSchema[]> =>
+      this.client.Issues.all({...options, page, projectId});
+
+    for await (const issue of this.paginate<Types.IssueSchema>(
+      fetchPage,
+      `issues for project ${projectId}`
+    )) {
+      // Collect users in UserCollector
+      if (issue.author) {
+        this.userCollector.collectUser({
+          id: issue.author.id as number,
+          username: issue.author.username as string,
+          name: issue.author.name as string,
+          email: (issue.author.public_email ?? issue.author.email) as string,
+          state: issue.author.state as string,
+          web_url: issue.author.web_url as string,
+          created_at: issue.author.created_at as string,
+          updated_at: issue.author.updated_at as string,
+        });
+      }
+
+      if (issue.assignees) {
+        for (const assignee of issue.assignees) {
+          this.userCollector.collectUser({
+            id: assignee.id as number,
+            username: assignee.username as string,
+            name: assignee.name as string,
+            email: (assignee.public_email ?? assignee.email) as string,
+            state: assignee.state as string,
+            web_url: assignee.web_url as string,
+            created_at: assignee.created_at as string,
+            updated_at: assignee.updated_at as string,
+          });
+        }
+      }
+
+      const convertUser = (user: any): User => ({
+        id: user.id as number,
+        username: user.username as string,
+        name: user.name as string,
+        email: (user.public_email ?? user.email) as string,
+        state: user.state as string,
+        web_url: user.web_url as string,
+        created_at: user.created_at as string,
+        updated_at: user.updated_at as string,
+      });
+
+      yield {
+        id: issue.id,
+        iid: issue.iid,
+        project_id: issue.project_id,
+        title: issue.title,
+        description: issue.description,
+        state: issue.state,
+        created_at: issue.created_at,
+        updated_at: issue.updated_at,
+        closed_at: issue.closed_at,
+        closed_by: issue.closed_by ? convertUser(issue.closed_by) : undefined,
+        labels: issue.labels || [],
+        milestone: issue.milestone,
+        assignees: issue.assignees ? issue.assignees.map(convertUser) : [],
+        author: convertUser(issue.author),
+        assignee: issue.assignee ? convertUser(issue.assignee) : undefined,
+        user_notes_count: issue.user_notes_count,
+        merge_requests_count: issue.merge_requests_count,
+        upvotes: issue.upvotes,
+        downvotes: issue.downvotes,
+        due_date: issue.due_date,
+        confidential: issue.confidential,
+        discussion_locked: issue.discussion_locked,
+        web_url: issue.web_url,
+        time_stats: issue.time_stats,
+        task_completion_status: issue.task_completion_status,
+        blocking_issues_count: issue.blocking_issues_count as number,
+        has_tasks: issue.has_tasks,
+        references: issue.references,
+        moved_to_id: issue.moved_to_id ? Number(issue.moved_to_id) : undefined,
+        service_desk_reply_to: issue.service_desk_reply_to as string,
       };
     }
   }

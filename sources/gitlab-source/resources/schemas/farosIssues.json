@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "iid",
+    "project_id",
+    "title",
+    "state",
+    "created_at",
+    "updated_at",
+    "labels",
+    "assignees",
+    "author",
+    "user_notes_count",
+    "merge_requests_count",
+    "upvotes",
+    "downvotes",
+    "confidential",
+    "web_url",
+    "group_id",
+    "project_path"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "project_id": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "closed_at": {
+      "type": ["string", "null"]
+    },
+    "closed_by": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {"type": "integer"},
+        "username": {"type": "string"},
+        "name": {"type": ["string", "null"]},
+        "email": {"type": ["string", "null"]},
+        "state": {"type": "string"},
+        "web_url": {"type": "string"}
+      }
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "milestone": {
+      "type": ["object", "null"]
+    },
+    "assignees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "username": {"type": "string"},
+          "name": {"type": ["string", "null"]},
+          "email": {"type": ["string", "null"]},
+          "state": {"type": "string"},
+          "web_url": {"type": "string"}
+        }
+      }
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "username": {"type": "string"},
+        "name": {"type": ["string", "null"]},
+        "email": {"type": ["string", "null"]},
+        "state": {"type": "string"},
+        "web_url": {"type": "string"}
+      }
+    },
+    "assignee": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {"type": "integer"},
+        "username": {"type": "string"},
+        "name": {"type": ["string", "null"]},
+        "email": {"type": ["string", "null"]},
+        "state": {"type": "string"},
+        "web_url": {"type": "string"}
+      }
+    },
+    "user_notes_count": {
+      "type": "integer"
+    },
+    "merge_requests_count": {
+      "type": "integer"
+    },
+    "upvotes": {
+      "type": "integer"
+    },
+    "downvotes": {
+      "type": "integer"
+    },
+    "due_date": {
+      "type": ["string", "null"]
+    },
+    "confidential": {
+      "type": "boolean"
+    },
+    "discussion_locked": {
+      "type": ["boolean", "null"]
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "time_stats": {
+      "type": ["object", "null"],
+      "properties": {
+        "time_estimate": {"type": "integer"},
+        "total_time_spent": {"type": "integer"},
+        "human_time_estimate": {"type": ["string", "null"]},
+        "human_total_time_spent": {"type": ["string", "null"]}
+      }
+    },
+    "task_completion_status": {
+      "type": ["object", "null"],
+      "properties": {
+        "count": {"type": "integer"},
+        "completed_count": {"type": "integer"}
+      }
+    },
+    "blocking_issues_count": {
+      "type": ["integer", "null"]
+    },
+    "has_tasks": {
+      "type": ["boolean", "null"]
+    },
+    "references": {
+      "type": ["object", "null"],
+      "properties": {
+        "short": {"type": "string"},
+        "relative": {"type": "string"},
+        "full": {"type": "string"}
+      }
+    },
+    "moved_to_id": {
+      "type": ["integer", "null"]
+    },
+    "service_desk_reply_to": {
+      "type": ["string", "null"]
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    }
+  }
+}

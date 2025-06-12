@@ -24,6 +24,7 @@ import {
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosCommits} from './streams/faros_commits';
 import {FarosGroups} from './streams/faros_groups';
+import {FarosIssues} from './streams/faros_issues';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosTags} from './streams/faros_tags';
 import {FarosUsers} from './streams/faros_users';
@@ -70,6 +71,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     return [
       new FarosCommits(config, this.logger, farosClient),
       new FarosGroups(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),
