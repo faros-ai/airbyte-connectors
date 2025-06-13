@@ -410,9 +410,6 @@ export class GitLab {
               email: mrData.author.publicEmail,
               state: 'active',
               web_url: mrData.author.webUrl,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              group_id: '',
             });
           }
 
@@ -425,9 +422,6 @@ export class GitLab {
                 email: assignee.publicEmail,
                 state: 'active',
                 web_url: assignee.webUrl,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                group_id: '',
               });
             }
           });
@@ -441,9 +435,6 @@ export class GitLab {
                 email: note.author.publicEmail,
                 state: 'active',
                 web_url: note.author.webUrl,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                group_id: '',
               });
             }
           });
@@ -533,9 +524,6 @@ export class GitLab {
           email: note.author.public_email || note.author.email,
           state: 'active',
           web_url: note.author.web_url,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          group_id: '',
         });
       }
 
@@ -559,12 +547,6 @@ export class GitLab {
       targetType: 'merge_request',
       perPage: this.pageSize,
     };
-
-    if (since) {
-      const sinceDate = new Date(since);
-      sinceDate.setDate(sinceDate.getDate() - 1); // GitLab after should be previous day
-      options.after = sinceDate.toISOString().split('T')[0]; // YYYY-MM-DD format
-    }
 
     const fetchPage = (page: number): Promise<any[]> =>
       this.client.Events.all({projectId: projectPath, ...options, page});
@@ -596,9 +578,6 @@ export class GitLab {
           email: event.author.public_email || event.author.email,
           state: 'active',
           web_url: event.author.web_url,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          group_id: '',
         });
       }
 
