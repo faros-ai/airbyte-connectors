@@ -1,0 +1,67 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Codacy Configuration Spec",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "api_token": {
+        "order": 1,
+        "type": "string",
+        "title": "Codacy API Token",
+        "description": "Codacy API Token for authentication",
+        "airbyte_secret": true
+      },
+      "organization": {
+        "order": 2,
+        "type": "string",
+        "title": "Organization",
+        "description": "Your Codacy organization name"
+      },
+      "repositories": {
+        "order": 3,
+        "type": "array",
+        "title": "Repositories",
+        "description": "List of repositories to sync. If empty, all repositories will be fetched.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cutoff_days": {
+        "order": 4,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "The number of days to look back for data",
+        "default": 90
+      },
+      "start_date": {
+        "order": 5,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The start date to look back for data"
+      },
+      "end_date": {
+        "order": 6,
+        "type": "string",
+        "title": "End Date",
+        "description": "The end date to look back for data"
+      },
+      "api_timeout": {
+        "order": 7,
+        "type": "integer",
+        "title": "API Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Codacy API. 0 means no timeout",
+        "default": 60000
+      },
+      "api_max_retries": {
+        "order": 8,
+        "type": "integer",
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the Codacy API",
+        "default": 3
+      }
+    },
+    "required": ["api_token", "organization"]
+  }
+}

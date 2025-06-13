@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "file": {
+      "type": "string"
+    },
+    "line": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "patternId": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "tool": {
+      "type": "string"
+    },
+    "commitSha": {
+      "type": "string"
+    },
+    "repositoryId": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
