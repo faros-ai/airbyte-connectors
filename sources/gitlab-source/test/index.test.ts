@@ -116,6 +116,7 @@ function setupBasicMocks() {
     }),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     userCollector: mockUserCollector,
   };
 
@@ -317,6 +318,27 @@ describe('index', () => {
         expect(state).toMatchSnapshot();
       },
     });
+  });
+
+  test('streams - faros issues', async () => {
+    const issues = readTestResourceAsJSON('faros_issues/issues.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getIssues.mockReturnValue(createAsyncGeneratorMock(issues));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_issues/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getIssues).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
   });
 
   test('round robin bucket execution', async () => {

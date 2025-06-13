@@ -6,6 +6,14 @@ import {GitLab} from '../gitlab';
 import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {
+  /**
+   * Depends on faros_issues stream to ensure issues are processed first.
+   * This allows the UserCollector to gather users from issue authors and assignees.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_issues'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosUsers.json');
   }

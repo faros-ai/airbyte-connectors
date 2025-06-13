@@ -5,6 +5,7 @@ import {
   Commit,
   GitLabToken,
   Group,
+  Issue,
   Project,
   Tag,
   User,
@@ -337,6 +338,79 @@ export class GitLab {
         name: tag.name,
         title: tag.message,
         commit_id: tag.commit?.id,
+      };
+    }
+  }
+
+  async *getIssues(
+    projectId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<Issue, 'group_id' | 'project_path'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    const fetchPage = (page: number): Promise<Types.IssueSchema[]> =>
+      this.client.Issues.all({...options, page, projectId});
+
+    for await (const issue of this.paginate<Types.IssueSchema>(
+      fetchPage,
+      `issues for project ${projectId}`
+    )) {
+      // Collect users in UserCollector
+      if (issue.author) {
+        this.userCollector.collectUser({
+          id: issue.author.id as number,
+          username: issue.author.username as string,
+          name: issue.author.name as string,
+          email: (issue.author.public_email ?? issue.author.email) as string,
+          state: issue.author.state as string,
+          web_url: issue.author.web_url as string,
+          created_at: issue.author.created_at as string,
+          updated_at: issue.author.updated_at as string,
+        });
+      }
+
+      if (issue.assignees) {
+        for (const assignee of issue.assignees) {
+          this.userCollector.collectUser({
+            id: assignee.id as number,
+            username: assignee.username as string,
+            name: assignee.name as string,
+            email: (assignee.public_email ?? assignee.email) as string,
+            state: assignee.state as string,
+            web_url: assignee.web_url as string,
+            created_at: assignee.created_at as string,
+            updated_at: assignee.updated_at as string,
+          });
+        }
+      }
+
+      yield {
+        id: issue.id,
+        title: issue.title,
+        description: issue.description,
+        state: issue.state,
+        created_at: issue.created_at,
+        updated_at: issue.updated_at,
+        labels: issue.labels || [],
+        assignees: issue.assignees
+          ? issue.assignees.map((assignee) => ({
+              username: assignee.username as string,
+            }))
+          : [],
+        author: {username: issue.author.username as string},
       };
     }
   }
