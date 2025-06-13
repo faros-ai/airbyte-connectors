@@ -1,6 +1,4 @@
 import {
-  AirbyteLogger,
-  AirbyteStreamBase,
   StreamKey,
   StreamState,
   SyncMode,
@@ -10,18 +8,12 @@ import {toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {Codacy} from '../codacy';
-import {CodacyConfig, CodacyMetrics,CodacyRepository} from '../types';
+import {CodacyConfig, CodacyMetrics, CodacyRepository} from '../types';
+import {CodacyStreamBase, StreamSlice} from './base';
 
-type StreamSlice = {
-  repository: CodacyRepository;
-};
-
-export class CodeQuality extends AirbyteStreamBase {
-  constructor(
-    private readonly config: CodacyConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
+export class CodeQuality extends CodacyStreamBase {
+  constructor(config: CodacyConfig, logger: any) {
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -36,19 +28,7 @@ export class CodeQuality extends AirbyteStreamBase {
     return 'createdAt';
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
-    const codacy = await Codacy.instance(this.config, this.logger);
-    const repositories = await codacy.getOrganizationRepositories();
-    
-    const configuredRepos = this.config.repositories;
-    const filteredRepos = configuredRepos?.length 
-      ? repositories.filter(repo => configuredRepos.includes(repo.name) || configuredRepos.includes(repo.fullName))
-      : repositories;
 
-    for (const repository of filteredRepos) {
-      yield {repository};
-    }
-  }
 
   async *readRecords(
     syncMode: SyncMode,
@@ -122,35 +102,6 @@ export class CodeQuality extends AirbyteStreamBase {
     if (!streamSlice) return currentStreamState;
     
     const latestRecordCutoff = Utils.toDate(latestRecord.createdAt);
-    const repositoryId = streamSlice.repository.id;
-
-    const currentState = Utils.toDate(
-      currentStreamState?.[repositoryId]?.cutoff
-    );
-    
-    if (!latestRecordCutoff) {
-      return currentStreamState;
-    }
-
-    if (!currentState || (latestRecordCutoff && latestRecordCutoff.getTime() > currentState.getTime())) {
-      return {
-        ...currentStreamState,
-        [repositoryId]: {
-          cutoff: latestRecordCutoff.getTime(),
-        },
-      };
-    }
-
-    return currentStreamState;
-  }
-
-  private getUpdateRange(cutoff?: number): [Date, Date] {
-    const startDate = cutoff ? Utils.toDate(cutoff) : this.config.startDate;
-    const endDate = this.config.endDate;
-    
-    return [
-      startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-      endDate || new Date(),
-    ];
+    return this.getUpdatedStateForRepository(currentStreamState, latestRecordCutoff, streamSlice.repository.id);
   }
 }
