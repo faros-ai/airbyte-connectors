@@ -593,7 +593,9 @@ export class GitLab {
     }
 
     const fetchPage = (page: number): Promise<Types.IssueSchema[]> =>
-      this.client.Issues.all({...options, page, projectId});
+      this.client.Issues.all({...options, page, projectId}) as Promise<
+        Types.IssueSchema[]
+      >;
 
     for await (const issue of this.paginate<Types.IssueSchema>(
       fetchPage,
