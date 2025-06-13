@@ -45,14 +45,16 @@ export class DailyUsage extends CursorConverter {
     res.push({
       model: 'vcs_UserToolUsage',
       record: {
-        user: {uid: dailyUsageItem.email, source: this.streamName.source},
-        organization: {
-          uid: VCSToolDetail.Cursor,
-          source: this.streamName.source,
-        },
-        tool: {
-          category: VCSToolCategory.CodingAssistant,
-          detail: VCSToolDetail.Cursor,
+        userTool: {
+          user: {uid: dailyUsageItem.email, source: this.streamName.source},
+          organization: {
+            uid: VCSToolDetail.Cursor,
+            source: this.streamName.source,
+          },
+          tool: {
+            category: VCSToolCategory.CodingAssistant,
+            detail: VCSToolDetail.Cursor,
+          },
         },
         usedAt: day.toISOString(),
         recordedAt: day.toISOString(),
