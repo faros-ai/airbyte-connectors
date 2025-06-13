@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "title",
+    "state",
+    "created_at",
+    "updated_at",
+    "labels",
+    "assignees",
+    "author",
+    "group_id",
+    "project_path"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assignees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "username": {"type": "string"}
+        },
+        "required": ["username"]
+      }
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "username": {"type": "string"}
+      },
+      "required": ["username"]
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    }
+  }
+}

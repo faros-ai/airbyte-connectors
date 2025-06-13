@@ -153,3 +153,17 @@ export interface MergeRequestEvent {
   created_at: string;
   project_path: string;
 }
+
+export interface Issue {
+  id: number;
+  title: string;
+  description?: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  labels: string[];
+  assignees: {username: string}[];
+  author: {username: string};
+  group_id: string;
+  project_path: string;
+}

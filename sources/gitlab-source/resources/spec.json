@@ -133,6 +133,7 @@
         },
         "examples": [
           "faros_groups",
+          "faros_issues",
           "faros_projects",
           "faros_merge_requests",
           "faros_merge_request_reviews"
