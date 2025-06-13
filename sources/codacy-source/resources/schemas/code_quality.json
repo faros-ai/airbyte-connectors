@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "uid": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "uid": {"type": "string"},
+        "organization": {
+          "type": "object",
+          "properties": {
+            "uid": {"type": "string"},
+            "source": {"type": "string"}
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "category": {"type": "string"},
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "value": {"type": "string"}
+      }
+    },
+    "complexity": {
+      "type": "object",
+      "properties": {
+        "category": {"type": "string"},
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "value": {"type": "string"}
+      }
+    },
+    "duplications": {
+      "type": "object",
+      "properties": {
+        "category": {"type": "string"},
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "value": {"type": "string"}
+      }
+    },
+    "bugs": {
+      "type": "object",
+      "properties": {
+        "category": {"type": "string"},
+        "name": {"type": "string"},
+        "type": {"type": "string"},
+        "value": {"type": "string"}
+      }
+    }
+  }
+}

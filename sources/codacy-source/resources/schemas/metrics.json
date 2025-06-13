@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "repositoryId": {
+      "type": "integer"
+    },
+    "commitSha": {
+      "type": "string"
+    },
+    "coverage": {
+      "type": "number"
+    },
+    "complexity": {
+      "type": "number"
+    },
+    "duplication": {
+      "type": "number"
+    },
+    "issues": {
+      "type": "integer"
+    },
+    "fileCount": {
+      "type": "integer"
+    },
+    "lineCount": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

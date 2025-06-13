@@ -1,0 +1,41 @@
+{
+  "name": "codacy-source",
+  "version": "0.1.0",
+  "description": "Airbyte Source for Codacy",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "faros-airbyte-common": "*",
+    "typescript-memoize": "^1.1.0",
+    "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testTimeout": 10000,
+    "transform": {
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
+  }
+}
