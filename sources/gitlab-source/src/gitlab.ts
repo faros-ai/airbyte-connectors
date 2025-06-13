@@ -1,4 +1,5 @@
 import {Gitlab as GitlabClient, Types} from '@gitbeaker/node';
+import {addDays, format,subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -36,7 +37,7 @@ export const DEFAULT_FAROS_GRAPH = 'default';
 
 export class GitLab {
   private static gitlab: GitLab;
-  private readonly client: any;
+  private readonly client: InstanceType<typeof GitlabClient>;
   private readonly gqlClient: GraphQLClient;
   protected readonly pageSize: number;
   protected readonly fetchPublicGroups: boolean;
@@ -87,7 +88,10 @@ export class GitLab {
       );
       const versionInfo = await this.client.Version.show();
       if (versionInfo && typeof versionInfo === 'object') {
-        this.logger.debug('GitLab credentials verified.', versionInfo);
+        this.logger.debug(
+          'GitLab credentials verified.',
+          JSON.stringify(versionInfo)
+        );
       } else {
         this.logger.error(
           'GitLab version info response was not an object or was null: %s',
@@ -529,22 +533,21 @@ export class GitLab {
       perPage: this.pageSize,
     };
 
+    if (since) {
+      options.after = format(subDays(since, 1), 'yyyy-MM-dd');
+    }
+
+    if (until) {
+      options.before = format(addDays(until, 1), 'yyyy-MM-dd');
+    }
+
     const fetchPage = (page: number): Promise<any[]> =>
       this.client.Events.all({projectId: projectPath, ...options, page});
 
     for await (const event of this.paginate<any>(
       fetchPage,
-      `MR events for project ${projectPath}`
+      `MR events for project ${projectPath} since ${options.after} until ${options.before}`
     )) {
-      // Apply date filtering
-      const eventDate = new Date(event.created_at);
-      if (since && eventDate <= since) {
-        continue;
-      }
-      if (until && eventDate > until) {
-        continue;
-      }
-
       // Collect event author (reviewer)
       if (event.author?.username) {
         this.userCollector.collectUser({
