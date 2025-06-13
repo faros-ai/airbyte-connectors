@@ -1,0 +1,72 @@
+query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String) {
+  project(fullPath: $fullPath) {
+    id
+    name
+    mergeRequests (first: $pageSize, sort: UPDATED_DESC, after: $cursor) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        id
+        iid
+        createdAt
+        updatedAt
+        mergedAt
+        author {
+          name
+          publicEmail
+          username
+          webUrl
+        }
+        assignees {
+          nodes {
+            name
+            publicEmail
+            username
+            webUrl
+          }
+        }
+        mergeCommitSha
+        commitCount
+        userNotesCount
+        diffStatsSummary {
+          additions
+          deletions
+          fileCount
+        }
+        state
+        title
+        webUrl
+        notes(first: $pageSize) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            id
+            author {
+              name
+              publicEmail
+              username
+              webUrl
+            }
+            body
+            system
+            createdAt
+            updatedAt
+          }
+        }
+        labels(first: $pageSize) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            title
+          }
+        }
+      }
+    }
+  }
+}

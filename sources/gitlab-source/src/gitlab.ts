@@ -5,6 +5,10 @@ import {
   Commit,
   GitLabToken,
   Group,
+  MERGE_REQUESTS_QUERY,
+  MergeRequest,
+  MergeRequestEvent,
+  MergeRequestNote,
   Project,
   Tag,
   User,
@@ -353,82 +357,7 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<any> {
-    const MERGE_REQUEST_QUERY = `
-      query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String) {
-        project(fullPath: $fullPath) {
-          id
-          name
-          mergeRequests (first: $pageSize, sort: UPDATED_DESC, after: $cursor) {
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
-            nodes {
-              id
-              iid
-              createdAt
-              updatedAt
-              mergedAt
-              author {
-                name
-                publicEmail
-                username
-                webUrl
-              }
-              assignees {
-                nodes {
-                  name
-                  publicEmail
-                  username
-                  webUrl
-                }
-              }
-              mergeCommitSha
-              commitCount
-              userNotesCount
-              diffStatsSummary {
-                additions
-                deletions
-                fileCount
-              }
-              state
-              title
-              webUrl
-              notes(first: $pageSize) {
-                pageInfo {
-                  endCursor
-                  hasNextPage
-                }
-                nodes {
-                  id
-                  author {
-                    name
-                    publicEmail
-                    username
-                    webUrl
-                  }
-                  body
-                  system
-                  createdAt
-                  updatedAt
-                }
-              }
-              labels(first: $pageSize) {
-                pageInfo {
-                  endCursor
-                  hasNextPage
-                }
-                nodes {
-                  title
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
+  ): AsyncGenerator<MergeRequest> {
     const mrNotes = new Map<string, Set<any>>();
     const needsMoreNotes = new Set<string>();
     const mrDataMap = new Map<string, any>();
@@ -439,7 +368,7 @@ export class GitLab {
     // Phase 1: GraphQL MR + first page notes
     while (hasNextPage) {
       try {
-        const result: any = await this.gqlClient.request(MERGE_REQUEST_QUERY, {
+        const result: any = await this.gqlClient.request(MERGE_REQUESTS_QUERY, {
           fullPath: projectPath,
           pageSize: this.pageSize,
           cursor,
@@ -566,7 +495,7 @@ export class GitLab {
     mergeRequestIid: number,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<any> {
+  ): AsyncGenerator<MergeRequestNote> {
     const options: any = {
       perPage: this.pageSize,
     };
@@ -625,7 +554,7 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<any> {
+  ): AsyncGenerator<MergeRequestEvent> {
     const options: any = {
       targetType: 'merge_request',
       perPage: this.pageSize,
