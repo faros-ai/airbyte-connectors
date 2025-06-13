@@ -1,0 +1,205 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`launchdarkly environments basic environment 1`] = `
+Array [
+  Object {
+    "model": "ffs_Environment",
+    "record": Object {
+      "createdAt": null,
+      "id": "production",
+      "name": "Production",
+      "projectId": "default",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly environments environment without color and tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_Environment",
+    "record": Object {
+      "createdAt": null,
+      "id": "staging",
+      "name": "Staging",
+      "projectId": "default",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly experiments basic experiment 1`] = `
+Array [
+  Object {
+    "model": "ffs_Experiment",
+    "record": Object {
+      "endAt": null,
+      "flagId": "unknown",
+      "id": "test-experiment",
+      "name": "Test Experiment",
+      "source": "LaunchDarkly",
+      "startAt": null,
+      "status": "running",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly experiments experiment without description and hypothesis 1`] = `
+Array [
+  Object {
+    "model": "ffs_Experiment",
+    "record": Object {
+      "endAt": null,
+      "flagId": "unknown",
+      "id": "simple-experiment",
+      "name": "Simple Experiment",
+      "source": "LaunchDarkly",
+      "startAt": null,
+      "status": "running",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags basic feature flag 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "test-flag-variation-0",
+      "description": "A test feature flag",
+      "id": "test-flag",
+      "key": "test-flag",
+      "projectId": "default",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags feature flag without description and tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "simple-flag-variation-0",
+      "description": null,
+      "id": "simple-flag",
+      "key": "simple-flag",
+      "projectId": "default",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly feature_flags multivariate feature flag 1`] = `
+Array [
+  Object {
+    "model": "ffs_FeatureFlag",
+    "record": Object {
+      "archived": false,
+      "createdAt": null,
+      "defaultVariationId": "multivariate-flag-variation-0",
+      "description": "A multivariate feature flag",
+      "id": "multivariate-flag",
+      "key": "multivariate-flag",
+      "projectId": "default",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly launchdarkly basic test process records from all streams 1`] = `
+Array [
+  "Processed 8 records",
+  "Processed records by stream: {\\\\\\"mytestsource__launchdarkly__environments\\\\\\":2,\\\\\\"mytestsource__launchdarkly__experiments\\\\\\":1,\\\\\\"mytestsource__launchdarkly__feature_flags\\\\\\":2,\\\\\\"mytestsource__launchdarkly__projects\\\\\\":1,\\\\\\"mytestsource__launchdarkly__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 8 records",
+  "Would write records by model: {\\\\\\"ffs_Environment\\\\\\":2,\\\\\\"ffs_Experiment\\\\\\":1,\\\\\\"ffs_FeatureFlag\\\\\\":2,\\\\\\"ffs_Project\\\\\\":1,\\\\\\"ffs_User\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`launchdarkly projects basic project 1`] = `
+Array [
+  Object {
+    "model": "ffs_Project",
+    "record": Object {
+      "createdAt": null,
+      "description": null,
+      "id": "test-project",
+      "name": "Test Project",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly projects project without tags 1`] = `
+Array [
+  Object {
+    "model": "ffs_Project",
+    "record": Object {
+      "createdAt": null,
+      "description": null,
+      "id": "simple-project",
+      "name": "Simple Project",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users basic user 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": "US",
+      "email": "john@example.com",
+      "id": "user-123",
+      "name": "John Doe",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users user with minimal data 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": null,
+      "email": null,
+      "id": "user-456",
+      "name": null,
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;
+
+exports[`launchdarkly users user without email and country 1`] = `
+Array [
+  Object {
+    "model": "ffs_User",
+    "record": Object {
+      "country": null,
+      "email": null,
+      "id": "user-789",
+      "name": "Jane Smith",
+      "source": "LaunchDarkly",
+    },
+  },
+]
+`;

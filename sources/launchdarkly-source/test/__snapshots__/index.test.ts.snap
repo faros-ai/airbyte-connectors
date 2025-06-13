@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Request failed with status code 401",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;

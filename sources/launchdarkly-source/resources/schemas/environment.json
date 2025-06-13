@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "apiKey": {
+      "type": "string"
+    },
+    "mobileKey": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "defaultTtl": {
+      "type": "integer"
+    },
+    "secureMode": {
+      "type": "boolean"
+    },
+    "defaultTrackEvents": {
+      "type": "boolean"
+    },
+    "requireComments": {
+      "type": "boolean"
+    },
+    "confirmChanges": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "_links": {
+      "type": "object"
+    },
+    "_id": {
+      "type": "string"
+    }
+  }
+}
