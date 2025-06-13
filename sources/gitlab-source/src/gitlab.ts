@@ -372,6 +372,8 @@ export class GitLab {
           fullPath: projectPath,
           pageSize: this.pageSize,
           cursor,
+          updatedAfter: since?.toISOString(),
+          updatedBefore: until?.toISOString(),
         });
 
         const requests = result.project?.mergeRequests;
@@ -380,15 +382,6 @@ export class GitLab {
         }
 
         for (const mrData of requests.nodes) {
-          // Apply date filtering
-          const mrDate = new Date(mrData.updatedAt);
-          if (since && mrDate <= since) {
-            continue;
-          }
-          if (until && mrDate > until) {
-            continue;
-          }
-
           // Store MR data and first page notes
           mrNotes.set(
             mrData.id,
@@ -459,9 +452,7 @@ export class GitLab {
       if (mrData) {
         for await (const note of this.getAdditionalMergeRequestNotes(
           projectPath,
-          mrData.iid,
-          since,
-          until
+          mrData.iid
         )) {
           mrNotes.get(mrId)?.add(note);
         }
@@ -483,9 +474,7 @@ export class GitLab {
 
   async *getAdditionalMergeRequestNotes(
     projectPath: string,
-    mergeRequestIid: number,
-    since?: Date,
-    until?: Date
+    mergeRequestIid: number
   ): AsyncGenerator<MergeRequestNote> {
     const options: any = {
       perPage: this.pageSize,
@@ -503,15 +492,6 @@ export class GitLab {
     )) {
       // Filter out system notes
       if (note.system) {
-        continue;
-      }
-
-      // Apply date filtering
-      const noteDate = new Date(note.created_at);
-      if (since && noteDate <= since) {
-        continue;
-      }
-      if (until && noteDate > until) {
         continue;
       }
 

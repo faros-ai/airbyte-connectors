@@ -1,8 +1,8 @@
-query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String) {
+query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String, $updatedAfter: Time, $updatedBefore: Time) {
   project(fullPath: $fullPath) {
     id
     name
-    mergeRequests (first: $pageSize, sort: UPDATED_DESC, after: $cursor) {
+    mergeRequests (first: $pageSize, sort: UPDATED_DESC, after: $cursor, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
       pageInfo {
         endCursor
         hasNextPage
