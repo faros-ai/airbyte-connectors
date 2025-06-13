@@ -525,6 +525,7 @@ export class GitLab {
   ): AsyncGenerator<MergeRequestEvent> {
     const options: any = {
       targetType: 'merge_request',
+      action: 'approved',
       perPage: this.pageSize,
     };
 
@@ -535,11 +536,6 @@ export class GitLab {
       fetchPage,
       `MR events for project ${projectPath}`
     )) {
-      // Filter for approval events
-      if (event.action_name !== 'approved') {
-        continue;
-      }
-
       // Apply date filtering
       const eventDate = new Date(event.created_at);
       if (since && eventDate <= since) {
