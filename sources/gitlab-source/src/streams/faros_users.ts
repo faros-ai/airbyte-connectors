@@ -6,6 +6,14 @@ import {GitLab} from '../gitlab';
 import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {
+  /**
+   * Users stream depends on MR streams to ensure users are collected
+   * from merge requests, notes, and reviews before emitting user records.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return ['faros_merge_requests', 'faros_merge_request_reviews'];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosUsers.json');
   }

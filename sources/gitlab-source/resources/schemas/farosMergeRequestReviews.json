@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "action_name": {
+      "type": "string"
+    },
+    "target_iid": {
+      "type": "integer"
+    },
+    "target_type": {
+      "type": "string"
+    },
+    "author": {
+      "type": ["object", "null"],
+      "properties": {
+        "name": {
+          "type": ["string", "null"]
+        },
+        "public_email": {
+          "type": ["string", "null"]
+        },
+        "email": {
+          "type": ["string", "null"]
+        },
+        "username": {
+          "type": "string"
+        },
+        "web_url": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "action_name",
+    "target_iid",
+    "target_type",
+    "created_at",
+    "project_path",
+    "group_id"
+  ]
+}

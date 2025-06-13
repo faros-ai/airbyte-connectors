@@ -9,6 +9,7 @@ import {
   Tag,
   User,
 } from 'faros-airbyte-common/gitlab';
+import {GraphQLClient} from 'graphql-request';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
@@ -32,6 +33,7 @@ export const DEFAULT_FAROS_GRAPH = 'default';
 export class GitLab {
   private static gitlab: GitLab;
   private readonly client: any;
+  private readonly gqlClient: GraphQLClient;
   protected readonly pageSize: number;
   protected readonly fetchPublicGroups: boolean;
   public readonly userCollector: UserCollector;
@@ -45,6 +47,12 @@ export class GitLab {
       host: this.getBaseUrl(),
       rejectUnauthorized:
         config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+    });
+
+    this.gqlClient = new GraphQLClient(`${this.getBaseUrl()}/api/graphql`, {
+      headers: {
+        authorization: `Bearer ${this.getToken()}`,
+      },
     });
 
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -337,6 +345,342 @@ export class GitLab {
         name: tag.name,
         title: tag.message,
         commit_id: tag.commit?.id,
+      };
+    }
+  }
+
+  async *getMergeRequestsWithNotes(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<any> {
+    const MERGE_REQUEST_QUERY = `
+      query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String) {
+        project(fullPath: $fullPath) {
+          id
+          name
+          mergeRequests (first: $pageSize, sort: UPDATED_DESC, after: $cursor) {
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
+            nodes {
+              id
+              iid
+              createdAt
+              updatedAt
+              mergedAt
+              author {
+                name
+                publicEmail
+                username
+                webUrl
+              }
+              assignees {
+                nodes {
+                  name
+                  publicEmail
+                  username
+                  webUrl
+                }
+              }
+              mergeCommitSha
+              commitCount
+              userNotesCount
+              diffStatsSummary {
+                additions
+                deletions
+                fileCount
+              }
+              state
+              title
+              webUrl
+              notes(first: $pageSize) {
+                pageInfo {
+                  endCursor
+                  hasNextPage
+                }
+                nodes {
+                  id
+                  author {
+                    name
+                    publicEmail
+                    username
+                    webUrl
+                  }
+                  body
+                  system
+                  createdAt
+                  updatedAt
+                }
+              }
+              labels(first: $pageSize) {
+                pageInfo {
+                  endCursor
+                  hasNextPage
+                }
+                nodes {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const mrNotes = new Map<string, Set<any>>();
+    const needsMoreNotes = new Set<string>();
+    const mrDataMap = new Map<string, any>();
+
+    let cursor: string | null = null;
+    let hasNextPage = true;
+
+    // Phase 1: GraphQL MR + first page notes
+    while (hasNextPage) {
+      try {
+        const result: any = await this.gqlClient.request(MERGE_REQUEST_QUERY, {
+          fullPath: projectPath,
+          pageSize: this.pageSize,
+          cursor,
+        });
+
+        const requests = result.project?.mergeRequests;
+        if (!requests?.nodes?.length) {
+          break;
+        }
+
+        for (const mrData of requests.nodes) {
+          // Apply date filtering
+          const mrDate = new Date(mrData.updatedAt);
+          if (since && mrDate <= since) {
+            continue;
+          }
+          if (until && mrDate > until) {
+            continue;
+          }
+
+          // Store MR data and first page notes
+          mrNotes.set(
+            mrData.id,
+            new Set(mrData.notes.nodes.filter((note) => !note.system))
+          );
+          mrDataMap.set(mrData.id, mrData);
+
+          // Track if more notes needed
+          if (mrData.notes.pageInfo.hasNextPage) {
+            needsMoreNotes.add(mrData.id);
+          }
+
+          // Collect users
+          if (mrData.author?.username) {
+            this.userCollector.collectUser({
+              id: mrData.author.username,
+              username: mrData.author.username,
+              name: mrData.author.name,
+              email: mrData.author.publicEmail,
+              state: 'active',
+              web_url: mrData.author.webUrl,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              group_id: '',
+            });
+          }
+
+          mrData.assignees?.nodes?.forEach((assignee: any) => {
+            if (assignee?.username) {
+              this.userCollector.collectUser({
+                id: assignee.username,
+                username: assignee.username,
+                name: assignee.name,
+                email: assignee.publicEmail,
+                state: 'active',
+                web_url: assignee.webUrl,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                group_id: '',
+              });
+            }
+          });
+
+          mrData.notes.nodes.forEach((note: any) => {
+            if (note.author?.username) {
+              this.userCollector.collectUser({
+                id: note.author.username,
+                username: note.author.username,
+                name: note.author.name,
+                email: note.author.publicEmail,
+                state: 'active',
+                web_url: note.author.webUrl,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                group_id: '',
+              });
+            }
+          });
+        }
+
+        cursor = requests.pageInfo.endCursor;
+        hasNextPage = requests.pageInfo.hasNextPage;
+      } catch (err: any) {
+        this.logger.error(
+          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`
+        );
+        throw new VError(
+          err,
+          `Error fetching merge requests for project ${projectPath}`
+        );
+      }
+    }
+
+    // Phase 2: REST API for additional notes
+    for (const mrId of needsMoreNotes) {
+      const mrData = mrDataMap.get(mrId);
+      if (mrData) {
+        for await (const note of this.getAdditionalMergeRequestNotes(
+          projectPath,
+          mrData.iid,
+          since,
+          until
+        )) {
+          mrNotes.get(mrId)?.add(note);
+        }
+      }
+    }
+
+    // Phase 3: Emit complete MR records
+    for (const [mrId, notes] of mrNotes) {
+      const mrData = mrDataMap.get(mrId);
+      if (mrData) {
+        yield {
+          ...mrData,
+          notes: Array.from(notes),
+          project_path: projectPath,
+        };
+      }
+    }
+  }
+
+  async *getAdditionalMergeRequestNotes(
+    projectPath: string,
+    mergeRequestIid: number,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<any> {
+    const options: any = {
+      perPage: this.pageSize,
+    };
+
+    const fetchPage = (page: number): Promise<any[]> =>
+      this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, {
+        ...options,
+        page,
+      });
+
+    for await (const note of this.paginate<any>(
+      fetchPage,
+      `additional notes for MR ${mergeRequestIid} in project ${projectPath}`
+    )) {
+      // Filter out system notes
+      if (note.system) {
+        continue;
+      }
+
+      // Apply date filtering
+      const noteDate = new Date(note.created_at);
+      if (since && noteDate <= since) {
+        continue;
+      }
+      if (until && noteDate > until) {
+        continue;
+      }
+
+      // Collect note author
+      if (note.author?.username) {
+        this.userCollector.collectUser({
+          id: note.author.username,
+          username: note.author.username,
+          name: note.author.name,
+          email: note.author.public_email || note.author.email,
+          state: 'active',
+          web_url: note.author.web_url,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          group_id: '',
+        });
+      }
+
+      yield {
+        id: note.id,
+        author: note.author,
+        body: note.body,
+        system: note.system,
+        createdAt: note.created_at,
+        updatedAt: note.updated_at,
+      };
+    }
+  }
+
+  async *getMergeRequestEvents(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<any> {
+    const options: any = {
+      targetType: 'merge_request',
+      perPage: this.pageSize,
+    };
+
+    if (since) {
+      const sinceDate = new Date(since);
+      sinceDate.setDate(sinceDate.getDate() - 1); // GitLab after should be previous day
+      options.after = sinceDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    }
+
+    const fetchPage = (page: number): Promise<any[]> =>
+      this.client.Events.all({projectId: projectPath, ...options, page});
+
+    for await (const event of this.paginate<any>(
+      fetchPage,
+      `MR events for project ${projectPath}`
+    )) {
+      // Filter for approval events
+      if (event.action_name !== 'approved') {
+        continue;
+      }
+
+      // Apply date filtering
+      const eventDate = new Date(event.created_at);
+      if (since && eventDate <= since) {
+        continue;
+      }
+      if (until && eventDate > until) {
+        continue;
+      }
+
+      // Collect event author (reviewer)
+      if (event.author?.username) {
+        this.userCollector.collectUser({
+          id: event.author.username,
+          username: event.author.username,
+          name: event.author.name,
+          email: event.author.public_email || event.author.email,
+          state: 'active',
+          web_url: event.author.web_url,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          group_id: '',
+        });
+      }
+
+      yield {
+        id: event.id,
+        action_name: event.action_name,
+        target_iid: event.target_iid,
+        target_type: event.target_type,
+        author: event.author,
+        created_at: event.created_at,
+        project_path: projectPath,
       };
     }
   }
