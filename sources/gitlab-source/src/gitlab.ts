@@ -211,20 +211,7 @@ export class GitLab {
       fetchPage,
       `members for group ${groupId}`
     )) {
-      const user: User = {
-        id: member.id,
-        username: member.username,
-        name: member.name,
-        email: (member.public_email ?? member.email) as string,
-        state: member.state,
-        web_url: member.web_url,
-        created_at: member.created_at as string,
-        updated_at: member.updated_at as string,
-        group_id: groupId,
-      };
-
-      // Collect the user in UserCollector
-      this.userCollector.collectUser(user);
+      this.userCollector.collectUser(member);
     }
   }
 
@@ -399,41 +386,19 @@ export class GitLab {
             needsMoreNotes.add(mrData.id);
           }
 
-          // Collect users
           if (mrData.author?.username) {
-            this.userCollector.collectUser({
-              id: mrData.author.username,
-              username: mrData.author.username,
-              name: mrData.author.name,
-              email: mrData.author.publicEmail,
-              state: 'active',
-              web_url: mrData.author.webUrl,
-            });
+            this.userCollector.collectUser(mrData.author);
           }
 
           mrData.assignees?.nodes?.forEach((assignee: any) => {
             if (assignee?.username) {
-              this.userCollector.collectUser({
-                id: assignee.username,
-                username: assignee.username,
-                name: assignee.name,
-                email: assignee.publicEmail,
-                state: 'active',
-                web_url: assignee.webUrl,
-              });
+              this.userCollector.collectUser(assignee);
             }
           });
 
           mrData.notes.nodes.forEach((note: any) => {
             if (note.author?.username) {
-              this.userCollector.collectUser({
-                id: note.author.username,
-                username: note.author.username,
-                name: note.author.name,
-                email: note.author.publicEmail,
-                state: 'active',
-                web_url: note.author.webUrl,
-              });
+              this.userCollector.collectUser(note.author);
             }
           });
         }
@@ -500,16 +465,8 @@ export class GitLab {
         continue;
       }
 
-      // Collect note author
       if (note.author?.username) {
-        this.userCollector.collectUser({
-          id: note.author.username,
-          username: note.author.username,
-          name: note.author.name,
-          email: note.author.public_email || note.author.email,
-          state: 'active',
-          web_url: note.author.web_url,
-        });
+        this.userCollector.collectUser(note.author);
       }
 
       yield {
@@ -549,16 +506,8 @@ export class GitLab {
       fetchPage,
       `MR events for project ${projectPath} since ${options.after} until ${options.before}`
     )) {
-      // Collect event author (reviewer)
       if (event.author?.username) {
-        this.userCollector.collectUser({
-          id: event.author.username,
-          username: event.author.username,
-          name: event.author.name,
-          email: event.author.public_email || event.author.email,
-          state: 'active',
-          web_url: event.author.web_url,
-        });
+        this.userCollector.collectUser(event.author);
       }
 
       yield {
@@ -601,32 +550,13 @@ export class GitLab {
       fetchPage,
       `issues for project ${projectId}`
     )) {
-      // Collect users in UserCollector
-      if (issue.author) {
-        this.userCollector.collectUser({
-          id: issue.author.id as number,
-          username: issue.author.username as string,
-          name: issue.author.name as string,
-          email: (issue.author.public_email ?? issue.author.email) as string,
-          state: issue.author.state as string,
-          web_url: issue.author.web_url as string,
-          created_at: issue.author.created_at as string,
-          updated_at: issue.author.updated_at as string,
-        });
+      if (issue.author?.username) {
+        this.userCollector.collectUser(issue.author as unknown as User);
       }
 
       if (issue.assignees) {
         for (const assignee of issue.assignees) {
-          this.userCollector.collectUser({
-            id: assignee.id as number,
-            username: assignee.username as string,
-            name: assignee.name as string,
-            email: (assignee.public_email ?? assignee.email) as string,
-            state: assignee.state as string,
-            web_url: assignee.web_url as string,
-            created_at: assignee.created_at as string,
-            updated_at: assignee.updated_at as string,
-          });
+          this.userCollector.collectUser(assignee as unknown as User);
         }
       }
 

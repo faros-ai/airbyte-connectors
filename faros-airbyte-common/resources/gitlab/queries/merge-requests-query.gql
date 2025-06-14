@@ -14,15 +14,19 @@ query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String, $updat
         updatedAt
         mergedAt
         author {
+          id
           name
           publicEmail
+          state
           username
           webUrl
         }
         assignees {
           nodes {
+            id
             name
             publicEmail
+            state
             username
             webUrl
           }
@@ -46,8 +50,10 @@ query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String, $updat
           nodes {
             id
             author {
+              id
               name
               publicEmail
+              state
               username
               webUrl
             }

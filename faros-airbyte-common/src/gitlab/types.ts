@@ -7,6 +7,8 @@ export interface User {
   id: number;
   username: string;
   name?: string;
+  public_email?: string;
+  publicEmail?: string; // from graphql
   email?: string;
   state: string;
   web_url: string;
