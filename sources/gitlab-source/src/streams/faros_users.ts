@@ -7,11 +7,15 @@ import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {
   /**
-   * Depends on faros_issues stream to ensure issues are processed first.
-   * This allows the UserCollector to gather users from issue authors and assignees.
+   * Users stream depends on other streams to ensure users are collected
+   * from various sources before emitting user records.
    */
   get dependencies(): ReadonlyArray<string> {
-    return ['faros_issues'];
+    return [
+      'faros_issues',
+      'faros_merge_requests',
+      'faros_merge_request_reviews',
+    ];
   }
 
   getJsonSchema(): Dictionary<any, string> {

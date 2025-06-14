@@ -16,7 +16,7 @@ import {GroupFilter} from '../src/group-filter';
 import * as sut from '../src/index';
 
 // Test data factories
-const createTestGroup = (overrides = {}) => ({
+const createTestGroup = (overrides = {}): any => ({
   id: '1',
   parent_id: null,
   name: 'Test Group',
@@ -29,7 +29,7 @@ const createTestGroup = (overrides = {}) => ({
   ...overrides,
 });
 
-const createTestProject = (overrides = {}) => ({
+const createTestProject = (overrides = {}): any => ({
   id: '123',
   name: 'Test Project',
   path: 'test-project',
@@ -52,7 +52,7 @@ const createTestProject = (overrides = {}) => ({
   ...overrides,
 });
 
-const createTestUsers = () => [
+const createTestUsers = (): any[] => [
   {
     id: 1,
     username: 'user1',
@@ -83,7 +83,7 @@ async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
 }
 
 // Common mock setup functions
-function setupBasicMocks() {
+function setupBasicMocks(): any {
   const testGroup = createTestGroup();
   const testProject = createTestProject();
   const testUsers = createTestUsers();
@@ -116,6 +116,12 @@ function setupBasicMocks() {
     }),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getMergeRequestsWithNotes: jest
+      .fn()
+      .mockReturnValue(createAsyncGeneratorMock([])),
+    getMergeRequestEvents: jest
+      .fn()
+      .mockReturnValue(createAsyncGeneratorMock([])),
     getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     userCollector: mockUserCollector,
   };
@@ -281,6 +287,129 @@ describe('index', () => {
     expect(gitlab.getCommits).toHaveBeenCalledWith(
       'test-group/test-project',
       'main',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros merge requests', async () => {
+    const mergeRequests = [
+      {
+        id: 'gid://gitlab/MergeRequest/1',
+        iid: 1,
+        createdAt: '2021-01-01T00:00:00Z',
+        updatedAt: '2021-01-02T00:00:00Z',
+        mergedAt: null,
+        author: {
+          name: 'Test User',
+          publicEmail: 'test@example.com',
+          username: 'testuser',
+          webUrl: 'https://gitlab.com/testuser',
+        },
+        assignees: {
+          nodes: [
+            {
+              name: 'Assignee User',
+              publicEmail: 'assignee@example.com',
+              username: 'assigneeuser',
+              webUrl: 'https://gitlab.com/assigneeuser',
+            },
+          ],
+        },
+        mergeCommitSha: null,
+        commitCount: 2,
+        userNotesCount: 1,
+        diffStatsSummary: {
+          additions: 10,
+          deletions: 5,
+          fileCount: 3,
+        },
+        state: 'opened',
+        title: 'Test Merge Request',
+        webUrl: 'https://gitlab.com/test-group/test-project/-/merge_requests/1',
+        notes: [
+          {
+            id: 'gid://gitlab/Note/1',
+            author: {
+              name: 'Note Author',
+              publicEmail: 'noteauthor@example.com',
+              username: 'noteauthor',
+              webUrl: 'https://gitlab.com/noteauthor',
+            },
+            body: 'Test note',
+            system: false,
+            createdAt: '2021-01-01T01:00:00Z',
+            updatedAt: '2021-01-01T01:00:00Z',
+          },
+        ],
+        labels: {
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
+          nodes: [
+            {
+              title: 'bug',
+            },
+          ],
+        },
+        project_path: 'test-group/test-project',
+      },
+    ];
+    const {gitlab} = setupBasicMocks();
+    gitlab.getMergeRequestsWithNotes.mockReturnValue(
+      createAsyncGeneratorMock(mergeRequests)
+    );
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_merge_requests/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getMergeRequestsWithNotes).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros merge request reviews', async () => {
+    const reviews = [
+      {
+        id: '123',
+        action_name: 'approved',
+        target_iid: 1,
+        target_type: 'merge_request',
+        author: {
+          name: 'Reviewer',
+          public_email: 'reviewer@example.com',
+          username: 'reviewer',
+          web_url: 'https://gitlab.com/reviewer',
+        },
+        created_at: '2021-01-01T02:00:00Z',
+        project_path: 'test-group/test-project',
+      },
+    ];
+    const {gitlab} = setupBasicMocks();
+    gitlab.getMergeRequestEvents.mockReturnValue(
+      createAsyncGeneratorMock(reviews)
+    );
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_merge_request_reviews/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getMergeRequestEvents).toHaveBeenCalledWith(
+      'test-group/test-project',
       expect.any(Date),
       expect.any(Date)
     );

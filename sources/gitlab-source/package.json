@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@gitbeaker/node": "^35.6.0",
+    "date-fns": "^4.1.0",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "typescript-memoize": "^1.1.0",
