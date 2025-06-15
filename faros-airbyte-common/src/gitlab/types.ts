@@ -155,6 +155,7 @@ export interface MergeRequestEvent {
   };
   created_at: string;
   project_path: string;
+  group_id?: string;
 }
 
 export interface Issue {
