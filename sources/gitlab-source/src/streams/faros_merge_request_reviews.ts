@@ -1,4 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {MergeRequestEvent} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
@@ -9,23 +10,6 @@ import {
   StreamState,
   StreamWithProjectSlices,
 } from './common';
-
-export interface MergeRequestReview {
-  readonly id: string;
-  readonly action_name: string;
-  readonly target_iid: number;
-  readonly target_type: string;
-  readonly author?: {
-    readonly name?: string;
-    readonly public_email?: string;
-    readonly email?: string;
-    readonly username: string;
-    readonly web_url?: string;
-  };
-  readonly created_at: string;
-  readonly project_path: string;
-  readonly group_id: string;
-}
 
 export class FarosMergeRequestReviews extends StreamWithProjectSlices {
   getJsonSchema(): Dictionary<any, string> {
@@ -45,7 +29,7 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState
-  ): AsyncGenerator<MergeRequestReview> {
+  ): AsyncGenerator<MergeRequestEvent> {
     const groupId = streamSlice?.group_id;
     const project = streamSlice?.project;
 
@@ -82,7 +66,7 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: MergeRequestReview,
+    latestRecord: MergeRequestEvent,
     slice: ProjectStreamSlice
   ): StreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.created_at ?? 0);

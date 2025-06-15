@@ -139,6 +139,7 @@ export interface MergeRequest {
     nodes: MergeRequestLabel[];
   };
   project_path: string;
+  group_id?: string;
 }
 
 export interface MergeRequestEvent {
