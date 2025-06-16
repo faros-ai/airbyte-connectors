@@ -363,6 +363,7 @@ exports[`index streams - faros tags 1`] = `
 exports[`index streams - faros users 1`] = `
 [
   {
+    "__brand": "FarosUser",
     "created_at": "2021-01-01T00:00:00Z",
     "email": "user1@example.com",
     "group_id": "1",
@@ -374,6 +375,7 @@ exports[`index streams - faros users 1`] = `
     "web_url": "https://gitlab.com/user1",
   },
   {
+    "__brand": "FarosUser",
     "created_at": "2021-02-01T00:00:00Z",
     "email": "user2@example.com",
     "group_id": "1",

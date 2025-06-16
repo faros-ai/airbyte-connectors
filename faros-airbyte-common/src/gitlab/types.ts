@@ -3,12 +3,11 @@ export type GitLabToken = {
   personal_access_token: string;
 };
 
-export interface User {
+export interface FarosUserOutput {
+  readonly __brand: 'FarosUser';
   id: number;
   username: string;
   name?: string;
-  public_email?: string;
-  publicEmail?: string; // from graphql
   email?: string;
   state: string;
   web_url: string;

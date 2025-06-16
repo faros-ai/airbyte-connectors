@@ -13,7 +13,6 @@ import {
   MergeRequestNote,
   Project,
   Tag,
-  User,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
 import {toLower} from 'lodash';
@@ -22,6 +21,7 @@ import VError from 'verror';
 
 import {RunMode} from './streams/common';
 import {GitLabConfig} from './types';
+import {GitLabUserResponse} from './types/api';
 import {UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
@@ -211,7 +211,10 @@ export class GitLab {
       fetchPage,
       `members for group ${groupId}`
     )) {
-      this.userCollector.collectUser(member);
+      this.userCollector.collectUser({
+        ...member,
+        group_id: groupId,
+      } as unknown as GitLabUserResponse);
     }
   }
 
@@ -387,18 +390,24 @@ export class GitLab {
           }
 
           if (mrData.author?.username) {
-            this.userCollector.collectUser(mrData.author);
+            this.userCollector.collectUser(
+              mrData.author as unknown as GitLabUserResponse
+            );
           }
 
           mrData.assignees?.nodes?.forEach((assignee: any) => {
             if (assignee?.username) {
-              this.userCollector.collectUser(assignee);
+              this.userCollector.collectUser(
+                assignee as unknown as GitLabUserResponse
+              );
             }
           });
 
           mrData.notes.nodes.forEach((note: any) => {
             if (note.author?.username) {
-              this.userCollector.collectUser(note.author);
+              this.userCollector.collectUser(
+                note.author as unknown as GitLabUserResponse
+              );
             }
           });
         }
@@ -466,7 +475,9 @@ export class GitLab {
       }
 
       if (note.author?.username) {
-        this.userCollector.collectUser(note.author);
+        this.userCollector.collectUser(
+          note.author as unknown as GitLabUserResponse
+        );
       }
 
       yield {
@@ -507,7 +518,9 @@ export class GitLab {
       `MR events for project ${projectPath} since ${options.after} until ${options.before}`
     )) {
       if (event.author?.username) {
-        this.userCollector.collectUser(event.author);
+        this.userCollector.collectUser(
+          event.author as unknown as GitLabUserResponse
+        );
       }
 
       yield {
@@ -551,12 +564,16 @@ export class GitLab {
       `issues for project ${projectId}`
     )) {
       if (issue.author?.username) {
-        this.userCollector.collectUser(issue.author as unknown as User);
+        this.userCollector.collectUser(
+          issue.author as unknown as GitLabUserResponse
+        );
       }
 
       if (issue.assignees) {
         for (const assignee of issue.assignees) {
-          this.userCollector.collectUser(assignee as unknown as User);
+          this.userCollector.collectUser(
+            assignee as unknown as GitLabUserResponse
+          );
         }
       }
 

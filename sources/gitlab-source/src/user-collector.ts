@@ -1,8 +1,9 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/gitlab';
+
+import {GitLabUserResponse} from './types/api';
 
 export class UserCollector {
-  private readonly collectedUsers = new Map<string, User>();
+  private readonly collectedUsers = new Map<string, GitLabUserResponse>();
   private readonly userNameMappings = new Map<string, Set<string>>();
 
   constructor(private readonly logger: AirbyteLogger) {}
@@ -11,7 +12,7 @@ export class UserCollector {
    * Collect a user from any GitLab entity (member, commit author, etc.)
    * Handles deduplication and merging of user data
    */
-  collectUser(user: User): void {
+  collectUser(user: GitLabUserResponse): void {
     if (!user?.username) {
       this.logger.debug(
         `User has no username. Skipping collection. ${JSON.stringify(user)}`
@@ -66,7 +67,7 @@ export class UserCollector {
   /**
    * Get all collected users
    */
-  getCollectedUsers(): ReadonlyMap<string, User> {
+  getCollectedUsers(): ReadonlyMap<string, GitLabUserResponse> {
     return this.collectedUsers;
   }
 
@@ -87,7 +88,7 @@ export class UserCollector {
   /**
    * Get a specific user by username
    */
-  getUser(username: string): User | undefined {
+  getUser(username: string): GitLabUserResponse | undefined {
     return this.collectedUsers.get(username);
   }
 
@@ -100,9 +101,12 @@ export class UserCollector {
   }
 
   // Private helper methods
-  private mergeUsers(existing: User, newUser: User): User {
+  private mergeUsers(
+    existing: GitLabUserResponse,
+    newUser: GitLabUserResponse
+  ): GitLabUserResponse {
     // Use logic similar to getFinalUser in destinations/airbyte-faros-destination
-    const finalUser: Partial<User> = {};
+    const finalUser: Partial<GitLabUserResponse> = {};
     for (const user of [existing, newUser]) {
       for (const key in user) {
         if (!finalUser[key] && user[key]) {
@@ -110,6 +114,6 @@ export class UserCollector {
         }
       }
     }
-    return finalUser as User;
+    return finalUser as GitLabUserResponse;
   }
 }
