@@ -24,7 +24,7 @@ interface ActivityState {
 }
 
 export class Activity extends AirbyteStreamBase {
-  private defaultStartTime: Date;
+  private readonly defaultStartTime: Date;
 
   constructor(
     readonly config: GoogleDriveConfig,

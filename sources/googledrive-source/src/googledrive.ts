@@ -1,7 +1,5 @@
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import {Utils} from 'faros-js-client';
 import {admin_directory_v1, Auth, driveactivity_v2, google} from 'googleapis';
-import {Dictionary} from 'ts-essentials';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -142,7 +140,7 @@ export class GoogleDrive {
         throw new VError(`${response?.status}: ${response?.statusText}`);
       }
 
-      const items = response?.data?.[itemsField] || [];
+      const items = response?.data?.[itemsField] ?? [];
       const newPageToken = response?.data?.nextPageToken;
 
       for (const item of items) {
