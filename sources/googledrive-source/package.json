@@ -1,14 +1,13 @@
 {
-  "name": "googledrive-activity-source",
+  "name": "googledrive-source",
   "version": "0.0.1",
-  "description": "Google Drive Activity Airbyte source",
+  "description": "Google Drive Airbyte source",
   "homepage": "https://www.faros.ai",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "googledrive",
-    "activity"
+    "googledrive"
   ],
   "author": "Faros AI, Inc.",
   "license": "Apache-2.0",

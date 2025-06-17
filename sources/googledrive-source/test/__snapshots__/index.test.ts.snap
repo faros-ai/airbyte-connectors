@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - activity 1`] = `
+[
+  {
+    "actions": [
+      {
+        "detail": {
+          "edit": {},
+        },
+      },
+    ],
+    "actors": [
+      {
+        "user": {
+          "knownUser": {
+            "isCurrentUser": true,
+            "personName": "people/123456789012345678901",
+          },
+        },
+      },
+    ],
+    "primaryActionDetail": {
+      "edit": {},
+    },
+    "targets": [
+      {
+        "driveItem": {
+          "driveFile": {},
+          "file": {},
+          "mimeType": "application/vnd.google-apps.document",
+          "name": "items/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+          "owner": {
+            "domain": {
+              "legacyId": "110223439587376147641",
+              "name": "example.com",
+            },
+            "user": {
+              "knownUser": {
+                "isCurrentUser": false,
+                "personName": "people/098765432109876543210",
+              },
+            },
+          },
+          "title": "Example Document",
+        },
+      },
+    ],
+    "timestamp": "2024-01-01T12:00:00.000Z",
+  },
+  {
+    "actions": [
+      {
+        "detail": {
+          "create": {
+            "new": {},
+          },
+        },
+      },
+    ],
+    "actors": [
+      {
+        "user": {
+          "knownUser": {
+            "isCurrentUser": false,
+            "personName": "people/567890123456789012345",
+          },
+        },
+      },
+    ],
+    "primaryActionDetail": {
+      "create": {
+        "new": {},
+      },
+    },
+    "targets": [
+      {
+        "driveItem": {
+          "driveFile": {},
+          "file": {},
+          "mimeType": "application/vnd.google-apps.spreadsheet",
+          "name": "items/2CyiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+          "owner": {
+            "domain": {
+              "legacyId": "110223439587376147641",
+              "name": "example.com",
+            },
+            "user": {
+              "knownUser": {
+                "isCurrentUser": false,
+                "personName": "people/567890123456789012345",
+              },
+            },
+          },
+          "title": "Test Spreadsheet",
+        },
+      },
+    ],
+    "timestamp": "2024-01-01T11:30:00.000Z",
+  },
+]
+`;
+
+exports[`index streams - workspace 1`] = `
+[
+  {
+    "alternateEmail": "admin@example.com",
+    "customerCreationTime": "2020-01-01T00:00:00.000Z",
+    "customerDomain": "example.com",
+    "etag": ""abcdef123456789/sample_customer_etag"",
+    "id": "C01abc234",
+    "kind": "admin#directory#customer",
+    "language": "en",
+    "phoneNumber": "+1-555-0123",
+    "postalAddress": {
+      "addressLine1": "123 Main Street",
+      "addressLine2": "Suite 100",
+      "contactName": "John Admin",
+      "countryCode": "US",
+      "locality": "San Francisco",
+      "organizationName": "Example Corp",
+      "postalCode": "94105",
+      "region": "CA",
+    },
+  },
+]
+`;
+
+exports[`index streams - workspace users 1`] = `
+[
+  {
+    "agreedToTerms": true,
+    "archived": false,
+    "changePasswordAtNextLogin": false,
+    "creationTime": "2023-06-01T09:00:00.000Z",
+    "customerId": "C01abc234",
+    "emails": [
+      {
+        "address": "john.doe@example.com",
+        "primary": true,
+      },
+      {
+        "address": "john.doe@example.test-google-a.com",
+      },
+    ],
+    "etag": ""abcdef123456789/user_etag_value"",
+    "id": "123456789012345678901",
+    "includeInGlobalAddressList": true,
+    "ipWhitelisted": false,
+    "isAdmin": false,
+    "isDelegatedAdmin": false,
+    "isEnforcedIn2Sv": true,
+    "isEnrolledIn2Sv": true,
+    "isMailboxSetup": true,
+    "kind": "admin#directory#user",
+    "languages": [
+      {
+        "languageCode": "en",
+        "preference": "preferred",
+      },
+    ],
+    "lastLoginTime": "2024-01-15T10:30:00.000Z",
+    "name": {
+      "familyName": "Doe",
+      "fullName": "John Doe",
+      "givenName": "John",
+    },
+    "nonEditableAliases": [
+      "john.doe@example.test-google-a.com",
+    ],
+    "orgUnitPath": "/Engineering",
+    "organizations": [
+      {
+        "customType": "",
+        "department": "Engineering",
+        "location": "San Francisco",
+        "name": "Example Corp",
+        "primary": true,
+        "title": "Software Engineer",
+        "type": "work",
+      },
+    ],
+    "phones": [
+      {
+        "type": "mobile",
+        "value": "(555) 123-4567",
+      },
+    ],
+    "primaryEmail": "john.doe@example.com",
+    "recoveryEmail": "j.doe.recovery@gmail.com",
+    "recoveryPhone": "+15551234567",
+    "suspended": false,
+  },
+  {
+    "agreedToTerms": true,
+    "archived": false,
+    "changePasswordAtNextLogin": false,
+    "creationTime": "2023-03-15T12:00:00.000Z",
+    "customerId": "C01abc234",
+    "emails": [
+      {
+        "address": "jane.smith@example.com",
+        "primary": true,
+      },
+    ],
+    "etag": ""abcdef123456789/user_etag_value_2"",
+    "id": "987654321098765432109",
+    "includeInGlobalAddressList": true,
+    "ipWhitelisted": true,
+    "isAdmin": true,
+    "isDelegatedAdmin": false,
+    "isEnforcedIn2Sv": true,
+    "isEnrolledIn2Sv": true,
+    "isMailboxSetup": true,
+    "kind": "admin#directory#user",
+    "lastLoginTime": "2024-01-16T14:20:00.000Z",
+    "name": {
+      "familyName": "Smith",
+      "fullName": "Jane Smith",
+      "givenName": "Jane",
+    },
+    "orgUnitPath": "/IT",
+    "organizations": [
+      {
+        "customType": "",
+        "department": "IT",
+        "location": "New York",
+        "name": "Example Corp",
+        "primary": true,
+        "title": "IT Administrator",
+        "type": "work",
+      },
+    ],
+    "primaryEmail": "jane.smith@example.com",
+    "suspended": false,
+  },
+]
+`;

@@ -1,0 +1,7 @@
+{
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----",
+  "client_email": "test@test-project.iam.gserviceaccount.com",
+  "shared_drive_ids": ["shared_drive_1"],
+  "include_personal_drives": true,
+  "cutoff_days": 90
+} 
