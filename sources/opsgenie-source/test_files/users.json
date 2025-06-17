@@ -1,44 +1,44 @@
 [
-    {
-        "blocked": false,
-        "verified": true,
-        "id": "01952c09-d155-454a-ae85-0ebbc8da040b",
-        "username": "huongkstn@gmail.com",
-        "fullName": "trần ngọc hướng",
-        "role": {
-            "id": "Owner",
-            "name": "Owner"
-        },
-        "timeZone": "Asia/Novosibirsk",
-        "locale": "en_US",
-        "userAddress": {
-            "country": "",
-            "state": "",
-            "city": "",
-            "line": "",
-            "zipCode": ""
-        },
-        "createdAt": "2022-04-05T03:23:39.314Z"
+  {
+    "blocked": false,
+    "verified": true,
+    "id": "01952c09-d155-454a-ae85-0ebbc8da040b",
+    "username": "huongkstn@gmail.com",
+    "fullName": "trần ngọc hướng",
+    "role": {
+      "id": "Owner",
+      "name": "Owner"
     },
-    {
-        "blocked": false,
-        "verified": false,
-        "id": "44e5ea7e-de82-4e4d-baf6-21108ccd3125",
-        "username": "yenhh8@gmail.com",
-        "fullName": "yenhh8@gmail.com",
-        "role": {
-            "id": "User",
-            "name": "User"
-        },
-        "timeZone": "Asia/Novosibirsk",
-        "locale": "en_US",
-        "userAddress": {
-            "country": "",
-            "state": "",
-            "city": "",
-            "line": "",
-            "zipCode": ""
-        },
-        "createdAt": "2022-04-05T03:27:21.674Z"
-    }
+    "timeZone": "Asia/Novosibirsk",
+    "locale": "en_US",
+    "userAddress": {
+      "country": "",
+      "state": "",
+      "city": "",
+      "line": "",
+      "zipCode": ""
+    },
+    "createdAt": "2022-04-05T03:23:39.314Z"
+  },
+  {
+    "blocked": false,
+    "verified": false,
+    "id": "44e5ea7e-de82-4e4d-baf6-21108ccd3125",
+    "username": "yenhh8@gmail.com",
+    "fullName": "yenhh8@gmail.com",
+    "role": {
+      "id": "User",
+      "name": "User"
+    },
+    "timeZone": "Asia/Novosibirsk",
+    "locale": "en_US",
+    "userAddress": {
+      "country": "",
+      "state": "",
+      "city": "",
+      "line": "",
+      "zipCode": ""
+    },
+    "createdAt": "2022-04-05T03:27:21.674Z"
+  }
 ]

@@ -1,1902 +1,1902 @@
 [
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-04-28T10:41:28.768Z",
-                "Full_Name": "James Rodriguez",
-                "Employee_ID": "100",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesrodriguez@co.co",
-                "Team_Name": "Team C",
-                "Manager_ID": "105",
-                "Manager_Name": "Olivia Johnson",
-                "Team_ID": "C"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2018-08-07T11:41:53.577Z",
-                "Full_Name": "Charlotte Miller",
-                "Employee_ID": "101",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "charlottemiller@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-09-12T03:42:26.772Z",
-                "Full_Name": "Elijah Garcia",
-                "Employee_ID": "102",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "elijahgarcia@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-04-11T01:07:37.325Z",
-                "Full_Name": "Emma Lopez",
-                "Employee_ID": "103",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "emmalopez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-03-21T07:42:15.784Z",
-                "Full_Name": "James Williams",
-                "Employee_ID": "104",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "jameswilliams@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-01-18T03:06:58.013Z",
-                "Full_Name": "Olivia Johnson",
-                "Employee_ID": "105",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliviajohnson@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-12-22T20:37:24.175Z",
-                "Full_Name": "Liam Smith",
-                "Employee_ID": "106",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "liamsmith@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-03-20T05:07:42.818Z",
-                "Full_Name": "Isabella Johnson",
-                "Employee_ID": "107",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "isabellajohnson@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-03-18T01:49:57.776Z",
-                "Full_Name": "James Johnson",
-                "Employee_ID": "108",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesjohnson@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-04-20T15:04:15.505Z",
-                "Full_Name": "Isabella Hernandez",
-                "Employee_ID": "109",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "isabellahernandez@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2022-12-20T07:35:43.366Z",
-                "Full_Name": "Isabella Hernandez",
-                "Employee_ID": "110",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "isabellahernandez@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-01-29T12:04:17.792Z",
-                "Full_Name": "Olivia Miller",
-                "Employee_ID": "111",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "oliviamiller@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-09-24T17:45:03.206Z",
-                "Full_Name": "Ava Martinez",
-                "Employee_ID": "112",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "avamartinez@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-04-10T08:18:58.882Z",
-                "Full_Name": "Isabella Smith",
-                "Employee_ID": "113",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "isabellasmith@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2018-09-08T06:10:28.353Z",
-                "Full_Name": "Olivia Miller",
-                "Employee_ID": "114",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "oliviamiller@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-08-12T07:33:02.063Z",
-                "Full_Name": "James Williams",
-                "Employee_ID": "115",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "jameswilliams@co.co",
-                "Team_Name": "Team C",
-                "Manager_ID": "105",
-                "Manager_Name": "Olivia Johnson",
-                "Team_ID": "C"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-10-18T14:22:19.071Z",
-                "Full_Name": "Isabella Garcia",
-                "Employee_ID": "116",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "isabellagarcia@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-03-28T11:48:30.151Z",
-                "Full_Name": "Isabella Lopez",
-                "Employee_ID": "117",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "isabellalopez@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-01-17T13:20:00.972Z",
-                "Full_Name": "Isabella Miller",
-                "Employee_ID": "118",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "isabellamiller@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-09-26T23:04:41.953Z",
-                "Full_Name": "Noah Rodriguez",
-                "Employee_ID": "119",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "noahrodriguez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-04-05T10:48:07.767Z",
-                "Full_Name": "Ava Williams",
-                "Employee_ID": "120",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "avawilliams@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-01-19T19:10:45.227Z",
-                "Full_Name": "Sophia Davis",
-                "Employee_ID": "121",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "sophiadavis@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-02-01T04:02:49.461Z",
-                "Full_Name": "Elijah Miller",
-                "Employee_ID": "122",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "elijahmiller@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-11-26T21:14:17.183Z",
-                "Full_Name": "Olivia Williams",
-                "Employee_ID": "123",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliviawilliams@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-12-21T20:47:33.001Z",
-                "Full_Name": "Emma Rodriguez",
-                "Employee_ID": "124",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "emmarodriguez@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-08-06T06:01:05.732Z",
-                "Full_Name": "Emma Johnson",
-                "Employee_ID": "125",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "emmajohnson@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-03-19T21:45:47.524Z",
-                "Full_Name": "Isabella Miller",
-                "Employee_ID": "126",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "isabellamiller@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-03-26T13:50:58.502Z",
-                "Full_Name": "Liam Williams",
-                "Employee_ID": "127",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "liamwilliams@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-02-14T01:52:46.397Z",
-                "Full_Name": "Ava Smith",
-                "Employee_ID": "128",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "avasmith@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2022-01-26T22:47:35.489Z",
-                "Full_Name": "Lucas Rodriguez",
-                "Employee_ID": "129",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "lucasrodriguez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-09-29T05:47:01.189Z",
-                "Full_Name": "Isabella Martinez",
-                "Employee_ID": "130",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "isabellamartinez@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-04-06T01:27:23.711Z",
-                "Full_Name": "James Martinez",
-                "Employee_ID": "131",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesmartinez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-03-27T09:21:14.933Z",
-                "Full_Name": "Lucas Hernandez",
-                "Employee_ID": "132",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "lucashernandez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-03-13T17:05:24.869Z",
-                "Full_Name": "Liam Jones",
-                "Employee_ID": "133",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "liamjones@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-07-15T14:40:55.164Z",
-                "Full_Name": "Elijah Miller",
-                "Employee_ID": "134",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "elijahmiller@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-07-08T19:49:14.024Z",
-                "Full_Name": "Sophia Garcia",
-                "Employee_ID": "135",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "sophiagarcia@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-10-05T17:55:53.274Z",
-                "Full_Name": "Sophia Martinez",
-                "Employee_ID": "136",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "sophiamartinez@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-08-13T15:31:47.797Z",
-                "Full_Name": "Oliver Lopez",
-                "Employee_ID": "137",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliverlopez@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-03-30T00:47:22.632Z",
-                "Full_Name": "Isabella Brown",
-                "Employee_ID": "138",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "isabellabrown@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-01-27T01:58:18.851Z",
-                "Full_Name": "Oliver Williams",
-                "Employee_ID": "139",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliverwilliams@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-02-14T09:51:13.630Z",
-                "Full_Name": "Elijah Davis",
-                "Employee_ID": "140",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "elijahdavis@co.co",
-                "Team_Name": null,
-                "Manager_ID": "None",
-                "Manager_Name": "None",
-                "Team_ID": null
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-07-26T05:13:42.273Z",
-                "Full_Name": "Isabella Brown",
-                "Employee_ID": "141",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "isabellabrown@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-07-24T05:05:04.546Z",
-                "Full_Name": "Sophia Brown",
-                "Employee_ID": "142",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "sophiabrown@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-05-10T16:44:55.042Z",
-                "Full_Name": "Ava Rodriguez",
-                "Employee_ID": "143",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "avarodriguez@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-02-19T19:15:36.663Z",
-                "Full_Name": "Sophia Johnson",
-                "Employee_ID": "144",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "sophiajohnson@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2018-09-30T08:47:07.479Z",
-                "Full_Name": "Ava Miller",
-                "Employee_ID": "145",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "avamiller@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-04-03T20:33:59.376Z",
-                "Full_Name": "Isabella Martinez",
-                "Employee_ID": "146",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "isabellamartinez@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-11-02T09:36:40.580Z",
-                "Full_Name": "Oliver Lopez",
-                "Employee_ID": "147",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "oliverlopez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-12-11T06:59:14.378Z",
-                "Full_Name": "Charlotte Rodriguez",
-                "Employee_ID": "148",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "charlotterodriguez@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-08-21T12:43:56.027Z",
-                "Full_Name": "Lucas Brown",
-                "Employee_ID": "149",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "lucasbrown@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-07-16T22:16:26.344Z",
-                "Full_Name": "Charlotte Garcia",
-                "Employee_ID": "150",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "charlottegarcia@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-03-04T00:13:19.653Z",
-                "Full_Name": "Emma Rodriguez",
-                "Employee_ID": "151",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "emmarodriguez@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2022-01-26T17:49:23.526Z",
-                "Full_Name": "Lucas Davis",
-                "Employee_ID": "152",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "lucasdavis@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-11-29T10:43:21.421Z",
-                "Full_Name": "Liam Williams",
-                "Employee_ID": "153",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "liamwilliams@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-10-06T00:57:07.687Z",
-                "Full_Name": "Ava Davis",
-                "Employee_ID": "154",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "avadavis@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-10-25T22:39:40.455Z",
-                "Full_Name": "Noah Hernandez",
-                "Employee_ID": "155",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "noahhernandez@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-06-23T03:10:04.136Z",
-                "Full_Name": "Noah Johnson",
-                "Employee_ID": "156",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "noahjohnson@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2018-11-04T00:23:03.938Z",
-                "Full_Name": "Lucas Martinez",
-                "Employee_ID": "157",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "lucasmartinez@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-12-16T22:20:56.822Z",
-                "Full_Name": "Ava Hernandez",
-                "Employee_ID": "158",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "avahernandez@co.co",
-                "Team_Name": "Team C",
-                "Manager_ID": "105",
-                "Manager_Name": "Olivia Johnson",
-                "Team_ID": "C"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2022-07-17T16:34:07.204Z",
-                "Full_Name": "Sophia Williams",
-                "Employee_ID": "159",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "sophiawilliams@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-11-22T20:25:46.957Z",
-                "Full_Name": "Charlotte Williams",
-                "Employee_ID": "160",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "charlottewilliams@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-08-18T15:35:50.693Z",
-                "Full_Name": "Sophia Lopez",
-                "Employee_ID": "161",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "sophialopez@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-01-06T01:24:10.973Z",
-                "Full_Name": "Emma Rodriguez",
-                "Employee_ID": "162",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "emmarodriguez@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-09-09T11:44:21.771Z",
-                "Full_Name": "Emma Martinez",
-                "Employee_ID": "163",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "emmamartinez@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-01-13T19:11:35.394Z",
-                "Full_Name": "Liam Hernandez",
-                "Employee_ID": "164",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "liamhernandez@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-08-24T11:02:01.227Z",
-                "Full_Name": "Sophia Johnson",
-                "Employee_ID": "165",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "sophiajohnson@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-04-08T23:13:35.195Z",
-                "Full_Name": "Noah Johnson",
-                "Employee_ID": "166",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "noahjohnson@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-09-15T00:36:12.719Z",
-                "Full_Name": "Noah Garcia",
-                "Employee_ID": "167",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "noahgarcia@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-04-17T07:16:09.122Z",
-                "Full_Name": "Ava Jones",
-                "Employee_ID": "168",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "avajones@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-09-15T11:13:02.775Z",
-                "Full_Name": "Olivia Miller",
-                "Employee_ID": "169",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliviamiller@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-05-04T21:29:25.034Z",
-                "Full_Name": "Emma Jones",
-                "Employee_ID": "170",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "emmajones@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-01-19T04:03:56.468Z",
-                "Full_Name": "Oliver Rodriguez",
-                "Employee_ID": "171",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "oliverrodriguez@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2018-08-05T01:16:57.501Z",
-                "Full_Name": "Oliver Martinez",
-                "Employee_ID": "172",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "olivermartinez@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-05-09T05:51:05.399Z",
-                "Full_Name": "Oliver Jones",
-                "Employee_ID": "173",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "oliverjones@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-06-19T18:54:46.621Z",
-                "Full_Name": "Charlotte Martinez",
-                "Employee_ID": "174",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "charlottemartinez@co.co",
-                "Team_Name": "Team ChiefExecs",
-                "Manager_ID": "162",
-                "Manager_Name": "Emma Rodriguez",
-                "Team_ID": "ChiefExecs"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-09-07T12:19:27.550Z",
-                "Full_Name": "James Johnson",
-                "Employee_ID": "175",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesjohnson@co.co",
-                "Team_Name": "Team TopDog",
-                "Manager_ID": "140",
-                "Manager_Name": "Elijah Davis",
-                "Team_ID": "TopDog"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-10-05T11:03:59.651Z",
-                "Full_Name": "Sophia Lopez",
-                "Employee_ID": "176",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "sophialopez@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-01-16T08:06:02.234Z",
-                "Full_Name": "Elijah Jones",
-                "Employee_ID": "177",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "elijahjones@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-08-24T05:49:39.854Z",
-                "Full_Name": "Liam Garcia",
-                "Employee_ID": "178",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "liamgarcia@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-05-17T20:17:33.695Z",
-                "Full_Name": "James Davis",
-                "Employee_ID": "179",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesdavis@co.co",
-                "Team_Name": "Team D",
-                "Manager_ID": "129",
-                "Manager_Name": "Lucas Rodriguez",
-                "Team_ID": "D"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2019-03-27T14:47:16.531Z",
-                "Full_Name": "Sophia Davis",
-                "Employee_ID": "180",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "sophiadavis@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-08-11T13:37:50.353Z",
-                "Full_Name": "Liam Brown",
-                "Employee_ID": "181",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "liambrown@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-09-01T09:00:35.982Z",
-                "Full_Name": "Noah Williams",
-                "Employee_ID": "182",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "noahwilliams@co.co",
-                "Team_Name": "Team Engineering",
-                "Manager_ID": "171",
-                "Manager_Name": "Oliver Rodriguez",
-                "Team_ID": "Engineering"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2016-12-29T13:44:49.676Z",
-                "Full_Name": "Charlotte Jones",
-                "Employee_ID": "183",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "charlottejones@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-12-10T08:53:50.525Z",
-                "Full_Name": "Emma Garcia",
-                "Employee_ID": "184",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "emmagarcia@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2013-07-08T21:26:27.960Z",
-                "Full_Name": "Olivia Williams",
-                "Employee_ID": "185",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "oliviawilliams@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2023-08-18T06:56:49.067Z",
-                "Full_Name": "James Davis",
-                "Employee_ID": "186",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "jamesdavis@co.co",
-                "Team_Name": "Team E",
-                "Manager_ID": "114",
-                "Manager_Name": "Olivia Miller",
-                "Team_ID": "E"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-07-01T16:48:35.122Z",
-                "Full_Name": "Noah Rodriguez",
-                "Employee_ID": "187",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "noahrodriguez@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2022-09-28T19:53:11.613Z",
-                "Full_Name": "Liam Martinez",
-                "Employee_ID": "188",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "liammartinez@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-06-29T09:05:16.171Z",
-                "Full_Name": "Lucas Martinez",
-                "Employee_ID": "189",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "lucasmartinez@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-09-23T04:56:49.903Z",
-                "Full_Name": "Sophia Rodriguez",
-                "Employee_ID": "190",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "sophiarodriguez@co.co",
-                "Team_Name": "Team Security",
-                "Manager_ID": "179",
-                "Manager_Name": "James Davis",
-                "Team_ID": "Security"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-09-20T10:24:35.748Z",
-                "Full_Name": "James Rodriguez",
-                "Employee_ID": "191",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "jamesrodriguez@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-03-05T14:52:33.561Z",
-                "Full_Name": "Isabella Smith",
-                "Employee_ID": "192",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "isabellasmith@co.co",
-                "Team_Name": "Team A",
-                "Manager_ID": "109",
-                "Manager_Name": "Isabella Hernandez",
-                "Team_ID": "A"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2012-08-06T02:59:25.714Z",
-                "Full_Name": "Noah Garcia",
-                "Employee_ID": "193",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "noahgarcia@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2020-08-04T06:31:44.596Z",
-                "Full_Name": "Charlotte Jones",
-                "Employee_ID": "194",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "charlottejones@co.co",
-                "Team_Name": "Team G",
-                "Manager_ID": "143",
-                "Manager_Name": "Ava Rodriguez",
-                "Team_ID": "G"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-04-10T22:32:14.028Z",
-                "Full_Name": "Emma Brown",
-                "Employee_ID": "195",
-                "Termination_Date": null,
-                "Location": "New York",
-                "Email": "emmabrown@co.co",
-                "Team_Name": "Team F",
-                "Manager_ID": "155",
-                "Manager_Name": "Noah Hernandez",
-                "Team_ID": "F"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2021-12-16T03:02:18.178Z",
-                "Full_Name": "Ava Brown",
-                "Employee_ID": "196",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "avabrown@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2017-04-24T09:56:13.280Z",
-                "Full_Name": "Oliver Lopez",
-                "Employee_ID": "197",
-                "Termination_Date": null,
-                "Location": "Texas",
-                "Email": "oliverlopez@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2015-10-11T08:34:00.017Z",
-                "Full_Name": "Ava Rodriguez",
-                "Employee_ID": "198",
-                "Termination_Date": null,
-                "Location": "Connecticut",
-                "Email": "avarodriguez@co.co",
-                "Team_Name": "Team SecurityContracts",
-                "Manager_ID": "176",
-                "Manager_Name": "Sophia Lopez",
-                "Team_ID": "SecurityContracts"
-            }
-        },
-        "type": "RECORD"
-    },
-    {
-        "record": {
-            "stream": "mytestsource__workday__customreports",
-            "emitted_at": 1697757823488,
-            "data": {
-                "Start_Date": "2014-03-29T04:06:27.065Z",
-                "Full_Name": "Lucas Garcia",
-                "Employee_ID": "199",
-                "Termination_Date": null,
-                "Location": "California",
-                "Email": "lucasgarcia@co.co",
-                "Team_Name": "Team B",
-                "Manager_ID": "149",
-                "Manager_Name": "Lucas Brown",
-                "Team_ID": "B"
-            }
-        },
-        "type": "RECORD"
-    }
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-04-28T10:41:28.768Z",
+        "Full_Name": "James Rodriguez",
+        "Employee_ID": "100",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesrodriguez@co.co",
+        "Team_Name": "Team C",
+        "Manager_ID": "105",
+        "Manager_Name": "Olivia Johnson",
+        "Team_ID": "C"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2018-08-07T11:41:53.577Z",
+        "Full_Name": "Charlotte Miller",
+        "Employee_ID": "101",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "charlottemiller@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-09-12T03:42:26.772Z",
+        "Full_Name": "Elijah Garcia",
+        "Employee_ID": "102",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "elijahgarcia@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-04-11T01:07:37.325Z",
+        "Full_Name": "Emma Lopez",
+        "Employee_ID": "103",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "emmalopez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-03-21T07:42:15.784Z",
+        "Full_Name": "James Williams",
+        "Employee_ID": "104",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "jameswilliams@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-01-18T03:06:58.013Z",
+        "Full_Name": "Olivia Johnson",
+        "Employee_ID": "105",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliviajohnson@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-12-22T20:37:24.175Z",
+        "Full_Name": "Liam Smith",
+        "Employee_ID": "106",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "liamsmith@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-03-20T05:07:42.818Z",
+        "Full_Name": "Isabella Johnson",
+        "Employee_ID": "107",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "isabellajohnson@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-03-18T01:49:57.776Z",
+        "Full_Name": "James Johnson",
+        "Employee_ID": "108",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesjohnson@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-04-20T15:04:15.505Z",
+        "Full_Name": "Isabella Hernandez",
+        "Employee_ID": "109",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "isabellahernandez@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2022-12-20T07:35:43.366Z",
+        "Full_Name": "Isabella Hernandez",
+        "Employee_ID": "110",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "isabellahernandez@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-01-29T12:04:17.792Z",
+        "Full_Name": "Olivia Miller",
+        "Employee_ID": "111",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "oliviamiller@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-09-24T17:45:03.206Z",
+        "Full_Name": "Ava Martinez",
+        "Employee_ID": "112",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "avamartinez@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-04-10T08:18:58.882Z",
+        "Full_Name": "Isabella Smith",
+        "Employee_ID": "113",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "isabellasmith@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2018-09-08T06:10:28.353Z",
+        "Full_Name": "Olivia Miller",
+        "Employee_ID": "114",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "oliviamiller@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-08-12T07:33:02.063Z",
+        "Full_Name": "James Williams",
+        "Employee_ID": "115",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "jameswilliams@co.co",
+        "Team_Name": "Team C",
+        "Manager_ID": "105",
+        "Manager_Name": "Olivia Johnson",
+        "Team_ID": "C"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-10-18T14:22:19.071Z",
+        "Full_Name": "Isabella Garcia",
+        "Employee_ID": "116",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "isabellagarcia@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-03-28T11:48:30.151Z",
+        "Full_Name": "Isabella Lopez",
+        "Employee_ID": "117",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "isabellalopez@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-01-17T13:20:00.972Z",
+        "Full_Name": "Isabella Miller",
+        "Employee_ID": "118",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "isabellamiller@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-09-26T23:04:41.953Z",
+        "Full_Name": "Noah Rodriguez",
+        "Employee_ID": "119",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "noahrodriguez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-04-05T10:48:07.767Z",
+        "Full_Name": "Ava Williams",
+        "Employee_ID": "120",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "avawilliams@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-01-19T19:10:45.227Z",
+        "Full_Name": "Sophia Davis",
+        "Employee_ID": "121",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "sophiadavis@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-02-01T04:02:49.461Z",
+        "Full_Name": "Elijah Miller",
+        "Employee_ID": "122",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "elijahmiller@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-11-26T21:14:17.183Z",
+        "Full_Name": "Olivia Williams",
+        "Employee_ID": "123",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliviawilliams@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-12-21T20:47:33.001Z",
+        "Full_Name": "Emma Rodriguez",
+        "Employee_ID": "124",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "emmarodriguez@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-08-06T06:01:05.732Z",
+        "Full_Name": "Emma Johnson",
+        "Employee_ID": "125",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "emmajohnson@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-03-19T21:45:47.524Z",
+        "Full_Name": "Isabella Miller",
+        "Employee_ID": "126",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "isabellamiller@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-03-26T13:50:58.502Z",
+        "Full_Name": "Liam Williams",
+        "Employee_ID": "127",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "liamwilliams@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-02-14T01:52:46.397Z",
+        "Full_Name": "Ava Smith",
+        "Employee_ID": "128",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "avasmith@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2022-01-26T22:47:35.489Z",
+        "Full_Name": "Lucas Rodriguez",
+        "Employee_ID": "129",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "lucasrodriguez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-09-29T05:47:01.189Z",
+        "Full_Name": "Isabella Martinez",
+        "Employee_ID": "130",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "isabellamartinez@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-04-06T01:27:23.711Z",
+        "Full_Name": "James Martinez",
+        "Employee_ID": "131",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesmartinez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-03-27T09:21:14.933Z",
+        "Full_Name": "Lucas Hernandez",
+        "Employee_ID": "132",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "lucashernandez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-03-13T17:05:24.869Z",
+        "Full_Name": "Liam Jones",
+        "Employee_ID": "133",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "liamjones@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-07-15T14:40:55.164Z",
+        "Full_Name": "Elijah Miller",
+        "Employee_ID": "134",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "elijahmiller@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-07-08T19:49:14.024Z",
+        "Full_Name": "Sophia Garcia",
+        "Employee_ID": "135",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "sophiagarcia@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-10-05T17:55:53.274Z",
+        "Full_Name": "Sophia Martinez",
+        "Employee_ID": "136",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "sophiamartinez@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-08-13T15:31:47.797Z",
+        "Full_Name": "Oliver Lopez",
+        "Employee_ID": "137",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliverlopez@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-03-30T00:47:22.632Z",
+        "Full_Name": "Isabella Brown",
+        "Employee_ID": "138",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "isabellabrown@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-01-27T01:58:18.851Z",
+        "Full_Name": "Oliver Williams",
+        "Employee_ID": "139",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliverwilliams@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-02-14T09:51:13.630Z",
+        "Full_Name": "Elijah Davis",
+        "Employee_ID": "140",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "elijahdavis@co.co",
+        "Team_Name": null,
+        "Manager_ID": "None",
+        "Manager_Name": "None",
+        "Team_ID": null
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-07-26T05:13:42.273Z",
+        "Full_Name": "Isabella Brown",
+        "Employee_ID": "141",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "isabellabrown@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-07-24T05:05:04.546Z",
+        "Full_Name": "Sophia Brown",
+        "Employee_ID": "142",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "sophiabrown@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-05-10T16:44:55.042Z",
+        "Full_Name": "Ava Rodriguez",
+        "Employee_ID": "143",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "avarodriguez@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-02-19T19:15:36.663Z",
+        "Full_Name": "Sophia Johnson",
+        "Employee_ID": "144",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "sophiajohnson@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2018-09-30T08:47:07.479Z",
+        "Full_Name": "Ava Miller",
+        "Employee_ID": "145",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "avamiller@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-04-03T20:33:59.376Z",
+        "Full_Name": "Isabella Martinez",
+        "Employee_ID": "146",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "isabellamartinez@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-11-02T09:36:40.580Z",
+        "Full_Name": "Oliver Lopez",
+        "Employee_ID": "147",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "oliverlopez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-12-11T06:59:14.378Z",
+        "Full_Name": "Charlotte Rodriguez",
+        "Employee_ID": "148",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "charlotterodriguez@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-08-21T12:43:56.027Z",
+        "Full_Name": "Lucas Brown",
+        "Employee_ID": "149",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "lucasbrown@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-07-16T22:16:26.344Z",
+        "Full_Name": "Charlotte Garcia",
+        "Employee_ID": "150",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "charlottegarcia@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-03-04T00:13:19.653Z",
+        "Full_Name": "Emma Rodriguez",
+        "Employee_ID": "151",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "emmarodriguez@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2022-01-26T17:49:23.526Z",
+        "Full_Name": "Lucas Davis",
+        "Employee_ID": "152",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "lucasdavis@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-11-29T10:43:21.421Z",
+        "Full_Name": "Liam Williams",
+        "Employee_ID": "153",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "liamwilliams@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-10-06T00:57:07.687Z",
+        "Full_Name": "Ava Davis",
+        "Employee_ID": "154",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "avadavis@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-10-25T22:39:40.455Z",
+        "Full_Name": "Noah Hernandez",
+        "Employee_ID": "155",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "noahhernandez@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-06-23T03:10:04.136Z",
+        "Full_Name": "Noah Johnson",
+        "Employee_ID": "156",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "noahjohnson@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2018-11-04T00:23:03.938Z",
+        "Full_Name": "Lucas Martinez",
+        "Employee_ID": "157",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "lucasmartinez@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-12-16T22:20:56.822Z",
+        "Full_Name": "Ava Hernandez",
+        "Employee_ID": "158",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "avahernandez@co.co",
+        "Team_Name": "Team C",
+        "Manager_ID": "105",
+        "Manager_Name": "Olivia Johnson",
+        "Team_ID": "C"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2022-07-17T16:34:07.204Z",
+        "Full_Name": "Sophia Williams",
+        "Employee_ID": "159",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "sophiawilliams@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-11-22T20:25:46.957Z",
+        "Full_Name": "Charlotte Williams",
+        "Employee_ID": "160",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "charlottewilliams@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-08-18T15:35:50.693Z",
+        "Full_Name": "Sophia Lopez",
+        "Employee_ID": "161",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "sophialopez@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-01-06T01:24:10.973Z",
+        "Full_Name": "Emma Rodriguez",
+        "Employee_ID": "162",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "emmarodriguez@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-09-09T11:44:21.771Z",
+        "Full_Name": "Emma Martinez",
+        "Employee_ID": "163",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "emmamartinez@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-01-13T19:11:35.394Z",
+        "Full_Name": "Liam Hernandez",
+        "Employee_ID": "164",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "liamhernandez@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-08-24T11:02:01.227Z",
+        "Full_Name": "Sophia Johnson",
+        "Employee_ID": "165",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "sophiajohnson@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-04-08T23:13:35.195Z",
+        "Full_Name": "Noah Johnson",
+        "Employee_ID": "166",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "noahjohnson@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-09-15T00:36:12.719Z",
+        "Full_Name": "Noah Garcia",
+        "Employee_ID": "167",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "noahgarcia@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-04-17T07:16:09.122Z",
+        "Full_Name": "Ava Jones",
+        "Employee_ID": "168",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "avajones@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-09-15T11:13:02.775Z",
+        "Full_Name": "Olivia Miller",
+        "Employee_ID": "169",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliviamiller@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-05-04T21:29:25.034Z",
+        "Full_Name": "Emma Jones",
+        "Employee_ID": "170",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "emmajones@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-01-19T04:03:56.468Z",
+        "Full_Name": "Oliver Rodriguez",
+        "Employee_ID": "171",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "oliverrodriguez@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2018-08-05T01:16:57.501Z",
+        "Full_Name": "Oliver Martinez",
+        "Employee_ID": "172",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "olivermartinez@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-05-09T05:51:05.399Z",
+        "Full_Name": "Oliver Jones",
+        "Employee_ID": "173",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "oliverjones@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-06-19T18:54:46.621Z",
+        "Full_Name": "Charlotte Martinez",
+        "Employee_ID": "174",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "charlottemartinez@co.co",
+        "Team_Name": "Team ChiefExecs",
+        "Manager_ID": "162",
+        "Manager_Name": "Emma Rodriguez",
+        "Team_ID": "ChiefExecs"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-09-07T12:19:27.550Z",
+        "Full_Name": "James Johnson",
+        "Employee_ID": "175",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesjohnson@co.co",
+        "Team_Name": "Team TopDog",
+        "Manager_ID": "140",
+        "Manager_Name": "Elijah Davis",
+        "Team_ID": "TopDog"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-10-05T11:03:59.651Z",
+        "Full_Name": "Sophia Lopez",
+        "Employee_ID": "176",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "sophialopez@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-01-16T08:06:02.234Z",
+        "Full_Name": "Elijah Jones",
+        "Employee_ID": "177",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "elijahjones@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-08-24T05:49:39.854Z",
+        "Full_Name": "Liam Garcia",
+        "Employee_ID": "178",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "liamgarcia@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-05-17T20:17:33.695Z",
+        "Full_Name": "James Davis",
+        "Employee_ID": "179",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesdavis@co.co",
+        "Team_Name": "Team D",
+        "Manager_ID": "129",
+        "Manager_Name": "Lucas Rodriguez",
+        "Team_ID": "D"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2019-03-27T14:47:16.531Z",
+        "Full_Name": "Sophia Davis",
+        "Employee_ID": "180",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "sophiadavis@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-08-11T13:37:50.353Z",
+        "Full_Name": "Liam Brown",
+        "Employee_ID": "181",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "liambrown@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-09-01T09:00:35.982Z",
+        "Full_Name": "Noah Williams",
+        "Employee_ID": "182",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "noahwilliams@co.co",
+        "Team_Name": "Team Engineering",
+        "Manager_ID": "171",
+        "Manager_Name": "Oliver Rodriguez",
+        "Team_ID": "Engineering"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2016-12-29T13:44:49.676Z",
+        "Full_Name": "Charlotte Jones",
+        "Employee_ID": "183",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "charlottejones@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-12-10T08:53:50.525Z",
+        "Full_Name": "Emma Garcia",
+        "Employee_ID": "184",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "emmagarcia@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2013-07-08T21:26:27.960Z",
+        "Full_Name": "Olivia Williams",
+        "Employee_ID": "185",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "oliviawilliams@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2023-08-18T06:56:49.067Z",
+        "Full_Name": "James Davis",
+        "Employee_ID": "186",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "jamesdavis@co.co",
+        "Team_Name": "Team E",
+        "Manager_ID": "114",
+        "Manager_Name": "Olivia Miller",
+        "Team_ID": "E"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-07-01T16:48:35.122Z",
+        "Full_Name": "Noah Rodriguez",
+        "Employee_ID": "187",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "noahrodriguez@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2022-09-28T19:53:11.613Z",
+        "Full_Name": "Liam Martinez",
+        "Employee_ID": "188",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "liammartinez@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-06-29T09:05:16.171Z",
+        "Full_Name": "Lucas Martinez",
+        "Employee_ID": "189",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "lucasmartinez@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-09-23T04:56:49.903Z",
+        "Full_Name": "Sophia Rodriguez",
+        "Employee_ID": "190",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "sophiarodriguez@co.co",
+        "Team_Name": "Team Security",
+        "Manager_ID": "179",
+        "Manager_Name": "James Davis",
+        "Team_ID": "Security"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-09-20T10:24:35.748Z",
+        "Full_Name": "James Rodriguez",
+        "Employee_ID": "191",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "jamesrodriguez@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-03-05T14:52:33.561Z",
+        "Full_Name": "Isabella Smith",
+        "Employee_ID": "192",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "isabellasmith@co.co",
+        "Team_Name": "Team A",
+        "Manager_ID": "109",
+        "Manager_Name": "Isabella Hernandez",
+        "Team_ID": "A"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2012-08-06T02:59:25.714Z",
+        "Full_Name": "Noah Garcia",
+        "Employee_ID": "193",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "noahgarcia@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2020-08-04T06:31:44.596Z",
+        "Full_Name": "Charlotte Jones",
+        "Employee_ID": "194",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "charlottejones@co.co",
+        "Team_Name": "Team G",
+        "Manager_ID": "143",
+        "Manager_Name": "Ava Rodriguez",
+        "Team_ID": "G"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-04-10T22:32:14.028Z",
+        "Full_Name": "Emma Brown",
+        "Employee_ID": "195",
+        "Termination_Date": null,
+        "Location": "New York",
+        "Email": "emmabrown@co.co",
+        "Team_Name": "Team F",
+        "Manager_ID": "155",
+        "Manager_Name": "Noah Hernandez",
+        "Team_ID": "F"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2021-12-16T03:02:18.178Z",
+        "Full_Name": "Ava Brown",
+        "Employee_ID": "196",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "avabrown@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2017-04-24T09:56:13.280Z",
+        "Full_Name": "Oliver Lopez",
+        "Employee_ID": "197",
+        "Termination_Date": null,
+        "Location": "Texas",
+        "Email": "oliverlopez@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2015-10-11T08:34:00.017Z",
+        "Full_Name": "Ava Rodriguez",
+        "Employee_ID": "198",
+        "Termination_Date": null,
+        "Location": "Connecticut",
+        "Email": "avarodriguez@co.co",
+        "Team_Name": "Team SecurityContracts",
+        "Manager_ID": "176",
+        "Manager_Name": "Sophia Lopez",
+        "Team_ID": "SecurityContracts"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__workday__customreports",
+      "emitted_at": 1697757823488,
+      "data": {
+        "Start_Date": "2014-03-29T04:06:27.065Z",
+        "Full_Name": "Lucas Garcia",
+        "Employee_ID": "199",
+        "Termination_Date": null,
+        "Location": "California",
+        "Email": "lucasgarcia@co.co",
+        "Team_Name": "Team B",
+        "Manager_ID": "149",
+        "Manager_Name": "Lucas Brown",
+        "Team_ID": "B"
+      }
+    },
+    "type": "RECORD"
+  }
 ]

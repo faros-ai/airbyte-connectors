@@ -2,10 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Spec",
   "type": "object",
-  "required": [
-    "user",
-    "cutoff_days"
-  ],
+  "required": ["user", "cutoff_days"],
   "additionalProperties": true,
   "properties": {
     "user": {

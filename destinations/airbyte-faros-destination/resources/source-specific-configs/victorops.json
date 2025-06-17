@@ -26,9 +26,7 @@
           "title": "Application Field",
           "description": "Field name in a VictorOps incident, to compute a Faros Application name. The value of this field will be used to look up the app/platform in the specified application mapping",
           "default": "service",
-          "examples": [
-            "routing_key"
-          ]
+          "examples": ["routing_key"]
         }
       }
     }

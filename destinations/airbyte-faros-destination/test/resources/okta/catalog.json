@@ -5,7 +5,7 @@
         "name": "mytestsource__okta__groups"
       },
       "destination_sync_mode": "append"
-    }, 
+    },
     {
       "stream": {
         "name": "mytestsource__okta__users"

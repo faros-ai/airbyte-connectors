@@ -161,11 +161,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "flexId",
-          "flexName",
-          "flexValue"
-        ]
+        "required": ["flexId", "flexName", "flexValue"]
       }
     },
     "urgency": {

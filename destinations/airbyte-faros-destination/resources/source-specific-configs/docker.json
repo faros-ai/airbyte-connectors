@@ -5,9 +5,7 @@
     {
       "type": "object",
       "title": "Configuration",
-      "required": [
-        "organization"
-      ],
+      "required": ["organization"],
       "properties": {
         "source_type": {
           "type": "string",

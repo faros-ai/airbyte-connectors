@@ -4,9 +4,7 @@
       "stream": {
         "name": "faros_users",
         "jsonSchema": {},
-        "supportedSyncModes": [
-          "full_refresh"
-        ],
+        "supportedSyncModes": ["full_refresh"],
         "sync_mode": "full_refresh",
         "destination_sync_mode": "overwrite"
       }

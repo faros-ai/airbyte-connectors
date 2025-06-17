@@ -14,9 +14,7 @@
       "interval": "integer",
       "length": "integer",
       "metric": "system.cpu.idle",
-      "pointlist": [
-        [1575317847, 0.5]
-      ],
+      "pointlist": [[1575317847, 0.5]],
       "queryIndex": "integer",
       "scope": "host:foo,env:test",
       "start": "integer",

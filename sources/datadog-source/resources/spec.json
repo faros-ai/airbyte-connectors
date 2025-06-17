@@ -57,12 +57,7 @@
         "type": "array",
         "items": {
           "type": "string",
-          "enum": [
-            "incidents",
-            "metrics",
-            "service_level_objectives",
-            "users"
-          ]
+          "enum": ["incidents", "metrics", "service_level_objectives", "users"]
         }
       }
     }

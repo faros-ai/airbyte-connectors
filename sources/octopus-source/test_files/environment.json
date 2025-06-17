@@ -1,17 +1,17 @@
 {
-    "Id": "Environments-2",
-    "SpaceId": "Spaces-1",
-    "Slug": "staging",
-    "Name": "Staging",
-    "Description": "",
-    "SortOrder": 0,
-    "UseGuidedFailure": false,
-    "AllowDynamicInfrastructure": true,
-    "ExtensionSettings": [],
-    "Links": {
-        "Self": "/api/Spaces-1/environments/Environments-2",
-        "Machines": "/api/Spaces-1/environments/Environments-2/machines{?skip,take,partialName,roles,isDisabled,healthStatuses,commStyles,tenantIds,tenantTags,shellNames,deploymentTargetTypes}",
-        "SinglyScopedVariableDetails": "/api/Spaces-1/environments/Environments-2/singlyScopedVariableDetails",
-        "Metadata": "/api/Spaces-1/environments/Environments-2/metadata"
-    }
+  "Id": "Environments-2",
+  "SpaceId": "Spaces-1",
+  "Slug": "staging",
+  "Name": "Staging",
+  "Description": "",
+  "SortOrder": 0,
+  "UseGuidedFailure": false,
+  "AllowDynamicInfrastructure": true,
+  "ExtensionSettings": [],
+  "Links": {
+    "Self": "/api/Spaces-1/environments/Environments-2",
+    "Machines": "/api/Spaces-1/environments/Environments-2/machines{?skip,take,partialName,roles,isDisabled,healthStatuses,commStyles,tenantIds,tenantTags,shellNames,deploymentTargetTypes}",
+    "SinglyScopedVariableDetails": "/api/Spaces-1/environments/Environments-2/singlyScopedVariableDetails",
+    "Metadata": "/api/Spaces-1/environments/Environments-2/metadata"
+  }
 }

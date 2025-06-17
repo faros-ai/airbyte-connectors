@@ -4,9 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "PagerDuty Spec",
     "type": "object",
-    "required": [
-      "token"
-    ],
+    "required": ["token"],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -39,14 +37,7 @@
         "type": "string",
         "title": "Severity category",
         "description": "A default severity category if not present",
-        "examples": [
-          "Sev1",
-          "Sev2",
-          "Sev3",
-          "Sev4",
-          "Sev5",
-          "Custom"
-        ],
+        "examples": ["Sev1", "Sev2", "Sev3", "Sev4", "Sev5", "Custom"],
         "pattern": "^(Sev[0-5])?(Custom)?$"
       },
       "exclude_services": {
@@ -55,10 +46,7 @@
           "type": "string"
         },
         "title": "Exclude Services",
-        "examples": [
-          "service-1",
-          "service-2"
-        ],
+        "examples": ["service-1", "service-2"],
         "description": "List of PagerDuty service names to ignore incidents from. If not set, all incidents will be pulled."
       },
       "service_details": {

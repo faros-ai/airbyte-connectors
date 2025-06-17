@@ -1,21 +1,21 @@
 [
-    {
-        "id": "UGlwZWxpbmUtLS01ZjBhZmM1MC04YTcxLTQyMzUtYTE0Ny00ZmY4YmU5ZTM4Njg=",
-        "organization": {
-            "slug": "devcube"
-        },
-        "uuid": "5f0afc50-8a71-4235-a147-4ff8be9e3868",
-        "name": "Kelvin test",
-        "slug": "kelvin-test",
-        "url": "https://buildkite.com/devcube/kelvin-test",
-        "createdAt": "2021-12-20T03:21:28.048Z",
-        "description": null,
-        "cursor":"ktkhMjAyMS0xMi0yMCAwMzoyMToyOC4wNDgxMDUwMDAgVVRD2SQ1ZjBhZmM1MC04YTcxLTQyMzUtYTE0Ny00ZmY4YmU5ZTM4Njg=",
-        "repository": {
-            "url": "git@github.com:huongtn/ECHTMen.git",
-            "provider": {
-                "name": "GitHub"
-            }
-        }
+  {
+    "id": "UGlwZWxpbmUtLS01ZjBhZmM1MC04YTcxLTQyMzUtYTE0Ny00ZmY4YmU5ZTM4Njg=",
+    "organization": {
+      "slug": "devcube"
+    },
+    "uuid": "5f0afc50-8a71-4235-a147-4ff8be9e3868",
+    "name": "Kelvin test",
+    "slug": "kelvin-test",
+    "url": "https://buildkite.com/devcube/kelvin-test",
+    "createdAt": "2021-12-20T03:21:28.048Z",
+    "description": null,
+    "cursor": "ktkhMjAyMS0xMi0yMCAwMzoyMToyOC4wNDgxMDUwMDAgVVRD2SQ1ZjBhZmM1MC04YTcxLTQyMzUtYTE0Ny00ZmY4YmU5ZTM4Njg=",
+    "repository": {
+      "url": "git@github.com:huongtn/ECHTMen.git",
+      "provider": {
+        "name": "GitHub"
+      }
     }
+  }
 ]

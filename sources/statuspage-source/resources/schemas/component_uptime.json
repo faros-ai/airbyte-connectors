@@ -36,9 +36,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "id"
-      ]
+      "required": ["id"]
     },
     "page_id": {
       "type": "string"

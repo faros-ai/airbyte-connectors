@@ -33,9 +33,7 @@
           "description": "JSON map of Zendesk group(s) name, to org_Team uids.",
           "multiline": true,
           "default": "{}",
-          "examples": [
-            "{ \"Group 1\": \"team1\", \"*\": \"all_teams\" }"
-          ],
+          "examples": ["{ \"Group 1\": \"team1\", \"*\": \"all_teams\" }"],
           "order": 3
         },
         "sync_groups": {

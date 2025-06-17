@@ -1,29 +1,29 @@
-    [
+[
+  {
+    "id": 1,
+    "phid": "PHID-DIFF-s5z7iytghip2wolacch6",
+    "revision": {
+      "id": 3,
+      "phid": "PHID-DREV-gsrobup7ptw5ubjounb4",
+      "dateModified": 1634778351
+    },
+    "repository": {
+      "id": 2,
+      "type": "REPO",
+      "phid": "PHID-REPO-uwrzrrles7cuyvbvadu2",
+      "fields": {
+        "callsign": null,
+        "name": "Test 2",
+        "shortName": "test-2"
+      }
+    },
+    "files": [
       {
-        "id": 1,
-        "phid": "PHID-DIFF-s5z7iytghip2wolacch6",
-        "revision": {
-          "id": 3,
-          "phid": "PHID-DREV-gsrobup7ptw5ubjounb4",
-          "dateModified": 1634778351
-        },
-        "repository": {
-          "id": 2,
-          "type": "REPO",
-          "phid": "PHID-REPO-uwrzrrles7cuyvbvadu2",
-          "fields": {
-            "callsign": null,
-            "name": "Test 2",
-            "shortName": "test-2"
-          }
-        },
-        "files": [
-          {
-            "deletions": 1,
-            "additions": 1,
-            "from": "destinations/airbyte-faros-destination/package.json",
-            "to": "destinations/airbyte-faros-destination/package.json"
-          }
-        ]
+        "deletions": 1,
+        "additions": 1,
+        "from": "destinations/airbyte-faros-destination/package.json",
+        "to": "destinations/airbyte-faros-destination/package.json"
       }
     ]
+  }
+]

@@ -4,16 +4,9 @@
       "stream": {
         "name": "repositories",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "phid"
-          ]
-        ]
+        "source_defined_primary_key": [["phid"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -22,17 +15,9 @@
       "stream": {
         "name": "commits",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "fields",
-            "identifier"
-          ]
-        ]
+        "source_defined_primary_key": [["fields", "identifier"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -41,16 +26,9 @@
       "stream": {
         "name": "revisions",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "phid"
-          ]
-        ]
+        "source_defined_primary_key": [["phid"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -59,16 +37,9 @@
       "stream": {
         "name": "users",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "phid"
-          ]
-        ]
+        "source_defined_primary_key": [["phid"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -77,16 +48,9 @@
       "stream": {
         "name": "projects",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "phid"
-          ]
-        ]
+        "source_defined_primary_key": [["phid"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -95,16 +59,9 @@
       "stream": {
         "name": "transactions",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [
-          [
-            "phid"
-          ]
-        ]
+        "source_defined_primary_key": [["phid"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

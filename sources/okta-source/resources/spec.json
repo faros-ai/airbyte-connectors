@@ -4,10 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Okta Spec",
     "type": "object",
-    "required": [
-      "token",
-      "domain_name"
-    ],
+    "required": ["token", "domain_name"],
     "additionalProperties": true,
     "properties": {
       "domain_name": {
@@ -15,9 +12,7 @@
         "type": "string",
         "title": "Domain name",
         "description": "Domain name (org name part of your Okta URL)",
-        "examples": [
-          "dev-12345678"
-        ]
+        "examples": ["dev-12345678"]
       },
       "token": {
         "order": 1,

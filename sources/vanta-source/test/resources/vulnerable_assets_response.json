@@ -19,9 +19,7 @@
               "integrationId": "aws",
               "imageDigest": "sha256:b4ba739302d96202481a12345678912345677876fbaea6cf1531e78b9e5be4286",
               "imagePushedAtDate": "2024-11-11T17:39:13.831Z",
-              "imageTags": [
-                "0f7e60c1234567892e6bd131ec066026f5ed84"
-              ],
+              "imageTags": ["0f7e60c1234567892e6bd131ec066026f5ed84"],
               "assetTags": [],
               "parentAccountOrOrganization": "674713269178: us-east-1",
               "biosUuid": null,

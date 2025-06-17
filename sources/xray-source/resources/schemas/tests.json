@@ -1,92 +1,92 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Test",
-    "type": "object",
-    "properties": {
-      "issueId": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Test",
+  "type": "object",
+  "properties": {
+    "issueId": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "gherkin": {
+      "type": "string"
+    },
+    "unstructured": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
         "type": "string"
-      },
-      "key": {
-        "type": "string"
-      },
-      "summary": {
-        "type": "string"
-      },
-      "description": {
-        "type": "string"
-      },
-      "gherkin": {
-        "type": "string"
-      },
-      "unstructured": {
-        "type": "string"
-      },
-      "labels": {
-        "type": "array",
-        "items": {
+      }
+    },
+    "testType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
           "type": "string"
         }
-      },
-      "testType": {
+      }
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
         "type": "object",
         "properties": {
-          "name": {
+          "id": {
             "type": "string"
           },
-          "kind": {
+          "action": {
             "type": "string"
           }
         }
-      },
-      "status": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "steps": {
-        "type": "array",
-        "items": {
+      }
+    },
+    "preconditions": {
+      "type": "object",
+      "properties": {
+        "issueId": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "string"
+        },
+        "preconditionType": {
           "type": "object",
           "properties": {
-            "id": {
+            "name": {
               "type": "string"
             },
-            "action": {
+            "kind": {
               "type": "string"
-            }
-          }
-        }
-      },
-      "preconditions": {
-        "type": "object",
-        "properties": {
-          "issueId": {
-            "type": "string"
-          },
-          "key": {
-            "type": "string"
-          },
-          "definition": {
-            "type": "string"
-          },
-          "rank": {
-            "type": "string"
-          },
-          "preconditionType": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "kind": {
-                "type": "string"
-              }
             }
           }
         }
       }
     }
   }
+}

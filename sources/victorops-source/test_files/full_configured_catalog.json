@@ -4,19 +4,10 @@
       "stream": {
         "name": "incidents",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "default_cursor_field": [
-          "startTime"
-        ],
-        "source_defined_primary_key": [
-          [
-            "incidentNumber"
-          ]
-        ]
+        "default_cursor_field": ["startTime"],
+        "source_defined_primary_key": [["incidentNumber"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -25,15 +16,9 @@
       "stream": {
         "name": "teams",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh"
-        ],
+        "supported_sync_modes": ["full_refresh"],
         "source_defined_cursor": false,
-        "source_defined_primary_key": [
-          [
-            "slug"
-          ]
-        ]
+        "source_defined_primary_key": [["slug"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -42,16 +27,9 @@
       "stream": {
         "name": "users",
         "json_schema": {},
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": false,
-        "source_defined_primary_key": [
-          [
-            "username"
-          ]
-        ]
+        "source_defined_primary_key": [["username"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

@@ -77,9 +77,7 @@
             "html_url": "https://github.com/nehanda"
           },
           "labels": {
-            "nodes": [
-              {"name": "bug"}
-            ]
+            "nodes": [{"name": "bug"}]
           },
           "assignments": {
             "nodes": []

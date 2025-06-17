@@ -1,31 +1,31 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "TestExecution",
-    "type": "object",
-    "properties": {
-      "issueId": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TestExecution",
+  "type": "object",
+  "properties": {
+    "issueId": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "testEnvironments": {
+      "type": "array",
+      "items": {
         "type": "string"
-      },
-      "key": {
+      }
+    },
+    "labels": {
+      "type": "array",
+      "items": {
         "type": "string"
-      },
-      "summary": {
-        "type": "string"
-      },
-      "description": {
-        "type": "string"
-      },
-      "testEnvironments": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      },
-      "labels": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
       }
     }
   }
+}

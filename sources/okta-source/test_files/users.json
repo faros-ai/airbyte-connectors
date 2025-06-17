@@ -1,42 +1,42 @@
 [
-    {
-        "id": "00u3iw1h2t4oi09Cv5d7",
-        "status": "ACTIVE",
-        "created": "2022-01-07T06:09:40.000Z",
-        "activated": null,
-        "statusChanged": "2022-01-07T07:43:31.000Z",
-        "lastLogin": "2022-01-07T07:43:35.000Z",
-        "lastUpdated": "2022-01-07T07:43:31.000Z",
-        "passwordChanged": "2022-01-07T07:43:31.000Z",
-        "type": {
-            "id": "oty3iw1gxxYagRUHa5d7"
-        },
-        "profile": {
-            "firstName": "Kelvin",
-            "lastName": "Tran",
-            "mobilePhone": null,
-            "secondEmail": null,
-            "login": "kelvin.tr@mydevcube.com",
-            "email": "kelvin.tr@mydevcube.com"
-        },
-        "credentials": {
-            "password": {},
-            "emails": [
-                {
-                    "value": "kelvin.tr@mydevcube.com",
-                    "status": "VERIFIED",
-                    "type": "PRIMARY"
-                }
-            ],
-            "provider": {
-                "type": "OKTA",
-                "name": "OKTA"
-            }
-        },
-        "_links": {
-            "self": {
-                "href": "https://dev-88164258.okta.com/api/v1/users/00u3iw1h2t4oi09Cv5d7"
-            }
+  {
+    "id": "00u3iw1h2t4oi09Cv5d7",
+    "status": "ACTIVE",
+    "created": "2022-01-07T06:09:40.000Z",
+    "activated": null,
+    "statusChanged": "2022-01-07T07:43:31.000Z",
+    "lastLogin": "2022-01-07T07:43:35.000Z",
+    "lastUpdated": "2022-01-07T07:43:31.000Z",
+    "passwordChanged": "2022-01-07T07:43:31.000Z",
+    "type": {
+      "id": "oty3iw1gxxYagRUHa5d7"
+    },
+    "profile": {
+      "firstName": "Kelvin",
+      "lastName": "Tran",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "kelvin.tr@mydevcube.com",
+      "email": "kelvin.tr@mydevcube.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "kelvin.tr@mydevcube.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
         }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-88164258.okta.com/api/v1/users/00u3iw1h2t4oi09Cv5d7"
+      }
     }
+  }
 ]

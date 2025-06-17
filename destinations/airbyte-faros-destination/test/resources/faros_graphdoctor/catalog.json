@@ -1,12 +1,12 @@
 {
-    "streams": [
-      {
-        "stream": {
-          "name": "mytestsource__faros_graphdoctor__data_quality_tests",
-          "json_schema": {},
-          "supported_sync_modes": ["full_refresh", "incremental"]
-        },
-        "destination_sync_mode": "append"
-      }
-    ]
-  }
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__faros_graphdoctor__data_quality_tests",
+        "json_schema": {},
+        "supported_sync_modes": ["full_refresh", "incremental"]
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

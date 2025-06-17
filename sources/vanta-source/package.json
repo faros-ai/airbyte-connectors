@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
-    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' '**/*.json' && npm run lint -- --fix",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
     "test": "jest --verbose --color",
     "test-cov": "jest --coverage --verbose --color",

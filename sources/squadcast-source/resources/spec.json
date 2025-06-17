@@ -4,9 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "SquadCast Spec",
     "type": "object",
-    "required": [
-      "token"
-    ],
+    "required": ["token"],
     "additionalProperties": true,
     "properties": {
       "token": {

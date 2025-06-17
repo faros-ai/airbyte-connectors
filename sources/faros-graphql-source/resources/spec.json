@@ -4,10 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "GraphQL Spec",
     "type": "object",
-    "required": [
-      "api_key",
-      "graph"
-    ],
+    "required": ["api_key", "graph"],
     "additionalProperties": true,
     "properties": {
       "api_url": {
@@ -16,9 +13,7 @@
         "title": "API URL",
         "description": "The Faros API URL.",
         "default": "https://prod.api.faros.ai",
-        "examples": [
-          "https://prod.api.faros.ai"
-        ]
+        "examples": ["https://prod.api.faros.ai"]
       },
       "api_key": {
         "order": 1,
@@ -63,10 +58,7 @@
         "title": "Result model",
         "description": "Where to place each of the query results in their corresponding output records. E.g Nested - { vcs { pullRequests { nodes: [<record>] } } }, Flat - { vcs_PullRequest: <record> }",
         "default": "Nested",
-        "enum": [
-          "Nested",
-          "Flat"
-        ]
+        "enum": ["Nested", "Flat"]
       },
       "bucket_id": {
         "order": 10,

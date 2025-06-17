@@ -161,16 +161,10 @@
             }
           }
         },
-        "supported_sync_modes": [
-          "full_refresh"
-        ],
+        "supported_sync_modes": ["full_refresh"],
         "source_defined_cursor": false,
         "default_cursor_field": [],
-        "source_defined_primary_key": [
-          [
-            "fullName"
-          ]
-        ]
+        "source_defined_primary_key": [["fullName"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -239,19 +233,10 @@
             }
           }
         },
-        "supported_sync_modes": [
-          "full_refresh",
-          "incremental"
-        ],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
-        "default_cursor_field": [
-          "timestamp"
-        ],
-        "source_defined_primary_key": [
-          [
-            "fullDisplayName"
-          ]
-        ]
+        "default_cursor_field": ["timestamp"],
+        "source_defined_primary_key": [["fullDisplayName"]]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

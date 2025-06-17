@@ -14,10 +14,7 @@
     "rule": {
       "id": "js/zipslip",
       "severity": "error",
-      "tags": [
-        "security",
-        "external/cwe/cwe-022"
-      ],
+      "tags": ["security", "external/cwe/cwe-022"],
       "description": "Arbitrary file write during zip extraction",
       "name": "js/zipslip"
     },
@@ -43,9 +40,7 @@
         "start_column": 7,
         "end_column": 18
       },
-      "classifications": [
-        "test"
-      ]
+      "classifications": ["test"]
     },
     "instances_url": "https://api.github.com/repos/octocat/hello-world/code-scanning/alerts/4/instances"
   },
@@ -83,10 +78,7 @@
     "rule": {
       "id": "js/zipslip",
       "severity": "error",
-      "tags": [
-        "security",
-        "external/cwe/cwe-022"
-      ],
+      "tags": ["security", "external/cwe/cwe-022"],
       "description": "Arbitrary file write during zip extraction",
       "name": "js/zipslip"
     },

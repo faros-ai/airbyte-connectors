@@ -6,9 +6,11 @@
     "uuid": "{6cc04382-59f0-4a75-8b55-5aaa79d72d17}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/geekhub2019/refs/branches"},
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/geekhub2019/refs/branches"
+      },
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/geekhub2019"}
+        "href": "https://bitbucket.org/RomanKyrnis/geekhub2019"
+      }
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/geekhub2019",
@@ -16,7 +18,8 @@
     "project": {
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PROJ"}
+          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PROJ"
+        }
       },
       "type": "project",
       "name": "Untitled project",
@@ -34,7 +37,8 @@
       "name": "Untitled project",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/"}
+          "href": "https://bitbucket.org/RomanKyrnis/"
+        }
       },
       "uuid": "{107a5af7-050c-4a5f-918b-63d2d0be99b5}"
     },
@@ -45,7 +49,8 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
+          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
+        }
       }
     },
     "updated_on": "2021-12-05T08:25:02.254785+00:00",
@@ -62,9 +67,11 @@
     "uuid": "{8a0cf3e6-d87f-42bb-91cb-7ba284318ec0}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/client/refs/branches"},
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/client/refs/branches"
+      },
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/client"}
+        "href": "https://bitbucket.org/RomanKyrnis/client"
+      }
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/client",
@@ -72,7 +79,8 @@
     "project": {
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KC"}
+          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KC"
+        }
       },
       "type": "project",
       "name": "Kiev Cameras",
@@ -90,7 +98,8 @@
       "name": "Kiev Cameras",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/"}
+          "href": "https://bitbucket.org/RomanKyrnis/"
+        }
       },
       "uuid": "{9fbdb888-e280-4626-a6a5-874760bc0cd0}"
     },
@@ -101,7 +110,8 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
+          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
+        }
       }
     },
     "updated_on": "2021-08-04T19:28:34.344761+00:00",
@@ -118,9 +128,11 @@
     "uuid": "{75f33860-5d51-4103-ad24-23a2451fb272}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/kievcameras/refs/branches"},
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/kievcameras/refs/branches"
+      },
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/kievcameras"}
+        "href": "https://bitbucket.org/RomanKyrnis/kievcameras"
+      }
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/kievcameras",
@@ -128,7 +140,8 @@
     "project": {
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KIEV"}
+          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KIEV"
+        }
       },
       "type": "project",
       "name": "kievCameras",
@@ -146,7 +159,8 @@
       "name": "kievCameras",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/"}
+          "href": "https://bitbucket.org/RomanKyrnis/"
+        }
       },
       "uuid": "{17ec367a-8f56-4996-b964-d113b6053a01}"
     },
@@ -157,7 +171,8 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
+          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
+        }
       }
     },
     "updated_on": "2021-08-03T09:17:51.311690+00:00",

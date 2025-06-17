@@ -15,18 +15,11 @@
       "type": "string"
     },
     "packageIdentifier": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "vulnerabilityType": {
       "type": "string",
-      "enum": [
-        "CONFIGURATION",
-        "COMMON",
-        "GROUPED"
-      ]
+      "enum": ["CONFIGURATION", "COMMON", "GROUPED"]
     },
     "targetId": {
       "type": "string"
@@ -36,51 +29,28 @@
       "format": "date-time"
     },
     "sourceDetectedDate": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": ["string", "null"],
       "format": "date-time"
     },
     "lastDetectedDate": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": ["string", "null"],
       "format": "date-time"
     },
     "severity": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "LOW",
-        "MEDIUM",
-        "HIGH",
-        "CRITICAL"
-      ]
+      "type": ["string", "null"],
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
     },
     "cvssSeverityScore": {
-      "type": [
-        "number",
-        "null"
-      ]
+      "type": ["number", "null"]
     },
     "scannerScore": {
-      "type": [
-        "number",
-        "null"
-      ]
+      "type": ["number", "null"]
     },
     "isFixable": {
       "type": "boolean"
     },
     "remediateByDate": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": ["string", "null"],
       "format": "date-time"
     },
     "relatedVulns": {
@@ -99,25 +69,16 @@
       "type": "string"
     },
     "scanSource": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
     "deactivateMetadata": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "type": ["object", "null"],
       "properties": {
         "isVulnDeactivatedIndefinitely": {
           "type": "boolean"
         },
         "deactivatedUntilDate": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "deactivationReason": {

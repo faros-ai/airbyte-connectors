@@ -1,16 +1,16 @@
 {
-    "streams": [
-      {
-        "stream": {
-          "name": "mytestsource__zephyr__test_cycles"
-        },
-        "destination_sync_mode": "append"
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__zephyr__test_cycles"
       },
-      {
-        "stream": {
-          "name": "mytestsource__zephyr__test_executions"
-        },
-        "destination_sync_mode": "append"
-      }
-    ]
-  }
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__zephyr__test_executions"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

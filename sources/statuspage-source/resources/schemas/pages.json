@@ -15,16 +15,10 @@
       "type": "string"
     },
     "page_description": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "headline": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "branding": {
       "type": "string"
@@ -33,22 +27,13 @@
       "type": "string"
     },
     "domain": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "url": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "support_url": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "hidden_from_search": {
       "type": "boolean"
@@ -72,10 +57,7 @@
       "type": "boolean"
     },
     "notifications_from_email": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "notifications_email_footer": {
       "type": "string"
@@ -84,37 +66,22 @@
       "type": "integer"
     },
     "twitter_username": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "viewers_must_be_team_members": {
       "type": "boolean"
     },
     "ip_restrictions": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "city": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "state": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "country": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": ["null", "string"]
     },
     "time_zone": {
       "type": "string"
@@ -159,16 +126,10 @@
       "type": "object",
       "properties": {
         "updated_at": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "size": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "url": {
           "type": "string"
@@ -179,19 +140,13 @@
       "type": "object",
       "properties": {
         "updated_at": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "original_url": {
           "type": "string"
         },
         "size": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "normal_url": {
           "type": "string"
@@ -205,19 +160,13 @@
       "type": "object",
       "properties": {
         "updated_at": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "original_url": {
           "type": "string"
         },
         "size": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "normal_url": {
           "type": "string"
@@ -231,19 +180,13 @@
       "type": "object",
       "properties": {
         "updated_at": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "original_url": {
           "type": "string"
         },
         "size": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "normal_url": {
           "type": "string"
@@ -257,16 +200,10 @@
       "type": "object",
       "properties": {
         "updated_at": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "size": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "url": {
           "type": "string"

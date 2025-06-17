@@ -171,10 +171,7 @@
       "type": "object",
       "properties": {
         "htmlUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "uri"
         }
       }

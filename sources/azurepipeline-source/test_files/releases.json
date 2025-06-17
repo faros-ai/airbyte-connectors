@@ -1,88 +1,88 @@
 [
-    {
-        "id": 1,
-        "name": "Release-11",
-        "status": "active",
-        "createdOn": "2022-02-14T03:35:24.14Z",
-        "modifiedOn": "2022-02-14T03:35:24.14Z",
-        "modifiedBy": {
-            "displayName": "tran ngoc huong",
-            "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
-            "_links": {
-                "avatar": {
-                    "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-                }
-            },
-            "id": "8725d325-8926-6514-a563-8717451ce799",
-            "uniqueName": "huongkstn@gmail.com",
-            "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
-            "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+  {
+    "id": 1,
+    "name": "Release-11",
+    "status": "active",
+    "createdOn": "2022-02-14T03:35:24.14Z",
+    "modifiedOn": "2022-02-14T03:35:24.14Z",
+    "modifiedBy": {
+      "displayName": "tran ngoc huong",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+      "_links": {
+        "avatar": {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+        }
+      },
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "uniqueName": "huongkstn@gmail.com",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+    },
+    "createdBy": {
+      "displayName": "tran ngoc huong",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+      "_links": {
+        "avatar": {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+        }
+      },
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "uniqueName": "huongkstn@gmail.com",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+    },
+    "createdFor": {
+      "displayName": "tran ngoc huong",
+      "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
+      "_links": {
+        "avatar": {
+          "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+        }
+      },
+      "id": "8725d325-8926-6514-a563-8717451ce799",
+      "uniqueName": "huongkstn@gmail.com",
+      "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+      "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+    },
+    "variables": {},
+    "variableGroups": [],
+    "releaseDefinition": {
+      "id": 1,
+      "name": "release 14/02/2022",
+      "path": "\\",
+      "projectReference": null,
+      "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1",
+      "_links": {
+        "self": {
+          "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1"
         },
-        "createdBy": {
-            "displayName": "tran ngoc huong",
-            "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
-            "_links": {
-                "avatar": {
-                    "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-                }
-            },
-            "id": "8725d325-8926-6514-a563-8717451ce799",
-            "uniqueName": "huongkstn@gmail.com",
-            "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
-            "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-        },
-        "createdFor": {
-            "displayName": "tran ngoc huong",
-            "url": "https://spsprodcus5.vssps.visualstudio.com/Adc21dd72-1c92-418a-bea3-e51c7a562f87/_apis/Identities/8725d325-8926-6514-a563-8717451ce799",
-            "_links": {
-                "avatar": {
-                    "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-                }
-            },
-            "id": "8725d325-8926-6514-a563-8717451ce799",
-            "uniqueName": "huongkstn@gmail.com",
-            "imageUrl": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
-            "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-        },
-        "variables": {},
-        "variableGroups": [],
-        "releaseDefinition": {
-            "id": 1,
-            "name": "release 14/02/2022",
-            "path": "\\",
-            "projectReference": null,
-            "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1",
-            "_links": {
-                "self": {
-                    "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/definitions/1"
-                },
-                "web": {
-                    "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?definitionId=1"
-                }
-            }
-        },
-        "releaseDefinitionRevision": 8,
-        "description": "",
-        "reason": "manual",
-        "releaseNameFormat": "Release-$(rev:r)1",
-        "keepForever": false,
-        "definitionSnapshotRevision": 1,
-        "logsContainerUrl": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1/logs",
-        "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1",
-        "_links": {
-            "self": {
-                "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1"
-            },
-            "web": {
-                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?releaseId=1&_a=release-summary"
-            }
-        },
-        "tags": [],
-        "triggeringArtifactAlias": null,
-        "projectReference": {
-            "id": "a432baaf-0264-4311-b613-087a2e7931f8",
-            "name": "devcube"
-        },
-        "properties": {}
-    }
+        "web": {
+          "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?definitionId=1"
+        }
+      }
+    },
+    "releaseDefinitionRevision": 8,
+    "description": "",
+    "reason": "manual",
+    "releaseNameFormat": "Release-$(rev:r)1",
+    "keepForever": false,
+    "definitionSnapshotRevision": 1,
+    "logsContainerUrl": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1/logs",
+    "url": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1",
+    "_links": {
+      "self": {
+        "href": "https://vsrm.dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/Release/releases/1"
+      },
+      "web": {
+        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_release?releaseId=1&_a=release-summary"
+      }
+    },
+    "tags": [],
+    "triggeringArtifactAlias": null,
+    "projectReference": {
+      "id": "a432baaf-0264-4311-b613-087a2e7931f8",
+      "name": "devcube"
+    },
+    "properties": {}
+  }
 ]

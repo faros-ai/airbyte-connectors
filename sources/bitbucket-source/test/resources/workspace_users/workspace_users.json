@@ -61,28 +61,28 @@
       "uuid": "{0ee8b2b4-1234-41be-abcd-e584ab10c586}",
       "account_id": "12345:b4f37d53-bb31-4770-aaa3-a7022892124",
       "nickname": "Jane Doe"
-      },
-      "workspace": {
+    },
+    "workspace": {
       "type": "workspace",
       "uuid": "{33db76fb-7682-4f94-8b58-6b64de16e35f}",
       "name": "test",
       "slug": "test",
       "links": {
-          "avatar": {
+        "avatar": {
           "href": "https://bitbucket.org/workspaces/test/avatar/?ts=1724679346"
-          },
-          "html": {
+        },
+        "html": {
           "href": "https://bitbucket.org/test/"
-          },
-          "self": {
+        },
+        "self": {
           "href": "https://api.bitbucket.org/2.0/workspaces/test"
-          }
+        }
       }
-      },
-      "links": {
+    },
+    "links": {
       "self": {
-          "href": "https://api.bitbucket.org/2.0/workspaces/mtest/members/%FAD0ee8b2b4-112-abc-a698-e584ab101246%AB"
+        "href": "https://api.bitbucket.org/2.0/workspaces/mtest/members/%FAD0ee8b2b4-112-abc-a698-e584ab101246%AB"
       }
-      }
+    }
   }
 ]

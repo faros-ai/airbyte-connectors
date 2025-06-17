@@ -1,130 +1,116 @@
 {
-    "documentationUrl": "https://docs.faros.ai",
-    "connectionSpecification": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "title": "Workday Spec",
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Workday Spec",
+    "type": "object",
+    "required": ["tenant", "credentials", "baseUrl", "customReportName"],
+    "additionalProperties": true,
+    "properties": {
+      "tenant": {
+        "type": "string",
+        "title": "Tenant",
+        "description": "Workday tenant name.",
+        "examples": ["acme"]
+      },
+      "credentials": {
         "type": "object",
-        "required": [
-            "tenant",
-            "credentials",
-            "baseUrl",
-            "customReportName"
-        ],
-        "additionalProperties": true,
-        "properties": {
-            "tenant": {
+        "oneOf": [
+          {
+            "required": [
+              "credential_type",
+              "clientId",
+              "clientSecret",
+              "refreshToken"
+            ],
+            "properties": {
+              "credential_type": {
                 "type": "string",
-                "title": "Tenant",
-                "description": "Workday tenant name.",
-                "examples": [
-                    "acme"
-                ]
-            },
-            "credentials": {
-                "type": "object",
-                "oneOf": [
-                    {
-                        "required": [
-                            "credential_type",
-                            "clientId",
-                            "clientSecret",
-                            "refreshToken"
-                        ],
-                        "properties": {
-                            "credential_type": {
-                                "type": "string",
-                                "title": "Credential Type",
-                                "const": "token"
-                            },
-                            "clientId": {
-                                "type": "string",
-                                "title": "Client ID",
-                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
-                            },
-                            "clientSecret": {
-                                "type": "string",
-                                "title": "Client Secret",
-                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
-                                "airbyte_secret": true
-                            },
-                            "refreshToken": {
-                                "type": "string",
-                                "title": "Refresh Token",
-                                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
-                                "airbyte_secret": true
-                            }
-                        }
-                    },
-                    {
-                        "required": [
-                            "credential_type",
-                            "username",
-                            "password"
-                        ],
-                        "properties": {
-                            "credential_type": {
-                                "type": "string",
-                                "title": "Credential Type",
-                                "const": "userpassword"
-                            },
-                            "username": {
-                                "type": "string",
-                                "title": "Username",
-                                "description": "Workday username for Basic authentication."
-                            },
-                            "password": {
-                                "type": "string",
-                                "title": "Password",
-                                "description": "Workday password for Basic authentication.",
-                                "airbyte_secret": true
-                            }
-                        }
-                    }
-                ]
-            },
-            "baseUrl": {
+                "title": "Credential Type",
+                "const": "token"
+              },
+              "clientId": {
                 "type": "string",
-                "title": "REST/Auth API base URL",
-                "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip '/ccx/api/v2/{tenant}' and paste 'https://wd2-impl-services1.workday.com'.",
-                "examples": [
-                    "https://wd2-impl-services1.workday.com",
-                    "https://wd5-impl-services1.workday.com"
-                ]
-            },
-            "limit": {
-                "type": "number",
-                "title": "Page Limit",
-                "minimum": 1,
-                "maximum": 100,
-                "default": 20,
-                "description": "The maximum number of objects in a single response."
-            },
-            "customReportName": {
+                "title": "Client ID",
+                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values."
+              },
+              "clientSecret": {
                 "type": "string",
-                "title": "Custom Report Name",
-                "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=$FORMAT"
-            },
-            "reportFormat": {
+                "title": "Client Secret",
+                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
+                "airbyte_secret": true
+              },
+              "refreshToken": {
                 "type": "string",
-                "title": "Report Format (json/csv)",
-                "default": "json",
-                "description": "The format of the report. Can be either json or csv.",
-                "enum": [
-                    "json",
-                    "csv"
-                ]
-            },
-            "timeout": {
-                "type": "number",
-                "title": "Request Timeout",
-                "default": 60000,
-                "description": "The time allowed for a request to timeout (in milliseconds)."
-            },
-            "skipConnectionCheck": {
-                "type": "boolean",
-                "title": "Skip Connection Check",
-                "default": true
+                "title": "Refresh Token",
+                "description": "In Workday, register an integrations API client with Person and Staffing as its scope. Obtain the Client ID, Client Secret, and Refresh Token values.",
+                "airbyte_secret": true
+              }
             }
-        }
+          },
+          {
+            "required": ["credential_type", "username", "password"],
+            "properties": {
+              "credential_type": {
+                "type": "string",
+                "title": "Credential Type",
+                "const": "userpassword"
+              },
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Workday username for Basic authentication."
+              },
+              "password": {
+                "type": "string",
+                "title": "Password",
+                "description": "Workday password for Basic authentication.",
+                "airbyte_secret": true
+              }
+            }
+          }
+        ]
+      },
+      "baseUrl": {
+        "type": "string",
+        "title": "REST/Auth API base URL",
+        "description": "Workday REST/Auth API base URL. For example if your Workday REST API endpoint URL is 'https://wd2-impl-services1.workday.com/ccx/api/v2/{tenant}' then strip '/ccx/api/v2/{tenant}' and paste 'https://wd2-impl-services1.workday.com'.",
+        "examples": [
+          "https://wd2-impl-services1.workday.com",
+          "https://wd5-impl-services1.workday.com"
+        ]
+      },
+      "limit": {
+        "type": "number",
+        "title": "Page Limit",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20,
+        "description": "The maximum number of objects in a single response."
+      },
+      "customReportName": {
+        "type": "string",
+        "title": "Custom Report Name",
+        "description": "Name of a Custom Report to fetch from the API, e.g. My_Custom_Report. The source then calls the following API endpoint {baseUrl}/api/service/customreport2/{tenant}/My_Custom_Report?format=$FORMAT"
+      },
+      "reportFormat": {
+        "type": "string",
+        "title": "Report Format (json/csv)",
+        "default": "json",
+        "description": "The format of the report. Can be either json or csv.",
+        "enum": ["json", "csv"]
+      },
+      "timeout": {
+        "type": "number",
+        "title": "Request Timeout",
+        "default": 60000,
+        "description": "The time allowed for a request to timeout (in milliseconds)."
+      },
+      "skipConnectionCheck": {
+        "type": "boolean",
+        "title": "Skip Connection Check",
+        "default": true
+      }
     }
+  }
 }

@@ -1,9 +1,6 @@
 {
   "primaryKeys": {
-    "tms_Task": [
-      "source",
-      "uid"
-    ]
+    "tms_Task": ["source", "uid"]
   },
   "scalars": {
     "tms_Task": {
@@ -51,9 +48,6 @@
       }
     ]
   },
-  "sortedModelDependencies": [
-    "tms_Task"
-  ],
-  "tableNames": [
-    "tms_Task"
-  ]}
+  "sortedModelDependencies": ["tms_Task"],
+  "tableNames": ["tms_Task"]
+}

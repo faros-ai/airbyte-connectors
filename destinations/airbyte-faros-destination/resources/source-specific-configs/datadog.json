@@ -26,11 +26,7 @@
           "title": "Default Severity",
           "description": "A default severity category if not present",
           "pattern": "^(Sev[1-5])?(Custom)?$",
-          "examples": [
-            "Sev1",
-            "Sev5",
-            "Custom"
-          ]
+          "examples": ["Sev1", "Sev5", "Custom"]
         }
       }
     }

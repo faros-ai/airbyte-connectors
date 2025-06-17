@@ -1,81 +1,81 @@
 {
-    "pipeline": {
-        "after_task_id": "",
-        "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-        "branch_name": "chore/test-dynamic-import",
-        "commit_message": "Merge branch 'main' into chore/test-dynamic-import",
-        "commit_sha": "61944fd75f9a87741c3f2e2af1a61df59064e7b2",
-        "compile_task_id": "",
-        "created_at": "2022-07-25 21:47:03.555638Z",
-        "done_at": "2022-07-25 21:53:27.647149Z",
-        "error_description": "",
-        "hook_id": "ec56ee57-35c7-476b-8457-ccf17e8c3bef",
-        "name": "Tests",
-        "partial_rerun_of": "",
-        "partially_rerun_by": "",
-        "pending_at": "2022-07-25 21:47:03.831796Z",
-        "ppl_id": "0f64a303-b156-4e82-a291-bafd58b671b7",
-        "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
-        "promotion_of": "",
-        "queuing_at": "2022-07-25 21:47:03.843289Z",
-        "repository_id": "",
-        "result": "stopped",
-        "result_reason": "internal",
-        "running_at": "2022-07-25 21:51:17.493843Z",
-        "snapshot_id": "",
-        "state": "done",
-        "stopping_at": "2022-07-25 21:53:26.118556Z",
-        "switch_id": "",
-        "terminate_request": "stop",
-        "terminated_by": "branch deletion",
-        "wf_id": "b1310b6a-35e9-42aa-99db-85b231aa52b2",
-        "with_after_task": false,
-        "working_directory": ".semaphore",
-        "yaml_file_name": "semaphore.yml"
-    },
-    "blocks": [
+  "pipeline": {
+    "after_task_id": "",
+    "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
+    "branch_name": "chore/test-dynamic-import",
+    "commit_message": "Merge branch 'main' into chore/test-dynamic-import",
+    "commit_sha": "61944fd75f9a87741c3f2e2af1a61df59064e7b2",
+    "compile_task_id": "",
+    "created_at": "2022-07-25 21:47:03.555638Z",
+    "done_at": "2022-07-25 21:53:27.647149Z",
+    "error_description": "",
+    "hook_id": "ec56ee57-35c7-476b-8457-ccf17e8c3bef",
+    "name": "Tests",
+    "partial_rerun_of": "",
+    "partially_rerun_by": "",
+    "pending_at": "2022-07-25 21:47:03.831796Z",
+    "ppl_id": "0f64a303-b156-4e82-a291-bafd58b671b7",
+    "project_id": "bea7e6ed-911e-4172-80f8-7ab58b541a86",
+    "promotion_of": "",
+    "queuing_at": "2022-07-25 21:47:03.843289Z",
+    "repository_id": "",
+    "result": "stopped",
+    "result_reason": "internal",
+    "running_at": "2022-07-25 21:51:17.493843Z",
+    "snapshot_id": "",
+    "state": "done",
+    "stopping_at": "2022-07-25 21:53:26.118556Z",
+    "switch_id": "",
+    "terminate_request": "stop",
+    "terminated_by": "branch deletion",
+    "wf_id": "b1310b6a-35e9-42aa-99db-85b231aa52b2",
+    "with_after_task": false,
+    "working_directory": ".semaphore",
+    "yaml_file_name": "semaphore.yml"
+  },
+  "blocks": [
+    {
+      "state": "done",
+      "result_reason": "test",
+      "result": "passed",
+      "name": "Setup",
+      "jobs": [
         {
-            "state": "done",
-            "result_reason": "test",
-            "result": "passed",
-            "name": "Setup",
-            "jobs": [
-                {
-                    "status": "FINISHED",
-                    "result": "PASSED",
-                    "name": "Install",
-                    "job_id": "894f8d42-d1c7-4edf-8abf-2a9c1247909d",
-                    "index": 0
-                }
-            ],
-            "error_description": "",
-            "build_req_id": "dc030f40-c300-42f1-83ea-4b3e3165a0df",
-            "block_id": "725abdf4-f58e-4ae0-8495-13cdc43c0260"
+          "status": "FINISHED",
+          "result": "PASSED",
+          "name": "Install",
+          "job_id": "894f8d42-d1c7-4edf-8abf-2a9c1247909d",
+          "index": 0
+        }
+      ],
+      "error_description": "",
+      "build_req_id": "dc030f40-c300-42f1-83ea-4b3e3165a0df",
+      "block_id": "725abdf4-f58e-4ae0-8495-13cdc43c0260"
+    },
+    {
+      "state": "done",
+      "result_reason": "internal",
+      "result": "stopped",
+      "name": "Unit Tests",
+      "jobs": [
+        {
+          "status": "FINISHED",
+          "result": "STOPPED",
+          "name": "Lint",
+          "job_id": "c5b81077-ef77-4a16-b9bd-c94e8db3308e",
+          "index": 0
         },
         {
-            "state": "done",
-            "result_reason": "internal",
-            "result": "stopped",
-            "name": "Unit Tests",
-            "jobs": [
-                {
-                    "status": "FINISHED",
-                    "result": "STOPPED",
-                    "name": "Lint",
-                    "job_id": "c5b81077-ef77-4a16-b9bd-c94e8db3308e",
-                    "index": 0
-                },
-                {
-                    "status": "FINISHED",
-                    "result": "PASSED",
-                    "name": "Jest",
-                    "job_id": "0175c955-5db5-4747-8556-ff776e3d1b8b",
-                    "index": 1
-                }
-            ],
-            "error_description": "",
-            "build_req_id": "5e66532c-9b0d-47a3-9c32-b62cd9b727a5",
-            "block_id": "18bfc5c3-122b-44f7-b5fd-cf3c8e4bd593"
+          "status": "FINISHED",
+          "result": "PASSED",
+          "name": "Jest",
+          "job_id": "0175c955-5db5-4747-8556-ff776e3d1b8b",
+          "index": 1
         }
-    ]
+      ],
+      "error_description": "",
+      "build_req_id": "5e66532c-9b0d-47a3-9c32-b62cd9b727a5",
+      "block_id": "18bfc5c3-122b-44f7-b5fd-cf3c8e4bd593"
+    }
+  ]
 }

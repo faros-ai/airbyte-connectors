@@ -12,12 +12,8 @@
     "routingKey": "default",
     "service": "Faros-test",
     "startTime": "2021-11-02T16:22:04Z",
-    "pagedTeams": [
-      "team-Z3scfG2gh0qF3QsL"
-    ],
-    "pagedUsers": [
-      "roman.kyrnis"
-    ],
+    "pagedTeams": ["team-Z3scfG2gh0qF3QsL"],
+    "pagedUsers": ["roman.kyrnis"],
     "pagedPolicies": [
       {
         "policy": {
@@ -59,12 +55,8 @@
     "routingKey": "default",
     "service": "#2",
     "startTime": "2021-11-02T16:23:32Z",
-    "pagedTeams": [
-      "team-Z3scfG2gh0qF3QsL"
-    ],
-    "pagedUsers": [
-      "roman.kyrnis"
-    ],
+    "pagedTeams": ["team-Z3scfG2gh0qF3QsL"],
+    "pagedUsers": ["roman.kyrnis"],
     "pagedPolicies": [
       {
         "policy": {

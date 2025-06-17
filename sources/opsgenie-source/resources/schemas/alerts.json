@@ -1,105 +1,105 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-      "id": {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "tinyId": {
+      "type": "string"
+    },
+    "alias": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "acknowledged": {
+      "type": "boolean"
+    },
+    "isSeen": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
         "type": "string"
-      },
-      "tinyId": {
-        "type": "string"
-      },
-      "alias": {
-        "type": "string"
-      },
-      "message": {
-        "type": "string"
-      },
-      "status": {
-        "type": "string"
-      },
-      "acknowledged": {
-        "type": "boolean"
-      },
-      "isSeen": {
-        "type": "boolean"
-      },
-      "tags": {
-        "type": "array",
-        "items": {
-            "type": "string"
-          }
-      },
-      "snoozed": {
-        "type": "boolean"
-      },
-      "snoozedUntil": {
-        "type": "string"
-      },
-      "count": {
-        "type": "integer"
-      },
-      "lastOccurredAt": {
-        "type": "string"
-      },
-      "createdAt": {
-        "type": "string"
-      },
-      "updatedAt": {
-        "type": "string"
-      },
-      "source": {
-        "type": "string"
-      },
-      "owner": {
-        "type": "string"
-      },
-      "priority": {
-        "type": "string"
-      },
-      "responders": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              }
-            }
-        }
-      },
-      "integration": {
+      }
+    },
+    "snoozed": {
+      "type": "boolean"
+    },
+    "snoozedUntil": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer"
+    },
+    "lastOccurredAt": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string"
+    },
+    "responders": {
+      "type": "array",
+      "items": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
-          },
-          "name": {
             "type": "string"
           },
           "type": {
             "type": "string"
           }
         }
-      },
-      "report": {
-        "type": "object",
-        "properties": {
-          "ackTime": {
-            "type": "integer"
-          },
-          "closeTime": {
-            "type": "integer"
-          },
-          "acknowledgedBy": {
-            "type": "string"
-          },
-          "closedBy": {
-            "type": "string"
-          }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "ackTime": {
+          "type": "integer"
+        },
+        "closeTime": {
+          "type": "integer"
+        },
+        "acknowledgedBy": {
+          "type": "string"
+        },
+        "closedBy": {
+          "type": "string"
         }
       }
     }
   }
+}

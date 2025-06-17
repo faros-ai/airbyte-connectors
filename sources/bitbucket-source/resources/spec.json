@@ -11,9 +11,7 @@
         "type": "string",
         "title": "API URL",
         "description": "The API URL for fetching data from Bitbucket",
-        "examples": [
-          "https://api.bitbucket.org/2.0"
-        ],
+        "examples": ["https://api.bitbucket.org/2.0"],
         "default": "https://api.bitbucket.org/2.0"
       },
       "username": {
@@ -44,9 +42,7 @@
         },
         "title": "Workspaces",
         "description": "List of Workspaces from which to fetch data. If none passed, all visible workspaces for the authenticated user will be used.",
-        "examples": [
-          "blaze-lib"
-        ]
+        "examples": ["blaze-lib"]
       },
       "excluded_workspaces": {
         "order": 6,
@@ -56,9 +52,7 @@
         },
         "title": "Excluded Workspaces",
         "description": "List of Workspaces from which data won't be fetched. By default, no workspaces are excluded. If workspaces list is specified, this list will be ignored.",
-        "examples": [
-          "blaze-lib"
-        ]
+        "examples": ["blaze-lib"]
       },
       "repositories": {
         "order": 7,
@@ -68,9 +62,7 @@
         },
         "title": "Repositories",
         "description": "List of Bitbucket repositories in the format 'workspace/repo-slug'. If none are provided, data from all repositories for the specified workspaces will be pulled.",
-        "examples": [
-          "blaze-lib/blaze"
-        ]
+        "examples": ["blaze-lib/blaze"]
       },
       "excluded_repositories": {
         "order": 8,
@@ -80,9 +72,7 @@
         },
         "title": "Excluded Repositories",
         "description": "List of Repositories from which data won't be fetched. By default, no repositories are excluded. If repositories list is specified, this list will be ignored.",
-        "examples": [
-          "blaze-lib/blaze"
-        ]
+        "examples": ["blaze-lib/blaze"]
       },
       "cutoff_days": {
         "order": 9,
@@ -97,11 +87,7 @@
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
         "default": "Full",
-        "enum": [
-          "Minimum",
-          "Full",
-          "Custom"
-        ]
+        "enum": ["Minimum", "Full", "Custom"]
       },
       "custom_streams": {
         "order": 11,
@@ -111,10 +97,7 @@
         "items": {
           "type": "string"
         },
-        "examples": [
-          "workspaces",
-          "repositories"
-        ]
+        "examples": ["workspaces", "repositories"]
       },
       "page_size": {
         "order": 12,
@@ -170,10 +153,7 @@
         },
         "title": "Bucket Ranges",
         "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
-        "examples": [
-          "3-5",
-          "7"
-        ]
+        "examples": ["3-5", "7"]
       },
       "concurrency_limit": {
         "order": 20,

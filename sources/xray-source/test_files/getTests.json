@@ -99,10 +99,7 @@
           "key": "TEST-187",
           "summary": "Example test 1",
           "description": "First test example",
-          "labels": [
-            "label1",
-            "label2"
-          ]
+          "labels": ["label1", "label2"]
         },
         "preconditions": {
           "total": 0,

@@ -2,19 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Spec",
   "type": "object",
-  "required": [
-    "query_groups"
-  ],
+  "required": ["query_groups"],
   "additionalProperties": true,
   "properties": {
     "query_groups": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "queries"
-        ],
+        "required": ["name", "queries"],
         "properties": {
           "name": {
             "order": 0,

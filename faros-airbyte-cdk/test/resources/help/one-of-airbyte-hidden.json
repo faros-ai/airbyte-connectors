@@ -11,9 +11,7 @@
         {
           "title": "Mode X",
           "type": "object",
-          "required": [
-            "mode"
-          ],
+          "required": ["mode"],
           "properties": {
             "mode": {
               "type": "string",
@@ -25,9 +23,7 @@
           "title": "Mode Y",
           "type": "object",
           "airbyte_hidden": false,
-          "required": [
-            "mode"
-          ],
+          "required": ["mode"],
           "properties": {
             "mode": {
               "type": "string",
@@ -39,9 +35,7 @@
           "title": "Mode Z",
           "type": "object",
           "airbyte_hidden": true,
-          "required": [
-            "mode"
-          ],
+          "required": ["mode"],
           "properties": {
             "mode": {
               "type": "string",

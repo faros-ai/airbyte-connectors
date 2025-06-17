@@ -1,11 +1,11 @@
 [
-    {
-        "id": "26f9e160-0aac-40d9-ae19-c1c3fe2000be",
-        "name": "Nodejs team",
-        "description": "Nodejs team",
-        "links": {
-            "web": "https://huongtn.app.opsgenie.com/teams/dashboard/26f9e160-0aac-40d9-ae19-c1c3fe2000be/main",
-            "api": "https://api.opsgenie.com/v2/teams/26f9e160-0aac-40d9-ae19-c1c3fe2000be"
-        }
+  {
+    "id": "26f9e160-0aac-40d9-ae19-c1c3fe2000be",
+    "name": "Nodejs team",
+    "description": "Nodejs team",
+    "links": {
+      "web": "https://huongtn.app.opsgenie.com/teams/dashboard/26f9e160-0aac-40d9-ae19-c1c3fe2000be/main",
+      "api": "https://api.opsgenie.com/v2/teams/26f9e160-0aac-40d9-ae19-c1c3fe2000be"
     }
+  }
 ]

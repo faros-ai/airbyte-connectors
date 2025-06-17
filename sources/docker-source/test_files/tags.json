@@ -19,15 +19,11 @@
           "NODE_VERSION=14.17.0",
           "YARN_VERSION=1.22.5"
         ],
-        "Cmd": [
-          "start"
-        ],
+        "Cmd": ["start"],
         "Image": "sha256:5213db727faed506f9cfac185bfdc413c73bd6e2dd7c721a98bb7385c85e4c0e",
         "Volumes": null,
         "WorkingDir": "/usr/src/app",
-        "Entrypoint": [
-          "npm"
-        ],
+        "Entrypoint": ["npm"],
         "OnBuild": null,
         "Labels": null
       },
@@ -47,18 +43,11 @@
           "NODE_VERSION=14.17.0",
           "YARN_VERSION=1.22.5"
         ],
-        "Cmd": [
-          "/bin/sh",
-          "-c",
-          "#(nop) ",
-          "CMD [\"start\"]"
-        ],
+        "Cmd": ["/bin/sh", "-c", "#(nop) ", "CMD [\"start\"]"],
         "Image": "sha256:5213db727faed506f9cfac185bfdc413c73bd6e2dd7c721a98bb7385c85e4c0e",
         "Volumes": null,
         "WorkingDir": "/usr/src/app",
-        "Entrypoint": [
-          "npm"
-        ],
+        "Entrypoint": ["npm"],
         "OnBuild": null,
         "Labels": {}
       },

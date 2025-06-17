@@ -4,9 +4,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "GitLab Spec",
     "type": "object",
-    "required": [
-      "authentication"
-    ],
+    "required": ["authentication"],
     "additionalProperties": true,
     "properties": {
       "authentication": {
@@ -31,10 +29,7 @@
                 "order": 1
               }
             },
-            "required": [
-              "type",
-              "personal_access_token"
-            ]
+            "required": ["type", "personal_access_token"]
           }
         ]
       },
@@ -60,10 +55,7 @@
         "items": {
           "type": "string"
         },
-        "examples": [
-          "gitlab-org",
-          "mygroup"
-        ]
+        "examples": ["gitlab-org", "mygroup"]
       },
       "excluded_groups": {
         "order": 4,
@@ -73,10 +65,7 @@
         "items": {
           "type": "string"
         },
-        "examples": [
-          "gitlab-org",
-          "mygroup"
-        ]
+        "examples": ["gitlab-org", "mygroup"]
       },
       "use_faros_graph_projects_selection": {
         "order": 5,
@@ -93,10 +82,7 @@
         "items": {
           "type": "string"
         },
-        "examples": [
-          "gitlab-org/project1",
-          "mygroup/project2"
-        ]
+        "examples": ["gitlab-org/project1", "mygroup/project2"]
       },
       "excluded_projects": {
         "order": 7,
@@ -106,10 +92,7 @@
         "items": {
           "type": "string"
         },
-        "examples": [
-          "gitlab-org/project1",
-          "mygroup/project2"
-        ]
+        "examples": ["gitlab-org/project1", "mygroup/project2"]
       },
       "run_mode": {
         "order": 8,
@@ -117,11 +100,7 @@
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
         "default": "Full",
-        "enum": [
-          "Minimum",
-          "Full",
-          "Custom"
-        ]
+        "enum": ["Minimum", "Full", "Custom"]
       },
       "custom_streams": {
         "order": 9,
@@ -196,10 +175,7 @@
         },
         "title": "Bucket Ranges",
         "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
-        "examples": [
-          "3-5",
-          "7"
-        ]
+        "examples": ["3-5", "7"]
       },
       "page_size": {
         "order": 18,
