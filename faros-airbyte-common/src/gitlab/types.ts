@@ -3,7 +3,8 @@ export type GitLabToken = {
   personal_access_token: string;
 };
 
-export interface User {
+export interface FarosUserOutput {
+  readonly __brand: 'FarosUser';
   id: number;
   username: string;
   name?: string;
@@ -76,6 +77,84 @@ export interface Tag {
   name: string;
   title: string;
   commit_id: string;
+}
+
+export interface MergeRequestAuthor {
+  name: string;
+  publicEmail?: string;
+  username: string;
+  webUrl: string;
+}
+
+export interface MergeRequestAssignee {
+  name: string;
+  publicEmail?: string;
+  username: string;
+  webUrl: string;
+}
+
+export interface MergeRequestDiffStats {
+  additions: number;
+  deletions: number;
+  fileCount: number;
+}
+
+export interface MergeRequestLabel {
+  title: string;
+}
+
+export interface MergeRequestNote {
+  id: string;
+  author: MergeRequestAuthor;
+  body: string;
+  system: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MergeRequest {
+  id: string;
+  iid: number;
+  createdAt: string;
+  updatedAt: string;
+  mergedAt: string | null;
+  author: MergeRequestAuthor;
+  assignees: {
+    nodes: MergeRequestAssignee[];
+  };
+  mergeCommitSha: string | null;
+  commitCount: number;
+  userNotesCount: number;
+  diffStatsSummary: MergeRequestDiffStats;
+  state: string;
+  title: string;
+  webUrl: string;
+  notes: MergeRequestNote[];
+  labels: {
+    pageInfo: {
+      endCursor: string | null;
+      hasNextPage: boolean;
+    };
+    nodes: MergeRequestLabel[];
+  };
+  project_path: string;
+  group_id?: string;
+}
+
+export interface MergeRequestEvent {
+  id: string;
+  action_name: string;
+  target_iid: number;
+  target_type: string;
+  author: {
+    name: string;
+    public_email?: string;
+    username: string;
+    web_url: string;
+  };
+  created_at: string;
+  project_path: string;
+  group_id?: string;
 }
 
 export interface Issue {

@@ -227,6 +227,93 @@ exports[`index streams - faros issues 1`] = `
 ]
 `;
 
+exports[`index streams - faros merge request reviews 1`] = `
+[
+  {
+    "action_name": "approved",
+    "author": {
+      "name": "Reviewer",
+      "public_email": "reviewer@example.com",
+      "username": "reviewer",
+      "web_url": "https://gitlab.com/reviewer",
+    },
+    "created_at": "2021-01-01T02:00:00Z",
+    "group_id": "1",
+    "id": "123",
+    "project_path": "test-group/test-project",
+    "target_iid": 1,
+    "target_type": "merge_request",
+  },
+]
+`;
+
+exports[`index streams - faros merge requests 1`] = `
+[
+  {
+    "assignees": {
+      "nodes": [
+        {
+          "name": "Assignee User",
+          "publicEmail": "assignee@example.com",
+          "username": "assigneeuser",
+          "webUrl": "https://gitlab.com/assigneeuser",
+        },
+      ],
+    },
+    "author": {
+      "name": "Test User",
+      "publicEmail": "test@example.com",
+      "username": "testuser",
+      "webUrl": "https://gitlab.com/testuser",
+    },
+    "commitCount": 2,
+    "createdAt": "2021-01-01T00:00:00Z",
+    "diffStatsSummary": {
+      "additions": 10,
+      "deletions": 5,
+      "fileCount": 3,
+    },
+    "group_id": "1",
+    "id": "gid://gitlab/MergeRequest/1",
+    "iid": 1,
+    "labels": {
+      "nodes": [
+        {
+          "title": "bug",
+        },
+      ],
+      "pageInfo": {
+        "endCursor": null,
+        "hasNextPage": false,
+      },
+    },
+    "mergeCommitSha": null,
+    "mergedAt": null,
+    "notes": [
+      {
+        "author": {
+          "name": "Note Author",
+          "publicEmail": "noteauthor@example.com",
+          "username": "noteauthor",
+          "webUrl": "https://gitlab.com/noteauthor",
+        },
+        "body": "Test note",
+        "createdAt": "2021-01-01T01:00:00Z",
+        "id": "gid://gitlab/Note/1",
+        "system": false,
+        "updatedAt": "2021-01-01T01:00:00Z",
+      },
+    ],
+    "project_path": "test-group/test-project",
+    "state": "opened",
+    "title": "Test Merge Request",
+    "updatedAt": "2021-01-02T00:00:00Z",
+    "userNotesCount": 1,
+    "webUrl": "https://gitlab.com/test-group/test-project/-/merge_requests/1",
+  },
+]
+`;
+
 exports[`index streams - faros projects 1`] = `
 [
   {
@@ -276,6 +363,7 @@ exports[`index streams - faros tags 1`] = `
 exports[`index streams - faros users 1`] = `
 [
   {
+    "__brand": "FarosUser",
     "created_at": "2021-01-01T00:00:00Z",
     "email": "user1@example.com",
     "group_id": "1",
@@ -287,6 +375,7 @@ exports[`index streams - faros users 1`] = `
     "web_url": "https://gitlab.com/user1",
   },
   {
+    "__brand": "FarosUser",
     "created_at": "2021-02-01T00:00:00Z",
     "email": "user2@example.com",
     "group_id": "1",

@@ -1,6 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/gitlab';
 
+import {GitLabUserResponse} from '../src/types/api';
 import {UserCollector} from '../src/user-collector';
 
 describe('UserCollector', () => {
@@ -23,14 +23,13 @@ describe('UserCollector', () => {
 
   describe('collectUser', () => {
     it('should collect a valid user', () => {
-      const user: User = {
+      const user: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         name: 'Test User',
         email: 'test@example.com',
         state: 'active',
         web_url: 'https://gitlab.com/testuser',
-        group_id: 'group1',
       };
 
       userCollector.collectUser(user);
@@ -55,7 +54,7 @@ describe('UserCollector', () => {
     });
 
     it('should merge user data when collecting the same user twice', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         name: 'Test User',
@@ -63,7 +62,7 @@ describe('UserCollector', () => {
         web_url: 'https://gitlab.com/testuser',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         email: 'test@example.com',
@@ -87,7 +86,7 @@ describe('UserCollector', () => {
     });
 
     it('should maintain name mappings for users', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'user1',
         name: 'John Doe',
@@ -95,7 +94,7 @@ describe('UserCollector', () => {
         web_url: 'https://gitlab.com/user1',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 2,
         username: 'user2',
         name: 'John Doe',
@@ -117,7 +116,7 @@ describe('UserCollector', () => {
 
   describe('getCommitAuthor', () => {
     it('should return commit author for unique name mapping', () => {
-      const user: User = {
+      const user: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         name: 'Test User',
@@ -141,7 +140,7 @@ describe('UserCollector', () => {
     });
 
     it('should return undefined when multiple users have the same name', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'user1',
         name: 'John Doe',
@@ -149,7 +148,7 @@ describe('UserCollector', () => {
         web_url: 'https://gitlab.com/user1',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 2,
         username: 'user2',
         name: 'John Doe',
@@ -169,7 +168,7 @@ describe('UserCollector', () => {
     });
 
     it('should handle users without names', () => {
-      const user: User = {
+      const user: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         state: 'active',
@@ -186,7 +185,7 @@ describe('UserCollector', () => {
 
   describe('getCollectedUsers', () => {
     it('should return all collected users', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'user1',
         name: 'User One',
@@ -194,7 +193,7 @@ describe('UserCollector', () => {
         web_url: 'https://gitlab.com/user1',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 2,
         username: 'user2',
         name: 'User Two',
@@ -214,7 +213,7 @@ describe('UserCollector', () => {
 
   describe('clear', () => {
     it('should clear all collected data', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'user1',
         name: 'User One',
@@ -222,7 +221,7 @@ describe('UserCollector', () => {
         web_url: 'https://gitlab.com/user1',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 2,
         username: 'user2',
         name: 'User Two',
@@ -248,7 +247,7 @@ describe('UserCollector', () => {
 
   describe('edge cases', () => {
     it('should handle users with partial data', () => {
-      const minimalUser: User = {
+      const minimalUser: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         state: 'active',
@@ -262,7 +261,7 @@ describe('UserCollector', () => {
     });
 
     it('should use first non-empty value when merging', () => {
-      const user1: User = {
+      const user1: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         name: 'Test User',
@@ -271,7 +270,7 @@ describe('UserCollector', () => {
         updated_at: '2023-01-01T00:00:00Z',
       };
 
-      const user2: User = {
+      const user2: GitLabUserResponse = {
         id: 1,
         username: 'testuser',
         name: 'Test User',
