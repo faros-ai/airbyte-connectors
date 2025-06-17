@@ -1,8 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/gitlab';
+import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabConverter} from './common';
 
 export class FarosUsers extends GitlabConverter {
@@ -13,10 +13,9 @@ export class FarosUsers extends GitlabConverter {
   ];
 
   async convert(
-    record: AirbyteRecord,
-    ctx: StreamContext
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const user = record.record.data as User;
+    const user = record.record.data as FarosUserOutput;
 
     if (!user?.username) {
       return [];

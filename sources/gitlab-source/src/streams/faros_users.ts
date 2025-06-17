@@ -1,11 +1,24 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/gitlab';
+import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
+import {UserMapper} from '../types/internal';
 import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {
+  /**
+   * Users stream depends on other streams to ensure users are collected
+   * from various sources before emitting user records.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return [
+      'faros_issues',
+      'faros_merge_requests',
+      'faros_merge_request_reviews',
+    ];
+  }
+
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosUsers.json');
   }
@@ -25,12 +38,15 @@ export class FarosUsers extends StreamBase {
     return 'web_url';
   }
 
-  async *readRecords(): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<FarosUserOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     for (const group of await this.groupFilter.getGroups()) {
       this.logger.info(`Fetching users for group ${group}`);
       await gitlab.fetchGroupMembers(group);
     }
-    yield* gitlab.userCollector.getCollectedUsers().values();
+    const users = gitlab.userCollector.getCollectedUsers();
+    for (const user of users.values()) {
+      yield UserMapper.toOutput(user);
+    }
   }
 }

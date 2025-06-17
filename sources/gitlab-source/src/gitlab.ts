@@ -1,20 +1,27 @@
 import {Gitlab as GitlabClient, Types} from '@gitbeaker/node';
+import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   Commit,
   GitLabToken,
   Group,
+  Issue,
+  MergeRequest,
+  MergeRequestEvent,
+  MergeRequestNote,
   Project,
   Tag,
-  User,
 } from 'faros-airbyte-common/gitlab';
+import {GraphQLClient} from 'graphql-request';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
+import {MERGE_REQUESTS_QUERY} from './queries';
 import {RunMode} from './streams/common';
 import {GitLabConfig} from './types';
+import {GitLabUserResponse} from './types/api';
 import {UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
@@ -31,7 +38,8 @@ export const DEFAULT_FAROS_GRAPH = 'default';
 
 export class GitLab {
   private static gitlab: GitLab;
-  private readonly client: any;
+  private readonly client: InstanceType<typeof GitlabClient>;
+  private readonly gqlClient: GraphQLClient;
   protected readonly pageSize: number;
   protected readonly fetchPublicGroups: boolean;
   public readonly userCollector: UserCollector;
@@ -45,6 +53,12 @@ export class GitLab {
       host: this.getBaseUrl(),
       rejectUnauthorized:
         config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+    });
+
+    this.gqlClient = new GraphQLClient(`${this.getBaseUrl()}/api/graphql`, {
+      headers: {
+        authorization: `Bearer ${this.getToken()}`,
+      },
     });
 
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
@@ -75,7 +89,10 @@ export class GitLab {
       );
       const versionInfo = await this.client.Version.show();
       if (versionInfo && typeof versionInfo === 'object') {
-        this.logger.debug('GitLab credentials verified.', versionInfo);
+        this.logger.debug(
+          'GitLab credentials verified.',
+          JSON.stringify(versionInfo)
+        );
       } else {
         this.logger.error(
           'GitLab version info response was not an object or was null: %s',
@@ -194,20 +211,10 @@ export class GitLab {
       fetchPage,
       `members for group ${groupId}`
     )) {
-      const user: User = {
-        id: member.id,
-        username: member.username,
-        name: member.name,
-        email: (member.public_email ?? member.email) as string,
-        state: member.state,
-        web_url: member.web_url,
-        created_at: member.created_at as string,
-        updated_at: member.updated_at as string,
+      this.userCollector.collectUser({
+        ...member,
         group_id: groupId,
-      };
-
-      // Collect the user in UserCollector
-      this.userCollector.collectUser(user);
+      } as unknown as GitLabUserResponse);
     }
   }
 
@@ -337,6 +344,253 @@ export class GitLab {
         name: tag.name,
         title: tag.message,
         commit_id: tag.commit?.id,
+      };
+    }
+  }
+
+  async *getMergeRequestsWithNotes(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<MergeRequest> {
+    const mrNotes = new Map<string, Set<any>>();
+    const needsMoreNotes = new Set<string>();
+    const mrDataMap = new Map<string, any>();
+
+    let cursor: string | null = null;
+    let hasNextPage = true;
+
+    // Phase 1: GraphQL MR + first page notes
+    while (hasNextPage) {
+      try {
+        const result: any = await this.gqlClient.request(MERGE_REQUESTS_QUERY, {
+          fullPath: projectPath,
+          pageSize: this.pageSize,
+          cursor,
+          updatedAfter: since?.toISOString(),
+          updatedBefore: until?.toISOString(),
+        });
+
+        const requests = result.project?.mergeRequests;
+        if (!requests?.nodes?.length) {
+          break;
+        }
+
+        for (const mrData of requests.nodes) {
+          // Store MR data and first page notes
+          mrNotes.set(
+            mrData.id,
+            new Set(mrData.notes.nodes.filter((note) => !note.system))
+          );
+          mrDataMap.set(mrData.id, mrData);
+
+          // Track if more notes needed
+          if (mrData.notes.pageInfo.hasNextPage) {
+            needsMoreNotes.add(mrData.id);
+          }
+
+          if (mrData.author?.username) {
+            this.userCollector.collectUser(
+              mrData.author as unknown as GitLabUserResponse
+            );
+          }
+
+          mrData.assignees?.nodes?.forEach((assignee: any) => {
+            if (assignee?.username) {
+              this.userCollector.collectUser(
+                assignee as unknown as GitLabUserResponse
+              );
+            }
+          });
+
+          mrData.notes.nodes.forEach((note: any) => {
+            if (note.author?.username) {
+              this.userCollector.collectUser(
+                note.author as unknown as GitLabUserResponse
+              );
+            }
+          });
+        }
+
+        cursor = requests.pageInfo.endCursor;
+        hasNextPage = requests.pageInfo.hasNextPage;
+      } catch (err: any) {
+        this.logger.error(
+          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`
+        );
+        throw new VError(
+          err,
+          `Error fetching merge requests for project ${projectPath}`
+        );
+      }
+    }
+
+    // Phase 2: REST API for additional notes
+    for (const mrId of needsMoreNotes) {
+      const mrData = mrDataMap.get(mrId);
+      if (mrData) {
+        for await (const note of this.getAdditionalMergeRequestNotes(
+          projectPath,
+          mrData.iid
+        )) {
+          mrNotes.get(mrId)?.add(note);
+        }
+      }
+    }
+
+    // Phase 3: Emit complete MR records
+    for (const [mrId, notes] of mrNotes) {
+      const mrData = mrDataMap.get(mrId);
+      if (mrData) {
+        yield {
+          ...mrData,
+          notes: Array.from(notes),
+          project_path: projectPath,
+        };
+      }
+    }
+  }
+
+  async *getAdditionalMergeRequestNotes(
+    projectPath: string,
+    mergeRequestIid: number
+  ): AsyncGenerator<MergeRequestNote> {
+    const options: any = {
+      perPage: this.pageSize,
+    };
+
+    const fetchPage = (page: number): Promise<any[]> =>
+      this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, {
+        ...options,
+        page,
+      });
+
+    for await (const note of this.paginate<any>(
+      fetchPage,
+      `additional notes for MR ${mergeRequestIid} in project ${projectPath}`
+    )) {
+      // Filter out system notes
+      if (note.system) {
+        continue;
+      }
+
+      if (note.author?.username) {
+        this.userCollector.collectUser(
+          note.author as unknown as GitLabUserResponse
+        );
+      }
+
+      yield {
+        id: note.id,
+        author: note.author,
+        body: note.body,
+        system: note.system,
+        createdAt: note.created_at,
+        updatedAt: note.updated_at,
+      };
+    }
+  }
+
+  async *getMergeRequestEvents(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<MergeRequestEvent> {
+    const options: any = {
+      targetType: 'merge_request',
+      action: 'approved',
+      perPage: this.pageSize,
+    };
+
+    if (since) {
+      options.after = format(subDays(since, 1), 'yyyy-MM-dd');
+    }
+
+    if (until) {
+      options.before = format(addDays(until, 1), 'yyyy-MM-dd');
+    }
+
+    const fetchPage = (page: number): Promise<any[]> =>
+      this.client.Events.all({projectId: projectPath, ...options, page});
+
+    for await (const event of this.paginate<any>(
+      fetchPage,
+      `MR events for project ${projectPath} since ${options.after} until ${options.before}`
+    )) {
+      if (event.author?.username) {
+        this.userCollector.collectUser(
+          event.author as unknown as GitLabUserResponse
+        );
+      }
+
+      yield {
+        id: event.id,
+        action_name: event.action_name,
+        target_iid: event.target_iid,
+        target_type: event.target_type,
+        author: event.author,
+        created_at: event.created_at,
+        project_path: projectPath,
+      };
+    }
+  }
+
+  async *getIssues(
+    projectId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<Issue, 'group_id' | 'project_path'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    const fetchPage = (page: number): Promise<Types.IssueSchema[]> =>
+      this.client.Issues.all({...options, page, projectId}) as Promise<
+        Types.IssueSchema[]
+      >;
+
+    for await (const issue of this.paginate<Types.IssueSchema>(
+      fetchPage,
+      `issues for project ${projectId}`
+    )) {
+      if (issue.author?.username) {
+        this.userCollector.collectUser(
+          issue.author as unknown as GitLabUserResponse
+        );
+      }
+
+      if (issue.assignees) {
+        for (const assignee of issue.assignees) {
+          this.userCollector.collectUser(
+            assignee as unknown as GitLabUserResponse
+          );
+        }
+      }
+
+      yield {
+        id: issue.id,
+        title: issue.title,
+        description: issue.description,
+        state: issue.state,
+        created_at: issue.created_at,
+        updated_at: issue.updated_at,
+        labels: issue.labels || [],
+        assignees: issue.assignees
+          ? issue.assignees.map((assignee) => ({
+              username: assignee.username as string,
+            }))
+          : [],
+        author: {username: issue.author.username as string},
       };
     }
   }

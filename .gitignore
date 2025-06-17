@@ -7,6 +7,7 @@ acceptance_tests_logs/
 .idea/
 .turbo/
 .nx/
+.envrc
 
 .DS_Store
 acceptance-test-*.log

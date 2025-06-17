@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mergedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "author": {
+      "type": ["object", "null"],
+      "properties": {
+        "name": {
+          "type": ["string", "null"]
+        },
+        "publicEmail": {
+          "type": ["string", "null"]
+        },
+        "username": {
+          "type": "string"
+        },
+        "webUrl": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "assignees": {
+      "type": ["object", "null"],
+      "properties": {
+        "nodes": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": ["string", "null"]
+              },
+              "publicEmail": {
+                "type": ["string", "null"]
+              },
+              "username": {
+                "type": "string"
+              },
+              "webUrl": {
+                "type": ["string", "null"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "mergeCommitSha": {
+      "type": ["string", "null"]
+    },
+    "commitCount": {
+      "type": "integer"
+    },
+    "userNotesCount": {
+      "type": "integer"
+    },
+    "diffStatsSummary": {
+      "type": "object",
+      "properties": {
+        "additions": {
+          "type": "integer"
+        },
+        "deletions": {
+          "type": "integer"
+        },
+        "fileCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "state": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "webUrl": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "author": {
+            "type": ["object", "null"],
+            "properties": {
+              "name": {
+                "type": ["string", "null"]
+              },
+              "publicEmail": {
+                "type": ["string", "null"]
+              },
+              "username": {
+                "type": "string"
+              },
+              "webUrl": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "body": {
+            "type": "string"
+          },
+          "system": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": ["object", "null"],
+      "properties": {
+        "pageInfo": {
+          "type": ["object", "null"],
+          "properties": {
+            "endCursor": {
+              "type": ["string", "null"]
+            },
+            "hasNextPage": {
+              "type": "boolean"
+            }
+          }
+        },
+        "nodes": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "iid",
+    "createdAt",
+    "updatedAt",
+    "commitCount",
+    "userNotesCount",
+    "diffStatsSummary",
+    "state",
+    "title",
+    "webUrl",
+    "notes",
+    "project_path",
+    "group_id"
+  ]
+}

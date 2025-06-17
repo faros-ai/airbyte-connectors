@@ -15,20 +15,22 @@ exports[`cursor process records from all streams 2`] = `
 Array [
   Object {
     "vcs_UserToolUsage": Object {
-      "organization": Object {
-        "source": "Cursor",
-        "uid": "Cursor",
-      },
       "recordedAt": "2024-03-18T00:00:00.000Z",
       "source": "Cursor",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Cursor",
-      },
       "usedAt": "2024-03-18T00:00:00.000Z",
-      "user": Object {
-        "source": "Cursor",
-        "uid": "developer@company.com",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "Cursor",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Cursor",
+        },
+        "user": Object {
+          "source": "Cursor",
+          "uid": "developer@company.com",
+        },
       },
     },
   },
@@ -109,20 +111,22 @@ Array [
   },
   Object {
     "vcs_UserToolUsage": Object {
-      "organization": Object {
-        "source": "Cursor",
-        "uid": "Cursor",
-      },
       "recordedAt": "2024-03-19T00:00:00.000Z",
       "source": "Cursor",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Cursor",
-      },
       "usedAt": "2024-03-19T00:00:00.000Z",
-      "user": Object {
-        "source": "Cursor",
-        "uid": "developer@company.com",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "Cursor",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Cursor",
+        },
+        "user": Object {
+          "source": "Cursor",
+          "uid": "developer@company.com",
+        },
       },
     },
   },
