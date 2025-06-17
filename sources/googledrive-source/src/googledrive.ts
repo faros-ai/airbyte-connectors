@@ -33,11 +33,10 @@ export const REQUIRED_SCOPES = [
 export interface GoogleDriveConfig extends AirbyteConfig {
   readonly client_email: string;
   readonly private_key: string;
+  readonly delegated_admin_user?: string;
   readonly shared_drive_ids?: ReadonlyArray<string>;
   readonly include_personal_drives?: boolean;
-  readonly delegated_user?: string;
   readonly cutoff_days?: number;
-  readonly domain_wide_delegation?: boolean;
 }
 
 type PaginationReqFunc = (pageToken?: string) => Promise<any>;
@@ -70,8 +69,8 @@ export class GoogleDrive {
     }
 
     const clientOptions =
-      config.domain_wide_delegation === true && config.delegated_user
-        ? {subject: config.delegated_user}
+      config.delegated_admin_user
+        ? {subject: config.delegated_admin_user}
         : {};
 
     const credentials: Auth.JWTInput = {

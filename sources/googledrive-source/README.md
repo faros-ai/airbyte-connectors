@@ -54,20 +54,20 @@ Create credentials:
 - Create [Service Account](https://console.cloud.google.com/apis/credentials)
 - Use client_email and private_key from Service account
 
-#### Enable Domain-wide Delegation for service account
+#### Domain-wide Delegation for Workspace Access
 
 Setup requirements: Google Workspace Admin permissions
 
-In normal cases, one's Drive activities can only be accessed by its owner or specific users that it is shared to. This is good for personal use, but in an organization that required data from all members' Drive activities, using one service account for each member, or forcing all members to share their Drive activities with an account is troublesome.
+To access workspace users and personal drives, you need to configure domain-wide delegation. This allows a service account to call APIs on behalf of users in a Google Workspace organization, enabling access to all organization members' Drive activities and workspace data.
 
-Google has introduced an feature named Domain-wide Delegation, in which it allows a service account to call APIs on behalf of users in a Google Workspace organization. With this, one service account can access all organization members' Drive activities without extra configuration efforts.
+Domain-wide delegation is automatically enabled when you specify a `delegated_admin_user` in your configuration. The specified user must be a Google Workspace admin.
 
 Refer to this [link](https://developers.google.com/workspace/guides/create-credentials#optional_set_up_domain-wide_delegation_for_a_service_account) to know how to enable Domain-wide Delegation for the service account.
 
 Scopes required for delegation: 
 - `https://www.googleapis.com/auth/drive.activity.readonly` (for Drive Activity)
 - `https://www.googleapis.com/auth/admin.directory.user.readonly` (for Workspace Users)
-- `https://www.googleapis.com/auth/admin.directory.customer.readonly` (for Workspace Users)
+- `https://www.googleapis.com/auth/admin.directory.customer.readonly` (for Workspace Customer)
 
 #### Shared Drive Configuration
 
@@ -84,26 +84,41 @@ You can control whether personal drives (user drives) are included in activity p
 - If `include_personal_drives` is `false`, only shared drives specified in `shared_drive_ids` will be processed
 - This setting is useful when you only want to monitor shared drives and not individual user activities
 
-Example configuration with shared drives only:
+**Note**: Personal drives can only be accessed when `delegated_admin_user` is specified and domain-wide delegation is properly configured.
+
+## Configuration Examples
+
+### Shared Drives Only (No Domain-wide Delegation)
 ```json
 {
   "private_key": "PRIVATE_KEY",
   "client_email": "CLIENT_EMAIL", 
   "shared_drive_ids": ["1ABC123DEF456GHI789JKL", "2MNO456PQR789STU123VWX"],
   "include_personal_drives": false,
-  "domain_wide_delegation": true,
   "cutoff_days": 90
 }
 ```
 
-Example configuration with both personal and shared drives:
+### Full Workspace Access (With Domain-wide Delegation)
 ```json
 {
   "private_key": "PRIVATE_KEY",
   "client_email": "CLIENT_EMAIL", 
+  "delegated_admin_user": "admin@company.com",
   "shared_drive_ids": ["1ABC123DEF456GHI789JKL", "2MNO456PQR789STU123VWX"],
   "include_personal_drives": true,
-  "domain_wide_delegation": true,
+  "cutoff_days": 90
+}
+```
+
+### Personal Drives Only (With Domain-wide Delegation)
+```json
+{
+  "private_key": "PRIVATE_KEY",
+  "client_email": "CLIENT_EMAIL", 
+  "delegated_admin_user": "admin@company.com",
+  "shared_drive_ids": [],
+  "include_personal_drives": true,
   "cutoff_days": 90
 }
 ```

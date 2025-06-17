@@ -1,7 +1,6 @@
 {
   "private_key": "PRIVATE_KEY",
   "client_email": "CLIENT_EMAIL",
-  "delegated_user": "DELEGATED_USER",
-  "domain_wide_delegation": true,
+  "delegated_admin_user": "admin@example.com",
   "cutoff_days": 90
 }

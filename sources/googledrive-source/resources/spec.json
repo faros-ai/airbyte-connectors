@@ -33,16 +33,11 @@
         "description": "Whether to include personal drives (user drives) in activity processing. If set to false, only shared drives specified in 'shared_drive_ids' will be processed. If set to true (default), activities from all workspace users' personal drives will be included along with any specified shared drives.",
         "default": true
       },
-      "delegated_user": {
+      "delegated_admin_user": {
         "type": "string",
-        "title": "Delegated User",
-        "description": "Email of the user to impersonate when domain-wide delegation is enabled. If not specified, the client_email will be used."
-      },
-      "domain_wide_delegation": {
-        "type": "boolean",
-        "title": "Enable Domain-wide Delegation",
-        "description": "This mode allows a service account to call APIs on behalf of users in a Google Workspace organization. Meaning that one service account can access all organization members' Drive activities and workspace users without extra configuration efforts. Must be a Google Workspace Admin to configure. Refer to this [link](https://developers.google.com/workspace/guides/create-credentials#optional_set_up_domain-wide_delegation_for_a_service_account) to know how to enable Domain-wide Delegation for the service account. Scopes required for delegation: https://www.googleapis.com/auth/drive.activity.readonly, https://www.googleapis.com/auth/admin.directory.user.readonly, https://www.googleapis.com/auth/admin.directory.customer.readonly",
-        "default": false
+        "title": "Delegated Admin User",
+        "description": "Email of a Google Workspace admin user to impersonate for accessing workspace APIs and personal drives. When specified, enables domain-wide delegation allowing the service account to access all organization members' Drive activities and workspace data. The user must be a Google Workspace admin. If not specified, only shared drives and workspace customer information will be accessible. Required scopes for delegation: https://www.googleapis.com/auth/drive.activity.readonly, https://www.googleapis.com/auth/admin.directory.user.readonly, https://www.googleapis.com/auth/admin.directory.customer.readonly. Refer to [Google's documentation](https://developers.google.com/workspace/guides/create-credentials#optional_set_up_domain-wide_delegation_for_a_service_account) for setting up domain-wide delegation.",
+        "examples": ["admin@company.com"]
       },
       "cutoff_days": {
         "type": "integer",

@@ -114,6 +114,10 @@ function setupGoogleDriveInstance(
   jest
     .spyOn(GoogleDrive, 'instance')
     .mockImplementation(async (config, logger) => {
+      const mockAuth = {
+        getAccessToken: jest.fn().mockResolvedValue('mock-access-token'),
+      };
+
       const adminDirectoryClient = {
         users: {
           list: jest.fn().mockResolvedValue({
@@ -137,7 +141,7 @@ function setupGoogleDriveInstance(
 
       return new GoogleDrive(
         mockCredentials,
-        {} as any,
+        mockAuth as any,
         adminDirectoryClient as any,
         driveActivityClient as any,
         logger
