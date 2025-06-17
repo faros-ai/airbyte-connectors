@@ -3,5 +3,7 @@
   "compilerOptions": {
     "outDir": "../out"
   },
-  "references": [{"path": "../src"}]
+  "references": [
+    {"path": "../src"}
+  ]
 }

@@ -4,10 +4,19 @@
       "stream": {
         "name": "incidents",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"],
-        "source_defined_primary_key": [["id"]]
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -16,9 +25,15 @@
       "stream": {
         "name": "pages",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -27,9 +42,15 @@
       "stream": {
         "name": "components",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -38,9 +59,15 @@
       "stream": {
         "name": "component_groups",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -49,9 +76,15 @@
       "stream": {
         "name": "users",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
         "source_defined_cursor": true,
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -60,11 +93,21 @@
       "stream": {
         "name": "component_uptimes",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["range_start"],
+        "default_cursor_field": [
+          "range_start"
+        ],
         "source_defined_primary_key": [
-          ["id", "page_id", "range_start", "range_end"]
+          [
+            "id",
+            "page_id",
+            "range_start",
+            "range_end"
+          ]
         ]
       },
       "sync_mode": "full_refresh",

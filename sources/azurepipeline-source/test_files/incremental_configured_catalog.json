@@ -4,10 +4,19 @@
       "stream": {
         "name": "runs",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["queueTime"],
-        "source_defined_primary_key": [["uid"]]
+        "default_cursor_field": [
+          "queueTime"
+        ],
+        "source_defined_primary_key": [
+          [
+            "uid"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -16,10 +25,19 @@
       "stream": {
         "name": "releases",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["createdOn"],
-        "source_defined_primary_key": [["uid"]]
+        "default_cursor_field": [
+          "createdOn"
+        ],
+        "source_defined_primary_key": [
+          [
+            "uid"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

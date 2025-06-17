@@ -4,7 +4,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Azure Workitems Spec",
     "type": "object",
-    "required": ["instance", "access_token", "organization"],
+    "required": [
+      "instance",
+      "access_token",
+      "organization"
+    ],
     "additionalProperties": true,
     "properties": {
       "instance": {
@@ -23,7 +27,9 @@
                 "order": 0
               }
             },
-            "required": ["type"]
+            "required": [
+              "type"
+            ]
           },
           {
             "type": "object",
@@ -40,7 +46,10 @@
                 "title": "API URL"
               }
             },
-            "required": ["type", "api_url"]
+            "required": [
+              "type",
+              "api_url"
+            ]
           }
         ]
       },
@@ -75,7 +84,11 @@
           "type": "string"
         },
         "description": "Fields to include on tasks.",
-        "examples": ["Area Path", "Acceptance Criteria", "Accepted By"]
+        "examples": [
+          "Area Path",
+          "Acceptance Criteria",
+          "Accepted By"
+        ]
       },
       "cutoff_days": {
         "order": 7,

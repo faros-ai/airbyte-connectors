@@ -4,7 +4,9 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Cursor Spec",
     "type": "object",
-    "required": ["cursor_api_key"],
+    "required": [
+      "cursor_api_key"
+    ],
     "additionalProperties": true,
     "properties": {
       "cursor_api_key": {

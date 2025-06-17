@@ -13,24 +13,24 @@
       "format": "date-time"
     },
     "issues": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string"
-          },
-          "points": {
-            "type": "number"
-          },
-          "status": {
-            "type": "string"
-          },
-          "addedDuringSprint": {
-            "type": "boolean"
-          }
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "points": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string"
+              },
+              "addedDuringSprint": {
+                "type": "boolean"
+              }
+            }
         }
-      }
     }
   }
 }

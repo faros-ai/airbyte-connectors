@@ -1,6 +1,6 @@
 {
-  "Report_Entry": [
-    {"A": "B", "foo": "bar", "C": "3"},
-    {"A": "D", "foo": "baz", "C": "4"}
-  ]
+    "Report_Entry": [
+                {"A": "B", "foo": "bar", "C":"3"},
+                {"A": "D", "foo": "baz", "C":"4"}
+            ]
 }

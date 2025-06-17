@@ -10,7 +10,10 @@
       "type": "string"
     },
     "name": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "key": {
       "type": "string"
@@ -19,7 +22,10 @@
       "type": "number"
     },
     "lastUpdateTime": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time"
     },
     "environment": {
@@ -29,7 +35,10 @@
           "type": "string"
         },
         "type": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -113,7 +122,10 @@
           "type": "string"
         },
         "type": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -147,21 +159,33 @@
           "type": "string"
         },
         "startedOn": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "completedOn": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "status": {
           "type": "object",
           "properties": {
             "name": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "type": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             }
           }
         }

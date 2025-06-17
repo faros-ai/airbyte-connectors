@@ -9,7 +9,10 @@
       "type": "string"
     },
     "group_id": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "created_at": {
       "type": "string"
@@ -24,7 +27,10 @@
       "type": "string"
     },
     "description": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "position": {
       "type": "integer"
@@ -42,7 +48,10 @@
       "type": "string"
     },
     "start_date": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     }
   }
 }

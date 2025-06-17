@@ -80,7 +80,9 @@
           },
           "attachments": {
             "projects": {
-              "projectPHIDs": ["PHID-PROJ-cmq7ncnt3rfgspqfm3b5"]
+              "projectPHIDs": [
+                "PHID-PROJ-cmq7ncnt3rfgspqfm3b5"
+              ]
             },
             "uris": {
               "uris": []
@@ -199,7 +201,9 @@
           },
           "attachments": {
             "projects": {
-              "projectPHIDs": ["PHID-PROJ-cmq7ncnt3rfgspqfm3b5"]
+              "projectPHIDs": [
+                "PHID-PROJ-cmq7ncnt3rfgspqfm3b5"
+              ]
             },
             "uris": {
               "uris": []
@@ -321,7 +325,9 @@
           },
           "attachments": {
             "projects": {
-              "projectPHIDs": ["PHID-PROJ-cmq7ncnt3rfgspqfm3b5"]
+              "projectPHIDs": [
+                "PHID-PROJ-cmq7ncnt3rfgspqfm3b5"
+              ]
             },
             "uris": {
               "uris": []

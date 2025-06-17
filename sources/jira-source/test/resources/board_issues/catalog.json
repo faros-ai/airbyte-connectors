@@ -4,7 +4,9 @@
       "stream": {
         "name": "faros_board_issues",
         "jsonSchema": {},
-        "supportedSyncModes": ["full_refresh"],
+        "supportedSyncModes": [
+          "full_refresh"
+        ],
         "sync_mode": "full_refresh",
         "destination_sync_mode": "overwrite"
       }

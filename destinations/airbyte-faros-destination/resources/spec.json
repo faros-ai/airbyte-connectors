@@ -3,12 +3,18 @@
   "supportsIncremental": true,
   "supportsNormalization": false,
   "supportsDBT": true,
-  "supported_destination_sync_modes": ["overwrite", "append", "append_dedup"],
+  "supported_destination_sync_modes": [
+    "overwrite",
+    "append",
+    "append_dedup"
+  ],
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Faros Destination Spec",
     "type": "object",
-    "required": ["edition_configs"],
+    "required": [
+      "edition_configs"
+    ],
     "additionalProperties": true,
     "properties": {
       "edition_configs": {
@@ -30,7 +36,9 @@
         "type": "string",
         "title": "Origin name",
         "description": "The Faros origin name used for uploaded entries. Must be unique.",
-        "examples": ["my-faros-destination"]
+        "examples": [
+          "my-faros-destination"
+        ]
       },
       "accept_input_records_origin": {
         "order": 2,
@@ -46,7 +54,9 @@
         "description": "JSON map to replace records origin values, where each entry (origin1, origin2) indicates that the output records' origin property should be replaced from 'origin1' by 'origin2'",
         "multiline": true,
         "default": "{}",
-        "examples": ["{ \"originA\": \"originB\" }"]
+        "examples": [
+          "{ \"originA\": \"originB\" }"
+        ]
       },
       "exclude_fields_map": {
         "order": 4,
@@ -100,7 +110,10 @@
         "title": "Invalid record strategy",
         "description": "Strategy to follow to handle an invalid input record.",
         "default": "SKIP",
-        "enum": ["FAIL", "SKIP"]
+        "enum": [
+          "FAIL",
+          "SKIP"
+        ]
       },
       "jsonata_expression": {
         "order": 10,
@@ -115,7 +128,10 @@
         "title": "JSONata apply mode",
         "description": "JSONata apply mode when converting input records.",
         "default": "FALLBACK",
-        "enum": ["FALLBACK", "OVERRIDE"]
+        "enum": [
+          "FALLBACK",
+          "OVERRIDE"
+        ]
       },
       "jsonata_destination_models": {
         "order": 12,
@@ -125,7 +141,10 @@
         },
         "title": "JSONata destination models",
         "description": "Destination models when using JSONata expression. If '*' is provided we assume that all models are being modified.",
-        "examples": ["ims_Incident", "vcs_Commit"]
+        "examples": [
+          "ims_Incident",
+          "vcs_Commit"
+        ]
       },
       "source_specific_configs": {
         "$ref": "source-specific-configs/spec.json"

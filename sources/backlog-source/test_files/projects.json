@@ -1,37 +1,37 @@
 [
-  {
-    "id": 68075,
-    "projectKey": "DEVCUBE",
-    "name": "devcube",
-    "chartEnabled": false,
-    "subtaskingEnabled": false,
-    "projectLeaderCanEditProjectLeader": false,
-    "useWikiTreeView": true,
-    "textFormattingRule": "markdown",
-    "archived": false,
-    "displayOrder": 2147483646,
-    "useDevAttributes": true,
-    "versionMilestones": [
-      {
-        "id": 63715,
-        "projectId": 68075,
-        "name": "sprint2",
-        "description": null,
-        "startDate": "2022-01-20T00:00:00Z",
-        "releaseDueDate": "2022-01-22T00:00:00Z",
+    {
+        "id": 68075,
+        "projectKey": "DEVCUBE",
+        "name": "devcube",
+        "chartEnabled": false,
+        "subtaskingEnabled": false,
+        "projectLeaderCanEditProjectLeader": false,
+        "useWikiTreeView": true,
+        "textFormattingRule": "markdown",
         "archived": false,
-        "displayOrder": 0
-      },
-      {
-        "id": 63714,
-        "projectId": 68075,
-        "name": "sprint1",
-        "description": null,
-        "startDate": null,
-        "releaseDueDate": null,
-        "archived": false,
-        "displayOrder": 1
-      }
-    ]
-  }
+        "displayOrder": 2147483646,
+        "useDevAttributes": true,
+        "versionMilestones": [
+            {
+                "id": 63715,
+                "projectId": 68075,
+                "name": "sprint2",
+                "description": null,
+                "startDate": "2022-01-20T00:00:00Z",
+                "releaseDueDate": "2022-01-22T00:00:00Z",
+                "archived": false,
+                "displayOrder": 0
+            },
+            {
+                "id": 63714,
+                "projectId": 68075,
+                "name": "sprint1",
+                "description": null,
+                "startDate": null,
+                "releaseDueDate": null,
+                "archived": false,
+                "displayOrder": 1
+            }
+        ]
+    }
 ]

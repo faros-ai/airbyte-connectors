@@ -1,12 +1,12 @@
 {
   "suites": {},
-  "runs": {
+  "runs":{
     "bad": 1234
   },
-  "results": {
+  "results":{
     "bad": 1234
   },
-  "cases": {
+  "cases":{
     "bad": 1234
   }
 }

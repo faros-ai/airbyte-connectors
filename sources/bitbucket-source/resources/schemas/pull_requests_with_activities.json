@@ -69,7 +69,10 @@
                 "type": "number"
               },
               "old": {
-                "type": ["object", "null"],
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
                   "path": {
                     "type": "string"
@@ -80,7 +83,10 @@
                 }
               },
               "new": {
-                "type": ["object", "null"],
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
                   "path": {
                     "type": "string"
@@ -307,7 +313,10 @@
           }
         },
         "mergeCommit": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "properties": {
             "hash": {
               "type": "string"
@@ -315,7 +324,10 @@
           }
         },
         "closedBy": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "properties": {
             "displayName": {
               "type": "string"
@@ -586,7 +598,10 @@
               }
             },
             "mergeCommit": {
-              "type": ["array", "null"],
+              "type": [
+                "array",
+                "null"
+              ],
               "items": {
                 "type": "object",
                 "properties": {

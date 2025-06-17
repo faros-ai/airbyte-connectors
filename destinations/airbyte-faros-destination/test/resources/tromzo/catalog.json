@@ -1,10 +1,10 @@
 {
-  "streams": [
-    {
-      "stream": {
-        "name": "mytestsource__tromzo__findings"
-      },
-      "destination_sync_mode": "append"
-    }
-  ]
-}
+    "streams": [
+      {
+        "stream": {
+          "name": "mytestsource__tromzo__findings"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
+  }

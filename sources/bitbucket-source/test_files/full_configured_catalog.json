@@ -4,8 +4,14 @@
       "stream": {
         "name": "branches",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["name"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "name"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -14,8 +20,14 @@
       "stream": {
         "name": "deployments",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["uuid"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "uuid"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -24,8 +36,14 @@
       "stream": {
         "name": "pipelines",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["uuid"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "uuid"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -34,8 +52,14 @@
       "stream": {
         "name": "pipeline_steps",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["uuid"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "uuid"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -44,7 +68,9 @@
       "stream": {
         "name": "repositories",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"]
+        "supported_sync_modes": [
+          "full_refresh"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -53,7 +79,9 @@
       "stream": {
         "name": "workspace_users",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"]
+        "supported_sync_modes": [
+          "full_refresh"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -62,7 +90,9 @@
       "stream": {
         "name": "workspaces",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"]
+        "supported_sync_modes": [
+          "full_refresh"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

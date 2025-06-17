@@ -3,14 +3,20 @@
   "type": "object",
   "properties": {
     "completedOn": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time"
     },
     "uuid": {
       "type": "string"
     },
     "startedOn": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time"
     },
     "type": {
@@ -23,13 +29,19 @@
       "type": "number"
     },
     "maxTime": {
-      "type": ["number", "null"]
+      "type": [
+        "number",
+        "null"
+      ]
     },
     "buildSecondsUsed": {
       "type": "number"
     },
     "durationInSeconds": {
-      "type": ["number", "null"]
+      "type": [
+        "number",
+        "null"
+      ]
     },
     "pipeline": {
       "type": "object",
@@ -80,10 +92,16 @@
           "type": "object",
           "properties": {
             "name": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "type": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             }
           }
         }

@@ -1,37 +1,46 @@
 {
-  "streams": [
-    {
-      "stream": {
-        "name": "issues",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
-        "source_defined_cursor": true,
-        "default_cursor_field": ["updated"]
-      },
-      "sync_mode": "full_refresh",
-      "destination_sync_mode": "overwrite"
-    },
-    {
-      "stream": {
-        "name": "projects",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_cursor": true,
-        "default_cursor_field": []
-      },
-      "sync_mode": "full_refresh",
-      "destination_sync_mode": "overwrite"
-    },
-    {
-      "stream": {
-        "name": "users",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_cursor": true,
-        "default_cursor_field": []
-      },
-      "sync_mode": "full_refresh",
-      "destination_sync_mode": "overwrite"
-    }
-  ]
+    "streams": [
+        {
+            "stream": {
+                "name": "issues",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": [
+                    "updated"
+                ]
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "projects",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": []
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        },
+        {
+            "stream": {
+                "name": "users",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh"
+                ],
+                "source_defined_cursor": true,
+                "default_cursor_field": []
+            },
+            "sync_mode": "full_refresh",
+            "destination_sync_mode": "overwrite"
+        }
+    ]
 }

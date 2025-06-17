@@ -26,7 +26,9 @@
               "envTags": [],
               "groups": null,
               "modifiedAt": 1740589575,
-              "monitorIds": [1000],
+              "monitorIds": [
+                1000
+              ],
               "name": "Test SLO for Source",
               "overallStatus": [
                 {
@@ -45,7 +47,9 @@
                 }
               ],
               "query": null,
-              "serviceTags": ["subscription"],
+              "serviceTags": [
+                "subscription"
+              ],
               "sloType": "monitor",
               "status": {
                 "calculationError": null,
@@ -82,7 +86,10 @@
                 "target_threshold": 98,
                 "timeframe": "7d"
               },
-              "allTags": ["delivery", "service:delivery-api"],
+              "allTags": [
+                "delivery",
+                "service:delivery-api"
+              ],
               "createdAt": 1740453374,
               "creator": {
                 "email": "user@test.ai",

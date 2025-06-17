@@ -17,7 +17,10 @@
             }
           ]
         },
-        "run_on": ["tags", "branches"],
+        "run_on": [
+          "tags",
+          "branches"
+        ],
         "pipeline_file": ".semaphore/semaphore.yml",
         "owner": "organization",
         "name": "repository-one",
@@ -55,7 +58,10 @@
             }
           ]
         },
-        "run_on": ["tags", "branches"],
+        "run_on": [
+          "tags",
+          "branches"
+        ],
         "pipeline_file": ".semaphore/semaphore.yml",
         "owner": "organization",
         "name": "repository-two",

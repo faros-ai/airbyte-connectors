@@ -16,7 +16,9 @@
     {
       "type": "object",
       "title": "Configuration",
-      "required": ["kind_property"],
+      "required": [
+        "kind_property"
+      ],
       "properties": {
         "source_type": {
           "type": "string",
@@ -36,7 +38,9 @@
             {
               "type": "object",
               "title": "Project Configuration",
-              "required": ["kind"],
+              "required": [
+                "kind"
+              ],
               "properties": {
                 "option_title": {
                   "type": "string",
@@ -79,7 +83,9 @@
             {
               "type": "object",
               "title": "Epic Configuration",
-              "required": ["kind"],
+              "required": [
+                "kind"
+              ],
               "properties": {
                 "option_title": {
                   "type": "string",
@@ -134,7 +140,9 @@
             {
               "type": "object",
               "title": "Sprint Configuration",
-              "required": ["kind"],
+              "required": [
+                "kind"
+              ],
               "properties": {
                 "option_title": {
                   "type": "string",
@@ -201,7 +209,9 @@
             {
               "type": "object",
               "title": "Task Configuration",
-              "required": ["kind"],
+              "required": [
+                "kind"
+              ],
               "properties": {
                 "option_title": {
                   "type": "string",

@@ -10,7 +10,10 @@
     },
     "type": {
       "type": "string",
-      "enum": ["scrum", "kanban"]
+      "enum": [
+        "scrum",
+        "kanban"
+      ]
     },
     "issueSync": {
       "type": "boolean"

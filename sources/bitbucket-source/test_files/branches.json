@@ -7,7 +7,11 @@
       }
     },
     "default_merge_strategy": "merge_commit",
-    "merge_strategies": ["merge_commit", "squash", "fast_forward"],
+    "merge_strategies": [
+      "merge_commit",
+      "squash",
+      "fast_forward"
+    ],
     "type": "branch",
     "target": {
       "hash": "7dfd0e39462a812a2540acce9e3dea92e898fc9a",

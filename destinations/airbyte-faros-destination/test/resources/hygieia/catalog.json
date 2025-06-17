@@ -1,10 +1,11 @@
 {
-  "streams": [
-    {
-      "stream": {
-        "name": "mytestsource__hygieia__collector_items"
-      },
-      "destination_sync_mode": "append"
-    }
-  ]
+    "streams": [
+      {
+        "stream": {
+          "name": "mytestsource__hygieia__collector_items"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
 }
+

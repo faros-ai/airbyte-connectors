@@ -4,7 +4,9 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Github Spec",
     "type": "object",
-    "required": ["authentication"],
+    "required": [
+      "authentication"
+    ],
     "additionalProperties": true,
     "properties": {
       "authentication": {
@@ -29,7 +31,10 @@
                 "order": 1
               }
             },
-            "required": ["type", "personal_access_token"]
+            "required": [
+              "type",
+              "personal_access_token"
+            ]
           },
           {
             "type": "object",
@@ -55,7 +60,11 @@
                 "order": 2
               }
             },
-            "required": ["type", "app_id", "private_key"]
+            "required": [
+              "type",
+              "app_id",
+              "private_key"
+            ]
           }
         ]
       },
@@ -88,7 +97,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["apache", "airbytehq"]
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
       },
       "excluded_organizations": {
         "order": 5,
@@ -98,7 +110,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["apache", "airbytehq"]
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
       },
       "repositories": {
         "order": 6,
@@ -108,7 +123,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["apache/repo1", "airbytehq/repo2"]
+        "examples": [
+          "apache/repo1",
+          "airbytehq/repo2"
+        ]
       },
       "excluded_repositories": {
         "order": 7,
@@ -118,7 +136,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["apache/repo1", "airbytehq/repo2"]
+        "examples": [
+          "apache/repo1",
+          "airbytehq/repo2"
+        ]
       },
       "enterprises": {
         "order": 8,
@@ -128,7 +149,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["apache", "airbytehq"]
+        "examples": [
+          "apache",
+          "airbytehq"
+        ]
       },
       "run_mode": {
         "order": 9,
@@ -153,7 +177,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["faros_organizations", "faros_repositories"]
+        "examples": [
+          "faros_organizations",
+          "faros_repositories"
+        ]
       },
       "fetch_teams": {
         "order": 11,
@@ -212,7 +239,10 @@
         },
         "title": "Bucket Ranges",
         "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
-        "examples": ["3-5", "7"]
+        "examples": [
+          "3-5",
+          "7"
+        ]
       },
       "api_url": {
         "order": 19,

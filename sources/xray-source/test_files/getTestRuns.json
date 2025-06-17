@@ -34,7 +34,9 @@
         "id": "6660738d897a8ced80c5db6f",
         "startedOn": "2024-06-05T14:59:49.234Z",
         "finishedOn": "2024-06-05T14:59:49.234Z",
-        "defects": ["23135"],
+        "defects": [
+          "23135"
+        ],
         "status": {
           "name": "FAILED"
         },

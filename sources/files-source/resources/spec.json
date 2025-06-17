@@ -4,7 +4,9 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Files Spec",
     "type": "object",
-    "required": ["files_source"],
+    "required": [
+      "files_source"
+    ],
     "additionalProperties": true,
     "properties": {
       "files_source": {
@@ -35,14 +37,18 @@
                 "title": "Path",
                 "description": "Path to files in an S3 bucket",
                 "type": "string",
-                "examples": ["s3://my-bucket/path/to/files"]
+                "examples": [
+                  "s3://my-bucket/path/to/files"
+                ]
               },
               "aws_region": {
                 "order": 2,
                 "title": "AWS Region",
                 "description": "AWS Region",
                 "type": "string",
-                "examples": ["us-east-1"]
+                "examples": [
+                  "us-east-1"
+                ]
               },
               "aws_access_key_id": {
                 "order": 3,
@@ -71,7 +77,10 @@
                 "title": "File Processing Strategy",
                 "description": "Strategy to use for deciding whether to process or ignore files.",
                 "default": "PROCESS_ALL_FILES",
-                "enum": ["PROCESS_ALL_FILES", "IMMUTABLE_LEXICOGRAPHICAL_ORDER"]
+                "enum": [
+                  "PROCESS_ALL_FILES",
+                  "IMMUTABLE_LEXICOGRAPHICAL_ORDER"
+                ]
               },
               "files": {
                 "order": 7,
@@ -81,7 +90,11 @@
                 },
                 "title": "Files",
                 "description": "List of files to be filtered from the S3 path (they will also be processed in the indicated order). If empty, all files in the path will be processed.",
-                "examples": ["file1.csv", "file2.csv", "file3.csv"]
+                "examples": [
+                  "file1.csv",
+                  "file2.csv",
+                  "file3.csv"
+                ]
               },
               "max_request_length": {
                 "order": 8,
@@ -107,7 +120,11 @@
         "description": "Name of the data stream",
         "type": "string",
         "default": "files",
-        "examples": ["sales", "customers", "orders"]
+        "examples": [
+          "sales",
+          "customers",
+          "orders"
+        ]
       }
     }
   }

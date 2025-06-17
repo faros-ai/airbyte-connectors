@@ -4,7 +4,9 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Sheets Spec",
     "type": "object",
-    "required": ["spreadsheet_source"],
+    "required": [
+      "spreadsheet_source"
+    ],
     "additionalProperties": true,
     "properties": {
       "spreadsheet_source": {
@@ -17,7 +19,10 @@
             "order": 0,
             "title": "Local Spreadsheet",
             "type": "object",
-            "required": ["sheet_source", "file"],
+            "required": [
+              "sheet_source",
+              "file"
+            ],
             "properties": {
               "sheet_source": {
                 "order": 0,
@@ -29,7 +34,9 @@
                 "title": "File",
                 "description": "Path to a local spreadsheet file",
                 "type": "string",
-                "examples": ["my-sheet.xlsx"]
+                "examples": [
+                  "my-sheet.xlsx"
+                ]
               }
             }
           },
@@ -37,7 +44,10 @@
             "order": 1,
             "title": "Google Sheet",
             "type": "object",
-            "required": ["sheet_source", "google_sheet_id"],
+            "required": [
+              "sheet_source",
+              "google_sheet_id"
+            ],
             "properties": {
               "sheet_source": {
                 "order": 0,
@@ -49,7 +59,9 @@
                 "title": "Google Sheet ID",
                 "description": "Google Sheet ID from the URL",
                 "type": "string",
-                "examples": ["1tslbvnyGJmEXzwOhTgOILTxzyYxuled8xwXkkfl5JWY"]
+                "examples": [
+                  "1tslbvnyGJmEXzwOhTgOILTxzyYxuled8xwXkkfl5JWY"
+                ]
               },
               "google_service_account_private_key": {
                 "order": 2,
@@ -90,14 +102,18 @@
                 "title": "File",
                 "description": "Path to a spreadsheet file in an S3 bucket",
                 "type": "string",
-                "examples": ["s3://my-bucket/my-sheet.xlsx"]
+                "examples": [
+                  "s3://my-bucket/my-sheet.xlsx"
+                ]
               },
               "aws_region": {
                 "order": 2,
                 "title": "AWS Region",
                 "description": "AWS Region",
                 "type": "string",
-                "examples": ["us-east-1"]
+                "examples": [
+                  "us-east-1"
+                ]
               },
               "aws_access_key_id": {
                 "order": 2,
@@ -132,7 +148,12 @@
         "items": {
           "type": "string"
         },
-        "examples": [["Sheet1", "Sheet2"]]
+        "examples": [
+          [
+            "Sheet1",
+            "Sheet2"
+          ]
+        ]
       },
       "row_offset": {
         "order": 3,
@@ -147,7 +168,12 @@
         "description": "Page size when fetching rows from a sheet",
         "type": "integer",
         "default": 500,
-        "examples": [100, 250, 500, 1000]
+        "examples": [
+          100,
+          250,
+          500,
+          1000
+        ]
       },
       "stream_name": {
         "order": 5,
@@ -155,7 +181,11 @@
         "description": "Name of the data stream",
         "type": "string",
         "default": "sheets",
-        "examples": ["sales", "customers", "orders"]
+        "examples": [
+          "sales",
+          "customers",
+          "orders"
+        ]
       }
     }
   }

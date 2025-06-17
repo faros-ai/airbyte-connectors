@@ -1,9 +1,9 @@
 {
   "edition_configs": {
-    "edition": "cloud",
-    "api_url": "<API URL>",
-    "api_key": "<KEY>",
-    "graph": "<GRAPH_NAME>"
+  "edition": "cloud",
+  "api_url": "<API URL>",
+  "api_key": "<KEY>",
+  "graph": "<GRAPH_NAME>"
   },
   "origin": "<ORIGIN NAME>",
   "dry_run": "true"

@@ -1,5 +1,5 @@
 {
   "token": "",
-  "base_url": "https://api.app.shortcut.com",
-  "version": "v3"
+  "base_url":"https://api.app.shortcut.com",
+  "version":"v3"
 }

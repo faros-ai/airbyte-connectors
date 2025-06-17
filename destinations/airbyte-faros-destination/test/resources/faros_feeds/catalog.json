@@ -1,10 +1,11 @@
 {
-  "streams": [
-    {
-      "stream": {
-        "name": "mytestsource__faros_feeds__faros_feed"
-      },
-      "destination_sync_mode": "append"
-    }
-  ]
+    "streams": [
+      {
+        "stream": {
+          "name": "mytestsource__faros_feeds__faros_feed"
+        },
+        "destination_sync_mode": "append"
+      }
+    ]
 }
+

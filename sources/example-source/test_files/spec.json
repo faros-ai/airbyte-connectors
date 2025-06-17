@@ -4,13 +4,19 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Jenkins Spec",
     "type": "object",
-    "required": ["server_url", "user", "token"],
+    "required": [
+      "server_url",
+      "user",
+      "token"
+    ],
     "additionalProperties": true,
     "properties": {
       "server_url": {
         "type": "string",
         "title": "Jenkins Server URL",
-        "examples": ["https://my-jenkins-server.example.com"]
+        "examples": [
+          "https://my-jenkins-server.example.com"
+        ]
       },
       "user": {
         "type": "string",

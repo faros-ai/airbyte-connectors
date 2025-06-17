@@ -5,7 +5,9 @@
     "title": "Asana Spec",
     "type": "object",
     "additionalProperties": true,
-    "required": ["credentials"],
+    "required": [
+      "credentials"
+    ],
     "properties": {
       "credentials": {
         "order": 0,
@@ -16,7 +18,9 @@
           {
             "type": "object",
             "title": "Authenticate with Personal Access Token",
-            "required": ["personal_access_token"],
+            "required": [
+              "personal_access_token"
+            ],
             "properties": {
               "option_title": {
                 "type": "string",
@@ -42,7 +46,10 @@
         },
         "title": "Workspace IDs",
         "description": "The IDs of the workspaces to fetch. If not provided, all workspaces will be fetched.",
-        "examples": ["123", "456"]
+        "examples": [
+          "123",
+          "456"
+        ]
       },
       "cutoff_days": {
         "order": 2,

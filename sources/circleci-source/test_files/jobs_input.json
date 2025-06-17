@@ -1,7 +1,9 @@
 [
   {
     "canceled_by": "026a6d28-c22e-4aab-a8b4-bd7131a8ea35",
-    "dependencies": ["497f6eca-6276-4993-bfeb-53cbbbba6f08"],
+    "dependencies": [
+      "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+    ],
     "job_number": 0,
     "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "started_at": "2019-08-24T14:15:22Z",

@@ -1,24 +1,26 @@
 [
-  {
-    "role": "owner",
-    "entity_type": "member",
-    "disabled": false,
-    "state": "full",
-    "updated_at": "2021-12-07T14:09:40Z",
-    "created_without_invite": false,
-    "group_ids": ["61af6b25-a7f5-46c4-8803-13ab5ff5cd32"],
-    "id": "61af6b25-0b86-4afa-adf1-c3ea4ba0982c",
-    "profile": {
-      "entity_type": "profile",
-      "deactivated": false,
-      "two_factor_auth_activated": false,
-      "mention_name": "kelvintran",
-      "name": "Kelvin Tran",
-      "gravatar_hash": "f98c99e3cd53ece58face0377bc238f0",
-      "id": "61af6b25-8f22-42d9-85ba-8d4220f86f97",
-      "display_icon": null,
-      "email_address": "huongkstn@gmail.com"
-    },
-    "created_at": "2021-12-07T14:09:40Z"
-  }
+    {
+        "role": "owner",
+        "entity_type": "member",
+        "disabled": false,
+        "state": "full",
+        "updated_at": "2021-12-07T14:09:40Z",
+        "created_without_invite": false,
+        "group_ids": [
+            "61af6b25-a7f5-46c4-8803-13ab5ff5cd32"
+        ],
+        "id": "61af6b25-0b86-4afa-adf1-c3ea4ba0982c",
+        "profile": {
+            "entity_type": "profile",
+            "deactivated": false,
+            "two_factor_auth_activated": false,
+            "mention_name": "kelvintran",
+            "name": "Kelvin Tran",
+            "gravatar_hash": "f98c99e3cd53ece58face0377bc238f0",
+            "id": "61af6b25-8f22-42d9-85ba-8d4220f86f97",
+            "display_icon": null,
+            "email_address": "huongkstn@gmail.com"
+        },
+        "created_at": "2021-12-07T14:09:40Z"
+    }
 ]

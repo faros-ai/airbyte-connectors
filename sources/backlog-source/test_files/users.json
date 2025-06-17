@@ -1,30 +1,30 @@
 [
-  {
-    "id": 319076,
-    "userId": "64kfUlnZKJ",
-    "name": "Hướng Trần Ngọc",
-    "roleType": 1,
-    "lang": "en",
-    "mailAddress": "huongkstn@gmail.com",
-    "nulabAccount": {
-      "nulabId": "vgoiBUrAEkKt99RytjfQb968FlrBblq9SBuxbdIC5Fdezsv5t3",
-      "name": "Hướng Trần Ngọc",
-      "uniqueId": "huongkstn"
+    {
+        "id": 319076,
+        "userId": "64kfUlnZKJ",
+        "name": "Hướng Trần Ngọc",
+        "roleType": 1,
+        "lang": "en",
+        "mailAddress": "huongkstn@gmail.com",
+        "nulabAccount": {
+            "nulabId": "vgoiBUrAEkKt99RytjfQb968FlrBblq9SBuxbdIC5Fdezsv5t3",
+            "name": "Hướng Trần Ngọc",
+            "uniqueId": "huongkstn"
+        },
+        "keyword": "Hướng Trần Ngọc Hướng Trần Ngọc"
     },
-    "keyword": "Hướng Trần Ngọc Hướng Trần Ngọc"
-  },
-  {
-    "id": 319270,
-    "userId": "*EwHbgb48dL",
-    "name": "yenhh8",
-    "roleType": 2,
-    "lang": null,
-    "mailAddress": "yenhh8@gmail.com",
-    "nulabAccount": {
-      "nulabId": "xaQqGyCdHzChG15NfoXMH9cI1TDZfnLonhD2aIib8PiKBuLAvB",
-      "name": null,
-      "uniqueId": null
-    },
-    "keyword": "yenhh8 yenhh8"
-  }
+    {
+        "id": 319270,
+        "userId": "*EwHbgb48dL",
+        "name": "yenhh8",
+        "roleType": 2,
+        "lang": null,
+        "mailAddress": "yenhh8@gmail.com",
+        "nulabAccount": {
+            "nulabId": "xaQqGyCdHzChG15NfoXMH9cI1TDZfnLonhD2aIib8PiKBuLAvB",
+            "name": null,
+            "uniqueId": null
+        },
+        "keyword": "yenhh8 yenhh8"
+    }
 ]

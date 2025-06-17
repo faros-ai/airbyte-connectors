@@ -4,14 +4,18 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Bitbucket Server Spec",
     "type": "object",
-    "required": ["server_url"],
+    "required": [
+      "server_url"
+    ],
     "additionalProperties": true,
     "properties": {
       "server_url": {
         "type": "string",
         "title": "Server URL",
         "description": "Bitbucket Server URL",
-        "examples": ["https://my.bitbucketserver.com"]
+        "examples": [
+          "https://my.bitbucketserver.com"
+        ]
       },
       "username": {
         "type": "string",
@@ -35,7 +39,9 @@
         },
         "title": "Projects",
         "description": "Keys of your Bitbucket Server projects",
-        "examples": ["PROJ"]
+        "examples": [
+          "PROJ"
+        ]
       },
       "repositories": {
         "type": "array",
@@ -44,7 +50,9 @@
         },
         "title": "Repositories",
         "description": "Names of your Bitbucket repositories in the format 'project-key/repo-slug'. If you want to pull all repositories from a project, you can add the project key to the Projects list instead of listing the repositories here",
-        "examples": ["PROJ/myrepo"]
+        "examples": [
+          "PROJ/myrepo"
+        ]
       },
       "cutoff_days": {
         "type": "integer",

@@ -4,7 +4,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "ClickUp Spec",
     "type": "object",
-    "required": ["token", "cutoff_days"],
+    "required": [
+      "token",
+      "cutoff_days"
+    ],
     "additionalProperties": true,
     "properties": {
       "token": {
@@ -20,7 +23,9 @@
           "type": "string"
         },
         "description": "Names of ClickUp workspaces to sync. If left blank, all workspaces will be synced.",
-        "examples": ["My Workspace Name"]
+        "examples": [
+          "My Workspace Name"
+        ]
       },
       "fetch_archived": {
         "type": "boolean",

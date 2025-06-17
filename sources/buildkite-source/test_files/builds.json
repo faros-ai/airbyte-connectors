@@ -1,52 +1,52 @@
 [
-  {
-    "commit": "HEAD",
-    "createdAt": "2021-12-20T03:37:40.894Z",
-    "cursor": "kaEy",
-    "finishedAt": null,
-    "id": "QnVpbGQtLS00YzU1MTI2ZS0wZjhlLTRkNDgtOWNlMi03MDcxZmVjYjcwY2Q=",
-    "message": "test 1",
-    "number": 2,
-    "pipeline": {
-      "organization": {
-        "slug": "devcube"
-      },
-      "repository": {
-        "provider": {
-          "name": "GitHub"
+    {
+        "commit": "HEAD",
+        "createdAt": "2021-12-20T03:37:40.894Z",
+        "cursor": "kaEy",
+        "finishedAt": null,
+        "id": "QnVpbGQtLS00YzU1MTI2ZS0wZjhlLTRkNDgtOWNlMi03MDcxZmVjYjcwY2Q=",
+        "message": "test 1",
+        "number": 2,
+        "pipeline": {
+            "organization": {
+                "slug": "devcube"
+            },
+            "repository":  {
+                "provider": {
+                    "name": "GitHub"
+                },
+                "url": "git@github.com:huongtn/ECHTMen.git"
+            },
+        "slug": "kelvin-test"
         },
-        "url": "git@github.com:huongtn/ECHTMen.git"
-      },
-      "slug": "kelvin-test"
+        "startedAt": null,
+        "state": "SCHEDULED",
+        "url": "https://buildkite.com/devcube/kelvin-test/builds/2",
+        "uuid": "4c55126e-0f8e-4d48-9ce2-7071fecb70cd"
     },
-    "startedAt": null,
-    "state": "SCHEDULED",
-    "url": "https://buildkite.com/devcube/kelvin-test/builds/2",
-    "uuid": "4c55126e-0f8e-4d48-9ce2-7071fecb70cd"
-  },
-  {
-    "commit": "HEAD",
-    "createdAt": "2021-12-20T03:28:25.066Z",
-    "cursor": "kaEx",
-    "finishedAt": null,
-    "id": "QnVpbGQtLS1lZTAwZWNkNi04ZDk3LTQyNmQtOWYwZi0xYTYxOGI4ZjUwMjM=",
-    "message": "Test build",
-    "number": 1,
-    "pipeline": {
-      "organization": {
-        "slug": "devcube"
-      },
-      "repository": {
-        "provider": {
-          "name": "GitHub"
+    {
+        "commit": "HEAD",
+        "createdAt": "2021-12-20T03:28:25.066Z",
+        "cursor": "kaEx",
+        "finishedAt": null,
+        "id": "QnVpbGQtLS1lZTAwZWNkNi04ZDk3LTQyNmQtOWYwZi0xYTYxOGI4ZjUwMjM=",
+        "message": "Test build",
+        "number": 1,
+        "pipeline": {
+            "organization": {
+                "slug": "devcube"
+            },
+            "repository": {
+                "provider": {
+                    "name": "GitHub"
+                },
+                "url": "git@github.com:huongtn/ECHTMen.git"
+            },
+            "slug": "kelvin-test"
         },
-        "url": "git@github.com:huongtn/ECHTMen.git"
-      },
-      "slug": "kelvin-test"
-    },
-    "startedAt": null,
-    "state": "SCHEDULED",
-    "url": "https://buildkite.com/devcube/kelvin-test/builds/1",
-    "uuid": "ee00ecd6-8d97-426d-9f0f-1a618b8f5023"
-  }
+        "startedAt": null,
+        "state": "SCHEDULED",
+        "url": "https://buildkite.com/devcube/kelvin-test/builds/1",
+        "uuid": "ee00ecd6-8d97-426d-9f0f-1a618b8f5023"
+    }
 ]

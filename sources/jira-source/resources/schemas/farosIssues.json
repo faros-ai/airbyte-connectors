@@ -32,7 +32,10 @@
           "type": "string"
         }
       },
-      "required": ["category", "detail"]
+      "required": [
+        "category",
+        "detail"
+      ]
     },
     "creator": {
       "type": "string"
@@ -64,7 +67,11 @@
             "type": "string"
           }
         },
-        "required": ["key", "inward", "outward"]
+        "required": [
+          "key",
+          "inward",
+          "outward"
+        ]
       }
     },
     "subtasks": {
@@ -83,7 +90,9 @@
           "type": "string"
         }
       },
-      "required": ["key"]
+      "required": [
+        "key"
+      ]
     },
     "statusChanged": {
       "type": "string",
@@ -104,7 +113,10 @@
                 "type": "string"
               }
             },
-            "required": ["category", "detail"]
+            "required": [
+              "category",
+              "detail"
+            ]
           },
           {
             "type": "string",
@@ -147,7 +159,10 @@
             "format": "date-time"
           }
         },
-        "required": ["uid", "assignedAt"]
+        "required": [
+          "uid",
+          "assignedAt"
+        ]
       }
     },
     "assigned": {
@@ -183,11 +198,17 @@
                 "format": "date-time"
               }
             },
-            "required": ["uid", "addedAt"]
+            "required": [
+              "uid",
+              "addedAt"
+            ]
           }
         }
       },
-      "required": ["currentSprintId", "history"]
+      "required": [
+        "currentSprintId",
+        "history"
+      ]
     },
     "additionalFields": {
       "type": "array",
@@ -214,5 +235,7 @@
       "format": "date-time"
     }
   },
-  "required": ["key"]
+  "required": [
+    "key"
+  ]
 }

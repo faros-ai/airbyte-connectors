@@ -2,6 +2,6 @@
   "extends": "../../../faros-airbyte-cdk/src/tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "outDir": "../lib"
+    "outDir": "../lib",
   }
 }

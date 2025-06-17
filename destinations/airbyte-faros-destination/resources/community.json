@@ -1,7 +1,9 @@
 {
   "type": "object",
   "title": "Community Edition",
-  "required": ["hasura_url"],
+  "required": [
+    "hasura_url"
+  ],
   "properties": {
     "edition": {
       "type": "string",

@@ -30,7 +30,10 @@
       "type": "string"
     },
     "description": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "visibility": {
       "type": "string"

@@ -4,9 +4,14 @@
       "stream": {
         "name": "projects",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"]
+        "default_cursor_field": [
+          "updated_at"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -15,9 +20,14 @@
       "stream": {
         "name": "iterations",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"]
+        "default_cursor_field": [
+          "updated_at"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -26,9 +36,14 @@
       "stream": {
         "name": "epics",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"]
+        "default_cursor_field": [
+          "updated_at"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -37,9 +52,14 @@
       "stream": {
         "name": "stories",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"]
+        "default_cursor_field": [
+          "updated_at"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -48,9 +68,14 @@
       "stream": {
         "name": "members",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"]
+        "default_cursor_field": [
+          "updated_at"
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

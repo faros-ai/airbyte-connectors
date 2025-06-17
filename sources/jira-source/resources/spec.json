@@ -4,7 +4,9 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Jira Configuration Spec",
     "type": "object",
-    "required": ["url"],
+    "required": [
+      "url"
+    ],
     "additionalProperties": true,
     "properties": {
       "url": {
@@ -45,7 +47,11 @@
           "type": "string"
         },
         "description": "Fields to include on tasks. Use '*' to include all fields.",
-        "examples": ["*", "Last Viewed", "Priority"]
+        "examples": [
+          "*",
+          "Last Viewed",
+          "Priority"
+        ]
       },
       "additional_fields_array_limit": {
         "order": 7,
@@ -131,7 +137,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["AIR", "DEV"]
+        "examples": [
+          "AIR",
+          "DEV"
+        ]
       },
       "excluded_projects": {
         "order": 19,
@@ -141,7 +150,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["AIR", "DEV"]
+        "examples": [
+          "AIR",
+          "DEV"
+        ]
       },
       "cutoff_days": {
         "order": 20,
@@ -197,7 +209,10 @@
         "items": {
           "type": "string"
         },
-        "examples": ["faros_projects", "faros_boards"]
+        "examples": [
+          "faros_projects",
+          "faros_boards"
+        ]
       },
       "bucket_id": {
         "order": 26,
@@ -228,7 +243,10 @@
         },
         "title": "Bucket Ranges",
         "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
-        "examples": ["3-5", "7"]
+        "examples": [
+          "3-5",
+          "7"
+        ]
       },
       "api_url": {
         "order": 30,
@@ -310,7 +328,9 @@
         "type": "string",
         "title": "Source Qualifier",
         "description": "The qualifier to append as a suffix to the Jira source name to ensure uniqueness among entities with similar IDs when syncing multiple Jira instances, while preserving their original IDs, e.g. for Boards and Sprints.",
-        "examples": ["Instance2"]
+        "examples": [
+          "Instance2"
+        ]
       }
     }
   }

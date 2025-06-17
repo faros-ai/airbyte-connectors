@@ -16,7 +16,11 @@
           "title": "TaskBoard Source",
           "description": "ClickUp task grouping type that will be mapped to tms_TaskBoards",
           "default": "space",
-          "enum": ["space", "folder", "list"]
+          "enum": [
+            "space",
+            "folder",
+            "list"
+          ]
         },
         "truncate_limit": {
           "type": "integer",

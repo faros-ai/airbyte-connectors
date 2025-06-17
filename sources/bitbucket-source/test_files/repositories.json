@@ -6,11 +6,9 @@
     "uuid": "{6cc04382-59f0-4a75-8b55-5aaa79d72d17}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/geekhub2019/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/geekhub2019/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/geekhub2019"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/geekhub2019"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/geekhub2019",
@@ -18,8 +16,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PROJ"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PROJ"}
       },
       "type": "project",
       "name": "Untitled project",
@@ -37,8 +34,7 @@
       "name": "Untitled project",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{107a5af7-050c-4a5f-918b-63d2d0be99b5}"
     },
@@ -49,8 +45,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2021-12-05T08:25:02.254785+00:00",
@@ -67,11 +62,9 @@
     "uuid": "{8a0cf3e6-d87f-42bb-91cb-7ba284318ec0}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/client/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/client/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/client"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/client"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/client",
@@ -79,8 +72,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KC"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KC"}
       },
       "type": "project",
       "name": "Kiev Cameras",
@@ -98,8 +90,7 @@
       "name": "Kiev Cameras",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{9fbdb888-e280-4626-a6a5-874760bc0cd0}"
     },
@@ -110,8 +101,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2021-08-04T19:28:34.344761+00:00",
@@ -128,11 +118,9 @@
     "uuid": "{75f33860-5d51-4103-ad24-23a2451fb272}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/kievcameras/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/kievcameras/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/kievcameras"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/kievcameras"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/kievcameras",
@@ -140,8 +128,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KIEV"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/KIEV"}
       },
       "type": "project",
       "name": "kievCameras",
@@ -159,8 +146,7 @@
       "name": "kievCameras",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{17ec367a-8f56-4996-b964-d113b6053a01}"
     },
@@ -171,8 +157,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2021-08-03T09:17:51.311690+00:00",
@@ -189,11 +174,9 @@
     "uuid": "{4b2b33b8-7de1-4829-9749-202df6d7c537}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/server-web/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/server-web/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/server-web"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/server-web"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/server-web",
@@ -201,8 +184,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/VKRED"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/VKRED"}
       },
       "type": "project",
       "name": "vk-redirect",
@@ -220,8 +202,7 @@
       "name": "vk-redirect",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{0c468fcb-d4ae-40ba-a740-be12f215ca09}"
     },
@@ -232,8 +213,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2021-07-27T20:45:44.410197+00:00",
@@ -250,11 +230,9 @@
     "uuid": "{2f776152-0f83-47d5-bc15-7482ffa1253f}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/backend-bot/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/backend-bot/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/backend-bot"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/backend-bot"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/backend-bot",
@@ -262,8 +240,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/WEIG"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/WEIG"}
       },
       "type": "project",
       "name": "weight-loss",
@@ -281,8 +258,7 @@
       "name": "weight-loss",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{bf294d59-7f67-4e3f-9877-381e51f6dbdd}"
     },
@@ -293,8 +269,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2021-05-26T04:41:26.980329+00:00",
@@ -311,11 +286,9 @@
     "uuid": "{8535e840-984e-4e3b-a708-699620ed5165}",
     "links": {
       "branches": {
-        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/html-css/refs/branches"
-      },
+        "href": "https://api.bitbucket.org/2.0/repositories/RomanKyrnis/html-css/refs/branches"},
       "html": {
-        "href": "https://bitbucket.org/RomanKyrnis/html-css"
-      }
+        "href": "https://bitbucket.org/RomanKyrnis/html-css"}
     },
     "fork_policy": "no_public_forks",
     "full_name": "RomanKyrnis/html-css",
@@ -323,8 +296,7 @@
     "project": {
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PYT"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/workspace/projects/PYT"}
       },
       "type": "project",
       "name": "Python",
@@ -342,8 +314,7 @@
       "name": "Python",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/RomanKyrnis/"
-        }
+        "href": "https://bitbucket.org/RomanKyrnis/"}
       },
       "uuid": "{5fa6fd5c-64c9-40d8-93ca-bbf28a3a8704}"
     },
@@ -354,8 +325,7 @@
       "uuid": "{46e585e0-6f39-42f1-adc3-e234e729afea}",
       "links": {
         "html": {
-          "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"
-        }
+        "href": "https://bitbucket.org/%7B46e585e0-6f39-42f1-adc3-e234e729afea%7D/"}
       }
     },
     "updated_on": "2020-10-16T14:04:26.036658+00:00",

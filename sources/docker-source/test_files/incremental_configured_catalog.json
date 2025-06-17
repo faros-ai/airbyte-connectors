@@ -1,15 +1,25 @@
 {
-  "streams": [
-    {
-      "stream": {
-        "name": "tags",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
-        "default_cursor_field": ["imageConfig", "created"],
-        "source_defined_primary_key": [["name"]]
-      },
-      "sync_mode": "incremental",
-      "destination_sync_mode": "append"
-    }
-  ]
+    "streams": [
+        {
+            "stream": {
+                "name": "tags",
+                "json_schema": {},
+                "supported_sync_modes": [
+                    "full_refresh",
+                    "incremental"
+                ],
+                "default_cursor_field": [
+                    "imageConfig",
+                    "created"
+                ],
+                "source_defined_primary_key": [
+                    [
+                        "name"
+                    ]
+                ]
+            },
+            "sync_mode": "incremental",
+            "destination_sync_mode": "append"
+        }
+    ]
 }

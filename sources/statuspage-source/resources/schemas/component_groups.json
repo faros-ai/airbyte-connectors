@@ -12,7 +12,10 @@
       "type": "string"
     },
     "description": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "components": {
       "type": "array",

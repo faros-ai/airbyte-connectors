@@ -4,10 +4,19 @@
       "stream": {
         "name": "incident_log_entries",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["created_at"],
-        "source_defined_primary_key": [["id"]]
+        "default_cursor_field": [
+          "created_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -16,10 +25,19 @@
       "stream": {
         "name": "incidents",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["created_at"],
-        "source_defined_primary_key": [["id"]]
+        "default_cursor_field": [
+          "created_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -28,8 +46,14 @@
       "stream": {
         "name": "priorities_resource",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["id"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -38,9 +62,15 @@
       "stream": {
         "name": "services",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
         "source_defined_cursor": false,
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
@@ -49,8 +79,14 @@
       "stream": {
         "name": "users",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
-        "source_defined_primary_key": [["id"]]
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"

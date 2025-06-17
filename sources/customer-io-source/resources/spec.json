@@ -18,10 +18,7 @@
         "title": "API URL",
         "description": "Customer.io API URL. Use https://api.customer.io/v1 for US, and https://api-eu.customer.io/v1 for EU.",
         "default": "https://api.customer.io/v1",
-        "examples": [
-          "https://api.customer.io/v1",
-          "https://api-eu.customer.io/v1"
-        ]
+        "examples": ["https://api.customer.io/v1", "https://api-eu.customer.io/v1"]
       },
       "cutoff_days": {
         "type": "integer",

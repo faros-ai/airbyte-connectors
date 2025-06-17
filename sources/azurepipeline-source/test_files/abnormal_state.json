@@ -1,8 +1,8 @@
 {
-  "builds": {
-    "lastQueueTime": "2025-01-01T00:00:00Z"
-  },
-  "releases": {
-    "lastCreatedOn": "2025-01-01T00:00:00Z"
-  }
+    "builds": {
+        "lastQueueTime": "2025-01-01T00:00:00Z"
+    },
+    "releases": {
+        "lastCreatedOn": "2025-01-01T00:00:00Z"
+    }
 }

@@ -5,7 +5,11 @@
       "htmlUrl": "https://bitbucket.org/RomanKyrnis/geekhub2019/branch/master"
     },
     "defaultMergeStrategy": "merge_commit",
-    "mergeStrategies": ["merge_commit", "squash", "fast_forward"],
+    "mergeStrategies": [
+      "merge_commit",
+      "squash",
+      "fast_forward"
+    ],
     "type": "branch",
     "target": {
       "hash": "7dfd0e39462a812a2540acce9e3dea92e898fc9a",

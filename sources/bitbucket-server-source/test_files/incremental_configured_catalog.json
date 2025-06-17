@@ -4,10 +4,19 @@
       "stream": {
         "name": "commits",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["committerTimestamp"],
-        "source_defined_primary_key": [["id"]]
+        "default_cursor_field": [
+          "committerTimestamp"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "incremental",
       "destination_sync_mode": "append"
@@ -16,14 +25,21 @@
       "stream": {
         "name": "pull_request_activities",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
         "default_cursor_field": [
           "computedProperties",
           "pullRequest",
           "updatedDate"
         ],
-        "source_defined_primary_key": [["id"]]
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "incremental",
       "destination_sync_mode": "append"
@@ -32,7 +48,10 @@
       "stream": {
         "name": "pull_request_diffs",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
         "default_cursor_field": [
           "computedProperties",
@@ -40,8 +59,17 @@
           "updatedDate"
         ],
         "source_defined_primary_key": [
-          ["computedProperties", "pullRequest", "repository", "fullName"],
-          ["computedProperties", "pullRequest", "id"]
+          [
+            "computedProperties",
+            "pullRequest",
+            "repository",
+            "fullName"
+          ],
+          [
+            "computedProperties",
+            "pullRequest",
+            "id"
+          ]
         ]
       },
       "sync_mode": "incremental",
@@ -51,12 +79,23 @@
       "stream": {
         "name": "pull_requests",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updatedDate"],
+        "default_cursor_field": [
+          "updatedDate"
+        ],
         "source_defined_primary_key": [
-          ["computedProperties", "repository", "fullName"],
-          ["id"]
+          [
+            "computedProperties",
+            "repository",
+            "fullName"
+          ],
+          [
+            "id"
+          ]
         ]
       },
       "sync_mode": "incremental",

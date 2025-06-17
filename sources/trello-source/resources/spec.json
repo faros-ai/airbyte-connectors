@@ -5,7 +5,9 @@
     "title": "Trello Spec",
     "type": "object",
     "additionalProperties": true,
-    "required": ["credentials"],
+    "required": [
+      "credentials"
+    ],
     "properties": {
       "credentials": {
         "order": 0,
@@ -16,7 +18,10 @@
           {
             "type": "object",
             "title": "Authenticate with Basic OAuth",
-            "required": ["key", "token"],
+            "required": [
+              "key",
+              "token"
+            ],
             "properties": {
               "option_title": {
                 "type": "string",
@@ -50,7 +55,9 @@
         },
         "title": "Board IDs",
         "description": "The IDs of the boards to fetch. If not provided, all boards will be fetched.",
-        "examples": ["60a809554d8e673bb195a5e7"]
+        "examples": [
+          "60a809554d8e673bb195a5e7"
+        ]
       },
       "cutoff_days": {
         "order": 2,

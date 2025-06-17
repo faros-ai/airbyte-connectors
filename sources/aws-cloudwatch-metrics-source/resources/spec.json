@@ -4,7 +4,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "CloudWatch Spec",
     "type": "object",
-    "required": ["aws_region", "credentials", "query_groups"],
+    "required": [
+      "aws_region",
+      "credentials",
+      "query_groups"
+    ],
     "additionalProperties": false,
     "properties": {
       "aws_region": {
@@ -18,7 +22,10 @@
         "type": "object",
         "title": "Credentials",
         "description": "AWS credentials for the CloudWatch service. cloudwatch:ListMetrics, cloudwatch:GetMetricData and cloudwatch:GetMetricStatistics permissions are required.",
-        "required": ["aws_access_key_id", "aws_secret_access_key"],
+        "required": [
+          "aws_access_key_id",
+          "aws_secret_access_key"
+        ],
         "properties": {
           "aws_access_key_id": {
             "order": 0,
@@ -92,7 +99,9 @@
         "description": "Name of the data stream",
         "type": "string",
         "default": "metrics",
-        "examples": ["aws_billing"]
+        "examples": [
+          "aws_billing"
+        ]
       }
     }
   }

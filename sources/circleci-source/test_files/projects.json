@@ -1,13 +1,13 @@
 {
-  "slug": "gh/huongtn/sample-test",
-  "organization_name": "huongtn",
-  "organization_id": "988b9f2e-fc7c-4a81-b2ac-651c352e01b5",
-  "name": "sample-test",
-  "id": "19713f32-e5b8-4f7e-9978-ecc3f96b3113",
-  "organization_slug": "gh/huongtn",
-  "vcs_info": {
-    "vcs_url": "https://github.com/huongtn/sample-test",
-    "default_branch": "main",
-    "provider": "GitHub"
-  }
+    "slug": "gh/huongtn/sample-test",
+    "organization_name": "huongtn",
+    "organization_id": "988b9f2e-fc7c-4a81-b2ac-651c352e01b5",
+    "name": "sample-test",
+    "id": "19713f32-e5b8-4f7e-9978-ecc3f96b3113",
+    "organization_slug": "gh/huongtn",
+    "vcs_info": {
+        "vcs_url": "https://github.com/huongtn/sample-test",
+        "default_branch": "main",
+        "provider": "GitHub"
+    }
 }

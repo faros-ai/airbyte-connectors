@@ -1,5 +1,5 @@
 {
-  "organization": "company",
-  "token": "aToken",
-  "startDate": "2022-01-01T00:00:00Z"
+    "organization": "company",
+    "token": "aToken",
+    "startDate": "2022-01-01T00:00:00Z"
 }

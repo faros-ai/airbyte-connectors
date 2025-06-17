@@ -1,198 +1,198 @@
 [
-  {
-    "subjectKind": "user",
-    "domain": "Build",
-    "principalName": "f4169169-8e7b-4152-afd2-eeff5ccccd91",
-    "mailAddress": "",
-    "origin": "vsts",
-    "originId": "d827d95b-fe94-4a8c-9ec5-11fbf540dbaf",
-    "displayName": "Project Collection Build Service (huongkstn)",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "Build",
+        "principalName": "f4169169-8e7b-4152-afd2-eeff5ccccd91",
+        "mailAddress": "",
+        "origin": "vsts",
+        "originId": "d827d95b-fe94-4a8c-9ec5-11fbf540dbaf",
+        "displayName": "Project Collection Build Service (huongkstn)",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ",
+        "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ",
-    "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmY0MTY5MTY5LThlN2ItNDE1Mi1hZmQyLWVlZmY1Y2NjY2Q5MQ"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "AgentPool",
-    "principalName": "0f794331-c3f0-4bf9-a4ed-8c11df5eb4e9",
-    "mailAddress": "",
-    "origin": "vsts",
-    "originId": "7d6717b6-b381-46b6-9353-366b89c8a839",
-    "displayName": "Agent Pool Service (9)",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "AgentPool",
+        "principalName": "0f794331-c3f0-4bf9-a4ed-8c11df5eb4e9",
+        "mailAddress": "",
+        "origin": "vsts",
+        "originId": "7d6717b6-b381-46b6-9353-366b89c8a839",
+        "displayName": "Agent Pool Service (9)",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk",
+        "descriptor": "svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk",
-    "descriptor": "svc.ZjQxNjkxNjktOGU3Yi00MTUyLWFmZDItZWVmZjVjY2NjZDkxOkFnZW50UG9vbDowZjc5NDMzMS1jM2YwLTRiZjktYTRlZC04YzExZGY1ZWI0ZTk"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "Build",
-    "principalName": "6f976908-9a09-4ca0-8c81-b2c1488f65e1",
-    "mailAddress": "",
-    "origin": "vsts",
-    "originId": "4f0b6116-96eb-4eac-98d3-510d7eef3dcb",
-    "displayName": "testgit Build Service (huongkstn)",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "Build",
+        "principalName": "6f976908-9a09-4ca0-8c81-b2c1488f65e1",
+        "mailAddress": "",
+        "origin": "vsts",
+        "originId": "4f0b6116-96eb-4eac-98d3-510d7eef3dcb",
+        "displayName": "testgit Build Service (huongkstn)",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ",
+        "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ",
-    "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOjZmOTc2OTA4LTlhMDktNGNhMC04YzgxLWIyYzE0ODhmNjVlMQ"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "Build",
-    "principalName": "e9b1a182-5ce5-4aeb-aac0-f007b583be65",
-    "mailAddress": "",
-    "origin": "vsts",
-    "originId": "ca440982-da63-4976-a05d-6a5fd9dcc6fc",
-    "displayName": "test git Build Service (huongkstn)",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "Build",
+        "principalName": "e9b1a182-5ce5-4aeb-aac0-f007b583be65",
+        "mailAddress": "",
+        "origin": "vsts",
+        "originId": "ca440982-da63-4976-a05d-6a5fd9dcc6fc",
+        "displayName": "test git Build Service (huongkstn)",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ",
+        "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ",
-    "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmU5YjFhMTgyLTVjZTUtNGFlYi1hYWMwLWYwMDdiNTgzYmU2NQ"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "Windows Live ID",
-    "principalName": "huongkstn@gmail.com",
-    "mailAddress": "huongkstn@gmail.com",
-    "origin": "msa",
-    "originId": "0003BFFDC52C4235",
-    "displayName": "tran ngoc huong",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "Windows Live ID",
+        "principalName": "huongkstn@gmail.com",
+        "mailAddress": "huongkstn@gmail.com",
+        "origin": "msa",
+        "originId": "0003BFFDC52C4235",
+        "displayName": "tran ngoc huong",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
+        "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5",
-    "descriptor": "msa.ODcyNWQzMjUtODkyNi03NTE0LWE1NjMtODcxNzQ1MWNlNzk5"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "Build",
-    "principalName": "a432baaf-0264-4311-b613-087a2e7931f8",
-    "mailAddress": "",
-    "origin": "vsts",
-    "originId": "d68ede51-e5d8-4df5-8b74-c7ac6d609986",
-    "displayName": "devcube Build Service (huongkstn)",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-      }
+    {
+        "subjectKind": "user",
+        "domain": "Build",
+        "principalName": "a432baaf-0264-4311-b613-087a2e7931f8",
+        "mailAddress": "",
+        "origin": "vsts",
+        "originId": "d68ede51-e5d8-4df5-8b74-c7ac6d609986",
+        "displayName": "devcube Build Service (huongkstn)",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA",
+        "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
     },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA",
-    "descriptor": "svc.ZGMyMWRkNzItMWM5Mi00MThhLWJlYTMtZTUxYzdhNTYyZjg3OkJ1aWxkOmE0MzJiYWFmLTAyNjQtNDMxMS1iNjEzLTA4N2EyZTc5MzFmOA"
-  },
-  {
-    "subjectKind": "user",
-    "domain": "Windows Live ID",
-    "principalName": "kelvin@gmail.com",
-    "mailAddress": "kelvin@gmail.com",
-    "origin": "msa",
-    "originId": null,
-    "displayName": "kelvin@gmail.com",
-    "_links": {
-      "self": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-      },
-      "memberships": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-      },
-      "membershipState": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-      },
-      "storageKey": {
-        "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-      },
-      "avatar": {
-        "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-      }
-    },
-    "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t",
-    "descriptor": "bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
-  }
+    {
+        "subjectKind": "user",
+        "domain": "Windows Live ID",
+        "principalName": "kelvin@gmail.com",
+        "mailAddress": "kelvin@gmail.com",
+        "origin": "msa",
+        "originId": null,
+        "displayName": "kelvin@gmail.com",
+        "_links": {
+            "self": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+            },
+            "memberships": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Memberships/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+            },
+            "membershipState": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/MembershipStates/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+            },
+            "storageKey": {
+                "href": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/StorageKeys/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+            },
+            "avatar": {
+                "href": "https://dev.azure.com/huongkstn/_apis/GraphProfile/MemberAvatars/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+            }
+        },
+        "url": "https://vssps.dev.azure.com/huongkstn/_apis/Graph/Users/bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t",
+        "descriptor": "bnd.dXBuOldpbmRvd3MgTGl2ZSBJRFxrZWx2aW5AZ21haWwuY29t"
+    }
 ]

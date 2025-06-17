@@ -27,21 +27,34 @@
           "description": "Field name in a ServiceNow incident, to compute a Faros Application name. The value of this field will be used to look up the app/platform in the specified application mapping",
           "default": "business_service",
           "pattern": "^(business_service|cmdb_ci)$",
-          "examples": ["business_service", "cmdb_ci"]
+          "examples": [
+            "business_service",
+            "cmdb_ci"
+          ]
         },
         "default_severity": {
           "type": "string",
           "title": "Default Severity",
           "description": "A default severity category if not present",
           "pattern": "^(Sev[1-5])?(Custom)?$",
-          "examples": ["Sev1", "Sev5", "Custom"]
+          "examples": [
+            "Sev1",
+            "Sev5",
+            "Custom"
+          ]
         },
         "default_priority": {
           "type": "string",
           "title": "Default Priority",
           "description": "A default priority category if not present",
           "pattern": "^(Critical|High|Medium|Low|Custom)$",
-          "examples": ["Critical", "High", "Medium", "Low", "Custom"]
+          "examples": [
+            "Critical",
+            "High",
+            "Medium",
+            "Low",
+            "Custom"
+          ]
         },
         "store_current_incidents_associations": {
           "type": "boolean",

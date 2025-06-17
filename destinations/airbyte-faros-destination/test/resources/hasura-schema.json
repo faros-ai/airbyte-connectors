@@ -1,14 +1,41 @@
 {
   "primaryKeys": {
-    "vcs_Branch": ["name", "repositoryId"],
-    "vcs_Commit": ["repositoryId", "sha"],
-    "vcs_Organization": ["source", "uid"],
-    "vcs_Repository": ["name", "organizationId"],
-    "org_Employee": ["uid"],
-    "vcs_PullRequest": ["number", "repositoryId"],
-    "vcs_User": ["source", "uid"],
-    "vcs_UserTool": ["organizationId", "tool", "userId"],
-    "vcs_UserToolUsage": ["usedAt", "userToolId"]
+    "vcs_Branch": [
+      "name",
+      "repositoryId"
+    ],
+    "vcs_Commit": [
+      "repositoryId",
+      "sha"
+    ],
+    "vcs_Organization": [
+      "source",
+      "uid"
+    ],
+    "vcs_Repository": [
+      "name",
+      "organizationId"
+    ],
+    "org_Employee": [
+      "uid"
+    ],
+    "vcs_PullRequest": [
+      "number",
+      "repositoryId"
+    ],
+    "vcs_User": [
+      "source",
+      "uid"
+    ],
+    "vcs_UserTool": [
+      "organizationId",
+      "tool",
+      "userId"
+    ],
+    "vcs_UserToolUsage": [
+      "usedAt",
+      "userToolId"
+    ]
   },
   "scalars": {
     "vcs_Branch": {

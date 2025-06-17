@@ -1,144 +1,134 @@
 {
-  "empty": {
-    "teamIDToManagerIDs": {},
-    "employeeIDToRecords": {},
-    "cycleChains": [],
-    "generalLogCollection": []
-  },
-  "basic works": {
-    "teamIDToManagerIDs": {
-      "A": [
-        {
-          "Manager_ID": "001",
-          "Timestamp": ""
-        }
-      ],
-      "B": [
-        {
-          "Manager_ID": "002",
-          "Timestamp": ""
-        }
-      ],
-      "C": [
-        {
-          "Manager_ID": "003",
-          "Timestamp": ""
-        }
-      ]
+    "empty": {
+        "teamIDToManagerIDs": {},
+        "employeeIDToRecords": {},
+        "cycleChains": [],
+        "generalLogCollection": []
     },
-    "employeeIDToRecords": {
-      "002": [
-        {
-          "Start_Date": "2021-08-14T09:24:16.027Z",
-          "Full_Name": "C Smith",
-          "Employee_ID": "002",
-          "Manager_Name": "C Smith",
-          "Manager_ID": "001",
-          "Team_Name": "Team A",
-          "Team_ID": "A",
-          "Termination_Date": null,
-          "Location": "Connecticut",
-          "Email": "bsmith@co.co"
-        }
-      ],
-      "003": [
-        {
-          "Start_Date": "2018-11-21T22:18:43.511Z",
-          "Full_Name": "B Smith",
-          "Employee_ID": "003",
-          "Manager_Name": "C Smith",
-          "Manager_ID": "002",
-          "Team_ID": "B",
-          "Team_Name": "Team B",
-          "Termination_Date": null,
-          "Location": "Alabama",
-          "Email": "dsmith@co.co"
-        }
-      ],
-      "004": [
-        {
-          "Start_Date": "2019-03-29T12:07:39.730Z",
-          "Full_Name": "A Smith",
-          "Employee_ID": "004",
-          "Manager_Name": "B Smith",
-          "Manager_ID": "003",
-          "Team_ID": "C",
-          "Team_Name": "Team C",
-          "Termination_Date": null,
-          "Location": "Connecticut",
-          "Email": "asmith@co.co"
-        }
-      ]
+    "basic works": {
+        "teamIDToManagerIDs": {
+            "A": [
+                {
+                    "Manager_ID": "001",
+                    "Timestamp": ""
+                }
+            ],
+            "B": [
+                {
+                    "Manager_ID": "002",
+                    "Timestamp": ""
+                }
+            ],
+            "C": [
+                {
+                    "Manager_ID": "003",
+                    "Timestamp": ""
+                }
+            ]
+        },
+        "employeeIDToRecords": {
+            "002": [{
+                "Start_Date": "2021-08-14T09:24:16.027Z",
+                "Full_Name": "C Smith",
+                "Employee_ID": "002",
+                "Manager_Name": "C Smith",
+                "Manager_ID": "001",
+                "Team_Name": "Team A",
+                "Team_ID": "A",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "bsmith@co.co" 
+
+            }],
+            "003": [{
+                "Start_Date": "2018-11-21T22:18:43.511Z",
+                "Full_Name": "B Smith",
+                "Employee_ID": "003",
+                "Manager_Name": "C Smith",
+                "Manager_ID": "002",
+                "Team_ID": "B",
+                "Team_Name": "Team B",
+                "Termination_Date": null,
+                "Location": "Alabama",
+                "Email": "dsmith@co.co"  
+            }],
+            "004": [{
+                "Start_Date": "2019-03-29T12:07:39.730Z",
+                "Full_Name": "A Smith",
+                "Employee_ID": "004",
+                "Manager_Name": "B Smith",
+                "Manager_ID": "003",
+                "Team_ID": "C",
+                "Team_Name": "Team C",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "asmith@co.co"
+            }]
+        },
+        "cycleChains": [],
+        "generalLogCollection": []
     },
-    "cycleChains": [],
-    "generalLogCollection": []
-  },
-  "failing cycle 1": {
-    "teamIDToManagerIDs": {
-      "A": [
-        {
-          "Manager_ID": "004",
-          "Timestamp": ""
-        }
-      ],
-      "B": [
-        {
-          "Manager_ID": "002",
-          "Timestamp": ""
-        }
-      ],
-      "C": [
-        {
-          "Manager_ID": "003",
-          "Timestamp": ""
-        }
-      ]
-    },
-    "employeeIDToRecords": {
-      "002": [
-        {
-          "Start_Date": "2021-08-14T09:24:16.027Z",
-          "Full_Name": "C Smith",
-          "Employee_ID": "002",
-          "Manager_Name": "A Smith",
-          "Manager_ID": "004",
-          "Team_ID": "A",
-          "Team_Name": "Team A",
-          "Termination_Date": null,
-          "Location": "Connecticut",
-          "Email": "bsmith@co.co"
-        }
-      ],
-      "003": [
-        {
-          "Start_Date": "2018-11-21T22:18:43.511Z",
-          "Full_Name": "B Smith",
-          "Employee_ID": "003",
-          "Manager_Name": "C Smith",
-          "Manager_ID": "002",
-          "Team_ID": "B",
-          "Team_Name": "Team B",
-          "Termination_Date": null,
-          "Location": "Alabama",
-          "Email": "dsmith@co.co"
-        }
-      ],
-      "004": [
-        {
-          "Start_Date": "2019-03-29T12:07:39.730Z",
-          "Full_Name": "A Smith",
-          "Employee_ID": "004",
-          "Manager_Name": "B Smith",
-          "Manager_ID": "003",
-          "Team_ID": "C",
-          "Team_Name": "Team C",
-          "Termination_Date": null,
-          "Location": "Connecticut",
-          "Email": "asmith@co.co"
-        }
-      ]
-    },
-    "cycleChains": [],
-    "generalLogCollection": []
-  }
+    "failing cycle 1": {
+        "teamIDToManagerIDs": {
+            "A": [
+                {
+                    "Manager_ID": "004",
+                    "Timestamp": ""
+                }
+            ],
+            "B": [
+                {
+                    "Manager_ID": "002",
+                    "Timestamp": ""
+                }
+            ],
+            "C": [
+                {
+                    "Manager_ID": "003",
+                    "Timestamp": ""
+                }
+            ]
+        },
+        "employeeIDToRecords": {
+            "002": [{
+                "Start_Date": "2021-08-14T09:24:16.027Z",
+                "Full_Name": "C Smith",
+                "Employee_ID": "002",
+                "Manager_Name": "A Smith",
+                "Manager_ID": "004",
+                "Team_ID": "A",
+                "Team_Name": "Team A",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "bsmith@co.co" 
+
+            }],
+            "003": [{
+                "Start_Date": "2018-11-21T22:18:43.511Z",
+                "Full_Name": "B Smith",
+                "Employee_ID": "003",
+                "Manager_Name": "C Smith",
+                "Manager_ID": "002",
+                "Team_ID": "B",
+                "Team_Name": "Team B",
+                "Termination_Date": null,
+                "Location": "Alabama",
+                "Email": "dsmith@co.co"  
+            }],
+            "004": [{
+                "Start_Date": "2019-03-29T12:07:39.730Z",
+                "Full_Name": "A Smith",
+                "Employee_ID": "004",
+                "Manager_Name": "B Smith",
+                "Manager_ID": "003",
+                "Team_ID": "C",
+                "Team_Name": "Team C",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "asmith@co.co"
+            }]
+        },
+        "cycleChains": [],
+        "generalLogCollection": []
+    }
 }

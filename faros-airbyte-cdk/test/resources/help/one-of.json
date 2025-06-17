@@ -11,7 +11,9 @@
         {
           "title": "Mode X",
           "type": "object",
-          "required": ["mode"],
+          "required": [
+            "mode"
+          ],
           "properties": {
             "mode": {
               "type": "string",
@@ -22,7 +24,9 @@
         {
           "title": "Mode Y",
           "type": "object",
-          "required": ["mode"],
+          "required": [
+            "mode"
+          ],
           "properties": {
             "mode": {
               "type": "string",

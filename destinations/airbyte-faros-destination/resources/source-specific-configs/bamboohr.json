@@ -24,7 +24,10 @@
           },
           "title": "Inactive employmentHistoryStatus",
           "description": "Values of employmentHistoryStatus that are equivalent to an employee being inactive",
-          "example": ["Terminated", "On-Leave"]
+          "example": [
+            "Terminated",
+            "On-Leave"
+          ]
         },
         "resolve_locations": {
           "type": "boolean",

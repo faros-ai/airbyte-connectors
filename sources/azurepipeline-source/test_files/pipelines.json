@@ -1,32 +1,32 @@
 [
-  {
-    "_links": {
-      "self": {
-        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1"
-      },
-      "web": {
-        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2"
-      }
+    {
+        "_links": {
+            "self": {
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1"
+            },
+            "web": {
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=2"
+            }
+        },
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
+        "id": 2,
+        "revision": 1,
+        "name": "coonglinh.medee_dms",
+        "folder": "\\"
     },
-    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/2?revision=1",
-    "id": 2,
-    "revision": 1,
-    "name": "coonglinh.medee_dms",
-    "folder": "\\"
-  },
-  {
-    "_links": {
-      "self": {
-        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1"
-      },
-      "web": {
-        "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=6"
-      }
-    },
-    "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1",
-    "id": 6,
-    "revision": 1,
-    "name": "devcube",
-    "folder": "\\"
-  }
+    {
+        "_links": {
+            "self": {
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1"
+            },
+            "web": {
+                "href": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_build/definition?definitionId=6"
+            }
+        },
+        "url": "https://dev.azure.com/huongkstn/a432baaf-0264-4311-b613-087a2e7931f8/_apis/pipelines/6?revision=1",
+        "id": 6,
+        "revision": 1,
+        "name": "devcube",
+        "folder": "\\"
+    }
 ]

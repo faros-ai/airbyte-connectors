@@ -1,106 +1,106 @@
 [
-  {
-    "terminate_request": "stop",
-    "queuing_at": {
-      "seconds": 1658785623,
-      "nanos": 843289000
+    {
+        "terminate_request": "stop",
+        "queuing_at": {
+            "seconds": 1658785623,
+            "nanos": 843289000
+        },
+        "working_directory": ".semaphore",
+        "name": "Tests",
+        "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
+        "running_at": {
+            "seconds": 1658785877,
+            "nanos": 493843000
+        },
+        "partially_rerun_by": "",
+        "with_after_task": false,
+        "state": "DONE",
+        "snapshot_id": "",
+        "commit_message": "Merge branch 'main' into chore/test-dynamic-import",
+        "commit_sha": "61944fd75f9a87741c3f2e2af1a61df59064e7b2",
+        "terminated_by": "branch deletion",
+        "after_task_id": "",
+        "created_at": {
+            "seconds": 1658785623,
+            "nanos": 555638000
+        },
+        "error_description": "",
+        "repository_id": "",
+        "yaml_file_name": "semaphore.yml",
+        "pending_at": {
+            "seconds": 1658785623,
+            "nanos": 831796000
+        },
+        "ppl_id": "0f64a303-b156-4e82-a291-bafd58b671b7",
+        "stopping_at": {
+            "seconds": 1658786006,
+            "nanos": 118556000
+        },
+        "wf_id": "b1310b6a-35e9-42aa-99db-85b231aa52b2",
+        "done_at": {
+            "seconds": 1658786007,
+            "nanos": 647149000
+        },
+        "result": "STOPPED",
+        "compile_task_id": "",
+        "hook_id": "ec56ee57-35c7-476b-8457-ccf17e8c3bef",
+        "branch_name": "chore/test-dynamic-import",
+        "promotion_of": "",
+        "switch_id": "",
+        "result_reason": "INTERNAL",
+        "partial_rerun_of": ""
     },
-    "working_directory": ".semaphore",
-    "name": "Tests",
-    "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-    "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
-    "running_at": {
-      "seconds": 1658785877,
-      "nanos": 493843000
-    },
-    "partially_rerun_by": "",
-    "with_after_task": false,
-    "state": "DONE",
-    "snapshot_id": "",
-    "commit_message": "Merge branch 'main' into chore/test-dynamic-import",
-    "commit_sha": "61944fd75f9a87741c3f2e2af1a61df59064e7b2",
-    "terminated_by": "branch deletion",
-    "after_task_id": "",
-    "created_at": {
-      "seconds": 1658785623,
-      "nanos": 555638000
-    },
-    "error_description": "",
-    "repository_id": "",
-    "yaml_file_name": "semaphore.yml",
-    "pending_at": {
-      "seconds": 1658785623,
-      "nanos": 831796000
-    },
-    "ppl_id": "0f64a303-b156-4e82-a291-bafd58b671b7",
-    "stopping_at": {
-      "seconds": 1658786006,
-      "nanos": 118556000
-    },
-    "wf_id": "b1310b6a-35e9-42aa-99db-85b231aa52b2",
-    "done_at": {
-      "seconds": 1658786007,
-      "nanos": 647149000
-    },
-    "result": "STOPPED",
-    "compile_task_id": "",
-    "hook_id": "ec56ee57-35c7-476b-8457-ccf17e8c3bef",
-    "branch_name": "chore/test-dynamic-import",
-    "promotion_of": "",
-    "switch_id": "",
-    "result_reason": "INTERNAL",
-    "partial_rerun_of": ""
-  },
-  {
-    "terminate_request": "",
-    "queuing_at": {
-      "seconds": 1658785545,
-      "nanos": 511146000
-    },
-    "working_directory": ".semaphore",
-    "name": "Tests",
-    "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
-    "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
-    "running_at": {
-      "seconds": 1658785545,
-      "nanos": 530338000
-    },
-    "partially_rerun_by": "",
-    "with_after_task": false,
-    "state": "DONE",
-    "snapshot_id": "",
-    "commit_message": "chore: SPIKE Dynamic imports",
-    "commit_sha": "245172d65b757903307a73a467142a502a8606cb",
-    "terminated_by": "",
-    "after_task_id": "",
-    "created_at": {
-      "seconds": 1658785545,
-      "nanos": 54670000
-    },
-    "error_description": "",
-    "repository_id": "",
-    "yaml_file_name": "semaphore.yml",
-    "pending_at": {
-      "seconds": 1658785545,
-      "nanos": 467986000
-    },
-    "ppl_id": "d85c0dce-1651-475b-9469-d38aad2c5c11",
-    "stopping_at": {
-      "seconds": 0,
-      "nanos": 0
-    },
-    "wf_id": "943f5be3-a3af-458b-ba78-fbb8186fee8e",
-    "done_at": {
-      "seconds": 1658785877,
-      "nanos": 271496000
-    },
-    "result": "PASSED",
-    "compile_task_id": "",
-    "hook_id": "5a8dabd2-7265-4d37-9de6-70af4ae60e58",
-    "branch_name": "chore/test-dynamic-import",
-    "promotion_of": "",
-    "switch_id": "",
-    "result_reason": "TEST",
-    "partial_rerun_of": ""
-  }
+    {
+        "terminate_request": "",
+        "queuing_at": {
+            "seconds": 1658785545,
+            "nanos": 511146000
+        },
+        "working_directory": ".semaphore",
+        "name": "Tests",
+        "branch_id": "66cf8152-c72d-468d-977a-7384c3683f58",
+        "project_id": "40513a80-0de8-4b75-9690-16fae6542e58",
+        "running_at": {
+            "seconds": 1658785545,
+            "nanos": 530338000
+        },
+        "partially_rerun_by": "",
+        "with_after_task": false,
+        "state": "DONE",
+        "snapshot_id": "",
+        "commit_message": "chore: SPIKE Dynamic imports",
+        "commit_sha": "245172d65b757903307a73a467142a502a8606cb",
+        "terminated_by": "",
+        "after_task_id": "",
+        "created_at": {
+            "seconds": 1658785545,
+            "nanos": 54670000
+        },
+        "error_description": "",
+        "repository_id": "",
+        "yaml_file_name": "semaphore.yml",
+        "pending_at": {
+            "seconds": 1658785545,
+            "nanos": 467986000
+        },
+        "ppl_id": "d85c0dce-1651-475b-9469-d38aad2c5c11",
+        "stopping_at": {
+            "seconds": 0,
+            "nanos": 0
+        },
+        "wf_id": "943f5be3-a3af-458b-ba78-fbb8186fee8e",
+        "done_at": {
+            "seconds": 1658785877,
+            "nanos": 271496000
+        },
+        "result": "PASSED",
+        "compile_task_id": "",
+        "hook_id": "5a8dabd2-7265-4d37-9de6-70af4ae60e58",
+        "branch_name": "chore/test-dynamic-import",
+        "promotion_of": "",
+        "switch_id": "",
+        "result_reason": "TEST",
+        "partial_rerun_of": ""
+    }
 ]

@@ -1,59 +1,59 @@
 [
-  {
-    "record": {
-      "stream": "mytestsource__workday__customreports",
-      "emitted_at": 1635865052219,
-      "data": {
-        "Start_Date": "2019-03-29T12:07:39.730Z",
-        "Full_Name": "A Smith",
-        "Employee_ID": "001",
-        "Manager_Name": "B Smith",
-        "Manager_ID": "002",
-        "Team_ID": "B",
-        "Team_Name": "Team B",
-        "Termination_Date": null,
-        "Location": "Connecticut",
-        "Email": "asmith@co.co"
-      }
+    {
+        "record": {
+            "stream": "mytestsource__workday__customreports",
+            "emitted_at": 1635865052219,
+            "data": {
+                "Start_Date": "2019-03-29T12:07:39.730Z",
+                "Full_Name": "A Smith",
+                "Employee_ID": "001",
+                "Manager_Name": "B Smith",
+                "Manager_ID": "002",
+                "Team_ID": "B",
+                "Team_Name": "Team B",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "asmith@co.co"
+            }
+        },
+        "type": "RECORD"
     },
-    "type": "RECORD"
-  },
-  {
-    "record": {
-      "stream": "mytestsource__workday__customreports",
-      "emitted_at": 1635865052219,
-      "data": {
-        "Start_Date": "2021-08-14T09:24:16.027Z",
-        "Full_Name": "B Smith",
-        "Employee_ID": "002",
-        "Manager_Name": "C Smith",
-        "Manager_ID": "003",
-        "Team_ID": "A",
-        "Team_Name": "Team A",
-        "Termination_Date": null,
-        "Location": "Connecticut",
-        "Email": "bsmith@co.co"
-      }
+    {
+        "record": {
+            "stream": "mytestsource__workday__customreports",
+            "emitted_at": 1635865052219,
+            "data": {
+                "Start_Date": "2021-08-14T09:24:16.027Z",
+                "Full_Name": "B Smith",
+                "Employee_ID": "002",
+                "Manager_Name": "C Smith",
+                "Manager_ID": "003",
+                "Team_ID": "A",
+                "Team_Name": "Team A",
+                "Termination_Date": null,
+                "Location": "Connecticut",
+                "Email": "bsmith@co.co"
+            }
+        },
+        "type": "RECORD"
     },
-    "type": "RECORD"
-  },
-  {
-    "record": {
-      "stream": "mytestsource__workday__customreports",
-      "emitted_at": 1635865052219,
-      "data": {
-        "Start_Date": "2018-11-21T22:18:43.511Z",
-        "Full_Name": "D Smith",
-        "Employee_ID": "004",
-        "Manager_Name": "B Smith",
-        "Manager_ID": "002",
-        "Team_Name": "Team B",
-        "Team_ID": "B",
-        "Termination_Date": null,
-        "Location": "Alabama",
-        "Email": "dsmith@co.co"
-      }
-    },
-    "type": "RECORD"
-  }
+    {
+        "record": {
+            "stream": "mytestsource__workday__customreports",
+            "emitted_at": 1635865052219,
+            "data": {
+                "Start_Date": "2018-11-21T22:18:43.511Z",
+                "Full_Name": "D Smith",
+                "Employee_ID": "004",
+                "Manager_Name": "B Smith",
+                "Manager_ID": "002",
+                "Team_Name": "Team B",
+                "Team_ID": "B",
+                "Termination_Date": null,
+                "Location": "Alabama",
+                "Email": "dsmith@co.co"
+            }
+        },
+        "type": "RECORD"
+    }
 ]
