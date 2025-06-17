@@ -7,7 +7,6 @@ import {
   GitLabToken,
   Group,
   Issue,
-  MERGE_REQUESTS_QUERY,
   MergeRequest,
   MergeRequestEvent,
   MergeRequestNote,
@@ -19,6 +18,7 @@ import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
+import {MERGE_REQUESTS_QUERY} from './queries';
 import {RunMode} from './streams/common';
 import {GitLabConfig} from './types';
 import {GitLabUserResponse} from './types/api';

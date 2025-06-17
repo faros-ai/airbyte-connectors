@@ -11,7 +11,7 @@ export const MERGE_REQUESTS_QUERY = loadQuery('merge-requests-query.gql');
  */
 function loadQuery(query: string): string {
   return fs.readFileSync(
-    path.join(__dirname, '..', '..', 'resources', 'gitlab', 'queries', query),
+    path.join(__dirname, '..', 'resources', 'queries', query),
     'utf8'
   );
 }
