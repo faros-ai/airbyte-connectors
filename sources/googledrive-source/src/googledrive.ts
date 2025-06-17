@@ -48,6 +48,7 @@ export class GoogleDrive {
 
   constructor(
     private readonly credentials: Auth.JWTInput,
+    private readonly auth: Auth.GoogleAuth,
     private readonly adminDirectoryClient: admin_directory_v1.Admin,
     private readonly driveActivityClient: driveactivity_v2.Driveactivity,
     private readonly logger: AirbyteLogger
@@ -88,11 +89,24 @@ export class GoogleDrive {
 
     GoogleDrive.googleDrive = new GoogleDrive(
       credentials,
+      auth,
       adminDirectoryClient,
       driveActivityClient,
       logger
     );
     return GoogleDrive.googleDrive;
+  }
+
+  async checkConnection(): Promise<void> {
+    try {
+      const token = await this.auth.getAccessToken();
+      if (!token) {
+        throw new VError('Could not get access token');
+      }
+      await this.getWorkspaceCustomer();
+    } catch (err: any) {
+      throw new VError(err);
+    }
   }
 
   private async invokeCallWithErrorWrapper<T>(

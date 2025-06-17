@@ -137,6 +137,7 @@ function setupGoogleDriveInstance(
 
       return new GoogleDrive(
         mockCredentials,
+        {} as any,
         adminDirectoryClient as any,
         driveActivityClient as any,
         logger

@@ -8,7 +8,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {GoogleDrive, GoogleDriveConfig} from './googledrive';
+import {GoogleDrive, GoogleDriveConfig, REQUIRED_SCOPES} from './googledrive';
 import {Activity} from './streams/activity';
 import {Workspace} from './streams/workspace';
 import {WorkspaceUsers} from './streams/workspace_users';
@@ -33,11 +33,11 @@ export class GoogleDriveSource extends AirbyteSourceBase<GoogleDriveConfig> {
   async checkConnection(config: GoogleDriveConfig): Promise<[boolean, VError]> {
     try {
       const googleDrive = await GoogleDrive.instance(config, this.logger);
-      await googleDrive.getWorkspaceCustomer();
+      await googleDrive.checkConnection();
     } catch (error: any) {
       const err = new VError(
         `Please verify your private_key and client_email are correct and have access ` +
-          `to Admin Directory API (customer and user)and Drive Activity API. ` +
+          `to these scopes: ${REQUIRED_SCOPES.join(',')} ` +
           `Error: ${error?.message}`
       );
       return [false, err];
