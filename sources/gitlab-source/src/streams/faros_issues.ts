@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Issue} from 'faros-airbyte-common/gitlab';
+type Issue = any;
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 

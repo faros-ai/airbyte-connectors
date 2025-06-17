@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Tag} from 'faros-airbyte-common/gitlab';
+type Tag = any;
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';

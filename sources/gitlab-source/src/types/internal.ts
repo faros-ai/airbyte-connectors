@@ -1,4 +1,4 @@
-import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
+type FarosUserOutput = any;
 
 import {GitLabUserResponse} from './api';
 

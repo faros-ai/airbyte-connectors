@@ -3,7 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {Project} from 'faros-airbyte-common/gitlab';
+type Project = any;
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -125,7 +125,7 @@ export abstract class StreamWithProjectSlices extends StreamBase {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
         group
       )) {
-        if (repo.empty_repo === true) {
+        if ((repo as any).empty_repo === true) {
           this.logger.warn(
             `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`
           );
