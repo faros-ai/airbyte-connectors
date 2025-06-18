@@ -571,15 +571,39 @@ export class GitLab {
     } = { orderBy: 'id' }
   ): Promise<T[]> {
     const results: T[] = [];
-    const paginationOptions = {
-      pagination: 'keyset' as const,
-      orderBy: options.orderBy,
-      sort: options.sort || 'asc',
-      perPage: options.perPage || this.pageSize
-    };
+    let hasMore = true;
+    let idAfter: string | undefined;
 
-    const response = await apiCall(paginationOptions);
-    results.push(...response);
+    while (hasMore) {
+      const paginationOptions: any = {
+        pagination: 'keyset' as const,
+        orderBy: options.orderBy,
+        sort: options.sort || 'asc',
+        perPage: options.perPage || this.pageSize,
+        showExpanded: true
+      };
+
+      if (idAfter) {
+        paginationOptions.idAfter = idAfter;
+      }
+
+      const response = await apiCall(paginationOptions);
+      
+      if (response && typeof response === 'object' && 'data' in response && 'paginationInfo' in response) {
+        const { data, paginationInfo } = response as any;
+        results.push(...data);
+        
+        hasMore = paginationInfo.next !== null && paginationInfo.next !== undefined;
+        if (hasMore && data.length > 0) {
+          const lastItem = data[data.length - 1];
+          idAfter = lastItem.id?.toString();
+        }
+      } else {
+        results.push(...(response as T[]));
+        hasMore = false;
+      }
+    }
+
     return results;
   }
 
@@ -591,14 +615,33 @@ export class GitLab {
     } = {}
   ): Promise<T[]> {
     const results: T[] = [];
-    const paginationOptions = {
-      pagination: 'offset' as const,
-      perPage: options.perPage || this.pageSize,
-      page: options.page
-    };
+    let currentPage = options.page || 1;
+    let hasMore = true;
 
-    const response = await apiCall(paginationOptions);
-    results.push(...response);
+    while (hasMore) {
+      const paginationOptions = {
+        pagination: 'offset' as const,
+        perPage: options.perPage || this.pageSize,
+        page: currentPage,
+        showExpanded: true
+      };
+
+      const response = await apiCall(paginationOptions);
+      
+      if (response && typeof response === 'object' && 'data' in response && 'paginationInfo' in response) {
+        const { data, paginationInfo } = response as any;
+        results.push(...data);
+        
+        hasMore = paginationInfo.next !== null && paginationInfo.next !== undefined;
+        if (hasMore) {
+          currentPage = paginationInfo.next;
+        }
+      } else {
+        results.push(...(response as T[]));
+        hasMore = false;
+      }
+    }
+
     return results;
   }
 
