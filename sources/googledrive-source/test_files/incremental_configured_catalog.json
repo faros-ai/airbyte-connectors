@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "activity_stream",
+        "name": "activity",
         "json_schema": {},
         "supported_sync_modes": [
           "full_refresh",
@@ -38,7 +38,7 @@
     },
     {
       "stream": {
-        "name": "workspace_customer",
+        "name": "workspace",
         "json_schema": {},
         "supported_sync_modes": ["full_refresh"],
         "source_defined_cursor": false,
