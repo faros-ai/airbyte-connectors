@@ -1,6 +1,5 @@
+import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
 import {GitLabUserResponse} from './api';
-
-type FarosUserOutput = any;
 
 export class UserMapper {
   static toOutput(apiUser: GitLabUserResponse): FarosUserOutput {

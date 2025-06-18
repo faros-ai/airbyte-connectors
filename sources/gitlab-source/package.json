@@ -53,7 +53,6 @@
     }
   },
   "devDependencies": {
-    "faros-airbyte-testing-tools": "*",
-    "jest-extended": "^4.0.2"
+    "faros-airbyte-testing-tools": "*"
   }
 }
