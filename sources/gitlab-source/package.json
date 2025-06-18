@@ -27,11 +27,9 @@
   },
   "dependencies": {
     "@gitbeaker/rest": "^42.5.0",
-    "commander": "^13.1.0",
     "date-fns": "^4.1.0",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "faros-js-client": "^0.7.1",
     "fs-extra": "^11.2.0",
     "graphql-request": "^6.1.0",
     "typescript-memoize": "^1.1.0",
