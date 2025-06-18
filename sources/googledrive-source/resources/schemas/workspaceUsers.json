@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "primaryEmail": {
+      "type": "string"
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "familyName": {
+          "type": "string"
+        },
+        "givenName": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        }
+      }
+    },
+    "isAdmin": {
+      "type": "boolean"
+    },
+    "isDelegatedAdmin": {
+      "type": "boolean"
+    },
+    "creationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastLoginTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "orgUnitPath": {
+      "type": "string"
+    },
+    "isMailboxSetup": {
+      "type": "boolean"
+    },
+    "suspended": {
+      "type": "boolean"
+    },
+    "suspensionReason": {
+      "type": "string"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "agreedToTerms": {
+      "type": "boolean"
+    },
+    "ipWhitelisted": {
+      "type": "boolean"
+    },
+    "emails": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "customType": {
+            "type": "string"
+          },
+          "primary": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "phones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "customType": {
+            "type": "string"
+          },
+          "primary": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "organizations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "primary": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          },
+          "customType": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "customType": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "floorName": {
+            "type": "string"
+          },
+          "floorSection": {
+            "type": "string"
+          },
+          "deskCode": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "customSchemas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "etag": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "thumbnailPhotoUrl": {
+      "type": "string"
+    },
+    "thumbnailPhotoEtag": {
+      "type": "string"
+    },
+    "recoveryEmail": {
+      "type": "string"
+    },
+    "recoveryPhone": {
+      "type": "string"
+    },
+    "includeInGlobalAddressList": {
+      "type": "boolean"
+    },
+    "changePasswordAtNextLogin": {
+      "type": "boolean"
+    },
+    "isEnrolledIn2Sv": {
+      "type": "boolean"
+    },
+    "isEnforcedIn2Sv": {
+      "type": "boolean"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "languageCode": {
+            "type": "string"
+          },
+          "preference": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "nonEditableAliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "customerId": {
+      "type": "string"
+    }
+  }
+}

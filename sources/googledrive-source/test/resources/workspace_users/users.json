@@ -1,0 +1,112 @@
+{
+  "kind": "admin#directory#users",
+  "etag": "\"abcdef123456789/sample_etag_value\"",
+  "users": [
+    {
+      "kind": "admin#directory#user",
+      "id": "123456789012345678901",
+      "etag": "\"abcdef123456789/user_etag_value\"",
+      "primaryEmail": "john.doe@example.com",
+      "name": {
+        "givenName": "John",
+        "familyName": "Doe",
+        "fullName": "John Doe"
+      },
+      "isAdmin": false,
+      "isDelegatedAdmin": false,
+      "lastLoginTime": "2024-01-15T10:30:00.000Z",
+      "creationTime": "2023-06-01T09:00:00.000Z",
+      "agreedToTerms": true,
+      "suspended": false,
+      "archived": false,
+      "changePasswordAtNextLogin": false,
+      "ipWhitelisted": false,
+      "emails": [
+        {
+          "address": "john.doe@example.com",
+          "primary": true
+        },
+        {
+          "address": "john.doe@example.test-google-a.com"
+        }
+      ],
+      "organizations": [
+        {
+          "name": "Example Corp",
+          "title": "Software Engineer",
+          "primary": true,
+          "type": "work",
+          "customType": "",
+          "department": "Engineering",
+          "location": "San Francisco"
+        }
+      ],
+      "phones": [
+        {
+          "value": "(555) 123-4567",
+          "type": "mobile"
+        }
+      ],
+      "languages": [
+        {
+          "languageCode": "en",
+          "preference": "preferred"
+        }
+      ],
+      "nonEditableAliases": [
+        "john.doe@example.test-google-a.com"
+      ],
+      "customerId": "C01abc234",
+      "orgUnitPath": "/Engineering",
+      "isMailboxSetup": true,
+      "isEnrolledIn2Sv": true,
+      "isEnforcedIn2Sv": true,
+      "includeInGlobalAddressList": true,
+      "recoveryEmail": "j.doe.recovery@gmail.com",
+      "recoveryPhone": "+15551234567"
+    },
+    {
+      "kind": "admin#directory#user",
+      "id": "987654321098765432109",
+      "etag": "\"abcdef123456789/user_etag_value_2\"",
+      "primaryEmail": "jane.smith@example.com",
+      "name": {
+        "givenName": "Jane",
+        "familyName": "Smith",
+        "fullName": "Jane Smith"
+      },
+      "isAdmin": true,
+      "isDelegatedAdmin": false,
+      "lastLoginTime": "2024-01-16T14:20:00.000Z",
+      "creationTime": "2023-03-15T12:00:00.000Z",
+      "agreedToTerms": true,
+      "suspended": false,
+      "archived": false,
+      "changePasswordAtNextLogin": false,
+      "ipWhitelisted": true,
+      "emails": [
+        {
+          "address": "jane.smith@example.com",
+          "primary": true
+        }
+      ],
+      "organizations": [
+        {
+          "name": "Example Corp",
+          "title": "IT Administrator",
+          "primary": true,
+          "type": "work",
+          "customType": "",
+          "department": "IT",
+          "location": "New York"
+        }
+      ],
+      "customerId": "C01abc234",
+      "orgUnitPath": "/IT",
+      "isMailboxSetup": true,
+      "isEnrolledIn2Sv": true,
+      "isEnforcedIn2Sv": true,
+      "includeInGlobalAddressList": true
+    }
+  ]
+}
