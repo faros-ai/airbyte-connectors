@@ -1,6 +1,7 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-type FarosUserOutput = any;
 import {Dictionary} from 'ts-essentials';
+
+type FarosUserOutput = any;
 
 import {GitLab} from '../gitlab';
 import {UserMapper} from '../types/internal';

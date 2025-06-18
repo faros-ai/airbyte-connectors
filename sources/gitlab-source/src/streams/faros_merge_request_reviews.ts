@@ -1,7 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-type MergeRequestEvent = any;
+import {GitLabMergeRequestEvent} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+type MergeRequestEvent = GitLabMergeRequestEvent;
 
 import {GitLab} from '../gitlab';
 import {

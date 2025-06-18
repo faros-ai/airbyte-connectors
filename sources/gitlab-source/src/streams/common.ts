@@ -3,9 +3,11 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-type Project = any;
+import {GitLabProject} from '../gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
+
+type Project = GitLabProject;
 
 import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';

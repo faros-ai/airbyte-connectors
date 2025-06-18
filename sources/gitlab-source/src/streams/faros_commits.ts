@@ -1,7 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-type Commit = any;
+import {GitLabCommit} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+type Commit = GitLabCommit;
 
 import {GitLab} from '../gitlab';
 import {
@@ -63,7 +65,7 @@ export class FarosCommits extends StreamWithProjectSlices {
 
     for await (const commit of gitlab.getCommits(
       project.path_with_namespace,
-      project.default_branch,
+      project.default_branch as string,
       startDate,
       endDate
     )) {

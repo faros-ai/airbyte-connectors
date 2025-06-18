@@ -1,33 +1,123 @@
 import {Gitlab as GitlabClient} from '@gitbeaker/rest';
-const addDays = (date: Date, days: number): Date => {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-};
-
-const subDays = (date: Date, days: number): Date => {
-  const result = new Date(date);
-  result.setDate(result.getDate() - days);
-  return result;
-};
-
-const format = (date: Date, formatStr: string): string => {
-  if (formatStr === 'yyyy-MM-dd') {
-    return date.toISOString().split('T')[0];
-  }
-  return date.toISOString();
-};
+import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-type Commit = any;
-type GitLabToken = any;
-type Group = any;
-type Issue = any;
-type MergeRequest = any;
-type MergeRequestEvent = any;
-type MergeRequestNote = any;
-type Project = any;
-type Tag = any;
+export interface GitLabCommit {
+  id: string;
+  short_id: string;
+  title: string;
+  author_name: string;
+  author_email: string;
+  authored_date: string;
+  committed_date: string;
+  created_at: string;
+  message: string;
+  parent_ids?: string[];
+  committer_name?: string;
+  committer_email?: string;
+  web_url?: string;
+  branch?: string;
+  author_username?: string;
+  group_id: string;
+  project_path: string;
+}
+
+export interface GitLabGroup {
+  id: string;
+  name: string;
+  path: string;
+  description: string;
+  web_url: string;
+  parent_id: string | null;
+  visibility: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GitLabProject {
+  id: string;
+  name: string;
+  path: string;
+  path_with_namespace: string;
+  web_url: string;
+  description: string;
+  visibility: string;
+  created_at: string;
+  updated_at: string;
+  default_branch: string;
+  namespace: any;
+  owner: any;
+  archived: boolean;
+  empty_repo: boolean;
+  group_id: string;
+}
+
+export interface GitLabIssue {
+  id: number;
+  title: string;
+  description: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  author: { username: string };
+  assignees: Array<{ username: string }>;
+  labels: string[];
+  group_id: string;
+  project_path: string;
+}
+
+export interface GitLabTag {
+  name: string;
+  message: string;
+  target: string;
+  commit: GitLabCommit;
+  commit_id?: string;
+  title?: string;
+  group_id: string;
+  project_path: string;
+}
+
+export interface GitLabMergeRequest {
+  id: number;
+  iid: number;
+  title: string;
+  description: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  author: { username: string };
+  group_id: string;
+}
+
+export interface GitLabMergeRequestEvent {
+  id: number;
+  action_name: string;
+  target_iid: number;
+  target_type: string;
+  author: { username: string };
+  created_at: string;
+  group_id: string;
+  project_path: string;
+}
+
+export interface GitLabMergeRequestNote {
+  id: number;
+  author: { username: string };
+  body: string;
+  system: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type GitLabToken = any;
+type Commit = GitLabCommit;
+type Group = GitLabGroup;
+type Issue = GitLabIssue;
+type MergeRequest = GitLabMergeRequest;
+type MergeRequestEvent = GitLabMergeRequestEvent;
+type MergeRequestNote = GitLabMergeRequestNote;
+type Project = GitLabProject;
+type Tag = GitLabTag;
 import {GraphQLClient} from 'graphql-request';
 import {toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -100,25 +190,25 @@ export class GitLab {
   async checkConnection(): Promise<void> {
     try {
       this.logger.debug(
-        'Verifying GitLab credentials by fetching projects'
+        'Verifying GitLab credentials by fetching metadata'
       );
-      const projects = await this.client.Projects.all({ simple: true, perPage: 1 });
-      if (projects && Array.isArray(projects)) {
+      const metadata = await this.client.Metadata.show();
+      if (metadata && metadata.version) {
         this.logger.debug(
           'GitLab credentials verified.',
-          `Found ${projects.length} projects`
+          `Connected to GitLab version ${metadata.version}`
         );
       } else {
         this.logger.error(
-          'GitLab projects response was not an array or was null: %s',
-          JSON.stringify(projects)
+          'GitLab metadata response was invalid: %s',
+          JSON.stringify(metadata)
         );
         throw new VError(
           'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid'
         );
       }
     } catch (err: any) {
-      this.logger.error('Failed to fetch GitLab projects: %s', err.message);
+      this.logger.error('Failed to fetch GitLab metadata: %s', err.message);
       throw new VError(
         err,
         'GitLab authentication failed. Please check your API token and permissions'
@@ -148,10 +238,10 @@ export class GitLab {
       path: group.path,
       web_url: group.web_url,
       description: group.description,
-      visibility: group.visibility,
+      visibility: group.visibility || 'private',
       created_at: group.created_at,
       updated_at: group.updated_at,
-    };
+    } as Group;
   }
 
   @Memoize()
@@ -178,20 +268,15 @@ export class GitLab {
       path_with_namespace: project.path_with_namespace,
       web_url: project.web_url,
       description: project.description,
-      visibility: project.visibility as string,
+      visibility: project.visibility || 'private',
       created_at: project.created_at,
-      updated_at: project.updated_at as string,
-      namespace: {
-        id: toLower(`${project.namespace.id}`),
-        name: project.namespace.name,
-        path: project.namespace.path,
-        kind: project.namespace.kind,
-        full_path: project.namespace.full_path,
-      },
+      updated_at: project.updated_at || new Date().toISOString(),
+      namespace: project.namespace,
+      owner: project.owner,
       default_branch: project.default_branch,
-      archived: project.archived as boolean,
+      archived: project.archived || false,
       group_id: groupId,
-      empty_repo: project.empty_repo as boolean,
+      empty_repo: project.empty_repo || false,
     }));
   }
 
@@ -200,8 +285,7 @@ export class GitLab {
       (options) => this.client.GroupMembers.all(groupId, {
         ...options,
         includeInherited: true,
-      }),
-      { perPage: this.pageSize }
+      })
     );
 
     for (const member of members) {
@@ -214,10 +298,13 @@ export class GitLab {
 
   private getToken(): string {
     const auth = this.getAuth();
-    if (auth.type !== 'token') {
+    if (typeof auth === 'object' && auth.type !== 'token') {
       throw new VError('Only token authentication is supported');
     }
-    return auth.personal_access_token;
+    if (typeof auth === 'object') {
+      return auth.personal_access_token;
+    }
+    return auth;
   }
 
   private getAuth(): GitLabToken {
@@ -264,7 +351,7 @@ export class GitLab {
     branch: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<Omit<Commit, 'group_id' | 'project_path'>> {
+  ): AsyncGenerator<GitLabCommit> {
     const options: any = {
       refName: branch,
     };
@@ -277,9 +364,8 @@ export class GitLab {
       options.until = until.toISOString();
     }
 
-    const commits = await this.keysetPagination(
-      (paginationOptions) => this.client.Commits.all(projectPath, {...options, ...paginationOptions}),
-      { orderBy: 'id', sort: 'asc' }
+    const commits = await this.offsetPagination(
+      (paginationOptions) => this.client.Commits.all(projectPath, {...options, ...paginationOptions})
     );
 
     for (const commit of commits) {
@@ -314,24 +400,30 @@ export class GitLab {
         web_url: commitData.web_url,
         branch: branch,
         author_username: author,
+        group_id: '',
+        project_path: projectPath,
       };
     }
   }
 
   async *getTags(
     projectId: string
-  ): AsyncGenerator<Omit<Tag, 'group_id' | 'project_path'>> {
-    const tags = await this.keysetPagination(
-      (options) => this.client.Tags.all(projectId, options),
-      { orderBy: 'name', sort: 'asc' }
+  ): AsyncGenerator<GitLabTag> {
+    const tags = await this.offsetPagination(
+      (options) => this.client.Tags.all(projectId, options)
     );
 
     for (const tag of tags) {
       const tagData = tag as any;
       yield {
         name: tagData.name,
+        message: tagData.message,
+        target: tagData.target,
+        commit: tagData.commit,
         title: tagData.message,
         commit_id: tagData.commit?.id,
+        group_id: '',
+        project_path: projectId,
       };
     }
   }
@@ -444,8 +536,7 @@ export class GitLab {
     mergeRequestIid: number
   ): AsyncGenerator<MergeRequestNote> {
     const notes = await this.offsetPagination(
-      (options) => this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options),
-      { perPage: this.pageSize }
+      (options) => this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options)
     );
 
     for (const note of notes) {
@@ -465,8 +556,8 @@ export class GitLab {
         author: noteData.author,
         body: noteData.body,
         system: noteData.system,
-        createdAt: noteData.created_at,
-        updatedAt: noteData.updated_at,
+        created_at: noteData.created_at,
+        updated_at: noteData.updated_at,
       };
     }
   }
@@ -477,7 +568,6 @@ export class GitLab {
       orderBy: string;
       sort?: 'asc' | 'desc';
       perPage?: number;
-      maxPages?: number;
     } = { orderBy: 'id' }
   ): Promise<T[]> {
     const results: T[] = [];
@@ -485,28 +575,18 @@ export class GitLab {
       pagination: 'keyset' as const,
       orderBy: options.orderBy,
       sort: options.sort || 'asc',
-      perPage: options.perPage || this.pageSize,
-      maxPages: options.maxPages || 10
+      perPage: options.perPage || this.pageSize
     };
 
-    try {
-      const response = await apiCall(paginationOptions);
-      results.push(...response);
-      return results;
-    } catch (error) {
-      this.logger.warn(`Keyset pagination failed, falling back to offset: ${error}`);
-      return this.offsetPagination(apiCall, {
-        perPage: options.perPage,
-        maxPages: options.maxPages
-      });
-    }
+    const response = await apiCall(paginationOptions);
+    results.push(...response);
+    return results;
   }
 
   private async offsetPagination<T>(
     apiCall: (options: any) => Promise<T[]>,
     options: {
       perPage?: number;
-      maxPages?: number;
       page?: number;
     } = {}
   ): Promise<T[]> {
@@ -514,7 +594,6 @@ export class GitLab {
     const paginationOptions = {
       pagination: 'offset' as const,
       perPage: options.perPage || this.pageSize,
-      maxPages: options.maxPages || 10,
       page: options.page
     };
 
@@ -543,8 +622,7 @@ export class GitLab {
     }
 
     const events = await this.offsetPagination(
-      (paginationOptions) => this.client.Events.all({projectId: projectPath, ...options, ...paginationOptions}),
-      { perPage: this.pageSize }
+      (paginationOptions) => this.client.Events.all({projectId: projectPath, ...options, ...paginationOptions})
     );
 
     for (const event of events) {
@@ -563,6 +641,7 @@ export class GitLab {
         author: eventData.author,
         created_at: eventData.created_at,
         project_path: projectPath,
+        group_id: undefined,
       };
     }
   }
@@ -571,7 +650,7 @@ export class GitLab {
     projectId: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<Omit<Issue, 'group_id' | 'project_path'>> {
+  ): AsyncGenerator<GitLabIssue> {
     const options: any = {
       perPage: this.pageSize,
       orderBy: 'updated_at',
@@ -586,9 +665,8 @@ export class GitLab {
       options.updatedBefore = until.toISOString();
     }
 
-    const issues = await this.keysetPagination(
-      (paginationOptions) => this.client.Issues.all({...options, ...paginationOptions, projectId}),
-      { orderBy: 'updated_at', sort: 'desc' }
+    const issues = await this.offsetPagination(
+      (paginationOptions) => this.client.Issues.all({...options, ...paginationOptions, projectId})
     );
 
     for (const issue of issues) {
@@ -621,6 +699,8 @@ export class GitLab {
             }))
           : [],
         author: {username: issueData.author.username as string},
+        group_id: '',
+        project_path: projectId,
       };
     }
   }

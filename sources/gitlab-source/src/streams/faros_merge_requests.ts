@@ -1,7 +1,9 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-type MergeRequest = any;
+import {GitLabMergeRequest} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+type MergeRequest = GitLabMergeRequest;
 
 import {GitLab} from '../gitlab';
 import {
@@ -69,7 +71,7 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
     latestRecord: MergeRequest,
     slice: ProjectStreamSlice
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.updatedAt ?? 0);
+    const latestRecordCutoff = Utils.toDate(latestRecord?.updated_at ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
