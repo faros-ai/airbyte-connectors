@@ -1,0 +1,100 @@
+{
+  "activities": [
+    {
+      "primaryActionDetail": {
+        "edit": {}
+      },
+      "actors": [
+        {
+          "user": {
+            "knownUser": {
+              "personName": "people/123456789012345678901",
+              "isCurrentUser": true
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "detail": {
+            "edit": {}
+          }
+        }
+      ],
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+            "title": "Example Document",
+            "file": {},
+            "mimeType": "application/vnd.google-apps.document",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "people/098765432109876543210",
+                  "isCurrentUser": false
+                }
+              },
+              "domain": {
+                "name": "example.com",
+                "legacyId": "110223439587376147641"
+              }
+            },
+            "driveFile": {}
+          }
+        }
+      ],
+      "timestamp": "2024-01-01T12:00:00.000Z"
+    },
+    {
+      "primaryActionDetail": {
+        "create": {
+          "new": {}
+        }
+      },
+      "actors": [
+        {
+          "user": {
+            "knownUser": {
+              "personName": "people/567890123456789012345",
+              "isCurrentUser": false
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "detail": {
+            "create": {
+              "new": {}
+            }
+          }
+        }
+      ],
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/2CyiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+            "title": "Test Spreadsheet",
+            "file": {},
+            "mimeType": "application/vnd.google-apps.spreadsheet",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "people/567890123456789012345",
+                  "isCurrentUser": false
+                }
+              },
+              "domain": {
+                "name": "example.com",
+                "legacyId": "110223439587376147641"
+              }
+            },
+            "driveFile": {}
+          }
+        }
+      ],
+      "timestamp": "2024-01-01T11:30:00.000Z"
+    }
+  ]
+}

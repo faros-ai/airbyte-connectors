@@ -77,7 +77,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: GitLabConfig,
     protected readonly logger: AirbyteLogger,
-    protected readonly farosClient?: FarosClient,
+    protected readonly farosClient?: FarosClient
   ) {
     super(logger);
     this.groupFilter = GroupFilter.instance(config, logger, farosClient);
@@ -93,12 +93,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
   protected getUpdatedStreamState(
     latestRecordCutoff: Date,
     currentStreamState: StreamState,
-    groupKey: string,
+    groupKey: string
   ): StreamState {
     return calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      groupKey,
+      groupKey
     );
   }
 
@@ -123,11 +123,11 @@ export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     for (const group_id of await this.groupFilter.getGroups()) {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-        group_id,
+        group_id
       )) {
-        if (repo.empty_repo === true) {
+        if (repo.empty_repo) {
           this.logger.warn(
-            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`,
+            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`
           );
           continue;
         }

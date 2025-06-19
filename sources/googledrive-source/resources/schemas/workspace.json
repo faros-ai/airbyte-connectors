@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "etag": {
+      "type": "string"
+    },
+    "customerDomain": {
+      "type": "string"
+    },
+    "customerType": {
+      "type": "string"
+    },
+    "customerCreationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "alternateEmail": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "postalAddress": {
+      "type": "object",
+      "properties": {
+        "contactName": {
+          "type": "string"
+        },
+        "organizationName": {
+          "type": "string"
+        },
+        "addressLine1": {
+          "type": "string"
+        },
+        "addressLine2": {
+          "type": "string"
+        },
+        "addressLine3": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
