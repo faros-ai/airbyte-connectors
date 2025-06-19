@@ -8,13 +8,13 @@ import {GitlabConverter} from './common';
 export class FarosTags extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
-  id(record: AirbyteRecord): any {
+  id(record: AirbyteRecord): string {
     const tag = record?.record?.data as FarosTagOutput;
     return `${tag?.project_path}_${tag?.name}`;
   }
 
   async convert(
-    record: AirbyteRecord,
+    record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const tag = record.record.data as FarosTagOutput;
