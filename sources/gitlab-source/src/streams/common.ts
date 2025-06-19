@@ -3,7 +3,7 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {GitLabProject} from '../gitlab';
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
 import {pick, toLower} from 'lodash';
 
@@ -15,7 +15,7 @@ export interface GroupStreamSlice {
 }
 
 export type ProjectStreamSlice = Pick<
-  GitLabProject,
+  FarosProjectOutput,
   'default_branch' | 'group_id' | 'path' | 'path_with_namespace'
 >;
 
