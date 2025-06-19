@@ -47,15 +47,15 @@ export class UserCollector {
 
   /**
    * Get a commit author based on name mapping
-   * Returns undefined if no unique mapping exists
+   * Returns null if no unique mapping exists
    */
-  getCommitAuthor(authorName: string, commitId: string): string | undefined {
+  getCommitAuthor(authorName: string, commitId: string): string | null {
     const usernames = this.userNameMappings.get(authorName);
     if (!usernames || usernames.size === 0) {
       this.logger.debug(
         `Failed to find a username for commit author "${authorName}" (commit: ${commitId})`,
       );
-      return undefined;
+      return null;
     }
 
     if (usernames.size > 1) {
@@ -64,7 +64,7 @@ export class UserCollector {
           ...usernames,
         ].join(', ')}. Will skip author association.`,
       );
-      return undefined;
+      return null;
     }
 
     return [...usernames][0];

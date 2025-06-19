@@ -1,4 +1,9 @@
-import {GroupSchema, ProjectSchema, UserSchema} from '@gitbeaker/rest';
+import {
+  CommitSchema,
+  GroupSchema,
+  ProjectSchema,
+  UserSchema,
+} from '@gitbeaker/rest';
 
 export interface GitLabToken {
   type: 'token';
@@ -48,26 +53,13 @@ export type FarosGroupOutput = {
   | 'web_url'
 >;
 
-export interface Commit {
-  id: string;
-  short_id: string;
-  created_at: string;
-  parent_ids: string[];
-  title: string;
-  message: string;
-  author_name: string;
-  author_email: string;
-  authored_date: string;
-  committer_name: string;
-  committer_email: string;
-  committed_date: string;
-  web_url: string;
+export type FarosCommitOutput = {
+  readonly __brand: 'FarosCommit';
+  author_username: string | null;
+  branch: string;
   group_id: string;
   project_path: string;
-  branch: string;
-  // Author username resolved via UserCollector
-  author_username?: string;
-}
+} & Pick<CommitSchema, 'id' | 'message' | 'created_at' | 'web_url'>;
 
 export interface Tag {
   name: string;

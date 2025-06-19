@@ -1,4 +1,5 @@
 import {
+  CommitSchema,
   Gitlab as GitlabClient,
   GroupSchema,
   ProjectSchema,
@@ -6,25 +7,6 @@ import {
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-export interface GitLabCommit {
-  id: string;
-  short_id: string;
-  title: string;
-  author_name: string;
-  author_email: string;
-  authored_date: string;
-  committed_date: string;
-  created_at: string;
-  message: string;
-  parent_ids?: string[];
-  committer_name?: string;
-  committer_email?: string;
-  web_url?: string;
-  branch?: string;
-  author_username?: string;
-  group_id: string;
-  project_path: string;
-}
 
 export interface GitLabIssue {
   id: number;
@@ -44,7 +26,7 @@ export interface GitLabTag {
   name: string;
   message: string;
   target: string;
-  commit: GitLabCommit;
+  commit: any;
   commit_id?: string;
   title?: string;
   group_id: string;
@@ -91,6 +73,7 @@ type MergeRequestNote = GitLabMergeRequestNote;
 
 type Tag = GitLabTag;
 import {
+  FarosCommitOutput,
   FarosGroupOutput,
   FarosProjectOutput,
 } from 'faros-airbyte-common/gitlab';
@@ -303,7 +286,9 @@ export class GitLab {
     branch: string,
     since?: Date,
     until?: Date,
-  ): AsyncGenerator<GitLabCommit> {
+  ): AsyncGenerator<
+    Omit<FarosCommitOutput, 'branch' | 'group_id' | 'project_path'>
+  > {
     const options: any = {
       refName: branch,
     };
@@ -316,44 +301,20 @@ export class GitLab {
       options.until = until.toISOString();
     }
 
-    const commits = await this.offsetPagination((paginationOptions) =>
+    const commits = (await this.offsetPagination((paginationOptions) =>
       this.client.Commits.all(projectPath, {...options, ...paginationOptions}),
-    );
+    )) as CommitSchema[];
 
     for (const commit of commits) {
-      const author = this.userCollector.getCommitAuthor(
-        (commit as any).author_name,
-        (commit as any).id,
+      const author_username = this.userCollector.getCommitAuthor(
+        commit.author_name,
+        commit.id,
       );
 
-      const commitData = commit as any;
       yield {
-        id: commitData.id,
-        short_id: commitData.short_id,
-        created_at:
-          commitData.created_at instanceof Date
-            ? commitData.created_at.toISOString()
-            : commitData.created_at,
-        parent_ids: commitData.parent_ids ?? [],
-        title: commitData.title,
-        message: commitData.message,
-        author_name: commitData.author_name,
-        author_email: commitData.author_email,
-        authored_date:
-          commitData.authored_date instanceof Date
-            ? commitData.authored_date.toISOString()
-            : commitData.authored_date,
-        committer_name: commitData.committer_name,
-        committer_email: commitData.committer_email,
-        committed_date:
-          commitData.committed_date instanceof Date
-            ? commitData.committed_date.toISOString()
-            : commitData.committed_date,
-        web_url: commitData.web_url,
-        branch,
-        author_username: author,
-        group_id: '',
-        project_path: projectPath,
+        __brand: 'FarosCommit',
+        ...pick(commit, ['id', 'message', 'created_at', 'web_url']),
+        author_username,
       };
     }
   }

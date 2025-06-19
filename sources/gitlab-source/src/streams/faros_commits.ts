@@ -1,10 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {FarosCommitOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-
-import {GitLabCommit} from '../gitlab';
-
-type Commit = GitLabCommit;
 
 import {GitLab} from '../gitlab';
 import {
@@ -33,7 +30,7 @@ export class FarosCommits extends StreamWithProjectSlices {
   }
 
   get cursorField(): string | string[] {
-    return 'committed_date';
+    return 'created_at';
   }
 
   async *readRecords(
@@ -41,7 +38,7 @@ export class FarosCommits extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState,
-  ): AsyncGenerator<Commit> {
+  ): AsyncGenerator<FarosCommitOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
       streamSlice.group_id,
@@ -61,6 +58,7 @@ export class FarosCommits extends StreamWithProjectSlices {
     )) {
       yield {
         ...commit,
+        branch: streamSlice.default_branch,
         group_id: streamSlice.group_id,
         project_path: streamSlice.path,
       };
@@ -69,10 +67,10 @@ export class FarosCommits extends StreamWithProjectSlices {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: Commit,
+    latestRecord: FarosCommitOutput,
     slice: ProjectStreamSlice,
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.committed_date ?? 0);
+    const latestRecordCutoff = Utils.toDate(latestRecord?.created_at ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,

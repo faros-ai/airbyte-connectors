@@ -108,7 +108,7 @@ describe('UserCollector', () => {
 
       // Should not return author when multiple users have the same name
       const author = userCollector.getCommitAuthor('John Doe', 'commit123');
-      expect(author).toBeUndefined();
+      expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining('maps to multiple usernames: user1, user2'),
       );
@@ -133,7 +133,7 @@ describe('UserCollector', () => {
     it('should return undefined for unknown author name', () => {
       const author = userCollector.getCommitAuthor('Unknown User', 'commit123');
 
-      expect(author).toBeUndefined();
+      expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
         'Failed to find a username for commit author "Unknown User" (commit: commit123)',
       );
@@ -159,7 +159,7 @@ describe('UserCollector', () => {
 
       const author = userCollector.getCommitAuthor('John Doe', 'commit123');
 
-      expect(author).toBeUndefined();
+      expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
         'Commit commit123 author name "John Doe" maps to multiple usernames: user1, user2. Will skip author association.',
       );
@@ -176,7 +176,7 @@ describe('UserCollector', () => {
 
       // Should not find author by name if user has no name
       const author = userCollector.getCommitAuthor('testuser', 'commit123');
-      expect(author).toBeUndefined();
+      expect(author).toBeNull();
     });
   });
 
@@ -248,9 +248,7 @@ describe('UserCollector', () => {
       expect(userCollector.getUserCount()).toBe(0);
       expect(userCollector.hasUser('user1')).toBe(false);
       expect(userCollector.hasUser('user2')).toBe(false);
-      expect(
-        userCollector.getCommitAuthor('User One', 'commit123'),
-      ).toBeUndefined();
+      expect(userCollector.getCommitAuthor('User One', 'commit123')).toBeNull();
     });
   });
 
