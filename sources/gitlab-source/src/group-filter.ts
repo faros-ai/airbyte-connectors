@@ -4,7 +4,10 @@ import {
   VCSAdapter,
   VCSFilter,
 } from 'faros-airbyte-common/common';
-import {FarosProjectOutput, Group} from 'faros-airbyte-common/gitlab';
+import {
+  FarosGroupOutput,
+  FarosProjectOutput,
+} from 'faros-airbyte-common/gitlab';
 import {FarosClient} from 'faros-js-client';
 import {Memoize} from 'typescript-memoize';
 
@@ -14,7 +17,9 @@ import {GitLabConfig} from './types';
 /**
  * GitLab VCS adapter implementation
  */
-class GitLabVCSAdapter implements VCSAdapter<Group, FarosProjectOutput> {
+class GitLabVCSAdapter
+  implements VCSAdapter<FarosGroupOutput, FarosProjectOutput>
+{
   constructor(
     private readonly config: GitLabConfig,
     private readonly logger: AirbyteLogger,
@@ -26,7 +31,7 @@ class GitLabVCSAdapter implements VCSAdapter<Group, FarosProjectOutput> {
     return groups.map((group) => group.id);
   }
 
-  async getOrg(orgName: string): Promise<Group> {
+  async getOrg(orgName: string): Promise<FarosGroupOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     return gitlab.getGroup(orgName);
   }
@@ -58,7 +63,7 @@ interface GitLabConfigFields {
 export class GroupFilter {
   private readonly vcsFilter: VCSFilter<
     GitLabConfig,
-    Group,
+    FarosGroupOutput,
     FarosProjectOutput
   >;
   private static _instance: GroupFilter;

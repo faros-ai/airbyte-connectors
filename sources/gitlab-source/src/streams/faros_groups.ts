@@ -1,5 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {Group} from 'faros-airbyte-common/gitlab';
+import {FarosGroupOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
@@ -17,10 +17,9 @@ export class FarosGroups extends StreamWithGroupSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: GroupStreamSlice
-  ): AsyncGenerator<Group> {
-    const group = streamSlice?.group;
+    streamSlice?: GroupStreamSlice,
+  ): AsyncGenerator<FarosGroupOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
-    yield gitlab.getGroup(group);
+    yield gitlab.getGroup(streamSlice?.group_id);
   }
 }

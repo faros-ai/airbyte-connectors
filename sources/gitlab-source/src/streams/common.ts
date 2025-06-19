@@ -11,7 +11,7 @@ import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
 
 export interface GroupStreamSlice {
-  group: string;
+  group_id: string;
 }
 
 export type ProjectStreamSlice = Pick<
@@ -113,21 +113,21 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithGroupSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<GroupStreamSlice> {
-    for (const group of await this.groupFilter.getGroups()) {
-      yield {group};
+    for (const group_id of await this.groupFilter.getGroups()) {
+      yield {group_id};
     }
   }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
-    for (const group of await this.groupFilter.getGroups()) {
+    for (const group_id of await this.groupFilter.getGroups()) {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-        group,
+        group_id,
       )) {
         if ((repo as any).empty_repo === true) {
           this.logger.warn(
-            `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`,
+            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`,
           );
           continue;
         }

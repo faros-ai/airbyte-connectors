@@ -18,9 +18,8 @@ export class FarosProjects extends StreamWithGroupSlices {
     cursorField?: string[],
     streamSlice?: GroupStreamSlice,
   ): AsyncGenerator<FarosProjectOutput> {
-    const group = streamSlice?.group;
     for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-      group,
+      streamSlice?.group_id,
     )) {
       yield {
         ...repo,

@@ -1,4 +1,8 @@
-import {Gitlab as GitlabClient, ProjectSchema} from '@gitbeaker/rest';
+import {
+  Gitlab as GitlabClient,
+  GroupSchema,
+  ProjectSchema,
+} from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
@@ -20,18 +24,6 @@ export interface GitLabCommit {
   author_username?: string;
   group_id: string;
   project_path: string;
-}
-
-export interface GitLabGroup {
-  id: string;
-  name: string;
-  path: string;
-  description: string;
-  web_url: string;
-  parent_id: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface GitLabIssue {
@@ -93,14 +85,15 @@ export interface GitLabMergeRequestNote {
 
 export type GitLabToken = any;
 
-type Group = GitLabGroup;
-
 type MergeRequest = GitLabMergeRequest;
 type MergeRequestEvent = GitLabMergeRequestEvent;
 type MergeRequestNote = GitLabMergeRequestNote;
 
 type Tag = GitLabTag;
-import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
+import {
+  FarosGroupOutput,
+  FarosProjectOutput,
+} from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
 import {pick, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -198,8 +191,8 @@ export class GitLab {
   }
 
   @Memoize()
-  async getGroups(): Promise<Group[]> {
-    const groups = await this.keysetPagination(
+  async getGroups(): Promise<FarosGroupOutput[]> {
+    const groups = (await this.keysetPagination(
       (options) =>
         this.client.Groups.all({
           ...options,
@@ -207,29 +200,32 @@ export class GitLab {
           allAvailable: this.fetchPublicGroups,
         }),
       {orderBy: 'id', sort: 'asc'},
-    );
+    )) as GroupSchema[];
 
-    return groups.map((group: any) => GitLab.convertGitLabGroup(group));
+    return groups.map((group) => GitLab.convertGitLabGroup(group));
   }
 
-  static convertGitLabGroup(group: any): Group {
+  static convertGitLabGroup(group: GroupSchema): FarosGroupOutput {
     return {
+      __brand: 'FarosGroup',
       id: toLower(`${group.id}`),
       parent_id: group.parent_id ? toLower(`${group.parent_id}`) : null,
-      name: group.name,
-      path: group.path,
-      web_url: group.web_url,
-      description: group.description,
-      visibility: group.visibility || 'private',
-      created_at: group.created_at,
-      updated_at: group.updated_at,
-    } as Group;
+      ...pick(group, [
+        'created_at',
+        'description',
+        'name',
+        'path',
+        'updated_at',
+        'visibility',
+        'web_url',
+      ]),
+    };
   }
 
   @Memoize()
-  async getGroup(groupId: string): Promise<Group> {
+  async getGroup(groupId: string): Promise<FarosGroupOutput> {
     try {
-      const group = await this.client.Groups.show(groupId);
+      const group = (await this.client.Groups.show(groupId)) as GroupSchema;
       return GitLab.convertGitLabGroup(group);
     } catch (err: any) {
       this.logger.error(`Failed to fetch group ${groupId}: ${err.message}`);
