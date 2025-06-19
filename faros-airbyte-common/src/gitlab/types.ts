@@ -1,6 +1,9 @@
 import {
+  Camelize,
   CommitSchema,
   GroupSchema,
+  MergeRequestSchema,
+  NoteSchema,
   ProjectSchema,
   TagSchema,
   UserSchema,
@@ -69,67 +72,31 @@ export type FarosTagOutput = {
   project_path: string;
 } & Pick<TagSchema, 'name' | 'message' | 'target' | 'title'>;
 
-export interface MergeRequestAuthor {
-  name: string;
-  publicEmail?: string;
-  username: string;
-  webUrl: string;
-}
-
-export interface MergeRequestAssignee {
-  name: string;
-  publicEmail?: string;
-  username: string;
-  webUrl: string;
-}
-
-export interface MergeRequestDiffStats {
-  additions: number;
-  deletions: number;
-  fileCount: number;
-}
-
-export interface MergeRequestLabel {
-  title: string;
-}
-
-export interface MergeRequestNote {
-  id: string;
-  author: MergeRequestAuthor;
-  body: string;
-  system: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface MergeRequest {
-  id: string;
-  iid: number;
-  createdAt: string;
-  updatedAt: string;
-  mergedAt: string | null;
-  author: MergeRequestAuthor;
-  assignees: {
-    nodes: MergeRequestAssignee[];
-  };
-  mergeCommitSha: string | null;
-  commitCount: number;
-  userNotesCount: number;
-  diffStatsSummary: MergeRequestDiffStats;
-  state: string;
-  title: string;
-  webUrl: string;
-  notes: MergeRequestNote[];
-  labels: {
-    pageInfo: {
-      endCursor: string | null;
-      hasNextPage: boolean;
-    };
-    nodes: MergeRequestLabel[];
-  };
+export type FarosMergeRequestOutput = {
+  readonly __brand: 'FarosMergeRequest';
+  author_username: string;
+  group_id: string;
   project_path: string;
-  group_id?: string;
-}
+  labels: string[];
+  notes: ({author_username: string} & Pick<
+    NoteSchema,
+    'id' | 'body' | 'created_at' | 'updated_at'
+  >)[];
+} & Pick<
+  Camelize<MergeRequestSchema>,
+  | 'iid'
+  | 'title'
+  | 'description'
+  | 'state'
+  | 'webUrl'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'mergedAt'
+  | 'commitCount'
+  | 'userNotesCount'
+  | 'diffStatsSummary'
+  | 'mergeCommitSha'
+>;
 
 export interface MergeRequestEvent {
   id: string;

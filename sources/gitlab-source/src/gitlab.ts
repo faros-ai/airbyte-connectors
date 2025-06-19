@@ -1,7 +1,10 @@
 import {
+  Camelize,
   CommitSchema,
   Gitlab as GitlabClient,
   GroupSchema,
+  LabelSchema,
+  NoteSchema,
   ProjectSchema,
   TagSchema,
 } from '@gitbeaker/rest';
@@ -23,18 +26,6 @@ export interface GitLabIssue {
   project_path: string;
 }
 
-export interface GitLabMergeRequest {
-  id: number;
-  iid: number;
-  title: string;
-  description: string;
-  state: string;
-  created_at: string;
-  updated_at: string;
-  author: {username: string};
-  group_id: string;
-}
-
 export interface GitLabMergeRequestEvent {
   id: number;
   action_name: string;
@@ -46,24 +37,12 @@ export interface GitLabMergeRequestEvent {
   project_path: string;
 }
 
-export interface GitLabMergeRequestNote {
-  id: number;
-  author: {username: string};
-  body: string;
-  system: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export type GitLabToken = any;
-
-type MergeRequest = GitLabMergeRequest;
-type MergeRequestEvent = GitLabMergeRequestEvent;
-type MergeRequestNote = GitLabMergeRequestNote;
 
 import {
   FarosCommitOutput,
   FarosGroupOutput,
+  FarosMergeRequestOutput,
   FarosProjectOutput,
   FarosTagOutput,
 } from 'faros-airbyte-common/gitlab';
@@ -329,10 +308,12 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date,
-  ): AsyncGenerator<MergeRequest> {
-    const mrNotes = new Map<string, Set<any>>();
-    const needsMoreNotes = new Set<string>();
-    const mrDataMap = new Map<string, any>();
+  ): AsyncGenerator<
+    Omit<FarosMergeRequestOutput, 'group_id' | 'project_path'>
+  > {
+    const notes = new Map<number, Set<NoteSchema>>();
+    const needsMoreNotes = new Set<number>();
+    const mergeRequests = new Map<number, any>();
 
     let cursor: string | null = null;
     let hasNextPage = true;
@@ -353,26 +334,34 @@ export class GitLab {
           break;
         }
 
-        for (const mrData of requests.nodes) {
+        for (const mr of requests.nodes) {
           // Store MR data and first page notes
-          mrNotes.set(
-            mrData.id,
-            new Set(mrData.notes.nodes.filter((note) => !note.system)),
+          notes.set(
+            mr.id,
+            new Set(
+              mr.notes.nodes
+                .filter((note: Camelize<NoteSchema>) => !note.system)
+                .map((note: Camelize<NoteSchema>) => ({
+                  ...pick(note, ['author', 'id', 'body']),
+                  created_at: note.createdAt,
+                  updated_at: note.updatedAt,
+                })),
+            ),
           );
-          mrDataMap.set(mrData.id, mrData);
+          mergeRequests.set(mr.id, mr);
 
           // Track if more notes needed
-          if (mrData.notes.pageInfo.hasNextPage) {
-            needsMoreNotes.add(mrData.id);
+          if (mr.notes.pageInfo.hasNextPage) {
+            needsMoreNotes.add(mr.id);
           }
 
-          this.userCollector.collectUser(mrData?.author);
+          this.userCollector.collectUser(mr?.author);
 
-          mrData.assignees?.nodes?.forEach((assignee: GitLabUserResponse) => {
+          mr.assignees?.nodes?.forEach((assignee: GitLabUserResponse) => {
             this.userCollector.collectUser(assignee);
           });
 
-          mrData.notes.nodes.forEach((note) => {
+          mr.notes.nodes.forEach((note: NoteSchema) => {
             this.userCollector.collectUser(note?.author);
           });
         }
@@ -392,25 +381,43 @@ export class GitLab {
 
     // Phase 2: REST API for additional notes
     for (const mrId of needsMoreNotes) {
-      const mrData = mrDataMap.get(mrId);
+      const mrData = mergeRequests.get(mrId);
       if (mrData) {
         for await (const note of this.getAdditionalMergeRequestNotes(
           projectPath,
           mrData.iid,
         )) {
-          mrNotes.get(mrId)?.add(note);
+          notes.get(mrId)?.add(note);
         }
       }
     }
 
     // Phase 3: Emit complete MR records
-    for (const [mrId, notes] of mrNotes) {
-      const mrData = mrDataMap.get(mrId);
-      if (mrData) {
+    for (const [mrId, mrNotes] of notes) {
+      const mr = mergeRequests.get(mrId);
+      if (mr) {
         yield {
-          ...mrData,
-          notes: Array.from(notes),
-          project_path: projectPath,
+          __brand: 'FarosMergeRequest',
+          author_username: mr.author.username,
+          labels: mr.labels.nodes.map((label: LabelSchema) => label.title),
+          notes: Array.from(mrNotes).map((note: NoteSchema) => ({
+            ...pick(note, ['id', 'body', 'created_at', 'updated_at']),
+            author_username: note.author.username,
+          })),
+          ...pick(mr, [
+            'iid',
+            'title',
+            'description',
+            'state',
+            'webUrl',
+            'createdAt',
+            'updatedAt',
+            'mergedAt',
+            'commitCount',
+            'userNotesCount',
+            'diffStatsSummary',
+            'mergeCommitSha',
+          ]),
         };
       }
     }
@@ -419,27 +426,18 @@ export class GitLab {
   async *getAdditionalMergeRequestNotes(
     projectPath: string,
     mergeRequestIid: number,
-  ): AsyncGenerator<MergeRequestNote> {
-    const notes = await this.offsetPagination((options) =>
+  ): AsyncGenerator<NoteSchema> {
+    const notes = (await this.offsetPagination((options) =>
       this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options),
-    );
+    )) as NoteSchema[];
 
     for (const note of notes) {
-      const noteData = note as any;
-      if (noteData.system) {
+      if (note.system) {
         continue;
       }
 
-      this.userCollector.collectUser(noteData?.author);
-
-      yield {
-        id: noteData.id,
-        author: noteData.author,
-        body: noteData.body,
-        system: noteData.system,
-        created_at: noteData.created_at,
-        updated_at: noteData.updated_at,
-      };
+      this.userCollector.collectUser(note?.author);
+      yield note;
     }
   }
 
@@ -542,7 +540,7 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date,
-  ): AsyncGenerator<MergeRequestEvent> {
+  ): AsyncGenerator<GitLabMergeRequestEvent> {
     const options: any = {
       targetType: 'merge_request',
       action: 'approved',

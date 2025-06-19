@@ -1,10 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {FarosMergeRequestOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-
-import {GitLabMergeRequest} from '../gitlab';
-
-type MergeRequest = GitLabMergeRequest;
 
 import {GitLab} from '../gitlab';
 import {
@@ -32,7 +29,7 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState,
-  ): AsyncGenerator<MergeRequest> {
+  ): AsyncGenerator<FarosMergeRequestOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
       streamSlice.group_id,
@@ -52,16 +49,17 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
       yield {
         ...mergeRequest,
         group_id: streamSlice.group_id,
+        project_path: streamSlice.path_with_namespace,
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: MergeRequest,
+    latestRecord: FarosMergeRequestOutput,
     slice: ProjectStreamSlice,
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.updated_at ?? 0);
+    const latestRecordCutoff = Utils.toDate(latestRecord?.updatedAt ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
