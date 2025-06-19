@@ -13,12 +13,11 @@ export class FarosUsers extends GitlabConverter {
   ];
 
   id(record: AirbyteRecord): string {
-    const user = record.record.data as FarosUserOutput;
-    return user.username;
+    const user = record?.record?.data as FarosUserOutput;
+    return `${user?.group_id}_${user?.username}`;
   }
-
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data as FarosUserOutput;
 
@@ -65,7 +64,7 @@ export class FarosUsers extends GitlabConverter {
           htmlUrl: user.web_url,
           type: {category: 'User', detail: 'user'},
         },
-        (value) => isNil(value) || isEmpty(value)
+        (value) => isNil(value) || isEmpty(value),
       ),
     });
 

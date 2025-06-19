@@ -9,11 +9,11 @@ export class FarosTags extends GitlabConverter {
 
   id(record: AirbyteRecord): string {
     const tag = record?.record?.data;
-    return `${tag?.name}_${tag?.commit_id}`;
+    return `${tag?.project_path}_${tag?.name}`;
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const tag = record.record.data;

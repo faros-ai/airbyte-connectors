@@ -4,44 +4,48 @@
   "additionalProperties": true,
   "required": [
     "id",
+    "group_id",
+    "archived",
+    "created_at",
+    "default_branch",
+    "description",
+    "empty_repo",
     "name",
+    "namespace",
+    "owner",
     "path",
     "path_with_namespace",
-    "web_url",
+    "updated_at",
     "visibility",
-    "created_at",
-    "namespace",
-    "group_id"
+    "web_url"
   ],
   "properties": {
     "id": {
       "type": "string"
     },
-    "name": {
+    "group_id": {
       "type": "string"
     },
-    "path": {
-      "type": "string"
+    "syncRepoData": {
+      "type": "boolean"
     },
-    "path_with_namespace": {
-      "type": "string"
+    "archived": {
+      "type": "boolean"
     },
-    "web_url": {
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "default_branch": {
       "type": "string"
     },
     "description": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": ["string", "null"]
     },
-    "visibility": {
-      "type": "string"
+    "empty_repo": {
+      "type": "boolean"
     },
-    "created_at": {
-      "type": "string"
-    },
-    "updated_at": {
+    "name": {
       "type": "string"
     },
     "namespace": {
@@ -64,17 +68,24 @@
         }
       }
     },
-    "group_id": {
+    "owner": {
+      "type": ["object", "null"]
+    },
+    "path": {
       "type": "string"
     },
-    "default_branch": {
+    "path_with_namespace": {
       "type": "string"
     },
-    "archived": {
-      "type": "boolean"
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
     },
-    "syncRepoData": {
-      "type": "boolean"
+    "visibility": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
     }
   }
 }

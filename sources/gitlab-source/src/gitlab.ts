@@ -1,133 +1,36 @@
-import {Gitlab as GitlabClient} from '@gitbeaker/rest';
+import {
+  Camelize,
+  CommitSchema,
+  EventSchema,
+  Gitlab as GitlabClient,
+  GroupSchema,
+  IssueSchema,
+  LabelSchema,
+  NoteSchema,
+  ProjectSchema,
+  TagSchema,
+} from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-export interface GitLabCommit {
-  id: string;
-  short_id: string;
-  title: string;
-  author_name: string;
-  author_email: string;
-  authored_date: string;
-  committed_date: string;
-  created_at: string;
-  message: string;
-  parent_ids?: string[];
-  committer_name?: string;
-  committer_email?: string;
-  web_url?: string;
-  branch?: string;
-  author_username?: string;
-  group_id: string;
-  project_path: string;
-}
-
-export interface GitLabGroup {
-  id: string;
-  name: string;
-  path: string;
-  description: string;
-  web_url: string;
-  parent_id: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface GitLabProject {
-  id: string;
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  web_url: string;
-  description: string;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  default_branch: string;
-  namespace: any;
-  owner: any;
-  archived: boolean;
-  empty_repo: boolean;
-  group_id: string;
-}
-
-export interface GitLabIssue {
-  id: number;
-  title: string;
-  description: string;
-  state: string;
-  created_at: string;
-  updated_at: string;
-  author: { username: string };
-  assignees: Array<{ username: string }>;
-  labels: string[];
-  group_id: string;
-  project_path: string;
-}
-
-export interface GitLabTag {
-  name: string;
-  message: string;
-  target: string;
-  commit: GitLabCommit;
-  commit_id?: string;
-  title?: string;
-  group_id: string;
-  project_path: string;
-}
-
-export interface GitLabMergeRequest {
-  id: number;
-  iid: number;
-  title: string;
-  description: string;
-  state: string;
-  created_at: string;
-  updated_at: string;
-  author: { username: string };
-  group_id: string;
-}
-
-export interface GitLabMergeRequestEvent {
-  id: number;
-  action_name: string;
-  target_iid: number;
-  target_type: string;
-  author: { username: string };
-  created_at: string;
-  group_id: string;
-  project_path: string;
-}
-
-export interface GitLabMergeRequestNote {
-  id: number;
-  author: { username: string };
-  body: string;
-  system: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export type GitLabToken = any;
-type Commit = GitLabCommit;
-type Group = GitLabGroup;
-type Issue = GitLabIssue;
-type MergeRequest = GitLabMergeRequest;
-type MergeRequestEvent = GitLabMergeRequestEvent;
-type MergeRequestNote = GitLabMergeRequestNote;
-type Project = GitLabProject;
-type Tag = GitLabTag;
+import {
+  FarosCommitOutput,
+  FarosGroupOutput,
+  FarosIssueOutput,
+  FarosMergeRequestOutput,
+  FarosMergeRequestReviewOutput,
+  FarosProjectOutput,
+  FarosTagOutput,
+} from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
-import {toLower} from 'lodash';
+import {pick, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
 import {MERGE_REQUESTS_QUERY} from './queries';
 import {RunMode} from './streams/common';
-import {GitLabConfig} from './types';
-import {GitLabUserResponse} from './types/api';
-import {UserCollector} from './user-collector';
+import {GitLabConfig, GitLabToken} from './types';
+import {GitLabUserResponse, UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -151,7 +54,7 @@ export class GitLab {
 
   constructor(
     readonly config: GitLabConfig,
-    protected readonly logger: AirbyteLogger
+    protected readonly logger: AirbyteLogger,
   ) {
     this.client = new GitlabClient({
       token: this.getToken(),
@@ -174,7 +77,7 @@ export class GitLab {
 
   static async instance(
     cfg: GitLabConfig,
-    logger: AirbyteLogger
+    logger: AirbyteLogger,
   ): Promise<GitLab> {
     if (GitLab.gitlab) {
       return GitLab.gitlab;
@@ -189,110 +92,115 @@ export class GitLab {
 
   async checkConnection(): Promise<void> {
     try {
-      this.logger.debug(
-        'Verifying GitLab credentials by fetching metadata'
-      );
+      this.logger.debug('Verifying GitLab credentials by fetching metadata');
       const metadata = await this.client.Metadata.show();
-      if (metadata && metadata.version) {
+      if (metadata?.version) {
         this.logger.debug(
           'GitLab credentials verified.',
-          `Connected to GitLab version ${metadata.version}`
+          `Connected to GitLab version ${metadata.version}`,
         );
       } else {
         this.logger.error(
           'GitLab metadata response was invalid: %s',
-          JSON.stringify(metadata)
+          JSON.stringify(metadata),
         );
         throw new VError(
-          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid'
+          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid',
         );
       }
     } catch (err: any) {
       this.logger.error('Failed to fetch GitLab metadata: %s', err.message);
       throw new VError(
         err,
-        'GitLab authentication failed. Please check your API token and permissions'
+        'GitLab authentication failed. Please check your API token and permissions',
       );
     }
   }
 
   @Memoize()
-  async getGroups(): Promise<Group[]> {
-    const groups = await this.keysetPagination(
-      (options) => this.client.Groups.all({
-        ...options,
-        withProjects: false,
-        allAvailable: this.fetchPublicGroups,
-      }),
-      { orderBy: 'id', sort: 'asc' }
-    );
+  async getGroups(): Promise<FarosGroupOutput[]> {
+    const groups = (await this.keysetPagination(
+      (options) =>
+        this.client.Groups.all({
+          ...options,
+          withProjects: false,
+          allAvailable: this.fetchPublicGroups,
+        }),
+      {orderBy: 'id', sort: 'asc'},
+    )) as GroupSchema[];
 
-    return groups.map((group: any) => GitLab.convertGitLabGroup(group));
+    return groups.map((group) => GitLab.convertGroup(group));
   }
 
-  static convertGitLabGroup(group: any): Group {
+  static convertGroup(group: GroupSchema): FarosGroupOutput {
     return {
+      __brand: 'FarosGroup',
       id: toLower(`${group.id}`),
       parent_id: group.parent_id ? toLower(`${group.parent_id}`) : null,
-      name: group.name,
-      path: group.path,
-      web_url: group.web_url,
-      description: group.description,
-      visibility: group.visibility || 'private',
-      created_at: group.created_at,
-      updated_at: group.updated_at,
-    } as Group;
+      ...pick(group, [
+        'created_at',
+        'description',
+        'name',
+        'path',
+        'updated_at',
+        'visibility',
+        'web_url',
+      ]),
+    };
   }
 
   @Memoize()
-  async getGroup(groupId: string): Promise<Group> {
+  async getGroup(groupId: string): Promise<FarosGroupOutput> {
     try {
-      const group = await this.client.Groups.show(groupId);
-      return GitLab.convertGitLabGroup(group);
+      const group = (await this.client.Groups.show(groupId)) as GroupSchema;
+      return GitLab.convertGroup(group);
     } catch (err: any) {
       this.logger.error(`Failed to fetch group ${groupId}: ${err.message}`);
       throw new VError(err, `Error fetching group ${groupId}`);
     }
   }
 
-  async getProjects(groupId: string): Promise<Project[]> {
-    const projects = await this.keysetPagination(
-      (options) => this.client.Projects.all({ groupId, ...options }),
-      { orderBy: 'id', sort: 'asc' }
-    );
+  async getProjects(groupId: string): Promise<FarosProjectOutput[]> {
+    const projects = (await this.keysetPagination(
+      (options) => this.client.Groups.allProjects(groupId, {...options}),
+      {orderBy: 'id', sort: 'asc'},
+    )) as ProjectSchema[];
 
-    return projects.map((project: any) => ({
+    return projects.map((project: ProjectSchema) => ({
+      __brand: 'FarosProject',
       id: toLower(`${project.id}`),
-      name: project.name,
-      path: project.path,
-      path_with_namespace: project.path_with_namespace,
-      web_url: project.web_url,
-      description: project.description,
-      visibility: project.visibility || 'private',
-      created_at: project.created_at,
-      updated_at: project.updated_at || new Date().toISOString(),
-      namespace: project.namespace,
-      owner: project.owner,
-      default_branch: project.default_branch,
-      archived: project.archived || false,
       group_id: groupId,
-      empty_repo: project.empty_repo || false,
+      ...pick(project, [
+        'archived',
+        'created_at',
+        'default_branch',
+        'description',
+        'empty_repo',
+        'name',
+        'namespace',
+        'owner',
+        'path',
+        'path_with_namespace',
+        'updated_at',
+        'visibility',
+        'web_url',
+      ]),
     }));
   }
 
   async fetchGroupMembers(groupId: string): Promise<void> {
-    const members = await this.offsetPagination(
-      (options) => this.client.GroupMembers.all(groupId, {
+    const members = await this.offsetPagination((options) =>
+      this.client.GroupMembers.all(groupId, {
         ...options,
         includeInherited: true,
-      })
+      }),
     );
 
     for (const member of members) {
       this.userCollector.collectUser({
-        ...(member as any),
+        ...member,
         group_id: groupId,
-      } as unknown as GitLabUserResponse);
+      });
     }
   }
 
@@ -318,40 +226,14 @@ export class GitLab {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
   }
 
-  private async *paginate<T>(
-    fetchPage: (page: number) => Promise<T[]>,
-    entity: string
-  ): AsyncGenerator<T> {
-    try {
-      let page = 1;
-      let hasMore = true;
-
-      while (hasMore) {
-        const items = await fetchPage(page);
-
-        if (!items || items.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const item of items) {
-          yield item;
-        }
-
-        page++;
-      }
-    } catch (err: any) {
-      this.logger.error(`Failed to fetch ${entity}: ${err.message}`);
-      throw new VError(err, `Error fetching ${entity}`);
-    }
-  }
-
   async *getCommits(
     projectPath: string,
     branch: string,
     since?: Date,
-    until?: Date
-  ): AsyncGenerator<GitLabCommit> {
+    until?: Date,
+  ): AsyncGenerator<
+    Omit<FarosCommitOutput, 'branch' | 'group_id' | 'project_path'>
+  > {
     const options: any = {
       refName: branch,
     };
@@ -364,66 +246,36 @@ export class GitLab {
       options.until = until.toISOString();
     }
 
-    const commits = await this.offsetPagination(
-      (paginationOptions) => this.client.Commits.all(projectPath, {...options, ...paginationOptions})
-    );
+    const commits = (await this.offsetPagination((paginationOptions) =>
+      this.client.Commits.all(projectPath, {...options, ...paginationOptions}),
+    )) as CommitSchema[];
 
     for (const commit of commits) {
-      const author = this.userCollector.getCommitAuthor(
-        (commit as any).author_name,
-        (commit as any).id
+      const author_username = this.userCollector.getCommitAuthor(
+        commit.author_name,
+        commit.id,
       );
 
-      const commitData = commit as any;
       yield {
-        id: commitData.id,
-        short_id: commitData.short_id,
-        created_at:
-          commitData.created_at instanceof Date
-            ? commitData.created_at.toISOString()
-            : commitData.created_at,
-        parent_ids: commitData.parent_ids ?? [],
-        title: commitData.title,
-        message: commitData.message,
-        author_name: commitData.author_name,
-        author_email: commitData.author_email,
-        authored_date:
-          commitData.authored_date instanceof Date
-            ? commitData.authored_date.toISOString()
-            : commitData.authored_date,
-        committer_name: commitData.committer_name,
-        committer_email: commitData.committer_email,
-        committed_date:
-          commitData.committed_date instanceof Date
-            ? commitData.committed_date.toISOString()
-            : commitData.committed_date,
-        web_url: commitData.web_url,
-        branch: branch,
-        author_username: author,
-        group_id: '',
-        project_path: projectPath,
+        __brand: 'FarosCommit',
+        ...pick(commit, ['id', 'message', 'created_at', 'web_url']),
+        author_username,
       };
     }
   }
 
   async *getTags(
-    projectId: string
-  ): AsyncGenerator<GitLabTag> {
-    const tags = await this.offsetPagination(
-      (options) => this.client.Tags.all(projectId, options)
-    );
+    projectId: string,
+  ): AsyncGenerator<Omit<FarosTagOutput, 'group_id' | 'project_path'>> {
+    const tags = (await this.offsetPagination((options) =>
+      this.client.Tags.all(projectId, options),
+    )) as TagSchema[];
 
     for (const tag of tags) {
-      const tagData = tag as any;
       yield {
-        name: tagData.name,
-        message: tagData.message,
-        target: tagData.target,
-        commit: tagData.commit,
-        title: tagData.message,
-        commit_id: tagData.commit?.id,
-        group_id: '',
-        project_path: projectId,
+        __brand: 'FarosTag',
+        ...pick(tag, ['name', 'message', 'target', 'title']),
+        commit_id: tag.commit?.id,
       };
     }
   }
@@ -431,11 +283,13 @@ export class GitLab {
   async *getMergeRequestsWithNotes(
     projectPath: string,
     since?: Date,
-    until?: Date
-  ): AsyncGenerator<MergeRequest> {
-    const mrNotes = new Map<string, Set<any>>();
-    const needsMoreNotes = new Set<string>();
-    const mrDataMap = new Map<string, any>();
+    until?: Date,
+  ): AsyncGenerator<
+    Omit<FarosMergeRequestOutput, 'group_id' | 'project_path'>
+  > {
+    const notes = new Map<number, Set<NoteSchema>>();
+    const needsMoreNotes = new Set<number>();
+    const mergeRequests = new Map<number, any>();
 
     let cursor: string | null = null;
     let hasNextPage = true;
@@ -456,39 +310,35 @@ export class GitLab {
           break;
         }
 
-        for (const mrData of requests.nodes) {
+        for (const mr of requests.nodes) {
           // Store MR data and first page notes
-          mrNotes.set(
-            mrData.id,
-            new Set(mrData.notes.nodes.filter((note) => !note.system))
+          notes.set(
+            mr.id,
+            new Set(
+              mr.notes.nodes
+                .filter((note: Camelize<NoteSchema>) => !note.system)
+                .map((note: Camelize<NoteSchema>) => ({
+                  ...pick(note, ['author', 'id', 'body']),
+                  created_at: note.createdAt,
+                  updated_at: note.updatedAt,
+                })),
+            ),
           );
-          mrDataMap.set(mrData.id, mrData);
+          mergeRequests.set(mr.id, mr);
 
           // Track if more notes needed
-          if (mrData.notes.pageInfo.hasNextPage) {
-            needsMoreNotes.add(mrData.id);
+          if (mr.notes.pageInfo.hasNextPage) {
+            needsMoreNotes.add(mr.id);
           }
 
-          if (mrData.author?.username) {
-            this.userCollector.collectUser(
-              mrData.author as unknown as GitLabUserResponse
-            );
-          }
+          this.userCollector.collectUser(mr?.author);
 
-          mrData.assignees?.nodes?.forEach((assignee: any) => {
-            if (assignee?.username) {
-              this.userCollector.collectUser(
-                assignee as unknown as GitLabUserResponse
-              );
-            }
+          mr.assignees?.nodes?.forEach((assignee: GitLabUserResponse) => {
+            this.userCollector.collectUser(assignee);
           });
 
-          mrData.notes.nodes.forEach((note: any) => {
-            if (note.author?.username) {
-              this.userCollector.collectUser(
-                note.author as unknown as GitLabUserResponse
-              );
-            }
+          mr.notes.nodes.forEach((note: NoteSchema) => {
+            this.userCollector.collectUser(note?.author);
           });
         }
 
@@ -496,36 +346,54 @@ export class GitLab {
         hasNextPage = requests.pageInfo.hasNextPage;
       } catch (err: any) {
         this.logger.error(
-          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`
+          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`,
         );
         throw new VError(
           err,
-          `Error fetching merge requests for project ${projectPath}`
+          `Error fetching merge requests for project ${projectPath}`,
         );
       }
     }
 
     // Phase 2: REST API for additional notes
     for (const mrId of needsMoreNotes) {
-      const mrData = mrDataMap.get(mrId);
+      const mrData = mergeRequests.get(mrId);
       if (mrData) {
         for await (const note of this.getAdditionalMergeRequestNotes(
           projectPath,
-          mrData.iid
+          mrData.iid,
         )) {
-          mrNotes.get(mrId)?.add(note);
+          notes.get(mrId)?.add(note);
         }
       }
     }
 
     // Phase 3: Emit complete MR records
-    for (const [mrId, notes] of mrNotes) {
-      const mrData = mrDataMap.get(mrId);
-      if (mrData) {
+    for (const [mrId, mrNotes] of notes) {
+      const mr = mergeRequests.get(mrId);
+      if (mr) {
         yield {
-          ...mrData,
-          notes: Array.from(notes),
-          project_path: projectPath,
+          __brand: 'FarosMergeRequest',
+          author_username: mr.author.username,
+          labels: mr.labels.nodes.map((label: LabelSchema) => label.title),
+          notes: Array.from(mrNotes).map((note: NoteSchema) => ({
+            ...pick(note, ['id', 'body', 'created_at', 'updated_at']),
+            author_username: note.author.username,
+          })),
+          ...pick(mr, [
+            'iid',
+            'title',
+            'description',
+            'state',
+            'webUrl',
+            'createdAt',
+            'updatedAt',
+            'mergedAt',
+            'commitCount',
+            'userNotesCount',
+            'diffStatsSummary',
+            'mergeCommitSha',
+          ]),
         };
       }
     }
@@ -533,32 +401,19 @@ export class GitLab {
 
   async *getAdditionalMergeRequestNotes(
     projectPath: string,
-    mergeRequestIid: number
-  ): AsyncGenerator<MergeRequestNote> {
-    const notes = await this.offsetPagination(
-      (options) => this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options)
-    );
+    mergeRequestIid: number,
+  ): AsyncGenerator<NoteSchema> {
+    const notes = (await this.offsetPagination((options) =>
+      this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options),
+    )) as NoteSchema[];
 
     for (const note of notes) {
-      const noteData = note as any;
-      if (noteData.system) {
+      if (note.system) {
         continue;
       }
 
-      if (noteData.author?.username) {
-        this.userCollector.collectUser(
-          noteData.author as unknown as GitLabUserResponse
-        );
-      }
-
-      yield {
-        id: noteData.id,
-        author: noteData.author,
-        body: noteData.body,
-        system: noteData.system,
-        created_at: noteData.created_at,
-        updated_at: noteData.updated_at,
-      };
+      this.userCollector.collectUser(note?.author);
+      yield note;
     }
   }
 
@@ -568,7 +423,7 @@ export class GitLab {
       orderBy: string;
       sort?: 'asc' | 'desc';
       perPage?: number;
-    } = { orderBy: 'id' }
+    } = {orderBy: 'id'},
   ): Promise<T[]> {
     const results: T[] = [];
     let hasMore = true;
@@ -580,7 +435,7 @@ export class GitLab {
         orderBy: options.orderBy,
         sort: options.sort || 'asc',
         perPage: options.perPage || this.pageSize,
-        showExpanded: true
+        showExpanded: true,
       };
 
       if (idAfter) {
@@ -588,18 +443,24 @@ export class GitLab {
       }
 
       const response = await apiCall(paginationOptions);
-      
-      if (response && typeof response === 'object' && 'data' in response && 'paginationInfo' in response) {
-        const { data, paginationInfo } = response as any;
+
+      if (
+        response &&
+        typeof response === 'object' &&
+        'data' in response &&
+        'paginationInfo' in response
+      ) {
+        const {data, paginationInfo} = response as any;
         results.push(...data);
-        
-        hasMore = paginationInfo.next !== null && paginationInfo.next !== undefined;
+
+        hasMore =
+          paginationInfo.next !== null && paginationInfo.next !== undefined;
         if (hasMore && data.length > 0) {
           const lastItem = data[data.length - 1];
           idAfter = lastItem.id?.toString();
         }
       } else {
-        results.push(...(response as T[]));
+        results.push(...response);
         hasMore = false;
       }
     }
@@ -612,7 +473,7 @@ export class GitLab {
     options: {
       perPage?: number;
       page?: number;
-    } = {}
+    } = {},
   ): Promise<T[]> {
     const results: T[] = [];
     let currentPage = options.page || 1;
@@ -623,21 +484,27 @@ export class GitLab {
         pagination: 'offset' as const,
         perPage: options.perPage || this.pageSize,
         page: currentPage,
-        showExpanded: true
+        showExpanded: true,
       };
 
       const response = await apiCall(paginationOptions);
-      
-      if (response && typeof response === 'object' && 'data' in response && 'paginationInfo' in response) {
-        const { data, paginationInfo } = response as any;
+
+      if (
+        response &&
+        typeof response === 'object' &&
+        'data' in response &&
+        'paginationInfo' in response
+      ) {
+        const {data, paginationInfo} = response as any;
         results.push(...data);
-        
-        hasMore = paginationInfo.next !== null && paginationInfo.next !== undefined;
+
+        hasMore =
+          paginationInfo.next !== null && paginationInfo.next !== undefined;
         if (hasMore) {
           currentPage = paginationInfo.next;
         }
       } else {
-        results.push(...(response as T[]));
+        results.push(...response);
         hasMore = false;
       }
     }
@@ -648,8 +515,10 @@ export class GitLab {
   async *getMergeRequestEvents(
     projectPath: string,
     since?: Date,
-    until?: Date
-  ): AsyncGenerator<MergeRequestEvent> {
+    until?: Date,
+  ): AsyncGenerator<
+    Omit<FarosMergeRequestReviewOutput, 'group_id' | 'project_path'>
+  > {
     const options: any = {
       targetType: 'merge_request',
       action: 'approved',
@@ -664,27 +533,27 @@ export class GitLab {
       options.before = format(addDays(until, 1), 'yyyy-MM-dd');
     }
 
-    const events = await this.offsetPagination(
-      (paginationOptions) => this.client.Events.all({projectId: projectPath, ...options, ...paginationOptions})
-    );
+    const events = (await this.offsetPagination((paginationOptions) =>
+      this.client.Events.all({
+        projectId: projectPath,
+        ...options,
+        ...paginationOptions,
+      }),
+    )) as EventSchema[];
 
     for (const event of events) {
-      const eventData = event as any;
-      if (eventData.author?.username) {
-        this.userCollector.collectUser(
-          eventData.author as unknown as GitLabUserResponse
-        );
-      }
+      this.userCollector.collectUser(event?.author);
 
       yield {
-        id: eventData.id,
-        action_name: eventData.action_name,
-        target_iid: eventData.target_iid,
-        target_type: eventData.target_type,
-        author: eventData.author,
-        created_at: eventData.created_at,
-        project_path: projectPath,
-        group_id: undefined,
+        __brand: 'FarosMergeRequestReview',
+        ...pick(event, [
+          'action_name',
+          'author_username',
+          'created_at',
+          'id',
+          'target_iid',
+          'target_type',
+        ]),
       };
     }
   }
@@ -692,8 +561,8 @@ export class GitLab {
   async *getIssues(
     projectId: string,
     since?: Date,
-    until?: Date
-  ): AsyncGenerator<GitLabIssue> {
+    until?: Date,
+  ): AsyncGenerator<Omit<FarosIssueOutput, 'group_id' | 'project_path'>> {
     const options: any = {
       perPage: this.pageSize,
       orderBy: 'updated_at',
@@ -708,42 +577,31 @@ export class GitLab {
       options.updatedBefore = until.toISOString();
     }
 
-    const issues = await this.offsetPagination(
-      (paginationOptions) => this.client.Issues.all({...options, ...paginationOptions, projectId})
-    );
+    const issues = (await this.offsetPagination((paginationOptions) =>
+      this.client.Issues.all({...options, ...paginationOptions, projectId}),
+    )) as IssueSchema[];
 
     for (const issue of issues) {
-      const issueData = issue as any;
-      if (issueData.author?.username) {
-        this.userCollector.collectUser(
-          issueData.author as unknown as GitLabUserResponse
-        );
-      }
+      this.userCollector.collectUser(issue.author);
 
-      if (issueData.assignees && Array.isArray(issueData.assignees)) {
-        for (const assignee of issueData.assignees) {
-          this.userCollector.collectUser(
-            assignee as unknown as GitLabUserResponse
-          );
-        }
+      for (const assignee of issue.assignees) {
+        this.userCollector.collectUser(assignee);
       }
 
       yield {
-        id: issueData.id,
-        title: issueData.title,
-        description: issueData.description,
-        state: issueData.state,
-        created_at: issueData.created_at,
-        updated_at: issueData.updated_at,
-        labels: issueData.labels || [],
-        assignees: issueData.assignees && Array.isArray(issueData.assignees)
-          ? issueData.assignees.map((assignee: any) => ({
-              username: assignee.username as string,
-            }))
-          : [],
-        author: {username: issueData.author.username as string},
-        group_id: '',
-        project_path: projectId,
+        __brand: 'FarosIssue',
+        ...pick(issue, [
+          'id',
+          'title',
+          'description',
+          'state',
+          'created_at',
+          'updated_at',
+          'labels',
+        ]),
+        author_username: issue.author.username,
+        assignee_usernames:
+          issue.assignees?.map((assignee: any) => assignee.username) ?? [],
       };
     }
   }

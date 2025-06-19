@@ -1,9 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {GitLabMergeRequest} from '../gitlab';
+import {FarosMergeRequestOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-
-type MergeRequest = GitLabMergeRequest;
 
 import {GitLab} from '../gitlab';
 import {
@@ -19,7 +17,7 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
   }
 
   get primaryKey(): StreamKey {
-    return 'id';
+    return ['group_id', 'project_path', 'iid'];
   }
 
   get cursorField(): string | string[] {
@@ -30,19 +28,12 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
-  ): AsyncGenerator<MergeRequest> {
-    const groupId = streamSlice?.group_id;
-    const project = streamSlice?.project;
-
-    if (!groupId || !project) {
-      return;
-    }
-
+    streamState?: StreamState,
+  ): AsyncGenerator<FarosMergeRequestOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
-      groupId,
-      project.path_with_namespace
+      streamSlice.group_id,
+      streamSlice.path_with_namespace,
     );
     const state = streamState?.[stateKey];
     const [startDate, endDate] =
@@ -50,35 +41,29 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
 
-    this.logger.info(
-      `Fetching merge requests for project ${project.path_with_namespace} from ${startDate.toISOString()} to ${endDate.toISOString()}`
-    );
-
     for await (const mergeRequest of gitlab.getMergeRequestsWithNotes(
-      project.path_with_namespace,
+      streamSlice.path_with_namespace,
       startDate,
-      endDate
+      endDate,
     )) {
       yield {
         ...mergeRequest,
-        group_id: groupId,
+        group_id: streamSlice.group_id,
+        project_path: streamSlice.path_with_namespace,
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: MergeRequest,
-    slice: ProjectStreamSlice
+    latestRecord: FarosMergeRequestOutput,
+    slice: ProjectStreamSlice,
   ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.updated_at ?? 0);
+    const latestRecordCutoff = Utils.toDate(latestRecord?.updatedAt ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      StreamBase.groupProjectKey(
-        slice.group_id,
-        slice.project.path_with_namespace
-      )
+      StreamBase.groupProjectKey(slice.group_id, slice.path_with_namespace),
     );
   }
 }
