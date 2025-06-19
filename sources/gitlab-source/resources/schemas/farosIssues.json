@@ -1,20 +1,22 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "additionalProperties": true,
-  "required": [
-    "id",
-    "title",
-    "state",
-    "created_at",
-    "updated_at",
-    "labels",
-    "assignees",
-    "author",
-    "group_id",
-    "project_path"
-  ],
   "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "author_username": {
+      "type": "string"
+    },
+    "assignee_usernames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "id": {
       "type": "integer"
     },
@@ -28,39 +30,19 @@
       "type": "string"
     },
     "created_at": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "updated_at": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "labels": {
       "type": "array",
       "items": {
         "type": "string"
       }
-    },
-    "assignees": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "username": {"type": "string"}
-        },
-        "required": ["username"]
-      }
-    },
-    "author": {
-      "type": "object",
-      "properties": {
-        "username": {"type": "string"}
-      },
-      "required": ["username"]
-    },
-    "group_id": {
-      "type": "string"
-    },
-    "project_path": {
-      "type": "string"
     }
-  }
+  },
+  "required": ["group_id", "project_path", "author_username", "assignee_usernames", "id", "title", "description", "state", "created_at", "updated_at", "labels"]
 }
