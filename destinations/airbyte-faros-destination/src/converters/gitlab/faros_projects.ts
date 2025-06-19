@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Project} from 'faros-airbyte-common/gitlab';
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -17,9 +17,9 @@ export class FarosProjects extends GitlabConverter {
 
   async convert(
     record: AirbyteRecord,
-    ctx: StreamContext
+    ctx: StreamContext,
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const project = record.record.data as Project;
+    const project = record.record.data as FarosProjectOutput;
     const organization = {
       uid: project.group_id,
       source: this.streamName.source,
@@ -56,7 +56,7 @@ export class FarosProjects extends GitlabConverter {
       model: 'tms_Project',
       record: {
         ...projectKey,
-        name: project.name || projectName,
+        name: project.name ?? projectName,
         description: Utils.cleanAndTruncate(project.description),
         createdAt: Utils.toDate(project.created_at),
         updatedAt: Utils.toDate(project.updated_at),
@@ -67,7 +67,7 @@ export class FarosProjects extends GitlabConverter {
       model: 'tms_TaskBoard',
       record: {
         ...projectKey,
-        name: project.name || projectName,
+        name: project.name ?? projectName,
       },
     });
 
