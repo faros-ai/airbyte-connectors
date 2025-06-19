@@ -5,6 +5,7 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {DriveActivityEvent} from 'faros-airbyte-common/googledrive';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
@@ -12,7 +13,6 @@ import {
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_INCLUDE_PERSONAL_DRIVES,
   Drive,
-  DriveActivityEvent,
   GoogleDrive,
   GoogleDriveConfig,
   PersonalDrive,

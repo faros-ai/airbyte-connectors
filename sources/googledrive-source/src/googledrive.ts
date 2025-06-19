@@ -1,4 +1,9 @@
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {
+  DriveActivityEvent,
+  WorkspaceCustomer,
+  WorkspaceUser,
+} from 'faros-airbyte-common/googledrive';
 import {admin_directory_v1, Auth, driveactivity_v2, google} from 'googleapis';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -14,12 +19,6 @@ export type SharedDrive = {
 };
 
 export type Drive = PersonalDrive | SharedDrive;
-
-export type DriveActivityEvent = driveactivity_v2.Schema$DriveActivity;
-
-export type WorkspaceUser = admin_directory_v1.Schema$User;
-
-export type WorkspaceCustomer = admin_directory_v1.Schema$Customer;
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_INCLUDE_PERSONAL_DRIVES = true;
