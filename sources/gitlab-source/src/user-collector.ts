@@ -1,6 +1,12 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
+import {pick} from 'lodash';
 
-import {GitLabUserResponse} from './types/api';
+export type GitLabUserResponse = Partial<FarosUserOutput> & {
+  public_email?: string;
+  publicEmail?: string;
+  webUrl?: string;
+};
 
 export class UserCollector {
   private readonly collectedUsers = new Map<string, GitLabUserResponse>();
@@ -12,10 +18,10 @@ export class UserCollector {
    * Collect a user from any GitLab entity (member, commit author, etc.)
    * Handles deduplication and merging of user data
    */
-  collectUser(user: GitLabUserResponse): void {
+  collectUser(user?: GitLabUserResponse): void {
     if (!user?.username) {
       this.logger.debug(
-        `User has no username. Skipping collection. ${JSON.stringify(user)}`
+        `User has no username. Skipping collection. ${JSON.stringify(user)}`,
       );
       return;
     }
@@ -47,7 +53,7 @@ export class UserCollector {
     const usernames = this.userNameMappings.get(authorName);
     if (!usernames || usernames.size === 0) {
       this.logger.debug(
-        `Failed to find a username for commit author "${authorName}" (commit: ${commitId})`
+        `Failed to find a username for commit author "${authorName}" (commit: ${commitId})`,
       );
       return undefined;
     }
@@ -56,7 +62,7 @@ export class UserCollector {
       this.logger.debug(
         `Commit ${commitId} author name "${authorName}" maps to multiple usernames: ${[
           ...usernames,
-        ].join(', ')}. Will skip author association.`
+        ].join(', ')}. Will skip author association.`,
       );
       return undefined;
     }
@@ -67,8 +73,13 @@ export class UserCollector {
   /**
    * Get all collected users
    */
-  getCollectedUsers(): ReadonlyMap<string, GitLabUserResponse> {
-    return this.collectedUsers;
+  getCollectedUsers(): ReadonlyMap<string, FarosUserOutput> {
+    return new Map(
+      Array.from(this.collectedUsers.entries()).map(([username, user]) => [
+        username,
+        UserCollector.toOutput(user),
+      ]),
+    );
   }
 
   /**
@@ -88,8 +99,9 @@ export class UserCollector {
   /**
    * Get a specific user by username
    */
-  getUser(username: string): GitLabUserResponse | undefined {
-    return this.collectedUsers.get(username);
+  getUser(username: string): FarosUserOutput | undefined {
+    const user = this.collectedUsers.get(username);
+    return user ? UserCollector.toOutput(user) : undefined;
   }
 
   /**
@@ -103,7 +115,7 @@ export class UserCollector {
   // Private helper methods
   private mergeUsers(
     existing: GitLabUserResponse,
-    newUser: GitLabUserResponse
+    newUser: GitLabUserResponse,
   ): GitLabUserResponse {
     // Use logic similar to getFinalUser in destinations/airbyte-faros-destination
     const finalUser: Partial<GitLabUserResponse> = {};
@@ -115,5 +127,15 @@ export class UserCollector {
       }
     }
     return finalUser as GitLabUserResponse;
+  }
+
+  static toOutput(user: GitLabUserResponse): FarosUserOutput {
+    return {
+      __brand: 'FarosUser' as const,
+      ...pick(user, ['name', 'state', 'group_id']),
+      username: user.username,
+      email: user.email ?? user.public_email ?? user.publicEmail ?? null,
+      web_url: user.web_url ?? user.webUrl ?? null,
+    };
   }
 }

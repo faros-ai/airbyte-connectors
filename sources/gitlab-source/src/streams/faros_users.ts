@@ -3,7 +3,6 @@ import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
-import {UserMapper} from '../types/internal';
 import {StreamBase} from './common';
 
 export class FarosUsers extends StreamBase {
@@ -46,7 +45,7 @@ export class FarosUsers extends StreamBase {
     }
     const users = gitlab.userCollector.getCollectedUsers();
     for (const user of users.values()) {
-      yield UserMapper.toOutput(user);
+      yield user;
     }
   }
 }

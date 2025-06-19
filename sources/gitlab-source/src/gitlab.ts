@@ -102,8 +102,7 @@ import VError from 'verror';
 import {MERGE_REQUESTS_QUERY} from './queries';
 import {RunMode} from './streams/common';
 import {GitLabConfig} from './types';
-import {GitLabUserResponse} from './types/api';
-import {UserCollector} from './user-collector';
+import {GitLabUserResponse, UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
 export const DEFAULT_REJECT_UNAUTHORIZED = true;
@@ -271,9 +270,9 @@ export class GitLab {
 
     for (const member of members) {
       this.userCollector.collectUser({
-        ...(member as any),
+        ...member,
         group_id: groupId,
-      } as unknown as GitLabUserResponse);
+      });
     }
   }
 
@@ -448,26 +447,14 @@ export class GitLab {
             needsMoreNotes.add(mrData.id);
           }
 
-          if (mrData.author?.username) {
-            this.userCollector.collectUser(
-              mrData.author as unknown as GitLabUserResponse,
-            );
-          }
+          this.userCollector.collectUser(mrData?.author);
 
-          mrData.assignees?.nodes?.forEach((assignee: any) => {
-            if (assignee?.username) {
-              this.userCollector.collectUser(
-                assignee as unknown as GitLabUserResponse,
-              );
-            }
+          mrData.assignees?.nodes?.forEach((assignee: GitLabUserResponse) => {
+            this.userCollector.collectUser(assignee);
           });
 
-          mrData.notes.nodes.forEach((note: any) => {
-            if (note.author?.username) {
-              this.userCollector.collectUser(
-                note.author as unknown as GitLabUserResponse,
-              );
-            }
+          mrData.notes.nodes.forEach((note) => {
+            this.userCollector.collectUser(note?.author);
           });
         }
 
@@ -524,11 +511,7 @@ export class GitLab {
         continue;
       }
 
-      if (noteData.author?.username) {
-        this.userCollector.collectUser(
-          noteData.author as unknown as GitLabUserResponse,
-        );
-      }
+      this.userCollector.collectUser(noteData?.author);
 
       yield {
         id: noteData.id,
@@ -665,11 +648,7 @@ export class GitLab {
 
     for (const event of events) {
       const eventData = event as any;
-      if (eventData.author?.username) {
-        this.userCollector.collectUser(
-          eventData.author as unknown as GitLabUserResponse,
-        );
-      }
+      this.userCollector.collectUser(eventData?.author);
 
       yield {
         id: eventData.id,
@@ -709,17 +688,11 @@ export class GitLab {
 
     for (const issue of issues) {
       const issueData = issue as any;
-      if (issueData.author?.username) {
-        this.userCollector.collectUser(
-          issueData.author as unknown as GitLabUserResponse,
-        );
-      }
+      this.userCollector.collectUser(issueData?.author);
 
       if (issueData.assignees && Array.isArray(issueData.assignees)) {
         for (const assignee of issueData.assignees) {
-          this.userCollector.collectUser(
-            assignee as unknown as GitLabUserResponse,
-          );
+          this.userCollector.collectUser(assignee);
         }
       }
 
