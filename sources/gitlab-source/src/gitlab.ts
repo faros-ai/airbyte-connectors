@@ -1,6 +1,7 @@
 import {
   Camelize,
   CommitSchema,
+  EventSchema,
   Gitlab as GitlabClient,
   GroupSchema,
   LabelSchema,
@@ -26,23 +27,13 @@ export interface GitLabIssue {
   project_path: string;
 }
 
-export interface GitLabMergeRequestEvent {
-  id: number;
-  action_name: string;
-  target_iid: number;
-  target_type: string;
-  author: {username: string};
-  created_at: string;
-  group_id: string;
-  project_path: string;
-}
-
 export type GitLabToken = any;
 
 import {
   FarosCommitOutput,
   FarosGroupOutput,
   FarosMergeRequestOutput,
+  FarosMergeRequestReviewOutput,
   FarosProjectOutput,
   FarosTagOutput,
 } from 'faros-airbyte-common/gitlab';
@@ -540,7 +531,9 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date,
-  ): AsyncGenerator<GitLabMergeRequestEvent> {
+  ): AsyncGenerator<
+    Omit<FarosMergeRequestReviewOutput, 'group_id' | 'project_path'>
+  > {
     const options: any = {
       targetType: 'merge_request',
       action: 'approved',
@@ -555,27 +548,27 @@ export class GitLab {
       options.before = format(addDays(until, 1), 'yyyy-MM-dd');
     }
 
-    const events = await this.offsetPagination((paginationOptions) =>
+    const events = (await this.offsetPagination((paginationOptions) =>
       this.client.Events.all({
         projectId: projectPath,
         ...options,
         ...paginationOptions,
       }),
-    );
+    )) as EventSchema[];
 
     for (const event of events) {
-      const eventData = event as any;
-      this.userCollector.collectUser(eventData?.author);
+      this.userCollector.collectUser(event?.author);
 
       yield {
-        id: eventData.id,
-        action_name: eventData.action_name,
-        target_iid: eventData.target_iid,
-        target_type: eventData.target_type,
-        author: eventData.author,
-        created_at: eventData.created_at,
-        project_path: projectPath,
-        group_id: undefined,
+        __brand: 'FarosMergeRequestReview',
+        ...pick(event, [
+          'action_name',
+          'author_username',
+          'created_at',
+          'id',
+          'target_iid',
+          'target_type',
+        ]),
       };
     }
   }

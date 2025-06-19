@@ -1,10 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {FarosMergeRequestReviewOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-
-import {GitLabMergeRequestEvent} from '../gitlab';
-
-type MergeRequestEvent = GitLabMergeRequestEvent;
 
 import {GitLab} from '../gitlab';
 import {
@@ -32,7 +29,7 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState,
-  ): AsyncGenerator<MergeRequestEvent> {
+  ): AsyncGenerator<FarosMergeRequestReviewOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
       streamSlice.group_id,
@@ -52,13 +49,14 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
       yield {
         ...review,
         group_id: streamSlice.group_id,
+        project_path: streamSlice.path_with_namespace,
       };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: MergeRequestEvent,
+    latestRecord: FarosMergeRequestReviewOutput,
     slice: ProjectStreamSlice,
   ): StreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.created_at ?? 0);

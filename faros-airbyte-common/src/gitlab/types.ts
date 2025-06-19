@@ -1,6 +1,7 @@
 import {
   Camelize,
   CommitSchema,
+  EventSchema,
   GroupSchema,
   MergeRequestSchema,
   NoteSchema,
@@ -98,21 +99,19 @@ export type FarosMergeRequestOutput = {
   | 'mergeCommitSha'
 >;
 
-export interface MergeRequestEvent {
-  id: string;
-  action_name: string;
-  target_iid: number;
-  target_type: string;
-  author: {
-    name: string;
-    public_email?: string;
-    username: string;
-    web_url: string;
-  };
-  created_at: string;
+export type FarosMergeRequestReviewOutput = {
+  readonly __brand: 'FarosMergeRequestReview';
+  group_id: string;
   project_path: string;
-  group_id?: string;
-}
+} & Pick<
+  EventSchema,
+  | 'action_name'
+  | 'author_username'
+  | 'created_at'
+  | 'id'
+  | 'target_iid'
+  | 'target_type'
+>;
 
 export interface Issue {
   id: number;
