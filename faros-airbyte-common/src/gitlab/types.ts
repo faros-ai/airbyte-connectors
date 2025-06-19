@@ -3,17 +3,13 @@ import {
   CommitSchema,
   EventSchema,
   GroupSchema,
+  IssueSchema,
   MergeRequestSchema,
   NoteSchema,
   ProjectSchema,
   TagSchema,
   UserSchema,
 } from '@gitbeaker/rest';
-
-export interface GitLabToken {
-  type: 'token';
-  personal_access_token: string;
-}
 
 export type FarosProjectOutput = {
   readonly __brand: 'FarosProject';
@@ -113,16 +109,19 @@ export type FarosMergeRequestReviewOutput = {
   | 'target_type'
 >;
 
-export interface Issue {
-  id: number;
-  title: string;
-  description?: string;
-  state: string;
-  created_at: string;
-  updated_at: string;
-  labels: string[];
-  assignees: {username: string}[];
-  author: {username: string};
+export type FarosIssueOutput = {
+  readonly __brand: 'FarosIssue';
   group_id: string;
   project_path: string;
-}
+  author_username: string;
+  assignee_usernames: string[];
+} & Pick<
+  IssueSchema,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'state'
+  | 'created_at'
+  | 'updated_at'
+  | 'labels'
+>;

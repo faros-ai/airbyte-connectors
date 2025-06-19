@@ -4,6 +4,7 @@ import {
   EventSchema,
   Gitlab as GitlabClient,
   GroupSchema,
+  IssueSchema,
   LabelSchema,
   NoteSchema,
   ProjectSchema,
@@ -12,26 +13,10 @@ import {
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
-
-export interface GitLabIssue {
-  id: number;
-  title: string;
-  description: string;
-  state: string;
-  created_at: string;
-  updated_at: string;
-  author: {username: string};
-  assignees: {username: string}[];
-  labels: string[];
-  group_id: string;
-  project_path: string;
-}
-
-export type GitLabToken = any;
-
 import {
   FarosCommitOutput,
   FarosGroupOutput,
+  FarosIssueOutput,
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
   FarosProjectOutput,
@@ -44,7 +29,7 @@ import VError from 'verror';
 
 import {MERGE_REQUESTS_QUERY} from './queries';
 import {RunMode} from './streams/common';
-import {GitLabConfig} from './types';
+import {GitLabConfig, GitLabToken} from './types';
 import {GitLabUserResponse, UserCollector} from './user-collector';
 
 export const DEFAULT_GITLAB_API_URL = 'https://gitlab.com';
@@ -577,7 +562,7 @@ export class GitLab {
     projectId: string,
     since?: Date,
     until?: Date,
-  ): AsyncGenerator<GitLabIssue> {
+  ): AsyncGenerator<Omit<FarosIssueOutput, 'group_id' | 'project_path'>> {
     const options: any = {
       perPage: this.pageSize,
       orderBy: 'updated_at',
@@ -592,37 +577,31 @@ export class GitLab {
       options.updatedBefore = until.toISOString();
     }
 
-    const issues = await this.offsetPagination((paginationOptions) =>
+    const issues = (await this.offsetPagination((paginationOptions) =>
       this.client.Issues.all({...options, ...paginationOptions, projectId}),
-    );
+    )) as IssueSchema[];
 
     for (const issue of issues) {
-      const issueData = issue as any;
-      this.userCollector.collectUser(issueData?.author);
+      this.userCollector.collectUser(issue.author);
 
-      if (issueData.assignees && Array.isArray(issueData.assignees)) {
-        for (const assignee of issueData.assignees) {
-          this.userCollector.collectUser(assignee);
-        }
+      for (const assignee of issue.assignees) {
+        this.userCollector.collectUser(assignee);
       }
 
       yield {
-        id: issueData.id,
-        title: issueData.title,
-        description: issueData.description,
-        state: issueData.state,
-        created_at: issueData.created_at,
-        updated_at: issueData.updated_at,
-        labels: issueData.labels || [],
-        assignees:
-          issueData.assignees && Array.isArray(issueData.assignees)
-            ? issueData.assignees.map((assignee: any) => ({
-                username: assignee.username as string,
-              }))
-            : [],
-        author: {username: issueData.author.username as string},
-        group_id: '',
-        project_path: projectId,
+        __brand: 'FarosIssue',
+        ...pick(issue, [
+          'id',
+          'title',
+          'description',
+          'state',
+          'created_at',
+          'updated_at',
+          'labels',
+        ]),
+        author_username: issue.author.username,
+        assignee_usernames:
+          issue.assignees?.map((assignee: any) => assignee.username) ?? [],
       };
     }
   }

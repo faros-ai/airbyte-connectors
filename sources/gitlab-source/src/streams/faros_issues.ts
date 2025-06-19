@@ -1,10 +1,7 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {FarosIssueOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
-
-import {GitLabIssue} from '../gitlab';
-
-type Issue = GitLabIssue;
 
 import {GitLab} from '../gitlab';
 import {
@@ -32,7 +29,7 @@ export class FarosIssues extends StreamWithProjectSlices {
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
     streamState?: StreamState,
-  ): AsyncGenerator<Issue> {
+  ): AsyncGenerator<FarosIssueOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
     const groupKey = StreamBase.groupProjectKey(
       streamSlice.group_id,
@@ -55,7 +52,7 @@ export class FarosIssues extends StreamWithProjectSlices {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: Issue,
+    latestRecord: FarosIssueOutput,
   ): StreamState {
     const groupKey = StreamBase.groupProjectKey(
       latestRecord.group_id,
