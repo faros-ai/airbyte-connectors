@@ -12,6 +12,11 @@ export class FarosUsers extends GitlabConverter {
     'vcs_UserEmail',
   ];
 
+  id(record: AirbyteRecord): string {
+    const user = record.record.data as FarosUserOutput;
+    return user.username;
+  }
+
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {

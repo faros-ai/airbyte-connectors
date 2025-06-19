@@ -7,7 +7,7 @@ import {GitlabConverter} from './common';
 export class FarosTags extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
-  id(record: AirbyteRecord): any {
+  id(record: AirbyteRecord): string {
     const tag = record?.record?.data;
     return `${tag?.name}_${tag?.commit_id}`;
   }
