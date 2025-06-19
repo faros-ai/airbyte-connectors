@@ -23,7 +23,7 @@ export class FarosUsers extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['group_id', 'id'];
+    return ['group_id', 'username'];
   }
 
   // Although not actually an incremental stream, we run it in incremental mode
