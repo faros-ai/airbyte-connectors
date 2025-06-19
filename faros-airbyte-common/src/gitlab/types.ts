@@ -1,4 +1,4 @@
-import {ProjectSchema} from '@gitbeaker/rest';
+import {GroupSchema, ProjectSchema, UserSchema} from '@gitbeaker/rest';
 
 export interface GitLabToken {
   type: 'token';
@@ -27,54 +27,26 @@ export type FarosProjectOutput = {
   | 'web_url'
 >;
 
-export interface FarosUserOutput {
+export type FarosUserOutput = {
   readonly __brand: 'FarosUser';
-  id: number;
-  username: string;
-  name?: string;
-  email?: string;
-  state: string;
-  web_url: string;
-  created_at?: string;
-  updated_at?: string;
   group_id?: string;
-}
+} & Pick<UserSchema, 'username'> &
+  Partial<Pick<UserSchema, 'email' | 'name' | 'state' | 'web_url'>>;
 
-export interface Group {
+export type FarosGroupOutput = {
+  readonly __brand: 'FarosGroup';
   id: string;
   parent_id: string | null;
-  name: string;
-  path: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  namespace: {
-    id: string;
-    name: string;
-    path: string;
-    kind: string;
-    full_path: string;
-  };
-  default_branch: string;
-  archived: boolean;
-  group_id: string;
-  empty_repo: boolean;
-  syncRepoData?: boolean;
-}
+} & Pick<
+  GroupSchema,
+  | 'created_at'
+  | 'description'
+  | 'name'
+  | 'path'
+  | 'updated_at'
+  | 'visibility'
+  | 'web_url'
+>;
 
 export interface Commit {
   id: string;
