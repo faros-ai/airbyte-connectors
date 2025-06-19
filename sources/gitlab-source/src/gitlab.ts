@@ -201,10 +201,10 @@ export class GitLab {
       {orderBy: 'id', sort: 'asc'},
     )) as GroupSchema[];
 
-    return groups.map((group) => GitLab.convertGitLabGroup(group));
+    return groups.map((group) => GitLab.convertGroup(group));
   }
 
-  static convertGitLabGroup(group: GroupSchema): FarosGroupOutput {
+  static convertGroup(group: GroupSchema): FarosGroupOutput {
     return {
       __brand: 'FarosGroup',
       id: toLower(`${group.id}`),
@@ -225,7 +225,7 @@ export class GitLab {
   async getGroup(groupId: string): Promise<FarosGroupOutput> {
     try {
       const group = (await this.client.Groups.show(groupId)) as GroupSchema;
-      return GitLab.convertGitLabGroup(group);
+      return GitLab.convertGroup(group);
     } catch (err: any) {
       this.logger.error(`Failed to fetch group ${groupId}: ${err.message}`);
       throw new VError(err, `Error fetching group ${groupId}`);
@@ -296,34 +296,6 @@ export class GitLab {
 
   private getBaseUrl(): string {
     return this.config.url ?? DEFAULT_GITLAB_API_URL;
-  }
-
-  private async *paginate<T>(
-    fetchPage: (page: number) => Promise<T[]>,
-    entity: string,
-  ): AsyncGenerator<T> {
-    try {
-      let page = 1;
-      let hasMore = true;
-
-      while (hasMore) {
-        const items = await fetchPage(page);
-
-        if (!items || items.length === 0) {
-          hasMore = false;
-          continue;
-        }
-
-        for (const item of items) {
-          yield item;
-        }
-
-        page++;
-      }
-    } catch (err: any) {
-      this.logger.error(`Failed to fetch ${entity}: ${err.message}`);
-      throw new VError(err, `Error fetching ${entity}`);
-    }
   }
 
   async *getCommits(
