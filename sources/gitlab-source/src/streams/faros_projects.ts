@@ -10,7 +10,7 @@ export class FarosProjects extends StreamWithGroupSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['id'];
+    return 'id';
   }
 
   async *readRecords(

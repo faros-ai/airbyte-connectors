@@ -17,7 +17,7 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
   }
 
   get primaryKey(): StreamKey {
-    return 'id';
+    return ['group_id', 'project_path', 'iid'];
   }
 
   get cursorField(): string | string[] {
