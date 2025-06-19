@@ -14,6 +14,7 @@ import {
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
 import * as sut from '../src/index';
+import {UserCollector} from '../src/user-collector';
 
 // Test data factories
 const createTestGroup = (overrides = {}): any => ({
@@ -97,9 +98,9 @@ function setupBasicMocks(): any {
         new Map(
           testUsers.map((user) => [
             user.username,
-            {...user, group_id: testGroup.id},
-          ])
-        )
+            UserCollector.toOutput({...user, group_id: testGroup.id}),
+          ]),
+        ),
       ),
     clear: jest.fn(),
   };
@@ -147,7 +148,7 @@ describe('index', () => {
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
       ? AirbyteLogLevel.DEBUG
-      : AirbyteLogLevel.FATAL
+      : AirbyteLogLevel.FATAL,
   );
 
   const source = new sut.GitLabSource(logger);
@@ -160,7 +161,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceAsJSON('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json')),
     );
   });
 
@@ -288,7 +289,7 @@ describe('index', () => {
       'test-group/test-project',
       'main',
       expect.any(Date),
-      expect.any(Date)
+      expect.any(Date),
     );
   });
 
@@ -358,7 +359,7 @@ describe('index', () => {
     ];
     const {gitlab} = setupBasicMocks();
     gitlab.getMergeRequestsWithNotes.mockReturnValue(
-      createAsyncGeneratorMock(mergeRequests)
+      createAsyncGeneratorMock(mergeRequests),
     );
 
     await sourceReadTest({
@@ -373,7 +374,7 @@ describe('index', () => {
     expect(gitlab.getMergeRequestsWithNotes).toHaveBeenCalledWith(
       'test-group/test-project',
       expect.any(Date),
-      expect.any(Date)
+      expect.any(Date),
     );
   });
 
@@ -396,7 +397,7 @@ describe('index', () => {
     ];
     const {gitlab} = setupBasicMocks();
     gitlab.getMergeRequestEvents.mockReturnValue(
-      createAsyncGeneratorMock(reviews)
+      createAsyncGeneratorMock(reviews),
     );
 
     await sourceReadTest({
@@ -411,7 +412,7 @@ describe('index', () => {
     expect(gitlab.getMergeRequestEvents).toHaveBeenCalledWith(
       'test-group/test-project',
       expect.any(Date),
-      expect.any(Date)
+      expect.any(Date),
     );
   });
 
@@ -425,8 +426,8 @@ describe('index', () => {
           group: 'test-group',
           project: 'test-group/test-project',
           branch: 'main',
-        }))
-      )
+        })),
+      ),
     );
 
     await sourceReadTest({
@@ -466,7 +467,7 @@ describe('index', () => {
     expect(gitlab.getIssues).toHaveBeenCalledWith(
       'test-group/test-project',
       expect.any(Date),
-      expect.any(Date)
+      expect.any(Date),
     );
   });
 
@@ -488,7 +489,7 @@ describe('index', () => {
     const {config: newConfig, state: newState} = await source.onBeforeRead(
       {...config, round_robin_bucket_execution: true, bucket_total: 3},
       catalog,
-      {__bucket_execution_state: {last_executed_bucket_id: 1}}
+      {__bucket_execution_state: {last_executed_bucket_id: 1}},
     );
     expect(newConfig.bucket_id).toBe(2);
     expect(newState).toMatchSnapshot();
@@ -586,7 +587,7 @@ describe('index', () => {
       };
 
       await expect(source.onBeforeRead(config, catalog)).rejects.toThrow(
-        'Groups 2 found in both groups and excluded_groups lists'
+        'Groups 2 found in both groups and excluded_groups lists',
       );
     });
 
@@ -603,7 +604,7 @@ describe('index', () => {
       };
 
       await expect(source.onBeforeRead(config, catalog)).rejects.toThrow(
-        'No visible groups remain after applying inclusion and exclusion filters'
+        'No visible groups remain after applying inclusion and exclusion filters',
       );
     });
 

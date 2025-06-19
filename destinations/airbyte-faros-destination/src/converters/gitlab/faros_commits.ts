@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {Commit} from 'faros-airbyte-common/gitlab';
+import {FarosCommitOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -10,10 +10,10 @@ export class FarosCommits extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Commit'];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const commit = record.record.data as Commit;
+    const commit = record.record.data as FarosCommitOutput;
 
     const repository = {
       name: toLower(commit.project_path),

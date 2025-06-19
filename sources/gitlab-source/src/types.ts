@@ -1,8 +1,12 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {RoundRobinConfig} from 'faros-airbyte-common/common';
-import {GitLabToken} from 'faros-airbyte-common/gitlab';
 
 import {RunMode} from './streams/common';
+
+export interface GitLabToken {
+  type: 'token';
+  personal_access_token: string;
+}
 
 export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   readonly authentication: GitLabToken;
