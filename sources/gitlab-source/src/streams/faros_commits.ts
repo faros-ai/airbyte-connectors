@@ -1,7 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {GitLabCommit} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+import {GitLabCommit} from '../gitlab';
 
 type Commit = GitLabCommit;
 
@@ -39,19 +40,12 @@ export class FarosCommits extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
+    streamState?: StreamState,
   ): AsyncGenerator<Commit> {
-    const groupId = streamSlice?.group_id;
-    const project = streamSlice?.project;
-
-    if (!groupId || !project) {
-      return;
-    }
-
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
-      groupId,
-      project.path_with_namespace
+      streamSlice.group_id,
+      streamSlice.path_with_namespace,
     );
     const state = streamState?.[stateKey];
     const [startDate, endDate] =
@@ -59,20 +53,16 @@ export class FarosCommits extends StreamWithProjectSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
 
-    this.logger.info(
-      `Fetching commits for project ${project.path_with_namespace} on branch ${project.default_branch} from ${startDate.toISOString()} to ${endDate.toISOString()}`
-    );
-
     for await (const commit of gitlab.getCommits(
-      project.path_with_namespace,
-      project.default_branch as string,
+      streamSlice.path_with_namespace,
+      streamSlice.default_branch,
       startDate,
-      endDate
+      endDate,
     )) {
       yield {
         ...commit,
-        group_id: groupId,
-        project_path: project.path,
+        group_id: streamSlice.group_id,
+        project_path: streamSlice.path,
       };
     }
   }
@@ -80,16 +70,13 @@ export class FarosCommits extends StreamWithProjectSlices {
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: Commit,
-    slice: ProjectStreamSlice
+    slice: ProjectStreamSlice,
   ): StreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.committed_date ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      StreamBase.groupProjectKey(
-        slice.group_id,
-        slice.project.path_with_namespace
-      )
+      StreamBase.groupProjectKey(slice.group_id, slice.path_with_namespace),
     );
   }
 }

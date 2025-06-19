@@ -34,24 +34,6 @@ export interface GitLabGroup {
   updated_at: string;
 }
 
-export interface GitLabProject {
-  id: string;
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  web_url: string;
-  description: string;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  default_branch: string;
-  namespace: any;
-  owner: any;
-  archived: boolean;
-  empty_repo: boolean;
-  group_id: string;
-}
-
 export interface GitLabIssue {
   id: number;
   title: string;
@@ -116,10 +98,11 @@ type Group = GitLabGroup;
 type MergeRequest = GitLabMergeRequest;
 type MergeRequestEvent = GitLabMergeRequestEvent;
 type MergeRequestNote = GitLabMergeRequestNote;
-type Project = GitLabProject;
+
 type Tag = GitLabTag;
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
-import {toLower} from 'lodash';
+import {pick, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -254,28 +237,31 @@ export class GitLab {
     }
   }
 
-  async getProjects(groupId: string): Promise<Project[]> {
+  async getProjects(groupId: string): Promise<FarosProjectOutput[]> {
     const projects = (await this.keysetPagination(
       (options) => this.client.Groups.allProjects(groupId, {...options}),
       {orderBy: 'id', sort: 'asc'},
     )) as ProjectSchema[];
 
     return projects.map((project: ProjectSchema) => ({
+      __brand: 'FarosProject',
       id: toLower(`${project.id}`),
-      name: project.name,
-      path: project.path,
-      path_with_namespace: project.path_with_namespace,
-      web_url: project.web_url,
-      description: project.description,
-      visibility: project.visibility,
-      created_at: project.created_at,
-      updated_at: project.updated_at,
-      namespace: project.namespace,
-      owner: project.owner,
-      default_branch: project.default_branch,
-      archived: project.archived,
       group_id: groupId,
-      empty_repo: project.empty_repo,
+      ...pick(project, [
+        'archived',
+        'created_at',
+        'default_branch',
+        'description',
+        'empty_repo',
+        'name',
+        'namespace',
+        'owner',
+        'path',
+        'path_with_namespace',
+        'updated_at',
+        'visibility',
+        'web_url',
+      ]),
     }));
   }
 
@@ -602,7 +588,7 @@ export class GitLab {
           idAfter = lastItem.id?.toString();
         }
       } else {
-        results.push(...(response));
+        results.push(...response);
         hasMore = false;
       }
     }
@@ -646,7 +632,7 @@ export class GitLab {
           currentPage = paginationInfo.next;
         }
       } else {
-        results.push(...(response));
+        results.push(...response);
         hasMore = false;
       }
     }

@@ -1,7 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {GitLabIssue} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+import {GitLabIssue} from '../gitlab';
 
 type Issue = GitLabIssue;
 
@@ -30,56 +31,40 @@ export class FarosIssues extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
+    streamState?: StreamState,
   ): AsyncGenerator<Issue> {
     const gitlab = await GitLab.instance(this.config, this.logger);
-    const project = streamSlice?.project;
-    if (!project) {
-      return;
-    }
-
     const groupKey = StreamBase.groupProjectKey(
       streamSlice.group_id,
-      project.path
+      streamSlice.path_with_namespace,
     );
     const [since, until] = this.getUpdateRange(streamState?.[groupKey]?.cutoff);
 
-    this.logger.info(
-      `Syncing GitLab issues for project ${project.path_with_namespace} from ${since.toISOString()} to ${until.toISOString()}`
-    );
-
-    try {
-      for await (const issue of gitlab.getIssues(
-        project.path_with_namespace,
-        since,
-        until
-      )) {
-        yield {
-          ...issue,
-          group_id: streamSlice.group_id,
-          project_path: project.path,
-        };
-      }
-    } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch issues for project ${project.path_with_namespace}: ${err.message}`
-      );
-      throw err;
+    for await (const issue of gitlab.getIssues(
+      streamSlice.path_with_namespace,
+      since,
+      until,
+    )) {
+      yield {
+        ...issue,
+        group_id: streamSlice.group_id,
+        project_path: streamSlice.path,
+      };
     }
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: Issue
+    latestRecord: Issue,
   ): StreamState {
     const groupKey = StreamBase.groupProjectKey(
-      latestRecord.group_id!,
-      latestRecord.project_path!
+      latestRecord.group_id,
+      latestRecord.project_path,
     );
     return this.getUpdatedStreamState(
       Utils.toDate(latestRecord.updated_at),
       currentStreamState,
-      groupKey
+      groupKey,
     );
   }
 }

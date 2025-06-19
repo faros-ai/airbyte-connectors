@@ -3,29 +3,27 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {GitLabProject} from '../gitlab';
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
-
-type Project = GitLabProject;
+import {pick, toLower} from 'lodash';
 
 import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
 
-export type GroupStreamSlice = {
+export interface GroupStreamSlice {
   group: string;
-};
+}
 
-export type ProjectStreamSlice = {
-  group_id: string;
-  project: Pick<Project, 'path_with_namespace' | 'default_branch' | 'path'>;
-};
+export type ProjectStreamSlice = Pick<
+  FarosProjectOutput,
+  'default_branch' | 'group_id' | 'path' | 'path_with_namespace'
+>;
 
-export type StreamState = {
+export interface StreamState {
   readonly [key: string]: {
     cutoff: number;
   };
-};
+}
 
 export enum RunMode {
   Minimum = 'Minimum',
@@ -79,7 +77,7 @@ export abstract class StreamBase extends AirbyteStreamBase {
   constructor(
     protected readonly config: GitLabConfig,
     protected readonly logger: AirbyteLogger,
-    protected readonly farosClient?: FarosClient
+    protected readonly farosClient?: FarosClient,
   ) {
     super(logger);
     this.groupFilter = GroupFilter.instance(config, logger, farosClient);
@@ -95,12 +93,12 @@ export abstract class StreamBase extends AirbyteStreamBase {
   protected getUpdatedStreamState(
     latestRecordCutoff: Date,
     currentStreamState: StreamState,
-    groupKey: string
+    groupKey: string,
   ): StreamState {
     return calculateUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      groupKey
+      groupKey,
     );
   }
 
@@ -125,22 +123,22 @@ export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     for (const group of await this.groupFilter.getGroups()) {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-        group
+        group,
       )) {
         if ((repo as any).empty_repo === true) {
           this.logger.warn(
-            `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`
+            `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`,
           );
           continue;
         }
         if (syncRepoData) {
           yield {
-            group_id: repo.group_id,
-            project: {
-              path_with_namespace: repo.path_with_namespace,
-              default_branch: repo.default_branch,
-              path: repo.path,
-            },
+            ...pick(repo, [
+              'default_branch',
+              'group_id',
+              'path',
+              'path_with_namespace',
+            ]),
           };
         }
       }

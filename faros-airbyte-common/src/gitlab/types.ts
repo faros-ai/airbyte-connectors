@@ -1,7 +1,31 @@
-export type GitLabToken = {
+import {ProjectSchema} from '@gitbeaker/rest';
+
+export interface GitLabToken {
   type: 'token';
   personal_access_token: string;
-};
+}
+
+export type FarosProjectOutput = {
+  readonly __brand: 'FarosProject';
+  id: string;
+  group_id: string;
+  syncRepoData?: boolean;
+} & Pick<
+  ProjectSchema,
+  | 'archived'
+  | 'created_at'
+  | 'default_branch'
+  | 'description'
+  | 'empty_repo'
+  | 'name'
+  | 'namespace'
+  | 'owner'
+  | 'path'
+  | 'path_with_namespace'
+  | 'updated_at'
+  | 'visibility'
+  | 'web_url'
+>;
 
 export interface FarosUserOutput {
   readonly __brand: 'FarosUser';

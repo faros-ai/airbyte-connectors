@@ -1,7 +1,8 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {GitLabMergeRequestEvent} from '../gitlab';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
+
+import {GitLabMergeRequestEvent} from '../gitlab';
 
 type MergeRequestEvent = GitLabMergeRequestEvent;
 
@@ -30,19 +31,12 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-    streamState?: StreamState
+    streamState?: StreamState,
   ): AsyncGenerator<MergeRequestEvent> {
-    const groupId = streamSlice?.group_id;
-    const project = streamSlice?.project;
-
-    if (!groupId || !project) {
-      return;
-    }
-
     const gitlab = await GitLab.instance(this.config, this.logger);
     const stateKey = StreamBase.groupProjectKey(
-      groupId,
-      project.path_with_namespace
+      streamSlice.group_id,
+      streamSlice.path_with_namespace,
     );
     const state = streamState?.[stateKey];
     const [startDate, endDate] =
@@ -50,18 +44,14 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
 
-    this.logger.info(
-      `Fetching merge request reviews for project ${project.path_with_namespace} from ${startDate.toISOString()} to ${endDate.toISOString()}`
-    );
-
     for await (const review of gitlab.getMergeRequestEvents(
-      project.path_with_namespace,
+      streamSlice.path_with_namespace,
       startDate,
-      endDate
+      endDate,
     )) {
       yield {
         ...review,
-        group_id: groupId,
+        group_id: streamSlice.group_id,
       };
     }
   }
@@ -69,16 +59,13 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: MergeRequestEvent,
-    slice: ProjectStreamSlice
+    slice: ProjectStreamSlice,
   ): StreamState {
     const latestRecordCutoff = Utils.toDate(latestRecord?.created_at ?? 0);
     return this.getUpdatedStreamState(
       latestRecordCutoff,
       currentStreamState,
-      StreamBase.groupProjectKey(
-        slice.group_id,
-        slice.project.path_with_namespace
-      )
+      StreamBase.groupProjectKey(slice.group_id, slice.path_with_namespace),
     );
   }
 }
