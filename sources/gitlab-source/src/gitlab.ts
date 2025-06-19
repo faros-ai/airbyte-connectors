@@ -3,6 +3,7 @@ import {
   Gitlab as GitlabClient,
   GroupSchema,
   ProjectSchema,
+  TagSchema,
 } from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
@@ -18,17 +19,6 @@ export interface GitLabIssue {
   author: {username: string};
   assignees: {username: string}[];
   labels: string[];
-  group_id: string;
-  project_path: string;
-}
-
-export interface GitLabTag {
-  name: string;
-  message: string;
-  target: string;
-  commit: any;
-  commit_id?: string;
-  title?: string;
   group_id: string;
   project_path: string;
 }
@@ -71,11 +61,11 @@ type MergeRequest = GitLabMergeRequest;
 type MergeRequestEvent = GitLabMergeRequestEvent;
 type MergeRequestNote = GitLabMergeRequestNote;
 
-type Tag = GitLabTag;
 import {
   FarosCommitOutput,
   FarosGroupOutput,
   FarosProjectOutput,
+  FarosTagOutput,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
 import {pick, toLower} from 'lodash';
@@ -319,22 +309,18 @@ export class GitLab {
     }
   }
 
-  async *getTags(projectId: string): AsyncGenerator<GitLabTag> {
-    const tags = await this.offsetPagination((options) =>
+  async *getTags(
+    projectId: string,
+  ): AsyncGenerator<Omit<FarosTagOutput, 'group_id' | 'project_path'>> {
+    const tags = (await this.offsetPagination((options) =>
       this.client.Tags.all(projectId, options),
-    );
+    )) as TagSchema[];
 
     for (const tag of tags) {
-      const tagData = tag as any;
       yield {
-        name: tagData.name,
-        message: tagData.message,
-        target: tagData.target,
-        commit: tagData.commit,
-        title: tagData.message,
-        commit_id: tagData.commit?.id,
-        group_id: '',
-        project_path: projectId,
+        __brand: 'FarosTag',
+        ...pick(tag, ['name', 'message', 'target', 'title']),
+        commit_id: tag.commit?.id,
       };
     }
   }

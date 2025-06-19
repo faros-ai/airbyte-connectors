@@ -2,6 +2,7 @@ import {
   CommitSchema,
   GroupSchema,
   ProjectSchema,
+  TagSchema,
   UserSchema,
 } from '@gitbeaker/rest';
 
@@ -61,11 +62,12 @@ export type FarosCommitOutput = {
   project_path: string;
 } & Pick<CommitSchema, 'id' | 'message' | 'created_at' | 'web_url'>;
 
-export interface Tag {
-  name: string;
-  title: string;
-  commit_id: string;
-}
+export type FarosTagOutput = {
+  readonly __brand: 'FarosTag';
+  commit_id?: string;
+  group_id: string;
+  project_path: string;
+} & Pick<TagSchema, 'name' | 'message' | 'target' | 'title'>;
 
 export interface MergeRequestAuthor {
   name: string;

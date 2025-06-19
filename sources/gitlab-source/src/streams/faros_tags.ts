@@ -1,9 +1,6 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {FarosTagOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
-
-import {GitLabTag} from '../gitlab';
-
-type Tag = GitLabTag;
 
 import {GitLab} from '../gitlab';
 import {ProjectStreamSlice, StreamWithProjectSlices} from './common';
@@ -14,14 +11,14 @@ export class FarosTags extends StreamWithProjectSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['name', 'commit_id'];
+    return ['project_path', 'name'];
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: ProjectStreamSlice,
-  ): AsyncGenerator<Tag & {group_id: string; project_path: string}> {
+  ): AsyncGenerator<FarosTagOutput> {
     const gitlab = await GitLab.instance(this.config, this.logger);
 
     for await (const tag of gitlab.getTags(streamSlice.path_with_namespace)) {
