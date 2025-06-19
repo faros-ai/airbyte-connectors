@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__googledrive__workspace"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__googledrive__workspace_users"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__googledrive__activity"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

@@ -4,13 +4,10 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
+import {WorkspaceCustomer} from 'faros-airbyte-common/googledrive';
 import {Dictionary} from 'ts-essentials';
 
-import {
-  GoogleDrive,
-  GoogleDriveConfig,
-  WorkspaceCustomer,
-} from '../googledrive';
+import {GoogleDrive, GoogleDriveConfig} from '../googledrive';
 
 export class Workspace extends AirbyteStreamBase {
   constructor(
@@ -35,11 +32,6 @@ export class Workspace extends AirbyteStreamBase {
     streamState?: Dictionary<any, string>
   ): AsyncGenerator<WorkspaceCustomer> {
     const googleDrive = await GoogleDrive.instance(this.config, this.logger);
-
-    this.logger.info(
-      `Reading Workspace customer record with sync mode ${syncMode}`
-    );
-
     const workspaceCustomer = await googleDrive.getWorkspaceCustomer();
     yield workspaceCustomer;
   }
