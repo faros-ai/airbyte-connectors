@@ -94,7 +94,7 @@ export class GitLab {
     try {
       this.logger.debug('Verifying GitLab credentials by fetching metadata');
       const metadata = await this.client.Metadata.show();
-      if (metadata && metadata.version) {
+      if (metadata?.version) {
         this.logger.debug(
           'GitLab credentials verified.',
           `Connected to GitLab version ${metadata.version}`,

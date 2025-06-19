@@ -10,7 +10,7 @@ export class FarosTags extends GitlabConverter {
 
   id(record: AirbyteRecord): any {
     const tag = record?.record?.data as FarosTagOutput;
-    return `${tag?.name}_${tag?.commit_id}`;
+    return `${tag?.project_path}_${tag?.name}`;
   }
 
   async convert(

@@ -1,7 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 
-import {UserCollector} from '../src/user-collector';
-import {GitLabUserResponse} from '../src/user-collector';
+import {GitLabUserResponse, UserCollector} from '../src/user-collector';
 
 describe('UserCollector', () => {
   let userCollector: UserCollector;

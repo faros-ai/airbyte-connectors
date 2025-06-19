@@ -126,7 +126,7 @@ export class UserCollector {
         }
       }
     }
-    return finalUser as GitLabUserResponse;
+    return finalUser;
   }
 
   static toOutput(user: GitLabUserResponse): FarosUserOutput {
