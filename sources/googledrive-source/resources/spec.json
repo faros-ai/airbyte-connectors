@@ -1,0 +1,51 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Google Drive Spec",
+    "type": "object",
+    "required": ["client_email", "private_key"],
+    "additionalProperties": true,
+    "properties": {
+      "client_email": {
+        "type": "string",
+        "title": "Client Email",
+        "description": "Google Drive API Client Email",
+        "examples": ["service-account@project-id.iam.gserviceaccount.com"]
+      },
+      "private_key": {
+        "type": "string",
+        "title": "Private Key",
+        "description": "Private Key for accessing Google Drive API and Google Admin Directory API",
+        "airbyte_secret": true
+      },
+      "shared_drive_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Shared Drive IDs",
+        "description": "A list of Shared Drive IDs to query activities from. If empty, will query activities from the root drive (items/root). Each shared drive ID will generate activity queries with ancestorName = 'items/{shared_drive_id}'"
+      },
+      "include_personal_drives": {
+        "type": "boolean",
+        "title": "Include Personal Drives",
+        "description": "Whether to include personal drives (user drives) in activity processing. If set to false, only shared drives specified in 'shared_drive_ids' will be processed. If set to true (default), activities from all workspace users' personal drives will be included along with any specified shared drives.",
+        "default": true
+      },
+      "delegated_admin_user": {
+        "type": "string",
+        "title": "Delegated Admin User",
+        "description": "Email of a Google Workspace admin user to impersonate for accessing workspace APIs and personal drives. When specified, enables domain-wide delegation allowing the service account to access all organization members' Drive activities and workspace data. The user must be a Google Workspace admin. If not specified, only shared drives and workspace customer information will be accessible. Required scopes for delegation: https://www.googleapis.com/auth/drive.activity.readonly, https://www.googleapis.com/auth/admin.directory.user.readonly, https://www.googleapis.com/auth/admin.directory.customer.readonly. Refer to [Google's documentation](https://developers.google.com/workspace/guides/create-credentials#optional_set_up_domain-wide_delegation_for_a_service_account) for setting up domain-wide delegation.",
+        "examples": ["admin@company.com"]
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "minimum": 1,
+        "description": "Fetch activities within the specified number of days"
+      }
+    }
+  }
+}

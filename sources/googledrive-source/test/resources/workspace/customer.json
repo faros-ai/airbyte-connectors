@@ -1,0 +1,20 @@
+{
+  "kind": "admin#directory#customer",
+  "id": "C01abc234",
+  "etag": "\"abcdef123456789/sample_customer_etag\"",
+  "customerDomain": "example.com",
+  "alternateEmail": "admin@example.com",
+  "postalAddress": {
+    "contactName": "John Admin",
+    "organizationName": "Example Corp",
+    "addressLine1": "123 Main Street",
+    "addressLine2": "Suite 100",
+    "locality": "San Francisco",
+    "region": "CA",
+    "postalCode": "94105",
+    "countryCode": "US"
+  },
+  "phoneNumber": "+1-555-0123",
+  "language": "en",
+  "customerCreationTime": "2020-01-01T00:00:00.000Z"
+}
