@@ -163,35 +163,33 @@ export class GitLab {
     }
   }
 
-  async getProjects(groupId: string): Promise<FarosProjectOutput[]> {
-    const projects: ProjectSchema[] = [];
+  async *getProjects(groupId: string): AsyncGenerator<FarosProjectOutput> {
     for await (const project of this.keysetPagination(
       (options) => this.client.Groups.allProjects(groupId, {...options}),
       {orderBy: 'id', sort: 'asc'}
     )) {
-      projects.push(project as ProjectSchema);
+      const typedProject = project as ProjectSchema;
+      yield {
+        __brand: 'FarosProject',
+        id: toLower(`${typedProject.id}`),
+        group_id: groupId,
+        ...pick(typedProject, [
+          'archived',
+          'created_at',
+          'default_branch',
+          'description',
+          'empty_repo',
+          'name',
+          'namespace',
+          'owner',
+          'path',
+          'path_with_namespace',
+          'updated_at',
+          'visibility',
+          'web_url',
+        ]),
+      };
     }
-
-    return projects.map((project: ProjectSchema) => ({
-      __brand: 'FarosProject',
-      id: toLower(`${project.id}`),
-      group_id: groupId,
-      ...pick(project, [
-        'archived',
-        'created_at',
-        'default_branch',
-        'description',
-        'empty_repo',
-        'name',
-        'namespace',
-        'owner',
-        'path',
-        'path_with_namespace',
-        'updated_at',
-        'visibility',
-        'web_url',
-      ]),
-    }));
   }
 
   async fetchGroupMembers(groupId: string): Promise<void> {
