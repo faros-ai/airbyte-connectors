@@ -54,7 +54,7 @@ export class GitLab {
 
   constructor(
     readonly config: GitLabConfig,
-    protected readonly logger: AirbyteLogger,
+    protected readonly logger: AirbyteLogger
   ) {
     this.client = new GitlabClient({
       token: this.getToken(),
@@ -77,7 +77,7 @@ export class GitLab {
 
   static async instance(
     cfg: GitLabConfig,
-    logger: AirbyteLogger,
+    logger: AirbyteLogger
   ): Promise<GitLab> {
     if (GitLab.gitlab) {
       return GitLab.gitlab;
@@ -97,37 +97,40 @@ export class GitLab {
       if (metadata?.version) {
         this.logger.debug(
           'GitLab credentials verified.',
-          `Connected to GitLab version ${metadata.version}`,
+          `Connected to GitLab version ${metadata.version}`
         );
       } else {
         this.logger.error(
           'GitLab metadata response was invalid: %s',
-          JSON.stringify(metadata),
+          JSON.stringify(metadata)
         );
         throw new VError(
-          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid',
+          'GitLab authentication failed. Please check your GitLab instance is reachable and your API token is valid'
         );
       }
     } catch (err: any) {
       this.logger.error('Failed to fetch GitLab metadata: %s', err.message);
       throw new VError(
         err,
-        'GitLab authentication failed. Please check your API token and permissions',
+        'GitLab authentication failed. Please check your API token and permissions'
       );
     }
   }
 
   @Memoize()
   async getGroups(): Promise<FarosGroupOutput[]> {
-    const groups = (await this.keysetPagination(
+    const groups: GroupSchema[] = [];
+    for await (const group of this.keysetPagination(
       (options) =>
         this.client.Groups.all({
           ...options,
           withProjects: false,
           allAvailable: this.fetchPublicGroups,
         }),
-      {orderBy: 'id', sort: 'asc'},
-    )) as GroupSchema[];
+      {orderBy: 'id', sort: 'asc'}
+    )) {
+      groups.push(group as GroupSchema);
+    }
 
     return groups.map((group) => GitLab.convertGroup(group));
   }
@@ -161,10 +164,13 @@ export class GitLab {
   }
 
   async getProjects(groupId: string): Promise<FarosProjectOutput[]> {
-    const projects = (await this.keysetPagination(
+    const projects: ProjectSchema[] = [];
+    for await (const project of this.keysetPagination(
       (options) => this.client.Groups.allProjects(groupId, {...options}),
-      {orderBy: 'id', sort: 'asc'},
-    )) as ProjectSchema[];
+      {orderBy: 'id', sort: 'asc'}
+    )) {
+      projects.push(project as ProjectSchema);
+    }
 
     return projects.map((project: ProjectSchema) => ({
       __brand: 'FarosProject',
@@ -189,14 +195,12 @@ export class GitLab {
   }
 
   async fetchGroupMembers(groupId: string): Promise<void> {
-    const members = await this.offsetPagination((options) =>
+    for await (const member of this.offsetPagination((options) =>
       this.client.GroupMembers.all(groupId, {
         ...options,
         includeInherited: true,
-      }),
-    );
-
-    for (const member of members) {
+      })
+    )) {
       this.userCollector.collectUser({
         ...member,
         group_id: groupId,
@@ -230,7 +234,7 @@ export class GitLab {
     projectPath: string,
     branch: string,
     since?: Date,
-    until?: Date,
+    until?: Date
   ): AsyncGenerator<
     Omit<FarosCommitOutput, 'branch' | 'group_id' | 'project_path'>
   > {
@@ -246,36 +250,34 @@ export class GitLab {
       options.until = until.toISOString();
     }
 
-    const commits = (await this.offsetPagination((paginationOptions) =>
-      this.client.Commits.all(projectPath, {...options, ...paginationOptions}),
-    )) as CommitSchema[];
-
-    for (const commit of commits) {
+    for await (const commit of this.offsetPagination((paginationOptions) =>
+      this.client.Commits.all(projectPath, {...options, ...paginationOptions})
+    )) {
+      const typedCommit = commit as CommitSchema;
       const author_username = this.userCollector.getCommitAuthor(
-        commit.author_name,
-        commit.id,
+        typedCommit.author_name,
+        typedCommit.id
       );
 
       yield {
         __brand: 'FarosCommit',
-        ...pick(commit, ['id', 'message', 'created_at', 'web_url']),
+        ...pick(typedCommit, ['id', 'message', 'created_at', 'web_url']),
         author_username,
       };
     }
   }
 
   async *getTags(
-    projectId: string,
+    projectId: string
   ): AsyncGenerator<Omit<FarosTagOutput, 'group_id' | 'project_path'>> {
-    const tags = (await this.offsetPagination((options) =>
-      this.client.Tags.all(projectId, options),
-    )) as TagSchema[];
-
-    for (const tag of tags) {
+    for await (const tag of this.offsetPagination((options) =>
+      this.client.Tags.all(projectId, options)
+    )) {
+      const typedTag = tag as TagSchema;
       yield {
         __brand: 'FarosTag',
-        ...pick(tag, ['name', 'message', 'target', 'title']),
-        commit_id: tag.commit?.id,
+        ...pick(typedTag, ['name', 'message', 'target', 'title']),
+        commit_id: typedTag.commit?.id,
       };
     }
   }
@@ -283,7 +285,7 @@ export class GitLab {
   async *getMergeRequestsWithNotes(
     projectPath: string,
     since?: Date,
-    until?: Date,
+    until?: Date
   ): AsyncGenerator<
     Omit<FarosMergeRequestOutput, 'group_id' | 'project_path'>
   > {
@@ -321,8 +323,8 @@ export class GitLab {
                   ...pick(note, ['author', 'id', 'body']),
                   created_at: note.createdAt,
                   updated_at: note.updatedAt,
-                })),
-            ),
+                }))
+            )
           );
           mergeRequests.set(mr.id, mr);
 
@@ -346,11 +348,11 @@ export class GitLab {
         hasNextPage = requests.pageInfo.hasNextPage;
       } catch (err: any) {
         this.logger.error(
-          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`,
+          `Failed to fetch merge requests for project ${projectPath}: ${err.message}`
         );
         throw new VError(
           err,
-          `Error fetching merge requests for project ${projectPath}`,
+          `Error fetching merge requests for project ${projectPath}`
         );
       }
     }
@@ -361,7 +363,7 @@ export class GitLab {
       if (mrData) {
         for await (const note of this.getAdditionalMergeRequestNotes(
           projectPath,
-          mrData.iid,
+          mrData.iid
         )) {
           notes.get(mrId)?.add(note);
         }
@@ -401,31 +403,29 @@ export class GitLab {
 
   async *getAdditionalMergeRequestNotes(
     projectPath: string,
-    mergeRequestIid: number,
+    mergeRequestIid: number
   ): AsyncGenerator<NoteSchema> {
-    const notes = (await this.offsetPagination((options) =>
-      this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options),
-    )) as NoteSchema[];
-
-    for (const note of notes) {
-      if (note.system) {
+    for await (const note of this.offsetPagination((options) =>
+      this.client.MergeRequestNotes.all(projectPath, mergeRequestIid, options)
+    )) {
+      const typedNote = note as NoteSchema;
+      if (typedNote.system) {
         continue;
       }
 
-      this.userCollector.collectUser(note?.author);
-      yield note;
+      this.userCollector.collectUser(typedNote?.author);
+      yield typedNote;
     }
   }
 
-  private async keysetPagination<T>(
+  private async *keysetPagination<T>(
     apiCall: (options: any) => Promise<T[]>,
     options: {
       orderBy: string;
       sort?: 'asc' | 'desc';
       perPage?: number;
-    } = {orderBy: 'id'},
-  ): Promise<T[]> {
-    const results: T[] = [];
+    } = {orderBy: 'id'}
+  ): AsyncGenerator<T> {
     let hasMore = true;
     let idAfter: string | undefined;
 
@@ -451,7 +451,9 @@ export class GitLab {
         'paginationInfo' in response
       ) {
         const {data, paginationInfo} = response as any;
-        results.push(...data);
+        for (const item of data) {
+          yield item;
+        }
 
         hasMore =
           paginationInfo.next !== null && paginationInfo.next !== undefined;
@@ -460,22 +462,21 @@ export class GitLab {
           idAfter = lastItem.id?.toString();
         }
       } else {
-        results.push(...response);
+        for (const item of response) {
+          yield item;
+        }
         hasMore = false;
       }
     }
-
-    return results;
   }
 
-  private async offsetPagination<T>(
+  private async *offsetPagination<T>(
     apiCall: (options: any) => Promise<T[]>,
     options: {
       perPage?: number;
       page?: number;
-    } = {},
-  ): Promise<T[]> {
-    const results: T[] = [];
+    } = {}
+  ): AsyncGenerator<T> {
     let currentPage = options.page || 1;
     let hasMore = true;
 
@@ -496,7 +497,9 @@ export class GitLab {
         'paginationInfo' in response
       ) {
         const {data, paginationInfo} = response as any;
-        results.push(...data);
+        for (const item of data) {
+          yield item;
+        }
 
         hasMore =
           paginationInfo.next !== null && paginationInfo.next !== undefined;
@@ -504,18 +507,18 @@ export class GitLab {
           currentPage = paginationInfo.next;
         }
       } else {
-        results.push(...response);
+        for (const item of response) {
+          yield item;
+        }
         hasMore = false;
       }
     }
-
-    return results;
   }
 
   async *getMergeRequestEvents(
     projectPath: string,
     since?: Date,
-    until?: Date,
+    until?: Date
   ): AsyncGenerator<
     Omit<FarosMergeRequestReviewOutput, 'group_id' | 'project_path'>
   > {
@@ -533,20 +536,19 @@ export class GitLab {
       options.before = format(addDays(until, 1), 'yyyy-MM-dd');
     }
 
-    const events = (await this.offsetPagination((paginationOptions) =>
+    for await (const event of this.offsetPagination((paginationOptions) =>
       this.client.Events.all({
         projectId: projectPath,
         ...options,
         ...paginationOptions,
-      }),
-    )) as EventSchema[];
-
-    for (const event of events) {
-      this.userCollector.collectUser(event?.author);
+      })
+    )) {
+      const typedEvent = event as EventSchema;
+      this.userCollector.collectUser(typedEvent?.author);
 
       yield {
         __brand: 'FarosMergeRequestReview',
-        ...pick(event, [
+        ...pick(typedEvent, [
           'action_name',
           'author_username',
           'created_at',
@@ -561,7 +563,7 @@ export class GitLab {
   async *getIssues(
     projectId: string,
     since?: Date,
-    until?: Date,
+    until?: Date
   ): AsyncGenerator<Omit<FarosIssueOutput, 'group_id' | 'project_path'>> {
     const options: any = {
       perPage: this.pageSize,
@@ -577,20 +579,19 @@ export class GitLab {
       options.updatedBefore = until.toISOString();
     }
 
-    const issues = (await this.offsetPagination((paginationOptions) =>
-      this.client.Issues.all({...options, ...paginationOptions, projectId}),
-    )) as IssueSchema[];
+    for await (const issue of this.offsetPagination((paginationOptions) =>
+      this.client.Issues.all({...options, ...paginationOptions, projectId})
+    )) {
+      const typedIssue = issue as IssueSchema;
+      this.userCollector.collectUser(typedIssue.author);
 
-    for (const issue of issues) {
-      this.userCollector.collectUser(issue.author);
-
-      for (const assignee of issue.assignees) {
+      for (const assignee of typedIssue.assignees) {
         this.userCollector.collectUser(assignee);
       }
 
       yield {
         __brand: 'FarosIssue',
-        ...pick(issue, [
+        ...pick(typedIssue, [
           'id',
           'title',
           'description',
@@ -599,9 +600,9 @@ export class GitLab {
           'updated_at',
           'labels',
         ]),
-        author_username: issue.author.username,
+        author_username: typedIssue.author.username,
         assignee_usernames:
-          issue.assignees?.map((assignee: any) => assignee.username) ?? [],
+          typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
       };
     }
   }
