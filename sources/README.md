@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- NodeJS >= 16.x
+- NodeJS >= 22.x
 - Docker
 - [Turborepo](https://turbo.build/) -- Install by running `npm install turbo --global`
 
@@ -95,60 +95,11 @@ Slicing](https://docs.airbyte.com/connector-development/cdk-python/stream-slices
 by overriding the `streamSlices()` method, but for most cases, setting a
 checkpoint interval should be sufficient.
 
-## Testing
-
-Each source must be tested against an Airbyte-provided docker image that runs a
-series of tests to validate all the commands of a source. Pull this image by
-running `docker pull airbyte/source-acceptance-test`.
-
-This test suite requires several json files defining a valid source
-configuration and various input and expected outputs. The source-acceptance-test
-docker image determines the paths for these files via the
-`acceptance-test-config.yml` file in your source folder.
-
-First create a valid source configuration for the tests. In your source folder,
-create a new folder `secrets` and write your configuration to
-`secrets/config.json`. For `example-source`, this JSON would be
-
-```
-{
-  "server_url":"url",
-  "user":"chris",     // only this value is validated by the example-source
-  "token":"token"
-}
-```
-
-Since this configuration would likely contain sensitive values, it cannot be
-committed to the repo. To enable the Github Action Workflow to run the source
-acceptance test, ask one of the Faros team members to add the configuration JSON
-as a Github Repository Secret with the environment variable name
-`<SOURCE_NAME>_TEST_CREDS`. So for `new-source`, the name would be
-`NEW_SOURCE_TEST_CREDS`.
-
-The `acceptance-test-config.yml` points to several other json files that enable
-the tests for each of the source commands. See the [Source Acceptance Tests
-Reference](https://docs.airbyte.com/connector-development/testing-connectors/source-acceptance-tests-reference)
-for how those files are used. These files should be committed to the repo.
-
-Run the tests with the provided script from the
-root repo folder `./scripts/source-acceptance-test.sh <source>`, where
-`<source>` is the folder name, e.g. `new-source`.
-
 ## Common Development Instructions
 
 The following sections contain common instructions that apply to all source connectors. Individual source READMEs should reference these sections instead of duplicating this information.
 
 ### Local Development
-
-#### Prerequisites
-
-**To iterate on any connector, make sure to complete this prerequisites section.**
-
-##### Minimum Node.js version required
-
-- `>= 18`
-
-Check your connector's package.json for specific version requirements.
 
 #### Build Connector
 
