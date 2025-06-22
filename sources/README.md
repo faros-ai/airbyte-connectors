@@ -133,3 +133,152 @@ for how those files are used. These files should be committed to the repo.
 Run the tests with the provided script from the
 root repo folder `./scripts/source-acceptance-test.sh <source>`, where
 `<source>` is the folder name, e.g. `new-source`.
+
+## Common Development Instructions
+
+The following sections contain common instructions that apply to all source connectors. Individual source READMEs should reference these sections instead of duplicating this information.
+
+### Local Development
+
+#### Prerequisites
+
+**To iterate on any connector, make sure to complete this prerequisites section.**
+
+##### Minimum Node.js version required
+
+- `>= 18`
+
+Check your connector's package.json for specific version requirements.
+
+#### Build Connector
+
+From the root repository directory (NOT the individual source folder), run:
+
+```bash
+npm run prepare
+```
+
+This will install all required dependencies and build all included connectors.
+
+After making code changes to a specific connector, navigate to that connector's directory and run:
+
+```bash
+npm run build
+```
+
+#### Create Credentials
+
+1. Create a file `secrets/config.json` conforming to your source's `resources/spec.json` file.
+
+**Note:** Any directory named `secrets` is gitignored across the entire repository, so there is no danger of accidentally checking in sensitive information.
+
+2. See `test_files/config.json` in your source directory for a sample config file.
+
+### Running the Connector
+
+#### Locally Running the Connector
+
+From your source connector directory, run:
+
+```bash
+# Check the spec
+bin/main spec
+
+# Test the connection
+bin/main check --config secrets/config.json
+
+# Discover the schema
+bin/main discover --config secrets/config.json
+
+# Read data
+bin/main read --config secrets/config.json --catalog test_files/full_configured_catalog.json
+```
+
+#### Running the Connector Docker Image
+
+##### Build the Docker Image
+
+From the root repository directory, build the Docker image:
+
+```bash
+docker build . --build-arg path=sources/[source-name]-source --build-arg version=0.0.1 -t [source-name]-source
+```
+
+Replace `[source-name]` with your actual source name.
+
+##### Run Docker Commands
+
+From your source connector directory, run any of the connector commands:
+
+```bash
+# Check the spec
+docker run --rm [source-name]-source spec
+
+# Test the connection
+docker run --rm -v $(pwd)/secrets:/secrets [source-name]-source check --config /secrets/config.json
+
+# Discover the schema
+docker run --rm -v $(pwd)/secrets:/secrets [source-name]-source discover --config /secrets/config.json
+
+# Read data
+docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files [source-name]-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
+```
+
+### Unit Testing
+
+To run unit tests locally, from your source connector directory run:
+
+```bash
+npm test
+```
+
+### Common Project Structure
+
+Each source connector typically follows this structure:
+
+```
+[source-name]-source/
+├── bin/
+│   └── main           # Entry point script
+├── resources/
+│   └── spec.json      # Connector specification
+├── src/
+│   ├── index.ts       # Main connector implementation
+│   └── tsconfig.json  # TypeScript configuration
+├── test/
+│   └── index.test.ts  # Unit tests
+├── test_files/        # Test fixtures and sample data
+├── package.json       # Dependencies and scripts
+└── README.md          # Source-specific documentation
+```
+
+### Development Guidelines
+
+1. **TypeScript**: All connectors are written in TypeScript
+2. **Testing**: Write comprehensive unit tests for your connector logic
+3. **Documentation**: Update the README with source-specific information only
+4. **Secrets**: Never commit credentials or sensitive information
+5. **Spec**: Keep `resources/spec.json` up to date with configuration requirements
+
+### Troubleshooting
+
+#### Common Issues
+
+1. **Build Failures**: Ensure you've run `npm run prepare` from the root directory first
+2. **Type Errors**: Check that your TypeScript version matches the project requirements
+3. **Connection Failures**: Verify your credentials and network connectivity
+4. **Docker Issues**: Ensure Docker is running and you have sufficient permissions
+
+### Source-Specific README Guidelines
+
+When creating a README for a new source, include only:
+
+1. Brief description of the source
+2. Link to detailed Airbyte documentation (if applicable)
+3. Any source-specific prerequisites or setup steps
+4. Unique configuration examples
+5. List of supported streams
+6. Any special permissions or access requirements
+7. Known limitations or considerations
+
+Reference this common README section for all standard procedures to avoid duplication.
