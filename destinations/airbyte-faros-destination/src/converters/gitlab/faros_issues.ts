@@ -35,10 +35,6 @@ export class FarosIssues extends GitlabConverter {
     const taskKey = {uid, source: this.streamName.source};
     
     // Create organization key from group_id
-    const organizationKey = {
-      uid: toLower(issue.group_id),
-      source: this.streamName.source,
-    };
     
     // Create project key from project_path and group_id
     const projectKey = {
