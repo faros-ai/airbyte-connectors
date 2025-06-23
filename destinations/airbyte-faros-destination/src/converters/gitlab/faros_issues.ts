@@ -115,19 +115,6 @@ export class FarosIssues extends GitlabConverter {
       },
     });
 
-    // Also link task to group-level board
-    const groupBoardKey = {
-      uid: toLower(issue.group_id),
-      source: this.streamName.source,
-    };
-    res.push({
-      model: 'tms_TaskBoardRelationship',
-      record: {
-        task: taskKey,
-        board: groupBoardKey,
-      },
-    });
-
     return res;
   }
 }
