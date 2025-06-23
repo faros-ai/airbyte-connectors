@@ -108,7 +108,7 @@ export class Activity extends GoogleDriveConverter {
           source,
           title: item.title,
           type: this.getDocumentType(item.mimeType),
-          directory: {
+          location: {
             uid: ownerId,
             source,
           },
@@ -119,11 +119,11 @@ export class Activity extends GoogleDriveConverter {
     for (const [ownerId, owner] of Object.entries(seenOwners)) {
       if (owner.user?.knownUser) {
         res.push({
-          model: 'dms_Directory',
+          model: 'dms_Location',
           record: {
             uid: ownerId,
             source,
-            type: {category: 'User', detail: null},
+            type: {category: 'Personal', detail: 'My Drive'},
             owner: {
               uid: ownerId.split('people/')[1],
               source,
@@ -132,12 +132,12 @@ export class Activity extends GoogleDriveConverter {
         });
       } else if (owner.drive) {
         res.push({
-          model: 'dms_Directory',
+          model: 'dms_Location',
           record: {
             uid: ownerId,
             source,
             title: owner.drive.title,
-            type: {category: 'Team', detail: null},
+            type: {category: 'Shared', detail: 'Shared drives'},
           },
         });
       }
