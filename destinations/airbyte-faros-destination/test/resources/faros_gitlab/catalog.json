@@ -29,6 +29,12 @@
         "name": "mytestsource__gitlab__faros_commits"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_issues"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }
