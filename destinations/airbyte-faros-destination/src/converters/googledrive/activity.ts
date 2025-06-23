@@ -27,8 +27,9 @@ export class Activity extends GoogleDriveConverter {
   private readonly seenItems: Record<string, SeenItem> = {};
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'dms_Document',
     'dms_Activity',
+    'dms_Document',
+    'dms_Location',
   ];
 
   async convert(
