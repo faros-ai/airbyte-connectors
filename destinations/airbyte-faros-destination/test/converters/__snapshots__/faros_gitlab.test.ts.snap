@@ -4,8 +4,8 @@ exports[`faros_gitlab process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 18 records",
-  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 17 records",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -251,19 +251,6 @@ Array [
       "board": Object {
         "source": "GitLab",
         "uid": "12372707/testy",
-      },
-      "source": "GitLab",
-      "task": Object {
-        "source": "GitLab",
-        "uid": "168781674",
-      },
-    },
-  },
-  Object {
-    "tms_TaskBoardRelationship": Object {
-      "board": Object {
-        "source": "GitLab",
-        "uid": "12372707",
       },
       "source": "GitLab",
       "task": Object {
