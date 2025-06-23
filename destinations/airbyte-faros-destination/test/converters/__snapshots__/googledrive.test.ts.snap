@@ -4,8 +4,8 @@ exports[`googledrive process records from all streams 1`] = `
 Array [
   "Processed 6 records",
   "Processed records by stream: {\\\\\\"mytestsource__googledrive__activity\\\\\\":2,\\\\\\"mytestsource__googledrive__workspace\\\\\\":1,\\\\\\"mytestsource__googledrive__workspace_users\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 11 records",
-  "Would write records by model: {\\\\\\"dms_Activity\\\\\\":2,\\\\\\"dms_Document\\\\\\":2,\\\\\\"dms_Membership\\\\\\":3,\\\\\\"dms_Organization\\\\\\":1,\\\\\\"dms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 13 records",
+  "Would write records by model: {\\\\\\"dms_Activity\\\\\\":2,\\\\\\"dms_Directory\\\\\\":2,\\\\\\"dms_Document\\\\\\":2,\\\\\\"dms_Membership\\\\\\":3,\\\\\\"dms_Organization\\\\\\":1,\\\\\\"dms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -101,17 +101,6 @@ Array [
     },
   },
   Object {
-    "dms_Document": Object {
-      "source": "GoogleDrive",
-      "title": "Example Document",
-      "type": Object {
-        "category": "Document",
-        "detail": "application/vnd.google-apps.document",
-      },
-      "uid": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
-    },
-  },
-  Object {
     "dms_Activity": Object {
       "document": Object {
         "source": "GoogleDrive",
@@ -131,18 +120,6 @@ Array [
     },
   },
   Object {
-    "dms_Document": Object {
-      "createdAt": "2024-01-01T11:30:00.000Z",
-      "source": "GoogleDrive",
-      "title": "Test Spreadsheet",
-      "type": Object {
-        "category": "Spreadsheet",
-        "detail": "application/vnd.google-apps.spreadsheet",
-      },
-      "uid": "2CyiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
-    },
-  },
-  Object {
     "dms_Activity": Object {
       "document": Object {
         "source": "GoogleDrive",
@@ -159,6 +136,65 @@ Array [
         "source": "GoogleDrive",
         "uid": "567890123456789012345",
       },
+    },
+  },
+  Object {
+    "dms_Document": Object {
+      "directory": Object {
+        "source": "GoogleDrive",
+        "uid": "people/098765432109876543210",
+      },
+      "source": "GoogleDrive",
+      "title": "Example Document",
+      "type": Object {
+        "category": "Document",
+        "detail": "application/vnd.google-apps.document",
+      },
+      "uid": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+    },
+  },
+  Object {
+    "dms_Document": Object {
+      "createdAt": "2024-01-01T11:30:00.000Z",
+      "directory": Object {
+        "source": "GoogleDrive",
+        "uid": "people/567890123456789012345",
+      },
+      "source": "GoogleDrive",
+      "title": "Test Spreadsheet",
+      "type": Object {
+        "category": "Spreadsheet",
+        "detail": "application/vnd.google-apps.spreadsheet",
+      },
+      "uid": "2CyiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+    },
+  },
+  Object {
+    "dms_Directory": Object {
+      "owner": Object {
+        "source": "GoogleDrive",
+        "uid": "098765432109876543210",
+      },
+      "source": "GoogleDrive",
+      "type": Object {
+        "category": "User",
+        "detail": null,
+      },
+      "uid": "people/098765432109876543210",
+    },
+  },
+  Object {
+    "dms_Directory": Object {
+      "owner": Object {
+        "source": "GoogleDrive",
+        "uid": "567890123456789012345",
+      },
+      "source": "GoogleDrive",
+      "type": Object {
+        "category": "User",
+        "detail": null,
+      },
+      "uid": "people/567890123456789012345",
     },
   },
 ]

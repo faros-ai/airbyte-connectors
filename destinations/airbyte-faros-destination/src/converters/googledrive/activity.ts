@@ -1,9 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {digest} from 'faros-airbyte-common/common';
 import {DriveActivityEvent} from 'faros-airbyte-common/googledrive';
+import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GoogleDriveConverter} from './common';
-import { digest } from 'faros-airbyte-common/common';
 
 enum ActionType {
   Create = 'create',
@@ -17,7 +18,14 @@ enum ActionType {
   Custom = 'custom',
 }
 
+type SeenItem = DriveActivityEvent['targets'][0]['driveItem'] & {
+  latestTimestamp: number;
+  createdAt?: string;
+};
+
 export class Activity extends GoogleDriveConverter {
+  private readonly seenItems: Record<string, SeenItem> = {};
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'dms_Document',
     'dms_Activity',
@@ -32,7 +40,8 @@ export class Activity extends GoogleDriveConverter {
     const res: DestinationRecord[] = [];
 
     const action = Object.keys(activity.primaryActionDetail || {})[0];
-    const userId = activity.actors?.[0]?.user?.knownUser?.personName?.split('people/')[1];
+    const userId =
+      activity.actors?.[0]?.user?.knownUser?.personName?.split('people/')[1];
     const target = activity.targets?.[0];
     const driveItem = target?.driveItem || target?.fileComment?.parent;
     const isFile = !!driveItem?.driveFile;
@@ -42,66 +51,139 @@ export class Activity extends GoogleDriveConverter {
     }
 
     const itemId = driveItem.name.split('items/')[1];
-    const documentKey = {
-      uid: itemId,
-      source,
-    };
-    res.push(
-      {
-        model: 'dms_Document',
-        record: {
-          ...documentKey,
-          title: driveItem.title,
-          type: this.getDocumentType(driveItem.mimeType),
-          ...(action === ActionType.Create && {createdAt: activity.timestamp}),
-        },
-      },
-      {
-        model: 'dms_Activity',
-        record: {
-          uid: digest([action, userId, itemId, activity.timestamp].join('__')),
+    const timestamp = Utils.toDate(activity.timestamp)?.getTime();
+    if (timestamp > (this.seenItems[itemId]?.latestTimestamp ?? 0)) {
+      this.seenItems[itemId] = {
+        ...driveItem,
+        latestTimestamp: timestamp,
+      };
+    }
+    if (action === ActionType.Create) {
+      this.seenItems[itemId].createdAt = activity.timestamp;
+    }
+    res.push({
+      model: 'dms_Activity',
+      record: {
+        uid: digest([action, userId, itemId, activity.timestamp].join('__')),
+        source,
+        timestamp: activity.timestamp,
+        document: {
+          uid: itemId,
           source,
-          timestamp: activity.timestamp,
-          document: documentKey,
-          user: {
-            uid: userId,
-            source,
-          },
-          type: this.getActivityType(action),
         },
-      }
-    );
+        user: {
+          uid: userId,
+          source,
+        },
+        type: this.getActivityType(action),
+      },
+    });
 
     return res;
   }
 
-  private getDocumentType(mimeType?: string): {category: string; detail?: string} {
-    if ([
-      'application/vnd.google-apps.spreadsheet',
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ].includes(mimeType)) {
+  async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
+    const source = this.streamName.source;
+    const res: DestinationRecord[] = [];
+    const seenOwners: Record<
+      string,
+      SeenItem['owner'] & {latestTimestamp: number}
+    > = {};
+    for (const [itemId, item] of Object.entries(this.seenItems)) {
+      const ownerId =
+        item.owner?.user?.knownUser?.personName ?? item.owner?.drive?.name;
+      if (
+        ownerId &&
+        item.latestTimestamp > (seenOwners[ownerId]?.latestTimestamp ?? 0)
+      ) {
+        seenOwners[ownerId] = {
+          ...item.owner,
+          latestTimestamp: item.latestTimestamp,
+        };
+      }
+      res.push({
+        model: 'dms_Document',
+        record: {
+          uid: itemId,
+          source,
+          title: item.title,
+          type: this.getDocumentType(item.mimeType),
+          directory: {
+            uid: ownerId,
+            source,
+          },
+          ...(item.createdAt && {createdAt: item.createdAt}),
+        },
+      });
+    }
+    for (const [ownerId, owner] of Object.entries(seenOwners)) {
+      if (owner.user?.knownUser) {
+        res.push({
+          model: 'dms_Directory',
+          record: {
+            uid: ownerId,
+            source,
+            type: {category: 'User', detail: null},
+            owner: {
+              uid: ownerId.split('people/')[1],
+              source,
+            },
+          },
+        });
+      } else if (owner.drive) {
+        res.push({
+          model: 'dms_Directory',
+          record: {
+            uid: ownerId,
+            source,
+            title: owner.drive.title,
+            type: {category: 'Team', detail: null},
+          },
+        });
+      }
+    }
+    return res;
+  }
+
+  private getDocumentType(mimeType?: string): {
+    category: string;
+    detail?: string;
+  } {
+    if (
+      [
+        'application/vnd.google-apps.spreadsheet',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ].includes(mimeType)
+    ) {
       return {category: 'Spreadsheet', detail: mimeType};
     }
-    if ([
-      'application/vnd.google-apps.document',
-      'application/vnd.ms-word',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/pdf',
-    ].includes(mimeType)) {
+    if (
+      [
+        'application/vnd.google-apps.document',
+        'application/vnd.ms-word',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/pdf',
+      ].includes(mimeType)
+    ) {
       return {category: 'Document', detail: mimeType};
     }
-    if ([
-      'application/vnd.google-apps.presentation', 
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    ].includes(mimeType)) {
+    if (
+      [
+        'application/vnd.google-apps.presentation',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      ].includes(mimeType)
+    ) {
       return {category: 'Presentation', detail: mimeType};
     }
     return {category: 'Custom', detail: mimeType};
   }
 
-  private getActivityType(action?: string): {category: string; detail?: string} {
+  private getActivityType(action?: string): {
+    category: string;
+    detail?: string;
+  } {
     if (action === ActionType.Create) {
       return {category: 'Create', detail: action};
     }
