@@ -16,6 +16,7 @@
         "order": 1,
         "type": "string",
         "title": "Semaphore Token",
+        "description": "Log into your Semaphore account and then generate a personal authentication token: https://docs.semaphoreci.com/reference/api-v1alpha/#authentication",
         "airbyte_secret": true
       },
       "startDate": {

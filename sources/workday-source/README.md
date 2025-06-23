@@ -1,5 +1,11 @@
+# Workday Source
 
-## Custom Reports:
+This is the repository for the Workday source connector, written in Typescript.
+
+For common build, test, and run instructions, see the [common source documentation](../README.md#common-development-instructions).
+
+## Custom Reports
+
 When providing a Custom Report, please use the "Worker Data" setting. 
 Export the report to a JSON file which will be a list of employee records,
 all of which have similar fields. Among those specific field names,
