@@ -6,14 +6,15 @@ import {GoogleDriveConverter} from './common';
 import { digest } from 'faros-airbyte-common/common';
 
 enum ActionType {
-  CREATE = 'create',
-  EDIT = 'edit',
-  MOVE = 'move',
-  RENAME = 'rename',
-  DELETE = 'delete',
-  RESTORE = 'restore',
-  PERMISSION_CHANGE = 'permissionChange',
-  COMMENT = 'comment',
+  Create = 'create',
+  Edit = 'edit',
+  Move = 'move',
+  Rename = 'rename',
+  Delete = 'delete',
+  Restore = 'restore',
+  PermissionChange = 'permissionChange',
+  Comment = 'comment',
+  Custom = 'custom',
 }
 
 export class Activity extends GoogleDriveConverter {
@@ -36,46 +37,45 @@ export class Activity extends GoogleDriveConverter {
     const driveItem = target?.driveItem || target?.fileComment?.parent;
     const isFile = !!driveItem?.driveFile;
 
-    if (action && userId && driveItem && isFile) {
-      const itemId = driveItem.name.split('items/')[1];
-      const documentKey = {
-        uid: itemId,
-        source,
-      };
-      res.push(
-        {
-          model: 'dms_Document',
-          record: {
-            ...documentKey,
-            title: driveItem.title,
-            type: this.getDocumentType(driveItem.mimeType),
-            ...(action === ActionType.CREATE && {createdAt: activity.timestamp}),
-          },
-        }, 
-        {
-          model: 'dms_Activity',
-          record: {
-            uid: digest([action, userId, itemId, activity.timestamp].join('__')),
-            source,
-            timestamp: activity.timestamp,
-            document: documentKey,
-            user: {
-              uid: userId,
-              source,
-            },
-            type: this.getActivityType(action),
-          },
-        }
-      );
+    if (!action || !userId || !driveItem || !isFile) {
+      return res;
     }
+
+    const itemId = driveItem.name.split('items/')[1];
+    const documentKey = {
+      uid: itemId,
+      source,
+    };
+    res.push(
+      {
+        model: 'dms_Document',
+        record: {
+          ...documentKey,
+          title: driveItem.title,
+          type: this.getDocumentType(driveItem.mimeType),
+          ...(action === ActionType.Create && {createdAt: activity.timestamp}),
+        },
+      },
+      {
+        model: 'dms_Activity',
+        record: {
+          uid: digest([action, userId, itemId, activity.timestamp].join('__')),
+          source,
+          timestamp: activity.timestamp,
+          document: documentKey,
+          user: {
+            uid: userId,
+            source,
+          },
+          type: this.getActivityType(action),
+        },
+      }
+    );
 
     return res;
   }
 
   private getDocumentType(mimeType?: string): {category: string; detail?: string} {
-    if (!mimeType) {
-      return {category: 'Custom', detail: 'unknown'};
-    }
     if ([
       'application/vnd.google-apps.spreadsheet',
       'application/vnd.ms-excel',
@@ -102,31 +102,28 @@ export class Activity extends GoogleDriveConverter {
   }
 
   private getActivityType(action?: string): {category: string; detail?: string} {
-    if (!action) {
-      return {category: 'Custom', detail: 'unknown'};
-    }
-    if (action === ActionType.CREATE) {
+    if (action === ActionType.Create) {
       return {category: 'Create', detail: action};
     }
-    if (action === ActionType.EDIT) {
+    if (action === ActionType.Edit) {
       return {category: 'Edit', detail: action};
     }
-    if (action === ActionType.MOVE) {
+    if (action === ActionType.Move) {
       return {category: 'Move', detail: action};
     }
-    if (action === ActionType.RENAME) {
+    if (action === ActionType.Rename) {
       return {category: 'Rename', detail: action};
     }
-    if (action === ActionType.DELETE) {
+    if (action === ActionType.Delete) {
       return {category: 'Delete', detail: action};
     }
-    if (action === ActionType.RESTORE) {
+    if (action === ActionType.Restore) {
       return {category: 'Restore', detail: action};
     }
-    if (action === ActionType.PERMISSION_CHANGE) {
+    if (action === ActionType.PermissionChange) {
       return {category: 'PermissionChange', detail: action};
     }
-    if (action === ActionType.COMMENT) {
+    if (action === ActionType.Comment) {
       return {category: 'Comment', detail: action};
     }
     return {category: 'Custom', detail: action};
