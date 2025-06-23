@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {FarosGroupOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 
 import {DestinationModel, DestinationRecord} from '../converter';
@@ -10,16 +11,16 @@ export class FarosGroups extends GitlabConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
-    const group = record.record.data;
+    const group = record.record.data as FarosGroupOutput;
     const res: DestinationRecord[] = [];
 
     res.push({
       model: 'vcs_Organization',
       record: {
-        uid: String(group.id),
+        uid: group.id,
         name: group.name,
         htmlUrl: group.web_url,
         type: {category: 'Group', detail: 'Group'},

@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {FarosTagOutput} from 'faros-airbyte-common/gitlab';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
@@ -7,9 +8,9 @@ import {GitlabConverter} from './common';
 export class FarosTags extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['vcs_Tag'];
 
-  id(record: AirbyteRecord): any {
-    const tag = record?.record?.data;
-    return `${tag?.name}_${tag?.commit_id}`;
+  id(record: AirbyteRecord): string {
+    const tag = record?.record?.data as FarosTagOutput;
+    return `${tag?.project_path}_${tag?.name}`;
   }
 
   async convert(

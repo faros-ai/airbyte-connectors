@@ -2,11 +2,61 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "id": {
+    "author_username": {
       "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "author_username": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["author_username", "id", "body", "created_at", "updated_at"]
+      }
     },
     "iid": {
       "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string"
+    },
+    "webUrl": {
+      "type": "string"
     },
     "createdAt": {
       "type": "string",
@@ -19,51 +69,6 @@
     "mergedAt": {
       "type": ["string", "null"],
       "format": "date-time"
-    },
-    "author": {
-      "type": ["object", "null"],
-      "properties": {
-        "name": {
-          "type": ["string", "null"]
-        },
-        "publicEmail": {
-          "type": ["string", "null"]
-        },
-        "username": {
-          "type": "string"
-        },
-        "webUrl": {
-          "type": ["string", "null"]
-        }
-      }
-    },
-    "assignees": {
-      "type": ["object", "null"],
-      "properties": {
-        "nodes": {
-          "type": ["array", "null"],
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": ["string", "null"]
-              },
-              "publicEmail": {
-                "type": ["string", "null"]
-              },
-              "username": {
-                "type": "string"
-              },
-              "webUrl": {
-                "type": ["string", "null"]
-              }
-            }
-          }
-        }
-      }
-    },
-    "mergeCommitSha": {
-      "type": ["string", "null"]
     },
     "commitCount": {
       "type": "integer"
@@ -85,104 +90,27 @@
         }
       }
     },
-    "state": {
-      "type": "string"
-    },
-    "title": {
-      "type": "string"
-    },
-    "webUrl": {
-      "type": "string"
-    },
-    "notes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "author": {
-            "type": ["object", "null"],
-            "properties": {
-              "name": {
-                "type": ["string", "null"]
-              },
-              "publicEmail": {
-                "type": ["string", "null"]
-              },
-              "username": {
-                "type": "string"
-              },
-              "webUrl": {
-                "type": ["string", "null"]
-              }
-            }
-          },
-          "body": {
-            "type": "string"
-          },
-          "system": {
-            "type": "boolean"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "labels": {
-      "type": ["object", "null"],
-      "properties": {
-        "pageInfo": {
-          "type": ["object", "null"],
-          "properties": {
-            "endCursor": {
-              "type": ["string", "null"]
-            },
-            "hasNextPage": {
-              "type": "boolean"
-            }
-          }
-        },
-        "nodes": {
-          "type": ["array", "null"],
-          "items": {
-            "type": "object",
-            "properties": {
-              "title": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
-    "project_path": {
-      "type": "string"
-    },
-    "group_id": {
-      "type": "string"
+    "mergeCommitSha": {
+      "type": ["string", "null"]
     }
   },
   "required": [
-    "id",
+    "author_username",
+    "group_id",
+    "project_path",
+    "labels",
+    "notes",
     "iid",
+    "title",
+    "description",
+    "state",
+    "webUrl",
     "createdAt",
     "updatedAt",
+    "mergedAt",
     "commitCount",
     "userNotesCount",
     "diffStatsSummary",
-    "state",
-    "title",
-    "webUrl",
-    "notes",
-    "project_path",
-    "group_id"
+    "mergeCommitSha"
   ]
 }

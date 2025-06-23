@@ -5,28 +5,32 @@
     "id": {
       "type": "string"
     },
+    "parent_id": {
+      "type": ["string", "null"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
     "name": {
       "type": "string"
     },
     "path": {
       "type": "string"
     },
-    "web_url": {
-      "type": "string"
-    },
-    "description": {
-      "type": ["string", "null"]
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
     },
     "visibility": {
       "type": "string"
     },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updated_at": {
-      "type": "string", 
-      "format": "date-time"
+    "web_url": {
+      "type": "string"
     }
-  }
+  },
+  "required": ["id", "parent_id", "created_at", "description", "name", "path", "updated_at", "visibility", "web_url"]
 }

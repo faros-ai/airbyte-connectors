@@ -67,10 +67,9 @@ export class GoogleDrive {
       throw new VError('client_email: must be a string');
     }
 
-    const clientOptions =
-      config.delegated_admin_user
-        ? {subject: config.delegated_admin_user}
-        : {};
+    const clientOptions = config.delegated_admin_user
+      ? {subject: config.delegated_admin_user}
+      : {};
 
     const credentials: Auth.JWTInput = {
       private_key: config.private_key.replace(/\\n/g, '\n'),
