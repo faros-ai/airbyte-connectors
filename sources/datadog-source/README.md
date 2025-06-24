@@ -2,6 +2,8 @@
 
 This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/latest/) using the [Datadog Node.js API client](https://www.npmjs.com/package/@datadog/datadog-api-client).
 
+For common build, test, and run instructions, see the [common source documentation](../README.md#common-development-instructions).
+
 ## Streams
 
 | Model     | Full | Incremental | Required Permissions |
@@ -10,17 +12,3 @@ This source streams data from the [Datadog APIs](https://docs.datadoghq.com/api/
 | Metrics   | ✅ | ✅ | timeseries_query |
 | SLOs      | ✅ | ✅ | slos_read |
 | Users     | ✅ | ✅ | user_access_read  |
-
-## Testing
-
-From the Datadog source directory execute:
-
-```sh
-$ npm t
-```
-
-From the repo root directory execute:
-
-```sh
-$ ./scripts/source-acceptance-test.sh datadog-source
-```
