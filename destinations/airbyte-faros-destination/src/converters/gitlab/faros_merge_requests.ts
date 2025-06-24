@@ -86,10 +86,12 @@ export class FarosMergeRequests extends GitlabConverter {
 
     if (mergeRequest.notes) {
       for (const note of mergeRequest.notes) {
+        const numericId = this.extractIdFromGid(String(note.id));
+        
         res.push({
           model: 'vcs_PullRequestComment',
           record: {
-            number: parseInt(String(note.id), 10),
+            number: numericId,
             uid: note.id,
             author: note.author_username 
               ? {uid: note.author_username, source}
@@ -147,6 +149,28 @@ export class FarosMergeRequests extends GitlabConverter {
     }
 
     return res;
+  }
+
+  private extractIdFromGid(gid: string): number | null {
+    // Extract numeric ID from GitLab GID format (e.g., gid://gitlab/Note/2559908301)
+    // If it's already a number, return it as is
+    if (/^\d+$/.test(gid)) {
+      return parseInt(gid, 10);
+    }
+    
+    // Extract the numeric part from GID format
+    const parts = gid.split('/');
+    const numericPart = parts.pop();
+    if (!numericPart) {
+      return null;
+    }
+    const parsed = parseInt(numericPart, 10);
+    
+    if (isNaN(parsed)) {
+      return null;
+    }
+    
+    return parsed;
   }
 
   private pullRequestState(state?: string): {

@@ -228,7 +228,7 @@ Array [
       },
       "comment": "This is a comment on the MR",
       "createdAt": "2025-06-13T01:49:10.000Z",
-      "number": null,
+      "number": 2559908301,
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
@@ -283,7 +283,7 @@ Array [
       },
       "comment": "This is a comment on the diff",
       "createdAt": "2025-06-13T01:49:55.000Z",
-      "number": null,
+      "number": 2559908669,
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
