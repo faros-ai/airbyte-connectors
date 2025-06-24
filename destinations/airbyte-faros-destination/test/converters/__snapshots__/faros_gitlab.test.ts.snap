@@ -203,12 +203,12 @@ Array [
       "mergedAt": null,
       "number": 3,
       "repository": Object {
-        "name": "farosai/testy",
+        "name": "testy",
         "organization": Object {
           "source": "GitLab",
           "uid": "12372707",
         },
-        "uid": "farosai/testy",
+        "uid": "testy",
       },
       "source": "GitLab",
       "state": Object {
@@ -232,12 +232,12 @@ Array [
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
-          "name": "farosai/testy",
+          "name": "testy",
           "organization": Object {
             "source": "GitLab",
             "uid": "12372707",
           },
-          "uid": "farosai/testy",
+          "uid": "testy",
         },
         "uid": "3",
       },
@@ -253,12 +253,12 @@ Array [
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
-          "name": "farosai/testy",
+          "name": "testy",
           "organization": Object {
             "source": "GitLab",
             "uid": "12372707",
           },
-          "uid": "farosai/testy",
+          "uid": "testy",
         },
         "uid": "3",
       },
@@ -287,12 +287,12 @@ Array [
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
-          "name": "farosai/testy",
+          "name": "testy",
           "organization": Object {
             "source": "GitLab",
             "uid": "12372707",
           },
-          "uid": "farosai/testy",
+          "uid": "testy",
         },
         "uid": "3",
       },
@@ -308,12 +308,12 @@ Array [
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
-          "name": "farosai/testy",
+          "name": "testy",
           "organization": Object {
             "source": "GitLab",
             "uid": "12372707",
           },
-          "uid": "farosai/testy",
+          "uid": "testy",
         },
         "uid": "3",
       },
@@ -344,12 +344,12 @@ Array [
       "pullRequest": Object {
         "number": 3,
         "repository": Object {
-          "name": "farosai/testy",
+          "name": "testy",
           "organization": Object {
             "source": "GitLab",
             "uid": "12372707",
           },
-          "uid": "farosai/testy",
+          "uid": "testy",
         },
         "uid": "3",
       },

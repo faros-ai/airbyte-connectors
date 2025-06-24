@@ -49,7 +49,7 @@ export class FarosMergeRequests extends StreamWithProjectSlices {
       yield {
         ...mergeRequest,
         group_id: streamSlice.group_id,
-        project_path: streamSlice.path_with_namespace,
+        project_path: streamSlice.path,
       };
     }
   }

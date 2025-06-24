@@ -49,7 +49,7 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
       yield {
         ...review,
         group_id: streamSlice.group_id,
-        project_path: streamSlice.path_with_namespace,
+        project_path: streamSlice.path,
       };
     }
   }
