@@ -22,7 +22,7 @@ class GitLabVCSAdapter
 {
   constructor(
     private readonly config: GitLabConfig,
-    private readonly logger: AirbyteLogger,
+    private readonly logger: AirbyteLogger
   ) {}
 
   async getOrgs(): Promise<string[]> {
@@ -38,7 +38,11 @@ class GitLabVCSAdapter
 
   async getRepos(orgName: string): Promise<FarosProjectOutput[]> {
     const gitlab = await GitLab.instance(this.config, this.logger);
-    return gitlab.getProjects(orgName);
+    const projects: FarosProjectOutput[] = [];
+    for await (const project of gitlab.getProjects(orgName)) {
+      projects.push(project);
+    }
+    return projects;
   }
 
   getRepoName(repo: FarosProjectOutput): string {
@@ -71,7 +75,7 @@ export class GroupFilter {
   static instance(
     config: GitLabConfig,
     logger: AirbyteLogger,
-    farosClient?: FarosClient,
+    farosClient?: FarosClient
   ): GroupFilter {
     if (!this._instance) {
       this._instance = new GroupFilter(config, logger, farosClient);
@@ -82,7 +86,7 @@ export class GroupFilter {
   constructor(
     private readonly config: GitLabConfig,
     private readonly logger: AirbyteLogger,
-    private readonly farosClient?: FarosClient,
+    private readonly farosClient?: FarosClient
   ) {
     // Initialize the VCS filter with GitLab-specific configuration
     const configFields: GitLabConfigFields = {
@@ -120,14 +124,14 @@ export class GroupFilter {
 
   @Memoize()
   async getProjects(
-    group: string,
+    group: string
   ): Promise<ReadonlyArray<RepoInclusion<FarosProjectOutput>>> {
     return this.vcsFilter.getRepos(group);
   }
 
   async getProjectInclusion(
     group: string,
-    project: string,
+    project: string
   ): Promise<{
     included: boolean;
     syncRepoData: boolean;
