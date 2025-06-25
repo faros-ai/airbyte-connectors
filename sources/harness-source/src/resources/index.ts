@@ -92,3 +92,30 @@ export function getQueryExecution(): string {
     }
   `;
 }
+
+export function getQueryRepositories(): string {
+  return `
+    query getRepositories($offset: Int!, $limit: Int!, $createdAt: DateTime!) {
+      repositories(offset: $offset, limit: $limit, filters: {createdAt: {operator: AFTER, value: $createdAt}}) {
+        pageInfo {
+          total
+          hasMore
+        }
+        nodes {
+          id
+          name
+          type
+          url
+          description
+          defaultBranch
+          createdAt
+          updatedAt
+          tags {
+            name
+            value
+          }
+        }
+      }
+    }
+  `;
+}

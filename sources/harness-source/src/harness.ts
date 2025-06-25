@@ -5,10 +5,13 @@ import {VError} from 'verror';
 import {
   ExecutionNode,
   HarnessConfig,
+  RepositoryNode,
   RequestOptionsExecutions,
+  RequestOptionsRepositories,
   RequestResultExecutions,
+  RequestResultRepositories,
 } from './harness_models';
-import {getQueryExecution, getQueryToCheckConnection} from './resources';
+import {getQueryExecution, getQueryRepositories, getQueryToCheckConnection} from './resources';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
@@ -146,5 +149,60 @@ export class Harness {
     };
 
     return this.getIteratorExecution(func, funcOptions, sinceMax, this.logger);
+  }
+
+  private async *getIteratorRepository(
+    func: (
+      options: RequestOptionsRepositories
+    ) => Promise<RequestResultRepositories>,
+    options: RequestOptionsRepositories,
+    since: number,
+    logger: AirbyteLogger
+  ): AsyncGenerator<RepositoryNode> {
+    let offset = 0;
+    let hasMore = true;
+    do {
+      try {
+        const {repositories} = await func({...options, offset});
+        for (const item of repositories.nodes || []) {
+          const createdAt = item.createdAt;
+
+          if (createdAt && since >= createdAt) {
+            logger.info(
+              `Skipping repository ${item.id}, created ${item.createdAt} before cutoff ${since}`
+            );
+            return null;
+          }
+
+          yield item;
+        }
+        offset += repositories.pageInfo.limit ?? repositories.nodes.length;
+        hasMore = repositories.pageInfo.hasMore;
+      } catch (e: any) {
+        logger.error(e, e.stack);
+        throw e;
+      }
+    } while (hasMore);
+  }
+
+  getRepositories(since?: number): AsyncGenerator<RepositoryNode> {
+    const sinceMax =
+      since > this.startDate.getTime() ? since : this.startDate.getTime();
+    const query = getQueryRepositories();
+
+    const func = (
+      options: RequestOptionsRepositories
+    ): Promise<RequestResultRepositories> => {
+      const result = this.client.request(query, options);
+      return result as Promise<RequestResultRepositories>;
+    };
+
+    const funcOptions: RequestOptionsRepositories = {
+      offset: 0,
+      limit: this.pageSize,
+      createdAt: sinceMax,
+    };
+
+    return this.getIteratorRepository(func, funcOptions, sinceMax, this.logger);
   }
 }

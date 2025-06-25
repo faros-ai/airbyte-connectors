@@ -84,3 +84,37 @@ interface HarnessExecutions {
   pageInfo: PageInfo;
   nodes: ExecutionNode[];
 }
+
+export interface RepositoryState {
+  lastCreatedAt: number;
+}
+
+export type RequestResultRepositories = {
+  repositories: HarnessRepositories;
+};
+
+export type RequestOptionsRepositories = {
+  limit: number;
+  offset: number;
+  createdAt?: number;
+};
+
+export interface RepositoryNode {
+  id: string;
+  name: string;
+  type: string;
+  url?: string;
+  description?: string;
+  defaultBranch?: string;
+  createdAt: number;
+  updatedAt?: number;
+  tags?: {
+    name: string;
+    value: string;
+  }[];
+}
+
+interface HarnessRepositories {
+  pageInfo: PageInfo;
+  nodes: RepositoryNode[];
+}

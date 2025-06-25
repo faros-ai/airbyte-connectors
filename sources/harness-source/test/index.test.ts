@@ -169,4 +169,46 @@ describe('index', () => {
     expect(fnExecutions).toHaveBeenCalledTimes(1);
     expect(executions).toStrictEqual([]);
   });
+
+  test('streams - repositories, use full_refresh sync mode', async () => {
+    const fnRepositories = jest.fn();
+
+    Harness.instance = jest.fn().mockImplementation(() => {
+      return new Harness(
+        {
+          request: fnRepositories.mockResolvedValue({
+            repositories: {
+              nodes: [
+                {
+                  id: 'repo-1',
+                  name: 'test-repo',
+                  type: 'git',
+                  url: 'https://github.com/test/repo',
+                  createdAt: 1625097600000,
+                }
+              ],
+              pageInfo: {
+                limit: 1,
+                hasMore: false,
+              },
+            },
+          }),
+        } as any,
+        100,
+        new Date('2010-03-27T14:03:51-0800'),
+        logger
+      );
+    });
+
+    const source = new sut.HarnessSource(logger);
+    const [, repositoriesStream] = source.streams(sourceConfig);
+    const repositoriesIter = repositoriesStream.readRecords(SyncMode.FULL_REFRESH);
+    const repositories = [];
+    for await (const repository of repositoriesIter) {
+      repositories.push(repository);
+    }
+    expect(fnRepositories).toHaveBeenCalledTimes(1);
+    expect(repositories).toHaveLength(1);
+    expect(repositories[0].id).toBe('repo-1');
+  });
 });
