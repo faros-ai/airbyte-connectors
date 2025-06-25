@@ -27,8 +27,11 @@ class GitLabVCSAdapter
 
   async getOrgs(): Promise<string[]> {
     const gitlab = await GitLab.instance(this.config, this.logger);
-    const groups = await gitlab.getGroups();
-    return groups.map((group) => group.id);
+    const orgIds: string[] = [];
+    for await (const group of gitlab.getGroups()) {
+      orgIds.push(group.id);
+    }
+    return orgIds;
   }
 
   async getOrg(orgName: string): Promise<FarosGroupOutput> {

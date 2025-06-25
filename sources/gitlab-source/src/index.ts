@@ -12,6 +12,7 @@ import {
   applyRoundRobinBucketing,
   calculateDateRange,
 } from 'faros-airbyte-common/common';
+import {FarosGroupOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
@@ -131,7 +132,10 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     }
 
     const gitlab = await GitLab.instance(config, this.logger);
-    const visibleGroups = await gitlab.getGroups();
+    const visibleGroups: FarosGroupOutput[] = [];
+    for await (const group of gitlab.getGroups()) {
+      visibleGroups.push(group);
+    }
 
     // Build parent-child relationships map
     const parentMap = new Map<string, string>();

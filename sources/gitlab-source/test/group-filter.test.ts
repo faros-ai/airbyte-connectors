@@ -5,6 +5,13 @@ import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
 import {GitLabConfig} from '../src/types';
 
+// Helper to create async generator mock
+async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
+  for (const item of items) {
+    yield item;
+  }
+}
+
 describe('GroupFilter', () => {
   const logger = new AirbyteLogger(AirbyteLogLevel.DEBUG);
   const config: GitLabConfig = readTestResourceAsJSON('config.json');
@@ -12,11 +19,11 @@ describe('GroupFilter', () => {
   beforeEach(() => {
     // Mock GitLab.instance for all tests
     jest.spyOn(GitLab, 'instance').mockResolvedValue({
-      getGroups: jest.fn().mockResolvedValue([
+      getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
         {id: 'group-1', name: 'Group 1', path: 'group-1'},
         {id: 'group-2', name: 'Group 2', path: 'group-2'},
         {id: 'group-3', name: 'Group 3', path: 'group-3'},
-      ]),
+      ])),
       getGroup: jest.fn().mockImplementation((groupId: string) => {
         const groups = {
           'group-1': {id: 'group-1', name: 'Group 1', path: 'group-1'},
@@ -85,7 +92,7 @@ describe('GroupFilter', () => {
 
     // Mock an empty array for this specific test
     (GitLab.instance as jest.Mock).mockResolvedValueOnce({
-      getGroups: jest.fn().mockResolvedValue([]),
+      getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
       getGroup: jest.fn(),
       getProjects: jest.fn().mockResolvedValue([]),
     } as any);

@@ -117,9 +117,7 @@ export class GitLab {
     }
   }
 
-  @Memoize()
-  async getGroups(): Promise<FarosGroupOutput[]> {
-    const groups: GroupSchema[] = [];
+  async *getGroups(): AsyncGenerator<FarosGroupOutput> {
     for await (const group of this.keysetPagination(
       (options) =>
         this.client.Groups.all({
@@ -129,10 +127,8 @@ export class GitLab {
         }),
       {orderBy: 'id', sort: 'asc'}
     )) {
-      groups.push(group as GroupSchema);
+      yield GitLab.convertGroup(group as GroupSchema);
     }
-
-    return groups.map((group) => GitLab.convertGroup(group));
   }
 
   static convertGroup(group: GroupSchema): FarosGroupOutput {

@@ -106,7 +106,7 @@ function setupBasicMocks(): any {
   };
 
   const gitlab = {
-    getGroups: jest.fn().mockResolvedValue([testGroup]),
+    getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([testGroup])),
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
     getGroupMembers: jest.fn().mockResolvedValue(testUsers),
@@ -474,14 +474,14 @@ describe('index', () => {
   test('round robin bucket execution', async () => {
     jest.spyOn(GitLab, 'instance').mockResolvedValue({
       checkConnection: jest.fn().mockResolvedValue(undefined),
-      getGroups: jest.fn().mockResolvedValue([
+      getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
         {
           id: '1',
           parent_id: null,
           name: 'Test Group',
           path: 'test-group',
         },
-      ]),
+      ])),
     } as any);
 
     const config = readTestResourceAsJSON('config.json');
@@ -500,11 +500,11 @@ describe('index', () => {
 
     test('should include all groups when no inclusion/exclusion filters are specified', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Group 1'},
           {id: '2', parent_id: null, name: 'Group 2'},
           {id: '3', parent_id: '1', name: 'Group 3'},
-        ]),
+        ])),
       } as any);
 
       const config = readTestResourceAsJSON('config.json');
@@ -516,11 +516,11 @@ describe('index', () => {
 
     test('should include only specified groups when inclusion filter is set', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Group 1'},
           {id: '2', parent_id: null, name: 'Group 2'},
           {id: '3', parent_id: '1', name: 'Group 3'},
-        ]),
+        ])),
       } as any);
 
       const config = {...readTestResourceAsJSON('config.json'), groups: ['1']};
@@ -532,12 +532,12 @@ describe('index', () => {
 
     test('should exclude specified groups and their descendants', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Group 1'},
           {id: '2', parent_id: null, name: 'Group 2'},
           {id: '3', parent_id: '1', name: 'Group 3'},
           {id: '4', parent_id: '3', name: 'Group 4'},
-        ]),
+        ])),
       } as any);
 
       const config = {
@@ -552,14 +552,14 @@ describe('index', () => {
 
     test('should handle complex hierarchy with both inclusion and exclusion', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Root 1'},
           {id: '2', parent_id: null, name: 'Root 2'},
           {id: '3', parent_id: '1', name: 'Child 1-1'},
           {id: '4', parent_id: '1', name: 'Child 1-2'},
           {id: '5', parent_id: '3', name: 'Grandchild 1-1-1'},
           {id: '6', parent_id: '2', name: 'Child 2-1'},
-        ]),
+        ])),
       } as any);
 
       const config = {
@@ -577,7 +577,7 @@ describe('index', () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
         getGroups: jest
           .fn()
-          .mockResolvedValue([{id: '1', parent_id: null, name: 'Group 1'}]),
+          .mockReturnValue(createAsyncGeneratorMock([{id: '1', parent_id: null, name: 'Group 1'}])),
       } as any);
 
       const config = {
@@ -595,7 +595,7 @@ describe('index', () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
         getGroups: jest
           .fn()
-          .mockResolvedValue([{id: '1', parent_id: null, name: 'Group 1'}]),
+          .mockReturnValue(createAsyncGeneratorMock([{id: '1', parent_id: null, name: 'Group 1'}])),
       } as any);
 
       const config = {
@@ -610,12 +610,12 @@ describe('index', () => {
 
     test('should handle exclusion taking precedence over inclusion in hierarchy', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Root'},
           {id: '2', parent_id: '1', name: 'Parent'},
           {id: '3', parent_id: '2', name: 'Child'},
           {id: '4', parent_id: '3', name: 'Grandchild'},
-        ]),
+        ])),
       } as any);
 
       const config = {
@@ -630,12 +630,12 @@ describe('index', () => {
 
     test('should exclude groups when only exclusion filter is specified', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Group 1'},
           {id: '2', parent_id: null, name: 'Group 2'},
           {id: '3', parent_id: null, name: 'Group 3'},
           {id: '4', parent_id: '2', name: 'Group 4'},
-        ]),
+        ])),
       } as any);
 
       const config = {
@@ -649,11 +649,11 @@ describe('index', () => {
 
     test('should not include groups when inclusion filter is specified but they are not in hierarchy', async () => {
       jest.spyOn(GitLab, 'instance').mockResolvedValue({
-        getGroups: jest.fn().mockResolvedValue([
+        getGroups: jest.fn().mockReturnValue(createAsyncGeneratorMock([
           {id: '1', parent_id: null, name: 'Group 1'},
           {id: '2', parent_id: null, name: 'Group 2'},
           {id: '3', parent_id: null, name: 'Group 3'},
-        ]),
+        ])),
       } as any);
 
       const config = {
