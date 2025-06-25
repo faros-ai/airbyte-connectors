@@ -1,0 +1,33 @@
+[
+  {
+    "id": "repo-123",
+    "name": "sample-repository",
+    "type": "git",
+    "url": "https://github.com/harness/sample-repository",
+    "description": "A sample repository for testing",
+    "defaultBranch": "main",
+    "createdAt": 1625097600000,
+    "updatedAt": 1635097600000,
+    "tags": [
+      {
+        "name": "team",
+        "value": "backend"
+      },
+      {
+        "name": "language",
+        "value": "javascript"
+      }
+    ]
+  },
+  {
+    "id": "repo-456",
+    "name": "another-repo",
+    "type": "git",
+    "url": "https://github.com/harness/another-repo",
+    "description": "Another test repository",
+    "defaultBranch": "master",
+    "createdAt": 1625184000000,
+    "updatedAt": 1635184000000,
+    "tags": []
+  }
+]

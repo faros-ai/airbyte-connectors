@@ -51,6 +51,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^24.0.4",
     "faros-airbyte-testing-tools": "*"
   }
 }
