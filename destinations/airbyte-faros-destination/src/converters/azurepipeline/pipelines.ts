@@ -20,10 +20,12 @@ export class Pipelines extends AzurePipelineConverter {
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganizationFromUrl(pipeline.url);
+    const organizationName = getOrganizationFromUrl(pipeline.url) ??
+      this.getOrganizationFromSourceConfig(ctx);
+
     if (!organizationName) {
       ctx.logger.error(
-        `No organization found for pipeline ${pipeline.id}. URL: ${pipeline.url}`
+        `No organization found for pipeline ${pipeline.id}. URL: ${pipeline.url} and no organization configured in the source config`
       );
       return [];
     }

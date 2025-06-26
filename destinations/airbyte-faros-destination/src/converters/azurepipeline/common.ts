@@ -137,4 +137,11 @@ export abstract class AzurePipelineConverter extends Converter {
       source: source ?? this.streamName.source,
     };
   }
+
+  /**
+   * Get organization from source configuration
+   */
+  protected getOrganizationFromSourceConfig(ctx: StreamContext): string | undefined {
+    return ctx.getSourceConfig()?.organization;
+  }
 }
