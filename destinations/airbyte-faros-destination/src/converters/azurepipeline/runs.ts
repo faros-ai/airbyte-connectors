@@ -22,10 +22,12 @@ export class Runs extends AzurePipelineConverter {
     const run = record.record.data as Run;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganizationFromUrl(run.url);
+    const organizationName = getOrganizationFromUrl(run.url) ??
+      this.getOrganizationFromSourceConfig(ctx);
+
     if (!organizationName) {
       ctx.logger.error(
-        `No organization found for run ${run.id}. URL: ${run.url}`
+        `No organization found for run ${run.id}. URL: ${run.url} and no organization configured in the source config`
       );
       return [];
     }
