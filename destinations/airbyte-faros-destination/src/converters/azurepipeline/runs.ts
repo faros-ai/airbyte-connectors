@@ -22,8 +22,8 @@ export class Runs extends AzurePipelineConverter {
     const run = record.record.data as Run;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganizationFromUrl(run.url) ??
-      this.getOrganizationFromSourceConfig(ctx);
+    const organizationName = this.getOrganizationFromSourceConfig(ctx) ??
+      getOrganizationFromUrl(run.url);
 
     if (!organizationName) {
       ctx.logger.error(
