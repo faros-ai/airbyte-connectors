@@ -106,7 +106,7 @@ The following sections contain common instructions that apply to all source conn
 From the root repository directory (NOT the individual source folder), run:
 
 ```bash
-npm run prepare
+npm i
 ```
 
 This will install all required dependencies and build all included connectors.
