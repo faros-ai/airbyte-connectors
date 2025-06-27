@@ -37,6 +37,7 @@ export const DEFAULT_REJECT_UNAUTHORIZED = true;
 export const DEFAULT_RUN_MODE = RunMode.Full;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_GRAPHQL_PAGE_SIZE = 40;
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
@@ -49,6 +50,7 @@ export class GitLab {
   private readonly client: InstanceType<typeof GitlabClient>;
   private readonly gqlClient: GraphQLClient;
   protected readonly pageSize: number;
+  protected readonly graphqlPageSize: number;
   protected readonly fetchPublicGroups: boolean;
   public readonly userCollector: UserCollector;
 
@@ -70,6 +72,8 @@ export class GitLab {
     });
 
     this.pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
+    this.graphqlPageSize =
+      config.graphql_page_size ?? DEFAULT_GRAPHQL_PAGE_SIZE;
     this.fetchPublicGroups =
       config.fetch_public_groups ?? DEFAULT_FETCH_PUBLIC_GROUPS;
     this.userCollector = new UserCollector(logger);
@@ -299,7 +303,7 @@ export class GitLab {
       try {
         const result: any = await this.gqlClient.request(MERGE_REQUESTS_QUERY, {
           fullPath: projectPath,
-          pageSize: this.pageSize,
+          pageSize: this.graphqlPageSize,
           cursor,
           updatedAfter: since?.toISOString(),
           updatedBefore: until?.toISOString(),

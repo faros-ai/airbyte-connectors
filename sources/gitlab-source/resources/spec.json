@@ -208,35 +208,42 @@
         "description": "Maximum number of items in a paginated response",
         "default": 100
       },
-      "timeout": {
+      "graphql_page_size": {
         "order": 19,
+        "type": "integer",
+        "title": "GraphQL Page Size",
+        "description": "Maximum number of items in a paginated GraphQL response",
+        "default": 40
+      },
+      "timeout": {
+        "order": 20,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the GitLab API",
         "default": 120000
       },
       "concurrency_limit": {
-        "order": 20,
+        "order": 21,
         "type": "integer",
         "title": "Concurrency limit",
         "description": "Maximum concurrency to run with",
         "default": 4
       },
       "backfill": {
-        "order": 21,
+        "order": 22,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 22,
+        "order": 23,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 23,
+        "order": 24,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
@@ -246,7 +253,7 @@
         "title": "Fetch Public Groups",
         "description": "Fetch public groups",
         "default": false,
-        "order": 24
+        "order": 25
       }
     }
   }

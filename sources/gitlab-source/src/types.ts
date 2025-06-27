@@ -24,6 +24,7 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   readonly graph?: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
+  readonly graphql_page_size?: number;
   readonly timeout?: number;
   readonly concurrency_limit?: number;
   readonly start_date?: string;
