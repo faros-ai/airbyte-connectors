@@ -213,7 +213,7 @@
         "type": "integer",
         "title": "GraphQL Page Size",
         "description": "Maximum number of items in a paginated GraphQL response",
-        "default": 50
+        "default": 40
       },
       "timeout": {
         "order": 20,
