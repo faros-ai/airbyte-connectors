@@ -28,6 +28,11 @@
       "description": "The Faros graph name.",
       "default": "default"
     },
+    "proxy_url": {
+      "type": "string",
+      "title": "Proxy URL",
+      "description": "HTTP proxy URL for API requests (e.g., http://proxy-server:8080)."
+    },
     "cloud_graphql_upsert_batch_size": {
       "type": "integer",
       "title": "GraphQL upsert batch size",

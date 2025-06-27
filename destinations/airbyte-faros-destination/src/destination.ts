@@ -1,4 +1,5 @@
 import {Analytics} from '@segment/analytics-node';
+import {AxiosRequestConfig} from 'axios';
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -36,12 +37,15 @@ import {
   WriteStats,
 } from 'faros-js-client';
 import http from 'http';
+import {HttpProxyAgent} from 'http-proxy-agent';
 import https from 'https';
+import {HttpsProxyAgent} from 'https-proxy-agent';
 import {difference, isEmpty, keyBy, pickBy, uniq} from 'lodash';
 import path from 'path';
 import readline from 'readline';
 import {Writable} from 'stream';
 import {Dictionary} from 'ts-essentials';
+import {URL} from 'url';
 import {v4 as uuidv4, validate} from 'uuid';
 import {VError} from 'verror';
 
@@ -148,7 +152,25 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     });
   }
 
-  private makeHttpAgents(keepAlive?: boolean): HttpAgents {
+  private makeHttpAgents(keepAlive?: boolean, proxyUrl?: string): HttpAgents {
+    if (proxyUrl) {
+      try {
+        const parsedUrl = new URL(proxyUrl);
+        this.logger.info(
+          `Using HTTP proxy: ${parsedUrl.hostname}:${parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80)}`
+        );
+
+        return {
+          httpAgent: new HttpProxyAgent(proxyUrl, {keepAlive}),
+          httpsAgent: new HttpsProxyAgent(proxyUrl, {keepAlive}),
+        };
+      } catch (e) {
+        throw new VError(
+          `Invalid proxy URL format: ${proxyUrl}. Expected format: http://hostname:port`
+        );
+      }
+    }
+
     return keepAlive
       ? {
           httpAgent: new http.Agent({keepAlive: true}),
@@ -245,10 +267,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         apiKey: config.edition_configs.api_key,
       };
 
-      const axiosConfig = {
+      const axiosConfig: AxiosRequestConfig = {
         timeout: 60000,
-        ...this.makeHttpAgents(config.keep_alive),
+        ...this.makeHttpAgents(
+          config.keep_alive,
+          config.edition_configs.proxy_url
+        ),
       };
+
       this.farosClient = new FarosSyncClient(
         this.farosClientConfig,
         this.logger,
