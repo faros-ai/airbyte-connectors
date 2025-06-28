@@ -1,16 +1,27 @@
-import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {IncrementalStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {FarosCommitOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
+import {GitLabConfig} from '../types';
 import {
   ProjectStreamSlice,
   StreamBase,
   StreamState,
-  StreamWithProjectSlices,
 } from './common';
 
-export class FarosCommits extends StreamWithProjectSlices {
+export class FarosCommits extends IncrementalStreamBase<StreamState, FarosCommitOutput, ProjectStreamSlice> {
+  constructor(
+    protected readonly config: GitLabConfig,
+    protected readonly logger: any,
+    protected readonly farosClient?: any,
+  ) {
+    super(logger);
+  }
+
+  get name(): string {
+    return 'faros_commits';
+  }
   /**
    * Depends on faros_users stream to ensure users are collected first.
    * The UserCollector needs to have all users populated before we can
@@ -30,6 +41,19 @@ export class FarosCommits extends StreamWithProjectSlices {
 
   get cursorField(): string | string[] {
     return 'created_at';
+  }
+
+  protected getStateKey(streamSlice?: ProjectStreamSlice): string {
+    if (streamSlice) {
+      return StreamBase.groupProjectKey(streamSlice.group_id, streamSlice.path_with_namespace);
+    }
+    return this.name;
+  }
+
+  private getUpdateRange(cutoff?: string | number): [Date, Date] {
+    const now = new Date();
+    const since = cutoff ? new Date(cutoff) : new Date(0);
+    return [since, now];
   }
 
   async *readRecords(
