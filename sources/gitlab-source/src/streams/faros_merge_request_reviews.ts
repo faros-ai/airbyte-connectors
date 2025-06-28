@@ -1,6 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {FarosMergeRequestReviewOutput} from 'faros-airbyte-common/gitlab';
-import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
@@ -54,16 +53,4 @@ export class FarosMergeRequestReviews extends StreamWithProjectSlices {
     }
   }
 
-  getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: FarosMergeRequestReviewOutput,
-    slice: ProjectStreamSlice,
-  ): StreamState {
-    const latestRecordCutoff = Utils.toDate(latestRecord?.created_at ?? 0);
-    return this.getUpdatedStreamState(
-      latestRecordCutoff,
-      currentStreamState,
-      StreamBase.groupProjectKey(slice.group_id, slice.path_with_namespace),
-    );
-  }
 }

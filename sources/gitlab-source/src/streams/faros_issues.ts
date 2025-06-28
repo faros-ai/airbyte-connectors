@@ -1,6 +1,5 @@
 import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {FarosIssueOutput} from 'faros-airbyte-common/gitlab';
-import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
@@ -50,18 +49,4 @@ export class FarosIssues extends StreamWithProjectSlices {
     }
   }
 
-  getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: FarosIssueOutput,
-  ): StreamState {
-    const groupKey = StreamBase.groupProjectKey(
-      latestRecord.group_id,
-      latestRecord.project_path,
-    );
-    return this.getUpdatedStreamState(
-      Utils.toDate(latestRecord.updated_at),
-      currentStreamState,
-      groupKey,
-    );
-  }
 }
