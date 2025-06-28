@@ -8,8 +8,16 @@ import {calculateUpdatedStreamState, StreamState} from './stream-base';
  * Abstract base class for streams that support incremental sync with slice-based state management.
  * This class centralizes the common logic for handling incremental state that is currently
  * repeated across many sources.
+ * 
+ * @template TState The type of the stream state
+ * @template TRecord The type of records produced by the stream
+ * @template TSlice The type of stream slices used for partitioning
  */
-export abstract class IncrementalStreamBase extends AirbyteStreamBase {
+export abstract class IncrementalStreamBase<
+  TState = Dictionary<any>,
+  TRecord = Dictionary<any>,
+  TSlice = Dictionary<any>
+> extends AirbyteStreamBase {
   constructor(protected readonly logger: AirbyteLogger) {
     super(logger);
   }
@@ -22,13 +30,13 @@ export abstract class IncrementalStreamBase extends AirbyteStreamBase {
    * @param record The record to extract the cursor value from
    * @returns The cursor value as a Date, or null if not found
    */
-  protected getCursorValue(record: Dictionary<any>): Date | null {
+  protected getCursorValue(record: TRecord): Date | null {
     if (!this.cursorField || this.cursorField.length === 0) {
       return null;
     }
 
     const cursorPath = Array.isArray(this.cursorField) ? this.cursorField : [this.cursorField];
-    let value = record;
+    let value: any = record;
     
     for (const key of cursorPath) {
       if (value && typeof value === 'object' && key in value) {
@@ -38,7 +46,7 @@ export abstract class IncrementalStreamBase extends AirbyteStreamBase {
       }
     }
 
-    return Utils.toDate(value as any ?? 0) ?? null;
+    return Utils.toDate(value ?? 0) ?? null;
   }
 
   /**
@@ -52,7 +60,7 @@ export abstract class IncrementalStreamBase extends AirbyteStreamBase {
    * @param streamSlice The current stream slice being processed
    * @returns A unique string identifier for the slice
    */
-  protected abstract getStateKey(streamSlice?: Dictionary<any>): string;
+  protected abstract getStateKey(streamSlice?: TSlice): string;
 
   /**
    * Get the number of days to lag the cutoff timestamp.
@@ -71,13 +79,13 @@ export abstract class IncrementalStreamBase extends AirbyteStreamBase {
    * that this method calls (getCursorValue, getStateKey, getCutoffLagDays).
    */
   getUpdatedState(
-    currentStreamState: Dictionary<any>,
-    latestRecord: Dictionary<any>,
-    streamSlice?: Dictionary<any>
-  ): Dictionary<any> {
+    currentStreamState: TState,
+    latestRecord: TRecord,
+    streamSlice?: TSlice
+  ): TState {
     const cursorValue = this.getCursorValue(latestRecord);
     if (!cursorValue) {
-      return currentStreamState ?? {};
+      return currentStreamState ?? ({} as TState);
     }
 
     const stateKey = this.getStateKey(streamSlice);
@@ -88,6 +96,6 @@ export abstract class IncrementalStreamBase extends AirbyteStreamBase {
       currentStreamState as StreamState,
       stateKey,
       cutoffLagDays
-    );
+    ) as TState;
   }
 }
