@@ -1,11 +1,11 @@
 import {
   AirbyteLogger,
-  IncrementalStreamBase,
+  AirbyteStreamBase,
+  calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {Project} from 'faros-airbyte-common/gitlab';
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
-import {Dictionary} from 'ts-essentials';
+import {pick, toLower} from 'lodash';
 
 import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
@@ -14,10 +14,10 @@ export interface GroupStreamSlice {
   group_id: string;
 }
 
-export type ProjectStreamSlice = {
-  group_id: string;
-  project: Pick<Project, 'path_with_namespace' | 'default_branch' | 'path'>;
-};
+export type ProjectStreamSlice = Pick<
+  FarosProjectOutput,
+  'default_branch' | 'group_id' | 'path' | 'path_with_namespace'
+>;
 
 export interface StreamState {
   readonly [key: string]: {
@@ -72,7 +72,7 @@ export const RunModeStreams: {
   [RunMode.Custom]: CustomStreamNames,
 };
 
-export abstract class StreamBase extends IncrementalStreamBase {
+export abstract class StreamBase extends AirbyteStreamBase {
   readonly groupFilter: GroupFilter;
   constructor(
     protected readonly config: GitLabConfig,
@@ -90,14 +90,16 @@ export abstract class StreamBase extends IncrementalStreamBase {
     ];
   }
 
-  protected getStateKey(streamSlice?: Dictionary<any>): string {
-    if (streamSlice && 'group_id' in streamSlice && streamSlice.project) {
-      return StreamBase.groupProjectKey(streamSlice.group_id, streamSlice.project.path);
-    }
-    if (streamSlice && 'group' in streamSlice) {
-      return StreamBase.groupKey(streamSlice.group);
-    }
-    return 'gitlab';
+  protected getUpdatedStreamState(
+    latestRecordCutoff: Date,
+    currentStreamState: StreamState,
+    groupKey: string
+  ): StreamState {
+    return calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      groupKey
+    );
   }
 
   static groupKey(group: string): string {
@@ -131,12 +133,12 @@ export abstract class StreamWithProjectSlices extends StreamBase {
         }
         if (syncRepoData) {
           yield {
-            group_id: repo.group_id,
-            project: {
-              path_with_namespace: repo.path_with_namespace,
-              default_branch: repo.default_branch,
-              path: repo.path,
-            },
+            ...pick(repo, [
+              'default_branch',
+              'group_id',
+              'path',
+              'path_with_namespace',
+            ]),
           };
         }
       }
