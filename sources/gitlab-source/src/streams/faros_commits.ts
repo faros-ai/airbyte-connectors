@@ -1,8 +1,10 @@
 import {IncrementalStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {FarosCommitOutput} from 'faros-airbyte-common/gitlab';
+import {pick} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {GitLab} from '../gitlab';
+import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
 import {
   ProjectStreamSlice,
@@ -11,12 +13,15 @@ import {
 } from './common';
 
 export class FarosCommits extends IncrementalStreamBase<StreamState, FarosCommitOutput, ProjectStreamSlice> {
+  readonly groupFilter: GroupFilter;
+  
   constructor(
     protected readonly config: GitLabConfig,
     protected readonly logger: any,
     protected readonly farosClient?: any,
   ) {
     super(logger);
+    this.groupFilter = GroupFilter.instance(config, logger, farosClient);
   }
 
   get name(): string {
@@ -54,6 +59,31 @@ export class FarosCommits extends IncrementalStreamBase<StreamState, FarosCommit
     const now = new Date();
     const since = cutoff ? new Date(cutoff) : new Date(0);
     return [since, now];
+  }
+
+  async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
+    for (const group_id of await this.groupFilter.getGroups()) {
+      for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
+        group_id
+      )) {
+        if (repo.empty_repo) {
+          this.logger.warn(
+            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`
+          );
+          continue;
+        }
+        if (syncRepoData) {
+          yield {
+            ...pick(repo, [
+              'default_branch',
+              'group_id',
+              'path',
+              'path_with_namespace',
+            ]),
+          };
+        }
+      }
+    }
   }
 
   async *readRecords(
