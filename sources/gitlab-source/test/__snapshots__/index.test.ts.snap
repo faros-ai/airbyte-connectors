@@ -33,7 +33,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "GitLab authentication failed. Please check your API token and permissions: Response code 401 (Unauthorized)",
+    "message": "GitLab authentication failed. Please check your API token and permissions: Unauthorized",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
@@ -60,45 +60,27 @@ exports[`index round robin bucket execution 1`] = `
 exports[`index streams - faros commits 1`] = `
 [
   {
-    "author_email": "john.doe@example.com",
     "author_name": "John Doe",
-    "authored_date": "2024-01-15T10:25:00Z",
-    "committed_date": "2024-01-15T10:30:00Z",
-    "committer_email": "john.doe@example.com",
-    "committer_name": "John Doe",
+    "branch": "main",
     "created_at": "2024-01-15T10:30:00Z",
     "group_id": "1",
     "id": "abc123def456ghi789jkl012mno345pqr678stu",
     "message": "Add new feature for user authentication
 
 This commit implements OAuth2 integration for better security.",
-    "parent_ids": [
-      "def456ghi789jkl012mno345pqr678stu901vwx",
-    ],
     "project_path": "test-project",
-    "short_id": "abc123de",
-    "title": "Add new feature for user authentication",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
   },
   {
-    "author_email": "jane.smith@example.com",
     "author_name": "Jane Smith",
-    "authored_date": "2024-01-14T14:15:00Z",
-    "committed_date": "2024-01-14T14:20:00Z",
-    "committer_email": "jane.smith@example.com",
-    "committer_name": "Jane Smith",
+    "branch": "main",
     "created_at": "2024-01-14T14:20:00Z",
     "group_id": "1",
     "id": "def456ghi789jkl012mno345pqr678stu901vwx",
     "message": "Fix bug in payment processing
 
 Resolves issue where transactions were not properly validated.",
-    "parent_ids": [
-      "ghi789jkl012mno345pqr678stu901vwx234yz",
-    ],
     "project_path": "test-project",
-    "short_id": "def456gh",
-    "title": "Fix bug in payment processing",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
   },
 ]
@@ -107,13 +89,8 @@ Resolves issue where transactions were not properly validated.",
 exports[`index streams - faros commits with state 1`] = `
 [
   {
-    "author_email": "john.doe@example.com",
     "author_name": "John Doe",
-    "authored_date": "2024-01-15T10:25:00Z",
     "branch": "main",
-    "committed_date": "2024-01-15T10:30:00Z",
-    "committer_email": "john.doe@example.com",
-    "committer_name": "John Doe",
     "created_at": "2024-01-15T10:30:00Z",
     "group": "test-group",
     "group_id": "1",
@@ -121,23 +98,13 @@ exports[`index streams - faros commits with state 1`] = `
     "message": "Add new feature for user authentication
 
 This commit implements OAuth2 integration for better security.",
-    "parent_ids": [
-      "def456ghi789jkl012mno345pqr678stu901vwx",
-    ],
     "project": "test-group/test-project",
     "project_path": "test-project",
-    "short_id": "abc123de",
-    "title": "Add new feature for user authentication",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
   },
   {
-    "author_email": "jane.smith@example.com",
     "author_name": "Jane Smith",
-    "authored_date": "2024-01-14T14:15:00Z",
     "branch": "main",
-    "committed_date": "2024-01-14T14:20:00Z",
-    "committer_email": "jane.smith@example.com",
-    "committer_name": "Jane Smith",
     "created_at": "2024-01-14T14:20:00Z",
     "group": "test-group",
     "group_id": "1",
@@ -145,13 +112,8 @@ This commit implements OAuth2 integration for better security.",
     "message": "Fix bug in payment processing
 
 Resolves issue where transactions were not properly validated.",
-    "parent_ids": [
-      "ghi789jkl012mno345pqr678stu901vwx234yz",
-    ],
     "project": "test-group/test-project",
     "project_path": "test-project",
-    "short_id": "def456gh",
-    "title": "Fix bug in payment processing",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
   },
 ]
@@ -179,6 +141,137 @@ exports[`index streams - faros groups 1`] = `
     "updated_at": "2021-01-01T00:00:00Z",
     "visibility": "public",
     "web_url": "https://gitlab.com/test-group",
+  },
+]
+`;
+
+exports[`index streams - faros issues 1`] = `
+[
+  {
+    "assignees": [
+      {
+        "username": "hkmshb",
+      },
+    ],
+    "author": {
+      "username": "hkmshb",
+    },
+    "created_at": "2021-02-27T15:50:47.923Z",
+    "description": "The repository needs to be set up.",
+    "group_id": "1",
+    "id": 79927767,
+    "labels": [
+      "Enhancement",
+      "Project Setup",
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Setup Required!",
+    "updated_at": "2021-03-02T15:38:01.088Z",
+  },
+  {
+    "assignees": [],
+    "author": {
+      "username": "hkmshb",
+    },
+    "created_at": "2021-03-02T15:35:31.706Z",
+    "description": "The README.md file is to spare. Add more contents.",
+    "group_id": "1",
+    "id": 80103938,
+    "labels": [
+      "Enhancement",
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Update README file",
+    "updated_at": "2021-03-02T15:37:42.090Z",
+  },
+]
+`;
+
+exports[`index streams - faros merge request reviews 1`] = `
+[
+  {
+    "action_name": "approved",
+    "author": {
+      "name": "Reviewer",
+      "public_email": "reviewer@example.com",
+      "username": "reviewer",
+      "web_url": "https://gitlab.com/reviewer",
+    },
+    "created_at": "2021-01-01T02:00:00Z",
+    "group_id": "1",
+    "id": "123",
+    "project_path": "test-project",
+    "target_iid": 1,
+    "target_type": "merge_request",
+  },
+]
+`;
+
+exports[`index streams - faros merge requests 1`] = `
+[
+  {
+    "assignees": {
+      "nodes": [
+        {
+          "name": "Assignee User",
+          "publicEmail": "assignee@example.com",
+          "username": "assigneeuser",
+          "webUrl": "https://gitlab.com/assigneeuser",
+        },
+      ],
+    },
+    "author": {
+      "name": "Test User",
+      "publicEmail": "test@example.com",
+      "username": "testuser",
+      "webUrl": "https://gitlab.com/testuser",
+    },
+    "commitCount": 2,
+    "createdAt": "2021-01-01T00:00:00Z",
+    "diffStatsSummary": {
+      "additions": 10,
+      "deletions": 5,
+      "fileCount": 3,
+    },
+    "group_id": "1",
+    "id": "gid://gitlab/MergeRequest/1",
+    "iid": 1,
+    "labels": {
+      "nodes": [
+        {
+          "title": "bug",
+        },
+      ],
+      "pageInfo": {
+        "endCursor": null,
+        "hasNextPage": false,
+      },
+    },
+    "mergeCommitSha": null,
+    "mergedAt": null,
+    "notes": [
+      {
+        "author": {
+          "name": "Note Author",
+          "publicEmail": "noteauthor@example.com",
+          "username": "noteauthor",
+          "webUrl": "https://gitlab.com/noteauthor",
+        },
+        "body": "Test note",
+        "createdAt": "2021-01-01T01:00:00Z",
+        "id": "gid://gitlab/Note/1",
+        "system": false,
+        "updatedAt": "2021-01-01T01:00:00Z",
+      },
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Test Merge Request",
+    "updatedAt": "2021-01-02T00:00:00Z",
+    "userNotesCount": 1,
+    "webUrl": "https://gitlab.com/test-group/test-project/-/merge_requests/1",
   },
 ]
 `;
@@ -232,24 +325,20 @@ exports[`index streams - faros tags 1`] = `
 exports[`index streams - faros users 1`] = `
 [
   {
-    "created_at": "2021-01-01T00:00:00Z",
+    "__brand": "FarosUser",
     "email": "user1@example.com",
-    "group": "test-group",
-    "id": 1,
+    "group_id": "1",
     "name": "Test User 1",
     "state": "active",
-    "updated_at": "2021-01-01T00:00:00Z",
     "username": "user1",
     "web_url": "https://gitlab.com/user1",
   },
   {
-    "created_at": "2021-02-01T00:00:00Z",
+    "__brand": "FarosUser",
     "email": "user2@example.com",
-    "group": "test-group",
-    "id": 2,
+    "group_id": "1",
     "name": "Test User 2",
     "state": "active",
-    "updated_at": "2021-02-01T00:00:00Z",
     "username": "user2",
     "web_url": "https://gitlab.com/user2",
   },

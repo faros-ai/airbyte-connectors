@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   WorkItemAssigneeRevision,
   WorkItemIterationRevision,
@@ -7,8 +7,9 @@ import {
 } from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
+import {getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {TaskKey, TaskStatusChange} from './models';
 export class Workitems extends AzureWorkitemsConverter {
@@ -29,7 +30,8 @@ export class Workitems extends AzureWorkitemsConverter {
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
     const WorkItem = record.record.data as WorkItemWithRevisions;
@@ -46,7 +48,8 @@ export class Workitems extends AzureWorkitemsConverter {
     );
     const assignees = this.convertAssigneeRevisions(
       taskKey,
-      WorkItem.revisions.assignees
+      WorkItem.revisions.assignees,
+      ctx?.logger
     );
     const sprintHistory = this.convertIterationRevisions(
       taskKey,
@@ -81,10 +84,12 @@ export class Workitems extends AzureWorkitemsConverter {
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
           updatedAt: Utils.toDate(WorkItem.fields['System.ChangedDate']),
-          creator: {
-            uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
-            source,
-          },
+          creator: WorkItem.fields['System.CreatedBy']?.['uniqueName']
+            ? {
+                uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
+                source,
+              }
+            : null,
           sprint: WorkItem.fields['System.IterationId']
             ? {uid: String(WorkItem.fields['System.IterationId']), source}
             : null,
@@ -201,16 +206,29 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private convertAssigneeRevisions(
     task: TaskKey,
-    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>
+    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>,
+    logger?: AirbyteLogger
   ): ReadonlyArray<DestinationRecord> {
-    return assigneeRevisions.map((revision) => ({
-      model: 'tms_TaskAssignment',
-      record: {
-        task,
-        assignee: {uid: revision.assignee?.uniqueName, source: this.source},
-        assignedAt: Utils.toDate(revision.changedDate),
-      },
-    }));
+    return assigneeRevisions
+      .map((revision) => {
+        const uid = getUniqueName(revision.assignee);
+        if (uid) {
+          return {
+            model: 'tms_TaskAssignment',
+            record: {
+              task,
+              assignee: {uid: uid, source: this.source},
+              assignedAt: Utils.toDate(revision.changedDate),
+            },
+          };
+        } else {
+          logger?.warn(
+            `Missing assignee uniqueName in work item ${task.uid} revision. WorkItemId: ${task.uid}, Revision: ${JSON.stringify(revision)}`
+          );
+          return null;
+        }
+      })
+      .filter(Boolean) as DestinationRecord[];
   }
 
   private convertStateRevisions(

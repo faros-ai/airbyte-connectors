@@ -26,7 +26,7 @@ describe('faros_gitlab', () => {
     await destinationWriteTest({
       configPath,
       catalogPath: 'test/resources/faros_gitlab/catalog.json',
-      inputRecordsPath: 'faros_gitlab/all-streams.log',
+      inputRecordsPath: 'faros_gitlab/all-streams.json',
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });

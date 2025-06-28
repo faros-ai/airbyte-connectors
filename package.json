@@ -64,6 +64,7 @@
     "degenerator": "^5.0.0",
     "protobufjs": "^7.2.6",
     "semver": "^7.5.4",
-    "markdown-it": "^14.0.0"
+    "markdown-it": "^14.0.0",
+    "shescape": "^2.1.4"
   }
 }

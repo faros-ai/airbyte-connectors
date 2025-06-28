@@ -1041,6 +1041,9 @@ export abstract class GitHub {
       for await (const res of iter) {
         const seats = (res.data as any).seats as CopilotSeatsResponse['seats'];
         for (const seat of seats) {
+          if (!seat.assignee?.login) {
+            continue;
+          }
           seatsFound = true;
           yield {
             org,
@@ -1840,6 +1843,9 @@ export abstract class GitHub {
     for await (const res of iter) {
       for (const seat of res.data.seats) {
         seatsFound = true;
+        if (!seat.assignee?.login) {
+          continue;
+        }
         yield {
           enterprise,
           user: seat.assignee.login as string,

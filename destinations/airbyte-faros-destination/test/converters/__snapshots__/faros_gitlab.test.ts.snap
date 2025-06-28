@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 3 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 5 records",
-  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 9 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 25 records",
+  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -30,7 +30,7 @@ Array [
     "vcs_Repository": Object {
       "archived": false,
       "createdAt": "2022-10-19T16:40:22.162Z",
-      "description": "",
+      "description": "Test project for FarosCE GitLab integration",
       "fullName": "farosai/farosce-test",
       "htmlUrl": "https://gitlab.com/farosai/farosce-test",
       "mainBranch": "master",
@@ -43,6 +43,36 @@ Array [
       "source": "GitLab",
       "uid": "farosce-test",
       "updatedAt": "2024-10-15T18:38:58.340Z",
+    },
+  },
+  Object {
+    "tms_Project": Object {
+      "createdAt": "2022-10-19T16:40:22.162Z",
+      "description": "Test project for FarosCE GitLab integration",
+      "name": "FarosCE test",
+      "source": "GitLab",
+      "uid": "12372707/farosce-test",
+      "updatedAt": "2024-10-15T18:38:58.340Z",
+    },
+  },
+  Object {
+    "tms_TaskBoard": Object {
+      "name": "FarosCE test",
+      "source": "GitLab",
+      "uid": "12372707/farosce-test",
+    },
+  },
+  Object {
+    "tms_TaskBoardProjectRelationship": Object {
+      "board": Object {
+        "source": "GitLab",
+        "uid": "12372707/farosce-test",
+      },
+      "project": Object {
+        "source": "GitLab",
+        "uid": "12372707/farosce-test",
+      },
+      "source": "GitLab",
     },
   },
   Object {
@@ -84,6 +114,350 @@ Array [
         "detail": "user",
       },
       "uid": "ypc-faros",
+    },
+  },
+  Object {
+    "vcs_Tag": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "faros-events-cli",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "faros-events-cli",
+        },
+        "sha": "06a959fe1025f8eaa8ca7a6db1ac812ef1116e6d",
+        "uid": "06a959fe1025f8eaa8ca7a6db1ac812ef1116e6d",
+      },
+      "message": "Release version 0.4.0",
+      "name": "v0.4.0",
+      "repository": Object {
+        "name": "faros-events-cli",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "faros-events-cli",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "createdAt": "2025-06-04T18:12:02.000Z",
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/commit/8617223c1e31c8454c65c397b54bac653c32c3f4",
+      "message": "ypc test commit 1",
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "sha": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+      "source": "GitLab",
+      "uid": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": null,
+      "createdAt": "2025-06-05T10:30:00.000Z",
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/commit/123456789abcdef123456789abcdef1234567890",
+      "message": "This commit has no resolved author username",
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "sha": "123456789abcdef123456789abcdef1234567890",
+      "source": "GitLab",
+      "uid": "123456789abcdef123456789abcdef1234567890",
+    },
+  },
+  Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "commentCount": 2,
+      "commitCount": 1,
+      "createdAt": "2025-06-13T00:58:27.000Z",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": 1,
+        "linesDeleted": 0,
+      },
+      "htmlUrl": "https://gitlab.com/farosai/testy/-/merge_requests/3",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 3,
+      "repository": Object {
+        "name": "testy",
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "12372707",
+        },
+        "uid": "testy",
+      },
+      "source": "GitLab",
+      "state": Object {
+        "category": "Open",
+        "detail": "opened",
+      },
+      "title": "test MR",
+      "uid": "3",
+      "updatedAt": "2025-06-13T01:52:18.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "comment": "This is a comment on the MR",
+      "createdAt": "2025-06-13T01:49:10.000Z",
+      "number": 2559908301,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "source": "GitLab",
+      "uid": "gid://gitlab/Note/2559908301",
+      "updatedAt": "2025-06-13T01:49:10.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": null,
+      "number": 1749779350000,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "reviewer": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "source": "GitLab",
+      "state": Object {
+        "category": "Commented",
+        "detail": "commented",
+      },
+      "submittedAt": "2025-06-13T01:49:10.000Z",
+      "uid": "1749779350000",
+    },
+  },
+  Object {
+    "vcs_PullRequestComment": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "comment": "This is a comment on the diff",
+      "createdAt": "2025-06-13T01:49:55.000Z",
+      "number": 2559908669,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "source": "GitLab",
+      "uid": "gid://gitlab/DiffNote/2559908669",
+      "updatedAt": "2025-06-13T01:49:55.000Z",
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": null,
+      "number": 1749779395000,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "reviewer": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "source": "GitLab",
+      "state": Object {
+        "category": "Commented",
+        "detail": "commented",
+      },
+      "submittedAt": "2025-06-13T01:49:55.000Z",
+      "uid": "1749779395000",
+    },
+  },
+  Object {
+    "vcs_Label": Object {
+      "name": "l2",
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "vcs_PullRequestLabel": Object {
+      "label": Object {
+        "name": "l2",
+      },
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignee": Object {
+        "source": "GitLab",
+        "uid": "test-assignee",
+      },
+      "source": "GitLab",
+      "task": Object {
+        "source": "GitLab",
+        "uid": "168781674",
+      },
+    },
+  },
+  Object {
+    "tms_Label": Object {
+      "name": "l1",
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "tms_TaskTag": Object {
+      "label": Object {
+        "name": "l1",
+      },
+      "source": "GitLab",
+      "task": Object {
+        "source": "GitLab",
+        "uid": "168781674",
+      },
+    },
+  },
+  Object {
+    "tms_Task": Object {
+      "createdAt": "2025-06-12T00:42:24.388Z",
+      "creator": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "description": "There's something clearly broken",
+      "name": "Test issue",
+      "source": "GitLab",
+      "status": Object {
+        "category": "Todo",
+        "detail": "opened",
+      },
+      "uid": "168781674",
+      "updatedAt": "2025-06-12T00:42:48.083Z",
+    },
+  },
+  Object {
+    "tms_TaskProjectRelationship": Object {
+      "project": Object {
+        "source": "GitLab",
+        "uid": "12372707/testy",
+      },
+      "source": "GitLab",
+      "task": Object {
+        "source": "GitLab",
+        "uid": "168781674",
+      },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship": Object {
+      "board": Object {
+        "source": "GitLab",
+        "uid": "12372707/testy",
+      },
+      "source": "GitLab",
+      "task": Object {
+        "source": "GitLab",
+        "uid": "168781674",
+      },
+    },
+  },
+  Object {
+    "vcs_PullRequestReview": Object {
+      "htmlUrl": null,
+      "number": 4346114969,
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "3",
+      },
+      "reviewer": Object {
+        "source": "GitLab",
+        "uid": "ypc-faros",
+      },
+      "source": "GitLab",
+      "state": Object {
+        "category": "Approved",
+        "detail": "approved",
+      },
+      "submittedAt": "2025-06-13T01:52:18.939Z",
+      "uid": "4346114969",
     },
   },
 ]

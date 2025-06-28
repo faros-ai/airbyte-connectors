@@ -1,8 +1,12 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
 import {RoundRobinConfig} from 'faros-airbyte-common/common';
-import {GitLabToken} from 'faros-airbyte-common/gitlab';
 
 import {RunMode} from './streams/common';
+
+export interface GitLabToken {
+  type: 'token';
+  personal_access_token: string;
+}
 
 export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   readonly authentication: GitLabToken;
@@ -20,6 +24,7 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   readonly graph?: string;
   readonly cutoff_days?: number;
   readonly page_size?: number;
+  readonly graphql_page_size?: number;
   readonly timeout?: number;
   readonly concurrency_limit?: number;
   readonly start_date?: string;

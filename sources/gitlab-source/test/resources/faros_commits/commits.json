@@ -1,32 +1,16 @@
 [
   {
     "id": "abc123def456ghi789jkl012mno345pqr678stu",
-    "short_id": "abc123de",
     "created_at": "2024-01-15T10:30:00Z",
-    "parent_ids": ["def456ghi789jkl012mno345pqr678stu901vwx"],
-    "title": "Add new feature for user authentication",
     "message": "Add new feature for user authentication\n\nThis commit implements OAuth2 integration for better security.",
     "author_name": "John Doe",
-    "author_email": "john.doe@example.com",
-    "authored_date": "2024-01-15T10:25:00Z",
-    "committer_name": "John Doe",
-    "committer_email": "john.doe@example.com",
-    "committed_date": "2024-01-15T10:30:00Z",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu"
   },
   {
     "id": "def456ghi789jkl012mno345pqr678stu901vwx",
-    "short_id": "def456gh",
     "created_at": "2024-01-14T14:20:00Z",
-    "parent_ids": ["ghi789jkl012mno345pqr678stu901vwx234yz"],
-    "title": "Fix bug in payment processing",
     "message": "Fix bug in payment processing\n\nResolves issue where transactions were not properly validated.",
     "author_name": "Jane Smith",
-    "author_email": "jane.smith@example.com",
-    "authored_date": "2024-01-14T14:15:00Z",
-    "committer_name": "Jane Smith",
-    "committer_email": "jane.smith@example.com",
-    "committed_date": "2024-01-14T14:20:00Z",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx"
   }
 ]

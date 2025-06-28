@@ -1,0 +1,596 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "primaryActionDetail": {
+      "type": "object",
+      "properties": {
+        "edit": {
+          "type": "object"
+        },
+        "create": {
+          "type": "object",
+          "properties": {
+            "new": {
+              "type": "object"
+            }
+          }
+        },
+        "move": {
+          "type": "object",
+          "properties": {
+            "addedParents": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "removedParents": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "rename": {
+          "type": "object",
+          "properties": {
+            "oldTitle": {
+              "type": "string"
+            },
+            "newTitle": {
+              "type": "string"
+            }
+          }
+        },
+        "delete": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "restore": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "permissionChange": {
+          "type": "object",
+          "properties": {
+            "addedPermissions": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "removedPermissions": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "comment": {
+          "type": "object",
+          "properties": {
+            "post": {
+              "type": "object",
+              "properties": {
+                "subtype": {
+                  "type": "string"
+                }
+              }
+            },
+            "assignment": {
+              "type": "object",
+              "properties": {
+                "subtype": {
+                  "type": "string"
+                }
+              }
+            },
+            "suggestion": {
+              "type": "object",
+              "properties": {
+                "subtype": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "dlpChange": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "reference": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "settingsChange": {
+          "type": "object",
+          "properties": {
+            "restrictionChanges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "feature": {
+                    "type": "string"
+                  },
+                  "newRestriction": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "knownUser": {
+                "type": "object",
+                "properties": {
+                  "personName": {
+                    "type": "string"
+                  },
+                  "isCurrentUser": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "deletedUser": {
+                "type": "object"
+              }
+            }
+          },
+          "anonymous": {
+            "type": "object"
+          },
+          "impersonation": {
+            "type": "object",
+            "properties": {
+              "impersonatedUser": {
+                "type": "object",
+                "properties": {
+                  "knownUser": {
+                    "type": "object",
+                    "properties": {
+                      "personName": {
+                        "type": "string"
+                      },
+                      "isCurrentUser": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "system": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "administrator": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "driveItem": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "file": {
+                "type": "object"
+              },
+              "folder": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "mimeType": {
+                "type": "string"
+              },
+              "driveFile": {
+                "type": "object"
+              },
+              "driveFolder": {
+                "type": "object"
+              },
+              "owner": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "knownUser": {
+                        "type": "object",
+                        "properties": {
+                          "personName": {
+                            "type": "string"
+                          },
+                          "isCurrentUser": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "deletedUser": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "domain": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "legacyId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "teamDrive": {
+                    "type": "object"
+                  },
+                  "drive": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "drive": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "root": {
+                "type": "object"
+              }
+            }
+          },
+          "fileComment": {
+            "type": "object",
+            "properties": {
+              "legacyCommentId": {
+                "type": "string"
+              },
+              "legacyDiscussionId": {
+                "type": "string"
+              },
+              "linkToDiscussion": {
+                "type": "string"
+              },
+              "parent": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "object"
+                  },
+                  "folder": {
+                    "type": "object"
+                  },
+                  "mimeType": {
+                    "type": "string"
+                  },
+                  "driveFile": {
+                    "type": "object"
+                  },
+                  "driveFolder": {
+                    "type": "object"
+                  },
+                  "owner": {
+                    "type": "object",
+                    "properties": {
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "knownUser": {
+                            "type": "object",
+                            "properties": {
+                              "personName": {
+                                "type": "string"
+                              },
+                              "isCurrentUser": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "domain": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "legacyId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "teamDrive": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "root": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "object",
+            "properties": {
+              "edit": {
+                "type": "object"
+              },
+              "create": {
+                "type": "object",
+                "properties": {
+                  "new": {
+                    "type": "object"
+                  }
+                }
+              },
+              "move": {
+                "type": "object",
+                "properties": {
+                  "addedParents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "removedParents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "rename": {
+                "type": "object",
+                "properties": {
+                  "oldTitle": {
+                    "type": "string"
+                  },
+                  "newTitle": {
+                    "type": "string"
+                  }
+                }
+              },
+              "delete": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "restore": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "permissionChange": {
+                "type": "object",
+                "properties": {
+                  "addedPermissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "removedPermissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "comment": {
+                "type": "object",
+                "properties": {
+                  "post": {
+                    "type": "object",
+                    "properties": {
+                      "subtype": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "assignment": {
+                    "type": "object",
+                    "properties": {
+                      "subtype": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "suggestion": {
+                    "type": "object",
+                    "properties": {
+                      "subtype": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "dlpChange": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "reference": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "settingsChange": {
+                "type": "object",
+                "properties": {
+                  "restrictionChanges": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "feature": {
+                          "type": "string"
+                        },
+                        "newRestriction": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "actor": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "object",
+                "properties": {
+                  "knownUser": {
+                    "type": "object",
+                    "properties": {
+                      "personName": {
+                        "type": "string"
+                      },
+                      "isCurrentUser": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "target": {
+            "type": "object"
+          },
+          "timeRange": {
+            "type": "object",
+            "properties": {
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "timeRange": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

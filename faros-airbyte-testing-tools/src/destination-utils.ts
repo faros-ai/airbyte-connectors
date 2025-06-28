@@ -6,7 +6,7 @@ import {
 import {getLocal} from 'mockttp';
 import {Dictionary} from 'ts-essentials';
 
-import {CLI, read, readLines} from './cli';
+import {CLI, readLines} from './cli';
 import {initMockttp, tempConfig} from './destination-testing-tools';
 import {readTestResourceFile} from './testing-tools';
 
@@ -46,7 +46,22 @@ export const destinationWriteTest = async (
     '--dry-run',
   ]);
 
-  cli.stdin.end(readTestResourceFile(inputRecordsPath), 'utf8');
+  let content = readTestResourceFile(inputRecordsPath);
+  
+  // Check if the file is a .json file
+  if (inputRecordsPath.endsWith('.json')) {
+    try {
+      // Parse as JSON array and convert to line-delimited format
+      const jsonArray = JSON.parse(content);
+      if (Array.isArray(jsonArray)) {
+        content = jsonArray.map(record => JSON.stringify(record)).join('\n');
+      }
+    } catch (e) {
+      // If parsing fails, use content as-is
+    }
+  }
+  
+  cli.stdin.end(content, 'utf8');
 
   const stdoutLines = await readLines(cli.stdout);
   const matches: string[] = [];
