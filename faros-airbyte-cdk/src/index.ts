@@ -9,6 +9,7 @@ export * from './sources/source';
 export * from './sources/source-logger';
 export * from './sources/source-runner';
 export * from './sources/streams/stream-base';
+export * from './sources/streams/state-manager';
 export * from './spec-loader';
 export * from './sync-message-tables';
 export * from './utils';
