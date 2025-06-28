@@ -19,39 +19,6 @@ abstract class BaseKeyGenerator<TSlice> implements KeyGenerator<TSlice> {
 }
 
 /**
- * Key generator for GitHub-style org/repo slices
- */
-export class OrgRepoKeyGenerator<TSlice extends {org: string; repo: string}> 
-  extends BaseKeyGenerator<TSlice> {
-  
-  generateKey(slice: TSlice): string {
-    return this.normalize(`${slice.org}/${slice.repo}`);
-  }
-}
-
-/**
- * Key generator for GitLab-style group/project slices
- */
-export class GroupProjectKeyGenerator<TSlice extends {group_id: string; path_with_namespace: string}> 
-  extends BaseKeyGenerator<TSlice> {
-  
-  generateKey(slice: TSlice): string {
-    return this.normalize(`${slice.group_id}/${slice.path_with_namespace}`);
-  }
-}
-
-/**
- * Key generator for simple project key slices
- */
-export class ProjectKeyGenerator<TSlice extends {project: string}> 
-  extends BaseKeyGenerator<TSlice> {
-  
-  generateKey(slice: TSlice): string {
-    return this.normalize(slice.project);
-  }
-}
-
-/**
  * Generic key generator that uses a custom function
  */
 export class FunctionKeyGenerator<TSlice> extends BaseKeyGenerator<TSlice> {
@@ -65,30 +32,9 @@ export class FunctionKeyGenerator<TSlice> extends BaseKeyGenerator<TSlice> {
 }
 
 /**
- * Factory methods for common key generators
+ * Factory methods for key generators
  */
 export class KeyGenerators {
-  /**
-   * Create key generator for GitHub org/repo pattern
-   */
-  static orgRepo<TSlice extends {org: string; repo: string}>(): OrgRepoKeyGenerator<TSlice> {
-    return new OrgRepoKeyGenerator();
-  }
-
-  /**
-   * Create key generator for GitLab group/project pattern
-   */
-  static groupProject<TSlice extends {group_id: string; path_with_namespace: string}>(): GroupProjectKeyGenerator<TSlice> {
-    return new GroupProjectKeyGenerator();
-  }
-
-  /**
-   * Create key generator for simple project key pattern
-   */
-  static project<TSlice extends {project: string}>(): ProjectKeyGenerator<TSlice> {
-    return new ProjectKeyGenerator();
-  }
-
   /**
    * Create key generator with custom function
    */

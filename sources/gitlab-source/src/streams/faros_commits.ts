@@ -1,4 +1,4 @@
-import {StreamKey, SyncMode, StateManagerFactory, TimestampStateManager} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode, StateManagerFactory, FieldExtractors, KeyGenerators} from 'faros-airbyte-cdk';
 import {FarosCommitOutput} from 'faros-airbyte-common/gitlab';
 import {Dictionary} from 'ts-essentials';
 
@@ -11,8 +11,11 @@ import {
 } from './common';
 
 export class FarosCommits extends StreamWithProjectSlices {
-  // Initialize state manager for GitLab commits using created_at field
-  private readonly stateManager = StateManagerFactory.gitlab<FarosCommitOutput, ProjectStreamSlice>('created_at');
+  // Initialize state manager using generic configuration for GitLab commits
+  private readonly stateManager = StateManagerFactory.create<FarosCommitOutput, ProjectStreamSlice>({
+    fieldExtractor: FieldExtractors.timestamp<FarosCommitOutput>('created_at'),
+    keyGenerator: KeyGenerators.custom<ProjectStreamSlice>((slice) => `${slice.group_id}/${slice.path_with_namespace}`)
+  });
   /**
    * Depends on faros_users stream to ensure users are collected first.
    * The UserCollector needs to have all users populated before we can
@@ -71,7 +74,7 @@ export class FarosCommits extends StreamWithProjectSlices {
     latestRecord: FarosCommitOutput,
     slice: ProjectStreamSlice,
   ): StreamState {
-    // Use the new generic state manager instead of manual implementation
+    // Use the generic state manager instead of manual implementation
     return this.stateManager.getUpdatedState(currentStreamState, latestRecord, slice);
   }
 }
