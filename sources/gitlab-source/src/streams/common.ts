@@ -1,11 +1,11 @@
 import {
   AirbyteLogger,
-  AirbyteStreamBase,
-  calculateUpdatedStreamState,
+  IncrementalStreamBase,
 } from 'faros-airbyte-cdk';
 import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
 import {pick, toLower} from 'lodash';
+import {Dictionary} from 'ts-essentials';
 
 import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
@@ -72,7 +72,7 @@ export const RunModeStreams: {
   [RunMode.Custom]: CustomStreamNames,
 };
 
-export abstract class StreamBase extends AirbyteStreamBase {
+export abstract class StreamBase extends IncrementalStreamBase<StreamState, Dictionary<any>, ProjectStreamSlice | GroupStreamSlice> {
   readonly groupFilter: GroupFilter;
   constructor(
     protected readonly config: GitLabConfig,
@@ -90,16 +90,14 @@ export abstract class StreamBase extends AirbyteStreamBase {
     ];
   }
 
-  protected getUpdatedStreamState(
-    latestRecordCutoff: Date,
-    currentStreamState: StreamState,
-    groupKey: string
-  ): StreamState {
-    return calculateUpdatedStreamState(
-      latestRecordCutoff,
-      currentStreamState,
-      groupKey
-    );
+  protected getStateKey(streamSlice?: ProjectStreamSlice | GroupStreamSlice): string {
+    if (streamSlice && 'group_id' in streamSlice && 'path_with_namespace' in streamSlice) {
+      return StreamBase.groupProjectKey(streamSlice.group_id, streamSlice.path_with_namespace);
+    }
+    if (streamSlice && 'group_id' in streamSlice) {
+      return StreamBase.groupKey(streamSlice.group_id);
+    }
+    return this.name;
   }
 
   static groupKey(group: string): string {
