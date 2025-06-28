@@ -61,7 +61,11 @@ export class FarosCommits extends IncrementalStreamBase<StreamState, FarosCommit
     return [since, now];
   }
 
-  async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
+  async *streamSlices(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamState?: StreamState
+  ): AsyncGenerator<ProjectStreamSlice> {
     for (const group_id of await this.groupFilter.getGroups()) {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
         group_id
