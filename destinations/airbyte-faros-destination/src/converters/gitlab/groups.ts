@@ -15,18 +15,10 @@ export class Groups extends GitlabConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const group = record.record.data as FarosGroupOutput;
-    
+      
     // Create a modified record with string conversion of group.id
-    const modifiedRecord: AirbyteRecord = {
-      ...record,
-      record: {
-        ...record.record,
-        data: {
-          ...group,
-          id: String(group.id),
-        },
-      },
-    };
+    const modifiedRecord = structuredClone(record);
+    modifiedRecord.record.data.id = String(group.id);
     
     return this.alias.convert(modifiedRecord);
   }
