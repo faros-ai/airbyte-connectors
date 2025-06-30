@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {FarosGroupOutput} from 'faros-airbyte-common/gitlab';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabConverter} from './common';
@@ -13,6 +14,12 @@ export class Groups extends GitlabConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return this.alias.convert(record);
+    const group = record.record.data as FarosGroupOutput;
+      
+    // Create a modified record with string conversion of group.id
+    const modifiedRecord = structuredClone(record);
+    modifiedRecord.record.data.id = String(group.id);
+    
+    return this.alias.convert(modifiedRecord);
   }
 }
