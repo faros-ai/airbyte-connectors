@@ -303,6 +303,35 @@ exports[`index streams - faros projects 1`] = `
 ]
 `;
 
+exports[`index streams - faros releases 1`] = `
+[
+  {
+    "_links": {
+      "self": "https://gitlab.com/test-group/test-project/-/releases/v1.0.0",
+    },
+    "created_at": "2021-01-01T00:00:00Z",
+    "description": "First major release",
+    "group_id": "1",
+    "name": "Release 1.0.0",
+    "project_path": "test-project",
+    "released_at": "2021-01-01T12:00:00Z",
+    "tag_name": "v1.0.0",
+  },
+  {
+    "_links": {
+      "self": "https://gitlab.com/test-group/test-project/-/releases/v0.9.0",
+    },
+    "created_at": "2020-12-01T00:00:00Z",
+    "description": "Beta release",
+    "group_id": "1",
+    "name": "Release 0.9.0",
+    "project_path": "test-project",
+    "released_at": "2020-12-01T12:00:00Z",
+    "tag_name": "v0.9.0",
+  },
+]
+`;
+
 exports[`index streams - faros tags 1`] = `
 [
   {
