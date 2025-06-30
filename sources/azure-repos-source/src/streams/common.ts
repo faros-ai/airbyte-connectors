@@ -39,19 +39,10 @@ export abstract class AzureReposStreamBase extends AirbyteStreamBase {
   ) {
     super(logger);
   }
-}
 
-export abstract class StreamWithBranchSlices extends AzureReposStreamBase {
-  async *streamSlices(): AsyncGenerator<BranchStreamSlice> {
-    const azureRepos = await AzureRepos.instance(
-      this.config,
-      this.logger,
-      this.config.branch_pattern,
-      this.config.repositories,
-      this.config.fetch_tags,
-      this.config.fetch_branch_commits
-    );
-
+  protected async *iterateRepositories(
+    azureRepos: AzureRepos
+  ): AsyncGenerator<GitRepository> {
     for (const project of await azureRepos.getProjects(this.config?.projects)) {
       for (const repository of await azureRepos.listRepositories({
         id: project.id,
@@ -65,21 +56,38 @@ export abstract class StreamWithBranchSlices extends AzureReposStreamBase {
           continue;
         }
 
-        const branchNames = await azureRepos.getBranchNamesToQuery(repository);
-        for (const branch of branchNames) {
-          yield {
-            branch,
-            repository: {
-              id: repository.id,
-              name: repository.name,
-              defaultBranch: repository.defaultBranch,
-              project: {
-                id: project.id,
-                name: project.name,
-              },
-            },
-          };
-        }
+        yield {
+          id: repository.id,
+          name: repository.name,
+          defaultBranch: repository.defaultBranch,
+          project: {
+            id: project.id,
+            name: project.name,
+          },
+        };
+      }
+    }
+  }
+}
+
+export abstract class StreamWithBranchSlices extends AzureReposStreamBase {
+  async *streamSlices(): AsyncGenerator<BranchStreamSlice> {
+    const azureRepos = await AzureRepos.instance(
+      this.config,
+      this.logger,
+      this.config.branch_pattern,
+      this.config.repositories,
+      this.config.fetch_tags,
+      this.config.fetch_branch_commits
+    );
+
+    for await (const repository of this.iterateRepositories(azureRepos)) {
+      const branchNames = await azureRepos.getBranchNamesToQuery(repository);
+      for (const branch of branchNames) {
+        yield {
+          branch,
+          repository,
+        };
       }
     }
   }
@@ -133,31 +141,10 @@ export abstract class StreamWithRepoSlices extends AzureReposStreamBase {
       this.config.fetch_branch_commits
     );
 
-    for (const project of await azureRepos.getProjects(this.config?.projects)) {
-      for (const repository of await azureRepos.listRepositories({
-        id: project.id,
-        name: project.name,
-      })) {
-        if (repository.isDisabled) {
-          this.logger.info(
-            `Repository ${repository.name}:${repository.id} in project ` +
-              `${project.name} is disabled, skipping`
-          );
-          continue;
-        }
-
-        yield {
-          repository: {
-            id: repository.id,
-            name: repository.name,
-            defaultBranch: repository.defaultBranch,
-            project: {
-              id: project.id,
-              name: project.name,
-            },
-          },
-        };
-      }
+    for await (const repository of this.iterateRepositories(azureRepos)) {
+      yield {
+        repository,
+      };
     }
   }
 
