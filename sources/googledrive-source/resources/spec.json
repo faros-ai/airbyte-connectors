@@ -54,7 +54,7 @@
         "maximum": 10,
         "description": "Maximum number of retry attempts for Google Drive API calls when encountering quota exceeded errors. Uses exponential backoff with jitter."
       },
-      "retry_delay_ms": {
+      "retry_delay": {
         "type": "integer",
         "title": "Base Retry Delay (ms)",
         "default": 1000,

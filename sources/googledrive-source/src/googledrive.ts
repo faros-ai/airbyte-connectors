@@ -4,6 +4,7 @@ import {
   WorkspaceCustomer,
   WorkspaceUser,
 } from 'faros-airbyte-common/googledrive';
+import {Utils} from 'faros-js-client';
 import {admin_directory_v1, Auth, driveactivity_v2, google} from 'googleapis';
 import {random} from 'lodash';
 import {Memoize} from 'typescript-memoize';
@@ -24,8 +25,7 @@ export type Drive = PersonalDrive | SharedDrive;
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_INCLUDE_PERSONAL_DRIVES = true;
 export const DEFAULT_MAX_RETRIES = 5;
-export const DEFAULT_RETRY_DELAY_MS = 1000;
-export const DEFAULT_MAX_BACKOFF_MS = 64000; // 64 seconds as recommended by Google
+export const DEFAULT_RETRY_DELAY = 1000;
 
 export const REQUIRED_SCOPES = [
   'https://www.googleapis.com/auth/admin.directory.customer.readonly',
@@ -41,7 +41,7 @@ export interface GoogleDriveConfig extends AirbyteConfig {
   readonly include_personal_drives?: boolean;
   readonly cutoff_days?: number;
   readonly max_retries?: number;
-  readonly retry_delay_ms?: number;
+  readonly retry_delay?: number;
 }
 
 type PaginationReqFunc = (pageToken?: string) => Promise<any>;
@@ -50,7 +50,7 @@ type ErrorWrapperReqFunc<T> = (...opts: any) => Promise<T>;
 export class GoogleDrive {
   private static googleDrive: GoogleDrive;
   private readonly maxRetries: number;
-  private readonly retryDelayMs: number;
+  private readonly retryDelay: number;
 
   constructor(
     config: GoogleDriveConfig,
@@ -61,7 +61,7 @@ export class GoogleDrive {
     private readonly logger: AirbyteLogger
   ) {
     this.maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
-    this.retryDelayMs = config.retry_delay_ms ?? DEFAULT_RETRY_DELAY_MS;
+    this.retryDelay = config.retry_delay ?? DEFAULT_RETRY_DELAY;
   }
 
   static async instance(
@@ -119,16 +119,12 @@ export class GoogleDrive {
     }
   }
 
-  private async sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   private calculateRetryDelay(attempt: number): number {
     // Exponential backoff with jitter as recommended by Google
     // Wait time = min(((2^n) * base_delay + random_jitter), max_backoff)
-    const exponentialDelay = Math.pow(2, attempt) * this.retryDelayMs;
+    const exponentialDelay = Math.pow(2, attempt) * this.retryDelay;
     const jitter = random(0, 1000); // Random jitter up to 1 second
-    return Math.min(exponentialDelay + jitter, DEFAULT_MAX_BACKOFF_MS);
+    return Math.min(exponentialDelay + jitter, 64000); // 64 seconds as recommended by Google
   }
 
   private isRetryableError(err: any): boolean {
@@ -168,7 +164,7 @@ export class GoogleDrive {
             `Google Drive API error. Retrying in ${delay}ms ` +
               `(attempt ${attempt + 1}/${this.maxRetries}). Error: ${err.message}`
           );
-          await this.sleep(delay);
+          await Utils.sleep(delay);
           continue;
         }
 
