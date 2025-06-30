@@ -617,8 +617,8 @@ export class GitLab {
     until?: Date
   ): AsyncGenerator<Omit<FarosReleaseOutput, 'group_id' | 'project_path'>> {
     const options: any = {
-      // orderBy: 'created_at',
-      // sort: 'desc',
+      orderBy: 'created_at',
+      sort: 'desc',
       perPage: this.pageSize,
     };
 
