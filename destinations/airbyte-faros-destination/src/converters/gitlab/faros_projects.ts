@@ -21,7 +21,7 @@ export class FarosProjects extends GitlabConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data as FarosProjectOutput;
     const organization = {
-      uid: String(project.group_id),
+      uid: project.group_id,
       source: this.streamName.source,
     };
 
