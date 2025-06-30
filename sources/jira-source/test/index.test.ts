@@ -102,6 +102,21 @@ describe('index', () => {
       .mockResolvedValue(
         readTestResourceAsJSON('issue_pull_requests/dev_status_detail.json')
       ),
+    v2: {
+      ...getIssuesMockedImplementation(
+        true,
+        'issue_pull_requests/issues_with_pull_requests.json'
+      ).v2,
+      permissions: {
+        getMyPermissions: jest.fn().mockResolvedValueOnce({
+          permissions: {
+            VIEW_DEV_TOOLS: {
+              havePermission: true,
+            },
+          },
+        }),
+      },
+    },
   });
 
   const getSprintReportsMockedImplementation = () => ({
@@ -204,6 +219,40 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - issue_pull_requests without VIEW_DEV_TOOLS permission', async () => {
+    const loggerErrorSpy = jest.spyOn(logger, 'error');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'issue_pull_requests/config.json',
+      catalogOrPath: 'issue_pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const mockImpl = getIssuePullRequestsMockedImplementation();
+        // Override permissions to return false for VIEW_DEV_TOOLS
+        mockImpl.v2.permissions.getMyPermissions = jest
+          .fn()
+          .mockResolvedValueOnce({
+            permissions: {
+              VIEW_DEV_TOOLS: {
+                havePermission: false,
+              },
+            },
+          });
+
+        setupJiraInstance(mockImpl, true, res.config as JiraConfig, logger);
+      },
+      checkRecordsData: (records) => {
+        // Should have no pull request records due to missing permission
+        expect(records).toMatchSnapshot();
+
+        // Verify error was logged
+        expect(loggerErrorSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Missing VIEW_DEV_TOOLS permission')
+        );
       },
     });
   });

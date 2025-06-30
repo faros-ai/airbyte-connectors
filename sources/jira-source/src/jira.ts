@@ -651,7 +651,10 @@ export class Jira {
       }
 
       try {
-        const hasPermission = await this.hasBrowseProjectPerms(project.key);
+        const hasPermission = await this.hasProjectPermission(
+          project.key,
+          BROWSE_PROJECTS_PERM
+        );
         if (!hasPermission) {
           skippedProjects.push(project.key);
           continue;
@@ -715,7 +718,10 @@ export class Jira {
       expand: 'description',
     });
 
-    const hasPermission = await this.hasBrowseProjectPerms(project.key);
+    const hasPermission = await this.hasProjectPermission(
+      project.key,
+      BROWSE_PROJECTS_PERM
+    );
     if (!hasPermission) {
       throw new VError('Insufficient permissions for project: %s', project.key);
     }
@@ -724,13 +730,16 @@ export class Jira {
   }
 
   @Memoize()
-  async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
+  async hasProjectPermission(
+    projectKey: string,
+    permission: string
+  ): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
-      permissions: BROWSE_PROJECTS_PERM,
+      permissions: permission,
       projectKey,
     });
 
-    return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
+    return perms?.permissions?.[permission]?.['havePermission'];
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {

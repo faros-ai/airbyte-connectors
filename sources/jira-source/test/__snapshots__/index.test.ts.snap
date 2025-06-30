@@ -1596,6 +1596,8 @@ exports[`index streams - issue_pull_requests 1`] = `
 ]
 `;
 
+exports[`index streams - issue_pull_requests without VIEW_DEV_TOOLS permission 1`] = `[]`;
+
 exports[`index streams - project version issues 1`] = `
 [
   {
