@@ -17,40 +17,71 @@
               "type": "string"
             },
             "name": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "description": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "created_at": {
               "type": "string"
             },
             "released_at": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "_links": {
               "type": "object",
               "properties": {
-                "self": {"type": "string"}
+                "self": {
+                  "type": "string"
+                }
               }
             }
           },
-          "required": ["group_id", "project_path", "tag_name", "created_at"]
+          "required": [
+            "group_id",
+            "project_path",
+            "tag_name",
+            "created_at"
+          ]
         },
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["created_at"],
+        "default_cursor_field": [
+          "created_at"
+        ],
         "source_defined_primary_key": [
-          ["project_path"],
-          ["tag_name"]
+          [
+            "project_path"
+          ],
+          [
+            "tag_name"
+          ]
         ]
       },
       "sync_mode": "incremental",
-      "cursor_field": ["created_at"],
+      "cursor_field": [
+        "created_at"
+      ],
       "destination_sync_mode": "append_dedup",
       "primary_key": [
-        ["project_path"],
-        ["tag_name"]
+        [
+          "project_path"
+        ],
+        [
+          "tag_name"
+        ]
       ]
     }
   ]
