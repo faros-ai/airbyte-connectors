@@ -5,6 +5,7 @@ import {
   WorkspaceUser,
 } from 'faros-airbyte-common/googledrive';
 import {admin_directory_v1, Auth, driveactivity_v2, google} from 'googleapis';
+import {random} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -48,16 +49,20 @@ type ErrorWrapperReqFunc<T> = (...opts: any) => Promise<T>;
 
 export class GoogleDrive {
   private static googleDrive: GoogleDrive;
+  private readonly maxRetries: number;
+  private readonly retryDelayMs: number;
 
   constructor(
+    config: GoogleDriveConfig,
     private readonly credentials: Auth.JWTInput,
     private readonly auth: Auth.GoogleAuth,
     private readonly adminDirectoryClient: admin_directory_v1.Admin,
     private readonly driveActivityClient: driveactivity_v2.Driveactivity,
-    private readonly maxRetries: number,
-    private readonly retryDelayMs: number,
     private readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    this.retryDelayMs = config.retry_delay_ms ?? DEFAULT_RETRY_DELAY_MS;
+  }
 
   static async instance(
     config: GoogleDriveConfig,
@@ -91,16 +96,12 @@ export class GoogleDrive {
     const adminDirectoryClient = google.admin({version: 'directory_v1', auth});
     const driveActivityClient = google.driveactivity({version: 'v2', auth});
 
-    const maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
-    const retryDelayMs = config.retry_delay_ms ?? DEFAULT_RETRY_DELAY_MS;
-
     GoogleDrive.googleDrive = new GoogleDrive(
+      config,
       credentials,
       auth,
       adminDirectoryClient,
       driveActivityClient,
-      maxRetries,
-      retryDelayMs,
       logger
     );
     return GoogleDrive.googleDrive;
@@ -126,7 +127,7 @@ export class GoogleDrive {
     // Exponential backoff with jitter as recommended by Google
     // Wait time = min(((2^n) * base_delay + random_jitter), max_backoff)
     const exponentialDelay = Math.pow(2, attempt) * this.retryDelayMs;
-    const jitter = Math.random() * 1000; // Random jitter up to 1 second
+    const jitter = random(0, 1000); // Random jitter up to 1 second
     return Math.min(exponentialDelay + jitter, DEFAULT_MAX_BACKOFF_MS);
   }
 
