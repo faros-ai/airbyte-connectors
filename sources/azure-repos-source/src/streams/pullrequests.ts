@@ -2,7 +2,7 @@ import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepos, getQueryableDefaultBranch} from '../azure-repos';
+import {AzureRepos} from '../azure-repos';
 import {RepoStreamSlice, RepoStreamState, StreamWithRepoSlices} from './common';
 
 export class PullRequests extends StreamWithRepoSlices {
