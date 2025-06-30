@@ -36,6 +36,17 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
   ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
+    
+    // Check for VIEW_DEV_TOOLS permission
+    const hasDevToolsPermission = await jira.hasProjectPermission(projectKey, 'VIEW_DEV_TOOLS');
+    if (!hasDevToolsPermission) {
+      this.logger.error(
+        `Missing VIEW_DEV_TOOLS permission for project ${projectKey}. ` +
+        `Pull requests cannot be retrieved without this permission.`
+      );
+      return;
+    }
+    
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)

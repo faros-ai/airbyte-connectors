@@ -106,6 +106,7 @@ const EPIC_LINK_FIELD_NAME = 'Epic Link';
 const SPRINT_FIELD_NAME = 'Sprint';
 
 const BROWSE_PROJECTS_PERM = 'BROWSE_PROJECTS';
+const VIEW_DEV_TOOLS_PERM = 'VIEW_DEV_TOOLS';
 
 // PR info attached to issues can vary by Jira instance. Known patterns:
 // 1. pullrequest={dataType=pullrequest, state=MERGED, stateCount=1}
@@ -725,12 +726,17 @@ export class Jira {
 
   @Memoize()
   async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
+    return this.hasProjectPermission(projectKey, BROWSE_PROJECTS_PERM);
+  }
+
+  @Memoize()
+  async hasProjectPermission(projectKey: string, permission: string): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
-      permissions: BROWSE_PROJECTS_PERM,
+      permissions: permission,
       projectKey,
     });
 
-    return perms?.permissions?.[BROWSE_PROJECTS_PERM]?.['havePermission'];
+    return perms?.permissions?.[permission]?.['havePermission'];
   }
 
   getIssuesKeys(jql: string): AsyncIterableIterator<string> {
