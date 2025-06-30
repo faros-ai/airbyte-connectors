@@ -19,7 +19,7 @@ export class FarosCommits extends GitlabConverter {
       name: toLower(commit.project_path),
       uid: toLower(commit.project_path),
       organization: {
-        uid: commit.group_id,
+        uid: String(commit.group_id),
         source,
       },
     };

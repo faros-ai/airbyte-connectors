@@ -35,7 +35,7 @@ export class FarosMergeRequests extends GitlabConverter {
 
     // Create organization and repository keys following faros_projects pattern
     const organization = {
-      uid: mergeRequest.group_id,
+      uid: String(mergeRequest.group_id),
       source,
     };
 

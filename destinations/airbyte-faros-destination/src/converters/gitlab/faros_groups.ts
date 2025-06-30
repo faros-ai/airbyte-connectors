@@ -20,7 +20,7 @@ export class FarosGroups extends GitlabConverter {
     res.push({
       model: 'vcs_Organization',
       record: {
-        uid: group.id,
+        uid: String(group.id),
         name: group.name,
         htmlUrl: group.web_url,
         type: {category: 'Group', detail: 'Group'},
