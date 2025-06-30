@@ -106,7 +106,6 @@ const EPIC_LINK_FIELD_NAME = 'Epic Link';
 const SPRINT_FIELD_NAME = 'Sprint';
 
 const BROWSE_PROJECTS_PERM = 'BROWSE_PROJECTS';
-const VIEW_DEV_TOOLS_PERM = 'VIEW_DEV_TOOLS';
 
 // PR info attached to issues can vary by Jira instance. Known patterns:
 // 1. pullrequest={dataType=pullrequest, state=MERGED, stateCount=1}
@@ -652,7 +651,10 @@ export class Jira {
       }
 
       try {
-        const hasPermission = await this.hasBrowseProjectPerms(project.key);
+        const hasPermission = await this.hasProjectPermission(
+          project.key,
+          BROWSE_PROJECTS_PERM
+        );
         if (!hasPermission) {
           skippedProjects.push(project.key);
           continue;
@@ -716,7 +718,10 @@ export class Jira {
       expand: 'description',
     });
 
-    const hasPermission = await this.hasBrowseProjectPerms(project.key);
+    const hasPermission = await this.hasProjectPermission(
+      project.key,
+      BROWSE_PROJECTS_PERM
+    );
     if (!hasPermission) {
       throw new VError('Insufficient permissions for project: %s', project.key);
     }
@@ -725,12 +730,10 @@ export class Jira {
   }
 
   @Memoize()
-  async hasBrowseProjectPerms(projectKey: string): Promise<boolean> {
-    return this.hasProjectPermission(projectKey, BROWSE_PROJECTS_PERM);
-  }
-
-  @Memoize()
-  async hasProjectPermission(projectKey: string, permission: string): Promise<boolean> {
+  async hasProjectPermission(
+    projectKey: string,
+    permission: string
+  ): Promise<boolean> {
     const perms = await this.api.v2.permissions.getMyPermissions({
       permissions: permission,
       projectKey,

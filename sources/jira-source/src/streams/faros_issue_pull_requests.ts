@@ -11,6 +11,8 @@ import {
   StreamWithProjectSlices,
 } from './common';
 
+const VIEW_DEV_TOOLS_PERM = 'VIEW_DEV_TOOLS';
+
 export class FarosIssuePullRequests extends StreamWithProjectSlices {
   get dependencies(): ReadonlyArray<string> {
     return ['faros_issues'];
@@ -36,17 +38,20 @@ export class FarosIssuePullRequests extends StreamWithProjectSlices {
   ): AsyncGenerator<PullRequest> {
     const jira = await Jira.instance(this.config, this.logger);
     const projectKey = streamSlice?.project;
-    
+
     // Check for VIEW_DEV_TOOLS permission
-    const hasDevToolsPermission = await jira.hasProjectPermission(projectKey, 'VIEW_DEV_TOOLS');
+    const hasDevToolsPermission = await jira.hasProjectPermission(
+      projectKey,
+      VIEW_DEV_TOOLS_PERM
+    );
     if (!hasDevToolsPermission) {
       this.logger.error(
         `Missing VIEW_DEV_TOOLS permission for project ${projectKey}. ` +
-        `Pull requests cannot be retrieved without this permission.`
+          `Pull requests cannot be retrieved without this permission.`
       );
       return;
     }
-    
+
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(streamState?.[projectKey]?.cutoff)
