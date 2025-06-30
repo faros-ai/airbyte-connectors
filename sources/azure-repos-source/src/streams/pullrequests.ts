@@ -2,14 +2,10 @@ import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
-import {AzureRepos, getQueryableDefaultBranch} from '../azure-repos';
-import {
-  BranchStreamSlice,
-  BranchStreamState,
-  StreamWithBranchSlices,
-} from './common';
+import {AzureRepos} from '../azure-repos';
+import {RepoStreamSlice, RepoStreamState, StreamWithRepoSlices} from './common';
 
-export class PullRequests extends StreamWithBranchSlices {
+export class PullRequests extends StreamWithRepoSlices {
   // Run commits stream first to get the changeCounts for populating
   // vcs_PullRequest.diffStats
   get dependencies(): string[] {
@@ -29,12 +25,11 @@ export class PullRequests extends StreamWithBranchSlices {
   }
 
   getUpdatedState(
-    currentStreamState: BranchStreamState,
+    currentStreamState: RepoStreamState,
     latestPR: PullRequest
-  ): BranchStreamState {
+  ): RepoStreamState {
     return this.updateState(
       currentStreamState,
-      getQueryableDefaultBranch(latestPR.targetRefName),
       latestPR.repository.name,
       latestPR.repository.project.name,
       latestPR.closedDate
@@ -44,8 +39,8 @@ export class PullRequests extends StreamWithBranchSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: BranchStreamSlice,
-    streamState?: BranchStreamState
+    streamSlice?: RepoStreamSlice,
+    streamState?: RepoStreamState
   ): AsyncGenerator<PullRequest> {
     const azureRepos = await AzureRepos.instance(
       this.config,
@@ -57,10 +52,6 @@ export class PullRequests extends StreamWithBranchSlices {
     );
 
     const since = this.getCutoff(syncMode, streamSlice, streamState);
-    yield* azureRepos.getPullRequests(
-      streamSlice.branch,
-      streamSlice.repository,
-      since
-    );
+    yield* azureRepos.getPullRequests(streamSlice.repository, since);
   }
 }

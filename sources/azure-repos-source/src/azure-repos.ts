@@ -98,7 +98,6 @@ export class AzureRepos extends AzureDevOps {
   }
 
   async *getPullRequests(
-    branch: string,
     repository: GitRepository,
     since?: string
   ): AsyncGenerator<PullRequest> {
@@ -106,7 +105,7 @@ export class AzureRepos extends AzureDevOps {
       ? DateTime.fromISO(since)
       : DateTime.now().minus({days: this.cutoffDays});
 
-    yield* this.listPullRequests(repository, branch, sinceDate);
+    yield* this.listPullRequests(repository, sinceDate);
   }
 
   async *getCommits(
@@ -251,7 +250,6 @@ export class AzureRepos extends AzureDevOps {
 
   /**
    * Lists 'all' of the pull requests within a given project and repository
-   * whose target branch is the given branch.
    *
    * @param repo            The repository whose pull requests should be retrieved
    * @param branch          The target branch of pull requests that should be retrieved
@@ -260,12 +258,10 @@ export class AzureRepos extends AzureDevOps {
    */
   private async *listPullRequests(
     repo: GitRepository,
-    branch: string,
     since?: DateTime
   ): AsyncGenerator<PullRequest> {
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: PullRequestStatus.All,
-      targetRefName: `refs/heads/${branch}`,
     };
 
     const getPullRequestsFn = (
