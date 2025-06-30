@@ -45,6 +45,22 @@
         "default": 90,
         "minimum": 1,
         "description": "Fetch activities within the specified number of days"
+      },
+      "max_retries": {
+        "type": "integer",
+        "title": "Max Retries",
+        "default": 5,
+        "minimum": 0,
+        "maximum": 10,
+        "description": "Maximum number of retry attempts for Google Drive API calls when encountering quota exceeded errors. Uses exponential backoff with jitter."
+      },
+      "retry_delay": {
+        "type": "integer",
+        "title": "Base Retry Delay (ms)",
+        "default": 1000,
+        "minimum": 100,
+        "maximum": 10000,
+        "description": "Base delay in milliseconds for retry attempts. The actual delay increases exponentially with each retry attempt and includes random jitter to avoid synchronized retries."
       }
     }
   }

@@ -140,6 +140,7 @@ function setupGoogleDriveInstance(
       };
 
       return new GoogleDrive(
+        {} as any,
         mockCredentials,
         mockAuth as any,
         adminDirectoryClient as any,

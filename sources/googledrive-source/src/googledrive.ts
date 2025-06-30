@@ -4,7 +4,9 @@ import {
   WorkspaceCustomer,
   WorkspaceUser,
 } from 'faros-airbyte-common/googledrive';
+import {Utils} from 'faros-js-client';
 import {admin_directory_v1, Auth, driveactivity_v2, google} from 'googleapis';
+import {random} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
@@ -22,6 +24,8 @@ export type Drive = PersonalDrive | SharedDrive;
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_INCLUDE_PERSONAL_DRIVES = true;
+export const DEFAULT_MAX_RETRIES = 5;
+export const DEFAULT_RETRY_DELAY = 1000;
 
 export const REQUIRED_SCOPES = [
   'https://www.googleapis.com/auth/admin.directory.customer.readonly',
@@ -36,6 +40,8 @@ export interface GoogleDriveConfig extends AirbyteConfig {
   readonly shared_drive_ids?: ReadonlyArray<string>;
   readonly include_personal_drives?: boolean;
   readonly cutoff_days?: number;
+  readonly max_retries?: number;
+  readonly retry_delay?: number;
 }
 
 type PaginationReqFunc = (pageToken?: string) => Promise<any>;
@@ -43,14 +49,20 @@ type ErrorWrapperReqFunc<T> = (...opts: any) => Promise<T>;
 
 export class GoogleDrive {
   private static googleDrive: GoogleDrive;
+  private readonly maxRetries: number;
+  private readonly retryDelay: number;
 
   constructor(
+    config: GoogleDriveConfig,
     private readonly credentials: Auth.JWTInput,
     private readonly auth: Auth.GoogleAuth,
     private readonly adminDirectoryClient: admin_directory_v1.Admin,
     private readonly driveActivityClient: driveactivity_v2.Driveactivity,
     private readonly logger: AirbyteLogger
-  ) {}
+  ) {
+    this.maxRetries = config.max_retries ?? DEFAULT_MAX_RETRIES;
+    this.retryDelay = config.retry_delay ?? DEFAULT_RETRY_DELAY;
+  }
 
   static async instance(
     config: GoogleDriveConfig,
@@ -85,6 +97,7 @@ export class GoogleDrive {
     const driveActivityClient = google.driveactivity({version: 'v2', auth});
 
     GoogleDrive.googleDrive = new GoogleDrive(
+      config,
       credentials,
       auth,
       adminDirectoryClient,
@@ -106,25 +119,69 @@ export class GoogleDrive {
     }
   }
 
+  private calculateRetryDelay(attempt: number): number {
+    // Exponential backoff with jitter as recommended by Google
+    // Wait time = min(((2^n) * base_delay + random_jitter), max_backoff)
+    const exponentialDelay = Math.pow(2, attempt) * this.retryDelay;
+    const jitter = random(0, 1000); // Random jitter up to 1 second
+    return Math.min(exponentialDelay + jitter, 64000); // 64 seconds as recommended by Google
+  }
+
+  private isRetryableError(err: any): boolean {
+    const status = err?.response?.status || err?.status || err?.code;
+    const message = err?.message || err?.response?.data?.error?.message || '';
+
+    // Check for quota exceeded status codes and specific error messages
+    return (
+      status === 403 ||
+      status === 429 ||
+      status >= 500 ||
+      message.includes('quota') ||
+      message.includes('Quota exceeded') ||
+      message.includes('Rate limit') ||
+      message.includes('Too many requests') ||
+      message.includes('User rate limit exceeded')
+    );
+  }
+
   private async invokeCallWithErrorWrapper<T>(
     func: ErrorWrapperReqFunc<T>,
     message = '',
     pageToken?: string
   ): Promise<T> {
-    let res: T;
-    try {
-      res = await func(pageToken);
-    } catch (err: any) {
-      this.wrapAndThrow(err, message);
+    let lastError: any;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        return await func(pageToken);
+      } catch (err: any) {
+        lastError = err;
+
+        // Check if this is a retryeable error that should be retried
+        if (this.isRetryableError(err) && attempt < this.maxRetries) {
+          const delay = this.calculateRetryDelay(attempt);
+          this.logger.info(
+            `Google Drive API error. Retrying in ${delay}ms ` +
+              `(attempt ${attempt + 1}/${this.maxRetries}). Error: ${err.message}`
+          );
+          await Utils.sleep(delay);
+          continue;
+        }
+
+        // If it's not a retryable error or we've exhausted retries, break
+        break;
+      }
     }
-    return res;
+
+    // If we get here, we've either exhausted retries or hit a non-retryable error
+    this.wrapAndThrow(lastError, message);
   }
 
   private wrapAndThrow(err: any, errMessage = ''): void {
     if (err.error_code || err.error_info) {
       throw new VError(`${err.error_code}: ${err.error_info}`);
     }
-    let errorMessage = errMessage;
+    let errorMessage = `${errMessage}: `;
     try {
       errorMessage += err.errMessage ?? err.statusText ?? wrapApiError(err);
     } catch (wrapError: any) {
@@ -196,7 +253,7 @@ export class GoogleDrive {
     for await (const activity of this.paginate<driveactivity_v2.Schema$DriveActivity>(
       func,
       'activities',
-      'Failed to query Drive activities'
+      'Failed to query Google Drive activity'
     )) {
       yield activity;
     }
@@ -217,7 +274,7 @@ export class GoogleDrive {
     for await (const user of this.paginate<WorkspaceUser>(
       func,
       'users',
-      'Failed to query workspace users'
+      'Failed to query Google Workspace users'
     )) {
       users.push(user);
     }
@@ -230,7 +287,7 @@ export class GoogleDrive {
         this.adminDirectoryClient.customers.get({
           customerKey: 'my_customer',
         }),
-      'Failed to get workspace customer information'
+      'Failed to get Google Workspace customer information'
     );
     return res.data;
   }
