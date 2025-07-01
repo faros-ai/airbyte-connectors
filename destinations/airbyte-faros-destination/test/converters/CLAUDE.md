@@ -39,7 +39,7 @@ Example:
   "type": "RECORD"
 }
 
-2. Register the Stream
+#### 2. Register the Stream
 
 Add your stream to the catalog configuration:
 - File: destinations/airbyte-faros-destination/test/resources/faros_[source]/catalog.json
