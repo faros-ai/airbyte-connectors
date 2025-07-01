@@ -32,6 +32,12 @@
         "null"
       ]
     },
+    "author_username": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "_links": {
       "type": "object",
       "properties": {

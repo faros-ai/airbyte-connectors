@@ -643,8 +643,8 @@ export class GitLab {
       }
 
       // Collect author information if available
-      if (typedRelease.author) {
-        this.userCollector.collectUser(typedRelease.author);
+      if (typedRelease.user) {
+        this.userCollector.collectUser(typedRelease.user);
       }
 
       yield {
@@ -657,6 +657,7 @@ export class GitLab {
           'released_at',
           '_links',
         ]),
+        author_username: typedRelease.user?.username ?? null,
       };
     }
   }
