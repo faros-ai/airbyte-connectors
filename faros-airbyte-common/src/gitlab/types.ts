@@ -7,6 +7,7 @@ import {
   MergeRequestSchema,
   NoteSchema,
   ProjectSchema,
+  ReleaseSchema,
   TagSchema,
   UserSchema,
 } from '@gitbeaker/rest';
@@ -124,4 +125,18 @@ export type FarosIssueOutput = {
   | 'created_at'
   | 'updated_at'
   | 'labels'
+>;
+
+export type FarosReleaseOutput = {
+  readonly __brand: 'FarosRelease';
+  group_id: string;
+  project_path: string;
+} & Pick<
+  ReleaseSchema,
+  | 'tag_name'
+  | 'name'
+  | 'description'
+  | 'created_at'
+  | 'released_at'
+  | '_links'
 >;

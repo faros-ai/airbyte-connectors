@@ -8,6 +8,7 @@ import {
   LabelSchema,
   NoteSchema,
   ProjectSchema,
+  ReleaseSchema,
   TagSchema,
 } from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
@@ -20,6 +21,7 @@ import {
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
   FarosProjectOutput,
+  FarosReleaseOutput,
   FarosTagOutput,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
@@ -605,6 +607,56 @@ export class GitLab {
         author_username: typedIssue.author.username,
         assignee_usernames:
           typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
+      };
+    }
+  }
+
+  async *getReleases(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosReleaseOutput, 'group_id' | 'project_path'>> {
+    const options: any = {
+      orderBy: 'created_at',
+      sort: 'desc',
+      perPage: this.pageSize,
+    };
+
+    for await (const release of this.offsetPagination((paginationOptions) =>
+      this.client.ProjectReleases.all(projectPath, {
+        ...options,
+        ...paginationOptions,
+      })
+    )) {
+      const typedRelease = release as ReleaseSchema;
+
+      if (typedRelease.created_at) {
+        const releaseCreatedAt = new Date(typedRelease.created_at);
+        // Break pagination if we've reached releases older than our cutoff
+        if (since && releaseCreatedAt < since) {
+          break;
+        }
+        // Skip releases newer than our cutoff
+        if (until && releaseCreatedAt > until) {
+          continue;
+        }
+      }
+
+      // Collect author information if available
+      if (typedRelease.author) {
+        this.userCollector.collectUser(typedRelease.author);
+      }
+
+      yield {
+        __brand: 'FarosRelease',
+        ...pick(typedRelease, [
+          'tag_name',
+          'name',
+          'description',
+          'created_at',
+          'released_at',
+          '_links',
+        ]),
       };
     }
   }

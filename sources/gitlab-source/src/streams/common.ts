@@ -48,6 +48,7 @@ export const FullStreamNames = [
   'faros_merge_requests',
   'faros_merge_request_reviews',
   'faros_projects',
+  'faros_releases',
   'faros_tags',
   'faros_users',
 ];
@@ -60,6 +61,7 @@ export const CustomStreamNames = [
   'faros_merge_requests',
   'faros_merge_request_reviews',
   'faros_projects',
+  'faros_releases',
   'faros_tags',
   'faros_users',
 ];

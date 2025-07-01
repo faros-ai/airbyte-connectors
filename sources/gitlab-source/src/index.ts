@@ -28,6 +28,7 @@ import {FarosIssues} from './streams/faros_issues';
 import {FarosMergeRequestReviews} from './streams/faros_merge_request_reviews';
 import {FarosMergeRequests} from './streams/faros_merge_requests';
 import {FarosProjects} from './streams/faros_projects';
+import {FarosReleases} from './streams/faros_releases';
 import {FarosTags} from './streams/faros_tags';
 import {FarosUsers} from './streams/faros_users';
 import {GitLabConfig} from './types';
@@ -77,6 +78,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       new FarosMergeRequests(config, this.logger, farosClient),
       new FarosMergeRequestReviews(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
+      new FarosReleases(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),
     ];
