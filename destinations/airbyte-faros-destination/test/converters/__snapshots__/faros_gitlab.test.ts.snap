@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 9 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 25 records",
-  "Would write records by model: {\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 10 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 27 records",
+  "Would write records by model: {\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -458,6 +458,41 @@ Array [
       },
       "submittedAt": "2025-06-13T01:52:18.939Z",
       "uid": "4346114969",
+    },
+  },
+  Object {
+    "cicd_Release": Object {
+      "author": Object {
+        "source": "GitLab",
+        "uid": "john-doe",
+      },
+      "createdAt": "2024-01-15T10:30:45.123Z",
+      "description": "Minor release with bug fixes and performance improvements",
+      "name": "Release 2.1.0",
+      "releasedAt": "2024-01-15T14:22:30.456Z",
+      "source": "GitLab",
+      "uid": "backend-services/v2.1.0",
+      "url": "https://gitlab.example.com/acme-corp/web-platform/backend-services/-/releases/v2.1.0",
+    },
+  },
+  Object {
+    "cicd_ReleaseTagAssociation": Object {
+      "release": Object {
+        "source": "GitLab",
+        "uid": "backend-services/v2.1.0",
+      },
+      "source": "GitLab",
+      "tag": Object {
+        "name": "v2.1.0",
+        "repository": Object {
+          "name": "backend-services",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "42",
+          },
+          "uid": "backend-services",
+        },
+      },
     },
   },
 ]

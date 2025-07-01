@@ -129,6 +129,7 @@ export type FarosIssueOutput = {
 
 export type FarosReleaseOutput = {
   readonly __brand: 'FarosRelease';
+  author_username: string | null;
   group_id: string;
   project_path: string;
 } & Pick<
