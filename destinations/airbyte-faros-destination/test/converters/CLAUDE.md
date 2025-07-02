@@ -5,6 +5,8 @@
 When implementing a new faros converter, test coverage is essential. The approach differs depending on whether you're adding to an existing source or creating
 the first tests for a new source.
 
+> **⚠️ Remember**: Always run `npm run build` before testing to compile your TypeScript changes!
+
 ### Adding Tests to Existing Source
 
 #### 1. Add Test Data Record
@@ -56,26 +58,39 @@ Example:
 }
 ```
 
-#### 3. Run Tests Without Snapshot Update
+#### 3. Build the Code
 
-First, run the test to verify your converter produces the expected models:
+**IMPORTANT**: Always rebuild the TypeScript code before running tests to ensure your changes take effect:
+```bash
+npm run build
+```
+
+#### 4. Run Tests Without Snapshot Update
+
+After building, run the test to verify your converter produces the expected models:
+```bash
 npm test -- faros_gitlab.test.ts
+```
 
 Review the diff to ensure:
 - Correct number of records are processed
 - Expected destination models appear (e.g., cicd_Release, cicd_ReleaseTagAssociation)
 - Data transformations are correct
 
-#### 4. Update Snapshot
+#### 5. Update Snapshot
 
 If the output looks correct, update the snapshot:
+```bash
 npm test -- faros_gitlab.test.ts -u
+```
 
-This updates __snapshots__/faros_gitlab.test.ts.snap with your new models.
+This updates `__snapshots__/faros_gitlab.test.ts.snap` with your new models.
 
 ### Creating Tests for a New Source
 
 If you're writing the first faros tests for a new source:
+
+> **⚠️ Don't forget**: Run `npm run build` before testing your new converter!
 
 #### 1. Create Test File
 
@@ -150,12 +165,19 @@ Create catalog.json with your faros streams:
 
 Create all-streams.json with test records for each stream.
 
-Key Points
+### Key Points
 
+- **Always run `npm run build` before testing** - TypeScript changes must be compiled for tests to reflect your updates
 - No separate test file needed for existing sources - Tests are integrated into existing test suites
 - Create new test infrastructure for new sources following the established pattern
 - Use realistic test data - Base it on actual API responses but modify values
 - Verify transformations - Check that fields are mapped correctly
 - Follow existing patterns - Match the structure of other test records in the file
+
+### Common Testing Issues
+
+1. **Tests not reflecting code changes**: Always rebuild with `npm run build` before running tests
+2. **Snapshot mismatches**: Review the diff carefully before updating snapshots with `-u`
+3. **Missing test data**: Ensure your test records include all required fields for the converter
 
 This approach ensures comprehensive test coverage while maintaining consistency with the existing test infrastructure.

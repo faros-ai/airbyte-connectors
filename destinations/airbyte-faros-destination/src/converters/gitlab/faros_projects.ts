@@ -13,6 +13,8 @@ export class FarosProjects extends GitlabConverter {
     'tms_Project',
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
+    'cicd_Pipeline',
+    'compute_Application',
   ];
 
   async convert(
@@ -76,6 +78,27 @@ export class FarosProjects extends GitlabConverter {
       record: {
         board: projectKey,
         project: projectKey,
+      },
+    });
+
+    res.push({
+      model: 'cicd_Pipeline',
+      record: {
+        uid: projectName,
+        organization,
+        name: project.name ?? projectName,
+        description: Utils.cleanAndTruncate(project.description),
+        url: project.web_url,
+      },
+    });
+
+    res.push({
+      model: 'compute_Application',
+      record: {
+        name: project.path,
+        platform: this.streamName.source,
+        displayName: project.name,
+        included: true,
       },
     });
 
