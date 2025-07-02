@@ -38,6 +38,7 @@ Example:
   },
   "type": "RECORD"
 }
+```
 
 #### 2. Register the Stream
 
@@ -46,14 +47,16 @@ Add your stream to the catalog configuration:
 - Add: Stream entry with destination sync mode
 
 Example:
+```json
 {
   "stream": {
     "name": "mytestsource__gitlab__faros_releases"
   },
   "destination_sync_mode": "overwrite"
 }
+```
 
-3. Run Tests Without Snapshot Update
+#### 3. Run Tests Without Snapshot Update
 
 First, run the test to verify your converter produces the expected models:
 npm test -- faros_gitlab.test.ts
@@ -63,23 +66,24 @@ Review the diff to ensure:
 - Expected destination models appear (e.g., cicd_Release, cicd_ReleaseTagAssociation)
 - Data transformations are correct
 
-4. Update Snapshot
+#### 4. Update Snapshot
 
 If the output looks correct, update the snapshot:
 npm test -- faros_gitlab.test.ts -u
 
 This updates __snapshots__/faros_gitlab.test.ts.snap with your new models.
 
-Creating Tests for a New Source
+### Creating Tests for a New Source
 
 If you're writing the first faros tests for a new source:
 
-1. Create Test File
+#### 1. Create Test File
 
 Create a new test file following the pattern:
 - File: destinations/airbyte-faros-destination/test/converters/faros_[source].test.ts
 
 Use this template:
+```ts
 import {getLocal} from 'mockttp';
 import {destinationWriteTest} from 'faros-airbyte-testing-tools';
 import {tempConfig} from '../testing-tools';
@@ -111,17 +115,19 @@ describe('faros_[source]', () => {
     });
   });
 });
+```
 
-2. Create Test Resources Directory
+#### 2. Create Test Resources Directory
 
 Create the directory structure:
 test/resources/faros_[source]/
 ├── all-streams.json
 └── catalog.json
 
-3. Create Catalog File
+#### 3. Create Catalog File
 
 Create catalog.json with your faros streams:
+```json
 {
   "streams": [
     {
@@ -138,8 +144,9 @@ Create catalog.json with your faros streams:
     }
   ]
 }
+```
 
-4. Create Test Data File
+#### 4. Create Test Data File
 
 Create all-streams.json with test records for each stream.
 
@@ -152,4 +159,3 @@ Key Points
 - Follow existing patterns - Match the structure of other test records in the file
 
 This approach ensures comprehensive test coverage while maintaining consistency with the existing test infrastructure.
-```
