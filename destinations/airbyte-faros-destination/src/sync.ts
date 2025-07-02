@@ -204,14 +204,16 @@ class FarosSyncClient extends FarosClient {
       this._axiosConfig ?? DEFAULT_AXIOS_CONFIG,
       this.logger
     );
+    const headers: Record<string, string> = {
+      'content-length': `${content.length}`,
+      'content-md5': hash,
+      'content-type': 'text/plain; charset=UTF-8',
+    };
+    if (urlResp.uploadUrl.includes('windows.net')) {
+      headers['x-ms-blob-type'] = 'BlockBlob';
+    }
     const uploadResp = await this.attemptRequest(
-      api.put(urlResp.uploadUrl, content, {
-        headers: {
-          'content-length': content.length,
-          'content-md5': hash,
-          'content-type': 'text/plain; charset=UTF-8',
-        },
-      }),
+      api.put(urlResp.uploadUrl, content, {headers}),
       'Failed to upload sync logs'
     );
     if (!uploadResp && !skipVerify) {
