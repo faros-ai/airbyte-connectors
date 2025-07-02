@@ -24,7 +24,8 @@ export class Users extends AirbyteStreamBase {
   async *readRecords(): AsyncGenerator<User> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.additional_fields
     );
     yield* azureWorkitem.getUsers(this.config.projects);
   }

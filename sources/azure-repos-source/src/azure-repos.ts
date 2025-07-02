@@ -49,7 +49,7 @@ export class AzureRepos extends AzureDevOps {
     super(client, instanceType, cutoffDays, top, logger);
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
     this.logger.debug(
-      `Fetching commits and pull requests from branches matching pattern: ` +
+      `Fetching commits from branches matching pattern: ` +
         `${this.branchPattern}`
     );
 

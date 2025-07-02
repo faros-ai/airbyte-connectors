@@ -20,7 +20,8 @@ export class Workitems extends StreamWithProjectSlices {
   ): AsyncGenerator<WorkItemWithRevisions> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.additional_fields
     );
     const {name} = streamSlice;
     const since =

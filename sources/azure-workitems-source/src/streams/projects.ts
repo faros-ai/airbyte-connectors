@@ -17,7 +17,8 @@ export class Projects extends StreamBase {
   async *readRecords(): AsyncGenerator<TeamProject> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.additional_fields
     );
     yield* await azureWorkitem.getProjects(this.config.projects);
   }
