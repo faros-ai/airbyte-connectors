@@ -7,6 +7,7 @@ import {
 } from 'faros-js-client';
 import {DEFAULT_AXIOS_CONFIG} from 'faros-js-client/lib/client';
 import {Dictionary} from 'ts-essentials';
+import {URL} from 'url';
 import {VError} from 'verror';
 
 import {LogContent} from './destination-logger';
@@ -209,7 +210,8 @@ class FarosSyncClient extends FarosClient {
       'content-md5': hash,
       'content-type': 'text/plain; charset=UTF-8',
     };
-    if (urlResp.uploadUrl.includes('windows.net')) {
+    const parsedUrl = new URL(urlResp.uploadUrl);
+    if (parsedUrl.host.endsWith('.windows.net')) {
       headers['x-ms-blob-type'] = 'BlockBlob';
     }
     const uploadResp = await this.attemptRequest(
