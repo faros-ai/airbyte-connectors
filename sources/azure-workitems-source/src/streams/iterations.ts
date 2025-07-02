@@ -18,7 +18,8 @@ export class Iterations extends StreamWithProjectSlices {
   ): AsyncGenerator<WorkItemClassificationNode> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.additional_fields
     );
     const projectId = streamSlice?.id;
     yield* azureWorkitem.getIterations(projectId);
