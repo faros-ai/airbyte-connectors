@@ -83,6 +83,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly start_date?: string;
   readonly end_date?: string;
   readonly source_qualifier?: string;
+  readonly custom_headers?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
@@ -241,6 +242,7 @@ export class Jira {
         headers: {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
+          ...(JSON.parse(cfg.custom_headers ?? '{}')),
         },
         timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
         // https://github.com/axios/axios/issues/5058#issuecomment-1272229926

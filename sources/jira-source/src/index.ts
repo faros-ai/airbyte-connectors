@@ -63,6 +63,15 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   async checkConnection(config: JiraConfig): Promise<[boolean, VError]> {
     try {
+      // Validate custom_headers JSON format if provided
+      if (config.custom_headers) {
+        try {
+          JSON.parse(config.custom_headers);
+        } catch (error) {
+          throw new VError('Invalid JSON format in custom_headers configuration');
+        }
+      }
+
       const jira = await Jira.instance(config, this.logger);
       const projectKeys = config.projects
         ? new Set(config.projects)
