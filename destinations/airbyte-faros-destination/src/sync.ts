@@ -206,12 +206,12 @@ class FarosSyncClient extends FarosClient {
       this.logger
     );
     const headers: Record<string, string> = {
-      'content-length': `${content.length}`,
+      'content-length': `${Buffer.byteLength(content, 'utf8')}`,
       'content-md5': hash,
       'content-type': 'text/plain; charset=UTF-8',
     };
     const parsedUrl = new URL(urlResp.uploadUrl);
-    if (parsedUrl.host.endsWith('.windows.net')) {
+    if (parsedUrl.hostname.endsWith('.blob.core.windows.net')) {
       headers['x-ms-blob-type'] = 'BlockBlob';
     }
     const uploadResp = await this.attemptRequest(
