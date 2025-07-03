@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "__brand": {
+      "type": "string",
+      "const": "FarosDeployment"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": ["string", "null"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "sha": {
+      "type": ["string", "null"]
+    },
+    "environment": {
+      "type": ["object", "null"],
+      "properties": {
+        "name": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "deployable": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": ["string", "null"]
+        },
+        "status": {
+          "type": ["string", "null"]
+        },
+        "web_url": {
+          "type": ["string", "null"]
+        },
+        "created_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "started_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "artifacts": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "file_type": {
+                "type": ["string", "null"]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["__brand", "id", "status", "created_at", "updated_at", "group_id", "project_path"]
+}

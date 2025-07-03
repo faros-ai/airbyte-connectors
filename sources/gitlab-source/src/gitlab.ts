@@ -16,6 +16,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   FarosCommitOutput,
+  FarosDeploymentOutput,
   FarosGroupOutput,
   FarosIssueOutput,
   FarosMergeRequestOutput,
@@ -661,4 +662,37 @@ export class GitLab {
       };
     }
   }
+
+  async *getDeployments(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosDeploymentOutput, 'group_id' | 'project_path'>> {
+    const options: any = {
+      orderBy: 'updated_at',
+      sort: 'desc',
+      perPage: this.pageSize,
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    for await (const deployment of this.offsetPagination((paginationOptions) =>
+      this.client.Deployments.all(projectPath, {
+        ...options,
+        ...paginationOptions,
+      })
+    )) {
+      yield {
+        __brand: 'FarosDeployment',
+        ...deployment,
+      };
+    }
+  }
+
 }

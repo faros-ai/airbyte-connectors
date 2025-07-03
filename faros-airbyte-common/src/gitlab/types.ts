@@ -141,3 +141,32 @@ export type FarosReleaseOutput = {
   | 'released_at'
   | '_links'
 >;
+
+export type FarosDeploymentOutput = {
+  readonly __brand: 'FarosDeployment';
+  group_id: string;
+  project_path: string;
+  sha?: string;
+  environment?: {
+    name?: string;
+  };
+  deployable?: {
+    id: number;
+    name?: string;
+    status?: string;
+    web_url?: string;
+    created_at?: string;
+    started_at?: string;
+    finished_at?: string;
+    artifacts?: Array<{
+      filename: string;
+      file_type?: string;
+    }>;
+  };
+} & {
+  id: number;
+  status: string;
+  web_url?: string;
+  created_at: string;
+  updated_at: string;
+};
