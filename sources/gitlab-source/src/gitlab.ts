@@ -688,10 +688,21 @@ export class GitLab {
         ...paginationOptions,
       })
     )) {
+      const typedDeployment = deployment as any;
+
       yield {
         __brand: 'FarosDeployment',
-        ...deployment,
-      };
+        ...pick(typedDeployment, [
+          'id',
+          'status',
+          'web_url',
+          'sha',
+          'environment',
+          'deployable',
+        ]),
+        created_at: typedDeployment.created_at || typedDeployment.createdAt,
+        updated_at: typedDeployment.updated_at || typedDeployment.updatedAt,
+      } as Omit<FarosDeploymentOutput, 'group_id' | 'project_path'>;
     }
   }
 

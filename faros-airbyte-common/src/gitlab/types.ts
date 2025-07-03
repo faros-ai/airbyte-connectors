@@ -146,6 +146,12 @@ export type FarosDeploymentOutput = {
   readonly __brand: 'FarosDeployment';
   group_id: string;
   project_path: string;
+} & {
+  id: number;
+  status: string;
+  web_url?: string;
+  created_at: string;
+  updated_at: string;
   sha?: string;
   environment?: {
     name?: string;
@@ -163,10 +169,4 @@ export type FarosDeploymentOutput = {
       file_type?: string;
     }>;
   };
-} & {
-  id: number;
-  status: string;
-  web_url?: string;
-  created_at: string;
-  updated_at: string;
 };
