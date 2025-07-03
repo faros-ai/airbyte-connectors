@@ -242,7 +242,14 @@ export class Jira {
         headers: {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
-          ...(JSON.parse(cfg.custom_headers ?? '{}')),
+          ...(() => {
+            try {
+              return JSON.parse(cfg.custom_headers ?? '{}');
+            } catch (error) {
+              logger?.error(`Failed to parse custom_headers: ${error.message}`);
+              throw new VError('Invalid JSON in custom_headers configuration');
+            }
+          })(),
         },
         timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
         // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
