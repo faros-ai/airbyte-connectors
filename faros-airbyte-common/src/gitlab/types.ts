@@ -1,6 +1,7 @@
 import {
   Camelize,
   CommitSchema,
+  DeploymentSchema,
   EventSchema,
   GroupSchema,
   IssueSchema,
@@ -141,3 +142,9 @@ export type FarosReleaseOutput = {
   | 'released_at'
   | '_links'
 >;
+
+export type FarosDeploymentOutput = {
+  readonly __brand: 'FarosDeployment';
+  group_id: string;
+  path_with_namespace: string;
+} & DeploymentSchema;

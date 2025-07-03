@@ -1,6 +1,7 @@
 import {
   Camelize,
   CommitSchema,
+  DeploymentSchema,
   EventSchema,
   Gitlab as GitlabClient,
   GroupSchema,
@@ -16,6 +17,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   FarosCommitOutput,
+  FarosDeploymentOutput,
   FarosGroupOutput,
   FarosIssueOutput,
   FarosMergeRequestOutput,
@@ -658,6 +660,55 @@ export class GitLab {
           '_links',
         ]),
         author_username: typedRelease.user?.username ?? null,
+      };
+    }
+  }
+
+  async *getDeployments(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosDeploymentOutput, 'group_id' | 'path_with_namespace'>> {
+    const options: any = {
+      orderBy: 'updated_at',
+      sort: 'desc',
+      perPage: this.pageSize,
+    };
+
+    // Add updatedAfter parameter for incremental sync
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    for await (const deployment of this.offsetPagination((paginationOptions) =>
+      this.client.Deployments.all(projectPath, {
+        ...options,
+        ...paginationOptions,
+      })
+    )) {
+      const typedDeployment = deployment as DeploymentSchema;
+
+      if (typedDeployment.updated_at) {
+        const deploymentUpdatedAt = new Date(typedDeployment.updated_at);
+        // Skip deployments newer than our cutoff
+        if (until && deploymentUpdatedAt > until) {
+          continue;
+        }
+      }
+
+      // Collect user who triggered the deployment
+      if (typedDeployment.user) {
+        this.userCollector.collectUser(typedDeployment.user);
+      }
+
+      // Collect user from the deployable (build/job) if available
+      if (typedDeployment.deployable?.user) {
+        this.userCollector.collectUser(typedDeployment.deployable.user);
+      }
+
+      yield {
+        __brand: 'FarosDeployment',
+        ...typedDeployment,
       };
     }
   }
