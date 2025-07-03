@@ -147,4 +147,16 @@ export type FarosDeploymentOutput = {
   readonly __brand: 'FarosDeployment';
   group_id: string;
   path_with_namespace: string;
-} & DeploymentSchema;
+} & Pick<
+  DeploymentSchema,
+  | 'id'
+  | 'iid'
+  | 'ref'
+  | 'sha'
+  | 'user'
+  | 'created_at'
+  | 'updated_at'
+  | 'status'
+  | 'deployable'
+  | 'environment'
+>;
