@@ -17,7 +17,7 @@ export class FarosDeployments extends StreamWithProjectSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['id', 'path_with_namespace'];
+    return ['id'];
   }
 
   get cursorField(): string | string[] {
