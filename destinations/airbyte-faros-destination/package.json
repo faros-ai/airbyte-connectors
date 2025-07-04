@@ -61,7 +61,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "faros-airbyte-testing-tools": "*",
     "jest": "^29.7.0",
-    "mockttp": "^3.9.2",
+    "mockttp": "^4.0.1",
     "prettier": "^3.3.2",
     "tmp-promise": "^3.0.3",
     "ts-jest": "^29.1.5",
