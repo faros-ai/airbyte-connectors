@@ -708,7 +708,18 @@ export class GitLab {
 
       yield {
         __brand: 'FarosDeployment',
-        ...typedDeployment,
+        ...pick(typedDeployment, [
+          'id',
+          'iid',
+          'ref',
+          'sha',
+          'user',
+          'created_at',
+          'updated_at',
+          'status',
+          'deployable',
+          'environment',
+        ]),
       };
     }
   }
