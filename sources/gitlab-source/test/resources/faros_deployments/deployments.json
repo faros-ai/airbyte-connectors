@@ -1,0 +1,206 @@
+[
+  {
+    "id": 101,
+    "iid": 1,
+    "ref": "main",
+    "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+    "created_at": "2023-01-15T10:30:00Z",
+    "updated_at": "2023-01-15T10:45:00Z",
+    "status": "success",
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "username": "john.doe",
+      "email": "john.doe@example.com",
+      "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+      "web_url": "https://gitlab.com/john.doe"
+    },
+    "deployable": {
+      "id": 201,
+      "ref": "main",
+      "name": "deploy",
+      "stage": "deploy",
+      "started_at": "2023-01-15T10:30:00Z",
+      "finished_at": "2023-01-15T10:45:00Z",
+      "status": "success",
+      "tag": false,
+      "coverage": null,
+      "created_at": "2023-01-15T10:25:00Z",
+      "duration": 900,
+      "user": {
+        "id": 1,
+        "name": "John Doe",
+        "username": "john.doe",
+        "email": "john.doe@example.com",
+        "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+        "web_url": "https://gitlab.com/john.doe"
+      },
+      "commit": {
+        "id": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "short_id": "a1b2c3d4",
+        "title": "Deploy to production",
+        "author_name": "John Doe",
+        "author_email": "john.doe@example.com",
+        "authored_date": "2023-01-15T10:15:00Z",
+        "committer_name": "John Doe",
+        "committer_email": "john.doe@example.com",
+        "committed_date": "2023-01-15T10:15:00Z",
+        "message": "Deploy to production\n\nUpdates deployment configuration",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/a1b2c3d4e5f6789012345678901234567890abcd"
+      },
+      "pipeline": {
+        "id": 301,
+        "ref": "main",
+        "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "status": "success",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301"
+      }
+    },
+    "environment": {
+      "id": 401,
+      "name": "production",
+      "slug": "production",
+      "external_url": "https://myapp.example.com",
+      "description": "Production environment",
+      "state": "available",
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-15T10:45:00Z"
+    }
+  },
+  {
+    "id": 102,
+    "iid": 2,
+    "ref": "develop",
+    "sha": "b2c3d4e5f6789012345678901234567890abcdef",
+    "created_at": "2023-01-16T14:20:00Z",
+    "updated_at": "2023-01-16T14:25:00Z",
+    "status": "failed",
+    "user": {
+      "id": 2,
+      "name": "Jane Smith",
+      "username": "jane.smith",
+      "email": "jane.smith@example.com",
+      "avatar_url": "https://gitlab.com/avatars/jane.smith.png",
+      "web_url": "https://gitlab.com/jane.smith"
+    },
+    "deployable": {
+      "id": 202,
+      "ref": "develop",
+      "name": "deploy",
+      "stage": "deploy",
+      "started_at": "2023-01-16T14:20:00Z",
+      "finished_at": "2023-01-16T14:25:00Z",
+      "status": "failed",
+      "tag": false,
+      "coverage": null,
+      "created_at": "2023-01-16T14:15:00Z",
+      "duration": 300,
+      "user": {
+        "id": 2,
+        "name": "Jane Smith",
+        "username": "jane.smith",
+        "email": "jane.smith@example.com",
+        "avatar_url": "https://gitlab.com/avatars/jane.smith.png",
+        "web_url": "https://gitlab.com/jane.smith"
+      },
+      "commit": {
+        "id": "b2c3d4e5f6789012345678901234567890abcdef",
+        "short_id": "b2c3d4e5",
+        "title": "Fix deployment issue",
+        "author_name": "Jane Smith",
+        "author_email": "jane.smith@example.com",
+        "authored_date": "2023-01-16T14:10:00Z",
+        "committer_name": "Jane Smith",
+        "committer_email": "jane.smith@example.com",
+        "committed_date": "2023-01-16T14:10:00Z",
+        "message": "Fix deployment issue\n\nAttempt to resolve configuration problem",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/b2c3d4e5f6789012345678901234567890abcdef"
+      },
+      "pipeline": {
+        "id": 302,
+        "ref": "develop",
+        "sha": "b2c3d4e5f6789012345678901234567890abcdef",
+        "status": "failed",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/302"
+      }
+    },
+    "environment": {
+      "id": 402,
+      "name": "staging",
+      "slug": "staging",
+      "external_url": "https://staging.myapp.example.com",
+      "description": "Staging environment",
+      "state": "available",
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-16T14:25:00Z"
+    }
+  },
+  {
+    "id": 103,
+    "iid": 3,
+    "ref": "feature/new-feature",
+    "sha": "c3d4e5f6789012345678901234567890abcdef01",
+    "created_at": "2023-01-17T09:15:00Z",
+    "updated_at": "2023-01-17T09:20:00Z",
+    "status": "running",
+    "user": {
+      "id": 3,
+      "name": "Bob Johnson",
+      "username": "bob.johnson",
+      "email": "bob.johnson@example.com",
+      "avatar_url": "https://gitlab.com/avatars/bob.johnson.png",
+      "web_url": "https://gitlab.com/bob.johnson"
+    },
+    "deployable": {
+      "id": 203,
+      "ref": "feature/new-feature",
+      "name": "deploy",
+      "stage": "deploy",
+      "started_at": "2023-01-17T09:15:00Z",
+      "finished_at": null,
+      "status": "running",
+      "tag": false,
+      "coverage": null,
+      "created_at": "2023-01-17T09:10:00Z",
+      "duration": null,
+      "user": {
+        "id": 3,
+        "name": "Bob Johnson",
+        "username": "bob.johnson",
+        "email": "bob.johnson@example.com",
+        "avatar_url": "https://gitlab.com/avatars/bob.johnson.png",
+        "web_url": "https://gitlab.com/bob.johnson"
+      },
+      "commit": {
+        "id": "c3d4e5f6789012345678901234567890abcdef01",
+        "short_id": "c3d4e5f6",
+        "title": "Add new feature",
+        "author_name": "Bob Johnson",
+        "author_email": "bob.johnson@example.com",
+        "authored_date": "2023-01-17T09:05:00Z",
+        "committer_name": "Bob Johnson",
+        "committer_email": "bob.johnson@example.com",
+        "committed_date": "2023-01-17T09:05:00Z",
+        "message": "Add new feature\n\nImplements requested functionality",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/c3d4e5f6789012345678901234567890abcdef01"
+      },
+      "pipeline": {
+        "id": 303,
+        "ref": "feature/new-feature",
+        "sha": "c3d4e5f6789012345678901234567890abcdef01",
+        "status": "running",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/303"
+      }
+    },
+    "environment": {
+      "id": 403,
+      "name": "development",
+      "slug": "development",
+      "external_url": "https://dev.myapp.example.com",
+      "description": "Development environment",
+      "state": "available",
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-17T09:20:00Z"
+    }
+  }
+]
