@@ -528,7 +528,7 @@ Array [
   },
   Object {
     "compute_Application": Object {
-      "name": "group/subgroup/project",
+      "name": "project",
       "platform": "GitLab",
       "source": "GitLab",
     },
@@ -544,7 +544,7 @@ Array [
           "source": "GitLab",
           "uid": "1001",
         },
-        "uid": "group/subgroup/project",
+        "uid": "project",
       },
       "source": "GitLab",
       "startedAt": "2023-07-03T09:10:23.323Z",
@@ -564,18 +564,18 @@ Array [
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "uid": "2001",
       },
       "commit": Object {
         "repository": Object {
-          "name": "group/subgroup/project",
+          "name": "project",
           "organization": Object {
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "sha": "abc123def456789012345678901234567890abcd",
         "uid": "abc123def456789012345678901234567890abcd",
@@ -586,7 +586,7 @@ Array [
   Object {
     "cicd_Deployment": Object {
       "application": Object {
-        "name": "group/subgroup/project",
+        "name": "project",
         "platform": "GitLab",
         "source": "GitLab",
       },
@@ -596,7 +596,7 @@ Array [
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "uid": "2001",
       },
@@ -633,12 +633,12 @@ Array [
       },
       "commit": Object {
         "repository": Object {
-          "name": "group/subgroup/project",
+          "name": "project",
           "organization": Object {
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "sha": "abc123def456789012345678901234567890abcd",
         "uid": "abc123def456789012345678901234567890abcd",
@@ -676,12 +676,12 @@ Array [
       },
       "commit": Object {
         "repository": Object {
-          "name": "group/subgroup/project",
+          "name": "project",
           "organization": Object {
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "sha": "abc123def456789012345678901234567890abcd",
         "uid": "abc123def456789012345678901234567890abcd",
@@ -704,7 +704,7 @@ Array [
   },
   Object {
     "compute_Application": Object {
-      "name": "group/subgroup/project",
+      "name": "project",
       "platform": "GitLab",
       "source": "GitLab",
     },
@@ -720,7 +720,7 @@ Array [
           "source": "GitLab",
           "uid": "1001",
         },
-        "uid": "group/subgroup/project",
+        "uid": "project",
       },
       "source": "GitLab",
       "startedAt": "2023-07-04T10:15:30.000Z",
@@ -740,18 +740,18 @@ Array [
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "uid": "2002",
       },
       "commit": Object {
         "repository": Object {
-          "name": "group/subgroup/project",
+          "name": "project",
           "organization": Object {
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "sha": "def456abc789012345678901234567890abcdef",
         "uid": "def456abc789012345678901234567890abcdef",
@@ -762,7 +762,7 @@ Array [
   Object {
     "cicd_Deployment": Object {
       "application": Object {
-        "name": "group/subgroup/project",
+        "name": "project",
         "platform": "GitLab",
         "source": "GitLab",
       },
@@ -772,7 +772,7 @@ Array [
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "group/subgroup/project",
+          "uid": "project",
         },
         "uid": "2002",
       },
@@ -794,7 +794,7 @@ Array [
   },
   Object {
     "compute_Application": Object {
-      "name": "another-group/another-project",
+      "name": "another-project",
       "platform": "GitLab",
       "source": "GitLab",
     },
@@ -802,7 +802,7 @@ Array [
   Object {
     "cicd_Deployment": Object {
       "application": Object {
-        "name": "another-group/another-project",
+        "name": "another-project",
         "platform": "GitLab",
         "source": "GitLab",
       },

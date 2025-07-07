@@ -351,7 +351,7 @@
           ]
         },
         "group_id": "1001",
-        "path_with_namespace": "group/subgroup/project"
+        "project_path": "project"
       }
     },
     "type": "RECORD"
@@ -450,7 +450,7 @@
           "artifacts": []
         },
         "group_id": "1001",
-        "path_with_namespace": "group/subgroup/project"
+        "project_path": "project"
       }
     },
     "type": "RECORD"
@@ -488,7 +488,7 @@
         },
         "deployable": null,
         "group_id": "1002",
-        "path_with_namespace": "another-group/another-project"
+        "project_path": "another-project"
       }
     },
     "type": "RECORD"

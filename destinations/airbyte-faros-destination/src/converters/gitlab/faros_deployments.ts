@@ -33,19 +33,19 @@ export class FarosDeployments extends GitlabConverter {
     const cicdOrganization = {uid: toLower(deployment.group_id), source};
     const cicdPipeline = {
       organization: cicdOrganization,
-      uid: toLower(deployment.path_with_namespace),
+      uid: toLower(deployment.project_path),
     };
 
     // VCS entity references for commit associations
     const vcsOrganization = {uid: toLower(deployment.group_id), source};
     const vcsRepository = {
-      name: toLower(deployment.path_with_namespace),
-      uid: toLower(deployment.path_with_namespace),
+      name: toLower(deployment.project_path),
+      uid: toLower(deployment.project_path),
       organization: vcsOrganization,
     };
 
     // Application reference for deployments
-    const application = {name: deployment.path_with_namespace, platform: source};
+    const application = {name: deployment.project_path, platform: source};
 
     // Create compute_Application
     res.push({
