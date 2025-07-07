@@ -243,5 +243,254 @@
       }
     },
     "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581483123,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 101,
+        "iid": 1,
+        "ref": "main",
+        "sha": "abc123def456789012345678901234567890abcd",
+        "created_at": "2023-07-03T09:10:08.691Z",
+        "updated_at": "2023-07-03T09:11:04.844Z",
+        "status": "success",
+        "user": {
+          "id": 1001,
+          "username": "john.doe",
+          "public_email": null,
+          "name": "John Doe",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/john.doe"
+        },
+        "environment": {
+          "id": 401,
+          "name": "production",
+          "slug": "production",
+          "external_url": "https://app.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-05-27T09:20:23.444Z"
+        },
+        "deployable": {
+          "id": 2001,
+          "status": "success",
+          "stage": "deploy",
+          "name": "deploy-job",
+          "ref": "main",
+          "tag": false,
+          "coverage": null,
+          "allow_failure": false,
+          "created_at": "2023-07-03T09:10:08.234Z",
+          "started_at": "2023-07-03T09:10:23.323Z",
+          "finished_at": "2023-07-03T09:11:04.805Z",
+          "erased_at": null,
+          "duration": 41.482176,
+          "queued_duration": 1.988106,
+          "user": {
+            "id": 1001,
+            "username": "john.doe",
+            "public_email": null,
+            "name": "John Doe",
+            "state": "active",
+            "locked": false,
+            "avatar_url": "https://secure.gravatar.com/avatar/example?s=80&d=identicon",
+            "web_url": "https://gitlab.example.com/john.doe",
+            "created_at": "2023-01-01T00:00:00.000Z",
+            "bio": "",
+            "location": "",
+            "job_title": "",
+            "bot": false,
+            "followers": 0,
+            "following": 0
+          },
+          "commit": {
+            "id": "abc123def456789012345678901234567890abcd",
+            "short_id": "abc123de",
+            "created_at": "2023-07-03T14:38:52.000Z",
+            "parent_ids": ["def456abc789012345678901234567890abcdef"],
+            "title": "Deploy application update",
+            "message": "Deploy application update\n\nImplements new features and bug fixes",
+            "author_name": "john.doe",
+            "author_email": "john.doe@example.com",
+            "authored_date": "2023-07-03T14:38:52.000Z",
+            "committer_name": "john.doe",
+            "committer_email": "john.doe@example.com",
+            "committed_date": "2023-07-03T14:38:52.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/commit/abc123def456789012345678901234567890abcd"
+          },
+          "pipeline": {
+            "id": 3001,
+            "iid": 10,
+            "project_id": 5001,
+            "sha": "abc123def456789012345678901234567890abcd",
+            "ref": "main",
+            "status": "success",
+            "source": "web",
+            "created_at": "2023-07-03T09:10:08.217Z",
+            "updated_at": "2023-07-03T09:12:08.858Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/pipelines/3001"
+          },
+          "web_url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2001",
+          "artifacts": [
+            {
+              "file_type": "archive",
+              "size": 1024000,
+              "filename": "artifacts.zip",
+              "file_format": "zip"
+            },
+            {
+              "file_type": "trace",
+              "size": 7914,
+              "filename": "job.log",
+              "file_format": null
+            }
+          ]
+        },
+        "group_id": "1001",
+        "project_path": "project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581490000,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 102,
+        "iid": 2,
+        "ref": "develop",
+        "sha": "def456abc789012345678901234567890abcdef",
+        "created_at": "2023-07-04T10:15:00.000Z",
+        "updated_at": "2023-07-04T10:20:00.000Z",
+        "status": "failed",
+        "user": {
+          "id": 1002,
+          "username": "jane.smith",
+          "public_email": null,
+          "name": "Jane Smith",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example2?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/jane.smith"
+        },
+        "environment": {
+          "id": 402,
+          "name": "staging",
+          "slug": "staging",
+          "external_url": "https://staging.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-07-04T10:20:00.000Z"
+        },
+        "deployable": {
+          "id": 2002,
+          "status": "failed",
+          "stage": "deploy",
+          "name": "deploy-staging",
+          "ref": "develop",
+          "tag": false,
+          "coverage": null,
+          "allow_failure": false,
+          "created_at": "2023-07-04T10:15:00.000Z",
+          "started_at": "2023-07-04T10:15:30.000Z",
+          "finished_at": "2023-07-04T10:20:00.000Z",
+          "erased_at": null,
+          "duration": 270.0,
+          "queued_duration": 2.0,
+          "user": {
+            "id": 1002,
+            "username": "jane.smith",
+            "public_email": null,
+            "name": "Jane Smith",
+            "state": "active",
+            "locked": false,
+            "avatar_url": "https://secure.gravatar.com/avatar/example2?s=80&d=identicon",
+            "web_url": "https://gitlab.example.com/jane.smith",
+            "created_at": "2023-01-01T00:00:00.000Z",
+            "bio": "",
+            "location": "",
+            "job_title": "Developer",
+            "bot": false,
+            "followers": 5,
+            "following": 3
+          },
+          "commit": {
+            "id": "def456abc789012345678901234567890abcdef",
+            "short_id": "def456ab",
+            "created_at": "2023-07-04T10:00:00.000Z",
+            "parent_ids": ["abc123def456789012345678901234567890abcd"],
+            "title": "Fix staging deployment",
+            "message": "Fix staging deployment\n\nAddress configuration issues",
+            "author_name": "jane.smith",
+            "author_email": "jane.smith@example.com",
+            "authored_date": "2023-07-04T10:00:00.000Z",
+            "committer_name": "jane.smith",
+            "committer_email": "jane.smith@example.com",
+            "committed_date": "2023-07-04T10:00:00.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/commit/def456abc789012345678901234567890abcdef"
+          },
+          "pipeline": {
+            "id": 3002,
+            "iid": 11,
+            "project_id": 5001,
+            "sha": "def456abc789012345678901234567890abcdef",
+            "ref": "develop",
+            "status": "failed",
+            "source": "push",
+            "created_at": "2023-07-04T10:15:00.000Z",
+            "updated_at": "2023-07-04T10:20:00.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/pipelines/3002"
+          },
+          "web_url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2002",
+          "artifacts": []
+        },
+        "group_id": "1001",
+        "project_path": "project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581500000,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 103,
+        "iid": 3,
+        "ref": "feature/enhancement",
+        "sha": "fed789cba012345678901234567890abcdef123",
+        "created_at": "2023-07-05T15:30:00.000Z",
+        "updated_at": "2023-07-05T15:35:00.000Z",
+        "status": "running",
+        "user": {
+          "id": 1003,
+          "username": "bob.wilson",
+          "public_email": null,
+          "name": "Bob Wilson",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example3?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/bob.wilson"
+        },
+        "environment": {
+          "id": 403,
+          "name": "development",
+          "slug": "development",
+          "external_url": "https://dev.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-07-05T15:35:00.000Z"
+        },
+        "deployable": null,
+        "group_id": "1002",
+        "project_path": "another-project"
+      }
+    },
+    "type": "RECORD"
   }
 ]

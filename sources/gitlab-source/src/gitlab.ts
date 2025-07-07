@@ -668,7 +668,7 @@ export class GitLab {
     projectPath: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<Omit<FarosDeploymentOutput, 'group_id' | 'path_with_namespace'>> {
+  ): AsyncGenerator<Omit<FarosDeploymentOutput, 'group_id' | 'project_path'>> {
     const options: any = {
       orderBy: 'updated_at',
       sort: 'desc',

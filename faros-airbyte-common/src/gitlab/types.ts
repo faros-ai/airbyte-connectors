@@ -146,7 +146,7 @@ export type FarosReleaseOutput = {
 export type FarosDeploymentOutput = {
   readonly __brand: 'FarosDeployment';
   group_id: string;
-  path_with_namespace: string;
+  project_path: string;
 } & Pick<
   DeploymentSchema,
   | 'id'

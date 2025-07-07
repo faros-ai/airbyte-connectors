@@ -49,7 +49,7 @@ export class FarosDeployments extends StreamWithProjectSlices {
       yield {
         ...deployment,
         group_id: streamSlice.group_id,
-        path_with_namespace: streamSlice.path_with_namespace,
+        project_path: streamSlice.path,
       } as FarosDeploymentOutput;
     }
   }

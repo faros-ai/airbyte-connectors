@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 10 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 30 records",
-  "Would write records by model: {\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 13 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_deployments\\\\\\":3,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 46 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":2,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_Deployment\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"compute_Application\\\\\\":4,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -524,6 +524,303 @@ Array [
           "uid": "backend-services",
         },
       },
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "project",
+      "platform": "GitLab",
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2023-07-03T09:10:08.234Z",
+      "endedAt": "2023-07-03T09:11:04.805Z",
+      "name": "deploy-job",
+      "number": 2001,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "1001",
+        },
+        "uid": "project",
+      },
+      "source": "GitLab",
+      "startedAt": "2023-07-03T09:10:23.323Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "uid": "2001",
+      "url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2001",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "uid": "2001",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "project",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "sha": "abc123def456789012345678901234567890abcd",
+        "uid": "abc123def456789012345678901234567890abcd",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "project",
+        "platform": "GitLab",
+        "source": "GitLab",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "uid": "2001",
+      },
+      "endedAt": "2023-07-03T09:11:04.805Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "production",
+      },
+      "requestedAt": "2023-07-03T09:10:08.691Z",
+      "source": "GitLab",
+      "startedAt": "2023-07-03T09:10:23.323Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "uid": "101",
+      "url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2001",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "createdAt": "2023-07-03T09:11:04.805Z",
+      "name": "artifacts.zip",
+      "source": "GitLab",
+      "type": "archive",
+      "uid": "2001-artifacts.zip",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "source": "GitLab",
+        "uid": "2001-artifacts.zip",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "project",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "sha": "abc123def456789012345678901234567890abcd",
+        "uid": "abc123def456789012345678901234567890abcd",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "source": "GitLab",
+        "uid": "2001-artifacts.zip",
+      },
+      "deployment": Object {
+        "source": "GitLab",
+        "uid": "101",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "createdAt": "2023-07-03T09:11:04.805Z",
+      "name": "job.log",
+      "source": "GitLab",
+      "type": "trace",
+      "uid": "2001-job.log",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "source": "GitLab",
+        "uid": "2001-job.log",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "project",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "sha": "abc123def456789012345678901234567890abcd",
+        "uid": "abc123def456789012345678901234567890abcd",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "source": "GitLab",
+        "uid": "2001-job.log",
+      },
+      "deployment": Object {
+        "source": "GitLab",
+        "uid": "101",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "project",
+      "platform": "GitLab",
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2023-07-04T10:15:00.000Z",
+      "endedAt": "2023-07-04T10:20:00.000Z",
+      "name": "deploy-staging",
+      "number": 2002,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "1001",
+        },
+        "uid": "project",
+      },
+      "source": "GitLab",
+      "startedAt": "2023-07-04T10:15:30.000Z",
+      "status": Object {
+        "category": "Failed",
+        "detail": "failed",
+      },
+      "uid": "2002",
+      "url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2002",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "uid": "2002",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "project",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "sha": "def456abc789012345678901234567890abcdef",
+        "uid": "def456abc789012345678901234567890abcdef",
+      },
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "project",
+        "platform": "GitLab",
+        "source": "GitLab",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "project",
+        },
+        "uid": "2002",
+      },
+      "endedAt": "2023-07-04T10:20:00.000Z",
+      "env": Object {
+        "category": "Staging",
+        "detail": "staging",
+      },
+      "requestedAt": "2023-07-04T10:15:00.000Z",
+      "source": "GitLab",
+      "startedAt": "2023-07-04T10:15:30.000Z",
+      "status": Object {
+        "category": "Failed",
+        "detail": "failed",
+      },
+      "uid": "102",
+      "url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2002",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "another-project",
+      "platform": "GitLab",
+      "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "another-project",
+        "platform": "GitLab",
+        "source": "GitLab",
+      },
+      "build": null,
+      "endedAt": null,
+      "env": Object {
+        "category": "Dev",
+        "detail": "development",
+      },
+      "requestedAt": "2023-07-05T15:30:00.000Z",
+      "source": "GitLab",
+      "startedAt": "2023-07-05T15:30:00.000Z",
+      "status": Object {
+        "category": "Running",
+        "detail": "running",
+      },
+      "uid": "103",
+      "url": null,
     },
   },
 ]

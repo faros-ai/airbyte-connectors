@@ -35,7 +35,7 @@
     "group_id": {
       "type": "string"
     },
-    "path_with_namespace": {
+    "project_path": {
       "type": "string"
     }
   },
@@ -49,6 +49,6 @@
     "status",
     "environment",
     "group_id",
-    "path_with_namespace"
+    "project_path"
   ]
 }
