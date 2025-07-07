@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "iid": {
+      "type": "number"
+    },
+    "ref": {
+      "type": "string"
+    },
+    "sha": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "user": {
+      "type": "object"
+    },
+    "deployable": {
+      "type": ["object", "null"]
+    },
+    "environment": {
+      "type": "object"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "path_with_namespace": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "iid",
+    "ref",
+    "sha",
+    "created_at",
+    "updated_at",
+    "status",
+    "environment",
+    "group_id",
+    "path_with_namespace"
+  ]
+}
