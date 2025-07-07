@@ -29,14 +29,12 @@ export class FarosDeployments extends GitlabConverter {
     const deployment = record.record.data as FarosDeploymentOutput;
     const res: DestinationRecord[] = [];
 
-    // CI/CD entity references following GitLab CI feed conventions
     const cicdOrganization = {uid: toLower(deployment.group_id), source};
     const cicdPipeline = {
       organization: cicdOrganization,
       uid: toLower(deployment.project_path),
     };
 
-    // VCS entity references for commit associations
     const vcsOrganization = {uid: toLower(deployment.group_id), source};
     const vcsRepository = {
       name: toLower(deployment.project_path),
@@ -44,16 +42,13 @@ export class FarosDeployments extends GitlabConverter {
       organization: vcsOrganization,
     };
 
-    // Application reference for deployments
     const application = {name: deployment.project_path, platform: source};
 
-    // Create compute_Application
     res.push({
       model: 'compute_Application',
       record: application,
     });
 
-    // Create the deployment build if deployable exists
     if (deployment.deployable) {
       const buildStatus = this.mapBuildStatus(deployment.deployable.status);
 
@@ -72,7 +67,6 @@ export class FarosDeployments extends GitlabConverter {
         },
       });
 
-      // Create build-commit association
       if (deployment.sha) {
         res.push({
           model: 'cicd_BuildCommitAssociation',
@@ -91,13 +85,12 @@ export class FarosDeployments extends GitlabConverter {
     const deploymentStatus = this.mapDeploymentStatus(deployment.status);
     const environment = this.mapEnvironment(deployment.environment?.name);
 
-    // Create deployment
     res.push({
       model: 'cicd_Deployment',
       record: {
         uid: `${deployment.id}`,
         application,
-        url: deployment.deployable?.web_url || null,
+        url: deployment.deployable?.web_url ?? null,
         build: deployment.deployable
           ? {
               uid: `${deployment.deployable.id}`,
@@ -106,7 +99,7 @@ export class FarosDeployments extends GitlabConverter {
           : null,
         requestedAt: Utils.toDate(deployment.created_at),
         startedAt: Utils.toDate(
-          deployment.deployable?.started_at || deployment.created_at
+          deployment.deployable?.started_at ?? deployment.created_at
         ),
         endedAt: Utils.toDate(deployment.deployable?.finished_at),
         env: environment,
@@ -115,7 +108,6 @@ export class FarosDeployments extends GitlabConverter {
       },
     });
 
-    // Create artifacts and artifact associations
     if (deployment.deployable?.artifacts && Array.isArray(deployment.deployable.artifacts)) {
       for (const artifact of deployment.deployable.artifacts as any[]) {
         const artifactUid = `${deployment.deployable.id}-${artifact.filename}`;
@@ -127,12 +119,11 @@ export class FarosDeployments extends GitlabConverter {
             name: artifact.filename,
             type: artifact.file_type,
             createdAt: Utils.toDate(
-              deployment.deployable.finished_at || deployment.created_at
+              deployment.deployable.finished_at ?? deployment.created_at
             ),
           },
         });
 
-        // Create artifact-commit association
         if (deployment.sha) {
           res.push({
             model: 'cicd_ArtifactCommitAssociation',
@@ -147,7 +138,6 @@ export class FarosDeployments extends GitlabConverter {
           });
         }
 
-        // Create artifact-deployment association
         res.push({
           model: 'cicd_ArtifactDeployment',
           record: {
