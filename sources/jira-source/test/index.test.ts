@@ -17,9 +17,18 @@ import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
-afterEach(() => {
+afterEach(async () => {
+  // Clear any pending timers before switching to real timers
+  jest.clearAllTimers();
   jest.useRealTimers();
+  
+  // Wait for any pending promises to resolve
+  await new Promise(resolve => process.nextTick(resolve));
+  
+  // Clear mocks after async operations complete
   jest.resetAllMocks();
+  
+  // Reset singleton instances
   (Jira as any).jira = undefined;
   (ProjectBoardFilter as any)._instance = undefined;
 });
@@ -842,85 +851,97 @@ describe('index', () => {
 
   test('streams - project versions', async () => {
     jest.useFakeTimers({now: new Date('2023-06-01')});
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'project_versions/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            v2: {
-              projectVersions: {
-                getProjectVersionsPaginated: paginate(
-                  readTestResourceAsJSON(
-                    'project_versions/project_versions.json'
-                  )
-                ),
-              },
-              projects: {
-                searchProjects: paginate(
-                  readTestResourceAsJSON('projects/projects.json'),
-                  'values',
-                  50
-                ),
+    try {
+      await sourceReadTest({
+        source,
+        configOrPath: config,
+        catalogOrPath: 'project_versions/catalog.json',
+        onBeforeReadResultConsumer: (res) => {
+          setupJiraInstance(
+            {
+              v2: {
+                projectVersions: {
+                  getProjectVersionsPaginated: paginate(
+                    readTestResourceAsJSON(
+                      'project_versions/project_versions.json'
+                    )
+                  ),
+                },
+                projects: {
+                  searchProjects: paginate(
+                    readTestResourceAsJSON('projects/projects.json'),
+                    'values',
+                    50
+                  ),
+                },
               },
             },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
+            true,
+            res.config as JiraConfig,
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    } finally {
+      // Ensure timers are properly cleaned up
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    }
   });
 
   test('streams - project version issues', async () => {
     jest.useFakeTimers({now: new Date('2023-06-01')});
-    const version = readTestResourceAsJSON(
-      'project_versions/project_versions.json'
-    )[2];
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'project_version_issues/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            v2: {
-              issueSearch: {
-                searchForIssuesUsingJqlEnhancedSearchPost: paginate(
-                  readTestResourceAsJSON(
-                    'project_version_issues/project_version_issues.json'
+    try {
+      const version = readTestResourceAsJSON(
+        'project_versions/project_versions.json'
+      )[2];
+      await sourceReadTest({
+        source,
+        configOrPath: config,
+        catalogOrPath: 'project_version_issues/catalog.json',
+        onBeforeReadResultConsumer: (res) => {
+          setupJiraInstance(
+            {
+              v2: {
+                issueSearch: {
+                  searchForIssuesUsingJqlEnhancedSearchPost: paginate(
+                    readTestResourceAsJSON(
+                      'project_version_issues/project_version_issues.json'
+                    ),
+                    'issues',
+                    1,
+                    true
                   ),
-                  'issues',
-                  1,
-                  true
-                ),
-              },
-              projects: {
-                searchProjects: paginate(
-                  readTestResourceAsJSON('projects/projects.json'),
-                  'values',
-                  50
-                ),
-              },
-              projectVersions: {
-                getProjectVersionsPaginated: paginate([version]),
+                },
+                projects: {
+                  searchProjects: paginate(
+                    readTestResourceAsJSON('projects/projects.json'),
+                    'values',
+                    50
+                  ),
+                },
+                projectVersions: {
+                  getProjectVersionsPaginated: paginate([version]),
+                },
               },
             },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
+            true,
+            res.config as JiraConfig,
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    } finally {
+      // Ensure timers are properly cleaned up
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    }
   });
 
   test('streams - teams', async () => {
