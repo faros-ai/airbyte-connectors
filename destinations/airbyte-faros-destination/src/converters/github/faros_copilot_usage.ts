@@ -27,7 +27,9 @@ const FarosMetricToAssistantMetricType = {
 };
 
 export class FarosCopilotUsage extends GitHubConverter {
-  private readonly recordsWithoutModelForDeletion = new Set<string>();
+  private readonly recordsWithoutModelForDeletion: {
+    [uid: string]: {day: string};
+  } = {};
   private readonly writtenTags = new Set<string>();
   private writtenMetricDefinitions = false;
 
@@ -256,9 +258,11 @@ export class FarosCopilotUsage extends GitHubConverter {
               )
             );
           }
-          this.recordsWithoutModelForDeletion.add(
+          this.recordsWithoutModelForDeletion[
             assistantMetricWithoutModel.record.uid
-          );
+          ] = {
+            day: summary.day,
+          };
         }
       }
     }
@@ -567,15 +571,18 @@ export class FarosCopilotUsage extends GitHubConverter {
     // make sure we delete old records without model for the same partition
     // that could have been written to avoid duplicated / redundant data
     res.push(
-      ...Array.from(this.recordsWithoutModelForDeletion).map((uid) => ({
-        model: 'vcs_AssistantMetric__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            uid,
+      ...Object.entries(this.recordsWithoutModelForDeletion).map(
+        ([uid, {day}]) => ({
+          model: 'vcs_AssistantMetric__Deletion',
+          record: {
+            flushRequired: false,
+            where: {
+              uid,
+              startedAt: day, // include to benefit from the index on startedAt and improve performance
+            },
           },
-        },
-      })),
+        })
+      ),
       FLUSH
     );
     return res;
