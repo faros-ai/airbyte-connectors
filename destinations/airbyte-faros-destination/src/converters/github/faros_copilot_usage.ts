@@ -8,7 +8,7 @@ import {
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
 
-import {Edition} from '../../common/types';
+import {Edition, FLUSH} from '../../common/types';
 import {Common} from '../common/common';
 import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -27,6 +27,7 @@ const FarosMetricToAssistantMetricType = {
 };
 
 export class FarosCopilotUsage extends GitHubConverter {
+  private readonly recordsWithoutModelForDeletion = new Set<string>();
   private readonly writtenTags = new Set<string>();
   private writtenMetricDefinitions = false;
 
@@ -255,16 +256,9 @@ export class FarosCopilotUsage extends GitHubConverter {
               )
             );
           }
-          // make sure we delete old records without model for the same partition
-          // that could have been written to avoid duplicated / redundant data
-          res.push({
-            model: 'vcs_AssistantMetric__Deletion',
-            record: {
-              where: {
-                uid: assistantMetricWithoutModel.record.uid,
-              },
-            },
-          });
+          this.recordsWithoutModelForDeletion.add(
+            assistantMetricWithoutModel.record.uid
+          );
         }
       }
     }
@@ -564,6 +558,27 @@ export class FarosCopilotUsage extends GitHubConverter {
         model,
       },
     };
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+    // make sure we delete old records without model for the same partition
+    // that could have been written to avoid duplicated / redundant data
+    res.push(
+      ...Array.from(this.recordsWithoutModelForDeletion).map((uid) => ({
+        model: 'vcs_AssistantMetric__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            uid,
+          },
+        },
+      })),
+      FLUSH
+    );
+    return res;
   }
 }
 
