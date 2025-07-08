@@ -247,10 +247,10 @@ export type CopilotUsageSummary = {
   total_lines_suggested: number;
   total_lines_accepted: number;
   total_active_users: number;
-  total_active_chat_users: number;
   total_chats: number;
   total_chat_insertion_events: number;
   total_chat_copy_events: number;
+  total_active_chat_users: number;
   breakdown: {
     language: string;
     editor: string;
@@ -284,6 +284,8 @@ export type CopilotUsageSummary = {
 };
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
+
+export type ModelBreakdown = LanguageEditorBreakdown['model_breakdown'][0];
 
 export type ChatBreakdown = CopilotUsageSummary['chat_breakdown'][0];
 

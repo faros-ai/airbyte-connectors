@@ -3,11 +3,12 @@ import {
   ChatBreakdown,
   CopilotUsageSummary,
   LanguageEditorBreakdown,
+  ModelBreakdown,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
 
-import {Edition} from '../../common/types';
+import {Edition, FLUSH} from '../../common/types';
 import {Common} from '../common/common';
 import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -26,6 +27,7 @@ const FarosMetricToAssistantMetricType = {
 };
 
 export class FarosCopilotUsage extends GitHubConverter {
+  private readonly recordsWithoutModelForDeletion = new Set<string>();
   private readonly writtenTags = new Set<string>();
   private writtenMetricDefinitions = false;
 
@@ -222,18 +224,17 @@ export class FarosCopilotUsage extends GitHubConverter {
     if (!isCommunity) {
       const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
       if (assistantMetricType) {
+        const assistantMetricWithoutModel = this.getAssistantMetric(
+          day,
+          assistantMetricType,
+          breakdown[breakdownMetric] as number,
+          org,
+          team,
+          breakdown.editor,
+          breakdown.language
+        );
         if (!breakdown.model_breakdown) {
-          res.push(
-            ...this.getAssistantMetric(
-              day,
-              assistantMetricType,
-              breakdown[breakdownMetric] as number,
-              org,
-              team,
-              breakdown.editor,
-              breakdown.language
-            )
-          );
+          res.push(assistantMetricWithoutModel);
         } else {
           for (const modelBreakdown of breakdown.model_breakdown) {
             if (
@@ -243,7 +244,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               continue;
             }
             res.push(
-              ...this.getAssistantMetric(
+              this.getAssistantMetric(
                 day,
                 assistantMetricType,
                 modelBreakdown[breakdownMetric] as number,
@@ -255,6 +256,9 @@ export class FarosCopilotUsage extends GitHubConverter {
               )
             );
           }
+          this.recordsWithoutModelForDeletion.add(
+            assistantMetricWithoutModel.record.uid
+          );
         }
       }
     }
@@ -350,7 +354,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
+        this.getAssistantMetric(
           day,
           assistantMetricType,
           modelBreakdown[breakdownMetric] as number,
@@ -390,7 +394,7 @@ export class FarosCopilotUsage extends GitHubConverter {
       const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
       if (assistantMetricType) {
         res.push(
-          ...this.getAssistantMetric(
+          this.getAssistantMetric(
             day,
             assistantMetricType,
             summary[metric],
@@ -439,7 +443,7 @@ export class FarosCopilotUsage extends GitHubConverter {
 
   private calculateDiscards(summary: CopilotUsageSummary): void {
     const calculateDifference = (
-      object: CopilotUsageSummary | LanguageEditorBreakdown,
+      object: CopilotUsageSummary | LanguageEditorBreakdown | ModelBreakdown,
       field1: string,
       field2: string,
       resultField: string
@@ -476,6 +480,26 @@ export class FarosCopilotUsage extends GitHubConverter {
           'lines_accepted',
           'lines_discarded'
         );
+
+        if (
+          !isNil(breakdown.model_breakdown) &&
+          Array.isArray(breakdown.model_breakdown)
+        ) {
+          for (const modelBreakdown of breakdown.model_breakdown) {
+            calculateDifference(
+              modelBreakdown,
+              'suggestions_count',
+              'acceptances_count',
+              'discards_count'
+            );
+            calculateDifference(
+              modelBreakdown,
+              'lines_suggested',
+              'lines_accepted',
+              'lines_discarded'
+            );
+          }
+        }
       }
     }
   }
@@ -489,53 +513,72 @@ export class FarosCopilotUsage extends GitHubConverter {
     editor?: string,
     language?: string,
     model?: string
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'vcs_AssistantMetric',
-        record: {
-          uid: GitHubCommon.digest(
-            []
-              .concat(
-                // original fields (required) to be included in the digest
-                ...[
-                  VCSToolCategory.GitHubCopilot,
-                  assistantMetricType,
-                  day.toISOString(),
-                  org,
-                  team,
-                  editor,
-                  language,
-                ],
-                // newer fields (optional) to be included in the digest
-                ...[{key: 'model', value: model}]
-                  .filter((v) => !isNil(v.value))
-                  .map((v) => `${v.key}:${v.value}`)
-              )
-              .join('__')
-          ),
+  ): DestinationRecord {
+    return {
+      model: 'vcs_AssistantMetric',
+      record: {
+        uid: GitHubCommon.digest(
+          []
+            .concat(
+              // original fields (required) to be included in the digest
+              ...[
+                VCSToolCategory.GitHubCopilot,
+                assistantMetricType,
+                day.toISOString(),
+                org,
+                team,
+                editor,
+                language,
+              ],
+              // newer fields (optional) to be included in the digest
+              ...[{key: 'model', value: model}]
+                .filter((v) => !isNil(v.value))
+                .map((v) => `${v.key}:${v.value}`)
+            )
+            .join('__')
+        ),
+        source: this.streamName.source,
+        startedAt: day,
+        endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
+        type: {category: assistantMetricType},
+        valueType: 'Int',
+        value: String(value),
+        organization: {
+          uid: org,
           source: this.streamName.source,
-          startedAt: day,
-          endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
-          type: {category: assistantMetricType},
-          valueType: 'Int',
-          value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
-          ...(team && {
-            team: {
-              uid: team,
-            },
-          }),
-          tool: {category: VCSToolCategory.GitHubCopilot},
-          editor,
-          language,
-          model,
         },
+        ...(team && {
+          team: {
+            uid: team,
+          },
+        }),
+        tool: {category: VCSToolCategory.GitHubCopilot},
+        editor,
+        language,
+        model,
       },
-    ];
+    };
+  }
+
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    const res: DestinationRecord[] = [];
+    // make sure we delete old records without model for the same partition
+    // that could have been written to avoid duplicated / redundant data
+    res.push(
+      ...Array.from(this.recordsWithoutModelForDeletion).map((uid) => ({
+        model: 'vcs_AssistantMetric__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            uid,
+          },
+        },
+      })),
+      FLUSH
+    );
+    return res;
   }
 }
 
