@@ -1,23 +1,12 @@
-import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
-import {FarosClient, wrapApiError} from 'faros-js-client';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {Utils, wrapApiError} from 'faros-js-client';
 import {AuditRecord} from 'jira.js/out/version2/models';
 import {Dictionary} from 'ts-essentials';
 
-import {Jira, JiraConfig} from '../jira';
-import {StreamBase} from './common';
+import {Jira} from '../jira';
+import {ProjectStreamSlice, StreamState, StreamWithProjectSlices} from './common';
 
-type AuditEventState = {
-  cutoff?: string; // ISO date string of last sync
-};
-
-export class FarosAuditEvents extends StreamBase {
-  constructor(
-    protected readonly config: JiraConfig,
-    protected readonly logger: AirbyteLogger,
-    protected readonly farosClient?: FarosClient
-  ) {
-    super(config, logger, farosClient);
-  }
+export class FarosAuditEvents extends StreamWithProjectSlices {
 
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/farosAuditEvents.json');
@@ -31,63 +20,56 @@ export class FarosAuditEvents extends StreamBase {
     return true;
   }
 
+  get cursorField(): string | string[] {
+    return ['created'];
+  }
+
   getUpdatedState(
-    currentStreamState: AuditEventState,
-    latestRecord: AuditRecord
-  ): AuditEventState {
-    const recordDate = latestRecord?.created;
-    if (!recordDate) {
+    currentStreamState: StreamState,
+    latestRecord: AuditRecord,
+    streamSlice?: ProjectStreamSlice
+  ): StreamState {
+    const recordDate = Utils.toDate(latestRecord?.created);
+    if (!recordDate || !streamSlice?.project) {
       return currentStreamState;
     }
 
-    const currentCutoff = currentStreamState?.cutoff;
-    if (!currentCutoff || recordDate > currentCutoff) {
-      return {cutoff: recordDate};
-    }
-
-    return currentStreamState;
+    return this.getUpdatedStreamState(
+      recordDate,
+      currentStreamState,
+      streamSlice.project
+    );
   }
 
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: any,
-    streamState?: AuditEventState
-  ): AsyncGenerator<any> {
+    streamSlice?: ProjectStreamSlice,
+    streamState?: StreamState
+  ): AsyncGenerator<AuditRecord> {
     const jira = await Jira.instance(this.config, this.logger);
-
-    // Get the projects that are being synced
-    const projects = await this.projectBoardFilter.getProjects();
-    const syncedProjectKeys = new Set(
-      projects.filter((p) => p.issueSync).map((p) => p.uid)
-    );
-
-    // Get the date range using the standard method
-    const cutoff = streamState?.cutoff
-      ? new Date(streamState.cutoff).getTime()
-      : undefined;
+    const projectKey = streamSlice?.project;
+    const projectState = streamState?.[projectKey];
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
-        ? this.getUpdateRange(cutoff)
+        ? this.getUpdateRange(projectState?.cutoff)
         : this.getUpdateRange();
 
     const [fromDate, toDate] = updateRange;
-    this.logger.info(
-      `Syncing audit events from ${fromDate.toISOString()} to ${toDate.toISOString()}`
-    );
 
     try {
       for await (const record of jira.getAuditRecords(
         fromDate,
         toDate,
-        // Only fetch and process issue deletion events
-        'deleted issue'
+        // Only fetch and process issue deletion events for this project
+        `deleted issue ${projectKey}-`
       )) {
         if (record.objectItem?.typeName === 'ISSUE_DELETE') {
           const issueKey = record.objectItem.name;
-          // Only yield deletion events for projects that are being synced
-          const projectKey = issueKey.split('-')[0];
-          if (syncedProjectKeys.has(projectKey)) {
+          // Only yield deletion events for the current project slice
+          // API will return partial matches so need explicit filter
+          const recordProjectKey = issueKey?.split('-')[0];
+          if (recordProjectKey === projectKey) {
             yield record;
           }
         }
