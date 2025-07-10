@@ -25,117 +25,32 @@ export class FarosAuditEvents extends JiraConverter {
     }
 
     const taskReference = {uid: issueKey, source};
-    return [
-      // Delete all relationship models first
-      {
-        model: 'tms_TaskAssignment__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskDependency__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            dependentTask: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskDependency__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            fulfillingTask: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskProjectRelationship__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskBoardRelationship__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskPullRequestAssociation__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskReleaseRelationship__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_TaskTag__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_SprintHistory__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            task: taskReference,
-          },
-        },
-      },
-      {
-        model: 'tms_SprintReport__Deletion',
-        record: {
-          flushRequired: false,
-          where: {
-            sprintHistory: {
-              task: taskReference,
-            },
-          },
-        },
-      },
-      {
-        model: 'tms_Epic__Deletion',
-        record: {
-          flushRequired: false,
-          where: taskReference,
-        },
-      },
-
-      // Delete the main task last
-      {
-        model: 'tms_Task__Deletion',
-        record: {
-          flushRequired: false,
-          where: taskReference,
-        },
-      },
+    const models = [
+      {model: 'tms_TaskAssignment__Deletion', where: {task: taskReference}},
+      {model: 'tms_TaskDependency__Deletion', where: {dependentTask: taskReference}},
+      {model: 'tms_TaskDependency__Deletion', where: {fulfillingTask: taskReference}},
+      {model: 'tms_TaskProjectRelationship__Deletion', where: {task: taskReference}},
+      {model: 'tms_TaskBoardRelationship__Deletion', where: {task: taskReference}},
+      {model: 'tms_TaskPullRequestAssociation__Deletion', where: {task: taskReference}},
+      {model: 'tms_TaskReleaseRelationship__Deletion', where: {task: taskReference}},
+      {model: 'tms_TaskTag__Deletion', where: {task: taskReference}},
+      {model: 'tms_SprintHistory__Deletion', where: {task: taskReference}},
+      {model: 'tms_SprintReport__Deletion', where: {sprintHistory: {task: taskReference}}},
+      {model: 'tms_Epic__Deletion', where: taskReference},
+      {model: 'tms_Task__Deletion', where: taskReference}, // Main task
     ];
+
+    return models.map(({model, where}) => this.createDeletionRecord(model, where));
+  }
+
+  private createDeletionRecord(model: string, where: object): DestinationRecord {
+    return {
+      model,
+      record: {
+        flushRequired: false,
+        where,
+      },
+    };
   }
 
   private extractIssueKey(
