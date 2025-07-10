@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The ID of the audit record"
+    },
+    "summary": {
+      "type": "string",
+      "description": "The summary of the audit record"
+    },
+    "remoteAddress": {
+      "type": "string",
+      "description": "The URL of the computer where the creation of the audit record was initiated"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time on which the audit record was created"
+    },
+    "category": {
+      "type": "string",
+      "description": "The category of the audit record"
+    },
+    "eventSource": {
+      "type": "string",
+      "description": "The event the audit record originated from"
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the audit record"
+    },
+    "objectItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the associated record"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the associated record"
+        },
+        "parentId": {
+          "type": "string",
+          "description": "The ID of the associated parent record"
+        },
+        "parentName": {
+          "type": "string",
+          "description": "The name of the associated parent record"
+        },
+        "typeName": {
+          "type": "string",
+          "description": "The type of the associated record"
+        }
+      }
+    },
+    "changedValues": {
+      "type": "array",
+      "description": "The list of values changed in the record event",
+      "items": {
+        "type": "object"
+      }
+    },
+    "associatedItems": {
+      "type": "array",
+      "description": "The list of items associated with the changed record",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the associated record"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the associated record"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "The ID of the associated parent record"
+          },
+          "parentName": {
+            "type": "string",
+            "description": "The name of the associated parent record"
+          },
+          "typeName": {
+            "type": "string",
+            "description": "The type of the associated record"
+          }
+        }
+      }
+    }
+  }
+}

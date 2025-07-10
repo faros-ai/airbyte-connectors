@@ -342,6 +342,13 @@
         "examples": [
           "Instance2"
         ]
+      },
+      "fetch_audit_events": {
+        "order": 42,
+        "type": "boolean",
+        "title": "Fetch Audit Events",
+        "description": "Enable syncing of audit events, for tracking deleted Jira issues",
+        "default": false
       }
     }
   }

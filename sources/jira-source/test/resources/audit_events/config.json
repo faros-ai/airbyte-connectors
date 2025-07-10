@@ -1,0 +1,8 @@
+{
+  "url": "https://test.atlassian.net",
+  "username": "test@example.com",
+  "password": "test-token",
+  "cutoff_days": 90,
+  "projects": ["TEST"],
+  "fetch_audit_events": true
+}

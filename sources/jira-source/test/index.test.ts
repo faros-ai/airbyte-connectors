@@ -8,7 +8,6 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import {FarosClient} from 'faros-js-client';
-import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
@@ -21,13 +20,13 @@ afterEach(async () => {
   // Clear any pending timers before switching to real timers
   jest.clearAllTimers();
   jest.useRealTimers();
-  
+
   // Wait for any pending promises to resolve
   await new Promise(resolve => process.nextTick(resolve));
-  
+
   // Clear mocks after async operations complete
   jest.resetAllMocks();
-  
+
   // Reset singleton instances
   (Jira as any).jira = undefined;
   (ProjectBoardFilter as any)._instance = undefined;
@@ -1145,6 +1144,43 @@ describe('index', () => {
       bucket_total: 2,
       bucket_id: 2,
       projects: ['TEST', 'TEST2', 'TEST3'],
+    });
+  });
+
+  test('streams - audit_events', async () => {
+    const auditRecords = readTestResourceAsJSON('audit_events/audit_records.json');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'audit_events/config.json',
+      catalogOrPath: 'audit_events/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const config = res.config as JiraConfig;
+
+        // Mock the ProjectBoardFilter to return projects with issueSync: true
+        ProjectBoardFilter.instance = jest.fn().mockReturnValue({
+          getProjects: jest.fn().mockResolvedValue([
+            { uid: 'TEST', issueSync: true },
+            { uid: 'OTHER', issueSync: false },
+          ]),
+        });
+
+        setupJiraInstance(
+          {
+            v2: {
+              auditRecords: {
+                getAuditRecords: paginate(auditRecords.records, 'records', 50, true),
+              },
+            },
+          },
+          true,
+          config,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
     });
   });
 });
