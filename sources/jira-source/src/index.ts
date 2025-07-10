@@ -23,7 +23,6 @@ import {
   JiraConfig,
 } from './jira';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
-
 import {FarosAuditEvents} from './streams/faros_audit_events';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';

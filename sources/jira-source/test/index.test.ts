@@ -1150,7 +1150,6 @@ describe('index', () => {
 
   test('streams - audit_events', async () => {
     const auditRecords = readTestResourceAsJSON('audit_events/audit_records.json');
-    const projects = readTestResourceAsJSON('projects/projects.json');
     
     await sourceReadTest({
       source,
