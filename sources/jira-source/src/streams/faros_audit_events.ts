@@ -1,5 +1,6 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {FarosClient, wrapApiError} from 'faros-js-client';
+import {AuditRecord} from 'jira.js/out/version2/models';
 import {Dictionary} from 'ts-essentials';
 
 import {Jira, JiraConfig} from '../jira';
@@ -23,7 +24,7 @@ export class FarosAuditEvents extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['key'];
+    return ['id'];
   }
 
   get supportsIncremental(): boolean {
@@ -32,7 +33,7 @@ export class FarosAuditEvents extends StreamBase {
 
   getUpdatedState(
     currentStreamState: AuditEventState,
-    latestRecord: any
+    latestRecord: AuditRecord
   ): AuditEventState {
     const recordDate = latestRecord?.created;
     if (!recordDate) {
@@ -41,7 +42,7 @@ export class FarosAuditEvents extends StreamBase {
 
     const currentCutoff = currentStreamState?.cutoff;
     if (!currentCutoff || recordDate > currentCutoff) {
-      return { cutoff: recordDate };
+      return {cutoff: recordDate};
     }
 
     return currentStreamState;
@@ -58,34 +59,36 @@ export class FarosAuditEvents extends StreamBase {
     // Get the projects that are being synced
     const projects = await this.projectBoardFilter.getProjects();
     const syncedProjectKeys = new Set(
-      projects.filter(p => p.issueSync).map(p => p.uid)
+      projects.filter((p) => p.issueSync).map((p) => p.uid)
     );
 
     // Get the date range using the standard method
-    const cutoff = streamState?.cutoff ? new Date(streamState.cutoff).getTime() : undefined;
+    const cutoff = streamState?.cutoff
+      ? new Date(streamState.cutoff).getTime()
+      : undefined;
     const updateRange =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(cutoff)
         : this.getUpdateRange();
 
     const [fromDate, toDate] = updateRange;
-    this.logger.info(`Syncing audit events from ${fromDate.toISOString()} to ${toDate.toISOString()}`);
+    this.logger.info(
+      `Syncing audit events from ${fromDate.toISOString()} to ${toDate.toISOString()}`
+    );
 
     try {
-      // Fetch audit records with filter for deleted issues
-      for await (const record of jira.getAuditRecords(fromDate, toDate, 'deleted issue')) {
-        // Only process issue deletion events
+      for await (const record of jira.getAuditRecords(
+        fromDate,
+        toDate,
+        // Only fetch and process issue deletion events
+        'deleted issue'
+      )) {
         if (record.objectItem?.typeName === 'ISSUE_DELETE') {
           const issueKey = record.objectItem.name;
-          // Extract project key from issue key (e.g., "MKT-457" -> "MKT")
-          const projectKey = issueKey.split('-')[0];
-
           // Only yield deletion events for projects that are being synced
+          const projectKey = issueKey.split('-')[0];
           if (syncedProjectKeys.has(projectKey)) {
-            yield {
-              key: issueKey,
-              isDeleted: true,
-            };
+            yield record;
           }
         }
       }
@@ -93,7 +96,9 @@ export class FarosAuditEvents extends StreamBase {
       // Handle cases where audit API is not available
       if (err?.status === 403 || err?.status === 404) {
         this.logger.warn(
-          `Fetching Audit events failed with status ${err.status}, code ${err.code}. Ensure you have correct Administer Jira (manage:jira-configuration) permissions.`
+          `Fetching Audit events failed with status ${err.status}, ` +
+            `code ${err.code}. Ensure you have correct Administer Jira ` +
+            `(manage:jira-configuration) permissions.`
         );
         return;
       }

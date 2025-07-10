@@ -1666,7 +1666,7 @@ export class Jira {
     from?: Date,
     to?: Date,
     filter?: string
-  ): AsyncIterableIterator<any> {
+  ): AsyncIterableIterator<Version2Models.AuditRecord> {
     yield* this.iterate(
       (startAt) =>
         this.api.v2.auditRecords.getAuditRecords({
@@ -1676,7 +1676,7 @@ export class Jira {
           to: to?.toISOString(),
           filter,
         }),
-      async (record: any) => record,
+      async (record: Version2Models.AuditRecord) => record,
       'records'
     );
   }

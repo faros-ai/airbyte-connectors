@@ -1504,12 +1504,32 @@ exports[`index streams - additional fields 1`] = `
 exports[`index streams - audit_events 1`] = `
 [
   {
-    "isDeleted": true,
-    "key": "TEST-457",
+    "authorAccountId": "712020:eb90f635-7126-4041-a317-c12af10f1e02",
+    "authorKey": "6e4fd6dd-e477-4824-b23a-8d80858aeb35",
+    "category": "issue",
+    "created": "2025-06-17T21:12:45.529+0000",
+    "eventSource": "",
+    "id": 14662,
+    "objectItem": {
+      "name": "TEST-457",
+      "typeName": "ISSUE_DELETE",
+    },
+    "remoteAddress": "136.62.57.167",
+    "summary": "Deleted Jira issue",
   },
   {
-    "isDeleted": true,
-    "key": "TEST-458",
+    "authorAccountId": "712020:eb90f635-7126-4041-a317-c12af10f1e02",
+    "authorKey": "6e4fd6dd-e477-4824-b23a-8d80858aeb35",
+    "category": "issue",
+    "created": "2025-06-17T21:15:30.123+0000",
+    "eventSource": "",
+    "id": 14663,
+    "objectItem": {
+      "name": "TEST-458",
+      "typeName": "ISSUE_DELETE",
+    },
+    "remoteAddress": "136.62.57.167",
+    "summary": "Deleted Jira issue",
   },
 ]
 `;
