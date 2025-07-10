@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "commander": "^13.1.0",
-    "faros-js-client": "^0.7.1"
+    "faros-js-client": "^0.7.6"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.8",
