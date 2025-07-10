@@ -1183,4 +1183,48 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - audit_events with API not available (403)', async () => {
+    const loggerWarnSpy = jest.spyOn(logger, 'warn');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'audit_events/config.json',
+      catalogOrPath: 'audit_events/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const config = res.config as JiraConfig;
+
+        ProjectBoardFilter.instance = jest.fn().mockReturnValue({
+          getProjects: jest.fn().mockResolvedValue([
+            { uid: 'TEST', issueSync: true },
+          ]),
+        });
+
+        setupJiraInstance(
+          {
+            v2: {
+              auditRecords: {
+                getAuditRecords: jest.fn().mockRejectedValue({
+                  status: 403,
+                  code: 'FORBIDDEN',
+                }),
+              },
+            },
+          },
+          true,
+          config,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        // Should have no records due to permission error
+        expect(records).toEqual([]);
+        
+        // Verify warning was logged
+        expect(loggerWarnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Fetching Audit events failed with status 403')
+        );
+      },
+    });
+  });
 });
