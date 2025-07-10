@@ -1147,4 +1147,42 @@ describe('index', () => {
       projects: ['TEST', 'TEST2', 'TEST3'],
     });
   });
+
+  test('streams - audit_events', async () => {
+    const auditRecords = readTestResourceAsJSON('audit_events/audit_records.json');
+    const projects = readTestResourceAsJSON('projects/projects.json');
+    
+    await sourceReadTest({
+      source,
+      configOrPath: 'audit_events/config.json',
+      catalogOrPath: 'audit_events/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const config = res.config as JiraConfig;
+        
+        // Mock the ProjectBoardFilter to return projects with issueSync: true
+        ProjectBoardFilter.instance = jest.fn().mockReturnValue({
+          getProjects: jest.fn().mockResolvedValue([
+            { uid: 'TEST', issueSync: true },
+            { uid: 'OTHER', issueSync: false },
+          ]),
+        });
+        
+        setupJiraInstance(
+          {
+            v2: {
+              auditRecords: {
+                getAuditRecords: paginate(auditRecords.records, 'records', 50, true),
+              },
+            },
+          },
+          true,
+          config,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

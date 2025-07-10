@@ -23,6 +23,8 @@ import {
   JiraConfig,
 } from './jira';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+
+import {FarosAuditEvents} from './streams/faros_audit_events';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
 import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
@@ -114,6 +116,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosTeams(config, this.logger, farosClient),
       new FarosTeamMemberships(config, this.logger, farosClient),
       new FarosIssueAdditionalFields(config, this.logger, farosClient),
+      new FarosAuditEvents(config, this.logger, farosClient),
     ];
   }
 
@@ -167,6 +170,10 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
     );
     if (config.fetch_teams) {
       streamNames.push(...TeamStreamNames);
+    }
+
+    if (config.sync_audit_events) {
+      streamNames.push('faros_audit_events');
     }
     // If use projects as boards is enabled, remove the boards and board issues stream.
     if (config.use_projects_as_boards) {

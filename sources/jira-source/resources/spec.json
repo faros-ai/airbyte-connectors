@@ -342,6 +342,13 @@
         "examples": [
           "Instance2"
         ]
+      },
+      "sync_audit_events": {
+        "order": 42,
+        "type": "boolean",
+        "title": "Sync Audit Events",
+        "description": "Sync audit events",
+        "default": false
       }
     }
   }

@@ -1501,6 +1501,19 @@ exports[`index streams - additional fields 1`] = `
 ]
 `;
 
+exports[`index streams - audit_events 1`] = `
+[
+  {
+    "isDeleted": true,
+    "key": "TEST-457",
+  },
+  {
+    "isDeleted": true,
+    "key": "TEST-458",
+  },
+]
+`;
+
 exports[`index streams - board_issues using board ids 1`] = `
 [
   {

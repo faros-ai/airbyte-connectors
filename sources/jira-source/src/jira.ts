@@ -84,6 +84,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly end_date?: string;
   readonly source_qualifier?: string;
   readonly custom_headers?: string;
+  readonly sync_audit_events?: boolean;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
@@ -1659,5 +1660,24 @@ export class Jira {
 
   getClientStats(): {[key: string]: number} {
     return this.api.getStats();
+  }
+
+  async *getAuditRecords(
+    from?: Date,
+    to?: Date,
+    filter?: string
+  ): AsyncIterableIterator<any> {
+    yield* this.iterate(
+      (startAt) =>
+        this.api.v2.auditRecords.getAuditRecords({
+          offset: startAt,
+          limit: this.maxPageSize,
+          from: from?.toISOString(),
+          to: to?.toISOString(),
+          filter,
+        }),
+      async (record: any) => record,
+      'records'
+    );
   }
 }
