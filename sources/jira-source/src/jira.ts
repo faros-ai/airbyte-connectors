@@ -84,7 +84,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly end_date?: string;
   readonly source_qualifier?: string;
   readonly custom_headers?: string;
-  readonly sync_audit_events?: boolean;
+  readonly fetch_audit_events?: boolean;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;

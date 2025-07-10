@@ -343,11 +343,11 @@
           "Instance2"
         ]
       },
-      "sync_audit_events": {
+      "fetch_audit_events": {
         "order": 42,
         "type": "boolean",
-        "title": "Sync Audit Events",
-        "description": "Sync audit events",
+        "title": "Fetch Audit Events",
+        "description": "Enable syncing of audit events, for tracking deleted Jira issues",
         "default": false
       }
     }

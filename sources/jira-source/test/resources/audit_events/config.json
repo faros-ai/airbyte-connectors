@@ -4,5 +4,5 @@
   "password": "test-token",
   "cutoff_days": 90,
   "projects": ["TEST"],
-  "sync_audit_events": true
+  "fetch_audit_events": true
 }

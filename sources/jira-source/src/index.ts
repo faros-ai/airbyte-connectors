@@ -171,7 +171,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       streamNames.push(...TeamStreamNames);
     }
 
-    if (config.sync_audit_events) {
+    if (config.fetch_audit_events) {
       streamNames.push('faros_audit_events');
     }
     // If use projects as boards is enabled, remove the boards and board issues stream.
