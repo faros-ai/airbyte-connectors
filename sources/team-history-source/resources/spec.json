@@ -1,0 +1,37 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Team Membership History Spec",
+    "type": "object",
+    "required": [
+      "api_key",
+      "graph"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "api_url": {
+        "order": 0,
+        "type": "string",
+        "title": "API URL",
+        "description": "The Faros API URL",
+        "examples": [
+          "https://prod.api.faros.ai"
+        ]
+      },
+      "api_key": {
+        "order": 1,
+        "title": "API Key",
+        "type": "string",
+        "description": "The Faros API key",
+        "airbyte_secret": true
+      },
+      "graph": {
+        "order": 2,
+        "type": "string",
+        "title": "Graph name",
+        "description": "The Faros graph name"
+      }
+    }
+  }
+}

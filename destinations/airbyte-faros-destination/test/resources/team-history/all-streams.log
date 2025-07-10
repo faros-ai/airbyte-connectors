@@ -1,0 +1,6 @@
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team1","memberUid":"user1","startedAt":"2023-01-01T00:00:00Z"}}}
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team2","memberUid":"user1","startedAt":"2023-02-01T00:00:00Z","endedAt":"2023-12-31T23:59:59Z"}}}
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team1","memberUid":"user2","startedAt":"2023-03-15T10:30:00Z"}}}
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team3","memberUid":"user3","startedAt":"2022-06-01T00:00:00Z","endedAt":"2023-05-31T23:59:59Z"}}}
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team2","memberUid":"user2","startedAt":"2023-01-15T08:00:00Z"}}}
+{"type":"RECORD","record":{"stream":"mytestsource__team-history__team_membership_history","emitted_at":1653145791152,"data":{"teamUid":"team4","memberUid":"user4","startedAt":"2021-01-01T00:00:00Z","endedAt":"2022-12-31T23:59:59Z"}}}
