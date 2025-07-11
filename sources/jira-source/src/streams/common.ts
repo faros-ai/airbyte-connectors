@@ -89,6 +89,7 @@ export const CustomStreamNames = [
   'faros_boards',
   'faros_project_versions',
   'faros_project_version_issues',
+  'faros_audit_events',
 ];
 
 export const TeamStreamNames = ['faros_teams', 'faros_team_memberships'];
