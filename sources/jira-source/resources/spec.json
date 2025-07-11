@@ -342,6 +342,13 @@
         "examples": [
           "Instance2"
         ]
+      },
+      "fetch_issue_comments": {
+        "order": 42,
+        "type": "boolean",
+        "title": "Fetch Issue Comments",
+        "description": "Include issue comments in the faros_issues stream. Warning: This may significantly increase API response size and processing time.",
+        "default": false
       }
     }
   }
