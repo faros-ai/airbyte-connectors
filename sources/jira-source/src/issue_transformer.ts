@@ -463,6 +463,18 @@ export class IssueTransformer {
       priority: item.fields.priority?.name,
       project: item.fields.project?.key,
       labels: item.fields.labels ?? [],
+      comments: item.fields.comment?.comments.map((c: any) => ({
+        id: c.id,
+        body: c.body,
+        created: Utils.toDate(c.created),
+        updated: Utils.toDate(c.updated),
+        author: c.author?.accountId
+          ? {
+              accountId: c.author.accountId,
+            }
+          : undefined,
+        parentId: c.parentId ? String(c.parentId) : undefined,
+      })),
       creator,
       created,
       updated: Utils.toDate(item.fields.updated),

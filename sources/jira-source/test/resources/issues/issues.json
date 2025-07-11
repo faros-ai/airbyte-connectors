@@ -574,6 +574,33 @@
           "colorName": "blue-gray",
           "name": "To Do"
         }
+      },
+      "comment": {
+        "comments": [
+          {
+            "id": "1",
+            "author": {
+              "accountId": "1234:aaaaa-1234-1234-bbbb-123456785"
+            },
+            "body": "Comment",
+            "created": "2024-07-10T23:34:48.558-0700",
+            "updated": "2024-07-10T23:34:48.558-0700"
+          },
+          {
+            "id": "2",
+            "author": {
+              "accountId": "1234:aaaaa-1234-1234-bbbb-123456785"
+            },
+            "body": "Reply",
+            "created": "2024-07-10T23:35:48.558-0700",
+            "updated": "2024-07-10T23:35:48.558-0700",
+            "parentId": 1
+          }
+        ],
+        "self": "https://faros-ai.atlassian.net/rest/api/2/issue/33069/comment",
+        "maxResults": 5,
+        "total": 5,
+        "startAt": 0
       }
     }
   }

@@ -225,6 +225,27 @@ export class FarosIssues extends JiraConverter {
       });
     }
 
+    if (issue.comments) {
+      for (const comment of issue.comments) {
+        results.push({
+          model: 'tms_TaskComment',
+          record: {
+            task: {uid: issue.key, source},
+            uid: comment.id,
+            comment: comment.body,
+            createdAt: comment.created,
+            updatedAt: comment.updated,
+            author: comment.author?.accountId
+              ? {uid: comment.author.accountId, source}
+              : undefined,
+            replyTo: comment.parentId
+              ? {task: {uid: issue.key, source}, uid: comment.parentId}
+              : undefined,
+          },
+        });
+      }
+    }
+
     const ancestors = this.updateAncestors(issue);
     return [...results, ...ancestors];
   }
