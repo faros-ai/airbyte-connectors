@@ -347,8 +347,7 @@ export abstract class AirbyteSourceBase<
     );
     const failedSlices = [];
     let streamRecordCounter = 0;
-    let sliceIndex = 0;
-    let totalSliceCount = 0;
+    let processedSlices = 0;
     
     // Get total slice count for progress tracking
     const totalSlices = await streamInstance.getSliceCount(
@@ -359,18 +358,17 @@ export abstract class AirbyteSourceBase<
     
     await streamInstance.onBeforeRead();
     for await (const slice of slices) {
-      sliceIndex++;
-      totalSliceCount++;
+      processedSlices++;
       if (slice) {
         if (totalSlices !== undefined) {
           this.logger.info(
             `Started processing ${streamName} stream slice ${JSON.stringify(
               slice
-            )} (${sliceIndex}/${totalSlices})`
+            )} (${processedSlices}/${totalSlices})`
           );
         } else {
           this.logger.info(
-            `Started processing ${streamName} stream slice #${sliceIndex}: ${JSON.stringify(
+            `Started processing ${streamName} stream slice #${processedSlices}: ${JSON.stringify(
               slice
             )}`
           );
@@ -414,11 +412,11 @@ export abstract class AirbyteSourceBase<
             this.logger.info(
               `Finished processing ${streamName} stream slice ${JSON.stringify(
                 slice
-              )} (${sliceIndex}/${totalSlices}). Read ${sliceRecordCounter} records`
+              )} (${processedSlices}/${totalSlices}). Read ${sliceRecordCounter} records`
             );
           } else {
             this.logger.info(
-              `Finished processing ${streamName} stream slice #${sliceIndex}: ${JSON.stringify(
+              `Finished processing ${streamName} stream slice #${processedSlices}: ${JSON.stringify(
                 slice
               )}. Read ${sliceRecordCounter} records`
             );
@@ -460,12 +458,12 @@ export abstract class AirbyteSourceBase<
     }
 
     const sliceFailurePct =
-      totalSliceCount > 0 ? failedSlices.length / totalSliceCount : undefined;
+      processedSlices > 0 ? failedSlices.length / processedSlices : undefined;
     if (sliceFailurePct >= streamInstance.sliceErrorPctForFailure) {
       this.logger.error(
         `Exceeded slice failure threshold for ${streamName} stream:` +
           ` ${Math.floor(sliceFailurePct * 100)}% of slices -` +
-          ` ${failedSlices.length} out of ${totalSliceCount} - have failed.` +
+          ` ${failedSlices.length} out of ${processedSlices} - have failed.` +
           ` Maximum threshold is ${streamInstance.sliceErrorPctForFailure * 100}%`
       );
       throw new VError(
