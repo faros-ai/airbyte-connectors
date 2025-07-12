@@ -182,9 +182,12 @@ export abstract class AirbyteSourceBase<
 
     // Requested streams in the order they should be processed
     const sortedStreams = toposort.array(configuredStreamNames, streamDeps);
+    const totalStreams = sortedStreams.length;
 
     const failedStreams = [];
+    let streamIndex = 0;
     for (const streamName of sortedStreams) {
+      streamIndex++;
       const configuredStream = configuredStreams[streamName];
       let streamRecordCounter = 0;
       try {
@@ -193,7 +196,9 @@ export abstract class AirbyteSourceBase<
           streamInstance,
           configuredStream,
           state,
-          pick(config, ['backfill'])
+          pick(config, ['backfill']),
+          streamIndex,
+          totalStreams
         );
 
         for await (const message of generator) {
@@ -274,7 +279,9 @@ export abstract class AirbyteSourceBase<
     streamInstance: AirbyteStreamBase,
     configuredStream: AirbyteConfiguredStream,
     connectorState: AirbyteState,
-    config: PartialAirbyteConfig
+    config: PartialAirbyteConfig,
+    streamIndex: number,
+    totalStreams: number
   ): AsyncGenerator<AirbyteMessage> {
     const useIncremental =
       configuredStream.sync_mode === SyncMode.INCREMENTAL &&
@@ -292,7 +299,7 @@ export abstract class AirbyteSourceBase<
     let recordCounter = 0;
     const streamName = configuredStream.stream.name;
     const mode = useIncremental ? 'incremental' : 'full';
-    this.logger.info(`Syncing ${streamName} stream in ${mode} mode`);
+    this.logger.info(`Syncing ${streamName} stream (${streamIndex}/${totalStreams}) in ${mode} mode`);
 
     for await (const record of recordGenerator) {
       if (record.type === AirbyteMessageType.RECORD) {
@@ -340,16 +347,34 @@ export abstract class AirbyteSourceBase<
     );
     const failedSlices = [];
     let streamRecordCounter = 0;
+    let sliceIndex = 0;
     let totalSliceCount = 0;
+    
+    // Get total slice count for progress tracking
+    const totalSlices = await streamInstance.getSliceCount(
+      syncMode,
+      configuredStream.cursor_field,
+      streamState
+    );
+    
     await streamInstance.onBeforeRead();
     for await (const slice of slices) {
+      sliceIndex++;
       totalSliceCount++;
       if (slice) {
-        this.logger.info(
-          `Started processing ${streamName} stream slice ${JSON.stringify(
-            slice
-          )}`
-        );
+        if (totalSlices !== undefined) {
+          this.logger.info(
+            `Started processing ${streamName} stream slice ${JSON.stringify(
+              slice
+            )} (${sliceIndex}/${totalSlices})`
+          );
+        } else {
+          this.logger.info(
+            `Started processing ${streamName} stream slice #${sliceIndex}: ${JSON.stringify(
+              slice
+            )}`
+          );
+        }
       }
       let sliceRecordCounter = 0;
       const records = streamInstance.readRecords(
@@ -385,11 +410,19 @@ export abstract class AirbyteSourceBase<
           yield this.checkpointState(streamName, streamState, connectorState);
         }
         if (slice) {
-          this.logger.info(
-            `Finished processing ${streamName} stream slice ${JSON.stringify(
-              slice
-            )}. Read ${sliceRecordCounter} records`
-          );
+          if (totalSlices !== undefined) {
+            this.logger.info(
+              `Finished processing ${streamName} stream slice ${JSON.stringify(
+                slice
+              )} (${sliceIndex}/${totalSlices}). Read ${sliceRecordCounter} records`
+            );
+          } else {
+            this.logger.info(
+              `Finished processing ${streamName} stream slice #${sliceIndex}: ${JSON.stringify(
+                slice
+              )}. Read ${sliceRecordCounter} records`
+            );
+          }
         }
       } catch (e: any) {
         failedSlices.push(slice);

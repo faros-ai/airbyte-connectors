@@ -145,6 +145,19 @@ export abstract class AirbyteStreamBase {
   }
 
   /**
+   * Override to return the total number of slices this stream will generate.
+   * This enables progress tracking showing (X/Y) slice progress.
+   * Return undefined if the count cannot be determined efficiently.
+   */
+  async getSliceCount(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamState?: Dictionary<any>
+  ): Promise<number | undefined> {
+    return undefined;
+  }
+
+  /**
    * Percentage of slices (expressed as decimal from 0 to 1) that have to error
    * for the stream to count as a failure instead of a partial success.
    */
