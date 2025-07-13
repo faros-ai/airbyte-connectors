@@ -8,6 +8,7 @@ import {
   IssueSchema,
   LabelSchema,
   NoteSchema,
+  PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
   TagSchema,
@@ -22,6 +23,7 @@ import {
   FarosIssueOutput,
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
+  FarosPipelineOutput,
   FarosProjectOutput,
   FarosReleaseOutput,
   FarosTagOutput,
@@ -719,6 +721,59 @@ export class GitLab {
           'status',
           'deployable',
           'environment',
+        ]),
+      };
+    }
+  }
+
+  async *getPipelines(
+    projectPath: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosPipelineOutput, 'group_id' | 'project_path'>> {
+    const options: any = {
+      orderBy: 'updated_at',
+      sort: 'desc',
+      perPage: this.pageSize,
+    };
+
+    // Add updatedAfter parameter for incremental sync
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    for await (const pipeline of this.offsetPagination((paginationOptions) =>
+      this.client.Pipelines.all(projectPath, {
+        ...options,
+        ...paginationOptions,
+      })
+    )) {
+      const typedPipeline = pipeline as PipelineSchema;
+
+      if (typedPipeline.updated_at) {
+        const pipelineUpdatedAt = new Date(typedPipeline.updated_at);
+        // Skip pipelines newer than our cutoff
+        if (until && pipelineUpdatedAt > until) {
+          continue;
+        }
+      }
+
+      // Collect user who triggered the pipeline
+      if (typedPipeline.user) {
+        this.userCollector.collectUser(typedPipeline.user);
+      }
+
+      yield {
+        __brand: 'FarosPipeline',
+        ...pick(typedPipeline, [
+          'id',
+          'status',
+          'ref',
+          'sha',
+          'web_url',
+          'created_at',
+          'updated_at',
+          'user',
         ]),
       };
     }
