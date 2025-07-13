@@ -170,15 +170,24 @@ export abstract class StreamBase extends AirbyteStreamBase {
 }
 
 export abstract class StreamWithOrgSlices extends StreamBase {
+  private async getOrgs(): Promise<ReadonlyArray<string>> {
+    return this.orgRepoFilter.getOrganizations();
+  }
+
   async *streamSlices(): AsyncGenerator<OrgStreamSlice> {
-    for (const org of await this.orgRepoFilter.getOrganizations()) {
+    for (const org of await this.getOrgs()) {
       yield {org};
     }
+  }
+
+  async getSliceCount(): Promise<number> {
+    return (await this.getOrgs()).length;
   }
 }
 
 export abstract class StreamWithRepoSlices extends StreamBase {
-  async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
+  private async getRepoSlices(): Promise<RepoStreamSlice[]> {
+    const slices: RepoStreamSlice[] = [];
     for (const org of await this.orgRepoFilter.getOrganizations()) {
       for (const {
         repo,
@@ -186,18 +195,37 @@ export abstract class StreamWithRepoSlices extends StreamBase {
       } of await this.orgRepoFilter.getRepositories(org)) {
         if (syncRepoData) {
           if (repo.recentPush) {
-            yield {org, repo: repo.name};
+            slices.push({org, repo: repo.name});
           }
         }
       }
     }
+    return slices;
+  }
+
+  async *streamSlices(): AsyncGenerator<RepoStreamSlice> {
+    for (const slice of await this.getRepoSlices()) {
+      yield slice;
+    }
+  }
+
+  async getSliceCount(): Promise<number> {
+    return (await this.getRepoSlices()).length;
   }
 }
 
 export abstract class StreamWithEnterpriseSlices extends StreamBase {
+  private getEnterprises(): string[] {
+    return this.config.enterprises ?? [];
+  }
+
   async *streamSlices(): AsyncGenerator<EnterpriseStreamSlice> {
-    for (const enterprise of this.config.enterprises ?? []) {
+    for (const enterprise of this.getEnterprises()) {
       yield {enterprise};
     }
+  }
+
+  async getSliceCount(): Promise<number> {
+    return this.getEnterprises().length;
   }
 }
