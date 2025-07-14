@@ -232,7 +232,10 @@ export class FarosIssues extends JiraConverter {
           record: {
             task: {uid: issue.key, source},
             uid: comment.id,
-            comment: comment.body,
+            comment: Utils.cleanAndTruncate(
+              comment.body,
+              this.truncateLimit(ctx)
+            ),
             createdAt: comment.created,
             updatedAt: comment.updated,
             author: comment.author?.accountId
