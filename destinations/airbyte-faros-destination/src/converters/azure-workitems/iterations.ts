@@ -8,10 +8,20 @@ import {AzureWorkitemsConverter} from './common';
 
 export class Iterations extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
+  private now: Date;
+
+  // Initialize current time once for consistent state calculation across all iterations
+  private initialize(): void {
+    if (!this.now) {
+      this.now = DateTime.now().setZone('UTC').toJSDate();
+    }
+  }
 
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize();
+    
     const Iteration = record.record.data as WorkItemClassificationNode;
     const startedAt = Iteration.attributes?.startDate
       ? Utils.toDate(Iteration.attributes.startDate)
@@ -58,32 +68,31 @@ export class Iterations extends AzureWorkitemsConverter {
     }
 
     // Calculate state based on dates if timeFrame is not available
-    if (!startDate && !endDate) {
-      // No dates set - consider it future per Azure DevOps logic
-      return 'Future';
-    }
-
-    const now = DateTime.now().setZone('UTC').toJSDate();
-    
-    // If we have an end date and it's in the past, iteration is closed
-    if (endDate && endDate < now) {
+    // Check end date first - if it's in the past, iteration is closed regardless of start date
+    if (endDate && endDate < this.now) {
       return 'Closed';
     }
     
     // If we have a start date that's in the future, iteration is future
-    if (startDate && startDate > now) {
+    if (startDate && startDate > this.now) {
       return 'Future';
     }
     
-    // If we're between start and end dates (or only have start date that's passed)
-    // then we're in an active iteration
-    if (startDate && startDate <= now) {
-      if (!endDate || endDate >= now) {
-        return 'Active';
-      }
+    // If we're between start and end dates, then we're in an active iteration
+    if (startDate && startDate <= this.now && endDate && endDate >= this.now) {
+      return 'Active';
     }
     
-    // Default to Future if we can't determine
+    // Handle edge case: start date exists and has passed, but no end date
+    // Note: Sprints with start date but no end date are treated as Active if started.
+    // This handles cases where sprints are created but end date hasn't been set yet,
+    // or for indefinite iterations like "Backlog". Azure's exact behavior for this
+    // edge case is unclear, but treating started iterations as Active seems reasonable.
+    if (startDate && startDate <= this.now && !endDate) {
+      return 'Active';
+    }
+    
+    // Default: no dates set, or only future start date, or only future end date
     return 'Future';
   }
 
