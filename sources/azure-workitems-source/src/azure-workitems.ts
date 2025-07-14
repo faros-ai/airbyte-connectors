@@ -356,8 +356,17 @@ export class AzureWorkitems extends types.AzureDevOps {
 
   /**
    * Retrieves all iterations for a given project in Azure DevOps using
-   * iteration hierarchy recursively. Using this instead of teamsettings/iterations
-   * since the latter only returns iterations explicitly assigned to a team.
+   * the Classification Nodes API to get the iteration hierarchy recursively.
+   * 
+   * We use the Classification Nodes API instead of the Teams/Iterations API because:
+   * - Classification Nodes API returns ALL iterations defined in the project
+   * - Teams/Iterations API only returns iterations explicitly assigned to specific teams
+   * - Classification Nodes API provides the complete iteration hierarchy structure
+   * - No team context is required, making it more comprehensive for data extraction
+   * 
+   * Note: The Classification Nodes API doesn't include the calculated 'timeFrame' 
+   * attribute (past/current/future), but this is calculated in the converter based 
+   * on the iteration's startDate and finishDate compared to the current date.
    */
   async *getIterations(
     projectId: string
