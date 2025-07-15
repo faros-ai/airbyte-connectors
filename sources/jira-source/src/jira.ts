@@ -869,7 +869,8 @@ export class Jira {
                 startAt,
                 maxResults: this.maxPageSize,
               }),
-            async (item: any) => item
+            async (item: any) => item,
+            'comments'
           )) {
             allComments.push(comment);
           }
