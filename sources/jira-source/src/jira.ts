@@ -817,7 +817,7 @@ export class Jira {
         }),
       async (item: any) => {
         this.memoizeIssue(item, jql);
-
+        // Nested array type fields are expected to return at least 100 results
         return issueTransformer.toIssue(item);
       },
       'issues'
@@ -890,6 +890,7 @@ export class Jira {
           },
         };
         this.memoizeIssue(updatedIssue, params.jql);
+        // Other nested array type fields are expected to return at least 100 results
         return issueTransformer.toIssue(updatedIssue);
       },
       'issues'
