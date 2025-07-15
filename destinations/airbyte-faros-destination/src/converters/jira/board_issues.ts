@@ -12,25 +12,7 @@ export class BoardIssues extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    if (this.useProjectsAsBoards(ctx)) return [];
-    const issue = record.record.data;
-    const source = this.initializeSource(ctx);
-    const relation = {
-      task: {uid: issue.key, source},
-      board: {uid: String(issue.boardId), source},
-    };
-    return [
-      issue.isDeleted
-        ? {
-            model: 'tms_TaskBoardRelationship__Deletion',
-            record: {
-              where: relation,
-            },
-          }
-        : {
-            model: 'tms_TaskBoardRelationship',
-            record: relation,
-          },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

@@ -14,7 +14,7 @@ export class FarosBoardIssues extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    this.initializeSource(ctx);
-    return this.alias.convert(record, ctx);
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

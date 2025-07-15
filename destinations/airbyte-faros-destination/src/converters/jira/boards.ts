@@ -13,22 +13,7 @@ export class Boards extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    if (this.useProjectsAsBoards(ctx)) return [];
-    const board = record.record.data;
-    const uid = board.id.toString();
-    const source = this.initializeSource(ctx);
-    return [
-      {
-        model: 'tms_TaskBoard',
-        record: {uid, name: board.name, source},
-      },
-      {
-        model: 'tms_TaskBoardProjectRelationship',
-        record: {
-          board: {uid, source},
-          project: {uid: board.projectKey, source},
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }
