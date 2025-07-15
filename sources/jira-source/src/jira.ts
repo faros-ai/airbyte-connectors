@@ -166,8 +166,9 @@ const DEFAULT_FETCH_ISSUE_COMMENTS = false;
 const MAX_SPRINTS_RESULTS = 50;
 //https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
 const MAX_TEAMS_RESULTS = 50;
-// Documented in the migration notes of enhanced JQL
+// Documented in the migration notes of enhanced JQL (https://developer.atlassian.com/changelog/#CHANGE-2046)
 const MAX_CHANGELOG_RESULTS = 40;
+const MAX_COMMENTS_RESULTS = 20;
 
 export class Jira {
   private static jira: Jira;
@@ -855,9 +856,37 @@ export class Jira {
           }
           changelogHistories = allChangelogs;
         }
+
+        let comments = item.fields?.comment?.comments;
+        // Enhanced JQL API returns max 20 comments so make extra call to
+        // fetch them all if comments are requested
+        if (item.fields?.comment?.total > MAX_COMMENTS_RESULTS) {
+          const allComments = [];
+          for await (const comment of this.iterate(
+            (startAt) =>
+              this.api.v2.issueComments.getComments({
+                issueIdOrKey: item.id,
+                startAt,
+                maxResults: this.maxPageSize,
+              }),
+            async (item: any) => item
+          )) {
+            allComments.push(comment);
+          }
+          comments = allComments;
+        }
+
         const updatedIssue = {
           ...item,
           changelog: {histories: changelogHistories},
+          fields: {
+            ...item.fields,
+            ...(item.fields.comment && {
+              comment: {
+                comments,
+              },
+            }),
+          },
         };
         this.memoizeIssue(updatedIssue, params.jql);
         return issueTransformer.toIssue(updatedIssue);
