@@ -150,3 +150,14 @@ export interface AdditionalField {
   name: string;
   value: string;
 }
+
+export interface WorkItemPullRequest {
+  readonly repositoryId: string;
+  readonly pullRequestId: number;
+  readonly url: string;
+  readonly projectId: string;
+}
+
+export interface WorkItemWithPullRequestsAndRevisions extends WorkItemWithRevisions {
+  pullRequests: ReadonlyArray<WorkItemPullRequest>;
+}

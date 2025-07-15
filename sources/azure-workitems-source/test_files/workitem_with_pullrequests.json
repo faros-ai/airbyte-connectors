@@ -1,0 +1,60 @@
+{
+  "id": 12345,
+  "rev": 1,
+  "fields": {
+    "System.AreaPath": "Project\\Team\\Component",
+    "System.TeamProject": "MyProject",
+    "System.WorkItemType": "Task",
+    "System.State": "Active",
+    "System.Title": "Implement new feature",
+    "System.CreatedDate": "2024-01-15T10:00:00Z",
+    "System.ChangedDate": "2024-01-15T10:00:00Z",
+    "Faros": {
+      "WorkItemStateCategory": {
+        "name": "Active",
+        "category": "InProgress"
+      }
+    }
+  },
+  "relations": [
+    {
+      "rel": "ArtifactLink",
+      "url": "vstfs:///Git/PullRequestId/proj-123/repo-456/789",
+      "attributes": {
+        "name": "pull request"
+      }
+    },
+    {
+      "rel": "ArtifactLink", 
+      "url": "vstfs:///Git/PullRequestId/proj-123/repo-456/790",
+      "attributes": {
+        "name": "pull request"
+      }
+    }
+  ],
+  "revisions": {
+    "states": [],
+    "assignees": [],
+    "iterations": []
+  },
+  "additionalFields": [],
+  "project": {
+    "id": "proj-123",
+    "name": "MyProject",
+    "url": "https://dev.azure.com/myorg/proj-123"
+  },
+  "pullRequests": [
+    {
+      "repositoryId": "repo-456",
+      "pullRequestId": 789,
+      "url": "vstfs:///Git/PullRequestId/proj-123/repo-456/789",
+      "projectId": "proj-123"
+    },
+    {
+      "repositoryId": "repo-456", 
+      "pullRequestId": 790,
+      "url": "vstfs:///Git/PullRequestId/proj-123/repo-456/790",
+      "projectId": "proj-123"
+    }
+  ]
+}

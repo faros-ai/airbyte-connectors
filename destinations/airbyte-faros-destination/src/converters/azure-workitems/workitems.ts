@@ -3,11 +3,11 @@ import {
   WorkItemAssigneeRevision,
   WorkItemIterationRevision,
   WorkItemStateRevision,
-  WorkItemWithRevisions,
+  WorkItemWithPullRequestsAndRevisions,
 } from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getUniqueName} from '../common/azure-devops';
+import {getUniqueName, getOrganizationFromUrl} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
@@ -26,6 +26,7 @@ export class Workitems extends AzureWorkitemsConverter {
     'tms_TaskBoardProjectRelationship',
     'tms_TaskBoardRelationship',
     'tms_TaskProjectRelationship',
+    'tms_TaskPullRequestAssociation',
     'tms_TaskTag',
   ];
 
@@ -34,7 +35,7 @@ export class Workitems extends AzureWorkitemsConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
-    const WorkItem = record.record.data as WorkItemWithRevisions;
+    const WorkItem = record.record.data as WorkItemWithPullRequestsAndRevisions;
     const taskKey = {uid: String(WorkItem.id), source};
     const projectId = String(WorkItem.project.id);
 
@@ -63,6 +64,7 @@ export class Workitems extends AzureWorkitemsConverter {
     );
 
     const epic = this.getEpic(taskKey, WorkItem.fields, status, projectId);
+    const pullRequestAssociations = this.convertPullRequests(taskKey, WorkItem.pullRequests, WorkItem.project);
 
     return [
       {
@@ -116,6 +118,7 @@ export class Workitems extends AzureWorkitemsConverter {
       ...taskBoard,
       ...sprintHistory,
       ...epic,
+      ...pullRequestAssociations,
     ];
   }
 
@@ -272,6 +275,36 @@ export class Workitems extends AzureWorkitemsConverter {
 
       return records;
     });
+  }
+
+  private convertPullRequests(
+    task: TaskKey,
+    pullRequests: ReadonlyArray<import('faros-airbyte-common/azure-devops').WorkItemPullRequest>,
+    project: any
+  ): ReadonlyArray<DestinationRecord> {
+    if (!pullRequests?.length) {
+      return [];
+    }
+
+    // Extract organization from the project URL
+    const organization = getOrganizationFromUrl(project.url) || project.id;
+
+    return pullRequests.map((pr) => ({
+      model: 'tms_TaskPullRequestAssociation',
+      record: {
+        task,
+        pullRequest: {
+          repository: {
+            organization: {
+              source: 'Azure-Repos',
+              uid: organization,
+            },
+            name: pr.repositoryId,
+          },
+          number: pr.pullRequestId,
+        },
+      },
+    }));
   }
 
   private getEpic(
