@@ -84,6 +84,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   readonly end_date?: string;
   readonly source_qualifier?: string;
   readonly custom_headers?: string;
+  readonly fetch_issue_comments?: boolean;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
@@ -160,12 +161,14 @@ const DEFAULT_BUCKET_TOTAL = 1;
 export const DEFAULT_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_GRAPH = 'default';
 const DEFAULT_USE_SPRINTS_REVERSE_SEARCH = false;
+const DEFAULT_FETCH_ISSUE_COMMENTS = false;
 // https://community.developer.atlassian.com/t/is-it-possible-to-pull-a-list-of-sprints-in-a-project-via-the-rest-api/53336/3
 const MAX_SPRINTS_RESULTS = 50;
 //https://developer.atlassian.com/platform/teams/rest/v1/api-group-teams-members-public-api/#api-gateway-api-public-teams-v1-org-orgid-teams-teamid-members-post
 const MAX_TEAMS_RESULTS = 50;
-// Documented in the migration notes of enhanced JQL
+// Documented in the migration notes of enhanced JQL (https://developer.atlassian.com/changelog/#CHANGE-2046)
 const MAX_CHANGELOG_RESULTS = 40;
+const MAX_COMMENTS_RESULTS = 20;
 
 export class Jira {
   private static jira: Jira;
@@ -198,7 +201,8 @@ export class Jira {
     private readonly requestedStreams?: Set<string>,
     private readonly useSprintsReverseSearch?: boolean,
     private readonly organizationId?: string,
-    private readonly sourceQualifier?: string
+    private readonly sourceQualifier?: string,
+    private readonly fetchIssueComments?: boolean
   ) {
     // Create inverse mapping from field name -> ids
     // Field can have multiple ids with the same name
@@ -242,7 +246,7 @@ export class Jira {
         headers: {
           'Accept-Language': 'en',
           'X-Force-Accept-Language': true,
-          ...(JSON.parse(cfg.custom_headers ?? '{}')),
+          ...JSON.parse(cfg.custom_headers ?? '{}'),
         },
         timeout: cfg.timeout ?? DEFAULT_TIMEOUT,
         // https://github.com/axios/axios/issues/5058#issuecomment-1272229926
@@ -326,7 +330,8 @@ export class Jira {
       cfg.requestedStreams,
       cfg.use_sprints_reverse_search ?? DEFAULT_USE_SPRINTS_REVERSE_SEARCH,
       cfg.organization_id,
-      cfg.source_qualifier
+      cfg.source_qualifier,
+      cfg.fetch_issue_comments ?? DEFAULT_FETCH_ISSUE_COMMENTS
     );
     return Jira.jira;
   }
@@ -812,7 +817,7 @@ export class Jira {
         }),
       async (item: any) => {
         this.memoizeIssue(item, jql);
-
+        // Nested array type fields are expected to return at least 100 results
         return issueTransformer.toIssue(item);
       },
       'issues'
@@ -851,11 +856,41 @@ export class Jira {
           }
           changelogHistories = allChangelogs;
         }
+
+        let comments = item.fields?.comment?.comments;
+        // Enhanced JQL API returns max 20 comments so make extra call to
+        // fetch them all if comments are requested
+        if (item.fields?.comment?.total > MAX_COMMENTS_RESULTS) {
+          const allComments = [];
+          for await (const comment of this.iterate(
+            (startAt) =>
+              this.api.v2.issueComments.getComments({
+                issueIdOrKey: item.id,
+                startAt,
+                maxResults: this.maxPageSize,
+              }),
+            async (item: any) => item,
+            'comments'
+          )) {
+            allComments.push(comment);
+          }
+          comments = allComments;
+        }
+
         const updatedIssue = {
           ...item,
           changelog: {histories: changelogHistories},
+          fields: {
+            ...item.fields,
+            ...(item.fields.comment && {
+              comment: {
+                comments,
+              },
+            }),
+          },
         };
         this.memoizeIssue(updatedIssue, params.jql);
+        // Other nested array type fields are expected to return at least 100 results
         return issueTransformer.toIssue(updatedIssue);
       },
       'issues'
@@ -1009,6 +1044,10 @@ export class Jira {
         'summary',
         'updated',
       ].forEach((field) => fieldIds.add(field));
+
+      if (this.fetchIssueComments) {
+        fieldIds.add('comment');
+      }
     }
     const additionalFieldIds: string[] = [];
     for (const fieldId of this.fieldNameById.keys()) {

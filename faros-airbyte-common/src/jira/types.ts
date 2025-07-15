@@ -20,6 +20,7 @@ export interface Issue extends IssueCompact {
   readonly project: string;
   readonly priority: string;
   readonly labels: ReadonlyArray<string>;
+  readonly comments?: ReadonlyArray<Comment>;
   readonly dependencies: ReadonlyArray<Dependency>;
   readonly subtasks: ReadonlyArray<string>;
   readonly parent?: Parent;
@@ -41,6 +42,17 @@ export interface Issue extends IssueCompact {
 export interface Parent {
   key: string;
   type?: string;
+}
+
+export interface Comment {
+  readonly id: string;
+  readonly body: string;
+  readonly created: Date;
+  readonly updated: Date;
+  readonly author?: {
+    readonly accountId: string;
+  };
+  readonly parentId?: string;
 }
 
 export interface Dependency {
