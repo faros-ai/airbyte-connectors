@@ -43,7 +43,10 @@ export class FarosIssues extends JiraConverter {
   labels: Set<string> = new Set();
   taskTags: DestinationRecord[] = [];
   taskDependencies: DestinationRecord[] = [];
+  taskComments: DestinationRecord[] = [];
   seenIssues: Set<string> = new Set();
+
+  fetchIssueComments: boolean = false;
 
   async convert(
     record: AirbyteRecord,
@@ -226,8 +229,9 @@ export class FarosIssues extends JiraConverter {
     }
 
     if (issue.comments) {
+      this.fetchIssueComments = true;
       for (const comment of issue.comments) {
-        results.push({
+        this.taskComments.push({
           model: 'tms_TaskComment',
           record: {
             task: {uid: issue.key, source},
@@ -254,7 +258,11 @@ export class FarosIssues extends JiraConverter {
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {
-    return [...this.convertDependencies(), ...this.convertLabels()];
+    return [
+      ...this.convertDependencies(),
+      ...this.convertLabels(),
+      ...this.convertComments(),
+    ];
   }
 
   private convertDependencies(): DestinationRecord[] {
@@ -286,6 +294,25 @@ export class FarosIssues extends JiraConverter {
       })),
       FLUSH,
       ...this.taskTags,
+    ];
+  }
+
+  private convertComments(): DestinationRecord[] {
+    if (!this.fetchIssueComments) {
+      return [];
+    }
+    return [
+      ...Array.from(this.seenIssues.keys()).map((issueKeyStr) => ({
+        model: 'tms_TaskComment__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task: {uid: issueKeyStr, source: this.source},
+          },
+        },
+      })),
+      FLUSH,
+      ...this.taskComments,
     ];
   }
 
