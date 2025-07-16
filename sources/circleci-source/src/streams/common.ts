@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 import {bucket} from 'faros-airbyte-common/common';
 
-import {CircleCIConfig} from '../circleci/circleci';
+import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 
 export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   constructor(
@@ -30,6 +30,34 @@ export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   }
 }
 
-export type StreamSlice = {
+export type ProjectSlice = {
   projectSlug: string;
+};
+
+export abstract class StreamWithOrganizationSlices extends AirbyteStreamBase {
+  constructor(
+    protected readonly cfg: CircleCIConfig,
+    protected readonly logger: AirbyteLogger
+  ) {
+    super(logger);
+  }
+
+  async *streamSlices(): AsyncGenerator<OrganizationSlice> {
+    const circleCI = CircleCI.instance(this.cfg, this.logger);
+    const organizations = await circleCI.getAllOrganizations();
+
+    for (const org of organizations) {
+      yield {
+        orgId: org.id,
+        orgSlug: org.slug,
+        orgName: org.name,
+      };
+    }
+  }
+}
+
+export type OrganizationSlice = {
+  orgId: string;
+  orgSlug: string;
+  orgName: string;
 };

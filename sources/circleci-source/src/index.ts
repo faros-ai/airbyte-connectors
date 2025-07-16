@@ -15,7 +15,7 @@ import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
 import {Faros} from './faros/faros';
-import {Pipelines, Projects, Tests} from './streams';
+import {Pipelines, Projects, Tests, Usage} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -120,6 +120,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       new Projects(config, this.logger),
       new Pipelines(config, this.logger),
       new Tests(config, this.logger),
+      new Usage(config, this.logger),
     ];
   }
 

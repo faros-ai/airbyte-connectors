@@ -3,7 +3,7 @@ import {TestMetadata} from 'faros-airbyte-common/circleci';
 import {Dictionary} from 'ts-essentials';
 
 import {CircleCI} from '../circleci/circleci';
-import {StreamSlice, StreamWithProjectSlices} from './common';
+import {ProjectSlice, StreamWithProjectSlices} from './common';
 
 type TestsState = Dictionary<{lastUpdatedAt?: string}>;
 
@@ -23,7 +23,7 @@ export class Tests extends StreamWithProjectSlices {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: StreamSlice,
+    streamSlice?: ProjectSlice,
     streamState?: TestsState
   ): AsyncGenerator<TestMetadata, any, unknown> {
     const circleCI = CircleCI.instance(this.cfg, this.logger);

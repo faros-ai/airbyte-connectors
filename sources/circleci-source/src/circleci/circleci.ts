@@ -4,6 +4,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
+import {parse} from 'csv-parse/sync';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Job,
@@ -20,6 +21,7 @@ import https from 'https';
 import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
+import zlib from 'zlib';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -27,6 +29,38 @@ const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_REQUEST_TIMEOUT = 120000;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
+
+export interface Organization {
+  id: string;
+  slug: string;
+  name: string;
+  vcs_type: string;
+  avatar_url?: string;
+}
+
+export interface UsageExportJob {
+  usage_export_job_id: string;
+  state: 'created' | 'processing' | 'completed' | 'failed';
+  start: string;
+  end: string;
+  download_urls: string[] | null;
+}
+
+export interface UsageRecord {
+  organization_id: string;
+  organization_name: string;
+  job_id: string;
+  job_run_date: string;
+  compute_credits: number;
+  dlc_credits: number;
+  user_credits: number;
+  storage_credits: number;
+  network_credits: number;
+  lease_credits: number;
+  lease_overage_credits: number;
+  ipranges_credits: number;
+  total_credits: number;
+}
 export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly token: string;
   readonly url?: string;
@@ -401,6 +435,152 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+  }
+
+  async getAllOrganizations(): Promise<Organization[]> {
+    try {
+      this.logger.debug('Getting all organizations from CircleCI');
+      const res = await this.get({path: '/me/collaborations'});
+      return res.data || [];
+    } catch (error: any) {
+      throw new Error(
+        `Failed to get organizations from CircleCI. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
+  }
+
+  async createUsageExport(
+    orgId: string,
+    start: string,
+    end: string
+  ): Promise<UsageExportJob> {
+    try {
+      this.logger.debug(
+        `Creating usage export for org ${orgId} from ${start} to ${end}`
+      );
+      const res = await this.post({
+        path: `/orgs/${orgId}/usage_export_jobs`,
+        data: {start, end},
+      });
+      return res.data;
+    } catch (error: any) {
+      throw new Error(
+        `Failed to create usage export for org ${orgId}. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
+  }
+
+  async getUsageExport(orgId: string, jobId: string): Promise<UsageExportJob> {
+    try {
+      this.logger.debug(
+        `Getting usage export status for org ${orgId}, job ${jobId}`
+      );
+      const res = await this.get({
+        path: `/orgs/${orgId}/usage_export_jobs/${jobId}`,
+      });
+      return res.data;
+    } catch (error: any) {
+      throw new Error(
+        `Failed to get usage export status for org ${orgId}, job ${jobId}. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
+  }
+
+  async *downloadAndParseUsageFiles(
+    downloadUrls: string[],
+    orgId: string,
+    orgName: string
+  ): AsyncGenerator<UsageRecord> {
+    for (const url of downloadUrls) {
+      try {
+        this.logger.debug(`Downloading usage file from ${url}`);
+        const response = await axios.get(url, {responseType: 'arraybuffer'});
+        const decompressed = zlib.gunzipSync(response.data);
+        const csvContent = decompressed.toString('utf-8');
+
+        const records = parse(csvContent, {
+          columns: true,
+          skip_empty_lines: true,
+        });
+
+        for (const record of records) {
+          yield {
+            organization_id: orgId,
+            organization_name: orgName,
+            job_id: record.JOB_ID,
+            job_run_date: record.JOB_RUN_DATE,
+            compute_credits: parseFloat(record.COMPUTE_CREDITS || '0'),
+            dlc_credits: parseFloat(record.DLC_CREDITS || '0'),
+            user_credits: parseFloat(record.USER_CREDITS || '0'),
+            storage_credits: parseFloat(record.STORAGE_CREDITS || '0'),
+            network_credits: parseFloat(record.NETWORK_CREDITS || '0'),
+            lease_credits: parseFloat(record.LEASE_CREDITS || '0'),
+            lease_overage_credits: parseFloat(
+              record.LEASE_OVERAGE_CREDITS || '0'
+            ),
+            ipranges_credits: parseFloat(record.IPRANGES_CREDITS || '0'),
+            total_credits: parseFloat(record.TOTAL_CREDITS || '0'),
+          };
+        }
+      } catch (error: any) {
+        this.logger.error(
+          `Failed to download/parse usage file from ${url}. Error: ${error.message}`
+        );
+      }
+    }
+  }
+
+  private async post<T = any, D = any>({
+    path,
+    api = this.v2,
+    data,
+    config = {},
+    attempt = 1,
+    sleepMs = 1000,
+  }: {
+    path: string;
+    api?: AxiosInstance;
+    data?: D;
+    config?: AxiosRequestConfig<D>;
+    attempt?: number;
+    sleepMs?: number;
+  }): Promise<AxiosResponse<T> | undefined> {
+    try {
+      const res = await api.post<T, AxiosResponse<T>>(path, data, config);
+      await this.maybeSleepOnResponse(path, res);
+      return res;
+    } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.post({path, api, data, config, attempt: attempt + 1});
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.post({
+          path,
+          api,
+          data,
+          config,
+          attempt: attempt + 1,
+          sleepMs: sleepMs * 2,
+        });
+      }
+      throw wrapApiError(err, `Failed to post to "${path}"`);
+    }
   }
 }
 

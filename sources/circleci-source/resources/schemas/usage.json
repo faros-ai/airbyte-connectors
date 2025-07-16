@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string",
+      "description": "The unique identifier for the organization"
+    },
+    "organization_name": {
+      "type": "string",
+      "description": "The name of the organization"
+    },
+    "job_id": {
+      "type": "string",
+      "description": "The unique identifier for the job"
+    },
+    "job_run_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date when the job was run"
+    },
+    "compute_credits": {
+      "type": "number",
+      "description": "Credits used for compute resources"
+    },
+    "dlc_credits": {
+      "type": "number",
+      "description": "Credits used for DLC (Docker Layer Caching)"
+    },
+    "user_credits": {
+      "type": "number",
+      "description": "Credits used for user-based resources"
+    },
+    "storage_credits": {
+      "type": "number",
+      "description": "Credits used for storage"
+    },
+    "network_credits": {
+      "type": "number",
+      "description": "Credits used for network resources"
+    },
+    "lease_credits": {
+      "type": "number",
+      "description": "Credits used for lease resources"
+    },
+    "lease_overage_credits": {
+      "type": "number",
+      "description": "Credits used for lease overage"
+    },
+    "ipranges_credits": {
+      "type": "number",
+      "description": "Credits used for IP ranges"
+    },
+    "total_credits": {
+      "type": "number",
+      "description": "Total credits used"
+    }
+  },
+  "required": [
+    "organization_id",
+    "organization_name",
+    "job_id",
+    "job_run_date",
+    "compute_credits",
+    "dlc_credits",
+    "user_credits",
+    "storage_credits",
+    "network_credits",
+    "lease_credits",
+    "lease_overage_credits",
+    "ipranges_credits",
+    "total_credits"
+  ]
+}
