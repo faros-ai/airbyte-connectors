@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';
 import {Incident} from '../firehydrant/models';
 interface IncidentState {
-  lastCreatedAt?: Date;
+  lastUpdatedAt?: Date;
 }
 export class Incidents extends AirbyteStreamBase {
   constructor(
@@ -26,7 +26,7 @@ export class Incidents extends AirbyteStreamBase {
     return 'id';
   }
   get cursorField(): string | string[] {
-    return 'created_at';
+    return 'updated_at';
   }
   async *readRecords(
     syncMode: SyncMode,
@@ -34,25 +34,43 @@ export class Incidents extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: IncidentState
   ): AsyncGenerator<Incident> {
-    const lastCreatedAt =
+    const lastUpdatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? new Date(streamState?.lastCreatedAt ?? 0)
+        ? streamState?.lastUpdatedAt
         : undefined;
-    const buildkite = FireHydrant.instance(this.config, this.logger);
-    yield* buildkite.getIncidents(lastCreatedAt);
+    
+    const firehydrant = FireHydrant.instance(this.config, this.logger);
+    yield* firehydrant.getIncidents(lastUpdatedAt);
+  }
+
+  /**
+   * Computes the updated timestamp for an incident based on the latest lifecycle phase milestone.
+   * This method examines all milestones across all lifecycle phases and returns the most recent
+   * milestone occurrence time. Falls back to the incident's created_at if no milestones exist.
+   * 
+   * @param incident - The incident to compute the updated timestamp for
+   * @returns The computed updated timestamp as a Date object
+   */
+  private getIncidentUpdatedAt(incident: Incident): Date {
+    const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
+    const latestMilestone = allMilestones.reduce((latest, current) => 
+      new Date(current.occurred_at || 0) > new Date(latest?.occurred_at || 0) ? current : latest
+    , null);
+    return new Date(latestMilestone?.occurred_at || incident.created_at);
   }
 
   getUpdatedState(
     currentStreamState: IncidentState,
     latestRecord: Incident
   ): IncidentState {
-    const lastCreatedAt = new Date(latestRecord.created_at);
+    const lastUpdatedAt = this.getIncidentUpdatedAt(latestRecord);
+    
     return {
-      lastCreatedAt:
-        new Date(lastCreatedAt) >
-        new Date(currentStreamState?.lastCreatedAt ?? 0)
-          ? lastCreatedAt
-          : currentStreamState?.lastCreatedAt,
+      lastUpdatedAt:
+        lastUpdatedAt >
+        new Date(currentStreamState?.lastUpdatedAt ?? 0)
+          ? lastUpdatedAt
+          : currentStreamState?.lastUpdatedAt,
     };
   }
 }

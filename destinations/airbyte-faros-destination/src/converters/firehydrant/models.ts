@@ -21,6 +21,27 @@ interface Milestone {
   duration: string;
 }
 
+export interface LifecycleMilestone {
+  id?: string;
+  name?: string;
+  description?: string;
+  slug?: string;
+  position?: number;
+  occurred_at?: string;
+  duration?: string;
+  updated_by?: object;
+  updated_at?: string;
+}
+
+export interface LifecyclePhase {
+  id?: string;
+  name?: string;
+  description?: string;
+  type?: string;
+  position?: number;
+  milestones: LifecycleMilestone[];
+}
+
 export interface User extends ObjectBase {
   email?: string;
   created_at: string;
@@ -128,6 +149,7 @@ export interface Incident extends ObjectBase {
   restricted: boolean;
   explicit_organization_user_ids: [any];
   events: IncidentEvent[];
+  lifecycle_phases: LifecyclePhase[];
 }
 
 interface TeamMember {
