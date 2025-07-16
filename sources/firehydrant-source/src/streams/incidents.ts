@@ -53,10 +53,16 @@ export class Incidents extends AirbyteStreamBase {
    */
   private getIncidentUpdatedAt(incident: Incident): Date {
     const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
+    
+    if (!allMilestones.length) {
+      return new Date(incident.created_at);
+    }
+    
     const latestMilestone = allMilestones.reduce((latest, current) => 
-      new Date(current.occurred_at || 0) > new Date(latest?.occurred_at || 0) ? current : latest
-    , null);
-    return new Date(latestMilestone?.occurred_at || incident.created_at);
+      new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0) ? current : latest
+    );
+    
+    return new Date(latestMilestone.occurred_at || incident.created_at);
   }
 
   getUpdatedState(
