@@ -3,6 +3,15 @@ import {bucket} from 'faros-airbyte-common/common';
 
 import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 
+export type ProjectSlice = {
+  projectSlug: string;
+};
+
+export type OrganizationSlice = {
+  orgId: string;
+  orgSlug: string;
+};
+
 export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   constructor(
     protected readonly cfg: CircleCIConfig,
@@ -30,10 +39,6 @@ export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   }
 }
 
-export type ProjectSlice = {
-  projectSlug: string;
-};
-
 export abstract class StreamWithOrganizationSlices extends AirbyteStreamBase {
   constructor(
     protected readonly cfg: CircleCIConfig,
@@ -50,14 +55,7 @@ export abstract class StreamWithOrganizationSlices extends AirbyteStreamBase {
       yield {
         orgId: org.id,
         orgSlug: org.slug,
-        orgName: org.name,
       };
     }
   }
 }
-
-export type OrganizationSlice = {
-  orgId: string;
-  orgSlug: string;
-  orgName: string;
-};

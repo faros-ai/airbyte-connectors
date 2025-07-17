@@ -1,7 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI, UsageRecord} from '../circleci/circleci';
+import {CircleCI, UsageExportJob} from '../circleci/circleci';
 import {OrganizationSlice, StreamWithOrganizationSlices} from './common';
 
 interface UsageState {
@@ -15,14 +15,13 @@ type UsageStreamState = Dictionary<UsageState>;
 
 export class Usage extends StreamWithOrganizationSlices {
   private syncTimestamp: Date;
-  private stateUpdates: Map<string, UsageState> = new Map();
 
   getJsonSchema(): Dictionary<any, string> {
     return require('../../resources/schemas/usage.json');
   }
 
   get primaryKey(): string[] {
-    return ['organization_id', 'job_run_date'];
+    return ['usage_export_job_id'];
   }
 
   async *readRecords(
@@ -30,7 +29,11 @@ export class Usage extends StreamWithOrganizationSlices {
     cursorField?: string[],
     streamSlice?: OrganizationSlice,
     streamState?: UsageStreamState
-  ): AsyncGenerator<UsageRecord, any, unknown> {
+  ): AsyncGenerator<
+    UsageExportJob & {org_id: string; org_slug: string},
+    any,
+    unknown
+  > {
     const circleCI = CircleCI.instance(this.cfg, this.logger);
 
     // Initialize sync timestamp once for all slices
@@ -42,7 +45,7 @@ export class Usage extends StreamWithOrganizationSlices {
     const now = this.syncTimestamp;
 
     this.logger.info(
-      `Processing usage for organization ${streamSlice.orgName} (${streamSlice.orgId})`
+      `Processing usage for organization ${streamSlice.orgSlug} (${streamSlice.orgId})`
     );
 
     // Check if we have an existing job
@@ -58,74 +61,48 @@ export class Usage extends StreamWithOrganizationSlices {
           orgState.job_id
         );
 
-        if (jobStatus.state === 'completed') {
-          this.logger.info(
-            `Usage export job ${orgState.job_id} completed for org ${streamSlice.orgId}`
-          );
+        this.logger.info(
+          `Usage export job ${orgState.job_id} status: ${jobStatus.state} for org ${streamSlice.orgId}`
+        );
 
-          // Update state to completed
-          this.stateUpdates.set(streamSlice.orgId, {
-            start: jobStatus.start,
-            end: jobStatus.end,
-            job_id: jobStatus.usage_export_job_id,
-            state: jobStatus.state,
-          });
+        // Always yield the current job status with org info
+        yield {
+          ...jobStatus,
+          org_id: streamSlice.orgId,
+          org_slug: streamSlice.orgSlug,
+        };
+        return;
+      }
 
-          // Download and parse the files
-          if (jobStatus.download_urls && jobStatus.download_urls.length > 0) {
-            yield* circleCI.downloadAndParseUsageFiles(
-              jobStatus.download_urls,
-              streamSlice.orgId,
-              streamSlice.orgName
-            );
-          }
+      if (orgState.state === 'failed') {
+        this.logger.warn(
+          `Usage export job ${orgState.job_id} failed for org ${streamSlice.orgId}, creating new export`
+        );
 
-          return;
-        } else if (jobStatus.state === 'processing') {
-          this.logger.info(
-            `Usage export job ${orgState.job_id} still processing for org ${streamSlice.orgId}`
-          );
-          // Update state with current status
-          this.stateUpdates.set(streamSlice.orgId, {
-            start: jobStatus.start,
-            end: jobStatus.end,
-            job_id: jobStatus.usage_export_job_id,
-            state: jobStatus.state,
-          });
-          return;
-        } else if (jobStatus.state === 'failed') {
-          this.logger.warn(
-            `Usage export job ${orgState.job_id} failed for org ${streamSlice.orgId}, creating new export`
-          );
+        // Create new export with same start time unless it's too old
+        const existingStart = new Date(orgState.start);
+        const thirtyDaysAgo = new Date(now);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-          // Create new export with same start time unless it's too old
-          const existingStart = new Date(orgState.start);
-          const thirtyDaysAgo = new Date(now);
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const startTime =
+          existingStart < thirtyDaysAgo ? thirtyDaysAgo : existingStart;
 
-          const startTime =
-            existingStart < thirtyDaysAgo ? thirtyDaysAgo : existingStart;
+        const newJob = await circleCI.createUsageExport(
+          streamSlice.orgId,
+          startTime.toISOString(),
+          now.toISOString()
+        );
 
-          const newJob = await circleCI.createUsageExport(
-            streamSlice.orgId,
-            startTime.toISOString(),
-            now.toISOString()
-          );
+        this.logger.info(
+          `Created new usage export job ${newJob.usage_export_job_id} for org ${streamSlice.orgId}`
+        );
 
-          this.logger.info(
-            `Created new usage export job ${newJob.usage_export_job_id} for org ${streamSlice.orgId}`
-          );
-
-          // Update state with new job
-          this.stateUpdates.set(streamSlice.orgId, {
-            start: newJob.start,
-            end: newJob.end,
-            job_id: newJob.usage_export_job_id,
-            state: newJob.state,
-          });
-
-          return;
-        }
+        yield {
+          ...newJob,
+          org_id: streamSlice.orgId,
+          org_slug: streamSlice.orgSlug,
+        };
+        return;
       }
     }
 
@@ -145,14 +122,11 @@ export class Usage extends StreamWithOrganizationSlices {
         `Created incremental usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
       );
 
-      // Update state with new job
-      this.stateUpdates.set(streamSlice.orgId, {
-        start: job.start,
-        end: job.end,
-        job_id: job.usage_export_job_id,
-        state: job.state,
-      });
-
+      yield {
+        ...job,
+        org_id: streamSlice.orgId,
+        org_slug: streamSlice.orgSlug,
+      };
       return;
     }
 
@@ -174,27 +148,26 @@ export class Usage extends StreamWithOrganizationSlices {
       `Created initial usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
     );
 
-    // Update state with new job
-    this.stateUpdates.set(streamSlice.orgId, {
-      start: job.start,
-      end: job.end,
-      job_id: job.usage_export_job_id,
-      state: job.state,
-    });
+    yield {
+      ...job,
+      org_id: streamSlice.orgId,
+      org_slug: streamSlice.orgSlug,
+    };
   }
 
   getUpdatedState(
     currentStreamState: UsageStreamState,
-    latestRecord: UsageRecord
+    latestRecord: UsageExportJob & {org_id: string; org_slug: string}
   ): UsageStreamState {
-    // Apply any pending state updates
+    // Update state with the latest job information
     const newState = {...currentStreamState};
 
-    // Check if we have a state update for this organization
-    const stateUpdate = this.stateUpdates.get(latestRecord.organization_id);
-    if (stateUpdate) {
-      newState[latestRecord.organization_id] = stateUpdate;
-    }
+    newState[latestRecord.org_id] = {
+      start: latestRecord.start,
+      end: latestRecord.end,
+      job_id: latestRecord.usage_export_job_id,
+      state: latestRecord.state,
+    };
 
     return newState;
   }

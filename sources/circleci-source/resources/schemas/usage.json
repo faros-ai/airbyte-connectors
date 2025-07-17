@@ -2,73 +2,48 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "organization_id": {
+    "usage_export_job_id": {
+      "type": "string",
+      "description": "The unique identifier for the usage export job"
+    },
+    "org_id": {
       "type": "string",
       "description": "The unique identifier for the organization"
     },
-    "organization_name": {
+    "org_slug": {
       "type": "string",
-      "description": "The name of the organization"
+      "description": "The slug identifier for the organization"
     },
-    "job_id": {
+    "state": {
       "type": "string",
-      "description": "The unique identifier for the job"
+      "enum": ["created", "processing", "completed", "failed"],
+      "description": "The current state of the export job"
     },
-    "job_run_date": {
+    "start": {
       "type": "string",
-      "format": "date",
-      "description": "The date when the job was run"
+      "format": "date-time",
+      "description": "The start date for the usage export"
     },
-    "compute_credits": {
-      "type": "number",
-      "description": "Credits used for compute resources"
+    "end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The end date for the usage export"
     },
-    "dlc_credits": {
-      "type": "number",
-      "description": "Credits used for DLC (Docker Layer Caching)"
-    },
-    "user_credits": {
-      "type": "number",
-      "description": "Credits used for user-based resources"
-    },
-    "storage_credits": {
-      "type": "number",
-      "description": "Credits used for storage"
-    },
-    "network_credits": {
-      "type": "number",
-      "description": "Credits used for network resources"
-    },
-    "lease_credits": {
-      "type": "number",
-      "description": "Credits used for lease resources"
-    },
-    "lease_overage_credits": {
-      "type": "number",
-      "description": "Credits used for lease overage"
-    },
-    "ipranges_credits": {
-      "type": "number",
-      "description": "Credits used for IP ranges"
-    },
-    "total_credits": {
-      "type": "number",
-      "description": "Total credits used"
+    "download_urls": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "URLs to download the usage data files (only available when state is 'completed')"
     }
   },
   "required": [
-    "organization_id",
-    "organization_name",
-    "job_id",
-    "job_run_date",
-    "compute_credits",
-    "dlc_credits",
-    "user_credits",
-    "storage_credits",
-    "network_credits",
-    "lease_credits",
-    "lease_overage_credits",
-    "ipranges_credits",
-    "total_credits"
+    "usage_export_job_id",
+    "org_id",
+    "org_slug",
+    "state",
+    "start",
+    "end"
   ]
 }

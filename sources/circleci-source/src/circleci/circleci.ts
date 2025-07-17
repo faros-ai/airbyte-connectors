@@ -4,7 +4,6 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
-import {parse} from 'csv-parse/sync';
 import {AirbyteConfig, AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   Job,
@@ -21,7 +20,6 @@ import https from 'https';
 import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
-import zlib from 'zlib';
 
 const DEFAULT_API_URL = 'https://circleci.com/api/v2';
 const DEFAULT_MAX_RETRIES = 3;
@@ -46,21 +44,6 @@ export interface UsageExportJob {
   download_urls: string[] | null;
 }
 
-export interface UsageRecord {
-  organization_id: string;
-  organization_name: string;
-  job_id: string;
-  job_run_date: string;
-  compute_credits: number;
-  dlc_credits: number;
-  user_credits: number;
-  storage_credits: number;
-  network_credits: number;
-  lease_credits: number;
-  lease_overage_credits: number;
-  ipranges_credits: number;
-  total_credits: number;
-}
 export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly token: string;
   readonly url?: string;
@@ -522,50 +505,6 @@ export class CircleCI {
           error
         )}`
       );
-    }
-  }
-
-  async *downloadAndParseUsageFiles(
-    downloadUrls: string[],
-    orgId: string,
-    orgName: string
-  ): AsyncGenerator<UsageRecord> {
-    for (const url of downloadUrls) {
-      try {
-        this.logger.debug(`Downloading usage file from ${url}`);
-        const response = await axios.get(url, {responseType: 'arraybuffer'});
-        const decompressed = zlib.gunzipSync(response.data);
-        const csvContent = decompressed.toString('utf-8');
-
-        const records = parse(csvContent, {
-          columns: true,
-          skip_empty_lines: true,
-        });
-
-        for (const record of records) {
-          yield {
-            organization_id: orgId,
-            organization_name: orgName,
-            job_id: record.JOB_ID,
-            job_run_date: record.JOB_RUN_DATE,
-            compute_credits: parseFloat(record.COMPUTE_CREDITS || '0'),
-            dlc_credits: parseFloat(record.DLC_CREDITS || '0'),
-            user_credits: parseFloat(record.USER_CREDITS || '0'),
-            storage_credits: parseFloat(record.STORAGE_CREDITS || '0'),
-            network_credits: parseFloat(record.NETWORK_CREDITS || '0'),
-            lease_credits: parseFloat(record.LEASE_CREDITS || '0'),
-            lease_overage_credits: parseFloat(
-              record.LEASE_OVERAGE_CREDITS || '0'
-            ),
-            ipranges_credits: parseFloat(record.IPRANGES_CREDITS || '0'),
-            total_credits: parseFloat(record.TOTAL_CREDITS || '0'),
-          };
-        }
-      } catch (error: any) {
-        this.logger.error(
-          `Failed to download/parse usage file from ${url}. Error: ${error.message}`
-        );
-      }
     }
   }
 }
