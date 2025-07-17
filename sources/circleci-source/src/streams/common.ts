@@ -3,6 +3,29 @@ import {bucket} from 'faros-airbyte-common/common';
 
 import {CircleCI, CircleCIConfig} from '../circleci/circleci';
 
+export enum RunMode {
+  Standard = 'Standard',
+  Usage = 'Usage',
+  Custom = 'Custom',
+}
+
+export const DEFAULT_RUN_MODE = RunMode.Standard;
+
+// Stream collections for different run modes
+export const StandardStreamNames = ['projects', 'pipelines', 'tests'];
+
+export const UsageStreamNames = ['usage'];
+
+export const CustomStreamNames = ['projects', 'pipelines', 'tests', 'usage'];
+
+export const RunModeStreams: {
+  [key in RunMode]: string[];
+} = {
+  [RunMode.Standard]: StandardStreamNames,
+  [RunMode.Usage]: UsageStreamNames,
+  [RunMode.Custom]: CustomStreamNames,
+};
+
 export type ProjectSlice = {
   projectSlug: string;
 };

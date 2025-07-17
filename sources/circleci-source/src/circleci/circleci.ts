@@ -57,6 +57,8 @@ export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly cutoff_days?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly run_mode?: string;
+  readonly custom_streams?: ReadonlyArray<string>;
 }
 
 export class CircleCI {

@@ -16,6 +16,7 @@ import VError from 'verror';
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
 import {Faros} from './faros/faros';
 import {Pipelines, Projects, Tests, Usage} from './streams';
+import {DEFAULT_RUN_MODE, RunMode, RunModeStreams} from './streams/common';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -116,12 +117,27 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    return [
-      new Projects(config, this.logger),
-      new Pipelines(config, this.logger),
-      new Tests(config, this.logger),
-      new Usage(config, this.logger),
-    ];
+    // Determine which streams to include based on run_mode and custom_streams
+    const runMode = (config.run_mode as RunMode) ?? DEFAULT_RUN_MODE;
+    const streamNames = [...RunModeStreams[runMode]].filter(
+      (streamName) =>
+        runMode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
+
+    this.logger.info(
+      `Running in ${runMode} mode with streams: ${streamNames.join(', ')}`
+    );
+
+    const allStreams = {
+      projects: new Projects(config, this.logger),
+      pipelines: new Pipelines(config, this.logger),
+      tests: new Tests(config, this.logger),
+      usage: new Usage(config, this.logger),
+    };
+
+    return streamNames.map((name) => allStreams[name]).filter(Boolean);
   }
 
   static filterBlockList(
