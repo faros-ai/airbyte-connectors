@@ -5,13 +5,15 @@ import {CircleCI, UsageExportJob} from '../circleci/circleci';
 import {OrganizationSlice, StreamWithOrganizationSlices} from './common';
 
 interface UsageState {
-  start?: string;
-  end?: string;
-  job_id?: string;
-  state?: string;
+  start: string;
+  end: string;
+  job_id: string;
+  state: string;
 }
 
-type UsageStreamState = Dictionary<UsageState>;
+type UsageStreamState = {[orgId: string]: UsageState | undefined};
+
+const INITIAL_CUTOFF_DAYS = 30;
 
 export class Usage extends StreamWithOrganizationSlices {
   private syncTimestamp: Date;
@@ -29,11 +31,7 @@ export class Usage extends StreamWithOrganizationSlices {
     cursorField?: string[],
     streamSlice?: OrganizationSlice,
     streamState?: UsageStreamState
-  ): AsyncGenerator<
-    UsageExportJob & {org_id: string; org_slug: string},
-    any,
-    unknown
-  > {
+  ): AsyncGenerator<{org_id: string; org_slug: string} & UsageExportJob> {
     const circleCI = CircleCI.instance(this.cfg, this.logger);
 
     // Initialize sync timestamp once for all slices
@@ -41,7 +39,7 @@ export class Usage extends StreamWithOrganizationSlices {
       this.syncTimestamp = new Date();
     }
 
-    const orgState = streamState?.[streamSlice.orgId] || {};
+    const orgState = streamState?.[streamSlice.orgId];
     const now = this.syncTimestamp;
 
     this.logger.info(
@@ -49,7 +47,7 @@ export class Usage extends StreamWithOrganizationSlices {
     );
 
     // Check if we have an existing job
-    if (orgState.job_id) {
+    if (orgState?.job_id) {
       this.logger.debug(
         `Found existing job ${orgState.job_id} in state ${orgState.state} for org ${streamSlice.orgId}`
       );
@@ -67,9 +65,9 @@ export class Usage extends StreamWithOrganizationSlices {
 
         // Always yield the current job status with org info
         yield {
-          ...jobStatus,
           org_id: streamSlice.orgId,
           org_slug: streamSlice.orgSlug,
+          ...jobStatus,
         };
         return;
       }
@@ -81,11 +79,11 @@ export class Usage extends StreamWithOrganizationSlices {
 
         // Create new export with same start time unless it's too old
         const existingStart = new Date(orgState.start);
-        const thirtyDaysAgo = new Date(now);
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const initialStart = new Date(now);
+        initialStart.setDate(initialStart.getDate() - 30);
 
         const startTime =
-          existingStart < thirtyDaysAgo ? thirtyDaysAgo : existingStart;
+          existingStart < initialStart ? initialStart : existingStart;
 
         const newJob = await circleCI.createUsageExport(
           streamSlice.orgId,
@@ -98,49 +96,49 @@ export class Usage extends StreamWithOrganizationSlices {
         );
 
         yield {
-          ...newJob,
           org_id: streamSlice.orgId,
           org_slug: streamSlice.orgSlug,
+          ...newJob,
+        };
+        return;
+      }
+
+      // Check if we have a completed state, create incremental export
+      if (orgState.state === 'completed' && orgState.end) {
+        this.logger.info(
+          `Creating incremental usage export for org ${streamSlice.orgId} from ${orgState.end}`
+        );
+
+        const job = await circleCI.createUsageExport(
+          streamSlice.orgId,
+          orgState.end,
+          now.toISOString()
+        );
+
+        this.logger.info(
+          `Created incremental usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
+        );
+
+        yield {
+          org_id: streamSlice.orgId,
+          org_slug: streamSlice.orgSlug,
+          ...job,
         };
         return;
       }
     }
 
-    // Check if we have a completed state, create incremental export
-    if (orgState.state === 'completed' && orgState.end) {
-      this.logger.info(
-        `Creating incremental usage export for org ${streamSlice.orgId} from ${orgState.end}`
-      );
-
-      const job = await circleCI.createUsageExport(
-        streamSlice.orgId,
-        orgState.end,
-        now.toISOString()
-      );
-
-      this.logger.info(
-        `Created incremental usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
-      );
-
-      yield {
-        ...job,
-        org_id: streamSlice.orgId,
-        org_slug: streamSlice.orgSlug,
-      };
-      return;
-    }
-
     // First time processing this org - create initial export
-    const thirtyDaysAgo = new Date(now);
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const initialStart = new Date(now);
+    initialStart.setDate(initialStart.getDate() - INITIAL_CUTOFF_DAYS);
 
     this.logger.info(
-      `Creating initial usage export for org ${streamSlice.orgId} from ${thirtyDaysAgo.toISOString()} to ${now.toISOString()}`
+      `Creating initial usage export for org ${streamSlice.orgId} from ${initialStart.toISOString()} to ${now.toISOString()}`
     );
 
     const job = await circleCI.createUsageExport(
       streamSlice.orgId,
-      thirtyDaysAgo.toISOString(),
+      initialStart.toISOString(),
       now.toISOString()
     );
 
@@ -149,9 +147,9 @@ export class Usage extends StreamWithOrganizationSlices {
     );
 
     yield {
-      ...job,
       org_id: streamSlice.orgId,
       org_slug: streamSlice.orgSlug,
+      ...job,
     };
   }
 
