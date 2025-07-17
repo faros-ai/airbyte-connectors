@@ -60,7 +60,7 @@ export class Incidents extends AirbyteStreamBase {
     
     const latestMilestone = allMilestones.reduce((latest, current) => 
       new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0) ? current : latest
-    );
+    , allMilestones[0]);
     
     return new Date(latestMilestone.occurred_at || incident.created_at);
   }
