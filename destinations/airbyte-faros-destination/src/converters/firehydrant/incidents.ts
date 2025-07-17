@@ -54,8 +54,13 @@ export class Incidents extends FireHydrantConverter {
       ? Utils.toDate(incident.events[incident.events.length - 1].occurred_at)
       : createdAt;
 
-    let acknowledgedAt: Date = undefined;
-    let resolvedAt: Date = undefined;
+    // Extract timestamps from lifecycle_phases
+    const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
+    const acknowledgedMilestone = allMilestones.find(milestone => milestone.slug === 'acknowledged');
+    const resolvedMilestone = allMilestones.find(milestone => milestone.slug === 'resolved');
+
+    const acknowledgedAt = Utils.toDate(acknowledgedMilestone?.occurred_at);
+    const resolvedAt = Utils.toDate(resolvedMilestone?.occurred_at);
 
     for (const event of incident.events) {
       const eventType: IncidentEventType = {
@@ -68,7 +73,6 @@ export class Incidents extends FireHydrantConverter {
         !resolvedAt &&
         event.data.current_milestone === FirehydrantIncidentMilestone.resolved
       ) {
-        resolvedAt = occurredAt;
         eventType.category = IncidentEventTypeCategory.Resolved;
       }
       if (
@@ -76,7 +80,6 @@ export class Incidents extends FireHydrantConverter {
         event.data.current_milestone ===
           FirehydrantIncidentMilestone.acknowledged
       ) {
-        acknowledgedAt = occurredAt;
         eventType.category = IncidentEventTypeCategory.Acknowledged;
       }
       res.push({

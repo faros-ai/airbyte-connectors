@@ -19,7 +19,7 @@ export class Teams extends AirbyteStreamBase {
   }
 
   async *readRecords(): AsyncGenerator<Team> {
-    const buildkite = FireHydrant.instance(this.config, this.logger);
-    yield* buildkite.getTeams();
+    const firehydrant = FireHydrant.instance(this.config, this.logger);
+    yield* firehydrant.getTeams();
   }
 }
