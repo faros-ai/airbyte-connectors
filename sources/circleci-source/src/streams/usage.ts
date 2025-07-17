@@ -1,3 +1,4 @@
+import {addDays, subDays} from 'date-fns';
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
@@ -90,17 +91,12 @@ export class Usage extends StreamWithOrganizationSlices {
         const failedEnd = new Date(orgState.end);
 
         // If the failed window is smaller than the API limit, extend it towards now()
-        const failedWindowDays = Math.ceil(
-          (failedEnd.getTime() - failedStart.getTime()) / DAYS_IN_MS
-        );
+        const failedWindowMs = failedEnd.getTime() - failedStart.getTime();
         let retryEnd = failedEnd;
 
-        if (failedWindowDays < MAX_EXPORT_WINDOW_DAYS) {
+        if (failedWindowMs < MAX_EXPORT_WINDOW_DAYS * DAYS_IN_MS) {
           // Try to extend the window towards now while respecting the API limit
-          const maxPossibleEnd = new Date(failedStart);
-          maxPossibleEnd.setDate(
-            maxPossibleEnd.getDate() + MAX_EXPORT_WINDOW_DAYS
-          );
+          const maxPossibleEnd = addDays(failedStart, MAX_EXPORT_WINDOW_DAYS);
           retryEnd = maxPossibleEnd < now ? maxPossibleEnd : now;
           this.logger.info(
             `Extending failed export window end from ${failedEnd.toISOString()} to ${retryEnd.toISOString()} for org ${streamSlice.orgId}`
@@ -134,10 +130,11 @@ export class Usage extends StreamWithOrganizationSlices {
         const minGapHours =
           this.cfg.usage_export_min_gap_hours ??
           DEFAULT_USAGE_EXPORT_MIN_GAP_HOURS;
-        const hoursSinceLastExport =
-          (now.getTime() - incrementalStart.getTime()) / HOURS_IN_MS;
+        const timeSinceLastExportMs =
+          now.getTime() - incrementalStart.getTime();
 
-        if (hoursSinceLastExport < minGapHours) {
+        if (timeSinceLastExportMs < minGapHours * HOURS_IN_MS) {
+          const hoursSinceLastExport = timeSinceLastExportMs / HOURS_IN_MS;
           this.logger.info(
             `Skipping incremental export for org ${streamSlice.orgId}. Only ${hoursSinceLastExport.toFixed(1)} hours have passed since last export (minimum: ${minGapHours} hours)`
           );
@@ -145,19 +142,14 @@ export class Usage extends StreamWithOrganizationSlices {
         }
 
         // Check if the time window exceeds API limit
-        const daysDiff = Math.ceil(
-          (now.getTime() - incrementalStart.getTime()) / DAYS_IN_MS
-        );
+        const windowMs = now.getTime() - incrementalStart.getTime();
 
-        if (daysDiff > MAX_EXPORT_WINDOW_DAYS) {
+        if (windowMs > MAX_EXPORT_WINDOW_DAYS * DAYS_IN_MS) {
           // Limit to the next window
-          incrementalEnd = new Date(incrementalStart);
-          incrementalEnd.setDate(
-            incrementalEnd.getDate() + MAX_EXPORT_WINDOW_DAYS
-          );
+          incrementalEnd = addDays(incrementalStart, MAX_EXPORT_WINDOW_DAYS);
 
           this.logger.info(
-            `Incremental window (${daysDiff} days) exceeds API limit. Creating export from ${incrementalStart.toISOString()} to ${incrementalEnd.toISOString()}`
+            `Incremental window exceeds API limit (${MAX_EXPORT_WINDOW_DAYS} days). Creating export from ${incrementalStart.toISOString()} to ${incrementalEnd.toISOString()}`
           );
         }
 
@@ -186,15 +178,13 @@ export class Usage extends StreamWithOrganizationSlices {
 
     // First time processing this org - create initial export
     const cutoffDays = this.cfg.cutoff_days ?? DEFAULT_CUTOFF_DAYS;
-    const exportStart = new Date(now);
-    exportStart.setDate(exportStart.getDate() - cutoffDays);
+    const exportStart = subDays(now, cutoffDays);
 
     let exportEnd = now;
     // If cutoff period exceeds API limit, start from the oldest window
     if (cutoffDays > MAX_EXPORT_WINDOW_DAYS) {
       // Start from the oldest window and limit the end date
-      exportEnd = new Date(exportStart);
-      exportEnd.setDate(exportEnd.getDate() + MAX_EXPORT_WINDOW_DAYS);
+      exportEnd = addDays(exportStart, MAX_EXPORT_WINDOW_DAYS);
 
       this.logger.info(
         `Cutoff period (${cutoffDays} days) exceeds API limit (${MAX_EXPORT_WINDOW_DAYS} days). Starting with oldest window from ${exportStart.toISOString()} to ${exportEnd.toISOString()}`
