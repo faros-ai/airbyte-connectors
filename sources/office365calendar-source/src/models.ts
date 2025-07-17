@@ -285,7 +285,8 @@ export function validateOffice365CalendarConfig(config: Office365CalendarConfig)
   // Validate tenant_id format (more lenient for testing)
   if (config.tenant_id) {
     const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;
+    // Fixed polynomial regex: use non-backtracking pattern for domain validation
+    const domainRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,}){1,3}$/;
     const testValueRegex = /^test-/; // Allow test values
     
     if (!guidRegex.test(config.tenant_id) && !domainRegex.test(config.tenant_id) && !testValueRegex.test(config.tenant_id)) {

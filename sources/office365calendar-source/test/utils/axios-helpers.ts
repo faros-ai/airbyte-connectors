@@ -1,4 +1,5 @@
-import { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { createMockHttpClient, createTokenResponse } from './test-helpers';
 
 /**
  * Test utility to create properly typed AxiosError mock objects.
@@ -83,4 +84,39 @@ function getStatusText(status: number): string {
     503: 'Service Unavailable'
   };
   return statusTexts[status] || 'Unknown';
+}
+
+/**
+ * Sets up axios mocking for tests.
+ * Eliminates duplication of axios mock setup across test files.
+ */
+export interface AxiosMockSetup {
+  mockedAxios: jest.Mocked<typeof axios>;
+  mockHttpClient: jest.Mocked<AxiosInstance>;
+}
+
+export function setupAxiosMocks(): AxiosMockSetup {
+  jest.mock('axios');
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  const mockHttpClient = createMockHttpClient();
+  
+  // Setup default successful authentication
+  mockedAxios.post.mockResolvedValue(createTokenResponse());
+  mockedAxios.create.mockReturnValue(mockHttpClient);
+  
+  return {
+    mockedAxios,
+    mockHttpClient
+  };
+}
+
+/**
+ * Resets axios mocks to clean state.
+ * Common cleanup pattern across test files.
+ */
+export function resetAxiosMocks(): void {
+  jest.clearAllMocks();
+  // Reset singleton between tests - common pattern
+  const office365Calendar = require('../../src/office365calendar').Office365Calendar;
+  (office365Calendar as any).office365Calendar = null;
 }

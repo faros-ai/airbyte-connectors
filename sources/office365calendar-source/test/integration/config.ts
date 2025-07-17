@@ -9,6 +9,41 @@ import { Office365CalendarConfig } from '../../src/models';
 import { TenantId, CalendarId, asTenantId, asCalendarId } from '../../src/models';
 
 /**
+ * Safely parse JSON with fallback value, preventing potential security issues
+ * from untrusted environment variable data.
+ */
+function safeJsonParse<T>(jsonString: string | undefined, fallback: T): T {
+  if (!jsonString || jsonString.trim() === '') {
+    return fallback;
+  }
+  
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.warn(`Failed to parse JSON from environment variable: ${error}`);
+    return fallback;
+  }
+}
+
+/**
+ * Safely parse integer with fallback value, preventing potential security issues
+ * and ensuring valid numeric values.
+ */
+function safeParseInt(value: string | undefined, fallback: number): number {
+  if (!value || value.trim() === '') {
+    return fallback;
+  }
+  
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed) || !isFinite(parsed)) {
+    console.warn(`Invalid integer value from environment variable: ${value}, using fallback: ${fallback}`);
+    return fallback;
+  }
+  
+  return parsed;
+}
+
+/**
  * Integration test environment configuration.
  * 
  * Supports both controlled test environment and real Microsoft 365 tenant testing.
@@ -71,8 +106,8 @@ export function loadIntegrationConfig(): IntegrationTestConfig | null {
       
       // Optional configuration with sensible defaults
       domain_wide_delegation: process.env.INTEGRATION_DOMAIN_WIDE === 'true',
-      events_max_results: parseInt(process.env.INTEGRATION_EVENTS_MAX_RESULTS || '100'),
-      cutoff_days: parseInt(process.env.INTEGRATION_CUTOFF_DAYS || '30'),
+      events_max_results: safeParseInt(process.env.INTEGRATION_EVENTS_MAX_RESULTS, 100),
+      cutoff_days: safeParseInt(process.env.INTEGRATION_CUTOFF_DAYS, 30),
       
       // Test-specific configuration
       testUserEmail: process.env.INTEGRATION_TEST_USER_EMAIL || 'test@example.com',
@@ -82,13 +117,13 @@ export function loadIntegrationConfig(): IntegrationTestConfig | null {
         .filter(id => id.trim().length > 0)
         .map(id => asCalendarId(id.trim())),
       
-      expectedEventCounts: JSON.parse(process.env.INTEGRATION_EXPECTED_EVENT_COUNTS || '{}'),
+      expectedEventCounts: safeJsonParse(process.env.INTEGRATION_EXPECTED_EVENT_COUNTS, {}),
       
       largeDatasetCalendarId: asCalendarId(
         process.env.INTEGRATION_LARGE_DATASET_CALENDAR_ID || 'large-calendar-id'
       ),
       
-      timeoutMs: parseInt(process.env.INTEGRATION_TIMEOUT_MS || '30000'),
+      timeoutMs: safeParseInt(process.env.INTEGRATION_TIMEOUT_MS, 30000),
       enableDestructiveTests: process.env.INTEGRATION_ENABLE_DESTRUCTIVE_TESTS === 'true'
     };
 

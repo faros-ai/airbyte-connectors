@@ -1,9 +1,10 @@
-import { AirbyteLogger, SyncMode } from 'faros-airbyte-cdk';
+import { SyncMode } from 'faros-airbyte-cdk';
 import { VError } from 'verror';
 
 import { Office365CalendarConfig, TenantId, CalendarId } from '../../src/models';
 import { Office365Calendar } from '../../src/office365calendar';
 import { Calendars } from '../../src/streams/calendars';
+import { setupStreamTests, createMockCalendars, expectSuccessResult, expectErrorResult } from '../utils/test-helpers';
 
 // Mock the Office365Calendar for testing
 jest.mock('../../src/office365calendar', () => ({
@@ -15,41 +16,14 @@ jest.mock('../../src/office365calendar', () => ({
 const MockedOffice365Calendar = Office365Calendar as jest.Mocked<typeof Office365Calendar>;
 
 describe('O365CAL-004: Calendars Stream (TDD)', () => {
-  let mockLogger: AirbyteLogger;
   let calendarsStream: Calendars;
-  let mockOffice365Calendar: jest.Mocked<Office365Calendar>;
-  let validConfig: Office365CalendarConfig;
+  let testSetup: ReturnType<typeof setupStreamTests>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    testSetup = setupStreamTests();
+    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.mockOffice365Calendar);
     
-    mockLogger = {
-      debug: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      fatal: jest.fn(),
-      trace: jest.fn(),
-      child: jest.fn().mockReturnThis(),
-    } as unknown as AirbyteLogger;
-
-    validConfig = {
-      client_id: 'test-client-id',
-      client_secret: 'test-client-secret',
-      tenant_id: 'test-tenant-id'
-    };
-
-    mockOffice365Calendar = {
-      getCalendars: jest.fn(),
-      getUsers: jest.fn(),
-      checkConnection: jest.fn(),
-      getEvents: jest.fn(),
-      getEventsIncremental: jest.fn(),
-    } as unknown as jest.Mocked<Office365Calendar>;
-
-    MockedOffice365Calendar.instance.mockResolvedValue(mockOffice365Calendar);
-    
-    calendarsStream = new Calendars(validConfig, mockLogger);
+    calendarsStream = new Calendars(testSetup.validConfig, testSetup.mockLogger);
   });
 
   describe('Stream Configuration', () => {
@@ -82,28 +56,9 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
 
   describe('Calendar Data Fetching - Single User', () => {
     test('should fetch current user calendars when no specific config', async () => {
-      const mockCalendars = [
-        {
-          id: 'calendar-1',
-          name: 'Primary Calendar',
-          description: 'My main calendar',
-          owner: { name: 'John Doe', email: 'john@example.com' },
-          canEdit: true,
-          canShare: true,
-          canViewPrivateItems: false
-        },
-        {
-          id: 'calendar-2', 
-          name: 'Work Calendar',
-          description: 'Work meetings',
-          owner: { name: 'John Doe', email: 'john@example.com' },
-          canEdit: true,
-          canShare: false,
-          canViewPrivateItems: true
-        }
-      ];
+      const mockCalendars = createMockCalendars(2);
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         for (const calendar of mockCalendars) {
           yield calendar;
         }
@@ -115,30 +70,21 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       }
 
       expect(records).toHaveLength(2);
-      expect(MockedOffice365Calendar.instance).toHaveBeenCalledWith(validConfig, mockLogger);
-      expect(mockOffice365Calendar.getCalendars).toHaveBeenCalledTimes(1);
+      expect(MockedOffice365Calendar.instance).toHaveBeenCalledWith(testSetup.validConfig, testSetup.mockLogger);
+      expect(testSetup.mockOffice365Calendar.getCalendars).toHaveBeenCalledTimes(1);
     });
 
     test('should fetch specific calendars when calendar_ids provided', async () => {
       const configWithSpecificCalendars = {
-        ...validConfig,
+        ...testSetup.validConfig,
         calendar_ids: ['cal-1', 'cal-2']
       };
       
-      const specificCalendarsStream = new Calendars(configWithSpecificCalendars, mockLogger);
+      const specificCalendarsStream = new Calendars(configWithSpecificCalendars, testSetup.mockLogger);
 
-      const mockCalendars = [
-        {
-          id: 'cal-1',
-          name: 'Specific Calendar 1',
-          owner: { name: 'John Doe', email: 'john@example.com' },
-          canEdit: true,
-          canShare: true,
-          canViewPrivateItems: false
-        }
-      ];
+      const mockCalendars = [createMockCalendars(1)[0]];
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         for (const calendar of mockCalendars) {
           yield calendar;
         }
@@ -150,18 +96,18 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       }
 
       expect(records).toHaveLength(1);
-      expect(records[0].id).toBe('cal-1');
+      expect(records[0].id).toBe('calendar-1');
     });
   });
 
   describe('Domain-Wide Delegation Support', () => {
     test('should fetch calendars for all users when domain_wide_delegation enabled', async () => {
       const configWithDelegation = {
-        ...validConfig,
+        ...testSetup.validConfig,
         domain_wide_delegation: true
       };
       
-      const delegationStream = new Calendars(configWithDelegation, mockLogger);
+      const delegationStream = new Calendars(configWithDelegation, testSetup.mockLogger);
 
       const mockUsers = [
         { id: 'user-1', mail: 'user1@example.com' },
@@ -190,13 +136,13 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getUsers.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getUsers.mockImplementation(async function* () {
         for (const user of mockUsers) {
           yield user;
         }
       });
 
-      mockOffice365Calendar.getCalendars
+      testSetup.mockOffice365Calendar.getCalendars
         .mockImplementationOnce(async function* () {
           for (const calendar of mockCalendarsUser1) {
             yield calendar;
@@ -216,31 +162,31 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       expect(records).toHaveLength(2);
       expect(records[0].id).toBe('cal-user1-1');
       expect(records[1].id).toBe('cal-user2-1');
-      expect(mockOffice365Calendar.getUsers).toHaveBeenCalledTimes(1);
-      expect(mockOffice365Calendar.getCalendars).toHaveBeenCalledTimes(2);
+      expect(testSetup.mockOffice365Calendar.getUsers).toHaveBeenCalledTimes(1);
+      expect(testSetup.mockOffice365Calendar.getCalendars).toHaveBeenCalledTimes(2);
     });
 
     test('should handle users with no accessible calendars in delegation mode', async () => {
       const configWithDelegation = {
-        ...validConfig,
+        ...testSetup.validConfig,
         domain_wide_delegation: true
       };
       
-      const delegationStream = new Calendars(configWithDelegation, mockLogger);
+      const delegationStream = new Calendars(configWithDelegation, testSetup.mockLogger);
 
       const mockUsers = [
         { id: 'user-1', mail: 'user1@example.com' },
         { id: 'user-2', mail: 'user2@example.com' }
       ];
 
-      mockOffice365Calendar.getUsers.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getUsers.mockImplementation(async function* () {
         for (const user of mockUsers) {
           yield user;
         }
       });
 
       // User 1 has calendars, User 2 has none
-      mockOffice365Calendar.getCalendars
+      testSetup.mockOffice365Calendar.getCalendars
         .mockImplementationOnce(async function* () {
           yield {
             id: 'cal-user1-1',
@@ -281,7 +227,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         canViewPrivateItems: true
       };
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         yield office365Calendar;
       });
 
@@ -323,7 +269,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         canViewPrivateItems: true
       };
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         yield office365Calendar;
       });
 
@@ -364,7 +310,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
           ...testCase.input
         };
 
-        mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+        testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
           yield office365Calendar;
         });
 
@@ -377,7 +323,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         
         // Reset mock for next iteration
         jest.clearAllMocks();
-        MockedOffice365Calendar.instance.mockResolvedValue(mockOffice365Calendar);
+        MockedOffice365Calendar.instance.mockResolvedValue(testSetup.mockOffice365Calendar);
       }
     });
   });
@@ -386,7 +332,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
     test('should handle permission errors gracefully and continue', async () => {
       const permissionError = new VError('Insufficient privileges to access calendar');
       
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         throw permissionError;
       });
 
@@ -396,7 +342,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       }
 
       expect(records).toHaveLength(0);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Failed to fetch calendars'),
         expect.stringContaining('Insufficient privileges')
       );
@@ -412,7 +358,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         canViewPrivateItems: false
       };
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         yield office365Calendar;
         throw new VError('Access denied to calendar: restricted-calendar');
       });
@@ -427,7 +373,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       expect(records[0].id).toBe('accessible-calendar');
       
       // Should log warning about the failed calendar
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Error fetching calendar'),
         expect.stringContaining('Access denied')
       );
@@ -437,7 +383,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       const rateLimitError = new VError('Rate limit exceeded');
       
       let callCount = 0;
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         callCount++;
         if (callCount === 1) {
           throw rateLimitError;
@@ -464,7 +410,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
     test('should handle authentication failures and re-throw', async () => {
       const authError = new VError('Authentication token expired');
       
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         throw authError;
       });
 
@@ -479,7 +425,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
 
   describe('Stream Integration', () => {
     test('should properly initialize Office365Calendar with config and logger', async () => {
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         yield {
           id: 'test-calendar',
           name: 'Test Calendar',
@@ -495,12 +441,12 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         records.push(record);
       }
 
-      expect(MockedOffice365Calendar.instance).toHaveBeenCalledWith(validConfig, mockLogger);
+      expect(MockedOffice365Calendar.instance).toHaveBeenCalledWith(testSetup.validConfig, testSetup.mockLogger);
       expect(records).toHaveLength(1);
     });
 
     test('should support stream state parameter (even though not used in full refresh)', async () => {
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         yield {
           id: 'test-calendar',
           name: 'Test Calendar',
@@ -548,7 +494,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
         for (const calendar of mockCalendars) {
           yield calendar;
         }
@@ -559,14 +505,14 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         records.push(record);
       }
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('Starting calendars sync')
       );
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining('Fetched calendar'),
         expect.stringContaining('cal-1')
       );
-      expect(mockLogger.info).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('Completed calendars sync'),
         expect.stringContaining('2 calendars')
       );
