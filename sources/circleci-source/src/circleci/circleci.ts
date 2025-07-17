@@ -292,6 +292,39 @@ export class CircleCI {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
+  private async withRetry<T>(
+    operation: () => Promise<T>,
+    path: string,
+    attempt: number = 1,
+    sleepMs: number = 1000
+  ): Promise<T> {
+    try {
+      const result = await operation();
+      if (result && typeof result === 'object' && 'headers' in result) {
+        await this.maybeSleepOnResponse(path, result as any);
+      }
+      return result;
+    } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.withRetry(operation, path, attempt + 1, sleepMs);
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.withRetry(operation, path, attempt + 1, sleepMs * 2);
+      }
+      throw wrapApiError(err, `Failed to request "${path}"`);
+    }
+  }
+
   private async get<T = any, D = any>({
     path,
     api = this.v2,
@@ -305,35 +338,35 @@ export class CircleCI {
     attempt?: number;
     sleepMs?: number;
   }): Promise<AxiosResponse<T> | undefined> {
-    try {
-      const res = await api.get<T, AxiosResponse<T>>(path, config);
-      await this.maybeSleepOnResponse(path, res);
-      return res;
-    } catch (err: any) {
-      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" was rate limited. Retrying... ` +
-            `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.maybeSleepOnResponse(path, err?.response);
-        return await this.get({path, api, config, attempt: attempt + 1});
-      } else if (attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" failed. Retrying in ${
-            sleepMs / 1000
-          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.sleep(sleepMs);
-        return await this.get({
-          path,
-          api,
-          config,
-          attempt: attempt + 1,
-          sleepMs: sleepMs * 2,
-        });
-      }
-      throw wrapApiError(err, `Failed to get "${path}"`);
-    }
+    return this.withRetry(
+      () => api.get<T, AxiosResponse<T>>(path, config),
+      path,
+      attempt,
+      sleepMs
+    );
+  }
+
+  private async post<T = any, D = any>({
+    path,
+    api = this.v2,
+    data,
+    config = {},
+    attempt = 1,
+    sleepMs = 1000,
+  }: {
+    path: string;
+    api?: AxiosInstance;
+    data?: D;
+    config?: AxiosRequestConfig<D>;
+    attempt?: number;
+    sleepMs?: number;
+  }): Promise<AxiosResponse<T> | undefined> {
+    return this.withRetry(
+      () => api.post<T, AxiosResponse<T>>(path, data, config),
+      path,
+      attempt,
+      sleepMs
+    );
   }
 
   @Memoize()
@@ -533,53 +566,6 @@ export class CircleCI {
           `Failed to download/parse usage file from ${url}. Error: ${error.message}`
         );
       }
-    }
-  }
-
-  private async post<T = any, D = any>({
-    path,
-    api = this.v2,
-    data,
-    config = {},
-    attempt = 1,
-    sleepMs = 1000,
-  }: {
-    path: string;
-    api?: AxiosInstance;
-    data?: D;
-    config?: AxiosRequestConfig<D>;
-    attempt?: number;
-    sleepMs?: number;
-  }): Promise<AxiosResponse<T> | undefined> {
-    try {
-      const res = await api.post<T, AxiosResponse<T>>(path, data, config);
-      await this.maybeSleepOnResponse(path, res);
-      return res;
-    } catch (err: any) {
-      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" was rate limited. Retrying... ` +
-            `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.maybeSleepOnResponse(path, err?.response);
-        return await this.post({path, api, data, config, attempt: attempt + 1});
-      } else if (attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" failed. Retrying in ${
-            sleepMs / 1000
-          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.sleep(sleepMs);
-        return await this.post({
-          path,
-          api,
-          data,
-          config,
-          attempt: attempt + 1,
-          sleepMs: sleepMs * 2,
-        });
-      }
-      throw wrapApiError(err, `Failed to post to "${path}"`);
     }
   }
 }
