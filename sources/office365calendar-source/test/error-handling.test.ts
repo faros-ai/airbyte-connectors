@@ -9,6 +9,11 @@ import { createAxiosError, createRateLimitError, createServerError, createNotFou
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// Mock Microsoft Graph SDK modules to prevent real API calls
+jest.mock('@azure/msal-node');
+jest.mock('@azure/identity');
+jest.mock('@microsoft/microsoft-graph-client');
+
 describe('O365CAL-003: Error Handling and Retry Logic (TDD)', () => {
   let mockLogger: AirbyteLogger;
   let validConfig: Office365CalendarConfig;

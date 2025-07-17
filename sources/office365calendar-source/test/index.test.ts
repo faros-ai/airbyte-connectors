@@ -173,7 +173,7 @@ describe('O365CAL-001: Project Setup and Structure', () => {
         
         const ourDirs = fs.readdirSync(projectRoot)
           .filter(item => fs.statSync(path.join(projectRoot, item)).isDirectory())
-          .filter(dir => !dir.startsWith('.') && dir !== 'node_modules');
+          .filter(dir => !dir.startsWith('.') && dir !== 'node_modules' && dir !== 'out' && dir !== 'coverage');
         
         // Should have same directory structure
         expect(ourDirs.sort()).toEqual(googleDirs.sort());

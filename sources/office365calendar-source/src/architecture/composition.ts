@@ -35,8 +35,7 @@
  */
 
 import { Result } from '../patterns/result';
-import { Option } from '../patterns/option';
-import { CalendarId, EventId, UserId, Timestamp } from '../domain/types';
+import { CalendarId, EventId, Timestamp } from '../domain/types';
 import { Event } from '../domain/events';
 
 /**
@@ -242,7 +241,7 @@ export const createCalendarService = (deps: Dependencies): CalendarService => {
           return;
         }
 
-        const token = tokenResult.unwrap();
+        tokenResult.unwrap(); // Token validated, proceed with request
         deps.logger.debug('Fetching calendars', { calendarCount: config.calendarIds?.length || 0 });
 
         // Mock implementation for testing - in real implementation, this would call Microsoft Graph API
@@ -266,7 +265,7 @@ export const createCalendarService = (deps: Dependencies): CalendarService => {
       }
     },
 
-    async getCalendar(calendarId: CalendarId, config: Office365Config): Promise<ServiceResult<Calendar>> {
+    async getCalendar(calendarId: CalendarId, _config: Office365Config): Promise<ServiceResult<Calendar>> {
       try {
         const tokenResult = await deps.tokenManager.getAccessToken();
         if (tokenResult.isFailure()) {
@@ -353,7 +352,7 @@ export const createEventService = (deps: Dependencies): EventService => {
       }
     },
 
-    async getEvent(eventId: EventId, calendarId: CalendarId, config: Office365Config): Promise<ServiceResult<Event>> {
+    async getEvent(eventId: EventId, calendarId: CalendarId, _config: Office365Config): Promise<ServiceResult<Event>> {
       try {
         const tokenResult = await deps.tokenManager.getAccessToken();
         if (tokenResult.isFailure()) {
@@ -401,8 +400,8 @@ export const createEventService = (deps: Dependencies): EventService => {
 
     async *getEventsInRange(
       calendarId: CalendarId, 
-      start: Timestamp, 
-      end: Timestamp, 
+      _start: Timestamp, 
+      _end: Timestamp, 
       config: Office365Config
     ): AsyncIterableService<Event> {
       // Delegate to getEvents for now - in real implementation would filter by date range
@@ -545,25 +544,21 @@ export const withLogging = <T extends CalendarService | EventService>(
  */
 export const withMetrics = <T extends CalendarService | EventService>(
   service: T,
-  serviceName: string
+  _serviceName: string
 ): T => {
   const enhancedService = {} as T;
 
   for (const [key, method] of Object.entries(service)) {
     if (typeof method === 'function') {
       (enhancedService as any)[key] = async (...args: any[]) => {
-        const startTime = Date.now();
-        
         try {
           const result = await (method as any).apply(service, args);
-          const duration = Date.now() - startTime;
           
           // In real implementation, would send metrics to monitoring system
           // Metrics: serviceName.key.success with duration
           
           return result;
         } catch (error) {
-          const duration = Date.now() - startTime;
           // Metrics: serviceName.key.error with duration
           throw error;
         }

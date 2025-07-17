@@ -184,7 +184,7 @@ export class Events extends AirbyteStreamBase {
    * 
    * @returns {string} The stream name 'events'
    */
-  get name(): string {
+  override get name(): string {
     return 'events';
   }
 
@@ -220,7 +220,7 @@ export class Events extends AirbyteStreamBase {
    * 
    * @returns {string | string[]} The cursor field name 'nextSyncToken'
    */
-  get cursorField(): string | string[] {
+  override get cursorField(): string | string[] {
     return 'nextSyncToken';
   }
 
@@ -239,7 +239,7 @@ export class Events extends AirbyteStreamBase {
    * }
    * ```
    */
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
+  override async *streamSlices(): AsyncGenerator<StreamSlice> {
     try {
       if (this.config.calendar_ids && this.config.calendar_ids.length > 0) {
         // Use specific calendar IDs from configuration
@@ -684,7 +684,7 @@ export class Events extends AirbyteStreamBase {
    * // newState will contain the updated sync token for the calendar
    * ```
    */
-  getUpdatedState(
+  override getUpdatedState(
     currentStreamState: EventsState,
     latestRecord: MappedEvent
   ): EventsState {

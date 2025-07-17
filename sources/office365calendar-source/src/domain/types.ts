@@ -213,7 +213,7 @@ class StringBrandedType<Brand> implements BrandedType<string, Brand> {
  * Internal implementation for timestamp branded type
  */
 class TimestampBrandedType implements Timestamp {
-  readonly [TIMESTAMP_BRAND]: typeof TIMESTAMP_BRAND;
+  readonly [TIMESTAMP_BRAND]: typeof TIMESTAMP_BRAND = TIMESTAMP_BRAND;
   readonly [key: symbol]: any;
   readonly value: number;
 

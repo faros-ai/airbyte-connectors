@@ -86,8 +86,8 @@ export interface Attendee {
   readonly email: string;
   readonly displayName: string;
   readonly status: AttendeeStatus;
-  readonly isOptional?: boolean;
-  readonly responseTime?: Timestamp;
+  readonly isOptional?: boolean | undefined;
+  readonly responseTime?: Timestamp | undefined;
 }
 
 /**
@@ -111,12 +111,12 @@ export interface NormalEvent extends BaseEvent {
   readonly attendees: readonly Attendee[];
   readonly status: EventStatus;
   readonly isAllDay: boolean;
-  readonly location?: string;
-  readonly description?: string;
-  readonly organizer?: UserId;
-  readonly recurrenceRule?: string;
-  readonly categories?: readonly string[];
-  readonly sensitivity?: 'normal' | 'private' | 'confidential';
+  readonly location?: string | undefined;
+  readonly description?: string | undefined;
+  readonly organizer?: UserId | undefined;
+  readonly recurrenceRule?: string | undefined;
+  readonly categories?: readonly string[] | undefined;
+  readonly sensitivity?: 'normal' | 'private' | 'confidential' | undefined;
 }
 
 /**
@@ -126,10 +126,10 @@ export interface DeletedEvent extends BaseEvent {
   readonly type: EventType.DELETED;
   readonly deletedAt: Timestamp;
   readonly reason: DeletionReason;
-  readonly originalSubject?: string;
-  readonly originalStart?: EventDateTime;
-  readonly originalEnd?: EventDateTime;
-  readonly deletedBy?: UserId;
+  readonly originalSubject?: string | undefined;
+  readonly originalStart?: EventDateTime | undefined;
+  readonly originalEnd?: EventDateTime | undefined;
+  readonly deletedBy?: UserId | undefined;
 }
 
 /**
@@ -185,8 +185,8 @@ class AttendeeImpl implements Attendee {
   readonly email: string;
   readonly displayName: string;
   readonly status: AttendeeStatus;
-  readonly isOptional?: boolean;
-  readonly responseTime?: Timestamp;
+  readonly isOptional?: boolean | undefined;
+  readonly responseTime?: Timestamp | undefined;
 
   constructor(
     userId: UserId,
@@ -231,12 +231,12 @@ class NormalEventImpl implements NormalEvent {
   readonly attendees: readonly Attendee[];
   readonly status: EventStatus;
   readonly isAllDay: boolean;
-  readonly location?: string;
-  readonly description?: string;
-  readonly organizer?: UserId;
-  readonly recurrenceRule?: string;
-  readonly categories?: readonly string[];
-  readonly sensitivity?: 'normal' | 'private' | 'confidential';
+  readonly location?: string | undefined;
+  readonly description?: string | undefined;
+  readonly organizer?: UserId | undefined;
+  readonly recurrenceRule?: string | undefined;
+  readonly categories?: readonly string[] | undefined;
+  readonly sensitivity?: 'normal' | 'private' | 'confidential' | undefined;
 
   constructor(config: Omit<NormalEvent, 'type'>) {
     // Validation
@@ -279,10 +279,10 @@ class DeletedEventImpl implements DeletedEvent {
   readonly lastModified: Timestamp;
   readonly deletedAt: Timestamp;
   readonly reason: DeletionReason;
-  readonly originalSubject?: string;
-  readonly originalStart?: EventDateTime;
-  readonly originalEnd?: EventDateTime;
-  readonly deletedBy?: UserId;
+  readonly originalSubject?: string | undefined;
+  readonly originalStart?: EventDateTime | undefined;
+  readonly originalEnd?: EventDateTime | undefined;
+  readonly deletedBy?: UserId | undefined;
 
   constructor(config: Omit<DeletedEvent, 'type'>) {
     // Validation

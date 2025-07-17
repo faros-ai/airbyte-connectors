@@ -93,7 +93,7 @@ export class Calendars extends AirbyteStreamBase {
    * 
    * @returns {string} The stream name 'calendars'
    */
-  get name(): string {
+  override get name(): string {
     return 'calendars';
   }
 

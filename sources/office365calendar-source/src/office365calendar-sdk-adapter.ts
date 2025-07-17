@@ -6,9 +6,7 @@ import {
   validateOffice365CalendarConfig,
   Calendar,
   Event,
-  CalendarId,
   asCalendarId,
-  asTenantId,
   asUserId,
   asDeltaToken,
   LogUtils,
@@ -38,22 +36,22 @@ export class Office365Calendar {
    * @param {AirbyteLogger} logger - Logger instance for debugging
    */
   private constructor(
-    private readonly config: Office365CalendarConfig,
-    private readonly logger: AirbyteLogger
+    private readonly _config: Office365CalendarConfig,
+    private readonly _logger: AirbyteLogger
   ) {
     // Validate configuration using existing validation
-    validateOffice365CalendarConfig(config);
+    validateOffice365CalendarConfig(_config);
     
     // Create structured logger
-    this.structuredLogger = LogUtils.createStructuredLogger(logger);
+    this.structuredLogger = LogUtils.createStructuredLogger(_logger);
     
     // Create the new SDK instance internally
-    this.sdk = new Office365CalendarSDK(config, logger);
+    this.sdk = new Office365CalendarSDK(_config, _logger);
     
     this.structuredLogger.info('Office 365 Calendar (SDK Adapter) initialized', {
-      tenantId: config.tenant_id,
-      clientId: config.client_id,
-      domainWideDelegation: config.domain_wide_delegation,
+      tenantId: _config.tenant_id,
+      clientId: _config.client_id,
+      domainWideDelegation: _config.domain_wide_delegation,
       usingMicrosoftGraphSDK: true
     });
   }
