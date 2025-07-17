@@ -559,12 +559,12 @@ export const withMetrics = <T extends CalendarService | EventService>(
           const duration = Date.now() - startTime;
           
           // In real implementation, would send metrics to monitoring system
-          console.debug(`METRIC: ${serviceName}.${key}.success`, { duration });
+          // Metrics: serviceName.key.success with duration
           
           return result;
         } catch (error) {
           const duration = Date.now() - startTime;
-          console.debug(`METRIC: ${serviceName}.${key}.error`, { duration });
+          // Metrics: serviceName.key.error with duration
           throw error;
         }
       };

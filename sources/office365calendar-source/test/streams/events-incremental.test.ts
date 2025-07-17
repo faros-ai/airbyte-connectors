@@ -1,9 +1,10 @@
-import { AirbyteLogger, SyncMode } from 'faros-airbyte-cdk';
+import { SyncMode } from 'faros-airbyte-cdk';
 import { VError } from 'verror';
 
 import { Office365CalendarConfig, TenantId, CalendarId } from '../../src/models';
 import { Office365Calendar } from '../../src/office365calendar';
 import { Events } from '../../src/streams/events';
+import { setupStreamTests, createMockEvents, createMockCalendars } from '../utils/test-helpers';
 
 // Mock the Office365Calendar for testing
 jest.mock('../../src/office365calendar', () => ({
@@ -15,41 +16,14 @@ jest.mock('../../src/office365calendar', () => ({
 const MockedOffice365Calendar = Office365Calendar as jest.Mocked<typeof Office365Calendar>;
 
 describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
-  let mockLogger: AirbyteLogger;
   let eventsStream: Events;
-  let mockOffice365Calendar: jest.Mocked<Office365Calendar>;
-  let validConfig: Office365CalendarConfig;
+  let testSetup: ReturnType<typeof setupStreamTests>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    testSetup = setupStreamTests();
+    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.testSetup.mockOffice365Calendar);
     
-    mockLogger = {
-      debug: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      fatal: jest.fn(),
-      trace: jest.fn(),
-      child: jest.fn().mockReturnThis(),
-    } as unknown as AirbyteLogger;
-
-    validConfig = {
-      client_id: 'test-client-id',
-      client_secret: 'test-client-secret',
-      tenant_id: 'test-tenant-id'
-    };
-
-    mockOffice365Calendar = {
-      getCalendars: jest.fn(),
-      getUsers: jest.fn(),
-      checkConnection: jest.fn(),
-      getEvents: jest.fn(),
-      getEventsIncremental: jest.fn(),
-    } as unknown as jest.Mocked<Office365Calendar>;
-
-    MockedOffice365Calendar.instance.mockResolvedValue(mockOffice365Calendar);
-    
-    eventsStream = new Events(validConfig, mockLogger);
+    eventsStream = new Events(testSetup.testSetup.validConfig, testSetup.testSetup.mockLogger);
   });
 
   describe('Incremental Sync Mode Support', () => {
@@ -82,7 +56,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEvents.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
         for (const event of mockEvents) {
           yield event;
         }
@@ -102,8 +76,8 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
       }
 
       expect(records).toHaveLength(1);
-      expect(mockOffice365Calendar.getEvents).toHaveBeenCalledWith('test-calendar', validConfig, undefined);
-      expect(mockOffice365Calendar.getEventsIncremental).not.toHaveBeenCalled();
+      expect(testSetup.mockOffice365Calendar.getEvents).toHaveBeenCalledWith('test-calendar', testSetup.validConfig, undefined);
+      expect(testSetup.mockOffice365Calendar.getEventsIncremental).not.toHaveBeenCalled();
     });
 
     test('should use incremental sync when state exists with delta token', async () => {
@@ -128,7 +102,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of mockIncrementalEvents) {
           yield item;
         }
@@ -152,11 +126,11 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
       }
 
       expect(records).toHaveLength(2);
-      expect(mockOffice365Calendar.getEventsIncremental).toHaveBeenCalledWith(
+      expect(testSetup.mockOffice365Calendar.getEventsIncremental).toHaveBeenCalledWith(
         'test-calendar',
         'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=existing-token-123'
       );
-      expect(mockOffice365Calendar.getEvents).not.toHaveBeenCalled();
+      expect(testSetup.mockOffice365Calendar.getEvents).not.toHaveBeenCalled();
     });
 
     test('should include nextSyncToken in event records for state management', async () => {
@@ -174,7 +148,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of mockIncrementalEvents) {
           yield item;
         }
@@ -223,7 +197,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of mockIncrementalEvents) {
           yield item;
         }
@@ -264,7 +238,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         nextDeltaLink: 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=token-456'
       };
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         yield mockDeletedEvent;
       });
 
@@ -382,10 +356,10 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
       (expiredTokenError as any).response = { status: 410 };
 
       // First call fails with 410, second call with full refresh succeeds
-      mockOffice365Calendar.getEventsIncremental
+      testSetup.mockOffice365Calendar.getEventsIncremental
         .mockRejectedValueOnce(expiredTokenError);
 
-      mockOffice365Calendar.getEvents.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
         yield {
           id: 'event-fallback',
           subject: 'Fallback Event',
@@ -413,19 +387,19 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
       expect(records[0].id).toBe('event-fallback');
       
       // Should log warning about fallback
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Delta token expired'),
         expect.stringContaining('falling back to full refresh')
       );
       
       // Should eventually call full refresh
-      expect(mockOffice365Calendar.getEvents).toHaveBeenCalledWith('test-calendar', validConfig, undefined);
+      expect(testSetup.mockOffice365Calendar.getEvents).toHaveBeenCalledWith('test-calendar', testSetup.validConfig, undefined);
     });
 
     test('should handle network errors during incremental sync', async () => {
       const networkError = new VError('Network connection failed');
       
-      mockOffice365Calendar.getEventsIncremental.mockRejectedValueOnce(networkError);
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockRejectedValueOnce(networkError);
 
       const streamSlice = { calendarId: 'test-calendar' };
       const streamState = { 'test-calendar': { lastSyncToken: 'valid-token' } };
@@ -454,7 +428,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of malformedDeltaEvents) {
           yield item;
         }
@@ -475,7 +449,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
 
       // Should skip malformed events and continue
       expect(records).toHaveLength(0);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Skipping malformed event in delta response')
       );
     });
@@ -498,7 +472,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of mockIncrementalEvents) {
           yield item;
         }
@@ -522,7 +496,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         records1.push(record);
       }
 
-      expect(mockOffice365Calendar.getEventsIncremental).toHaveBeenCalledWith(
+      expect(testSetup.mockOffice365Calendar.getEventsIncremental).toHaveBeenCalledWith(
         'calendar-1',
         'token-cal1'
       );
@@ -547,7 +521,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         }
       ];
 
-      mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
+      testSetup.mockOffice365Calendar.getEventsIncremental.mockImplementation(async function* () {
         for (const item of mockIncrementalEvents) {
           yield item;
         }
@@ -566,7 +540,7 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
         records.push(record);
       }
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
+      expect(testSetup.mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('Completed incremental events sync'),
         expect.stringContaining('1 events')
       );
