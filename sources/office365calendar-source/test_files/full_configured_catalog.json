@@ -1,0 +1,38 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "calendars",
+        "json_schema": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "summary": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "events",
+        "json_schema": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "summary": { "type": "string" },
+            "start": { "type": "object" },
+            "end": { "type": "object" }
+          }
+        },
+        "supported_sync_modes": ["full_refresh", "incremental"]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": ["nextSyncToken"],
+      "destination_sync_mode": "append"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "client_id": "",
+  "client_secret": "test-client-secret",
+  "tenant_id": "invalid-tenant-id"
+}

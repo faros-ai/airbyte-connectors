@@ -1,0 +1,80 @@
+{
+  "compilerOptions": {
+    /* === OVERKILL TYPE STRICTNESS === */
+    "strict": true,                                      // Enable all strict type-checking options
+    "noImplicitAny": true,                              // Raise error on expressions with implied 'any' type
+    "strictNullChecks": true,                           // Strict null checks
+    "strictFunctionTypes": true,                        // Strict function types
+    "strictBindCallApply": true,                        // Strict bind/call/apply methods
+    "strictPropertyInitialization": true,              // Strict property initialization
+    "noImplicitReturns": true,                         // Report error when not all code paths return a value
+    "noFallthroughCasesInSwitch": true,               // Report errors for fallthrough cases in switch
+    "noUncheckedIndexedAccess": true,                 // Include 'undefined' in index signature results
+    "noImplicitOverride": true,                       // Ensure override is specified when overriding
+    "useUnknownInCatchVariables": true,               // Type catch clause variables as 'unknown' instead of 'any'
+    "exactOptionalPropertyTypes": true,               // Differentiate between undefined and missing properties
+    
+    /* === OVERKILL COMPILER STRICTNESS === */
+    "noUnusedLocals": true,                           // Report errors on unused locals
+    "noUnusedParameters": true,                       // Report errors on unused parameters
+    "allowUnusedLabels": false,                       // Do not allow unused labels
+    "allowUnreachableCode": false,                    // Do not allow unreachable code
+    "noImplicitThis": true,                           // Raise error on 'this' expressions with implied 'any' type
+    "alwaysStrict": true,                             // Parse in strict mode and emit "use strict"
+    "noPropertyAccessFromIndexSignature": true,      // Require undeclared properties to be accessed using element syntax
+    "noUncheckedIndexedAccess": true,                 // Add undefined to index signature results
+    
+    /* === OVERKILL ADVANCED CHECKS === */
+    "exactOptionalPropertyTypes": true,               // Exact optional property types
+    "noImplicitOverride": true,                       // Require explicit override keyword
+    "useUnknownInCatchVariables": true,               // Unknown in catch variables
+    
+    /* === COMPILATION SETTINGS === */
+    "target": "ES2022",                               // Latest stable target
+    "module": "CommonJS",                             // Node.js compatible
+    "lib": ["ES2022"],                                // Include latest library definitions
+    "declaration": true,                              // Generate .d.ts files
+    "declarationMap": true,                           // Generate declaration source maps
+    "sourceMap": true,                                // Generate source maps
+    "outDir": "./lib",                                // Output directory
+    "rootDir": "./src",                               // Root directory
+    "composite": true,                                // Enable project compilation
+    "incremental": true,                              // Enable incremental compilation
+    "tsBuildInfoFile": "./.tsbuildinfo",             // Build info file location
+    
+    /* === MODULE RESOLUTION === */
+    "moduleResolution": "node",                       // Node.js module resolution
+    "esModuleInterop": true,                          // Emit additional JS for commonjs/es6 interop
+    "allowSyntheticDefaultImports": true,             // Allow synthetic default imports
+    "resolveJsonModule": true,                        // Allow importing JSON modules
+    "isolatedModules": true,                          // Treat each file as separate module
+    "forceConsistentCasingInFileNames": true,        // Force consistent file name casing
+    
+    /* === ADVANCED STRICTNESS === */
+    "skipLibCheck": false,                            // Do NOT skip checking .d.ts files (maximum safety)
+    "skipDefaultLibCheck": false,                     // Do NOT skip checking default library
+    "noErrorTruncation": true,                        // Do not truncate error messages
+    "preserveConstEnums": true,                       // Preserve const enums
+    "removeComments": false,                          // Keep comments for debugging
+    "noEmitOnError": true,                            // Do not emit if there are errors
+    
+    /* === DEBUGGING AND DEVELOPMENT === */
+    "pretty": true,                                   // Stylize errors and messages
+    "listFiles": false,                               // Print names of files part of compilation
+    "listEmittedFiles": false,                        // Print names of generated files
+    "traceResolution": false,                         // Trace module resolution
+    "diagnostics": false,                             // Show diagnostic information
+    "extendedDiagnostics": false                      // Show extended diagnostic information
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "test",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "references": []
+} 

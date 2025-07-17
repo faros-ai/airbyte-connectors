@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const {mainCommand} = require('../lib');
+
+// Temporary placeholder for O365CAL-001 - will be restored in O365CAL-007
+mainCommand();

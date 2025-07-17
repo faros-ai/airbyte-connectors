@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "nextSyncToken": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Calendar name (mapped from Office 365 'name' field)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "timeZone": {
+      "type": "string"
+    },
+    "accessRole": {
+      "type": "string",
+      "description": "User's access level to the calendar (mapped from Office 365 permissions)"
+    },
+    "primary": {
+      "type": "boolean",
+      "description": "Whether this is the user's primary calendar"
+    },
+    "selected": {
+      "type": "boolean"
+    },
+    "hidden": {
+      "type": "boolean"
+    },
+    "colorId": {
+      "type": "string"
+    },
+    "backgroundColor": {
+      "type": "string"
+    },
+    "foregroundColor": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "canEdit": {
+      "type": "boolean",
+      "description": "Whether the current user can edit this calendar"
+    },
+    "canShare": {
+      "type": "boolean",
+      "description": "Whether the current user can share this calendar"
+    },
+    "canViewPrivateItems": {
+      "type": "boolean",
+      "description": "Whether the current user can view private items in this calendar"
+    },
+    "defaultReminders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string"
+          },
+          "minutes": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

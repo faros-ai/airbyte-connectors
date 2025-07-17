@@ -1,0 +1,11 @@
+{
+  "extends": "../../../.tsconfig.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "composite": true,
+    "outDir": "../lib",
+    "exactOptionalPropertyTypes": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
+}

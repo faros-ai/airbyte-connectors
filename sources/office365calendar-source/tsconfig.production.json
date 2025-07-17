@@ -1,0 +1,31 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* === PRODUCTION OVERKILL SETTINGS === */
+    "skipLibCheck": true,                             // Skip external library checks for production builds
+    "skipDefaultLibCheck": true,                      // Skip default library checks
+    
+    /* === KEEP ALL OUR OVERKILL RULES === */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noErrorTruncation": true,
+    "noEmitOnError": true
+  }
+} 

@@ -1,0 +1,390 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "nextSyncToken": {
+      "type": "string",
+      "description": "Token for incremental sync (mapped from Office 365 deltaLink)"
+    },
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "description": "Event status (mapped from Office 365 showAs and isCancelled)"
+    },
+    "htmlLink": {
+      "type": "string",
+      "description": "Link to view the event in Office 365"
+    },
+    "created": {
+      "type": "string",
+      "description": "Event creation time (mapped from Office 365 createdDateTime)"
+    },
+    "updated": {
+      "type": "string",
+      "description": "Last modification time (mapped from Office 365 lastModifiedDateTime)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Event title (mapped from Office 365 'subject' field)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description (mapped from Office 365 'body.content' field)"
+    },
+    "location": {
+      "type": "string",
+      "description": "Event location (mapped from Office 365 'location.displayName')"
+    },
+    "colorId": {
+      "type": "string"
+    },
+    "creator": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "self": {
+          "type": "boolean"
+        }
+      },
+      "description": "Event creator (mapped from Office 365 organizer)"
+    },
+    "organizer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "description": "Mapped from Office 365 organizer.emailAddress.address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Mapped from Office 365 organizer.emailAddress.name"
+        },
+        "self": {
+          "type": "boolean",
+          "description": "Whether the current user is the organizer"
+        }
+      }
+    },
+    "start": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "All-day event date"
+        },
+        "dateTime": {
+          "type": "string",
+          "description": "Event start time (mapped from Office 365 start.dateTime)"
+        },
+        "timeZone": {
+          "type": "string",
+          "description": "Time zone (mapped from Office 365 start.timeZone)"
+        }
+      }
+    },
+    "end": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "All-day event end date"
+        },
+        "dateTime": {
+          "type": "string",
+          "description": "Event end time (mapped from Office 365 end.dateTime)"
+        },
+        "timeZone": {
+          "type": "string",
+          "description": "Time zone (mapped from Office 365 end.timeZone)"
+        }
+      }
+    },
+    "endTimeUnspecified": {
+      "type": "boolean"
+    },
+    "recurrence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recurrence rules (mapped from Office 365 recurrence pattern)"
+    },
+    "recurringEventId": {
+      "type": "string",
+      "description": "ID of the recurring event series"
+    },
+    "originalStartTime": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "dateTime": {
+          "type": "string"
+        },
+        "timeZone": {
+          "type": "string"
+        }
+      },
+      "description": "Original start time for recurring event exceptions"
+    },
+    "transparency": {
+      "type": "string",
+      "description": "Free/busy status (mapped from Office 365 showAs)"
+    },
+    "visibility": {
+      "type": "string",
+      "description": "Event visibility (mapped from Office 365 sensitivity)"
+    },
+    "iCalUID": {
+      "type": "string",
+      "description": "iCalendar UID"
+    },
+    "sequence": {
+      "type": "integer"
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "description": "Mapped from Office 365 attendees[].emailAddress.address"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Mapped from Office 365 attendees[].emailAddress.name"
+          },
+          "organizer": {
+            "type": "boolean"
+          },
+          "self": {
+            "type": "boolean"
+          },
+          "resource": {
+            "type": "boolean"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Mapped from Office 365 attendees[].type"
+          },
+          "responseStatus": {
+            "type": "string",
+            "description": "Mapped from Office 365 attendees[].status.response"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "additionalGuests": {
+            "type": "integer"
+          }
+        }
+      },
+      "description": "Event attendees (mapped from Office 365 attendees array)"
+    },
+    "attendeesOmitted": {
+      "type": "boolean"
+    },
+    "extendedProperties": {
+      "type": "object",
+      "properties": {
+        "private": {
+          "type": "object",
+          "patternProperties": {
+            ".": {
+              "type": "string"
+            }
+          }
+        },
+        "shared": {
+          "type": "object",
+          "patternProperties": {
+            ".": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "conferenceData": {
+      "type": "object",
+      "properties": {
+        "entryPoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "entryPointType": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "pin": {
+                "type": "string"
+              },
+              "accessCode": {
+                "type": "string"
+              },
+              "meetingCode": {
+                "type": "string"
+              },
+              "passcode": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "conferenceSolution": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "name": {
+              "type": "string"
+            },
+            "iconUri": {
+              "type": "string"
+            }
+          }
+        },
+        "conferenceId": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "description": "Conference/meeting data (mapped from Office 365 onlineMeeting)"
+    },
+    "anyoneCanAddSelf": {
+      "type": "boolean"
+    },
+    "guestsCanInviteOthers": {
+      "type": "boolean",
+      "description": "Guest permissions (mapped from Office 365 allowNewTimeProposals)"
+    },
+    "guestsCanModify": {
+      "type": "boolean"
+    },
+    "guestsCanSeeOtherGuests": {
+      "type": "boolean"
+    },
+    "privateCopy": {
+      "type": "boolean"
+    },
+    "locked": {
+      "type": "boolean"
+    },
+    "reminders": {
+      "type": "object",
+      "properties": {
+        "useDefault": {
+          "type": "boolean"
+        },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string"
+              },
+              "minutes": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "description": "Reminder settings (mapped from Office 365 reminder)"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fileUrl": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "iconLink": {
+            "type": "string"
+          },
+          "fileId": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Event attachments (mapped from Office 365 attachments)"
+    },
+    "eventType": {
+      "type": "string",
+      "description": "Event type (mapped from Office 365 type field)"
+    },
+    "isAllDay": {
+      "type": "boolean",
+      "description": "Whether this is an all-day event (from Office 365 isAllDay)"
+    },
+    "isCancelled": {
+      "type": "boolean",
+      "description": "Whether the event is cancelled (from Office 365 isCancelled)"
+    },
+    "importance": {
+      "type": "string",
+      "description": "Event importance level (from Office 365 importance)"
+    },
+    "sensitivity": {
+      "type": "string",
+      "description": "Event sensitivity/privacy level (from Office 365 sensitivity)"
+    }
+  }
+}

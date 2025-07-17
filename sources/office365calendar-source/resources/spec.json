@@ -1,0 +1,59 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Office 365 Calendar Spec",
+    "type": "object",
+    "required": ["client_id", "client_secret", "tenant_id"],
+    "additionalProperties": true,
+    "properties": {
+      "client_id": {
+        "type": "string",
+        "title": "Client ID",
+        "description": "The Azure AD application (client) ID for accessing Office 365 Calendar API",
+        "examples": ["12345678-1234-1234-1234-123456789012"]
+      },
+      "client_secret": {
+        "type": "string",
+        "title": "Client Secret",
+        "description": "The Azure AD application client secret for authentication",
+        "airbyte_secret": true
+      },
+      "tenant_id": {
+        "type": "string",
+        "title": "Tenant ID",
+        "description": "The Azure AD tenant ID where your Office 365 calendars are hosted",
+        "examples": ["12345678-1234-1234-1234-123456789012", "contoso.onmicrosoft.com"]
+      },
+      "calendar_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Calendar IDs",
+        "description": "A list of specific Calendar IDs to sync (default: all accessible calendars). If not provided, the connector will attempt to sync all accessible calendars. You can find Calendar IDs in the Microsoft Graph Explorer or through the Graph API."
+      },
+      "domain_wide_delegation": {
+        "type": "boolean",
+        "title": "Enable Domain-wide Delegation",
+        "description": "This mode allows the application to access calendars across the entire organization using application permissions. The Azure AD application must be configured with appropriate Calendar.Read.All permissions and admin consent must be granted.",
+        "default": false
+      },
+      "events_max_results": {
+        "type": "integer",
+        "title": "Events Max Results",
+        "description": "Maximum number of events returned on one result page. The number of events in the resulting page may be less than this value, or none at all, even if there are more events matching the query. Incomplete pages can be detected by pagination tokens in the response.",
+        "default": 500,
+        "minimum": 1,
+        "maximum": 2500
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "minimum": 1,
+        "description": "Fetch events created within the specified number of days"
+      }
+    }
+  }
+}
