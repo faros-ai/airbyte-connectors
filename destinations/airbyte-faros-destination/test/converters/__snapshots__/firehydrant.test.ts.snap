@@ -4,8 +4,8 @@ exports[`firehydrant process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__firehydrant__incidents\\\\\\":4,\\\\\\"mytestsource__firehydrant__teams\\\\\\":2,\\\\\\"mytestsource__firehydrant__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 87 records",
-  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":4,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":5,\\\\\\"ims_IncidentEvent\\\\\\":62,\\\\\\"ims_IncidentTag\\\\\\":1,\\\\\\"ims_IncidentTasks\\\\\\":4,\\\\\\"ims_Label\\\\\\":1,\\\\\\"ims_Team\\\\\\":2,\\\\\\"ims_User\\\\\\":1,\\\\\\"tms_Task\\\\\\":4,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 29 records",
+  "Would write records by model: {\\\\\\"compute_Application\\\\\\":1,\\\\\\"ims_Incident\\\\\\":4,\\\\\\"ims_IncidentApplicationImpact\\\\\\":1,\\\\\\"ims_IncidentAssignment\\\\\\":5,\\\\\\"ims_IncidentEvent\\\\\\":10,\\\\\\"ims_IncidentTag\\\\\\":1,\\\\\\"ims_IncidentTasks\\\\\\":2,\\\\\\"ims_Label\\\\\\":1,\\\\\\"ims_Team\\\\\\":2,\\\\\\"ims_User\\\\\\":1,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -23,19 +23,18 @@ Object {
   "recordsProcessed": 7,
   "recordsRead": 7,
   "recordsSkipped": 0,
-  "recordsWritten": 87,
+  "recordsWritten": 29,
   "writtenByModel": Object {
     "compute_Application": 1,
     "ims_Incident": 4,
     "ims_IncidentApplicationImpact": 1,
     "ims_IncidentAssignment": 5,
-    "ims_IncidentEvent": 62,
+    "ims_IncidentEvent": 10,
     "ims_IncidentTag": 1,
-    "ims_IncidentTasks": 4,
+    "ims_IncidentTasks": 2,
     "ims_Label": 1,
     "ims_Team": 2,
     "ims_User": 1,
-    "tms_Task": 4,
     "tms_User": 1,
   },
 }

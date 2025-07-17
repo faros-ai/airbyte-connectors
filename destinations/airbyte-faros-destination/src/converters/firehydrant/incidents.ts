@@ -50,69 +50,39 @@ export class Incidents extends FireHydrantConverter {
 
     const incidentRef = {uid: incident.id, source};
     const createdAt = Utils.toDate(incident.created_at);
-    const updatedAt = incident.events
-      ? Utils.toDate(incident.events[incident.events.length - 1].occurred_at)
-      : createdAt;
+    const startedAt = Utils.toDate(incident.started_at);
 
     // Extract timestamps from lifecycle_phases
     const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
+    
+    // Get the latest milestone timestamp for updatedAt
+    const latestMilestone = allMilestones.length > 0 
+      ? allMilestones.reduce((latest, current) => 
+          new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0) ? current : latest
+        )
+      : null;
+    const updatedAt = latestMilestone ? Utils.toDate(latestMilestone.occurred_at) : createdAt;
     const acknowledgedMilestone = allMilestones.find(milestone => milestone.slug === 'acknowledged');
     const resolvedMilestone = allMilestones.find(milestone => milestone.slug === 'resolved');
 
     const acknowledgedAt = Utils.toDate(acknowledgedMilestone?.occurred_at);
     const resolvedAt = Utils.toDate(resolvedMilestone?.occurred_at);
 
-    for (const event of incident.events) {
-      const eventType: IncidentEventType = {
-        category: IncidentEventTypeCategory.Created,
-        detail: event.type,
-      };
+    for (const milestone of allMilestones) {
+      if (!milestone.id || !milestone.occurred_at) continue;
+      
+      const eventType = this.getIncidentStatus(milestone.slug);
 
-      const occurredAt = Utils.toDate(event.occurred_at);
-      if (
-        !resolvedAt &&
-        event.data.current_milestone === FirehydrantIncidentMilestone.resolved
-      ) {
-        eventType.category = IncidentEventTypeCategory.Resolved;
-      }
-      if (
-        !acknowledgedAt &&
-        event.data.current_milestone ===
-          FirehydrantIncidentMilestone.acknowledged
-      ) {
-        eventType.category = IncidentEventTypeCategory.Acknowledged;
-      }
       res.push({
         model: 'ims_IncidentEvent',
         record: {
-          uid: event.id,
+          uid: milestone.id,
           type: eventType,
           incident: incidentRef,
-          detail: JSON.stringify(event.data),
-          createdAt: occurredAt,
+          detail: milestone.name,
+          createdAt: Utils.toDate(milestone.occurred_at),
         },
       });
-
-      if (event.data.operation === 'created' && event.data.ticket) {
-        const ticket = event.data.ticket as IncidentTicket;
-        // TODO
-        res.push(
-          this.getTaskDestinationRecord(
-            ticket,
-            source,
-            maxDescriptionLength,
-            occurredAt
-          )
-        );
-        const task = {uid: ticket.id, source};
-        res.push({
-          model: 'ims_IncidentTasks',
-          record: {
-            task,
-            incident: incidentRef,
-          },
-        });
-      }
     }
 
     res.push({
@@ -126,6 +96,7 @@ export class Incidents extends FireHydrantConverter {
         ),
         url: incident.incident_url,
         createdAt,
+        startedAt,
         updatedAt,
         acknowledgedAt,
         resolvedAt,
@@ -162,6 +133,18 @@ export class Incidents extends FireHydrantConverter {
         model: 'ims_IncidentAssignment',
         record: {
           assignee,
+          incident: incidentRef,
+        },
+      });
+    }
+
+    for (const ticket of incident.incident_tickets) {
+      // TODO: Figure out proper source for task - ticket might have different source than incident
+      const task = {uid: ticket.id, source};
+      res.push({
+        model: 'ims_IncidentTasks',
+        record: {
+          task,
           incident: incidentRef,
         },
       });
@@ -258,7 +241,7 @@ export class Incidents extends FireHydrantConverter {
     }
   }
 
-  //https://support.firehydrant.io/hc/en-us/articles/4403969187604-Incident-Milestones
+  //https://docs.firehydrant.com/docs/incident-milestones-lifecycle-phases
   private getIncidentStatus(milestone: string): {
     category: string;
     detail: string;
@@ -266,14 +249,19 @@ export class Incidents extends FireHydrantConverter {
     const detail = milestone;
     switch (milestone) {
       case FirehydrantIncidentMilestone.started:
-        return {category: IncidentStatusCategory.Investigating, detail};
       case FirehydrantIncidentMilestone.detected:
-        return {category: IncidentStatusCategory.Identified, detail};
       case FirehydrantIncidentMilestone.acknowledged:
-      case FirehydrantIncidentMilestone.firstaction:
-        return {category: IncidentStatusCategory.Monitoring, detail};
+        return {category: IncidentStatusCategory.Created, detail};
+      case FirehydrantIncidentMilestone.investigating:
+        return {category: IncidentStatusCategory.Investigating, detail};
+      case FirehydrantIncidentMilestone.identified:
+        return {category: IncidentStatusCategory.Identified, detail};
       case FirehydrantIncidentMilestone.mitigated:
+        return {category: IncidentStatusCategory.Monitoring, detail};
       case FirehydrantIncidentMilestone.resolved:
+      case FirehydrantIncidentMilestone.retrospective_started:
+      case FirehydrantIncidentMilestone.retrospective_completed:
+      case FirehydrantIncidentMilestone.closed:
         return {category: IncidentStatusCategory.Resolved, detail};
       default:
         return {category: IncidentStatusCategory.Custom, detail};

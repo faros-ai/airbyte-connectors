@@ -92,15 +92,6 @@ export interface IncidentTicket {
   attachments: [any];
 }
 
-export interface IncidentEvent {
-  id: string;
-  incident_id: string;
-  occurred_at: string;
-  type: string;
-  visibility: string;
-  author: User;
-  data: any;
-}
 
 export interface Incident extends ObjectBase {
   created_at: string;
@@ -148,7 +139,6 @@ export interface Incident extends ObjectBase {
   context_object?: any;
   restricted: boolean;
   explicit_organization_user_ids: [any];
-  events: IncidentEvent[];
   lifecycle_phases: LifecyclePhase[];
 }
 
@@ -188,9 +178,13 @@ export enum FirehydrantIncidentMilestone {
   started = 'started',
   detected = 'detected',
   acknowledged = 'acknowledged',
-  firstaction = 'firstaction',
+  investigating = 'investigating',
+  identified = 'identified',
   mitigated = 'mitigated',
   resolved = 'resolved',
+  retrospective_started = 'retrospective_started',
+  retrospective_completed = 'retrospective_completed',
+  closed = 'closed',
 }
 
 export enum FirehydrantIncidentSeverity {
@@ -205,6 +199,7 @@ export enum FirehydrantIncidentSeverity {
 }
 
 export enum IncidentStatusCategory {
+  Created = 'Created',
   Identified = 'Identified',
   Investigating = 'Investigating',
   Monitoring = 'Monitoring',
