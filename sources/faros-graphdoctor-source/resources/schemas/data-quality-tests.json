@@ -1,7 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "additionalProperties": {
-    "type": "string"
-  }
+  "properties": {
+    "faros_DataQualityIssue": {
+      "type": "object"
+    },
+    "faros_DataQualitySummary": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
 }
