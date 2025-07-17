@@ -11,7 +11,7 @@ export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
     super(logger);
   }
 
-  async *streamSlices(): AsyncGenerator<StreamSlice> {
+  async *streamSlices(): AsyncGenerator<ProjectSlice> {
     for (const projectSlug of this.cfg.project_slugs) {
       if (this.isProjectInBucket(projectSlug)) {
         yield {projectSlug};

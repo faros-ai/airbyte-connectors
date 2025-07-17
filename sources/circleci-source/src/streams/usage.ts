@@ -1,7 +1,7 @@
 import {SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CircleCI, UsageExportJob,UsageRecord} from '../circleci/circleci';
+import {CircleCI, UsageRecord} from '../circleci/circleci';
 import {OrganizationSlice, StreamWithOrganizationSlices} from './common';
 
 interface UsageState {
