@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`team-history basic test process records from all streams 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__team-history__team_membership_history\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 6 records",
+  "Would write records by model: {\\\\\\"org_TeamMembershipHistory\\\\\\":6}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;

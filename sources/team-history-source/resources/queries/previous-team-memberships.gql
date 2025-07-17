@@ -1,0 +1,11 @@
+query PreviousTeamMemberships {
+  org_TeamMembershipHistory(where: {endedAt: {_is_null: true}}) {
+    team {
+      uid
+    }
+    member {
+      uid
+    }
+    startedAt
+  }
+}
