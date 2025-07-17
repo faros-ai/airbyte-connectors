@@ -144,8 +144,15 @@
         "default": 90,
         "description": "Only fetch data updated after cutoff"
       },
-      "run_mode": {
+      "usage_export_min_gap_hours": {
         "order": 17,
+        "type": "integer",
+        "title": "Usage Export Minimum Gap Hours",
+        "default": 24,
+        "description": "Minimum hours that must pass between the latest usage export window end and now() before creating a new export"
+      },
+      "run_mode": {
+        "order": 18,
         "title": "Run Mode",
         "description": "Run mode for selecting the usage of the connector",
         "type": "string",
@@ -157,7 +164,7 @@
         ]
       },
       "custom_streams": {
-        "order": 18,
+        "order": 19,
         "title": "Custom Streams",
         "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
         "type": "array",

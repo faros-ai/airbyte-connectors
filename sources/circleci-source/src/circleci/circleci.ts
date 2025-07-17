@@ -21,10 +21,11 @@ import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-const DEFAULT_API_URL = 'https://circleci.com/api/v2';
-const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_REQUEST_TIMEOUT = 120000;
+export const DEFAULT_API_URL = 'https://circleci.com/api/v2';
+export const DEFAULT_MAX_RETRIES = 3;
+export const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_USAGE_EXPORT_MIN_GAP_HOURS = 24;
+export const DEFAULT_REQUEST_TIMEOUT = 120000;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
 
@@ -55,6 +56,7 @@ export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly faros_graph_name?: string;
   readonly reject_unauthorized: boolean;
   readonly cutoff_days?: number;
+  readonly usage_export_min_gap_hours?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
   readonly run_mode?: string;
