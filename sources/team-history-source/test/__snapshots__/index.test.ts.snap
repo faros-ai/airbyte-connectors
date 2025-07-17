@@ -31,7 +31,7 @@ exports[`index TeamMembershipHistory stream schema 1`] = `
 }
 `;
 
-exports[`index check connection - api error 1`] = `
+exports[`index check connection api error 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
     "message": "API connection failed",
@@ -41,7 +41,7 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index check connection - graph does not exist 1`] = `
+exports[`index check connection graph does not exist 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
     "message": "Graph test-graph does not exist!",
@@ -51,7 +51,7 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index check connection - missing graph 1`] = `
+exports[`index check connection missing graph 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
     "message": "Faros graph name was not provided",
@@ -61,7 +61,7 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index check connection - valid 1`] = `
+exports[`index check connection valid 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
     "status": "SUCCEEDED",

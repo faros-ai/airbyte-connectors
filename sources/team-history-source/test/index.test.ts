@@ -15,6 +15,30 @@ import VError from 'verror';
 import * as sut from '../src/index';
 import {TeamMembershipHistory} from '../src/streams';
 
+interface TeamMembershipModel {
+  readonly team: {uid: string} | null;
+  readonly member: {uid: string} | null;
+  readonly startedAt?: string;
+}
+
+interface MockGraphQueries {
+  readonly currentMemberships?: TeamMembershipModel[];
+  readonly previousMemberships?: TeamMembershipModel[];
+}
+
+function mockGraphQueries(mock: MockGraphQueries): void {
+  jest
+    .spyOn(FarosClient.prototype, 'nodeIterable')
+    .mockImplementation((_graph, query) => {
+      if (query.includes('CurrentTeamMemberships')) {
+        return mockAsyncIterable(mock.currentMemberships ?? []);
+      } else if (query.includes('PreviousTeamMemberships')) {
+        return mockAsyncIterable(mock.previousMemberships ?? []);
+      }
+      return mockAsyncIterable([]);
+    });
+}
+
 describe('index', () => {
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -35,39 +59,41 @@ describe('index', () => {
     );
   });
 
-  test('check connection - valid', async () => {
-    jest.spyOn(FarosClient.prototype, 'graphExists').mockResolvedValue(true);
+  describe('check connection', () => {
+    test('valid', async () => {
+      jest.spyOn(FarosClient.prototype, 'graphExists').mockResolvedValue(true);
 
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/valid_config.json',
+      await sourceCheckTest({
+        source,
+        configOrPath: 'check_connection/valid_config.json',
+      });
     });
-  });
 
-  test('check connection - missing graph', async () => {
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/missing_graph.json',
+    test('missing graph', async () => {
+      await sourceCheckTest({
+        source,
+        configOrPath: 'check_connection/missing_graph.json',
+      });
     });
-  });
 
-  test('check connection - graph does not exist', async () => {
-    jest.spyOn(FarosClient.prototype, 'graphExists').mockResolvedValue(false);
+    test('graph does not exist', async () => {
+      jest.spyOn(FarosClient.prototype, 'graphExists').mockResolvedValue(false);
 
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/valid_config.json',
+      await sourceCheckTest({
+        source,
+        configOrPath: 'check_connection/valid_config.json',
+      });
     });
-  });
 
-  test('check connection - api error', async () => {
-    jest
-      .spyOn(FarosClient.prototype, 'graphExists')
-      .mockRejectedValue(new VError('API connection failed'));
+    test('api error', async () => {
+      jest
+        .spyOn(FarosClient.prototype, 'graphExists')
+        .mockRejectedValue(new VError('API connection failed'));
 
-    await sourceCheckTest({
-      source,
-      configOrPath: 'check_connection/valid_config.json',
+      await sourceCheckTest({
+        source,
+        configOrPath: 'check_connection/valid_config.json',
+      });
     });
   });
 
@@ -110,32 +136,20 @@ describe('index', () => {
     });
 
     test('readRecords - new memberships', async () => {
-      // Mock current team memberships
-      const currentMemberships = [
-        {team: {uid: 'team1'}, member: {uid: 'user1'}},
-        {team: {uid: 'team2'}, member: {uid: 'user1'}},
-        {team: {uid: 'team1'}, member: {uid: 'user2'}},
-      ];
-
-      // Mock previous team memberships history
-      const previousMemberships = [
-        {
-          team: {uid: 'team1'},
-          member: {uid: 'user1'},
-          startedAt: '2023-01-01T00:00:00Z',
-        },
-      ];
-
-      jest
-        .spyOn(FarosClient.prototype, 'nodeIterable')
-        .mockImplementation((_graph, query) => {
-          if (query.includes('CurrentTeamMemberships')) {
-            return mockAsyncIterable(currentMemberships);
-          } else if (query.includes('PreviousTeamMemberships')) {
-            return mockAsyncIterable(previousMemberships);
-          }
-          return mockAsyncIterable([]);
-        });
+      mockGraphQueries({
+        currentMemberships: [
+          {team: {uid: 'team1'}, member: {uid: 'user1'}},
+          {team: {uid: 'team2'}, member: {uid: 'user1'}},
+          {team: {uid: 'team1'}, member: {uid: 'user2'}},
+        ],
+        previousMemberships: [
+          {
+            team: {uid: 'team1'},
+            member: {uid: 'user1'},
+            startedAt: '2023-01-01T00:00:00Z',
+          },
+        ],
+      });
 
       await sourceReadTest({
         source,
@@ -162,36 +176,22 @@ describe('index', () => {
       });
     });
 
-    test('readRecords - ended memberships', async () => {
-      // Mock current team memberships (user1 is no longer in team2)
-      const currentMemberships = [
-        {team: {uid: 'team1'}, member: {uid: 'user1'}},
-      ];
-
-      // Mock previous team memberships history
-      const previousMemberships = [
-        {
-          team: {uid: 'team1'},
-          member: {uid: 'user1'},
-          startedAt: '2023-01-01T00:00:00Z',
-        },
-        {
-          team: {uid: 'team2'},
-          member: {uid: 'user1'},
-          startedAt: '2023-02-01T00:00:00Z',
-        },
-      ];
-
-      jest
-        .spyOn(FarosClient.prototype, 'nodeIterable')
-        .mockImplementation((_graph, query) => {
-          if (query.includes('CurrentTeamMemberships')) {
-            return mockAsyncIterable(currentMemberships);
-          } else if (query.includes('PreviousTeamMemberships')) {
-            return mockAsyncIterable(previousMemberships);
-          }
-          return mockAsyncIterable([]);
-        });
+    test('readRecords - updated memberships', async () => {
+      mockGraphQueries({
+        currentMemberships: [{team: {uid: 'team1'}, member: {uid: 'user1'}}],
+        previousMemberships: [
+          {
+            team: {uid: 'team1'},
+            member: {uid: 'user1'},
+            startedAt: '2023-01-01T00:00:00Z',
+          },
+          {
+            team: {uid: 'team2'},
+            member: {uid: 'user1'},
+            startedAt: '2023-02-01T00:00:00Z',
+          },
+        ],
+      });
 
       await sourceReadTest({
         source,
@@ -212,30 +212,16 @@ describe('index', () => {
     });
 
     test('readRecords - no changes', async () => {
-      // Mock current team memberships
-      const currentMemberships = [
-        {team: {uid: 'team1'}, member: {uid: 'user1'}},
-      ];
-
-      // Mock previous team memberships history (same as current)
-      const previousMemberships = [
-        {
-          team: {uid: 'team1'},
-          member: {uid: 'user1'},
-          startedAt: '2023-01-01T00:00:00Z',
-        },
-      ];
-
-      jest
-        .spyOn(FarosClient.prototype, 'nodeIterable')
-        .mockImplementation((_graph, query) => {
-          if (query.includes('CurrentTeamMemberships')) {
-            return mockAsyncIterable(currentMemberships);
-          } else if (query.includes('PreviousTeamMemberships')) {
-            return mockAsyncIterable(previousMemberships);
-          }
-          return mockAsyncIterable([]);
-        });
+      mockGraphQueries({
+        currentMemberships: [{team: {uid: 'team1'}, member: {uid: 'user1'}}],
+        previousMemberships: [
+          {
+            team: {uid: 'team1'},
+            member: {uid: 'user1'},
+            startedAt: '2023-01-01T00:00:00Z',
+          },
+        ],
+      });
 
       await sourceReadTest({
         source,
@@ -247,42 +233,30 @@ describe('index', () => {
       });
     });
 
-    test('readRecords - handles missing data gracefully', async () => {
-      // Mock data with missing fields
-      const currentMemberships = [
-        {team: {uid: 'team1'}, member: {uid: 'user1'}},
-        {team: null, member: {uid: 'user2'}}, // Missing team
-        {team: {uid: 'team2'}, member: null}, // Missing member
-        {team: {uid: null}, member: {uid: 'user3'}}, // Missing team uid
-        {team: {uid: 'team3'}, member: {uid: null}}, // Missing member uid
-      ];
-
-      const previousMemberships = [
-        {
-          team: {uid: 'team1'},
-          member: {uid: 'user1'},
-          startedAt: '2023-01-01T00:00:00Z',
-        },
-        {team: {uid: 'team4'}, member: {uid: 'user4'}, startedAt: null}, // Missing startedAt
-      ];
-
-      jest
-        .spyOn(FarosClient.prototype, 'nodeIterable')
-        .mockImplementation((_graph, query) => {
-          if (query.includes('CurrentTeamMemberships')) {
-            return mockAsyncIterable(currentMemberships);
-          } else if (query.includes('PreviousTeamMemberships')) {
-            return mockAsyncIterable(previousMemberships);
-          }
-          return mockAsyncIterable([]);
-        });
+    test('readRecords - ignore records with nulls', async () => {
+      mockGraphQueries({
+        currentMemberships: [
+          {team: {uid: 'team1'}, member: {uid: 'user1'}},
+          {team: null, member: {uid: 'user2'}}, // Missing team
+          {team: {uid: 'team2'}, member: null}, // Missing member
+          {team: {uid: null}, member: {uid: 'user3'}}, // Missing team uid
+          {team: {uid: 'team3'}, member: {uid: null}}, // Missing member uid
+        ],
+        previousMemberships: [
+          {
+            team: {uid: 'team1'},
+            member: {uid: 'user1'},
+            startedAt: '2023-01-01T00:00:00Z',
+          },
+          {team: {uid: 'team4'}, member: {uid: 'user4'}, startedAt: null}, // Missing startedAt
+        ],
+      });
 
       await sourceReadTest({
         source,
         configOrPath: 'valid_config.json',
         catalogOrPath: 'catalog.json',
         checkRecordsData: (records) => {
-          // Should only process valid records
           expect(records).toHaveLength(0);
         },
       });
