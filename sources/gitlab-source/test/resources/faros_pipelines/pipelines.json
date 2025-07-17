@@ -1,0 +1,44 @@
+[
+  {
+    "id": 123456,
+    "status": "success",
+    "ref": "main",
+    "sha": "abc123def456ghi789jkl012mno345pqr678stu",
+    "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/123456",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:45:00Z",
+    "user": {
+      "name": "John Doe",
+      "username": "john.doe",
+      "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/1/avatar.png"
+    }
+  },
+  {
+    "id": 234567,
+    "status": "failed",
+    "ref": "feature-branch",
+    "sha": "def456ghi789jkl012mno345pqr678stu901vwx",
+    "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/234567",
+    "created_at": "2024-01-14T14:20:00Z",
+    "updated_at": "2024-01-14T14:35:00Z",
+    "user": {
+      "name": "Jane Smith",
+      "username": "jane.smith",
+      "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/2/avatar.png"
+    }
+  },
+  {
+    "id": 345678,
+    "status": "running",
+    "ref": "develop",
+    "sha": "ghi789jkl012mno345pqr678stu901vwx234yz",
+    "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/345678",
+    "created_at": "2024-01-16T08:15:00Z",
+    "updated_at": "2024-01-16T08:20:00Z",
+    "user": {
+      "name": "Alice Johnson",
+      "username": "alice.johnson",
+      "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/3/avatar.png"
+    }
+  }
+]

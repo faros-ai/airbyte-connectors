@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "ref": {
+      "type": "string"
+    },
+    "sha": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": "string"
+        }
+      }
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    }
+  }
+}
