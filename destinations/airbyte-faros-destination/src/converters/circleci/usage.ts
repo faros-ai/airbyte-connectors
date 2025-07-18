@@ -60,7 +60,7 @@ export class Usage extends CircleCIConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const usage = record.record.data as UsageExportJob;
 
-    const res: DestinationRecord[] = [];
+    let res: DestinationRecord[] = [];
 
     // Write metric definition once
     if (!Usage.metricDefinitionWritten) {
@@ -90,13 +90,14 @@ export class Usage extends CircleCIConverter {
 
     // Process each download URL (CSV file)
     for (const downloadUrl of usage.download_urls) {
+      ctx.logger.info(`Processing CSV from job ${usage.usage_export_job_id}`);
       try {
         const csvData = await this.downloadAndParseCsv(downloadUrl, ctx);
         const metricValues = this.convertCsvToMetricValues(csvData);
-        res.push(...metricValues);
+        res = res.concat(metricValues);
       } catch (error: any) {
         ctx.logger.error(
-          `Failed to process CSV from ${downloadUrl}: ${error.message}`
+          `Failed to process CSV from job ${usage.usage_export_job_id} at ${downloadUrl}: ${error.message}`
         );
       }
     }
