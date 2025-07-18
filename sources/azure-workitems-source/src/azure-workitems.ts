@@ -108,7 +108,7 @@ export class AzureWorkitems extends types.AzureDevOps {
   async *getWorkitems(
     project: ProjectReference,
     since: number
-  ): AsyncGenerator<types.WorkItemWithRevisions> {
+  ): AsyncGenerator<types.WorkItemWithPullRequestsAndRevisions> {
     await this.initializeFieldReferences();
     const stateCategories = await this.getStateCategories(project.id);
 
@@ -151,6 +151,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           project.id,
           states
         );
+        const pullRequests = this.extractPullRequests(item.relations);
         yield {
           ...item,
           fields: {
@@ -162,6 +163,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           revisions,
           additionalFields,
           project,
+          pullRequests,
         };
       }
     }
@@ -473,5 +475,41 @@ export class AzureWorkitems extends types.AzureDevOps {
       }
     }
     return additionalFields;
+  }
+
+  private extractPullRequests(relations?: any[]): ReadonlyArray<types.WorkItemPullRequest> {
+    const pullRequests = [];
+    if (!relations) {
+      return pullRequests;
+    }
+
+    for (const relation of relations) {
+      if (relation.rel === 'ArtifactLink' && relation.url) {
+        const pullRequestInfo = this.parsePullRequestUrl(relation.url);
+        if (pullRequestInfo) {
+          pullRequests.push(pullRequestInfo);
+        }
+      }
+    }
+    return pullRequests;
+  }
+
+  private parsePullRequestUrl(url: string): types.WorkItemPullRequest | null {
+    try {
+      // Azure DevOps pull request artifact links follow the format:
+      // vstfs:///Git/PullRequestId/{projectId}/{repositoryId}/{pullRequestId}
+      const pullRequestMatch = url.match(/^vstfs:\/\/\/Git\/PullRequestId\/([^\/]+)\/([^\/]+)\/(\d+)$/);
+      if (pullRequestMatch) {
+        return {
+          projectId: pullRequestMatch[1],
+          repositoryId: pullRequestMatch[2],
+          pullRequestId: parseInt(pullRequestMatch[3], 10),
+          url: url,
+        };
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to parse pull request URL: ${url}`, error);
+    }
+    return null;
   }
 }
