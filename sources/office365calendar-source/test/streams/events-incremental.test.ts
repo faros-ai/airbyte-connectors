@@ -21,9 +21,9 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
 
   beforeEach(() => {
     testSetup = setupStreamTests();
-    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.testSetup.mockOffice365Calendar);
+    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.mockOffice365Calendar);
     
-    eventsStream = new Events(testSetup.testSetup.validConfig, testSetup.testSetup.mockLogger);
+    eventsStream = new Events(testSetup.validConfig, testSetup.mockLogger);
   });
 
   describe('Incremental Sync Mode Support', () => {

@@ -21,9 +21,9 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
 
   beforeEach(() => {
     testSetup = setupStreamTests();
-    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.testSetup.mockOffice365Calendar);
+    MockedOffice365Calendar.instance.mockResolvedValue(testSetup.mockOffice365Calendar);
     
-    eventsStream = new Events(testSetup.testSetup.validConfig, testSetup.testSetup.mockLogger);
+    eventsStream = new Events(testSetup.validConfig, testSetup.mockLogger);
   });
 
   describe('Stream Configuration', () => {

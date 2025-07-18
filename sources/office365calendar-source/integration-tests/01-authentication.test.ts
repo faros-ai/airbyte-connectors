@@ -95,7 +95,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
       // Performance validation
       const duration = endTime - startTime;
-      expect(duration).toBeLessThan(config.timeoutMs);
+      expect(duration).toBeLessThan(config?.timeoutMs || 30000);
 
       // Memory usage should be reasonable for authentication
       const memoryUsed = endMemory - startMemory;
@@ -106,7 +106,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect.stringContaining('Office 365 Calendar SDK initialized'),
         expect.any(Object)
       );
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should cache access tokens and reuse them efficiently', async () => {
       expect.assertions(4);
@@ -131,7 +131,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const tokenAcquisitionCalls = (mockLogger.debug as jest.Mock).mock.calls
         .filter(call => call[0]?.includes?.('Acquiring new access token'));
       expect(tokenAcquisitionCalls.length).toBeLessThanOrEqual(1);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle token refresh gracefully when expired', async () => {
       expect.assertions(3);
@@ -154,7 +154,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       expect(mockLogger.error).not.toHaveBeenCalledWith(
         expect.stringContaining('Failed to acquire access token')
       );
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should fail gracefully with invalid tenant ID', async () => {
       expect.assertions(3);
@@ -175,7 +175,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(result.error).toBeDefined();
         expect(result.error).toMatch(/tenant.*not found|invalid.*tenant/i);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should fail gracefully with invalid client credentials', async () => {
       expect.assertions(3);
@@ -196,7 +196,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(result.error).toBeDefined();
         expect(result.error).toMatch(/invalid.*client.*secret|authentication.*failed/i);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('SDK Adapter Integration', () => {
@@ -216,7 +216,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Verify singleton pattern
       const secondAdapter = await Office365Calendar.instance(config, mockLogger);
       expect(secondAdapter).toBe(adapter); // Same instance
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle connection failures through adapter gracefully', async () => {
       expect.assertions(2);
@@ -236,7 +236,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(error).toBeInstanceOf(VError);
         expect(error.message).toMatch(/failed.*connect|authentication.*failed/i);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Network Resilience', () => {
@@ -254,7 +254,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Even with network challenges, should eventually succeed or fail gracefully
       expect(result.success).toBeDefined();
       expect(typeof result.success).toBe('boolean');
-    }, config.timeoutMs * 2); // Allow extra time for retries
+    }, config?.timeoutMs || 30000 * 2); // Allow extra time for retries
 
     test('should respect timeout settings and fail fast when appropriate', async () => {
       expect.assertions(2);
@@ -267,9 +267,9 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const duration = Date.now() - startTime;
       
       // Should not hang indefinitely
-      expect(duration).toBeLessThan(config.timeoutMs);
+      expect(duration).toBeLessThan(config?.timeoutMs || 30000);
       expect(result.success).toBeDefined();
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Security Validation', () => {
@@ -289,7 +289,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const logOutput = allLogCalls.map(call => JSON.stringify(call)).join(' ');
 
       // Should not contain sensitive information
-      expect(logOutput).not.toContain(config.client_secret);
+      expect(logOutput).not.toContain(config?.client_secret);
       expect(logOutput).not.toContain('client_secret');
       expect(logOutput).not.toContain('secret');
     });
@@ -342,7 +342,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
       expect(avgDuration).toBeLessThan(5000); // Average under 5 seconds
       expect(maxMemory).toBeLessThan(25 * 1024 * 1024); // Max 25MB memory usage
-    }, config.timeoutMs * 5);
+    }, config?.timeoutMs || 30000 * 5);
   });
 });
 

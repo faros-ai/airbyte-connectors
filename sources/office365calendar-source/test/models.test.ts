@@ -318,6 +318,7 @@ describe('O365CAL-002: Configuration and Models (TDD)', () => {
           id: 'calendar-id',
           uid: 'calendar-id',
           name: 'My Calendar',
+          summary: 'My Calendar',
           description: 'Calendar description',
           owner: {
             name: 'John Doe',
@@ -351,11 +352,15 @@ describe('O365CAL-002: Configuration and Models (TDD)', () => {
           },
           start: {
             dateTime: '2024-01-01T10:00:00',
-            timeZone: 'UTC'
+            date_time: '2024-01-01T10:00:00',
+            timeZone: 'UTC',
+            time_zone: 'UTC'
           },
           end: {
             dateTime: '2024-01-01T11:00:00',
-            timeZone: 'UTC'
+            date_time: '2024-01-01T11:00:00',
+            timeZone: 'UTC',
+            time_zone: 'UTC'
           },
           startTime: '2024-01-01T10:00:00',
           endTime: '2024-01-01T11:00:00',

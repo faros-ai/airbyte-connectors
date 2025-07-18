@@ -112,8 +112,8 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       });
 
       // Performance validation
-      expect(duration).toBeLessThan(config.timeoutMs);
-    }, config.timeoutMs);
+      expect(duration).toBeLessThan(config?.timeoutMs || 30000);
+    }, config?.timeoutMs || 30000);
 
     test('should map Office 365 event fields to Google Calendar schema', async () => {
       expect.assertions(8);
@@ -152,7 +152,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(true).toBe(true);
         expect(true).toBe(true);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle events with different complexity levels', async () => {
       expect.assertions(4);
@@ -183,7 +183,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(true).toBe(true);
         expect(true).toBe(true);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Event Data Validation', () => {
@@ -216,7 +216,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       });
 
       expect(true).toBe(true); // Ensure minimum assertions
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle attendee information correctly', async () => {
       expect.assertions(3);
@@ -246,7 +246,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(true).toBe(true);
         expect(true).toBe(true);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should preserve timezone information', async () => {
       expect.assertions(3);
@@ -276,7 +276,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
 
       expect(true).toBe(true); // Ensure assertion count
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Date Range Filtering', () => {
@@ -314,7 +314,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
 
       expect(true).toBe(true);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle all-day events correctly', async () => {
       expect.assertions(3);
@@ -345,7 +345,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       allDayEvents.forEach(event => {
         expect(event.start.date_time).toBeDefined();
       });
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Performance and Scalability', () => {
@@ -380,16 +380,16 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
       // Performance validation
       const performanceValidation = validatePerformanceMetrics(metrics, {
-        maxDuration: config.timeoutMs,
+        maxDuration: config?.timeoutMs || 30000,
         maxMemoryMB: 200,
         minThroughput: 1 // 1 event per second minimum
       });
 
       expect(performanceValidation.valid).toBe(true);
-      expect(metrics.duration).toBeLessThan(config.timeoutMs);
+      expect(metrics.duration).toBeLessThan(config?.timeoutMs || 30000);
       expect(metrics.memoryUsed).toBeLessThan(200 * 1024 * 1024); // 200MB
       expect(processedCount).toBeGreaterThanOrEqual(0);
-    }, config.timeoutMs * 2);
+    }, config?.timeoutMs || 30000 * 2);
 
     test('should use streaming for memory efficiency with large datasets', async () => {
       expect.assertions(3);
@@ -420,7 +420,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
 
       expect(memoryReadings.length).toBe(eventCount);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Multi-Calendar Event Extraction', () => {
@@ -457,23 +457,23 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const combinedEvents = [...events1, ...events2];
       const uniqueEventIds = new Set(combinedEvents.map(e => e.id));
       expect(uniqueEventIds.size).toBe(combinedEvents.length);
-    }, config.timeoutMs * 2);
+    }, config?.timeoutMs || 30000 * 2);
 
     test('should handle calendar-specific configurations', async () => {
       expect.assertions(2);
 
       // Test with specific calendar filtering
-      if (config.knownCalendarIds.length > 0) {
+      if (config?.knownCalendarIds?.length > 0) {
         const filteredConfig = {
           ...config,
-          calendar_ids: [config.knownCalendarIds[0]]
+          calendar_ids: [config?.knownCalendarIds?.[0]]
         };
 
         Office365Calendar.clearInstance();
         const filteredAdapter = await Office365Calendar.instance(filteredConfig, mockLogger);
 
         const events: Event[] = [];
-        for await (const event of filteredAdapter.getEvents(config.knownCalendarIds[0])) {
+        for await (const event of filteredAdapter.getEvents(config?.knownCalendarIds?.[0])) {
           events.push(event);
           if (events.length >= 5) break;
         }
@@ -486,7 +486,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(true).toBe(true);
         expect(true).toBe(true);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Error Handling and Edge Cases', () => {
@@ -504,7 +504,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Should handle empty results gracefully
       expect(Array.isArray(events)).toBe(true);
       expect(events.length).toBeGreaterThanOrEqual(0);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle malformed event data gracefully', async () => {
       expect.assertions(2);
@@ -534,7 +534,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
       expect(eventCount).toBeGreaterThanOrEqual(0);
       expect(errorCount).toBeLessThan(eventCount); // Most events should be valid
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 });
 

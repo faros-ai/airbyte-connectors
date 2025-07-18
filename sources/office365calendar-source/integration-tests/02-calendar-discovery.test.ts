@@ -92,8 +92,8 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       });
 
       // Performance validation
-      expect(duration).toBeLessThan(config.timeoutMs);
-    }, config.timeoutMs);
+      expect(duration).toBeLessThan(config?.timeoutMs || 30000);
+    }, config?.timeoutMs || 30000);
 
     test('should map Office 365 calendar fields to Google Calendar schema', async () => {
       expect.assertions(6);
@@ -122,16 +122,16 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       if (calendar.access_role) {
         expect(['reader', 'writer', 'owner']).toContain(calendar.access_role);
       }
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle calendar filtering when specific IDs are configured', async () => {
       expect.assertions(3);
 
       // Test with filtered configuration if we have known calendar IDs
-      if (config.knownCalendarIds.length > 0) {
+      if (config?.knownCalendarIds?.length > 0) {
         const filteredConfig = {
           ...config,
-          calendar_ids: config.knownCalendarIds.slice(0, 1) // Test with first known calendar
+          calendar_ids: config?.knownCalendarIds?.slice(0, 1) // Test with first known calendar
         };
 
         Office365Calendar.clearInstance();
@@ -146,7 +146,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(calendars.length).toBeLessThanOrEqual(1);
         
         if (calendars.length > 0) {
-          expect(calendars[0].id).toBe(config.knownCalendarIds[0]);
+          expect(calendars[0].id).toBe(config?.knownCalendarIds?.[0]);
         }
       } else {
         // If no known calendar IDs, test unfiltered discovery
@@ -158,7 +158,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
       
       expect(true).toBe(true); // Ensure at least one assertion
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Calendar Metadata Validation', () => {
@@ -187,7 +187,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
           expect(typeof calendar.time_zone).toBe('string');
         }
       });
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle calendars with different permission levels', async () => {
       expect.assertions(2);
@@ -202,7 +202,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Should find calendars with various access levels
       const accessRoles = new Set(calendars.map(cal => cal.access_role).filter(Boolean));
       expect(accessRoles.size).toBeGreaterThanOrEqual(1);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should preserve calendar ownership information', async () => {
       expect.assertions(3);
@@ -222,14 +222,14 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       
       // Should have access role information
       expect(calendar.access_role).toBeDefined();
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Domain-Wide Delegation Support', () => {
     test('should handle organization-wide calendar discovery when enabled', async () => {
       expect.assertions(2);
 
-      if (config.domain_wide_delegation) {
+      if (config?.domain_wide_delegation) {
         // Test organization-wide discovery
         const calendars: Calendar[] = [];
         for await (const calendar of office365Calendar.getCalendars()) {
@@ -252,7 +252,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         expect(calendars.length).toBeGreaterThanOrEqual(1);
         expect(true).toBe(true); // Second assertion for consistency
       }
-    }, config.timeoutMs * 2); // Allow extra time for org-wide discovery
+    }, config?.timeoutMs || 30000 * 2); // Allow extra time for org-wide discovery
   });
 
   describe('Error Handling and Edge Cases', () => {
@@ -284,7 +284,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       
       // Should not throw errors
       expect(true).toBe(true);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
 
     test('should handle network interruptions during calendar discovery', async () => {
       expect.assertions(2);
@@ -307,7 +307,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Either should succeed or fail gracefully
       expect(calendarCount >= 0 || errorOccurred).toBe(true);
       expect(true).toBe(true); // Ensure second assertion
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Performance and Scalability', () => {
@@ -335,7 +335,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const memoryUsed = endMemory - startMemory;
 
       // Performance validation
-      expect(duration).toBeLessThan(config.timeoutMs);
+      expect(duration).toBeLessThan(config?.timeoutMs || 30000);
       expect(memoryUsed).toBeLessThan(100 * 1024 * 1024); // 100MB max
 
       // Efficiency validation
@@ -345,7 +345,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
 
       expect(calendars.length).toBe(processedCount);
-    }, config.timeoutMs * 2);
+    }, config?.timeoutMs || 30000 * 2);
 
     test('should use streaming for memory efficiency', async () => {
       expect.assertions(3);
@@ -375,7 +375,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       }
 
       expect(memoryReadings.length).toBe(calendarCount);
-    }, config.timeoutMs);
+    }, config?.timeoutMs || 30000);
   });
 
   describe('Data Consistency Validation', () => {
@@ -412,7 +412,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       });
 
       expect(true).toBe(true); // Ensure we have enough assertions
-    }, config.timeoutMs * 2);
+    }, config?.timeoutMs || 30000 * 2);
   });
 });
 

@@ -329,8 +329,9 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
           {
             id: 'calendar-1',
             name: 'Primary Calendar',
+            summary: 'Primary Calendar',
             description: 'My main calendar',
-            owner: { name: 'John Doe', email: 'john@example.com' },
+            owner: { name: 'John Doe', address: 'john@example.com', email: 'john@example.com' },
             canEdit: true,
             canShare: true,
             canViewPrivateItems: false
@@ -359,7 +360,7 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
     });
 
     test('should handle pagination in calendar listing', async () => {
-      const firstPageResponse: PagedResponse<Calendar> = {
+      const firstPageResponse: PagedResponse<Calendar> & { '@odata.context': string } = {
         '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#me/calendars',
         '@odata.nextLink': 'https://graph.microsoft.com/v1.0/me/calendars?$skiptoken=page2',
         value: [
@@ -367,7 +368,7 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
         ]
       };
       
-      const secondPageResponse: PagedResponse<Calendar> = {
+      const secondPageResponse: PagedResponse<Calendar> & { '@odata.context': string } = {
         '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#me/calendars',
         value: [
           { id: 'cal-2', name: 'Calendar 2' } as Calendar
@@ -449,7 +450,7 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
       const expectedStartDate = new Date();
       expectedStartDate.setDate(expectedStartDate.getDate() - 30);
       
-      const mockEventsResponse: PagedResponse<Event> = {
+      const mockEventsResponse: PagedResponse<Event> & { '@odata.context': string } = {
         '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#me/events',
         value: [
           {
@@ -502,7 +503,7 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
     test('should handle incremental sync with delta queries', async () => {
       const deltaLink = 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=abc123';
       
-      const mockDeltaResponse: DeltaResponse<Event> = {
+      const mockDeltaResponse: DeltaResponse & { value: Event[] } = {
         '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#Collection(event)',
         '@odata.deltaLink': 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=xyz789',
         value: [

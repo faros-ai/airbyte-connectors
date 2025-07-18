@@ -118,7 +118,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         {
           id: 'cal-user1-1',
           name: 'User 1 Calendar',
-          owner: { name: 'User One', email: 'user1@example.com' },
+          owner: { name: 'User One', address: 'user1@example.com', email: 'user1@example.com' },
           canEdit: true,
           canShare: true,
           canViewPrivateItems: false
@@ -129,7 +129,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         {
           id: 'cal-user2-1', 
           name: 'User 2 Calendar',
-          owner: { name: 'User Two', email: 'user2@example.com' },
+          owner: { name: 'User Two', address: 'user2@example.com', email: 'user2@example.com' },
           canEdit: true,
           canShare: false,
           canViewPrivateItems: true
@@ -191,7 +191,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
           yield {
             id: 'cal-user1-1',
             name: 'User 1 Calendar',
-            owner: { name: 'User One', email: 'user1@example.com' },
+            owner: { name: 'User One', address: 'user1@example.com', email: 'user1@example.com' },
             canEdit: true,
             canShare: true,
             canViewPrivateItems: false
@@ -220,6 +220,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         description: 'Calendar description',
         owner: { 
           name: 'Calendar Owner',
+          address: 'owner@example.com',
           email: 'owner@example.com'
         },
         canEdit: true,
@@ -262,6 +263,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         description: null,
         owner: { 
           name: 'Current User',
+          address: 'currentuser@example.com',
           email: 'currentuser@example.com'
         },
         canEdit: true,
@@ -306,7 +308,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         const office365Calendar = {
           id: 'test-calendar',
           name: 'Test Calendar',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           ...testCase.input
         };
 
@@ -352,7 +354,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
       const office365Calendar = {
         id: 'accessible-calendar',
         name: 'Accessible Calendar',
-        owner: { name: 'Owner', email: 'owner@example.com' },
+        owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
         canEdit: true,
         canShare: true,
         canViewPrivateItems: false
@@ -391,7 +393,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         yield {
           id: 'calendar-after-retry',
           name: 'Calendar After Retry',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           canEdit: true,
           canShare: true,
           canViewPrivateItems: false
@@ -429,7 +431,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         yield {
           id: 'test-calendar',
           name: 'Test Calendar',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           canEdit: true,
           canShare: true,
           canViewPrivateItems: false
@@ -450,7 +452,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         yield {
           id: 'test-calendar',
           name: 'Test Calendar',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           canEdit: true,
           canShare: true,
           canViewPrivateItems: false
@@ -479,7 +481,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         {
           id: 'cal-1',
           name: 'Calendar 1',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           canEdit: true,
           canShare: true,
           canViewPrivateItems: false
@@ -487,7 +489,7 @@ describe('O365CAL-004: Calendars Stream (TDD)', () => {
         {
           id: 'cal-2',
           name: 'Calendar 2',
-          owner: { name: 'Owner', email: 'owner@example.com' },
+          owner: { name: 'Owner', address: 'owner@example.com', email: 'owner@example.com' },
           canEdit: true,
           canShare: false,
           canViewPrivateItems: true

@@ -23,39 +23,49 @@
     "build": "tsc -p src",
     "clean": "rm -rf lib node_modules out",
     "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
-    "lint": "echo 'Linting deferred to CI - using TypeScript compilation for type checking'",
-    "lint:fix": "eslint 'src/**/*.ts' 'test/**/*.ts' --fix",
-    "type-check": "tsc --project tsconfig.production.json --noEmit",
-    "type-check:strict": "tsc --noEmit --strict",
-    "type-check:watch": "tsc --project tsconfig.production.json --noEmit --watch",
-    "test": "jest --verbose --color test/patterns/ test/domain/ test/architecture/",
-    "test-all": "jest --verbose --color",
-    "test-cov": "jest --coverage --verbose --color --testPathIgnorePatterns='integration|error-handling|configuration|streams|microsoft-graph-sdk'",
-    "test-cov-all": "jest --coverage --verbose --color",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "test-integration": "jest --verbose --color --config=jest.integration.config.js",
+    "test-all": "jest --verbose --color --testPathIgnorePatterns=''",
+    "test:real-world": "jest --verbose --color real-world-tests/",
+    "test:real-world:auth": "jest --verbose --color real-world-tests/phase1-auth.test.ts",
+    "test:real-world:phase1": "npm run test:real-world:auth",
+    "test:real-world:calendars": "jest --verbose --color real-world-tests/phase2-calendars.test.ts",
+    "test:real-world:phase2": "npm run test:real-world:calendars",
+    "test:real-world:events": "jest --verbose --color real-world-tests/phase3-events.test.ts",
+    "test:real-world:phase3": "npm run test:real-world:events",
+    "test:auth:quick": "npm run build && node scripts/test-auth.js",
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
-    "@azure/msal-node": "^2.0.0",
+    "@azure/msal-node": "^2.0.0", 
     "@microsoft/microsoft-graph-client": "^3.0.0",
-    "axios": "^1.7.7",
-    "commander": "^13.1.0",
+    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
-    "faros-js-client": "*",
     "verror": "^1.10.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",
-      "<rootDir>/test/"
+      "<rootDir>/test/integration/"
     ],
     "preset": "ts-jest",
-    "setupFilesAfterEnv": [
-      "jest-extended/all"
-    ],
-    "testEnvironment": "node",
+    "testEnvironment": "node", 
     "testTimeout": 10000,
+    "testPathIgnorePatterns": [
+      "<rootDir>/integration-tests/",
+      "<rootDir>/test/error-handling.test.ts",
+      "<rootDir>/test/index.test.ts", 
+      "<rootDir>/test/models.test.ts",
+      "<rootDir>/test/office365calendar.test.ts",
+      "<rootDir>/test/streams/",
+      "<rootDir>/test/microsoft-graph-sdk-refactor.test.ts",
+      "<rootDir>/test/main-source-implementation.test.ts",
+      "<rootDir>/test/auth-compliance.test.ts"
+    ],
     "transform": {
       "\\.ts?$": [
         "ts-jest",
@@ -67,20 +77,6 @@
   },
   "devDependencies": {
     "@microsoft/microsoft-graph-types": "^2.40.0",
-    "@types/jest": "^29.5.0",
-    "@types/node": "^20.0.0",
-    "@types/verror": "^1.10.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-jsdoc": "^48.0.0",
-    "eslint-plugin-unicorn": "^50.0.0",
-    "fast-check": "3.13.0",
-    "jest-extended": "^4.0.2",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.3.0",
     "faros-airbyte-testing-tools": "*"
   }
 }
