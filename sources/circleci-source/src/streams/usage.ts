@@ -22,7 +22,7 @@ interface UsageState {
 type UsageStreamState = {[orgId: string]: UsageState | undefined};
 
 // https://circleci.com/docs/api/v2/index.html#tag/Usage
-const MAX_EXPORT_WINDOW_DAYS = 32; // CircleCI API limit
+const MAX_EXPORT_WINDOW_DAYS = 31; // CircleCI API limit
 
 const HOURS_IN_MS = 1000 * 60 * 60;
 const DAYS_IN_MS = HOURS_IN_MS * 24;

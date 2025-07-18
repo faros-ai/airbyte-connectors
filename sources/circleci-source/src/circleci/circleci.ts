@@ -491,7 +491,7 @@ export class CircleCI {
         `Creating usage export for org ${orgId} from ${start} to ${end}`
       );
       const res = await this.post({
-        path: `/organizations/${orgId}/usage_export_jobs`,
+        path: `/organizations/${orgId}/usage_export_job`,
         data: {start, end},
       });
       return res.data;
@@ -513,7 +513,7 @@ export class CircleCI {
         `Getting usage export status for org ${orgId}, job ${jobId}`
       );
       const res = await this.get({
-        path: `/organizations/${orgId}/usage_export_jobs/${jobId}`,
+        path: `/organizations/${orgId}/usage_export_job/${jobId}`,
       });
       return res.data;
     } catch (error: any) {
