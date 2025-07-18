@@ -91,11 +91,9 @@ export class Usage extends CircleCIConverter {
         const csvData = await this.downloadAndParseCsv(downloadUrl, ctx);
         const metricValues = this.convertCsvToMetricValues(csvData);
         res.push(...metricValues);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
+      } catch (error: any) {
         ctx.logger.warn(
-          `Failed to process CSV from ${downloadUrl}: ${errorMessage}`
+          `Failed to process CSV from ${downloadUrl}: ${error.message}`
         );
       }
     }
@@ -127,10 +125,8 @@ export class Usage extends CircleCIConverter {
 
       ctx.logger.debug(`Parsed ${records.length} usage records from CSV`);
       return records;
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      throw new Error(`Failed to download/parse CSV: ${errorMessage}`);
+    } catch (error: any) {
+      throw new Error(`Failed to download/parse CSV: ${error.message}`);
     }
   }
 
