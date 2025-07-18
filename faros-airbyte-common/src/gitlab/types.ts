@@ -7,6 +7,7 @@ import {
   IssueSchema,
   MergeRequestSchema,
   NoteSchema,
+  PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
   TagSchema,
@@ -159,4 +160,22 @@ export type FarosDeploymentOutput = {
   | 'status'
   | 'deployable'
   | 'environment'
+>;
+
+export type FarosPipelineOutput = {
+  readonly __brand: 'FarosPipeline';
+  group_id: string;
+  project_path: string;
+  author_username: string | null;
+} & Pick<
+  PipelineSchema,
+  | 'id'
+  | 'iid'
+  | 'ref'
+  | 'sha'
+  | 'status'
+  | 'created_at'
+  | 'updated_at'
+  | 'web_url'
+  | 'user'
 >;
