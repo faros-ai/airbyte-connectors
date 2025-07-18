@@ -38,6 +38,11 @@ export class Usage extends StreamWithOrganizationSlices {
     return ['usage_export_job_id'];
   }
 
+  // Not used, but necessary to pass Airbyte UI validation check
+  get cursorField(): string | string[] {
+    return 'usage_export_job_id';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
