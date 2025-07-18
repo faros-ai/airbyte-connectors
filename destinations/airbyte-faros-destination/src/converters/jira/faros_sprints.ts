@@ -14,36 +14,7 @@ export class FarosSprints extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const sprint = record.record.data;
-    const source = this.initializeSource(ctx);
-    const uid = toString(sprint.id);
-    // If the project key is provided and use_projects_as_boards is enabled, we use project as board uid.
-    const board =
-      sprint.projectKey && this.useProjectsAsBoards(ctx)
-        ? {uid: sprint.projectKey, source}
-        : {uid: toString(sprint.boardId), source};
-    return [
-      {
-        model: 'tms_Sprint',
-        record: {
-          uid,
-          name: sprint.name,
-          description: sprint.goal,
-          state: upperFirst(camelCase(sprint.state)),
-          startedAt: Utils.toDate(sprint.startDate),
-          openedAt: Utils.toDate(sprint.activatedDate),
-          endedAt: Utils.toDate(sprint.endDate),
-          closedAt: Utils.toDate(sprint.completeDate),
-          source,
-        },
-      },
-      {
-        model: 'tms_SprintBoardRelationship',
-        record: {
-          sprint: {uid, source},
-          board,
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

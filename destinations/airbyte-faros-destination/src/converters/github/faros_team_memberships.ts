@@ -13,17 +13,19 @@ export class FarosTeamMemberships extends GitHubConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const membership = record.record.data as TeamMembership;
-    this.collectUser(membership.user);
-    return [
-      {
-        model: 'vcs_TeamMembership',
-        record: {
-          team: {uid: membership.team},
-          member: {uid: membership.user.login, source: this.streamName.source},
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
+    // const membership = record.record.data as TeamMembership;
+    // this.collectUser(membership.user);
+    // return [
+    //   {
+    //     model: 'vcs_TeamMembership',
+    //     record: {
+    //       team: {uid: membership.team},
+    //       member: {uid: membership.user.login, source: this.streamName.source},
+    //     },
+    //   },
+    // ];
   }
 
   async onProcessingComplete(

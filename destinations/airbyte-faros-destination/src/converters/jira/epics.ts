@@ -13,33 +13,7 @@ export class Epics extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const epic = record.record.data;
-    const source = this.initializeSource(ctx);
-    const status = epic.fields.status ?? {};
-    let description = null;
-    if (typeof epic.fields.description === 'string') {
-      description = epic.fields.description;
-    } else if (epic.renderedFields.description) {
-      description = this.turndown.turndown(epic.renderedFields.description);
-    }
-
-    return [
-      {
-        model: 'tms_Epic',
-        record: {
-          uid: epic.key,
-          name: epic.fields.summary ?? null,
-          description: this.truncate(ctx, description),
-          status: {
-            category: JiraStatusCategories.get(
-              JiraCommon.normalize(status.statusCategory?.name)
-            ),
-            detail: status.name,
-          },
-          project: {uid: epic.projectKey, source},
-          source,
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

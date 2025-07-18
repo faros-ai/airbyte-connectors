@@ -429,248 +429,251 @@ export class Issues extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const issue = record.record.data;
-    const source = this.initializeSource(ctx);
-    const results: DestinationRecord[] = [];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
 
-    if (!this.fieldIdsByName) {
-      this.fieldIdsByName = Issues.getFieldIdsByName(ctx);
-    }
-    if (!this.fieldNameById) {
-      this.fieldNameById = Issues.getFieldNamesById(ctx);
-    }
-    if (!this.statusByName) {
-      this.statusByName = Issues.getStatusesByName(ctx);
-    }
+    // const issue = record.record.data;
+    // const source = this.initializeSource(ctx);
+    // const results: DestinationRecord[] = [];
 
-    results.push({
-      model: 'tms_TaskProjectRelationship',
-      record: {
-        task: {uid: issue.key, source},
-        project: {uid: issue.projectKey, source},
-      },
-    });
-    if (this.useProjectsAsBoards(ctx)) {
-      results.push({
-        model: 'tms_TaskBoardRelationship',
-        record: {
-          task: {uid: issue.key, source},
-          board: {uid: issue.projectKey, source},
-        },
-      });
-    }
-    for (const label of issue.fields.labels) {
-      results.push({
-        model: 'tms_TaskTag',
-        record: {label: {name: label}, task: {uid: issue.key, source}},
-      });
-    }
+    // if (!this.fieldIdsByName) {
+    //   this.fieldIdsByName = Issues.getFieldIdsByName(ctx);
+    // }
+    // if (!this.fieldNameById) {
+    //   this.fieldNameById = Issues.getFieldNamesById(ctx);
+    // }
+    // if (!this.statusByName) {
+    //   this.statusByName = Issues.getStatusesByName(ctx);
+    // }
 
-    const pulls = this.getPullRequests(ctx, issue.id);
-    for (const pull of pulls) {
-      results.push({
-        model: 'tms_TaskPullRequestAssociation',
-        record: {
-          task: {uid: issue.key, source},
-          pullRequest: {
-            repository: {
-              organization: {
-                source: pull.repo.source,
-                uid: toLower(pull.repo.org),
-              },
-              name: toLower(pull.repo.name),
-              uid: toLower(pull.repo.name),
-            },
-            number: pull.number,
-            uid: pull.number.toString(),
-          },
-        },
-      });
-    }
+    // results.push({
+    //   model: 'tms_TaskProjectRelationship',
+    //   record: {
+    //     task: {uid: issue.key, source},
+    //     project: {uid: issue.projectKey, source},
+    //   },
+    // });
+    // if (this.useProjectsAsBoards(ctx)) {
+    //   results.push({
+    //     model: 'tms_TaskBoardRelationship',
+    //     record: {
+    //       task: {uid: issue.key, source},
+    //       board: {uid: issue.projectKey, source},
+    //     },
+    //   });
+    // }
+    // for (const label of issue.fields.labels) {
+    //   results.push({
+    //     model: 'tms_TaskTag',
+    //     record: {label: {name: label}, task: {uid: issue.key, source}},
+    //   });
+    // }
 
-    const created = Utils.toDate(issue.fields.created);
-    const assignee =
-      issue.fields.assignee?.accountId || issue.fields.assignee?.name;
-    const changelog: any[] = issue.changelog?.histories || [];
-    changelog.sort((e1, e2) => {
-      // Sort changes from least to most recent
-      const created1 = +(Utils.toDate(e1.created) || new Date(0));
-      const created2 = +(Utils.toDate(e2.created) || new Date(0));
-      return created1 - created2;
-    });
-    const assigneeChangelog = Issues.assigneeChangelog(
-      changelog,
-      assignee,
-      created
-    );
-    for (const assignee of assigneeChangelog) {
-      results.push({
-        model: 'tms_TaskAssignment',
-        record: {
-          task: {uid: issue.key, source},
-          assignee: {uid: assignee.uid || 'Unassigned', source},
-          assignedAt: assignee.assignedAt,
-        },
-      });
-    }
+    // const pulls = this.getPullRequests(ctx, issue.id);
+    // for (const pull of pulls) {
+    //   results.push({
+    //     model: 'tms_TaskPullRequestAssociation',
+    //     record: {
+    //       task: {uid: issue.key, source},
+    //       pullRequest: {
+    //         repository: {
+    //           organization: {
+    //             source: pull.repo.source,
+    //             uid: toLower(pull.repo.org),
+    //           },
+    //           name: toLower(pull.repo.name),
+    //           uid: toLower(pull.repo.name),
+    //         },
+    //         number: pull.number,
+    //         uid: pull.number.toString(),
+    //       },
+    //     },
+    //   });
+    // }
 
-    const fixVersionChangelog = Issues.fieldChangelog(
-      changelog,
-      'Fix Version',
-      'from',
-      'to'
-    );
-    const now = Date.now();
-    for (const [i, change] of fixVersionChangelog.entries()) {
-      if (change.from) {
-        results.push({
-          model: 'tms_TaskReleaseRelationship__Deletion',
-          record: {
-            at: now + i,
-            where: {
-              task: {uid: issue.key, source},
-              release: {uid: change.from, source},
-            },
-          },
-        });
-      }
-      if (change.value) {
-        results.push({
-          model: 'tms_TaskReleaseRelationship__Upsert',
-          record: {
-            at: now + i,
-            data: {
-              task: {uid: issue.key, source},
-              release: {uid: change.value, source},
-            },
-          },
-        });
-      }
-    }
-    for (const fixVersion of issue.fields.fixVersions ?? []) {
-      results.push({
-        model: 'tms_TaskReleaseRelationship__Upsert',
-        record: {
-          at: Date.now(),
-          data: {
-            task: {uid: issue.key, source},
-            release: {uid: fixVersion.id, source},
-          },
-        },
-      });
-    }
+    // const created = Utils.toDate(issue.fields.created);
+    // const assignee =
+    //   issue.fields.assignee?.accountId || issue.fields.assignee?.name;
+    // const changelog: any[] = issue.changelog?.histories || [];
+    // changelog.sort((e1, e2) => {
+    //   // Sort changes from least to most recent
+    //   const created1 = +(Utils.toDate(e1.created) || new Date(0));
+    //   const created2 = +(Utils.toDate(e2.created) || new Date(0));
+    //   return created1 - created2;
+    // });
+    // const assigneeChangelog = Issues.assigneeChangelog(
+    //   changelog,
+    //   assignee,
+    //   created
+    // );
+    // for (const assignee of assigneeChangelog) {
+    //   results.push({
+    //     model: 'tms_TaskAssignment',
+    //     record: {
+    //       task: {uid: issue.key, source},
+    //       assignee: {uid: assignee.uid || 'Unassigned', source},
+    //       assignedAt: assignee.assignedAt,
+    //     },
+    //   });
+    // }
 
-    const statusChangelog = this.statusChangelog(
-      changelog,
-      issue.fields.status?.name,
-      created
-    );
-    // Timestamp of most recent status change
-    let statusChanged: Date | undefined;
-    if (statusChangelog.length) {
-      statusChanged = statusChangelog[statusChangelog.length - 1].changedAt;
-    }
+    // const fixVersionChangelog = Issues.fieldChangelog(
+    //   changelog,
+    //   'Fix Version',
+    //   'from',
+    //   'to'
+    // );
+    // const now = Date.now();
+    // for (const [i, change] of fixVersionChangelog.entries()) {
+    //   if (change.from) {
+    //     results.push({
+    //       model: 'tms_TaskReleaseRelationship__Deletion',
+    //       record: {
+    //         at: now + i,
+    //         where: {
+    //           task: {uid: issue.key, source},
+    //           release: {uid: change.from, source},
+    //         },
+    //       },
+    //     });
+    //   }
+    //   if (change.value) {
+    //     results.push({
+    //       model: 'tms_TaskReleaseRelationship__Upsert',
+    //       record: {
+    //         at: now + i,
+    //         data: {
+    //           task: {uid: issue.key, source},
+    //           release: {uid: change.value, source},
+    //         },
+    //       },
+    //     });
+    //   }
+    // }
+    // for (const fixVersion of issue.fields.fixVersions ?? []) {
+    //   results.push({
+    //     model: 'tms_TaskReleaseRelationship__Upsert',
+    //     record: {
+    //       at: Date.now(),
+    //       data: {
+    //         task: {uid: issue.key, source},
+    //         release: {uid: fixVersion.id, source},
+    //       },
+    //     },
+    //   });
+    // }
 
-    for (const link of issue.fields.issuelinks ?? []) {
-      const match = link.type.inward?.match(dependencyRegex);
-      const dependency = link.inwardIssue?.key;
-      if (match && dependency) {
-        const blocking = match.groups.type === 'blocked';
-        results.push({
-          model: 'tms_TaskDependency',
-          record: {
-            dependentTask: {uid: issue.key, source},
-            fulfillingTask: {uid: dependency, source},
-            blocking,
-          },
-        });
-      }
-    }
+    // const statusChangelog = this.statusChangelog(
+    //   changelog,
+    //   issue.fields.status?.name,
+    //   created
+    // );
+    // // Timestamp of most recent status change
+    // let statusChanged: Date | undefined;
+    // if (statusChangelog.length) {
+    //   statusChanged = statusChangelog[statusChangelog.length - 1].changedAt;
+    // }
 
-    // Rewrite keys of additional fields to use names instead of ids
-    let additionalFieldsMap: Record<string, string> = {};
-    for (const [id, name] of Object.entries(this.fieldNameById)) {
-      const value = issue.fields[id];
-      if (
-        Issues.standardFieldIds.includes(id) ||
-        Issues.fieldsToIgnore.includes(name)
-      ) {
-        continue;
-      } else if (name && value) {
-        try {
-          additionalFieldsMap = Object.assign(
-            additionalFieldsMap,
-            this.retrieveAdditionalFieldValue(ctx, name, value)
-          );
-        } catch (err) {
-          ctx.logger.warn(
-            `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
-          );
-        }
-      }
-    }
+    // for (const link of issue.fields.issuelinks ?? []) {
+    //   const match = link.type.inward?.match(dependencyRegex);
+    //   const dependency = link.inwardIssue?.key;
+    //   if (match && dependency) {
+    //     const blocking = match.groups.type === 'blocked';
+    //     results.push({
+    //       model: 'tms_TaskDependency',
+    //       record: {
+    //         dependentTask: {uid: issue.key, source},
+    //         fulfillingTask: {uid: dependency, source},
+    //         blocking,
+    //       },
+    //     });
+    //   }
+    // }
 
-    const additionalFields: any[] = [];
-    for (const [name, value] of Object.entries(additionalFieldsMap)) {
-      additionalFields.push({name, value});
-    }
+    // // Rewrite keys of additional fields to use names instead of ids
+    // let additionalFieldsMap: Record<string, string> = {};
+    // for (const [id, name] of Object.entries(this.fieldNameById)) {
+    //   const value = issue.fields[id];
+    //   if (
+    //     Issues.standardFieldIds.includes(id) ||
+    //     Issues.fieldsToIgnore.includes(name)
+    //   ) {
+    //     continue;
+    //   } else if (name && value) {
+    //     try {
+    //       additionalFieldsMap = Object.assign(
+    //         additionalFieldsMap,
+    //         this.retrieveAdditionalFieldValue(ctx, name, value)
+    //       );
+    //     } catch (err) {
+    //       ctx.logger.warn(
+    //         `Failed to extract custom field ${name} on issue ${issue.id}. Skipping.`
+    //       );
+    //     }
+    //   }
+    // }
 
-    let description = null;
-    if (typeof issue.fields.description === 'string') {
-      description = issue.fields.description;
-    } else if (issue.renderedFields?.description) {
-      description = this.turndown.turndown(issue.renderedFields.description);
-    }
+    // const additionalFields: any[] = [];
+    // for (const [name, value] of Object.entries(additionalFieldsMap)) {
+    //   additionalFields.push({name, value});
+    // }
 
-    const creator =
-      issue.fields.creator?.accountId || issue.fields.creator?.name;
-    const parent = issue.fields.parent?.key
-      ? {
-          key: issue.fields.parent?.key,
-          type: issue.fields.parent?.fields?.issuetype?.name,
-        }
-      : null;
-    const epicKey =
-      parent?.type === 'Epic' ? parent.key : this.getIssueEpic(issue);
-    const sprint = this.getSprintId(issue);
-    const type = issue.fields.issuetype?.name;
+    // let description = null;
+    // if (typeof issue.fields.description === 'string') {
+    //   description = issue.fields.description;
+    // } else if (issue.renderedFields?.description) {
+    //   description = this.turndown.turndown(issue.renderedFields.description);
+    // }
 
-    const task = {
-      uid: issue.key,
-      name: issue.fields.summary,
-      description: this.truncate(ctx, description),
-      type: {
-        category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
-        detail: type,
-      },
-      status: {
-        category: statusCategories.get(
-          JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
-        ),
-        detail: issue.fields.status?.name,
-      },
-      priority: issue.fields.priority?.name,
-      createdAt: created,
-      updatedAt: Utils.toDate(issue.fields.updated),
-      statusChangedAt: statusChanged,
-      statusChangelog,
-      points: this.getPoints(issue, ctx) ?? null,
-      creator: creator ? {uid: creator, source} : null,
-      parent: parent?.key ? {uid: parent.key, source} : null,
-      epic: epicKey ? {uid: epicKey, source} : null,
-      sprint: sprint ? {uid: sprint, source} : null,
-      source,
-      additionalFields,
-    };
+    // const creator =
+    //   issue.fields.creator?.accountId || issue.fields.creator?.name;
+    // const parent = issue.fields.parent?.key
+    //   ? {
+    //       key: issue.fields.parent?.key,
+    //       type: issue.fields.parent?.fields?.issuetype?.name,
+    //     }
+    //   : null;
+    // const epicKey =
+    //   parent?.type === 'Epic' ? parent.key : this.getIssueEpic(issue);
+    // const sprint = this.getSprintId(issue);
+    // const type = issue.fields.issuetype?.name;
 
-    const excludeFields = this.excludeFields(ctx);
-    if (excludeFields.size > 0) {
-      const keys = Object.keys(task).filter((f) => !excludeFields.has(f));
-      results.push({model: 'tms_Task', record: pick(task, keys)});
-    } else {
-      results.push({model: 'tms_Task', record: task});
-    }
+    // const task = {
+    //   uid: issue.key,
+    //   name: issue.fields.summary,
+    //   description: this.truncate(ctx, description),
+    //   type: {
+    //     category: typeCategories.get(JiraCommon.normalize(type)) ?? 'Custom',
+    //     detail: type,
+    //   },
+    //   status: {
+    //     category: statusCategories.get(
+    //       JiraCommon.normalize(issue.fields.status?.statusCategory?.name)
+    //     ),
+    //     detail: issue.fields.status?.name,
+    //   },
+    //   priority: issue.fields.priority?.name,
+    //   createdAt: created,
+    //   updatedAt: Utils.toDate(issue.fields.updated),
+    //   statusChangedAt: statusChanged,
+    //   statusChangelog,
+    //   points: this.getPoints(issue, ctx) ?? null,
+    //   creator: creator ? {uid: creator, source} : null,
+    //   parent: parent?.key ? {uid: parent.key, source} : null,
+    //   epic: epicKey ? {uid: epicKey, source} : null,
+    //   sprint: sprint ? {uid: sprint, source} : null,
+    //   source,
+    //   additionalFields,
+    // };
 
-    return results;
+    // const excludeFields = this.excludeFields(ctx);
+    // if (excludeFields.size > 0) {
+    //   const keys = Object.keys(task).filter((f) => !excludeFields.has(f));
+    //   results.push({model: 'tms_Task', record: pick(task, keys)});
+    // } else {
+    //   results.push({model: 'tms_Task', record: task});
+    // }
+
+    // return results;
   }
 }

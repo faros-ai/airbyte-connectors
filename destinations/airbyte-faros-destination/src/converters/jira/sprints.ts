@@ -81,36 +81,7 @@ export class Sprints extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const sprint = record.record.data;
-    const source = this.initializeSource(ctx);
-    if (!this.pointsFieldIdsByName) {
-      this.pointsFieldIdsByName = Sprints.getFieldIdsByName(ctx);
-    }
-    if (!this.sprintIssueRecords) {
-      this.sprintIssueRecords = Sprints.getSprintIssueRecords(ctx);
-    }
-
-    let completedPoints = 0;
-    for (const issue of this.sprintIssueRecords[sprint.id] ?? []) {
-      const status = issue.fields.status?.statusCategory?.name;
-      if (status && JiraCommon.normalize(status) === 'done') {
-        completedPoints += this.getPoints(issue, ctx);
-      }
-    }
-
-    return [
-      {
-        model: 'tms_Sprint',
-        record: {
-          uid: String(sprint.id),
-          name: sprint.name,
-          state: upperFirst(camelCase(sprint.state)),
-          completedPoints,
-          startedAt: Utils.toDate(sprint.startDate),
-          endedAt: Utils.toDate(sprint.endDate),
-          source,
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

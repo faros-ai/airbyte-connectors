@@ -12,57 +12,7 @@ export class FarosProjects extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const project = record.record.data;
-    const source = this.initializeSource(ctx);
-    const uid = project.key;
-    const results: Array<DestinationRecord> = [
-      {
-        model: 'tms_Project',
-        record: {
-          uid,
-          name: project.name,
-          description: Utils.cleanAndTruncate(
-            project.description,
-            this.truncateLimit(ctx)
-          ),
-          sourceSystemId: project.id,
-          source,
-        },
-      },
-    ];
-    if (this.useProjectsAsBoards(ctx)) {
-      results.push(
-        ...[
-          {
-            model: 'tms_TaskBoard',
-            record: {
-              uid,
-              name: project.name,
-              source,
-            },
-          },
-          {
-            model: 'tms_TaskBoardProjectRelationship',
-            record: {
-              board: {uid, source},
-              project: {uid, source},
-            },
-          },
-        ]
-      );
-      if (
-        project.issueSync &&
-        ctx?.config?.edition_configs?.edition !== Edition.COMMUNITY
-      ) {
-        results.push({
-          model: 'faros_TmsTaskBoardOptions',
-          record: {
-            board: {uid, source},
-            inclusion: {category: 'Included'},
-          },
-        });
-      }
-    }
-    return results;
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

@@ -10,19 +10,7 @@ export class FarosTeams extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const team = record.record.data;
-    const allTeamsUid = 'all_teams';
-    return [
-      {
-        model: 'tms_Team',
-        record: {
-          uid: team.id,
-          name: team.displayName,
-          parentTeam: {uid: allTeamsUid},
-          teamChain: [team.id, allTeamsUid],
-          source: this.initializeSource(ctx),
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

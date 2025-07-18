@@ -13,28 +13,7 @@ export class FarosIssuePullRequests extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const pullRequest = record.record.data;
-    const source = this.initializeSource(ctx);
-    return [
-      {
-        model: 'tms_TaskPullRequestAssociation',
-        record: {
-          task: {
-            uid: pullRequest.issue.key,
-            source,
-          },
-          pullRequest: {
-            repository: {
-              organization: {
-                source: pullRequest.repo.source,
-                uid: toLower(pullRequest.repo.org),
-              },
-              name: toLower(pullRequest.repo.name),
-            },
-            number: pullRequest.number,
-          },
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }
