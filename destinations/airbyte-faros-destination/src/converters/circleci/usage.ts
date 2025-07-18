@@ -95,7 +95,7 @@ export class Usage extends CircleCIConverter {
         const metricValues = this.convertCsvToMetricValues(csvData);
         res.push(...metricValues);
       } catch (error: any) {
-        ctx.logger.warn(
+        ctx.logger.error(
           `Failed to process CSV from ${downloadUrl}: ${error.message}`
         );
       }
