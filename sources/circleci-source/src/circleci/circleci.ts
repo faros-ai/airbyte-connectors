@@ -58,7 +58,7 @@ export interface UsageExportJobCreate extends UsageExportJob {
 export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly token: string;
   readonly url?: string;
-  project_slugs?: ReadonlyArray<string>;
+  project_slugs: ReadonlyArray<string>;
   readonly project_block_list?: string[];
   readonly pull_blocklist_from_graph?: boolean;
   readonly faros_api_url?: string;
