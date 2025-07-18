@@ -82,6 +82,9 @@ export class Usage extends CircleCIConverter {
 
     // Only process completed exports with download URLs
     if (usage.state !== 'completed' || !usage.download_urls?.length) {
+      ctx.logger.info(
+        `Skipping usage export job ${usage.usage_export_job_id} because it is not completed or has no download URLs`
+      );
       return res;
     }
 
