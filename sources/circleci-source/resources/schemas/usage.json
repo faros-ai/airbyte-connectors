@@ -36,14 +36,16 @@
         "format": "uri"
       },
       "description": "URLs to download the usage data files (only available when state is 'completed')"
+    },
+    "error_reason": {
+      "type": "string",
+      "description": "The reason the usage export job failed"
     }
   },
   "required": [
     "usage_export_job_id",
     "org_id",
     "org_slug",
-    "state",
-    "start",
-    "end"
+    "state"
   ]
 }

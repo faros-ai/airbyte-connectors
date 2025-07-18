@@ -6,7 +6,8 @@ import {
   CircleCI,
   DEFAULT_CUTOFF_DAYS,
   DEFAULT_USAGE_EXPORT_MIN_GAP_HOURS,
-  UsageExportJob,
+  UsageExportJobCreate,
+  UsageExportJobGet,
 } from '../circleci/circleci';
 import {OrganizationSlice, StreamWithOrganizationSlices} from './common';
 
@@ -15,6 +16,7 @@ interface UsageState {
   end: string;
   job_id: string;
   state: string;
+  error_reason?: string;
 }
 
 type UsageStreamState = {[orgId: string]: UsageState | undefined};
@@ -41,7 +43,12 @@ export class Usage extends StreamWithOrganizationSlices {
     cursorField?: string[],
     streamSlice?: OrganizationSlice,
     streamState?: UsageStreamState
-  ): AsyncGenerator<{org_id: string; org_slug: string} & UsageExportJob> {
+  ): AsyncGenerator<
+    {org_id: string; org_slug: string} & (
+      | UsageExportJobGet
+      | UsageExportJobCreate
+    )
+  > {
     const circleCI = CircleCI.instance(this.cfg, this.logger);
 
     // Initialize sync timestamp once for all slices
@@ -62,9 +69,10 @@ export class Usage extends StreamWithOrganizationSlices {
         `Found existing job ${orgState.job_id} in state ${orgState.state} for org ${streamSlice.orgId}`
       );
 
+      let jobStatus: UsageExportJobGet;
       if (orgState.state === 'created' || orgState.state === 'processing') {
         // Check the status of the existing job
-        const jobStatus = await circleCI.getUsageExport(
+        jobStatus = await circleCI.getUsageExport(
           streamSlice.orgId,
           orgState.job_id
         );
@@ -79,12 +87,12 @@ export class Usage extends StreamWithOrganizationSlices {
           org_slug: streamSlice.orgSlug,
           ...jobStatus,
         };
-        return;
       }
 
-      if (orgState.state === 'failed') {
+      if ((jobStatus?.state ?? orgState.state) === 'failed') {
+        const errorReason = jobStatus?.error_reason ?? orgState.error_reason;
         this.logger.warn(
-          `Usage export job ${orgState.job_id} failed for org ${streamSlice.orgId}, creating new export`
+          `Usage export job ${orgState.job_id} failed for org ${streamSlice.orgId}, error reason: ${errorReason}. Creating new export`
         );
 
         const failedStart = new Date(orgState.start);
@@ -122,7 +130,7 @@ export class Usage extends StreamWithOrganizationSlices {
       }
 
       // Check if we have a completed state, create incremental export
-      if (orgState.state === 'completed' && orgState.end) {
+      if ((jobStatus?.state ?? orgState.state) === 'completed') {
         const incrementalStart = new Date(orgState.end);
         let incrementalEnd = now;
 
@@ -214,16 +222,22 @@ export class Usage extends StreamWithOrganizationSlices {
 
   getUpdatedState(
     currentStreamState: UsageStreamState,
-    latestRecord: UsageExportJob & {org_id: string; org_slug: string}
+    latestRecord: {
+      org_id: string;
+      org_slug: string;
+    } & (UsageExportJobGet | UsageExportJobCreate)
   ): UsageStreamState {
     // Update state with the latest job information
     const newState = {...currentStreamState};
 
     newState[latestRecord.org_id] = {
-      start: latestRecord.start,
-      end: latestRecord.end,
+      start: latestRecord.start ?? newState[latestRecord.org_id]?.start,
+      end: latestRecord.end ?? newState[latestRecord.org_id]?.end,
       job_id: latestRecord.usage_export_job_id,
       state: latestRecord.state,
+      ...(latestRecord.error_reason && {
+        error_reason: latestRecord.error_reason,
+      }),
     };
 
     return newState;

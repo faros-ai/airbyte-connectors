@@ -40,9 +40,19 @@ export interface Organization {
 export interface UsageExportJob {
   usage_export_job_id: string;
   state: 'created' | 'processing' | 'completed' | 'failed';
+  download_urls: string[] | null;
+}
+
+export interface UsageExportJobGet extends UsageExportJob {
+  start?: never;
+  end?: never;
+  error_reason?: string;
+}
+
+export interface UsageExportJobCreate extends UsageExportJob {
   start: string;
   end: string;
-  download_urls: string[] | null;
+  error_reason?: never;
 }
 
 export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
@@ -475,7 +485,7 @@ export class CircleCI {
     orgId: string,
     start: string,
     end: string
-  ): Promise<UsageExportJob> {
+  ): Promise<UsageExportJobCreate> {
     try {
       this.logger.debug(
         `Creating usage export for org ${orgId} from ${start} to ${end}`
@@ -494,7 +504,10 @@ export class CircleCI {
     }
   }
 
-  async getUsageExport(orgId: string, jobId: string): Promise<UsageExportJob> {
+  async getUsageExport(
+    orgId: string,
+    jobId: string
+  ): Promise<UsageExportJobGet> {
     try {
       this.logger.debug(
         `Getting usage export status for org ${orgId}, job ${jobId}`
