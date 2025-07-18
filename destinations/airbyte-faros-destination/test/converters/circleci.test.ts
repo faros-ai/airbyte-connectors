@@ -43,6 +43,7 @@ describe('circleci', () => {
       configPath,
       catalogPath: 'test/resources/circleci/catalog.json',
       inputRecordsPath: 'circleci/all-streams.log',
+      mockttpUrl: mockttp.url,
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });
