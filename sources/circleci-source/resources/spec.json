@@ -5,8 +5,7 @@
     "title": "CircleCI Spec",
     "type": "object",
     "required": [
-      "token",
-      "project_slugs"
+      "token"
     ],
     "additionalProperties": true,
     "properties": {

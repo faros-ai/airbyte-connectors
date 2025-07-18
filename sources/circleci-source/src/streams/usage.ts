@@ -87,6 +87,11 @@ export class Usage extends StreamWithOrganizationSlices {
           org_slug: streamSlice.orgSlug,
           ...jobStatus,
         };
+
+        // If the job is still created or processing, we should return after yielding the status
+        if (jobStatus.state === 'created' || jobStatus.state === 'processing') {
+          return;
+        }
       }
 
       if ((jobStatus?.state ?? orgState.state) === 'failed') {
