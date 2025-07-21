@@ -496,10 +496,11 @@ export class CircleCI {
       });
       return res.data;
     } catch (error: any) {
+      const res = error.jse_info?.res;
       // catch error for orgs returning 404 when creating usage export
-      if (error.response?.status === 404) {
+      if (res?.status === 404) {
         this.logger.warn(
-          `Couldn't create usage export for org ${orgId}. Status: ${error.response.status}. Body ${JSON.stringify(error.response.data)}`
+          `Couldn't create usage export for org ${orgId}. Status: ${res.status}. Body ${JSON.stringify(res.data)}`
         );
         return;
       }
