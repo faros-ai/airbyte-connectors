@@ -498,7 +498,7 @@ export class CircleCI {
     } catch (error: any) {
       // catch error for orgs returning 404 when creating usage export
       if (error.response?.status === 404) {
-        this.logger.info(
+        this.logger.warn(
           `Couldn't create usage export for org ${orgId}. Status: ${error.response.status}. Body ${JSON.stringify(error.response.data)}`
         );
         return;
