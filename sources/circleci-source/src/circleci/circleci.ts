@@ -485,7 +485,7 @@ export class CircleCI {
     orgId: string,
     start: string,
     end: string
-  ): Promise<UsageExportJobCreate> {
+  ): Promise<UsageExportJobCreate | undefined> {
     try {
       this.logger.debug(
         `Creating usage export for org ${orgId} from ${start} to ${end}`
@@ -496,6 +496,13 @@ export class CircleCI {
       });
       return res.data;
     } catch (error: any) {
+      // catch error for orgs returning 404 when creating usage export
+      if (error.response?.status === 404) {
+        this.logger.info(
+          `Couldn't create usage export for org ${orgId}. Status: ${error.response.status}. Body ${JSON.stringify(error.response.data)}`
+        );
+        return;
+      }
       throw new Error(
         `Failed to create usage export for org ${orgId}. Error: ${wrapApiError(
           error

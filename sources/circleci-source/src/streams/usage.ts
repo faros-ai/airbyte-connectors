@@ -127,6 +127,10 @@ export class Usage extends StreamWithOrganizationSlices {
           retryEnd.toISOString()
         );
 
+        if (!newJob) {
+          return;
+        }
+
         this.logger.info(
           `Created new usage export job ${newJob.usage_export_job_id} for org ${streamSlice.orgId}`
         );
@@ -181,6 +185,10 @@ export class Usage extends StreamWithOrganizationSlices {
           incrementalEnd.toISOString()
         );
 
+        if (!job) {
+          return;
+        }
+
         this.logger.info(
           `Created incremental usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
         );
@@ -218,6 +226,10 @@ export class Usage extends StreamWithOrganizationSlices {
       exportStart.toISOString(),
       exportEnd.toISOString()
     );
+
+    if (!job) {
+      return;
+    }
 
     this.logger.info(
       `Created initial usage export job ${job.usage_export_job_id} for org ${streamSlice.orgId}`
