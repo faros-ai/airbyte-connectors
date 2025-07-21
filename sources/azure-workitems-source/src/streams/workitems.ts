@@ -1,5 +1,9 @@
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
-import {StreamState, SyncMode} from 'faros-airbyte-cdk';
+import {
+  calculateUpdatedStreamState,
+  StreamState,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {WorkItemWithRevisions} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -36,18 +40,13 @@ export class Workitems extends StreamWithProjectSlices {
     currentStreamState: StreamState,
     latestRecord: WorkItemWithRevisions
   ): StreamState {
-    const currentState =
-      currentStreamState?.[latestRecord.project.name]?.cutoff ?? 0;
-    const newState = Math.max(
-      currentState,
-      Utils.toDate(latestRecord.fields['System.ChangedDate']).getTime()
+    const latestRecordCutoff = Utils.toDate(
+      latestRecord.fields['System.ChangedDate']
     );
-
-    return {
-      ...currentStreamState,
-      [latestRecord.project.name]: {
-        cutoff: newState,
-      },
-    };
+    return calculateUpdatedStreamState(
+      latestRecordCutoff,
+      currentStreamState,
+      latestRecord.project.name
+    );
   }
 }
