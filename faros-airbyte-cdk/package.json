@@ -34,6 +34,8 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
+    "axios": "^1.8.4",
+    "commander": "^13.1.0",
     "enquirer": "^2.3.6",
     "fast-redact": "^3.0.2",
     "json-schema-traverse": "^1.0.0",
@@ -42,7 +44,13 @@
     "pino": "^8.17.0",
     "table": "^6.8.1",
     "toposort": "^2.0.2",
+    "ts-essentials": "^9.1.2",
     "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.173",
+    "@types/node": "^22.14.0",
+    "@types/verror": "^1.10.5"
   },
   "jest": {
     "coverageDirectory": "out/coverage",

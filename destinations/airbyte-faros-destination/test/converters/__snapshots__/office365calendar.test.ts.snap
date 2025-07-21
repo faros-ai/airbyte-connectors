@@ -1,0 +1,464 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`office365calendar process records from all streams 1`] = `
+Array [
+  "Processed 6 records",
+  "Processed records by stream: {\\\\\\"mytestsource__office365calendar__calendars\\\\\\":2,\\\\\\"mytestsource__office365calendar__events\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 26 records",
+  "Would write records by model: {\\\\\\"cal_Calendar\\\\\\":2,\\\\\\"cal_Event\\\\\\":4,\\\\\\"cal_EventGuestAssociation\\\\\\":7,\\\\\\"cal_User\\\\\\":8,\\\\\\"geo_Address\\\\\\":1,\\\\\\"geo_Coordinates\\\\\\":1,\\\\\\"geo_Location\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`office365calendar process records from all streams 2`] = `
+Array [
+  Object {
+    "cal_Calendar": Object {
+      "description": "Primary work calendar for Office 365",
+      "source": "Office365Calendar",
+      "title": "Work Calendar",
+      "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+    },
+  },
+  Object {
+    "cal_Calendar": Object {
+      "description": "Personal events and appointments",
+      "source": "Office365Calendar",
+      "title": "Personal Calendar",
+      "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhM0AAAA",
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Jane Doe",
+      "email": "user2@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user2@contoso.com",
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "AAMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL-AAAA",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user2@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "Accepted",
+        "detail": "accepted",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Bob Wilson",
+      "email": "user3@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user3@contoso.com",
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "AAMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL-AAAA",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user3@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "Tentative",
+        "detail": "tentative",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "John Smith",
+      "email": "user1@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user1@contoso.com",
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "Office365Calendar",
+        "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+      },
+      "conferenceUrl": null,
+      "description": "Daily team synchronization meeting",
+      "durationMs": 1800000,
+      "end": "2023-01-02T09:30:00.000Z",
+      "location": Object {
+        "uid": "Conference Room A, Building 1",
+      },
+      "organizer": Object {
+        "source": "Office365Calendar",
+        "uid": "user1@contoso.com",
+      },
+      "privacy": Object {
+        "category": "Public",
+        "detail": "default",
+      },
+      "source": "Office365Calendar",
+      "start": "2023-01-02T09:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "America/New_York",
+      "title": "Team Stand-up",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "AAMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL-AAAA",
+      "url": "https://outlook.office365.com/calendar/item/AAMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL-AAAA",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "opaque",
+      },
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "BBMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_AAAA",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user1@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "Accepted",
+        "detail": "accepted",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Mike Chen",
+      "email": "user5@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user5@contoso.com",
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "BBMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_AAAA",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user5@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "NeedsAction",
+        "detail": "needsaction",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Alex Taylor",
+      "email": "external@partner.com",
+      "source": "Office365Calendar",
+      "uid": "external@partner.com",
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "BBMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_AAAA",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "external@partner.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "Canceled",
+        "detail": "declined",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Sarah Johnson",
+      "email": "user4@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user4@contoso.com",
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "Office365Calendar",
+        "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+      },
+      "conferenceUrl": "https://teams.microsoft.com/l/meetup-join/19%3ameeting_abcd1234",
+      "description": "Quarterly project review with stakeholders\\\\n\\\\nAgenda:\\\\n- Q4 Results\\\\n- Q1 Planning\\\\n- Budget Review",
+      "durationMs": 5400000,
+      "end": "2023-01-02T16:30:00.000Z",
+      "location": null,
+      "organizer": Object {
+        "source": "Office365Calendar",
+        "uid": "user4@contoso.com",
+      },
+      "privacy": Object {
+        "category": "Public",
+        "detail": "default",
+      },
+      "source": "Office365Calendar",
+      "start": "2023-01-02T15:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "America/New_York",
+      "title": "Project Review Meeting",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "BBMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_AAAA",
+      "url": "https://outlook.office365.com/calendar/item/BBMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_AAAA",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "opaque",
+      },
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "CCMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_BBBB",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user1@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "Accepted",
+        "detail": "accepted",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "HR Department",
+      "email": "hr@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "hr@contoso.com",
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "Office365Calendar",
+        "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+      },
+      "conferenceUrl": null,
+      "description": "Annual company retreat - all hands meeting",
+      "durationMs": 172800000,
+      "end": "2023-01-17T00:00:00.000Z",
+      "location": Object {
+        "uid": "Conference Room A, Building 1",
+      },
+      "organizer": Object {
+        "source": "Office365Calendar",
+        "uid": "hr@contoso.com",
+      },
+      "privacy": Object {
+        "category": "Public",
+        "detail": "public",
+      },
+      "source": "Office365Calendar",
+      "start": "2023-01-15T00:00:00.000Z",
+      "status": Object {
+        "category": "Confirmed",
+        "detail": "confirmed",
+      },
+      "timeZone": "America/New_York",
+      "title": "All Day Company Event",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "CCMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_BBBB",
+      "url": "https://outlook.office365.com/calendar/item/CCMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_BBBB",
+      "visibility": Object {
+        "category": "Busy",
+        "detail": "opaque",
+      },
+    },
+  },
+  Object {
+    "cal_EventGuestAssociation": Object {
+      "event": Object {
+        "calendar": Object {
+          "source": "Office365Calendar",
+          "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+        },
+        "uid": "DDMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_CCCC",
+      },
+      "guest": Object {
+        "source": "Office365Calendar",
+        "uid": "user1@contoso.com",
+      },
+      "source": "Office365Calendar",
+      "status": Object {
+        "category": "NeedsAction",
+        "detail": "needsaction",
+      },
+    },
+  },
+  Object {
+    "cal_User": Object {
+      "displayName": "Lisa Brown",
+      "email": "user6@contoso.com",
+      "source": "Office365Calendar",
+      "uid": "user6@contoso.com",
+    },
+  },
+  Object {
+    "cal_Event": Object {
+      "calendar": Object {
+        "source": "Office365Calendar",
+        "uid": "AQMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgEGAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhMzAAAA",
+      },
+      "conferenceUrl": null,
+      "description": "This meeting was cancelled due to conflicting priorities",
+      "durationMs": 3600000,
+      "end": "2023-01-03T15:00:00.000Z",
+      "location": Object {
+        "uid": "Conference Room A, Building 1",
+      },
+      "organizer": Object {
+        "source": "Office365Calendar",
+        "uid": "user6@contoso.com",
+      },
+      "privacy": Object {
+        "category": "Private",
+        "detail": "private",
+      },
+      "source": "Office365Calendar",
+      "start": "2023-01-03T14:00:00.000Z",
+      "status": Object {
+        "category": "Canceled",
+        "detail": "cancelled",
+      },
+      "timeZone": "America/New_York",
+      "title": "Cancelled Meeting",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "DDMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_CCCC",
+      "url": "https://outlook.office365.com/calendar/item/DDMkADAwATM0MDAAMS1iNTkwLTI2YTUtMDACLTAwCgBGAAADsVyfxjDU406Ic4X7ill8xAcA5_vF7TKKdE6bGCRqXyl2xQAAAgENAAAA5_vF7TKKdE6bGCRqXyl2xQAAAhL_CCCC",
+      "visibility": Object {
+        "category": "Free",
+        "detail": "transparent",
+      },
+    },
+  },
+  Object {
+    "geo_Address": Object {
+      "city": "San Francisco",
+      "country": "United States",
+      "countryCode": "US",
+      "fullAddress": "Conference Room A, Building 1, 123 Business Ave, San Francisco, CA 94102, USA",
+      "houseNumber": "123",
+      "postalCode": "94102",
+      "source": "Office365Calendar",
+      "state": "California",
+      "stateCode": "CA",
+      "street": "Business Avenue",
+      "uid": "ConferenceRoomA-Building1-Address",
+      "unit": "Conference Room A",
+    },
+  },
+  Object {
+    "geo_Coordinates": Object {
+      "lat": 37.7849,
+      "lon": -122.4094,
+      "source": "Office365Calendar",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "ConferenceRoomA-Building1-Address",
+      },
+      "coordinates": Object {
+        "lat": 37.7849,
+        "lon": -122.4094,
+      },
+      "raw": "Conference Room A, Building 1",
+      "source": "Office365Calendar",
+      "uid": "Conference Room A, Building 1",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "ConferenceRoomA-Building1-Address",
+      },
+      "coordinates": Object {
+        "lat": 37.7849,
+        "lon": -122.4094,
+      },
+      "raw": "Conference Room A, Building 1",
+      "source": "Office365Calendar",
+      "uid": "Conference Room A, Building 1",
+    },
+  },
+  Object {
+    "geo_Location": Object {
+      "address": Object {
+        "uid": "ConferenceRoomA-Building1-Address",
+      },
+      "coordinates": Object {
+        "lat": 37.7849,
+        "lon": -122.4094,
+      },
+      "raw": "Conference Room A, Building 1",
+      "source": "Office365Calendar",
+      "uid": "Conference Room A, Building 1",
+    },
+  },
+]
+`;
