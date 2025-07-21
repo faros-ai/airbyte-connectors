@@ -190,6 +190,12 @@ export class FarosMergeRequests extends GitlabConverter {
     return res;
   }
 
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.branchCollector.convertBranches();
+  }
+
   private extractIdFromGid(gid: string): number | null {
     // Extract numeric ID from GitLab GID format (e.g., gid://gitlab/Note/2559908301)
     // If it's already a number, return it as is
