@@ -202,7 +202,7 @@ export class BranchCollector {
   private readonly collectedBranches = new Map<string, BranchKey>();
 
   collectBranch(branchName: string, repoKey: RepoKey): BranchKey | null {
-    if (!branchName) {
+    if (!branchName || !repoKey?.name || !repoKey?.organization?.uid) {
       return null;
     }
 
