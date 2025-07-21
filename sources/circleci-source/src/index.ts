@@ -55,6 +55,18 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
+
     const circleCI = CircleCI.instance(config, this.logger);
     const projectSlugBlocklist = new Set(config.project_block_list ?? []);
     if (projectSlugBlocklist.has('*')) {
@@ -113,31 +125,20 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       this.logger.info.bind(this.logger)
     );
 
-    return {config: newConfig as CircleCIConfig, catalog, state: newState};
+    return {
+      config: newConfig as CircleCIConfig,
+      catalog: {streams},
+      state: newState,
+    };
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
-    // Determine which streams to include based on run_mode and custom_streams
-    const runMode = (config.run_mode as RunMode) ?? DEFAULT_RUN_MODE;
-    const streamNames = [...RunModeStreams[runMode]].filter(
-      (streamName) =>
-        runMode !== RunMode.Custom ||
-        !config.custom_streams?.length ||
-        config.custom_streams.includes(streamName)
-    );
-
-    this.logger.info(
-      `Running in ${runMode} mode with streams: ${streamNames.join(', ')}`
-    );
-
-    const allStreams = {
-      projects: new Projects(config, this.logger),
-      pipelines: new Pipelines(config, this.logger),
-      tests: new Tests(config, this.logger),
-      usage: new Usage(config, this.logger),
-    };
-
-    return streamNames.map((name) => allStreams[name]).filter(Boolean);
+    return [
+      new Projects(config, this.logger),
+      new Pipelines(config, this.logger),
+      new Tests(config, this.logger),
+      new Usage(config, this.logger),
+    ];
   }
 
   static filterBlockList(
