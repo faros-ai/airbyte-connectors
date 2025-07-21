@@ -242,10 +242,36 @@ Array [
         "uid": "testy",
       },
       "source": "GitLab",
+      "sourceBranch": Object {
+        "name": "feature/add-new-feature",
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "feature/add-new-feature",
+      },
+      "sourceBranchName": "feature/add-new-feature",
       "state": Object {
         "category": "Open",
         "detail": "opened",
       },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "testy",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "12372707",
+          },
+          "uid": "testy",
+        },
+        "uid": "main",
+      },
+      "targetBranchName": "main",
       "title": "test MR",
       "uid": "3",
       "updatedAt": "2025-06-13T01:52:18.000Z",

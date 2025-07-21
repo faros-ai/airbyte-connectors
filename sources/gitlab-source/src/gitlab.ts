@@ -401,6 +401,11 @@ export class GitLab {
             'userNotesCount',
             'diffStatsSummary',
             'mergeCommitSha',
+            'sourceBranch',
+            'targetBranch',
+            'sourceProjectId',
+            'targetProjectId',
+            'sourceProject',
           ]),
         };
       }
