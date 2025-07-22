@@ -11,6 +11,7 @@ import {
   PagedResponse,
   PagedResults,
   PagedRuns,
+  PagedSuites,
   PagedTests,
   TestRailsCase,
   TestRailsCaseType,
@@ -96,8 +97,16 @@ export class TestRailsClient {
    * @param projectId The project to retrieve suites for
    * @returns The TestRails suites
    */
+  @Memoize()
   async listSuites(projectId: string): Promise<TestRailsSuite[]> {
-    return this.get(`/get_suites/${projectId}`);
+    const suites = [];
+    for await (const suite of this.paginate(
+      `/get_suites/${projectId}`,
+      (res: PagedSuites) => res.suites
+    )) {
+      suites.push(suite);
+    }
+    return suites;
   }
 
   /**
