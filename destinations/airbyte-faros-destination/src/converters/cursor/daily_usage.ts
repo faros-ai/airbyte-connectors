@@ -8,13 +8,32 @@ import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CursorConverter} from './common';
 
-const DailyUsageFieldToAssistantMetricType: Partial<
+const DailyUsageItemToAssistantMetricType: Partial<
   Record<keyof DailyUsageItem, AssistantMetric>
 > = {
   acceptedLinesAdded: AssistantMetric.LinesAccepted,
   totalAccepts: AssistantMetric.SuggestionsAccepted,
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
+
+enum Feature {
+  Tab = 'Tab',
+  Composer = 'Composer',
+  Chat = 'Chat',
+  Agent = 'Agent',
+  CmdK = 'Cmd+K',
+  BugBot = 'BugBot',
+}
+
+const DailyUsageItemToFeature: Partial<Record<keyof DailyUsageItem, Feature>> =
+  {
+    totalTabsAccepted: Feature.Tab,
+    composerRequests: Feature.Composer,
+    chatRequests: Feature.Chat,
+    agentRequests: Feature.Agent,
+    cmdkUsages: Feature.CmdK,
+    bugbotUsages: Feature.BugBot,
+  };
 
 const DEFAULT_CUSTOM_METRICS: (keyof DailyUsageItem)[] = [];
 
@@ -62,7 +81,7 @@ export class DailyUsage extends CursorConverter {
     });
 
     for (const [field, assistantMetricType] of Object.entries(
-      DailyUsageFieldToAssistantMetricType
+      DailyUsageItemToAssistantMetricType
     )) {
       const value = dailyUsageItem[field];
       if (isNil(value)) {
@@ -100,6 +119,23 @@ export class DailyUsage extends CursorConverter {
       );
     }
 
+    for (const [field, feature] of Object.entries(DailyUsageItemToFeature)) {
+      const value = dailyUsageItem[field];
+      if (isNil(value)) {
+        continue;
+      }
+      res.push(
+        ...this.getAssistantMetric(
+          day,
+          AssistantMetric.Usages,
+          value,
+          VCSToolDetail.Cursor,
+          dailyUsageItem.email,
+          undefined,
+          feature
+        )
+      );
+    }
     return res;
   }
 
@@ -109,21 +145,31 @@ export class DailyUsage extends CursorConverter {
     value: number | string | boolean,
     org: string,
     userEmail: string,
-    customMetricName?: string
+    customMetricName?: keyof DailyUsageItem,
+    feature?: Feature
   ): DestinationRecord[] {
     return [
       {
         model: 'vcs_AssistantMetric',
         record: {
           uid: digest(
-            [
-              VCSToolDetail.Cursor,
-              assistantMetricType,
-              day.toISOString(),
-              org,
-              userEmail,
-              customMetricName,
-            ].join('__')
+            []
+              .concat(
+                // original fields (required) to be included in the digest
+                ...[
+                  VCSToolDetail.Cursor,
+                  assistantMetricType,
+                  day.toISOString(),
+                  org,
+                  userEmail,
+                  customMetricName,
+                ],
+                // newer fields (optional) to be included in the digest
+                ...[{key: 'feature', value: feature}]
+                  .filter((v) => !isNil(v.value))
+                  .map((v) => `${v.key}:${v.value}`)
+              )
+              .join('__')
           ),
           source: this.source,
           startedAt: day,
@@ -143,6 +189,7 @@ export class DailyUsage extends CursorConverter {
             category: VCSToolCategory.CodingAssistant,
             detail: VCSToolDetail.Cursor,
           },
+          ...(feature && {feature}),
         },
       },
     ];

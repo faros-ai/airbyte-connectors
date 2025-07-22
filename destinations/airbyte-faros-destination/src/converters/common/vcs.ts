@@ -87,6 +87,7 @@ export enum AssistantMetric {
   ChatActiveUsers = 'ChatActiveUsers',
   LastActivity = 'LastActivity',
   Engagement = 'Engagement',
+  Usages = 'Usages',
   Custom = 'Custom',
 }
 
