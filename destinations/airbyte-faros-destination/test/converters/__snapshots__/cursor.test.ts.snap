@@ -4,8 +4,8 @@ exports[`cursor process records from all streams 1`] = `
 Array [
   "Processed 4 records",
   "Processed records by stream: {\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 15 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 27 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":18,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -110,6 +110,162 @@ Array [
     },
   },
   Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "1ed73a41c3c574a9ca923a54e0177174e967a4bb1064fa000513ba0d1e948b3a",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "289",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "b7041c0d2e3fb0ec91eb67dc5ea75a9a5dd34c4a4e2fdbb9db62bd301475eeb5",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "45",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "Chat",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "82fbcaad2a750649674eba479f1753c4f8552eac259e244a0b9b17d347e222c9",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "128",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "Agent",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "4846a926f8c0ac6e97e0502a2fd67805dbf2553d24853ae8d4a84baea772a7f3",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "12",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "Cmd+K",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "ceda1a96484d4beb8c05c67e5779bd06c72493eca32c6ea81cf839e699972c4e",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "67",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-19T00:00:00.000Z",
+      "feature": "BugBot",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "7c3f6a29b0694166e8732c8ea3ba4c6be10eac5b0bb92a0534dbd390ed53dad0",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
     "vcs_UserToolUsage": Object {
       "recordedAt": "2024-03-19T00:00:00.000Z",
       "source": "Cursor",
@@ -202,6 +358,162 @@ Array [
         "uid": "developer@company.com",
       },
       "value": "11",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "2f12f8de67e49b670a84b00edf6ed78f816b79d3aba3bc8100816c597dc1f766",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "398",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "68394113bfda7038b95d109102b5f896331013654dbd7c1c871c41910583baef",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "67",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "Chat",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "eb466b7d80efd14b2843fa15bdedabab5e2ab41b475971b0054e6ec2febe363f",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "156",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "Agent",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "6a2f92a7d6701aeb443db12ac10a6def01103ef3cae28df765121e2fef99b411",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "23",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "Cmd+K",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "17d12097dac983385264d9875debbbed01bf5667301e799c21bb006315d127a2",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "89",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-03-20T00:00:00.000Z",
+      "feature": "BugBot",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-19T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "319e7b6a53da3c90abc11305502a4300095631e125eb1345a3fbd13dc89ab578",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "5",
       "valueType": "Int",
     },
   },
