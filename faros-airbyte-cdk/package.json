@@ -71,6 +71,7 @@
     "@types/node": "^24.1.0",
     "axios": "^1.11.0",
     "commander": "^14.0.0",
+    "eslint": "^9.31.0",
     "faros-js-client": "^0.7.2",
     "jest": "^30.0.5",
     "ts-essentials": "^10.1.1",
