@@ -1,0 +1,233 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gerrit Spec",
+    "type": "object",
+    "required": [
+      "url",
+      "authentication"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "url": {
+        "order": 0,
+        "type": "string",
+        "title": "Gerrit Instance URL",
+        "description": "Gerrit instance URL, e.g. https://gerrit.example.com",
+        "examples": [
+          "https://gerrit.example.com",
+          "https://gerrit-review.googlesource.com"
+        ]
+      },
+      "authentication": {
+        "title": "Authentication",
+        "description": "Choose your Gerrit authentication method",
+        "type": "object",
+        "order": 1,
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "HTTP Password",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "http_password",
+                "order": 0
+              },
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Gerrit username",
+                "order": 1
+              },
+              "password": {
+                "type": "string",
+                "title": "HTTP Password",
+                "description": "HTTP password from Gerrit account settings",
+                "airbyte_secret": true,
+                "order": 2
+              }
+            },
+            "required": [
+              "type",
+              "username",
+              "password"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "Cookie Authentication",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "cookie",
+                "order": 0
+              },
+              "cookie_value": {
+                "type": "string",
+                "title": "Cookie Value",
+                "description": "Complete cookie string from Gerrit (e.g., 'GerritAccount=...; o=...')",
+                "airbyte_secret": true,
+                "multiline": true,
+                "order": 1
+              }
+            },
+            "required": [
+              "type",
+              "cookie_value"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "Git Cookie (from .gitcookies)",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "git_cookie",
+                "order": 0
+              },
+              "git_cookie_value": {
+                "type": "string",
+                "title": "Git Cookie Value",
+                "description": "Cookie value from ~/.gitcookies file or Gerrit's HTTP password setup script",
+                "airbyte_secret": true,
+                "multiline": true,
+                "order": 1
+              }
+            },
+            "required": [
+              "type",
+              "git_cookie_value"
+            ]
+          }
+        ]
+      },
+      "reject_unauthorized": {
+        "order": 2,
+        "type": "boolean",
+        "title": "Enable certificate validation",
+        "description": "Enable certificate validation for the Gerrit server",
+        "default": true
+      },
+      "projects": {
+        "order": 3,
+        "title": "Projects list",
+        "description": "List of Gerrit projects from which to fetch data. If none passed, all visible projects for the authenticated user will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "platform/frameworks/base",
+          "tools/build"
+        ]
+      },
+      "excluded_projects": {
+        "order": 4,
+        "title": "Excluded Projects list",
+        "description": "List of Gerrit projects from which data won't be fetched. By default, no projects are excluded.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "experimental/test-project"
+        ]
+      },
+      "run_mode": {
+        "order": 5,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "Minimum",
+          "Full",
+          "Custom"
+        ]
+      },
+      "custom_streams": {
+        "order": 6,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "faros_projects",
+          "faros_changes"
+        ]
+      },
+      "fetch_reviews": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Fetch Reviews",
+        "description": "Fetch change reviews and votes",
+        "default": true
+      },
+      "fetch_comments": {
+        "order": 8,
+        "type": "boolean",
+        "title": "Fetch Comments",
+        "description": "Fetch change comments",
+        "default": true
+      },
+      "cutoff_days": {
+        "order": 9,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "bucket_id": {
+        "order": 10,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for this source to determine which portion of projects to pull. Use it when distributing the load between multiple sources.",
+        "default": 1
+      },
+      "bucket_total": {
+        "order": 11,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to distribute projects across. Use it when distributing the load between multiple sources",
+        "default": 1
+      },
+      "page_size": {
+        "order": 12,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Maximum number of items in a paginated response",
+        "default": 100
+      },
+      "timeout": {
+        "order": 13,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Gerrit API",
+        "default": 120000
+      },
+      "concurrency_limit": {
+        "order": 14,
+        "type": "integer",
+        "title": "Concurrency limit",
+        "description": "Maximum concurrency to run with",
+        "default": 4
+      },
+      "start_date": {
+        "order": 15,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data."
+      },
+      "end_date": {
+        "order": 16,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data."
+      }
+    }
+  }
+}

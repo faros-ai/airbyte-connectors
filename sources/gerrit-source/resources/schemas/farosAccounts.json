@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "_account_id": {
+      "type": ["integer", "null"],
+      "description": "Account ID"
+    },
+    "name": {
+      "type": ["string", "null"],
+      "description": "Full name"
+    },
+    "display_name": {
+      "type": ["string", "null"],
+      "description": "Display name"
+    },
+    "email": {
+      "type": ["string", "null"],
+      "description": "Email address"
+    },
+    "secondary_emails": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Secondary email addresses"
+    },
+    "username": {
+      "type": ["string", "null"],
+      "description": "Username"
+    },
+    "avatars": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "height": {
+            "type": ["integer", "null"]
+          },
+          "width": {
+            "type": ["integer", "null"]
+          }
+        },
+        "required": ["url"]
+      },
+      "description": "User avatars"
+    },
+    "status": {
+      "type": ["string", "null"],
+      "description": "Account status"
+    },
+    "inactive": {
+      "type": ["boolean", "null"],
+      "description": "Whether account is inactive"
+    },
+    "tags": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Account tags"
+    }
+  },
+  "required": []
+}

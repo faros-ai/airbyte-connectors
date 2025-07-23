@@ -1,0 +1,10 @@
+{
+  "url": "https://gerrit-review.googlesource.com",
+  "authentication": {
+    "type": "git_cookie",
+    "git_cookie_value": "your-domain.com,FALSE,/,TRUE,2147483647,o,git-username=your-oauth-token-here"
+  },
+  "projects": ["gerrit"],
+  "cutoff_days": 7,
+  "page_size": 5
+}

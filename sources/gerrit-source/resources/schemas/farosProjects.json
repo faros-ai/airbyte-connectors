@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Project ID"
+    },
+    "name": {
+      "type": ["string", "null"],
+      "description": "Project name"
+    },
+    "parent": {
+      "type": ["string", "null"],
+      "description": "Parent project"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Project description"
+    },
+    "state": {
+      "type": ["string", "null"],
+      "enum": ["ACTIVE", "READ_ONLY", "HIDDEN", null],
+      "description": "Project state"
+    },
+    "branches": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Project branches"
+    },
+    "labels": {
+      "type": ["object", "null"],
+      "description": "Project labels configuration"
+    },
+    "web_links": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": ["string", "null"]
+          },
+          "image_url": {
+            "type": ["string", "null"]
+          },
+          "target": {
+            "type": ["string", "null"]
+          }
+        },
+        "required": ["url"]
+      },
+      "description": "Web links for the project"
+    }
+  },
+  "required": ["id"]
+}

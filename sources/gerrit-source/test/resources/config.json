@@ -1,0 +1,11 @@
+{
+  "url": "https://gerrit-review.googlesource.com",
+  "authentication": {
+    "type": "http_password",
+    "username": "testuser",
+    "password": "testpass"
+  },
+  "projects": ["platform/frameworks/base"],
+  "cutoff_days": 30,
+  "page_size": 50
+}

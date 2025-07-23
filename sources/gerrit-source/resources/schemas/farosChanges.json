@@ -1,0 +1,367 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Change ID"
+    },
+    "project": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "branch": {
+      "type": "string",
+      "description": "Target branch"
+    },
+    "topic": {
+      "type": ["string", "null"],
+      "description": "Change topic"
+    },
+    "change_id": {
+      "type": "string",
+      "description": "Change-Id from commit message"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Change subject (first line of commit message)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["NEW", "MERGED", "ABANDONED"],
+      "description": "Change status"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Change creation timestamp"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Change last update timestamp"
+    },
+    "submitted": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Change submission timestamp"
+    },
+    "_number": {
+      "type": "integer",
+      "description": "Change number"
+    },
+    "owner": {
+      "$ref": "#/definitions/AccountInfo",
+      "description": "Change owner"
+    },
+    "submitter": {
+      "anyOf": [
+        {"$ref": "#/definitions/AccountInfo"},
+        {"type": "null"}
+      ],
+      "description": "Change submitter"
+    },
+    "assignee": {
+      "anyOf": [
+        {"$ref": "#/definitions/AccountInfo"},
+        {"type": "null"}
+      ],
+      "description": "Change assignee"
+    },
+    "hashtags": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Change hashtags"
+    },
+    "insertions": {
+      "type": ["integer", "null"],
+      "description": "Number of inserted lines"
+    },
+    "deletions": {
+      "type": ["integer", "null"],
+      "description": "Number of deleted lines"
+    },
+    "total_comment_count": {
+      "type": ["integer", "null"],
+      "description": "Total number of comments"
+    },
+    "unresolved_comment_count": {
+      "type": ["integer", "null"],
+      "description": "Number of unresolved comments"
+    },
+    "labels": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "$ref": "#/definitions/LabelInfo"
+      },
+      "description": "Change labels and votes"
+    },
+    "reviewers": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/AccountInfo"
+        }
+      },
+      "description": "Change reviewers by type"
+    },
+    "messages": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "#/definitions/ChangeMessageInfo"
+      },
+      "description": "Change messages"
+    },
+    "current_revision": {
+      "type": ["string", "null"],
+      "description": "Current revision SHA"
+    },
+    "revisions": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "$ref": "#/definitions/RevisionInfo"
+      },
+      "description": "Change revisions"
+    },
+    "is_private": {
+      "type": ["boolean", "null"],
+      "description": "Whether change is private"
+    },
+    "work_in_progress": {
+      "type": ["boolean", "null"],
+      "description": "Whether change is work in progress"
+    },
+    "has_review_started": {
+      "type": ["boolean", "null"],
+      "description": "Whether review has started"
+    },
+    "mergeable": {
+      "type": ["boolean", "null"],
+      "description": "Whether change is mergeable"
+    },
+    "submittable": {
+      "type": ["boolean", "null"],
+      "description": "Whether change is submittable"
+    }
+  },
+  "required": ["id", "project", "branch", "change_id", "subject", "status", "created", "updated", "_number", "owner"],
+  "definitions": {
+    "AccountInfo": {
+      "type": "object",
+      "properties": {
+        "_account_id": {
+          "type": ["integer", "null"]
+        },
+        "name": {
+          "type": ["string", "null"]
+        },
+        "display_name": {
+          "type": ["string", "null"]
+        },
+        "email": {
+          "type": ["string", "null"]
+        },
+        "username": {
+          "type": ["string", "null"]
+        },
+        "status": {
+          "type": ["string", "null"]
+        },
+        "inactive": {
+          "type": ["boolean", "null"]
+        }
+      }
+    },
+    "LabelInfo": {
+      "type": "object",
+      "properties": {
+        "approved": {
+          "anyOf": [
+            {"$ref": "#/definitions/AccountInfo"},
+            {"type": "null"}
+          ]
+        },
+        "rejected": {
+          "anyOf": [
+            {"$ref": "#/definitions/AccountInfo"},
+            {"type": "null"}
+          ]
+        },
+        "value": {
+          "type": ["integer", "null"]
+        },
+        "default_value": {
+          "type": ["integer", "null"]
+        },
+        "all": {
+          "type": ["array", "null"],
+          "items": {
+            "$ref": "#/definitions/ApprovalInfo"
+          }
+        }
+      }
+    },
+    "ApprovalInfo": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "anyOf": [
+            {"$ref": "#/definitions/AccountInfo"},
+            {"type": "null"}
+          ]
+        },
+        "value": {
+          "type": ["integer", "null"]
+        },
+        "date": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "ChangeMessageInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "author": {
+          "anyOf": [
+            {"$ref": "#/definitions/AccountInfo"},
+            {"type": "null"}
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "message": {
+          "type": "string"
+        },
+        "_revision_number": {
+          "type": ["integer", "null"]
+        }
+      },
+      "required": ["id", "date", "message"]
+    },
+    "RevisionInfo": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "_number": {
+          "type": "integer"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "uploader": {
+          "$ref": "#/definitions/AccountInfo"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "commit": {
+          "anyOf": [
+            {"$ref": "#/definitions/CommitInfo"},
+            {"type": "null"}
+          ]
+        },
+        "files": {
+          "type": ["object", "null"],
+          "additionalProperties": {
+            "$ref": "#/definitions/FileInfo"
+          }
+        }
+      },
+      "required": ["kind", "_number", "created", "uploader", "ref"]
+    },
+    "CommitInfo": {
+      "type": "object",
+      "properties": {
+        "commit": {
+          "type": ["string", "null"]
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "commit": {
+                "type": "string"
+              },
+              "subject": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["commit"]
+          }
+        },
+        "author": {
+          "$ref": "#/definitions/GitPersonInfo"
+        },
+        "committer": {
+          "$ref": "#/definitions/GitPersonInfo"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": ["parents", "author", "committer", "subject", "message"]
+    },
+    "GitPersonInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tz": {
+          "type": "integer"
+        }
+      },
+      "required": ["name", "email", "date", "tz"]
+    },
+    "FileInfo": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["A", "D", "R", "C", "W", null]
+        },
+        "binary": {
+          "type": ["boolean", "null"]
+        },
+        "old_path": {
+          "type": ["string", "null"]
+        },
+        "lines_inserted": {
+          "type": ["integer", "null"]
+        },
+        "lines_deleted": {
+          "type": ["integer", "null"]
+        },
+        "size_delta": {
+          "type": ["integer", "null"]
+        },
+        "size": {
+          "type": ["integer", "null"]
+        }
+      }
+    }
+  }
+}

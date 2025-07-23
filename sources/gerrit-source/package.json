@@ -1,0 +1,54 @@
+{
+  "name": "gerrit-source",
+  "version": "0.0.1",
+  "description": "Gerrit Airbyte source",
+  "homepage": "https://www.faros.ai",
+  "keywords": [
+    "airbyte",
+    "source",
+    "faros",
+    "gerrit"
+  ],
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/",
+    "resources/"
+  ],
+  "main": "./lib",
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
+    "axios": "^1.7.7",
+    "verror": "^1.10.1"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ],
+    "testEnvironment": "node",
+    "testTimeout": 10000,
+    "transform": {
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
+  }
+}

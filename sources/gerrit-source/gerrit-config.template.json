@@ -1,0 +1,15 @@
+{
+  "url": "https://gerrit.example.com",
+  "authentication": {
+    "type": "git_cookie",
+    "git_cookie_value": "REPLACE_WITH_YOUR_COOKIE_LINE_FROM_GERRIT"
+  },
+  "projects": [
+    "your-project-name"
+  ],
+  "excluded_projects": [],
+  "cutoff_days": 7,
+  "page_size": 5,
+  "fetch_reviews": true,
+  "fetch_comments": true
+}

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "mcp__deepwiki__ask_question",
+      "Bash(git checkout:*)",
+      "WebFetch(domain:gerrit-review.googlesource.com)",
+      "WebFetch(domain:gerrit.wikimedia.org)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:osm.etsi.org)",
+      "Bash(git add:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(chmod:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": []
+  }
+}
