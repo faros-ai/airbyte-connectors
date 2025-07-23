@@ -151,6 +151,7 @@ export type Task = {
     name?: string;
   };
   stories?: ReadonlyArray<Story>;
+  comments?: ReadonlyArray<Story>;
 };
 
 export type Project = {

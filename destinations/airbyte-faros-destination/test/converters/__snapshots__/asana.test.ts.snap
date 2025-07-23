@@ -4,8 +4,8 @@ exports[`asana asana basic test process records from all streams 1`] = `
 Array [
   "Processed 7 records",
   "Processed records by stream: {\\\\\\"mytestsource__asana__projects\\\\\\":1,\\\\\\"mytestsource__asana__tags\\\\\\":2,\\\\\\"mytestsource__asana__tasks\\\\\\":3,\\\\\\"mytestsource__asana__users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 11 records",
-  "Would write records by model: {\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 17 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskComment\\\\\\":2,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -155,6 +155,61 @@ Array [
       "uid": "1205346703408262",
       "updatedAt": 2023-08-25T20:59:25.575Z,
       "url": "https://app.asana.com/0/1205346703408259/1205346703408262",
+    },
+  },
+]
+`;
+
+exports[`asana tasks comments 1`] = `
+Array [
+  Object {
+    "model": "tms_TaskComment__Deletion",
+    "record": Object {
+      "flushRequired": false,
+      "where": Object {
+        "task": Object {
+          "source": "Asana",
+          "uid": "1205346703408262",
+        },
+      },
+    },
+  },
+  Object {
+    "model": "__Flush",
+    "record": Object {},
+  },
+  Object {
+    "model": "tms_TaskComment",
+    "record": Object {
+      "author": Object {
+        "source": "Asana",
+        "uid": "1201075972474976",
+      },
+      "comment": "This is a test comment on the task",
+      "createdAt": 2023-08-24T16:00:00.000Z,
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+      "uid": "comment_001",
+      "updatedAt": 2023-08-24T16:00:00.000Z,
+    },
+  },
+  Object {
+    "model": "tms_TaskComment",
+    "record": Object {
+      "author": Object {
+        "source": "Asana",
+        "uid": "7440298482110",
+      },
+      "comment": "Another comment with additional feedback",
+      "createdAt": 2023-08-24T17:30:00.000Z,
+      "task": Object {
+        "source": "Asana",
+        "uid": "1205346703408262",
+      },
+      "uid": "comment_002",
+      "updatedAt": 2023-08-24T17:30:00.000Z,
     },
   },
 ]
