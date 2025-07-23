@@ -50,9 +50,9 @@ interface Config {
 
 export class Tasks extends AsanaConverter {
   private config: Config = undefined;
-  private seenProjects: Set<string> = new Set();
-  private seenTasks: Set<string> = new Set();
-  private taskComments: DestinationRecord[] = [];
+  private readonly seenProjects: Set<string> = new Set();
+  private readonly seenTasks: Set<string> = new Set();
+  private readonly taskComments: DestinationRecord[] = [];
   private fetchTaskComments: boolean = false;
 
   private initialize(ctx?: StreamContext): void {
