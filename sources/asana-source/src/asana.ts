@@ -321,12 +321,6 @@ export class Asana {
     return {stories, comments};
   }
 
-  // Keep backward compatibility
-  async getFilteredStories(task: string): Promise<ReadonlyArray<Story>> {
-    const {stories} = await this.getStoriesAndComments(task);
-    return stories;
-  }
-
   async *getTags(workspace: string): AsyncGenerator<Tag> {
     const opt_fields = ['name'];
     yield* this.fetchData<Tag>(`workspaces/${workspace}/tags`, opt_fields);
