@@ -1,7 +1,8 @@
-import {AirbyteRecord, DestinationSyncMode} from 'faros-airbyte-cdk';
+import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
+import {FLUSH} from '../../common/types';
 import {
   DestinationModel,
   DestinationRecord,
@@ -50,6 +51,9 @@ interface Config {
 export class Tasks extends AsanaConverter {
   private config: Config = undefined;
   private seenProjects: Set<string> = new Set();
+  private seenTasks: Set<string> = new Set();
+  private taskComments: DestinationRecord[] = [];
+  private fetchTaskComments: boolean = false;
 
   private initialize(ctx?: StreamContext): void {
     this.config =
@@ -61,6 +65,7 @@ export class Tasks extends AsanaConverter {
     'tms_TaskDependency',
     'tms_TaskAssignment',
     'tms_TaskTag',
+    'tms_TaskComment',
   ];
 
   static readonly tagsStream = new StreamName('asana', 'tags');
@@ -82,6 +87,9 @@ export class Tasks extends AsanaConverter {
 
     const taskKey = {uid: task.gid, source};
     const parent = task.parent ? {uid: task.parent.gid, source} : null;
+
+    // Track this task for comment deletion
+    this.seenTasks.add(task.gid);
 
     const taskCustomFields = (task.custom_fields ?? []).filter((f) =>
       this.config.task_custom_fields?.includes(f.gid)
@@ -200,6 +208,30 @@ export class Tasks extends AsanaConverter {
       }
     }
 
+    // Process comments following Jira pattern
+    if (task.comments && task.comments.length > 0) {
+      this.fetchTaskComments = true;
+      for (const comment of task.comments) {
+        this.taskComments.push({
+          model: 'tms_TaskComment',
+          record: {
+            task: taskKey,
+            uid: comment.gid,
+            comment: Utils.cleanAndTruncate(
+              comment.text,
+              AsanaCommon.MAX_DESCRIPTION_LENGTH
+            ),
+            createdAt: Utils.toDate(comment.created_at),
+            updatedAt: Utils.toDate(comment.created_at), // Asana stories don't have updated_at
+            author: comment.created_by?.gid
+              ? {uid: comment.created_by.gid, source}
+              : undefined,
+            // Note: Asana comments don't have reply structure like Jira
+          },
+        });
+      }
+    }
+
     return res;
   }
 
@@ -242,5 +274,32 @@ export class Tasks extends AsanaConverter {
 
   protected shouldProcessProjectMembership(): boolean {
     return false;
+  }
+
+  async onProcessingComplete(
+    _ctx?: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return [...this.convertComments()];
+  }
+
+  private convertComments(): DestinationRecord[] {
+    if (!this.fetchTaskComments) {
+      return [];
+    }
+    return [
+      // Delete existing comments for all processed tasks
+      ...Array.from(this.seenTasks.keys()).map((taskGid) => ({
+        model: 'tms_TaskComment__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task: {uid: taskGid, source: this.source},
+          },
+        },
+      })),
+      FLUSH,
+      // Insert all new comments
+      ...this.taskComments,
+    ];
   }
 }

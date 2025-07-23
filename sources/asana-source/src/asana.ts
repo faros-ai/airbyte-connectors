@@ -238,9 +238,11 @@ export class Asana {
         if (seenIdsPreviousPage.has(task.gid)) continue;
         seenIdsCurrentPage.add(task.gid);
         modified_at_after = task.modified_at;
+        const {stories, comments} = await this.getStoriesAndComments(task.gid);
         yield {
           ...task,
-          stories: await this.getFilteredStories(task.gid),
+          stories,
+          comments,
         };
       }
 
@@ -278,35 +280,50 @@ export class Asana {
     }
   }
 
-  async getFilteredStories(task: string): Promise<ReadonlyArray<Story>> {
+  async getStoriesAndComments(task: string): Promise<{
+    stories: ReadonlyArray<Story>;
+    comments: ReadonlyArray<Story>;
+  }> {
     const opt_fields = [
       'assignee',
       'created_at',
+      'created_by',
       'resource_subtype',
       'task',
       'duplicate_of',
+      'text', // Add text field for comments
     ];
     const stories: Story[] = [];
+    const comments: Story[] = [];
+
+    const systemEventTypes = [
+      'marked_complete',
+      'marked_incomplete',
+      'assigned',
+      'unassigned',
+      'added_to_task',
+      'removed_from_task',
+      'marked_duplicate',
+      'unmarked_duplicate',
+    ];
+
     for await (const story of this.fetchData<Story>(
       `tasks/${task}/stories`,
       opt_fields
     )) {
-      if (
-        [
-          'marked_complete',
-          'marked_incomplete',
-          'assigned',
-          'unassigned',
-          'added_to_task',
-          'removed_from_task',
-          'marked_duplicate',
-          'unmarked_duplicate',
-        ].includes(story.resource_subtype)
-      ) {
+      if (story.resource_subtype === 'comment_added') {
+        comments.push(story);
+      } else if (systemEventTypes.includes(story.resource_subtype)) {
         stories.push(story);
       }
     }
 
+    return {stories, comments};
+  }
+
+  // Keep backward compatibility
+  async getFilteredStories(task: string): Promise<ReadonlyArray<Story>> {
+    const {stories} = await this.getStoriesAndComments(task);
     return stories;
   }
 
