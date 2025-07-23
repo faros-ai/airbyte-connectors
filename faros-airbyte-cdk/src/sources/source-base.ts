@@ -171,7 +171,7 @@ export abstract class AirbyteSourceBase<
         // The stream is not requested in the catalog, ignore it
         continue;
       }
-      for (const dependency of stream.dependencies) {
+      for (const dependency of (stream as AirbyteStreamBase).dependencies) {
         if (!configuredStreamNames.includes(dependency)) {
           // The stream dependency is not requested in the catalog, ignore it
           continue;
