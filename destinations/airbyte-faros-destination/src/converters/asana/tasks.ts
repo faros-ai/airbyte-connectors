@@ -209,7 +209,7 @@ export class Tasks extends AsanaConverter {
     }
 
     // Process comments following Jira pattern
-    if (task.comments && task.comments.length > 0) {
+    if (task.comments) {
       this.fetchTaskComments = true;
       for (const comment of task.comments) {
         this.taskComments.push({
