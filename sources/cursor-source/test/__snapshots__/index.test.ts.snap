@@ -81,12 +81,14 @@ exports[`index streams - members 1`] = `
   {
     "active": true,
     "email": "developer@company.com",
+    "minUsageTimestamp": 1750979173824,
     "name": "Alex",
     "role": "member",
   },
   {
     "active": true,
     "email": "admin@company.com",
+    "minUsageTimestamp": 1750978339901,
     "name": "Sam",
     "role": "owner",
   },

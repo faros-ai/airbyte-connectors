@@ -82,8 +82,12 @@ describe('index', () => {
   });
 
   test('streams - members', async () => {
+    const usageEventsRes = readTestResourceAsJSON(
+      'usage_events/usage_events.json'
+    );
     const res = readTestResourceAsJSON('members/members.json');
     setupCursorInstance({
+      post: jest.fn().mockResolvedValue({data: usageEventsRes}),
       get: jest.fn().mockResolvedValue({data: res}),
     });
     await sourceReadTest({
@@ -91,7 +95,10 @@ describe('index', () => {
       configOrPath: 'config.json',
       catalogOrPath: 'members/catalog.json',
       checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
+        // skip records emitted by the usage_events stream
+        expect(
+          records.slice(usageEventsRes.usageEvents.length)
+        ).toMatchSnapshot();
       },
     });
   });
