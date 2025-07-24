@@ -121,12 +121,21 @@ export class AzureWorkitems extends types.AzureDevOps {
       `Fetching workitems for project ${project.name} from ${dateRange.startDate} to ${dateRange.endDate}`
     );
 
-    const promises = WORK_ITEM_TYPES.map((type) =>
+    // Build epic cache
+    const epicStates = stateCategories.get('Epic');
+    const epicCache = await this.buildWorkitemToEpicCache(project, epicStates, dateRange.startDate);
+    
+    // Extract epic IDs we already fetched
+    const epicIds = Array.from(new Set(epicCache.values()));
+
+    // Process non-epic work item types only (epics already fetched for cache)
+    const nonEpicTypes = WORK_ITEM_TYPES.filter(type => type !== "'Epic'");
+    const promises = nonEpicTypes.map((type) =>
       this.getIdsFromAWorkItemType(project.name, type, dateRange)
     );
 
     const results = await Promise.all(promises);
-    const ids = flatten(results);
+    const ids = [...flatten(results), ...epicIds];
 
     for (const c of chunk(ids, MAX_BATCH_SIZE)) {
       const workitems = await this.client.wit.getWorkItems(
@@ -145,6 +154,9 @@ export class AzureWorkitems extends types.AzureDevOps {
           states
         );
 
+        // Find associated epic
+        const epicId = epicCache.get(item.id);
+
         const additionalFields = this.extractAdditionalFields(item.fields);
         const revisions = await this.getWorkItemRevisions(
           item.id,
@@ -157,6 +169,7 @@ export class AzureWorkitems extends types.AzureDevOps {
             ...item.fields,
             Faros: {
               WorkItemStateCategory: stateCategory,
+              EpicId: epicId,
             },
           },
           revisions,
@@ -165,6 +178,100 @@ export class AzureWorkitems extends types.AzureDevOps {
         };
       }
     }
+  }
+
+  private async getAllEpics(
+    project: ProjectReference,
+    epicStates: Map<string, string>,
+    cutoffDate: Date
+  ): Promise<ReadonlyArray<number>> {
+    // Group states by category
+    const statesByCategory = new Map<string, string[]>();
+    if (epicStates?.size) {
+      for (const [state, category] of epicStates.entries()) {
+        const states = statesByCategory.get(category) || [];
+        states.push(`'${state}'`);
+        statesByCategory.set(category, states);
+      }
+    } else {
+      this.logger.warn(`No state categories found for Epic work item type in project ${project.name}. Fetching all epics.`);
+    }
+
+    const inProgressStates = statesByCategory.get('InProgress') || [];
+    const proposedStates = statesByCategory.get('Proposed') || [];
+    const completedStates = statesByCategory.get('Completed') || [];
+
+    // Build WIQL query for epics
+    const quotedProject = `'${project.name}'`;
+    const query = 
+      'Select [System.Id] From WorkItems' +
+      " WHERE [System.WorkItemType] = 'Epic'" +
+      ' AND [System.TeamProject] = ' + quotedProject +
+      ' AND (' +
+      (inProgressStates.length > 0 ? ` [System.State] IN (${inProgressStates.join(',')})` : '') +
+      (proposedStates.length > 0 ? 
+        (inProgressStates.length > 0 ? ' OR' : '') + ` [System.State] IN (${proposedStates.join(',')})` : '') +
+      (completedStates.length > 0 ?
+        ((inProgressStates.length > 0 || proposedStates.length > 0) ? ' OR' : '') +
+        ` ([System.State] IN (${completedStates.join(',')})` +
+        ` AND [Microsoft.VSTS.Common.ClosedDate] >= '${cutoffDate.toISOString()}')` : '') +
+      ')' +
+      ' ORDER BY [System.ChangedDate] DESC';
+
+    this.logger.debug(`Fetching epics for project ${project.name} with query: ${query}`);
+
+    const result = await this.client.wit.queryByWiql(
+      { query },
+      undefined,
+      true,
+      MAX_WIQL_ITEMS
+    );
+
+    return result.workItems.map(item => item.id);
+  }
+
+  private async getDescendantsForEpic(
+    epicId: number,
+    project: ProjectReference
+  ): Promise<ReadonlyArray<number>> {
+    const query = 
+      'SELECT [System.Id] FROM workitemLinks' +
+      ` WHERE ([Source].[System.Id] = ${epicId})` +
+      " AND ([System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward')" +
+      ' MODE (Recursive)';
+
+    this.logger.debug(`Fetching descendants for epic ${epicId} in project ${project.name}`);
+
+    const result = await this.client.wit.queryByWiql(
+      { query },
+      undefined,
+      true,
+      MAX_WIQL_ITEMS
+    );
+
+    return result.workItemRelations?.map(relation => relation.target.id) || [];
+  }
+
+  private async buildWorkitemToEpicCache(
+    project: ProjectReference,
+    epicStates: Map<string, string>,
+    cutoffDate: Date
+  ): Promise<Map<number, number>> {
+    const cache = new Map<number, number>();
+    
+    // Get all epics
+    const epicIds = await this.getAllEpics(project, epicStates, cutoffDate);
+    this.logger.debug(`Found ${epicIds.length} epics in project ${project.name}`);
+
+    // For each epic, get all its descendants and map them to the epic
+    for (const epicId of epicIds) {
+      const descendants = await this.getDescendantsForEpic(epicId, project);
+      for (const descendantId of descendants) {
+        cache.set(descendantId, epicId);
+      }
+    }
+
+    return cache;
   }
 
   private async getWorkItemRevisions(

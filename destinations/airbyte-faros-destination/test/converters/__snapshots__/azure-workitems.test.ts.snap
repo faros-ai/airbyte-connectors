@@ -31,6 +31,7 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "Our authorization logic needs to allow for users with Microsoft accounts (formerly Live Ids) - http://msdn.microsoft.com/en-us/library/live/hh826547.aspx",
+      "epic": null,
       "name": "Customer can sign in using their Microsoft Account",
       "parent": null,
       "points": 3,
@@ -170,6 +171,10 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "Follow the code samples from MSDN",
+      "epic": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
       "name": "JavaScript implementation for Microsoft Account",
       "parent": Object {
         "source": "Azure-Workitems",
@@ -351,6 +356,10 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "We need to ensure we have coverage to prevent regressions",
+      "epic": Object {
+        "source": "Azure-Workitems",
+        "uid": "298",
+      },
       "name": "Unit Testing for MSA login",
       "parent": null,
       "points": 8,

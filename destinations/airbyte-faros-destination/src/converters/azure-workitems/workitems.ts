@@ -93,6 +93,9 @@ export class Workitems extends AzureWorkitemsConverter {
           sprint: WorkItem.fields['System.IterationId']
             ? {uid: String(WorkItem.fields['System.IterationId']), source}
             : null,
+          epic: WorkItem.fields['Faros']?.['EpicId']
+            ? {uid: String(WorkItem.fields['Faros']['EpicId']), source}
+            : null,
           priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
           resolvedAt: Utils.toDate(
             WorkItem.fields['Microsoft.VSTS.Common.ResolvedDate']

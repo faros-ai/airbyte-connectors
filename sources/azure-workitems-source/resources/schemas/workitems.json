@@ -232,6 +232,25 @@
         },
         "System.Parent": {
           "type": "integer"
+        },
+        "Faros": {
+          "type": "object",
+          "properties": {
+            "WorkItemStateCategory": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                }
+              }
+            },
+            "EpicId": {
+              "type": "integer"
+            }
+          }
         }
       }
     },
