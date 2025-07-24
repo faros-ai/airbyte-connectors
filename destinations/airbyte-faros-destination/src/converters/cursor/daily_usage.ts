@@ -1,10 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {digest} from 'faros-airbyte-common/common';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CursorConverter} from './common';
 
