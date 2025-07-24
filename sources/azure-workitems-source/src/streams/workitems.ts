@@ -16,6 +16,10 @@ export class Workitems extends StreamWithProjectSlices {
     return require('../../resources/schemas/workitems.json');
   }
 
+  get cursorField(): string | string[] {
+    return 'System.ChangedDate';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
