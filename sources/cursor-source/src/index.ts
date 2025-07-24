@@ -14,6 +14,7 @@ import VError from 'verror';
 import {Cursor, DEFAULT_CUTOFF_DAYS} from './cursor';
 import {DailyUsage} from './streams/daily_usage';
 import {Members} from './streams/members';
+import {UsageEvents} from './streams/usage_events';
 import {CursorConfig} from './types';
 
 export function mainCommand(): Command {
@@ -45,6 +46,7 @@ export class CursorSource extends AirbyteSourceBase<CursorConfig> {
     return [
       new DailyUsage(config, this.logger),
       new Members(config, this.logger),
+      new UsageEvents(config, this.logger),
     ];
   }
 

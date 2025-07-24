@@ -51,3 +51,36 @@ export type DailyUsageResponse = {
     endDate: number;
   };
 };
+
+// https://docs.cursor.com/account/teams/admin-api#get-usage-events-data
+export type UsageEventsResponse = {
+  totalUsageEventsCount: number;
+  pagination: {
+    numPages: number;
+    currentPage: number;
+    pageSize: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+  usageEvents: {
+    timestamp: string;
+    model: string;
+    kindLabel: string;
+    maxMode: boolean;
+    requestsCosts: number;
+    isTokenBasedCall: boolean;
+    tokenUsage: {
+      inputTokens: number;
+      outputTokens: number;
+      cacheWriteTokens: number;
+      cacheReadTokens: number;
+      totalCents: number;
+    };
+    isFreeBugbot: boolean;
+    userEmail: string;
+  }[];
+  period: {
+    startDate: number;
+    endDate: number;
+  };
+};

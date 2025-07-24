@@ -11,6 +11,7 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 
+import {Cursor} from '../src/cursor';
 import * as sut from '../src/index';
 
 const setupCursorInstance = (mockMethods: any) => {
@@ -31,6 +32,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    (Cursor as any).cursor = undefined;
   });
 
   test('spec', async () => {
@@ -80,14 +82,36 @@ describe('index', () => {
   });
 
   test('streams - members', async () => {
+    const usageEventsRes = readTestResourceAsJSON(
+      'usage_events/usage_events.json'
+    );
     const res = readTestResourceAsJSON('members/members.json');
     setupCursorInstance({
+      post: jest.fn().mockResolvedValue({data: usageEventsRes}),
       get: jest.fn().mockResolvedValue({data: res}),
     });
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'members/catalog.json',
+      checkRecordsData: (records) => {
+        // skip records emitted by the usage_events stream
+        expect(
+          records.slice(usageEventsRes.usageEvents.length)
+        ).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - usage events', async () => {
+    const res = readTestResourceAsJSON('usage_events/usage_events.json');
+    setupCursorInstance({
+      post: jest.fn().mockResolvedValue({data: res}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'usage_events/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },

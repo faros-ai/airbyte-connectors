@@ -10,6 +10,12 @@
     },
     "role": {
       "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "minUsageTimestamp": {
+      "type": "integer"
     }
   }
 }

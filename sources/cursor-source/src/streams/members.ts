@@ -1,16 +1,29 @@
-import {AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {MemberItem} from 'faros-airbyte-common/cursor';
 import {Dictionary} from 'ts-essentials';
 
 import {Cursor} from '../cursor';
 import {CursorConfig} from '../types';
 
+type StreamState = {
+  minUsageTimestampPerEmail: {[email: string]: number};
+};
+
 export class Members extends AirbyteStreamBase {
   constructor(
     private readonly config: CursorConfig,
-    protected readonly logger: any
+    protected readonly logger: AirbyteLogger
   ) {
     super(logger);
+  }
+
+  get dependencies(): string[] {
+    return ['usage_events'];
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -21,12 +34,43 @@ export class Members extends AirbyteStreamBase {
     return ['email'];
   }
 
-  get supportsIncremental(): boolean {
-    return true;
+  get cursorField(): string | string[] {
+    return 'minUsageTimestamp';
   }
 
-  async *readRecords(): AsyncGenerator<MemberItem> {
+  async *readRecords(
+    syncMode: SyncMode,
+    cursorField?: string[],
+    streamSlice?: Dictionary<any>,
+    streamState?: StreamState
+  ): AsyncGenerator<MemberItem> {
+    const minUsageTimestampPerEmail =
+      streamState?.minUsageTimestampPerEmail ?? {};
     const cursor = Cursor.instance(this.config, this.logger);
-    yield* await cursor.getMembers();
+    for (const member of await cursor.getMembers()) {
+      const minUsageTimestamp = Math.min(
+        minUsageTimestampPerEmail[member.email] ?? Infinity,
+        cursor.getMinUsageTimestampForEmail(member.email) ?? Infinity
+      );
+      yield {
+        ...member,
+        ...(minUsageTimestamp !== Infinity && {minUsageTimestamp}),
+      };
+    }
+  }
+
+  getUpdatedState(
+    currentStreamState: StreamState,
+    latestRecord: MemberItem
+  ): StreamState {
+    if (!latestRecord.minUsageTimestamp) {
+      return currentStreamState;
+    }
+    return {
+      minUsageTimestampPerEmail: {
+        ...currentStreamState?.minUsageTimestampPerEmail,
+        [latestRecord.email]: latestRecord.minUsageTimestamp,
+      },
+    };
   }
 }

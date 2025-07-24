@@ -1,10 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {digest} from 'faros-airbyte-common/common';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CursorConverter} from './common';
 
@@ -42,11 +41,11 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export class DailyUsage extends CursorConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
-    'vcs_UserToolUsage',
   ];
 
   id(record: AirbyteRecord): string {
-    return `${record.record.data.date}__${record.record.data.email}`;
+    const dailyUsageItem = record.record.data as DailyUsageItem;
+    return `${dailyUsageItem.date}__${dailyUsageItem.email}`;
   }
 
   async convert(
@@ -61,24 +60,6 @@ export class DailyUsage extends CursorConverter {
 
     const day = Utils.toDate(dailyUsageItem.date);
     const res: DestinationRecord[] = [];
-    res.push({
-      model: 'vcs_UserToolUsage',
-      record: {
-        userTool: {
-          user: {uid: dailyUsageItem.email, source: this.streamName.source},
-          organization: {
-            uid: VCSToolDetail.Cursor,
-            source: this.streamName.source,
-          },
-          tool: {
-            category: VCSToolCategory.CodingAssistant,
-            detail: VCSToolDetail.Cursor,
-          },
-        },
-        usedAt: day.toISOString(),
-        recordedAt: day.toISOString(),
-      },
-    });
 
     for (const [field, assistantMetricType] of Object.entries(
       DailyUsageItemToAssistantMetricType
@@ -90,6 +71,7 @@ export class DailyUsage extends CursorConverter {
       res.push(
         ...this.getAssistantMetric(
           day,
+          Utils.toDate(day.getTime() + DAY_MS),
           assistantMetricType,
           value,
           VCSToolDetail.Cursor,
@@ -110,6 +92,7 @@ export class DailyUsage extends CursorConverter {
       res.push(
         ...this.getAssistantMetric(
           day,
+          Utils.toDate(day.getTime() + DAY_MS),
           AssistantMetric.Custom,
           value,
           VCSToolDetail.Cursor,
@@ -127,82 +110,17 @@ export class DailyUsage extends CursorConverter {
       res.push(
         ...this.getAssistantMetric(
           day,
+          Utils.toDate(day.getTime() + DAY_MS),
           AssistantMetric.Usages,
           value,
           VCSToolDetail.Cursor,
           dailyUsageItem.email,
+          undefined,
           undefined,
           feature
         )
       );
     }
     return res;
-  }
-
-  private getAssistantMetric(
-    day: Date,
-    assistantMetricType: string,
-    value: number | string | boolean,
-    org: string,
-    userEmail: string,
-    customMetricName?: keyof DailyUsageItem,
-    feature?: Feature
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'vcs_AssistantMetric',
-        record: {
-          uid: digest(
-            []
-              .concat(
-                // original fields (required) to be included in the digest
-                ...[
-                  VCSToolDetail.Cursor,
-                  assistantMetricType,
-                  day.toISOString(),
-                  org,
-                  userEmail,
-                  customMetricName,
-                ],
-                // newer fields (optional) to be included in the digest
-                ...[{key: 'feature', value: feature}]
-                  .filter((v) => !isNil(v.value))
-                  .map((v) => `${v.key}:${v.value}`)
-              )
-              .join('__')
-          ),
-          source: this.source,
-          startedAt: day,
-          endedAt: Utils.toDate(day.getTime() + DAY_MS),
-          type: {
-            category: assistantMetricType,
-            ...(customMetricName && {detail: customMetricName}),
-          },
-          valueType: getValueType(value),
-          value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
-          user: {uid: userEmail, source: this.streamName.source},
-          tool: {
-            category: VCSToolCategory.CodingAssistant,
-            detail: VCSToolDetail.Cursor,
-          },
-          ...(feature && {feature}),
-        },
-      },
-    ];
-  }
-}
-
-function getValueType(value: number | string | boolean): string {
-  switch (typeof value) {
-    case 'number':
-      return 'Int';
-    case 'boolean':
-      return 'Bool';
-    default:
-      return 'String';
   }
 }

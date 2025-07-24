@@ -4,7 +4,7 @@ import {
   StreamKey,
   SyncMode,
 } from 'faros-airbyte-cdk';
-import {DailyUsageItem} from 'faros-airbyte-common/cursor';
+import {UsageEventItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
@@ -15,7 +15,7 @@ type StreamState = {
   cutoff: number;
 };
 
-export class DailyUsage extends AirbyteStreamBase {
+export class UsageEvents extends AirbyteStreamBase {
   constructor(
     private readonly config: CursorConfig,
     protected readonly logger: AirbyteLogger
@@ -24,15 +24,15 @@ export class DailyUsage extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/dailyUsage.json');
+    return require('../../resources/schemas/usageEvents.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['date', 'email'];
+    return ['timestamp', 'userEmail'];
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'timestamp';
   }
 
   async *readRecords(
@@ -40,22 +40,29 @@ export class DailyUsage extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: StreamState
-  ): AsyncGenerator<DailyUsageItem> {
+  ): AsyncGenerator<UsageEventItem> {
     const cutoff = streamState?.cutoff;
     const [startDate, endDate] =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(cutoff)
         : this.getUpdateRange();
     const cursor = Cursor.instance(this.config, this.logger);
-    yield* cursor.getDailyUsage(startDate.getTime(), endDate.getTime());
+    const usageEvents = cursor.getUsageEvents(
+      startDate.getTime(),
+      endDate.getTime()
+    );
+    yield* usageEvents;
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: DailyUsageItem
+    latestRecord: UsageEventItem
   ): StreamState {
     return {
-      cutoff: Math.max(currentStreamState?.cutoff ?? 0, latestRecord.date),
+      cutoff: Math.max(
+        currentStreamState?.cutoff ?? 0,
+        Number(latestRecord.timestamp)
+      ),
     };
   }
 

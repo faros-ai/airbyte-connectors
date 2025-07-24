@@ -1,17 +1,31 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {DailyUsageItem, MemberItem} from 'faros-airbyte-common/cursor';
+import {
+  ActiveMemberItem,
+  DailyUsageItem,
+  InactiveMemberItem,
+  MemberItem,
+  UsageEventItem,
+} from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import VError from 'verror';
 
-import {CursorConfig, DailyUsageResponse, MembersResponse} from './types';
+import {
+  CursorConfig,
+  DailyUsageResponse,
+  MembersResponse,
+  UsageEventsResponse,
+} from './types';
 
 export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
+export const DEFAULT_PAGE_SIZE = 100;
 
 export class Cursor {
+  private static cursor: Cursor;
   private readonly api: AxiosInstance;
+  private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
     config: CursorConfig,
@@ -34,7 +48,10 @@ export class Cursor {
   }
 
   static instance(config: CursorConfig, logger: AirbyteLogger): Cursor {
-    return new Cursor(config, logger);
+    if (!Cursor.cursor) {
+      Cursor.cursor = new Cursor(config, logger);
+    }
+    return Cursor.cursor;
   }
 
   async checkConnection(): Promise<void> {
@@ -48,18 +65,32 @@ export class Cursor {
     }
   }
 
-  async getMembers(previousMembers?: string[]): Promise<MemberItem[]> {
+  async getMembers(): Promise<MemberItem[]> {
     const res = await this.api.get<MembersResponse>('/teams/members');
-    return res.data.teamMembers.map((member) => ({
-      ...member,
-      isNew: !previousMembers?.includes(member.email),
-    }));
+    const activeMembers: ActiveMemberItem[] = res.data.teamMembers.map(
+      (member) => ({
+        ...member,
+        active: true,
+      })
+    );
+    const inactiveMembers: InactiveMemberItem[] = Object.keys(
+      this.minUsageTimestampPerEmail
+    )
+      .filter(
+        (email) =>
+          !res.data.teamMembers.some((member) => member.email === email)
+      )
+      .map((email) => ({
+        email,
+        active: false,
+      }));
+    return [...activeMembers, ...inactiveMembers];
   }
 
-  async getDailyUsage(
+  async *getDailyUsage(
     startDate: number,
     endDate: number
-  ): Promise<DailyUsageItem[]> {
+  ): AsyncGenerator<DailyUsageItem> {
     const res = await this.api.post<DailyUsageResponse>(
       '/teams/daily-usage-data',
       {
@@ -67,6 +98,43 @@ export class Cursor {
         endDate,
       }
     );
-    return res.data.data;
+    yield* res.data.data;
+  }
+
+  async *getUsageEvents(
+    startDate: number,
+    endDate: number
+  ): AsyncGenerator<UsageEventItem> {
+    let page = 1;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const res = await this.api.post<UsageEventsResponse>(
+        '/teams/filtered-usage-events',
+        {
+          startDate,
+          endDate,
+          page,
+          pageSize: DEFAULT_PAGE_SIZE,
+        }
+      );
+
+      for (const usageEvent of res.data.usageEvents) {
+        if (usageEvent.userEmail) {
+          this.minUsageTimestampPerEmail[usageEvent.userEmail] = Math.min(
+            this.minUsageTimestampPerEmail[usageEvent.userEmail] ?? Infinity,
+            Number(usageEvent.timestamp)
+          );
+        }
+        yield usageEvent;
+      }
+
+      hasNextPage = res.data.pagination.hasNextPage;
+      page++;
+    }
+  }
+
+  getMinUsageTimestampForEmail(email: string): number | undefined {
+    return this.minUsageTimestampPerEmail[email];
   }
 }
