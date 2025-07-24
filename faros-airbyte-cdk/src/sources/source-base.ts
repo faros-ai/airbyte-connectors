@@ -171,7 +171,7 @@ export abstract class AirbyteSourceBase<
         // The stream is not requested in the catalog, ignore it
         continue;
       }
-      for (const dependency of stream.dependencies) {
+      for (const dependency of (stream as AirbyteStreamBase).dependencies) {
         if (!configuredStreamNames.includes(dependency)) {
           // The stream dependency is not requested in the catalog, ignore it
           continue;
@@ -184,7 +184,12 @@ export abstract class AirbyteSourceBase<
     const sortedStreams = toposort.array(configuredStreamNames, streamDeps);
 
     const failedStreams = [];
+    const totalStreamsCount = sortedStreams.length;
+    let processedStreamsCount = 0;
     for (const streamName of sortedStreams) {
+      this.logger.info(
+        `Running stream ${streamName}, ${processedStreamsCount + 1} out of ${totalStreamsCount} total`
+      );
       const configuredStream = configuredStreams[streamName];
       let streamRecordCounter = 0;
       try {
@@ -224,6 +229,7 @@ export abstract class AirbyteSourceBase<
             recordsEmitted: streamRecordCounter,
           }
         );
+        processedStreamsCount++;
       } catch (e: any) {
         this.logger.error(
           `Encountered an error while reading stream ${streamName}: ${
@@ -250,6 +256,7 @@ export abstract class AirbyteSourceBase<
           }
         );
         failedStreams.push(streamName);
+        processedStreamsCount++;
         continue;
       }
     }
@@ -341,9 +348,15 @@ export abstract class AirbyteSourceBase<
     const failedSlices = [];
     let streamRecordCounter = 0;
     let totalSliceCount = 0;
+    let processedSlicesCount = 0;
+    const totalSlicesCount: number | 'unknown' = 'unknown'; // Slices are async generator, count unknown
     await streamInstance.onBeforeRead();
     for await (const slice of slices) {
       totalSliceCount++;
+      processedSlicesCount++;
+      this.logger.info(
+        `Running slice ${JSON.stringify(slice)}, ${processedSlicesCount} out of ${totalSlicesCount === 'unknown' ? 'unknown' : totalSlicesCount} total`
+      );
       if (slice) {
         this.logger.info(
           `Started processing ${streamName} stream slice ${JSON.stringify(
