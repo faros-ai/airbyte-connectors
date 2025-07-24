@@ -272,7 +272,7 @@ describe('index', () => {
     }
 
     expect(workitemIdsFunc).toHaveBeenCalledTimes(13); // 1 epic query + 2 descendant queries + 10 non-epic workitem queries
-    const call = workitemIdsFunc.mock.calls[3][0]; // Skip epic-related calls
+    const call = workitemIdsFunc.mock.calls[3][0];
     expect(call.query).toMatch(
       `[System.ChangedDate] >= '2025-04-01T00:00:00.000Z'`
     );
