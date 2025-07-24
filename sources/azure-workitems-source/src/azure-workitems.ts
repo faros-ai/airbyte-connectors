@@ -180,6 +180,45 @@ export class AzureWorkitems extends types.AzureDevOps {
     }
   }
 
+  private buildEpicQuery(
+    projectName: string,
+    inProgressStates: string[],
+    proposedStates: string[],
+    completedStates: string[],
+    cutoffDate: Date
+  ): string {
+    const quotedProject = `'${projectName}'`;
+    
+    // Build state conditions
+    const stateConditions: string[] = [];
+    
+    if (inProgressStates.length) {
+      stateConditions.push(`[System.State] IN (${inProgressStates.join(',')})`);
+    }
+    
+    if (proposedStates.length) {
+      stateConditions.push(`[System.State] IN (${proposedStates.join(',')})`);
+    }
+    
+    if (completedStates.length) {
+      const completedCondition = 
+        `([System.State] IN (${completedStates.join(',')}) AND [Microsoft.VSTS.Common.ClosedDate] >= '${cutoffDate.toISOString()}')`;
+      stateConditions.push(completedCondition);
+    }
+    
+    const stateClause = stateConditions.length 
+      ? `AND (${stateConditions.join(' OR ')})` 
+      : '';
+    
+    return [
+      'SELECT [System.Id] FROM WorkItems',
+      "WHERE [System.WorkItemType] = 'Epic'",
+      `AND [System.TeamProject] = ${quotedProject}`,
+      stateClause,
+      'ORDER BY [System.ChangedDate] DESC'
+    ].filter(Boolean).join(' ');
+  }
+
   private async getAllEpics(
     project: ProjectReference,
     epicStates: Map<string, string>,
@@ -201,22 +240,7 @@ export class AzureWorkitems extends types.AzureDevOps {
     const proposedStates = statesByCategory.get('Proposed') || [];
     const completedStates = statesByCategory.get('Completed') || [];
 
-    // Build WIQL query for epics
-    const quotedProject = `'${project.name}'`;
-    const query = 
-      'Select [System.Id] From WorkItems' +
-      " WHERE [System.WorkItemType] = 'Epic'" +
-      ' AND [System.TeamProject] = ' + quotedProject +
-      ' AND (' +
-      (inProgressStates.length > 0 ? ` [System.State] IN (${inProgressStates.join(',')})` : '') +
-      (proposedStates.length > 0 ? 
-        (inProgressStates.length > 0 ? ' OR' : '') + ` [System.State] IN (${proposedStates.join(',')})` : '') +
-      (completedStates.length > 0 ?
-        ((inProgressStates.length > 0 || proposedStates.length > 0) ? ' OR' : '') +
-        ` ([System.State] IN (${completedStates.join(',')})` +
-        ` AND [Microsoft.VSTS.Common.ClosedDate] >= '${cutoffDate.toISOString()}')` : '') +
-      ')' +
-      ' ORDER BY [System.ChangedDate] DESC';
+    const query = this.buildEpicQuery(project.name, inProgressStates, proposedStates, completedStates, cutoffDate);
 
     this.logger.debug(`Fetching epics for project ${project.name} with query: ${query}`);
 
