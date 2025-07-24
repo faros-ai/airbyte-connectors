@@ -23,6 +23,7 @@ export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
 
 export class Cursor {
+  private static cursor: Cursor;
   private readonly api: AxiosInstance;
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
@@ -47,7 +48,10 @@ export class Cursor {
   }
 
   static instance(config: CursorConfig, logger: AirbyteLogger): Cursor {
-    return new Cursor(config, logger);
+    if (!Cursor.cursor) {
+      Cursor.cursor = new Cursor(config, logger);
+    }
+    return Cursor.cursor;
   }
 
   async checkConnection(): Promise<void> {

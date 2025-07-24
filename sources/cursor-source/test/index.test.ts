@@ -11,6 +11,7 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 
+import {Cursor} from '../src/cursor';
 import * as sut from '../src/index';
 
 const setupCursorInstance = (mockMethods: any) => {
@@ -31,6 +32,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    (Cursor as any).cursor = undefined;
   });
 
   test('spec', async () => {
