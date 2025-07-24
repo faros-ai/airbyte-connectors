@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {MemberItem, UsageEventItem} from 'faros-airbyte-common/cursor';
+import {MemberItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
-import {DestinationModel, DestinationRecord, StreamName} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {CursorConverter} from './common';
 
 export class Members extends CursorConverter {
