@@ -22,8 +22,13 @@ export class UsageEvents extends CursorConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const usageEventItem = record.record.data as UsageEventItem;
-    const res: DestinationRecord[] = [];
+
+    if (!usageEventItem.userEmail) {
+      return [];
+    }
+
     const timestamp = Utils.toDate(Number(usageEventItem.timestamp));
+    const res: DestinationRecord[] = [];
     res.push({
       model: 'vcs_UserToolUsage',
       record: {

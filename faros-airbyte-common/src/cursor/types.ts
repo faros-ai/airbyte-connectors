@@ -46,6 +46,6 @@ export type UsageEventItem = {
     totalCents: number;
   };
   isFreeBugbot: boolean;
-  userEmail: string;
+  userEmail?: string;
   minUsageTimestamp?: number;
 };

@@ -60,6 +60,9 @@ export class Members extends CursorConverter {
       ctx.getAll(Members.usageEventsStream.asString)
     )) {
       const dailyUsage = record.record.data as UsageEventItem;
+      if (!dailyUsage.userEmail) {
+        continue;
+      }
       if (!this.seenUsers[dailyUsage.userEmail]) {
         this.seenUsers[dailyUsage.userEmail] = {active: false};
       }
