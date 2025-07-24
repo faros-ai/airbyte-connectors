@@ -1,4 +1,9 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -13,7 +18,7 @@ type StreamState = {
 export class DailyUsage extends AirbyteStreamBase {
   constructor(
     private readonly config: CursorConfig,
-    protected readonly logger: any
+    protected readonly logger: AirbyteLogger
   ) {
     super(logger);
   }

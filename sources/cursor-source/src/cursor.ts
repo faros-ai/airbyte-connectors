@@ -1,7 +1,9 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
+  ActiveMemberItem,
   DailyUsageItem,
+  InactiveMemberItem,
   MemberItem,
   UsageEventItem,
 } from 'faros-airbyte-common/cursor';
@@ -22,6 +24,7 @@ export const DEFAULT_PAGE_SIZE = 100;
 
 export class Cursor {
   private readonly api: AxiosInstance;
+  private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
     config: CursorConfig,
@@ -58,12 +61,26 @@ export class Cursor {
     }
   }
 
-  async getMembers(previousMembers?: string[]): Promise<MemberItem[]> {
+  async getMembers(): Promise<MemberItem[]> {
     const res = await this.api.get<MembersResponse>('/teams/members');
-    return res.data.teamMembers.map((member) => ({
-      ...member,
-      isNew: !previousMembers?.includes(member.email),
-    }));
+    const activeMembers: ActiveMemberItem[] = res.data.teamMembers.map(
+      (member) => ({
+        ...member,
+        active: true,
+      })
+    );
+    const inactiveMembers: InactiveMemberItem[] = Object.keys(
+      this.minUsageTimestampPerEmail
+    )
+      .filter(
+        (email) =>
+          !res.data.teamMembers.some((member) => member.email === email)
+      )
+      .map((email) => ({
+        email,
+        active: false,
+      }));
+    return [...activeMembers, ...inactiveMembers];
   }
 
   async *getDailyUsage(
@@ -98,10 +115,22 @@ export class Cursor {
         }
       );
 
-      yield* res.data.usageEvents;
+      for (const usageEvent of res.data.usageEvents) {
+        if (usageEvent.userEmail) {
+          this.minUsageTimestampPerEmail[usageEvent.userEmail] = Math.min(
+            this.minUsageTimestampPerEmail[usageEvent.userEmail] ?? Infinity,
+            Number(usageEvent.timestamp)
+          );
+        }
+        yield usageEvent;
+      }
 
       hasNextPage = res.data.pagination.hasNextPage;
       page++;
     }
+  }
+
+  getMinUsageTimestampForEmail(email: string): number | undefined {
+    return this.minUsageTimestampPerEmail[email];
   }
 }

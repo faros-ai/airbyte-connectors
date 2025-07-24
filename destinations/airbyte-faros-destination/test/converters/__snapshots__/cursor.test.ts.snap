@@ -476,6 +476,82 @@ Array [
     },
   },
   Object {
+    "vcs_User": Object {
+      "email": "developer@company.com",
+      "name": "Alex",
+      "source": "Cursor",
+      "type": "User",
+      "uid": "developer@company.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "developer@company.com",
+      "source": "Cursor",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "admin@company.com",
+      "name": "Sam",
+      "source": "Cursor",
+      "type": "User",
+      "uid": "admin@company.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "admin@company.com",
+      "source": "Cursor",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2024-03-18T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+    },
+  },
+  Object {
     "vcs_UserToolUsage": Object {
       "recordedAt": "2025-06-26T23:07:05.854Z",
       "source": "Cursor",
@@ -614,82 +690,6 @@ Array [
       },
       "value": "1",
       "valueType": "Int",
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": "developer@company.com",
-      "name": "Alex",
-      "source": "Cursor",
-      "type": "User",
-      "uid": "developer@company.com",
-    },
-  },
-  Object {
-    "vcs_UserEmail": Object {
-      "email": "developer@company.com",
-      "source": "Cursor",
-      "user": Object {
-        "source": "Cursor",
-        "uid": "developer@company.com",
-      },
-    },
-  },
-  Object {
-    "vcs_UserTool": Object {
-      "inactive": false,
-      "organization": Object {
-        "source": "Cursor",
-        "uid": "Cursor",
-      },
-      "source": "Cursor",
-      "startedAt": "2024-03-18T00:00:00.000Z",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Cursor",
-      },
-      "user": Object {
-        "source": "Cursor",
-        "uid": "developer@company.com",
-      },
-    },
-  },
-  Object {
-    "vcs_User": Object {
-      "email": "admin@company.com",
-      "name": "Sam",
-      "source": "Cursor",
-      "type": "User",
-      "uid": "admin@company.com",
-    },
-  },
-  Object {
-    "vcs_UserEmail": Object {
-      "email": "admin@company.com",
-      "source": "Cursor",
-      "user": Object {
-        "source": "Cursor",
-        "uid": "admin@company.com",
-      },
-    },
-  },
-  Object {
-    "vcs_UserTool": Object {
-      "inactive": false,
-      "organization": Object {
-        "source": "Cursor",
-        "uid": "Cursor",
-      },
-      "source": "Cursor",
-      "startedAt": "2024-03-18T00:00:00.000Z",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Cursor",
-      },
-      "user": Object {
-        "source": "Cursor",
-        "uid": "admin@company.com",
-      },
     },
   },
   Object {

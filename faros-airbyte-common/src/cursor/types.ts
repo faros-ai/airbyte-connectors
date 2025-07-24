@@ -1,7 +1,19 @@
-export type MemberItem = {
+export type MemberItem = (ActiveMemberItem | InactiveMemberItem) & {
+  minUsageTimestamp?: number;
+};
+
+export type ActiveMemberItem = {
   name: string;
   email: string;
   role: 'owner' | 'member' | 'free-owner';
+  active: true;
+};
+
+export type InactiveMemberItem = {
+  name?: never;
+  email: string;
+  role?: never;
+  active: false;
 };
 
 export type DailyUsageItem = {
@@ -47,5 +59,4 @@ export type UsageEventItem = {
   };
   isFreeBugbot: boolean;
   userEmail?: string;
-  minUsageTimestamp?: number;
 };

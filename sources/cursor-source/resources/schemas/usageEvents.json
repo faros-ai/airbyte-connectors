@@ -45,9 +45,6 @@
     },
     "userEmail": {
       "type": "string"
-    },
-    "minUsageTimestamp": {
-      "type": "number"
     }
   }
 }

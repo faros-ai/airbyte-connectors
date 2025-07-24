@@ -79,14 +79,14 @@ exports[`index streams - daily usage 1`] = `
 exports[`index streams - members 1`] = `
 [
   {
+    "active": true,
     "email": "developer@company.com",
-    "isNew": true,
     "name": "Alex",
     "role": "member",
   },
   {
+    "active": true,
     "email": "admin@company.com",
-    "isNew": true,
     "name": "Sam",
     "role": "owner",
   },
@@ -100,7 +100,6 @@ exports[`index streams - usage events 1`] = `
     "isTokenBasedCall": true,
     "kindLabel": "Usage-based",
     "maxMode": true,
-    "minUsageTimestamp": 1750979225854,
     "model": "claude-4-opus",
     "requestsCosts": 5,
     "timestamp": "1750979225854",
@@ -118,7 +117,6 @@ exports[`index streams - usage events 1`] = `
     "isTokenBasedCall": true,
     "kindLabel": "Usage-based",
     "maxMode": true,
-    "minUsageTimestamp": 1750979173824,
     "model": "claude-4-opus",
     "requestsCosts": 10,
     "timestamp": "1750979173824",
@@ -136,7 +134,6 @@ exports[`index streams - usage events 1`] = `
     "isTokenBasedCall": false,
     "kindLabel": "Included in Business",
     "maxMode": true,
-    "minUsageTimestamp": 1750978339901,
     "model": "claude-4-sonnet-thinking",
     "requestsCosts": 1.4,
     "timestamp": "1750978339901",

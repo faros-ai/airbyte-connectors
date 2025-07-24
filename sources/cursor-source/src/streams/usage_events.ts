@@ -1,4 +1,9 @@
-import {AirbyteStreamBase, StreamKey, SyncMode} from 'faros-airbyte-cdk';
+import {
+  AirbyteLogger,
+  AirbyteStreamBase,
+  StreamKey,
+  SyncMode,
+} from 'faros-airbyte-cdk';
 import {UsageEventItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -8,15 +13,12 @@ import {CursorConfig} from '../types';
 
 type StreamState = {
   cutoff: number;
-  minUsageTimestampPerEmail: {[email: string]: number};
 };
 
 export class UsageEvents extends AirbyteStreamBase {
-  private minUsageTimestampPerEmail: {[email: string]: number};
-
   constructor(
     private readonly config: CursorConfig,
-    protected readonly logger: any
+    protected readonly logger: AirbyteLogger
   ) {
     super(logger);
   }
@@ -40,10 +42,6 @@ export class UsageEvents extends AirbyteStreamBase {
     streamState?: StreamState
   ): AsyncGenerator<UsageEventItem> {
     const cutoff = streamState?.cutoff;
-    if (!this.minUsageTimestampPerEmail) {
-      this.minUsageTimestampPerEmail =
-        streamState?.minUsageTimestampPerEmail ?? {};
-    }
     const [startDate, endDate] =
       syncMode === SyncMode.INCREMENTAL
         ? this.getUpdateRange(cutoff)
@@ -53,22 +51,7 @@ export class UsageEvents extends AirbyteStreamBase {
       startDate.getTime(),
       endDate.getTime()
     );
-
-    for await (const usageEvent of usageEvents) {
-      if (
-        !this.minUsageTimestampPerEmail[usageEvent.userEmail] ||
-        Number(usageEvent.timestamp) <
-          this.minUsageTimestampPerEmail[usageEvent.userEmail]
-      ) {
-        this.minUsageTimestampPerEmail[usageEvent.userEmail] = Number(
-          usageEvent.timestamp
-        );
-      }
-      yield {
-        ...usageEvent,
-        minUsageTimestamp: this.minUsageTimestampPerEmail[usageEvent.userEmail],
-      };
-    }
+    yield* usageEvents;
   }
 
   getUpdatedState(
@@ -80,7 +63,6 @@ export class UsageEvents extends AirbyteStreamBase {
         currentStreamState?.cutoff ?? 0,
         Number(latestRecord.timestamp)
       ),
-      minUsageTimestampPerEmail: this.minUsageTimestampPerEmail,
     };
   }
 

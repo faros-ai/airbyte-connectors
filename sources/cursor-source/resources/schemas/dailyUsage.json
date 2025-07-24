@@ -73,9 +73,6 @@
     },
     "email": {
       "type": "string"
-    },
-    "minUsageDate": {
-      "type": "integer"
     }
   }
 }
