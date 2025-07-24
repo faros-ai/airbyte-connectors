@@ -43,7 +43,9 @@ function loadRealWorldConfig(): Office365CalendarConfig | null {
     }),
     // Optional test parameters
     cutoff_days: parseInt(process.env.O365_TEST_CUTOFF_DAYS || '30'),
-    events_max_results: parseInt(process.env.O365_TEST_MAX_EVENTS || '100')
+    events_max_results: parseInt(process.env.O365_TEST_MAX_EVENTS || '100'),
+    domain_wide_delegation: process.env.O365_DOMAIN_WIDE_DELEGATION === 'true',
+    user_id: process.env.O365_USER_ID
   };
 }
 

@@ -90,7 +90,7 @@ export class Office365CalendarSource extends AirbyteSourceBase<Office365Calendar
    * ```
    */
   async spec(): Promise<AirbyteSpec> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+     
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 

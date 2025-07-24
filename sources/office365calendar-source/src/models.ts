@@ -224,6 +224,9 @@ export interface Office365CalendarConfig {
   /** Whether to use domain-wide delegation for accessing all users' calendars */
   domain_wide_delegation?: boolean;
   
+  /** Specific user ID/email for single-user scenarios (avoids need for user enumeration permissions) */
+  user_id?: string;
+  
   /** Maximum number of events to fetch per request (1-2500) */
   events_max_results?: number;
   

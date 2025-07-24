@@ -344,6 +344,7 @@ describe('O365CAL-002: Configuration and Models (TDD)', () => {
           uid: 'event-id',
           calendarUid: 'calendar-id',
           subject: 'Meeting Subject',
+          summary: 'Meeting Subject',
           title: 'Meeting Subject',
           description: 'Meeting content',
           body: {

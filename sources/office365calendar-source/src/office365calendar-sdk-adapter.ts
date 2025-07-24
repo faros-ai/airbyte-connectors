@@ -316,13 +316,15 @@ export class Office365Calendar {
    */
   async *getEventsIncremental(
     calendarId: string,
-    deltaToken: string
+    deltaToken: string,
+    userId: string
   ): AsyncGenerator<{ event: Event; nextDeltaLink: string }> {
     try {
       const brandedCalendarId = asCalendarId(calendarId);
       const brandedDeltaToken = asDeltaToken(deltaToken);
+      const brandedUserId = asUserId(userId);
       
-      for await (const eventDelta of this.sdk.getEventsIncremental(brandedCalendarId, brandedDeltaToken)) {
+      for await (const eventDelta of this.sdk.getEventsIncremental(brandedCalendarId, brandedDeltaToken, brandedUserId)) {
         if ('subject' in eventDelta.event) {
           // Regular event
           const graphEvent = eventDelta.event;

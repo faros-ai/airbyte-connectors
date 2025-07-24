@@ -42,6 +42,8 @@ function loadRealWorldConfig(): Office365CalendarConfig | null {
     // Test parameters
     cutoff_days: parseInt(process.env.O365_TEST_CUTOFF_DAYS || '30'),
     events_max_results: parseInt(process.env.O365_TEST_MAX_EVENTS || '100'),
+    domain_wide_delegation: process.env.O365_DOMAIN_WIDE_DELEGATION === 'true',
+    user_id: process.env.O365_USER_ID,
     ...(process.env.O365_TEST_CALENDAR_ID && {
       calendar_ids: [process.env.O365_TEST_CALENDAR_ID]
     })
@@ -76,6 +78,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
     let logger: AirbyteLogger;
     let office365Calendar: Office365Calendar;
     let testCalendars: Calendar[];
+    let testUserId: string;
     let startTime: number;
     let startMemory: number;
 
@@ -90,6 +93,31 @@ describe('Real-World Phase 3: Event Fetching', () => {
       // Create authenticated instance (builds on Phase 1)
       logger.info('🔧 Creating authenticated Office365Calendar instance...');
       office365Calendar = await Office365Calendar.instance(config!, logger);
+      
+      // Get the user ID from configuration (works for both single-user and domain-wide scenarios)
+      logger.info('👤 Getting user ID for event access...');
+      
+      if (config!.user_id) {
+        // Use configured user ID for single-user scenarios
+        testUserId = config!.user_id;
+        logger.info(`👤 Using configured user ID: ${testUserId}`);
+      } else if (config!.domain_wide_delegation) {
+        // For domain-wide delegation, try to get first available user
+        const users: Array<{ id: string; mail?: string }> = [];
+        for await (const user of office365Calendar.getUsers()) {
+          users.push(user);
+          break; // Just get the first user for testing
+        }
+        
+        if (users.length === 0) {
+          throw new Error('No users found for testing with domain-wide delegation');
+        }
+        
+        testUserId = users[0].id;
+        logger.info(`👤 Using domain-wide user ID: ${testUserId}`);
+      } else {
+        throw new Error('Either user_id must be configured or domain_wide_delegation must be enabled for event testing');
+      }
       
       // Discover calendars (builds on Phase 2)
       logger.info('📅 Discovering calendars for event testing...');
@@ -127,7 +155,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
         
         const events: Event[] = [];
         try {
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             events.push(event);
             logger.debug(`Found event: ${event.subject || 'No subject'} (${event.id})`);
           }
@@ -165,7 +193,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
         const events: Event[] = [];
         
         try {
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             events.push(event);
             if (events.length >= 10) break; // Limit for validation testing
           }
@@ -233,7 +261,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
       
       for (const calendar of testCalendars.slice(0, 1)) { // Test first calendar
         try {
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             if (event.start?.dateTime) {
               const eventDate = new Date(event.start.dateTime);
               
@@ -277,7 +305,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
         try {
           let eventsFromCalendar = 0;
           
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             eventsFromCalendar++;
             totalEventsReceived++;
             
@@ -324,7 +352,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
         try {
           let eventCount = 0;
           
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             eventCount++;
             if (eventCount >= 1) break; // Just check if any events exist
           }
@@ -365,7 +393,7 @@ describe('Real-World Phase 3: Event Fetching', () => {
         try {
           let calendarEvents = 0;
           
-          for await (const event of office365Calendar.getEvents(calendar.id, config!)) {
+          for await (const event of office365Calendar.getEvents(calendar.id, config!, testUserId)) {
             totalEvents++;
             calendarEvents++;
             

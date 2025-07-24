@@ -35,12 +35,14 @@
     "test:real-world:phase2": "npm run test:real-world:calendars",
     "test:real-world:events": "jest --verbose --color real-world-tests/phase3-events.test.ts",
     "test:real-world:phase3": "npm run test:real-world:events",
+    "test:real-world:incremental": "jest --verbose --color real-world-tests/phase4-incremental-sync.test.ts",
+    "test:real-world:phase4": "npm run test:real-world:incremental",
     "test:auth:quick": "npm run build && node scripts/test-auth.js",
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
-    "@azure/msal-node": "^2.0.0", 
+    "@azure/msal-node": "^2.0.0",
     "@microsoft/microsoft-graph-client": "^3.0.0",
     "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
@@ -53,15 +55,14 @@
       "<rootDir>/test/integration/"
     ],
     "preset": "ts-jest",
-    "testEnvironment": "node", 
+    "testEnvironment": "node",
     "testTimeout": 10000,
     "testPathIgnorePatterns": [
       "<rootDir>/integration-tests/",
       "<rootDir>/test/error-handling.test.ts",
-      "<rootDir>/test/index.test.ts", 
       "<rootDir>/test/models.test.ts",
       "<rootDir>/test/office365calendar.test.ts",
-      "<rootDir>/test/streams/",
+      "<rootDir>/test/streams/events-incremental.test.ts",
       "<rootDir>/test/microsoft-graph-sdk-refactor.test.ts",
       "<rootDir>/test/main-source-implementation.test.ts",
       "<rootDir>/test/auth-compliance.test.ts"
@@ -77,6 +78,9 @@
   },
   "devDependencies": {
     "@microsoft/microsoft-graph-types": "^2.40.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.31.0",
     "faros-airbyte-testing-tools": "*"
   }
 }

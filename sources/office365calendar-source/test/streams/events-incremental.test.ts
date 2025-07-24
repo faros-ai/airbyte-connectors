@@ -4,7 +4,7 @@ import { VError } from 'verror';
 import { Office365CalendarConfig, TenantId, CalendarId } from '../../src/models';
 import { Office365Calendar } from '../../src/office365calendar';
 import { Events } from '../../src/streams/events';
-import { setupStreamTests, createMockEvents, createMockCalendars } from '../utils/test-helpers';
+import { setupStreamTests, createMockEvent } from '../utils/test-helpers';
 
 // Mock the Office365Calendar for testing
 jest.mock('../../src/office365calendar', () => ({
@@ -46,14 +46,28 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
   describe('Incremental Sync Implementation', () => {
     test('should use full refresh for initial sync when no state exists', async () => {
       const mockEvents = [
-        {
+        createMockEvent({
           id: 'event-1',
           subject: 'Meeting 1',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
+          summary: 'Meeting 1',
+          title: 'Meeting 1',
+          start: {
+            dateTime: '2024-01-15T10:00:00Z',
+            date_time: '2024-01-15T10:00:00Z',
+            timeZone: 'UTC',
+            time_zone: 'UTC'
+          },
+          end: {
+            dateTime: '2024-01-15T11:00:00Z',
+            date_time: '2024-01-15T11:00:00Z',
+            timeZone: 'UTC',
+            time_zone: 'UTC'
+          },
+          startTime: '2024-01-15T10:00:00Z',
+          endTime: '2024-01-15T11:00:00Z',
           createdDateTime: '2024-01-10T09:00:00Z',
           lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        }
+        })
       ];
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
@@ -83,21 +97,38 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
     test('should use incremental sync when state exists with delta token', async () => {
       const mockIncrementalEvents = [
         {
-          event: {
+          event: createMockEvent({
             id: 'event-updated',
             subject: 'Updated Meeting',
-            start: { dateTime: '2024-01-16T10:00:00Z', timeZone: 'UTC' },
-            end: { dateTime: '2024-01-16T11:00:00Z', timeZone: 'UTC' },
+            summary: 'Updated Meeting',
+            title: 'Updated Meeting',
+            start: {
+              dateTime: '2024-01-16T10:00:00Z',
+              date_time: '2024-01-16T10:00:00Z',
+              timeZone: 'UTC',
+              time_zone: 'UTC'
+            },
+            end: {
+              dateTime: '2024-01-16T11:00:00Z',
+              date_time: '2024-01-16T11:00:00Z',
+              timeZone: 'UTC',
+              time_zone: 'UTC'
+            },
+            startTime: '2024-01-16T10:00:00Z',
+            endTime: '2024-01-16T11:00:00Z',
             createdDateTime: '2024-01-10T09:00:00Z',
             lastModifiedDateTime: '2024-01-15T16:45:00Z'
-          },
+          }),
           nextDeltaLink: 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=new-token-456'
         },
         {
-          event: {
+          event: createMockEvent({
             id: 'event-deleted',
+            subject: 'Deleted Event',
+            summary: 'Deleted Event',
+            title: 'Deleted Event',
             '@removed': { reason: 'deleted' }
-          },
+          }) as any,
           nextDeltaLink: 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=new-token-456'
         }
       ];
@@ -136,14 +167,28 @@ describe('O365CAL-006: Events Stream Incremental Sync (TDD)', () => {
     test('should include nextSyncToken in event records for state management', async () => {
       const mockIncrementalEvents = [
         {
-          event: {
+          event: createMockEvent({
             id: 'event-1',
             subject: 'Meeting 1',
-            start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-            end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
+            summary: 'Meeting 1',
+            title: 'Meeting 1',
+            start: {
+              dateTime: '2024-01-15T10:00:00Z',
+              date_time: '2024-01-15T10:00:00Z',
+              timeZone: 'UTC',
+              time_zone: 'UTC'
+            },
+            end: {
+              dateTime: '2024-01-15T11:00:00Z',
+              date_time: '2024-01-15T11:00:00Z',
+              timeZone: 'UTC',
+              time_zone: 'UTC'
+            },
+            startTime: '2024-01-15T10:00:00Z',
+            endTime: '2024-01-15T11:00:00Z',
             createdDateTime: '2024-01-10T09:00:00Z',
             lastModifiedDateTime: '2024-01-12T14:30:00Z'
-          },
+          }),
           nextDeltaLink: 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=token-789'
         }
       ];

@@ -11,6 +11,7 @@ import {
   PagedResponse
 } from '../src/office365calendar';
 import { createAxiosError, createAuthError, createRateLimitError, createServerError } from './utils/axios-helpers';
+import { createMockCalendar, createMockEvent } from './utils/test-helpers';
 
 // Mock axios for testing
 jest.mock('axios');
@@ -324,18 +325,12 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
 
     test('should fetch calendars with proper API call', async () => {
       const mockCalendarsResponse: PagedResponse<Calendar> = {
-        '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#me/calendars',
         value: [
-          {
+          createMockCalendar({
             id: 'calendar-1',
             name: 'Primary Calendar',
-            summary: 'Primary Calendar',
-            description: 'My main calendar',
-            owner: { name: 'John Doe', address: 'john@example.com', email: 'john@example.com' },
-            canEdit: true,
-            canShare: true,
-            canViewPrivateItems: false
-          }
+            summary: 'Primary Calendar'
+          })
         ]
       };
       
@@ -503,20 +498,29 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
     test('should handle incremental sync with delta queries', async () => {
       const deltaLink = 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=abc123';
       
-      const mockDeltaResponse: DeltaResponse & { value: Event[] } = {
-        '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#Collection(event)',
-        '@odata.deltaLink': 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=xyz789',
-        value: [
-          {
+      // Create mock response with event deltas in proper format
+      const mockEventDeltas: DeltaResponse[] = [
+        {
+          id: 'event-updated',
+          changeType: 'updated',
+          changeKey: 'change-key-1',
+          event: createMockEvent({
             id: 'event-updated',
             subject: 'Updated Meeting',
-            lastModifiedDateTime: '2024-01-02T10:00:00Z'
-          } as Event,
-          {
-            id: 'event-deleted',
-            '@removed': { reason: 'deleted' }
-          } as Event
-        ]
+            summary: 'Updated Meeting'
+          }) as any
+        },
+        {
+          id: 'event-deleted',
+          changeType: 'deleted',
+          changeKey: 'change-key-2',
+          // No event property for deleted items
+        }
+      ];
+      
+      const mockDeltaResponse = {
+        value: mockEventDeltas,
+        nextDeltaLink: 'https://graph.microsoft.com/v1.0/me/events/delta?$deltatoken=xyz789'
       };
       
       mockHttpClient.get.mockResolvedValueOnce({
@@ -524,7 +528,7 @@ describe('O365CAL-003: Authentication and API Client (TDD)', () => {
       } as AxiosResponse);
 
       const results: { events: Event[], nextDeltaLink?: string } = { events: [] };
-      for await (const result of office365Calendar.getEventsIncremental('calendar-id', deltaLink)) {
+      for await (const result of office365Calendar.getEventsIncremental('calendar-id', deltaLink, 'test-user@example.com')) {
         results.events.push(result.event);
         results.nextDeltaLink = result.nextDeltaLink;
       }

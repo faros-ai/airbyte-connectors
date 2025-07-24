@@ -1,0 +1,29 @@
+# Environment files with credentials
+.env
+.env.local
+.env.production
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Build outputs
+lib/
+out/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test artifacts
+test-results/

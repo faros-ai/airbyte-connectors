@@ -556,7 +556,7 @@ export class Events extends AirbyteStreamBase {
     currentUserEmail?: string
   ): AsyncGenerator<MappedEvent> {
     try {
-      for await (const deltaItem of office365Calendar.getEventsIncremental(calendarId, deltaToken)) {
+      for await (const deltaItem of office365Calendar.getEventsIncremental(calendarId, deltaToken, userId || '')) {
         const { event, nextDeltaLink } = deltaItem;
         
         // Skip malformed events

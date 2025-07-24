@@ -238,7 +238,9 @@ export class Office365CalendarSDK {
    */
   async checkConnection(): Promise<boolean> {
     try {
-      await this.graphClient.api('/me').get();
+      // Test connection with a simple API call that works with application permissions
+      // Try to access calendars endpoint which aligns with the app's intended functionality
+      await this.graphClient.api('/users').top(1).get();
       return true;
     } catch (error) {
       const structuredLogger = LogUtils.createStructuredLogger(this.logger);
@@ -316,28 +318,72 @@ export class Office365CalendarSDK {
   private async getCalendarsInternal(): Promise<GraphCalendar[]> {
     const calendars: GraphCalendar[] = [];
     
-    let currentUrl = '/me/calendars';
-    
-    do {
-      const response = await this.graphClient
-        .api(currentUrl)
-        .select('id,name,color,canEdit,canShare,canViewPrivateItems,owner')
-        .orderby('name')
-        .get();
+    if (this.config.domain_wide_delegation) {
+      // For domain-wide delegation, fetch calendars from all users in the organization
+      for await (const user of this.getUsers()) {
+        try {
+          let currentUrl = `/users/${user.id}/calendars`;
+          
+          do {
+            const response = await this.graphClient
+              .api(currentUrl)
+              .select('id,name,color,canEdit,canShare,canViewPrivateItems,owner')
+              .orderby('name')
+              .get();
 
-      for (const calendar of response.value) {
-        if (isCalendar(calendar)) {
-          calendars.push({
-            ...calendar,
-            id: asCalendarId(calendar.id),
-            isDefaultCalendar: false, // Will be determined by Graph API response
-            hexColor: '#1f497d' // Default Office 365 blue
-          } as GraphCalendar);
+            for (const calendar of response.value) {
+              if (isCalendar(calendar)) {
+                calendars.push({
+                  ...calendar,
+                  id: asCalendarId(calendar.id),
+                  isDefaultCalendar: false,
+                  hexColor: '#1f497d',
+                  // Add user context for application authentication
+                  userId: user.id
+                } as GraphCalendar & { userId: string });
+              }
+            }
+
+            currentUrl = response['@odata.nextLink'];
+          } while (currentUrl);
+        } catch (error) {
+          const structuredLogger = LogUtils.createStructuredLogger(this.logger);
+          structuredLogger.warn('Failed to fetch calendars for user', { 
+            userId: user.id, 
+            error: ErrorUtils.getMessage(error) 
+          });
+          // Continue with other users
         }
       }
+    } else {
+      // For single-user scenarios with application auth, use the configured user
+      if (!this.config.user_id) {
+        throw new Error('Single-user calendar access requires user_id configuration when domain_wide_delegation is false');
+      }
+      
+      let currentUrl = `/users/${this.config.user_id}/calendars`;
+      
+      do {
+        const response = await this.graphClient
+          .api(currentUrl)
+          .select('id,name,color,canEdit,canShare,canViewPrivateItems,owner')
+          .orderby('name')
+          .get();
 
-      currentUrl = response['@odata.nextLink'];
-    } while (currentUrl);
+        for (const calendar of response.value) {
+          if (isCalendar(calendar)) {
+            calendars.push({
+              ...calendar,
+              id: asCalendarId(calendar.id),
+              isDefaultCalendar: false, // Will be determined by Graph API response
+              hexColor: '#1f497d' // Default Office 365 blue
+            } as GraphCalendar);
+          }
+        }
+
+        currentUrl = response['@odata.nextLink'];
+      } while (currentUrl);
+    }
 
     return calendars;
   }
@@ -417,7 +463,12 @@ export class Office365CalendarSDK {
   private async getEventsInternal(calendarId: CalendarId, userId?: UserId): Promise<GraphEvent[]> {
     const events: GraphEvent[] = [];
     
-    const basePath = userId ? `/users/${userId}` : '/me';
+    // For application authentication, userId is required - no /me fallback
+    if (!userId) {
+      throw new Error('userId is required for application authentication - cannot use /me endpoint');
+    }
+    
+    const basePath = `/users/${userId}`;
     let currentUrl = `${basePath}/calendars/${calendarId}/events`;
     
     // Apply cutoff days filter if configured
@@ -555,9 +606,9 @@ export class Office365CalendarSDK {
    * }
    * ```
    */
-  async getEventsIncrementalSafe(calendarId: CalendarId, deltaToken: DeltaToken): Promise<Result<EventDelta[]>> {
+  async getEventsIncrementalSafe(calendarId: CalendarId, deltaToken: DeltaToken, userId: UserId): Promise<Result<EventDelta[]>> {
     try {
-      const deltas = await this.getEventsIncrementalInternal(calendarId, deltaToken);
+      const deltas = await this.getEventsIncrementalInternal(calendarId, deltaToken, userId);
       return { success: true, data: deltas };
     } catch (error) {
       return { 
@@ -576,7 +627,7 @@ export class Office365CalendarSDK {
    * @returns {Promise<EventDelta[]>} Promise resolving to an array of event deltas
    * @throws {Error} When API call fails
    */
-  private async getEventsIncrementalInternal(calendarId: CalendarId, deltaToken: DeltaToken): Promise<EventDelta[]> {
+  private async getEventsIncrementalInternal(calendarId: CalendarId, deltaToken: DeltaToken, userId: UserId): Promise<EventDelta[]> {
     const deltas: EventDelta[] = [];
     
     const deltaTokenValue = deltaToken.includes('$deltatoken=') 
@@ -584,7 +635,7 @@ export class Office365CalendarSDK {
       : deltaToken;
 
     const response = await this.graphClient
-      .api(`/me/calendars/${calendarId}/events/delta`)
+      .api(`/users/${userId}/calendars/${calendarId}/events/delta`)
       .query({ '$deltatoken': deltaTokenValue as string })
       .select('id,subject,body,start,end,location,attendees,organizer,lastModifiedDateTime,createdDateTime,isCancelled,importance,sensitivity,showAs,@removed')
       .get();
@@ -633,8 +684,8 @@ export class Office365CalendarSDK {
    * }
    * ```
    */
-  async *getEventsIncremental(calendarId: CalendarId, deltaToken: DeltaToken): AsyncGenerator<EventDelta> {
-    const result = await this.getEventsIncrementalSafe(calendarId, deltaToken);
+  async *getEventsIncremental(calendarId: CalendarId, deltaToken: DeltaToken, userId: UserId): AsyncGenerator<EventDelta> {
+    const result = await this.getEventsIncrementalSafe(calendarId, deltaToken, userId);
     if (result.success) {
       for (const delta of result.data) {
         yield delta;
@@ -668,9 +719,9 @@ export class Office365CalendarSDK {
    * }
    * ```
    */
-  async getMultipleCalendarEventsBatched(calendarIds: CalendarId[]): Promise<Result<BatchCalendarResult[]>> {
+  async getMultipleCalendarEventsBatched(calendarIds: CalendarId[], userId: UserId): Promise<Result<BatchCalendarResult[]>> {
     try {
-      const results = await this.getMultipleCalendarEventsBatchedInternal(calendarIds);
+      const results = await this.getMultipleCalendarEventsBatchedInternal(calendarIds, userId);
       return { success: true, data: results };
     } catch (error) {
       return { 
@@ -688,11 +739,11 @@ export class Office365CalendarSDK {
    * @returns {Promise<BatchCalendarResult[]>} Promise resolving to an array of batch results
    * @throws {Error} When batch API call fails
    */
-  private async getMultipleCalendarEventsBatchedInternal(calendarIds: CalendarId[]): Promise<BatchCalendarResult[]> {
+  private async getMultipleCalendarEventsBatchedInternal(calendarIds: CalendarId[], userId: UserId): Promise<BatchCalendarResult[]> {
     const batchRequests = calendarIds.map((calendarId, index) => ({
       id: (index + 1).toString(),
       method: 'GET',
-      url: `/me/calendars/${calendarId}/events?$select=id,subject,body,start,end,location,attendees,organizer,lastModifiedDateTime,createdDateTime,isCancelled,importance,sensitivity,showAs`
+      url: `/users/${userId}/calendars/${calendarId}/events?$select=id,subject,body,start,end,location,attendees,organizer,lastModifiedDateTime,createdDateTime,isCancelled,importance,sensitivity,showAs`
     }));
 
     const batchResponse = await this.graphClient

@@ -5,8 +5,7 @@
  * Tests the complete OAuth2 flow with real Azure AD endpoints.
  */
 
-import { Office365CalendarSDK } from '../../src/office365calendar-sdk';
-import { Office365Calendar } from '../../src/office365calendar-sdk-adapter';
+import { Office365Calendar } from '../../src/office365calendar';
 import { AirbyteLogger } from 'faros-airbyte-cdk';
 import { VError } from 'verror';
 
@@ -30,7 +29,6 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 (runIntegrationTests ? describe : describe.skip)('Integration Phase 1: Authentication Tests', () => {
   let config: IntegrationTestConfig;
   let mockLogger: AirbyteLogger;
-  let office365SDK: Office365CalendarSDK;
   let office365Calendar: Office365Calendar;
 
   beforeAll(() => {
@@ -58,8 +56,8 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       child: jest.fn().mockReturnThis(),
     } as unknown as AirbyteLogger;
 
-    // Initialize SDK with real configuration
-    office365SDK = new Office365CalendarSDK(config, mockLogger);
+    // Initialize Office365Calendar adapter with real configuration
+    office365Calendar = Office365Calendar.instance(config, mockLogger);
     
     // Clear any existing instances to ensure clean state
     Office365Calendar.clearInstance();
@@ -72,26 +70,19 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
   describe('Authentication Flow Validation', () => {
     test('should authenticate with valid credentials and acquire access token', async () => {
-      expect.assertions(5);
+      expect.assertions(3);
 
       const startTime = Date.now();
       const startMemory = process.memoryUsage().heapUsed;
 
       // Test basic authentication
-      const result = await office365SDK.checkConnectionSafe();
+      const result = await office365Calendar.checkConnection();
 
       const endTime = Date.now();
       const endMemory = process.memoryUsage().heapUsed;
 
-      // Validate result pattern
-      const resultValidation = validateResultPattern(result, true);
-      expect(resultValidation.valid).toBe(true);
-
       // Authentication should succeed
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data).toBe(true); // Connection successful
-      }
+      expect(result).toBe(true);
 
       // Performance validation
       const duration = endTime - startTime;
@@ -112,14 +103,14 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       expect.assertions(4);
 
       // First token acquisition
-      const firstResult = await office365SDK.checkConnectionSafe();
-      expect(firstResult.success).toBe(true);
+      const firstResult = await office365Calendar.checkConnection();
+      expect(firstResult).toBe(true);
 
       const firstCallTime = Date.now();
 
       // Second token acquisition (should use cached token)
-      const secondResult = await office365SDK.checkConnectionSafe();
-      expect(secondResult.success).toBe(true);
+      const secondResult = await office365Calendar.checkConnection();
+      expect(secondResult).toBe(true);
 
       const secondCallTime = Date.now();
 
@@ -139,8 +130,8 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       // Force token expiration by creating SDK with short-lived token simulation
       // Note: This test may require mocking or longer test execution to observe real expiration
       
-      const result = await office365SDK.checkConnectionSafe();
-      expect(result.success).toBe(true);
+      const result = await office365Calendar.checkConnection();
+      expect(result).toBe(true);
 
       // Verify token refresh mechanism is in place
       expect(mockLogger.debug).toHaveBeenCalledWith(
@@ -157,7 +148,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
     }, config?.timeoutMs || 30000);
 
     test('should fail gracefully with invalid tenant ID', async () => {
-      expect.assertions(3);
+      expect.assertions(1);
 
       // Create configuration with invalid tenant ID
       const invalidConfig = {
@@ -165,20 +156,16 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         tenant_id: 'invalid-tenant-id' as any
       };
 
-      const invalidSDK = new Office365CalendarSDK(invalidConfig, mockLogger);
+      const invalidOffice365Calendar = await Office365Calendar.instance(invalidConfig, mockLogger);
       
-      const result = await invalidSDK.checkConnectionSafe();
+      const result = await invalidOffice365Calendar.checkConnection();
 
       // Should fail with descriptive error
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeDefined();
-        expect(result.error).toMatch(/tenant.*not found|invalid.*tenant/i);
-      }
+      expect(result).toBe(false);
     }, config?.timeoutMs || 30000);
 
     test('should fail gracefully with invalid client credentials', async () => {
-      expect.assertions(3);
+      expect.assertions(1);
 
       // Create configuration with invalid client secret
       const invalidConfig = {
@@ -186,16 +173,12 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         client_secret: 'invalid-client-secret'
       };
 
-      const invalidSDK = new Office365CalendarSDK(invalidConfig, mockLogger);
+      const invalidOffice365Calendar = await Office365Calendar.instance(invalidConfig, mockLogger);
       
-      const result = await invalidSDK.checkConnectionSafe();
+      const result = await invalidOffice365Calendar.checkConnection();
 
       // Should fail with authentication error
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBeDefined();
-        expect(result.error).toMatch(/invalid.*client.*secret|authentication.*failed/i);
-      }
+      expect(result).toBe(false);
     }, config?.timeoutMs || 30000);
   });
 
@@ -241,19 +224,13 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
   describe('Network Resilience', () => {
     test('should handle network timeouts with appropriate retries', async () => {
-      expect.assertions(2);
+      expect.assertions(1);
 
-      // Test with very short timeout to simulate network issues
-      const shortTimeoutConfig = {
-        ...config,
-        timeout: 100 // Very short timeout
-      };
-
-      const result = await office365SDK.checkConnectionSafe();
+      // Test basic network resilience
+      const result = await office365Calendar.checkConnection();
 
       // Even with network challenges, should eventually succeed or fail gracefully
-      expect(result.success).toBeDefined();
-      expect(typeof result.success).toBe('boolean');
+      expect(typeof result).toBe('boolean');
     }, config?.timeoutMs || 30000 * 2); // Allow extra time for retries
 
     test('should respect timeout settings and fail fast when appropriate', async () => {
@@ -262,13 +239,13 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
       const startTime = Date.now();
       
       // This should complete within reasonable time
-      const result = await office365SDK.checkConnectionSafe();
+      const result = await office365Calendar.checkConnection();
       
       const duration = Date.now() - startTime;
       
       // Should not hang indefinitely
       expect(duration).toBeLessThan(config?.timeoutMs || 30000);
-      expect(result.success).toBeDefined();
+      expect(typeof result).toBe('boolean');
     }, config?.timeoutMs || 30000);
   });
 
@@ -276,7 +253,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
     test('should not log sensitive credentials in debug output', async () => {
       expect.assertions(3);
 
-      await office365SDK.checkConnectionSafe();
+      await office365Calendar.checkConnection();
 
       // Check all log calls for credential exposure
       const allLogCalls = [
@@ -295,18 +272,16 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
     });
 
     test('should use secure HTTPS endpoints only', async () => {
-      // This test verifies our SDK configuration uses secure endpoints
+      // This test verifies our configuration uses secure endpoints
       // The Microsoft Graph SDK should only use HTTPS
       
-      const sdkConfig = office365SDK.getSDKConfiguration();
+      // Verify configuration is properly set
+      expect(config.tenant_id).toBeDefined();
+      expect(config.client_id).toBeDefined();
+      expect(config.client_secret).toBeDefined();
       
-      // Verify configuration doesn't expose insecure settings
-      expect(sdkConfig.tenantId).toBeDefined();
-      expect(sdkConfig.clientId).toBeDefined();
-      expect(sdkConfig.clientSecret).toBeDefined();
-      
-      // SDK should be configured for production security
-      expect(typeof sdkConfig.tenantId).toBe('string');
+      // Configuration should be configured for production security
+      expect(typeof config.tenant_id).toBe('string');
     });
   });
 
@@ -322,8 +297,8 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
         const startTime = Date.now();
         const startMemory = process.memoryUsage().heapUsed;
 
-        const result = await office365SDK.checkConnectionSafe();
-        expect(result.success).toBe(true);
+        const result = await office365Calendar.checkConnection();
+        expect(result).toBe(true);
 
         const duration = Date.now() - startTime;
         const memoryUsed = process.memoryUsage().heapUsed - startMemory;
@@ -333,7 +308,7 @@ const runIntegrationTests = isIntegrationConfigAvailable(integrationConfig);
 
         // Clear cache between iterations to test fresh authentication
         Office365Calendar.clearInstance();
-        office365SDK = new Office365CalendarSDK(config, mockLogger);
+        office365Calendar = await Office365Calendar.instance(config, mockLogger);
       }
 
       // Performance validation

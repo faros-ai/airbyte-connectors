@@ -1,7 +1,7 @@
 import { AirbyteLogger } from 'faros-airbyte-cdk';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { Office365Calendar, Office365CalendarConfig } from '../../src/office365calendar';
-import { Calendar, Event } from '../../src/models';
+import { Calendar, Event, GraphCalendar, GraphEvent } from '../../src/models';
 
 /**
  * Creates a mock AirbyteLogger for testing.
@@ -270,4 +270,74 @@ export function createMockEvents(count: number, calendarId: string = 'calendar-1
     summary: `Event ${i + 1}`,
     title: `Event ${i + 1}`
   }));
+}
+
+/**
+ * Creates a mock GraphCalendar object for testing the new SDK.
+ * Reduces duplication of GraphCalendar mock data.
+ */
+export function createMockGraphCalendar(overrides: Partial<GraphCalendar> = {}): GraphCalendar {
+  return {
+    id: 'calendar-1',
+    name: 'Primary Calendar',
+    owner: {
+      name: 'John Doe',
+      address: 'john@example.com'
+    },
+    canEdit: true,
+    canShare: true,
+    canViewPrivateItems: false,
+    isDefaultCalendar: true,
+    hexColor: '#1f497d',
+    ...overrides
+  };
+}
+
+/**
+ * Creates a mock GraphEvent object for testing the new SDK.
+ * Reduces duplication of GraphEvent mock data.
+ */
+export function createMockGraphEvent(overrides: Partial<GraphEvent> = {}): GraphEvent {
+  return {
+    id: 'event-1',
+    subject: 'Test Meeting',
+    body: {
+      contentType: 'text',
+      content: 'Meeting description'
+    },
+    start: {
+      dateTime: '2024-01-15T10:00:00Z',
+      timeZone: 'UTC'
+    },
+    end: {
+      dateTime: '2024-01-15T11:00:00Z',
+      timeZone: 'UTC'
+    },
+    location: {
+      displayName: 'Conference Room A'
+    },
+    attendees: [],
+    organizer: {
+      emailAddress: {
+        name: 'Event Organizer',
+        address: 'organizer@example.com'
+      }
+    },
+    webLink: 'https://outlook.com/event-1',
+    onlineMeetingUrl: 'https://teams.microsoft.com/meeting',
+    isAllDay: false,
+    isCancelled: false,
+    isOrganizer: true,
+    responseRequested: true,
+    showAs: 'busy',
+    type: 'singleInstance',
+    categories: [],
+    createdDateTime: '2024-01-12T14:30:00Z',
+    lastModifiedDateTime: '2024-01-12T14:30:00Z',
+    changeKey: 'change-key-123',
+    '@odata.etag': 'etag-123',
+    importance: 'normal',
+    sensitivity: 'normal',
+    ...overrides
+  };
 }

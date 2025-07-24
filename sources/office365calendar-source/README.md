@@ -113,23 +113,29 @@ Extracts detailed event information including attendees, recurrence, and meeting
 
 ### Required Microsoft Graph Permissions
 
-**Minimum Permissions (User Calendar Access)**:
-- `Calendars.Read`: Read user calendars
-- `User.Read`: Read basic user profile
+**Application Permissions (Required for this connector)**:
+- `Calendars.Read` (Microsoft Graph): Read user calendars
+- `Calendars.Read.All` (Microsoft Graph): Read all organization calendars
+- `Directory.Read.All` (Microsoft Graph): Read directory data
+- `User.Read.All` (Microsoft Graph): Read all user profiles
+- `Calendars.Read` (Office 365 Exchange Online): Read calendars in Exchange Online
 
-**Extended Permissions (Organization-Wide Access)**:
-- `Calendars.Read.All`: Read all organization calendars
-- `User.Read.All`: Read all user profiles
-- `Directory.Read.All`: Read directory data
+**IMPORTANT**: All permissions must be **Application** type (not Delegated) and granted with **Admin Consent**.
 
-### Domain-Wide Delegation Setup
+### Authentication Setup
 
-For organization-wide calendar access:
+**CRITICAL**: Follow the complete authentication setup guide to avoid common configuration issues.
 
-1. **Enable Domain-Wide Delegation** in Azure portal
-2. **Configure OAuth Scopes** for the application
-3. **Grant Admin Consent** for the required permissions
-4. **Set `domain_wide_delegation: true`** in connector configuration
+📖 **Detailed Setup Guide**: See [`AUTHENTICATION_SETUP.md`](AUTHENTICATION_SETUP.md) for step-by-step instructions.
+
+⚠️ **Common Issues**: See [`EXCHANGE_ONLINE_SETUP.md`](EXCHANGE_ONLINE_SETUP.md) for troubleshooting "Access is denied" errors.
+
+**Quick Setup Steps**:
+1. Create Azure AD App Registration with required permissions
+2. Grant admin consent for all permissions  
+3. Run `.\check-api-grants.ps1` to verify permissions are properly granted
+4. Configure Exchange Online Application Access Policy (if needed)
+5. Test with `node diagnostic-calendar-access.js`
 
 ## Installation
 
@@ -282,13 +288,24 @@ The connector includes comprehensive test coverage:
 
 Apache License 2.0 - see LICENSE file for details.
 
-## Support
+## Troubleshooting
 
-For issues and questions:
-1. **Check Troubleshooting Guide**: See TROUBLESHOOTING.md
-2. **Review Configuration**: Verify Azure AD setup in SETUP.md
-3. **Report Issues**: Create issue in project repository
-4. **Contact Support**: Reach out through Faros support channels
+### Authentication Issues
+1. **"Access is denied" errors**: See [`EXCHANGE_ONLINE_SETUP.md`](EXCHANGE_ONLINE_SETUP.md)
+2. **Permission errors**: Run `.\check-api-grants.ps1` to verify and grant permissions
+3. **Connection failures**: Use `node diagnostic-calendar-access.js` for detailed diagnostics
+
+### Common Problems
+- **Missing permissions**: Most common cause - ensure all 5 required permissions are granted
+- **Exchange Online policies**: New tenants may need Application Access Policy configuration
+- **Permission propagation**: Allow 5-60 minutes for changes to take effect
+
+### Support
+For additional help:
+1. **Authentication Setup**: [`AUTHENTICATION_SETUP.md`](AUTHENTICATION_SETUP.md)
+2. **Diagnostic Tools**: Run included diagnostic scripts for detailed error analysis
+3. **Integration Tests**: `npm run test:real-world:phase2` to verify setup
+4. **Report Issues**: Create issue in project repository with diagnostic output
 
 ## Changelog
 

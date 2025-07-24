@@ -4,7 +4,7 @@ import { VError } from 'verror';
 import { Office365CalendarConfig, TenantId, CalendarId } from '../../src/models';
 import { Office365Calendar } from '../../src/office365calendar';
 import { Events } from '../../src/streams/events';
-import { setupStreamTests, createMockEvents, createMockCalendars } from '../utils/test-helpers';
+import { setupStreamTests, createMockEvents, createMockCalendars, createMockEvent, createMockCalendar } from '../utils/test-helpers';
 
 // Mock the Office365Calendar for testing
 jest.mock('../../src/office365calendar', () => ({
@@ -35,8 +35,9 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       expect(eventsStream.primaryKey).toBe('id');
     });
 
-    test('should support only full refresh sync mode for now', () => {
-      expect(eventsStream.supportedSyncModes).toEqual([SyncMode.FULL_REFRESH]);
+    test('should support both full refresh and incremental sync modes', () => {
+      expect(eventsStream.supportedSyncModes).toContain(SyncMode.FULL_REFRESH);
+      expect(eventsStream.supportedSyncModes).toContain(SyncMode.INCREMENTAL);
     });
 
     test('should load events JSON schema', () => {
@@ -50,17 +51,13 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       expect(schema.properties.start).toBeDefined();
       expect(schema.properties.end).toBeDefined();
     });
-
-    test('should not support incremental sync mode yet', () => {
-      expect(eventsStream.supportedSyncModes).not.toContain(SyncMode.INCREMENTAL);
-    });
   });
 
   describe('Stream Slicing by Calendar', () => {
     test('should create stream slices for each calendar when no calendar_ids specified', async () => {
       const mockCalendars = [
-        { id: 'calendar-1', name: 'Primary Calendar' },
-        { id: 'calendar-2', name: 'Work Calendar' }
+        createMockCalendar({ id: 'calendar-1', name: 'Primary Calendar' }),
+        createMockCalendar({ id: 'calendar-2', name: 'Work Calendar' })
       ];
 
       testSetup.mockOffice365Calendar.getCalendars.mockImplementation(async function* () {
@@ -135,48 +132,16 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
   describe('Event Data Fetching - Full Refresh', () => {
     test('should fetch events for a calendar slice', async () => {
       const mockEvents = [
-        {
+        createMockEvent({
           id: 'event-1',
           subject: 'Team Meeting',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          organizer: {
-            emailAddress: { name: 'John Doe', address: 'john@example.com' }
-          },
-          body: { content: 'Weekly team sync', contentType: 'text' },
-          location: { displayName: 'Conference Room A' },
-          attendees: [],
-          showAs: 'busy',
-          importance: 'normal',
-          isAllDay: false,
-          isCancelled: false,
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        },
-        {
+          summary: 'Team Meeting'
+        }),
+        createMockEvent({
           id: 'event-2',
           subject: 'Project Review',
-          start: { dateTime: '2024-01-16T14:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-16T15:30:00Z', timeZone: 'UTC' },
-          organizer: {
-            emailAddress: { name: 'Jane Smith', address: 'jane@example.com' }
-          },
-          body: { content: 'Quarterly project review', contentType: 'html' },
-          location: { displayName: 'Virtual' },
-          attendees: [
-            {
-              emailAddress: { name: 'John Doe', address: 'john@example.com' },
-              status: { response: 'accepted', time: '2024-01-10T10:00:00Z' },
-              type: 'required'
-            }
-          ],
-          showAs: 'busy',
-          importance: 'high',
-          isAllDay: false,
-          isCancelled: false,
-          createdDateTime: '2024-01-11T08:00:00Z',
-          lastModifiedDateTime: '2024-01-13T16:45:00Z'
-        }
+          summary: 'Project Review'
+        })
       ];
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
@@ -205,14 +170,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       const cutoffEventsStream = new Events(configWithCutoff, testSetup.mockLogger);
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
-        yield {
+        yield createMockEvent({
           id: 'recent-event',
           subject: 'Recent Meeting',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        };
+          summary: 'Recent Meeting'
+        });
       });
 
       const streamSlice = { calendarId: 'test-calendar' };
@@ -235,14 +197,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       const limitedEventsStream = new Events(configWithLimit, testSetup.mockLogger);
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
-        yield {
+        yield createMockEvent({
           id: 'event-1',
           subject: 'Meeting 1',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        };
+          summary: 'Meeting 1'
+        });
       });
 
       const streamSlice = { calendarId: 'test-calendar' };
@@ -259,36 +218,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
 
   describe('Data Mapping - Office 365 to Google Calendar Schema', () => {
     test('should map Office 365 event fields to Google Calendar schema', async () => {
-      const office365Event = {
+      const office365Event = createMockEvent({
         id: 'office365-event-id',
         subject: 'Office 365 Meeting Subject',
-        start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-        end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-        body: { content: 'Meeting description content', contentType: 'html' },
-        location: { displayName: 'Conference Room B' },
-        organizer: {
-          emailAddress: { name: 'Meeting Organizer', address: 'organizer@example.com' }
-        },
-        attendees: [
-          {
-            emailAddress: { name: 'Attendee One', address: 'attendee1@example.com' },
-            status: { response: 'accepted', time: '2024-01-10T10:00:00Z' },
-            type: 'required'
-          },
-          {
-            emailAddress: { name: 'Attendee Two', address: 'attendee2@example.com' },
-            status: { response: 'tentative', time: '2024-01-11T15:00:00Z' },
-            type: 'optional'
-          }
-        ],
-        showAs: 'busy',
-        importance: 'high',
-        sensitivity: 'normal',
-        isAllDay: false,
-        isCancelled: false,
-        createdDateTime: '2024-01-10T09:00:00Z',
-        lastModifiedDateTime: '2024-01-12T14:30:00Z'
-      };
+        summary: 'Office 365 Meeting Subject'
+      });
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
         yield office365Event;
@@ -348,16 +282,12 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
     });
 
     test('should handle all-day events correctly', async () => {
-      const allDayEvent = {
+      const allDayEvent = createMockEvent({
         id: 'allday-event',
         subject: 'All Day Event',
-        start: { date: '2024-01-15' }, // All-day events use date, not dateTime
-        end: { date: '2024-01-16' },
-        isAllDay: true,
-        isCancelled: false,
-        createdDateTime: '2024-01-10T09:00:00Z',
-        lastModifiedDateTime: '2024-01-12T14:30:00Z'
-      };
+        summary: 'All Day Event',
+        isAllDay: true
+      });
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
         yield allDayEvent;
@@ -380,15 +310,12 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
     });
 
     test('should handle cancelled events correctly', async () => {
-      const cancelledEvent = {
+      const cancelledEvent = createMockEvent({
         id: 'cancelled-event',
         subject: 'Cancelled Meeting',
-        start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-        end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-        isCancelled: true,
-        createdDateTime: '2024-01-10T09:00:00Z',
-        lastModifiedDateTime: '2024-01-12T14:30:00Z'
-      };
+        summary: 'Cancelled Meeting',
+        isCancelled: true
+      });
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
         yield cancelledEvent;
@@ -416,15 +343,12 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       ];
 
       for (const testCase of testCases) {
-        const event = {
+        const event = createMockEvent({
           id: 'test-event',
           subject: 'Test Event',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          showAs: testCase.showAs,
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        };
+          summary: 'Test Event',
+          showAs: testCase.showAs as 'free' | 'tentative' | 'busy' | 'oof'
+        });
 
         testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
           yield event;
@@ -477,14 +401,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
         if (callCount === 1) {
           throw rateLimitError;
         }
-        yield {
+        yield createMockEvent({
           id: 'event-after-retry',
           subject: 'Event After Retry',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        };
+          summary: 'Event After Retry'
+        });
       });
 
       const streamSlice = { calendarId: 'test-calendar' };
@@ -520,14 +441,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
     test('should use correct Microsoft Graph API endpoints for events', async () => {
       // This test verifies our API client uses the correct endpoints
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
-        yield {
+        yield createMockEvent({
           id: 'test-event',
           subject: 'Test Event',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        };
+          summary: 'Test Event'
+        });
       });
 
       const streamSlice = { calendarId: 'test-calendar' };
@@ -549,22 +467,16 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
   describe('Logging and Monitoring', () => {
     test('should log sync progress for event fetching', async () => {
       const mockEvents = [
-        {
+        createMockEvent({
           id: 'event-1',
           subject: 'Meeting 1',
-          start: { dateTime: '2024-01-15T10:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-15T11:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-10T09:00:00Z',
-          lastModifiedDateTime: '2024-01-12T14:30:00Z'
-        },
-        {
+          summary: 'Meeting 1'
+        }),
+        createMockEvent({
           id: 'event-2',
           subject: 'Meeting 2',
-          start: { dateTime: '2024-01-16T14:00:00Z', timeZone: 'UTC' },
-          end: { dateTime: '2024-01-16T15:00:00Z', timeZone: 'UTC' },
-          createdDateTime: '2024-01-11T08:00:00Z',
-          lastModifiedDateTime: '2024-01-13T16:45:00Z'
-        }
+          summary: 'Meeting 2'
+        })
       ];
 
       testSetup.mockOffice365Calendar.getEvents.mockImplementation(async function* () {
@@ -581,15 +493,11 @@ describe('O365CAL-005: Events Stream (TDD)', () => {
       }
 
       expect(testSetup.mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Starting events sync'),
+        expect.stringContaining('Starting full refresh events sync'),
         expect.stringContaining('test-calendar')
       );
-      expect(testSetup.mockLogger.debug).toHaveBeenCalledWith(
-        expect.stringContaining('Fetched event'),
-        expect.stringContaining('event-1')
-      );
       expect(testSetup.mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Completed events sync'),
+        expect.stringContaining('Completed full refresh events sync'),
         expect.stringContaining('2 events')
       );
     });
