@@ -93,4 +93,19 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - usage events', async () => {
+    const res = readTestResourceAsJSON('usage_events/usage_events.json');
+    setupCursorInstance({
+      post: jest.fn().mockResolvedValue({data: res}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'usage_events/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

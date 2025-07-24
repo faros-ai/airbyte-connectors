@@ -35,7 +35,6 @@ exports[`index streams - daily usage 1`] = `
     "date": 1710720000000,
     "email": "developer@company.com",
     "isActive": true,
-    "minUsageDate": 1710720000000,
     "mostUsedModel": "gpt-4",
     "subscriptionIncludedReqs": 180,
     "tabMostUsedExtension": ".ts",
@@ -62,7 +61,6 @@ exports[`index streams - daily usage 1`] = `
     "date": 1710806400000,
     "email": "developer@company.com",
     "isActive": true,
-    "minUsageDate": 1710720000000,
     "mostUsedModel": "claude-3-opus",
     "subscriptionIncludedReqs": 320,
     "tabMostUsedExtension": ".py",
@@ -91,6 +89,58 @@ exports[`index streams - members 1`] = `
     "isNew": true,
     "name": "Sam",
     "role": "owner",
+  },
+]
+`;
+
+exports[`index streams - usage events 1`] = `
+[
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": true,
+    "kindLabel": "Usage-based",
+    "maxMode": true,
+    "minUsageTimestamp": 1750979225854,
+    "model": "claude-4-opus",
+    "requestsCosts": 5,
+    "timestamp": "1750979225854",
+    "tokenUsage": {
+      "cacheReadTokens": 11964,
+      "cacheWriteTokens": 6112,
+      "inputTokens": 126,
+      "outputTokens": 450,
+      "totalCents": 20.18232,
+    },
+    "userEmail": "developer@company.com",
+  },
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": true,
+    "kindLabel": "Usage-based",
+    "maxMode": true,
+    "minUsageTimestamp": 1750979173824,
+    "model": "claude-4-opus",
+    "requestsCosts": 10,
+    "timestamp": "1750979173824",
+    "tokenUsage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 11964,
+      "inputTokens": 5805,
+      "outputTokens": 311,
+      "totalCents": 40.16699999999999,
+    },
+    "userEmail": "developer@company.com",
+  },
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": false,
+    "kindLabel": "Included in Business",
+    "maxMode": true,
+    "minUsageTimestamp": 1750978339901,
+    "model": "claude-4-sonnet-thinking",
+    "requestsCosts": 1.4,
+    "timestamp": "1750978339901",
+    "userEmail": "admin@company.com",
   },
 ]
 `;

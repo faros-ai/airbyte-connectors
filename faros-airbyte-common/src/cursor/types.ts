@@ -29,5 +29,23 @@ export type DailyUsageItem = {
   tabMostUsedExtension: string;
   clientVersion: string;
   email?: string;
-  minUsageDate?: number;
+};
+
+export type UsageEventItem = {
+  timestamp: string;
+  model: string;
+  kindLabel: string;
+  maxMode: boolean;
+  requestsCosts: number;
+  isTokenBasedCall: boolean;
+  tokenUsage?: {
+    inputTokens: number;
+    outputTokens: number;
+    cacheWriteTokens: number;
+    cacheReadTokens: number;
+    totalCents: number;
+  };
+  isFreeBugbot: boolean;
+  userEmail: string;
+  minUsageTimestamp?: number;
 };

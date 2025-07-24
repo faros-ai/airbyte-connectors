@@ -1,14 +1,24 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {DailyUsageItem, MemberItem} from 'faros-airbyte-common/cursor';
+import {
+  DailyUsageItem,
+  MemberItem,
+  UsageEventItem,
+} from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import VError from 'verror';
 
-import {CursorConfig, DailyUsageResponse, MembersResponse} from './types';
+import {
+  CursorConfig,
+  DailyUsageResponse,
+  MembersResponse,
+  UsageEventsResponse,
+} from './types';
 
 export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
+export const DEFAULT_PAGE_SIZE = 100;
 
 export class Cursor {
   private readonly api: AxiosInstance;
@@ -56,10 +66,10 @@ export class Cursor {
     }));
   }
 
-  async getDailyUsage(
+  async *getDailyUsage(
     startDate: number,
     endDate: number
-  ): Promise<DailyUsageItem[]> {
+  ): AsyncGenerator<DailyUsageItem> {
     const res = await this.api.post<DailyUsageResponse>(
       '/teams/daily-usage-data',
       {
@@ -67,6 +77,31 @@ export class Cursor {
         endDate,
       }
     );
-    return res.data.data;
+    yield* res.data.data;
+  }
+
+  async *getUsageEvents(
+    startDate: number,
+    endDate: number
+  ): AsyncGenerator<UsageEventItem> {
+    let page = 1;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const res = await this.api.post<UsageEventsResponse>(
+        '/teams/filtered-usage-events',
+        {
+          startDate,
+          endDate,
+          page,
+          pageSize: DEFAULT_PAGE_SIZE,
+        }
+      );
+
+      yield* res.data.usageEvents;
+
+      hasNextPage = res.data.pagination.hasNextPage;
+      page++;
+    }
   }
 }

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "kindLabel": {
+      "type": "string"
+    },
+    "maxMode": {
+      "type": "boolean"
+    },
+    "requestsCosts": {
+      "type": "number"
+    },
+    "isTokenBasedCall": {
+      "type": "boolean"
+    },
+    "tokenUsage": {
+      "type": "object",
+      "properties": {
+        "inputTokens": {
+          "type": "integer"
+        },
+        "outputTokens": {
+          "type": "integer"
+        },
+        "cacheWriteTokens": {
+          "type": "integer"
+        },
+        "cacheReadTokens": {
+          "type": "integer"
+        },
+        "totalCents": {
+          "type": "number"
+        }
+      }
+    },
+    "isFreeBugbot": {
+      "type": "boolean"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "minUsageTimestamp": {
+      "type": "number"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {DailyUsageItem, MemberItem} from 'faros-airbyte-common/cursor';
+import {MemberItem, UsageEventItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
@@ -19,19 +19,19 @@ export class Members extends CursorConverter {
     'vcs_UserTool',
   ];
 
-  private static readonly dailyUsageStream = new StreamName(
+  private static readonly usageEventsStream = new StreamName(
     'cursor',
-    'daily_usage'
+    'usage_events'
   );
 
   override get dependencies(): ReadonlyArray<StreamName> {
-    return [Members.dailyUsageStream];
+    return [Members.usageEventsStream];
   }
 
   private readonly seenUsers: {
     [email: string]: {
       name?: string;
-      minUsageDate?: number;
+      minUsageTimestamp?: number;
       active: boolean;
     };
   } = {};
@@ -57,20 +57,19 @@ export class Members extends CursorConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
     for (const record of Object.values(
-      ctx.getAll(Members.dailyUsageStream.asString)
+      ctx.getAll(Members.usageEventsStream.asString)
     )) {
-      const dailyUsage = record.record.data as DailyUsageItem;
-      if (!dailyUsage.email) {
-        continue;
-      }
-      if (!this.seenUsers[dailyUsage.email]) {
-        this.seenUsers[dailyUsage.email] = {active: false};
+      const dailyUsage = record.record.data as UsageEventItem;
+      if (!this.seenUsers[dailyUsage.userEmail]) {
+        this.seenUsers[dailyUsage.userEmail] = {active: false};
       }
       if (
-        !this.seenUsers[dailyUsage.email].minUsageDate ||
-        dailyUsage.minUsageDate < this.seenUsers[dailyUsage.email].minUsageDate
+        !this.seenUsers[dailyUsage.userEmail].minUsageTimestamp ||
+        dailyUsage.minUsageTimestamp <
+          this.seenUsers[dailyUsage.userEmail].minUsageTimestamp
       ) {
-        this.seenUsers[dailyUsage.email].minUsageDate = dailyUsage.minUsageDate;
+        this.seenUsers[dailyUsage.userEmail].minUsageTimestamp =
+          dailyUsage.minUsageTimestamp;
       }
     }
     for (const [email, user] of Object.entries(this.seenUsers)) {
@@ -105,8 +104,8 @@ export class Members extends CursorConverter {
               detail: VCSToolDetail.Cursor,
             },
             inactive: !user.active,
-            ...(user.minUsageDate && {
-              startedAt: Utils.toDate(user.minUsageDate).toISOString(),
+            ...(user.minUsageTimestamp && {
+              startedAt: Utils.toDate(user.minUsageTimestamp).toISOString(),
             }),
           },
         }
