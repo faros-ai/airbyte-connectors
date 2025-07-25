@@ -16,7 +16,10 @@ import {
 } from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
+import {
+  Comment,
+  WorkItem,
+} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
@@ -40,6 +43,7 @@ export interface AzureDevOpsConfig {
   readonly page_size?: number;
   readonly max_retries?: number;
   readonly request_timeout?: number;
+  readonly fetch_work_item_comments?: boolean;
 }
 
 export interface AzureDevOpsClient {
@@ -144,6 +148,7 @@ export interface WorkItemWithRevisions extends WorkItem {
   revisions: WorkItemRevisions;
   additionalFields: ReadonlyArray<AdditionalField>;
   project: ProjectReference;
+  comments?: ReadonlyArray<Comment>;
 }
 
 export interface AdditionalField {
