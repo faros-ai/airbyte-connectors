@@ -53,15 +53,17 @@ export class Incidents extends FireHydrantConverter {
 
     // Get the latest milestone timestamp for updatedAt
     const latestMilestone = allMilestones.length
-      ? allMilestones.reduce((latest, current) =>
-          new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0)
-            ? current
-            : latest
+      ? allMilestones.reduce(
+          (latest, current) =>
+            new Date(current.occurred_at || 0) >
+            new Date(latest.occurred_at || 0)
+              ? current
+              : latest,
+          allMilestones[0]
         )
       : null;
-    const updatedAt = latestMilestone
-      ? Utils.toDate(latestMilestone.occurred_at)
-      : createdAt;
+    const updatedAt = Utils.toDate(latestMilestone?.occurred_at ?? createdAt);
+
     const acknowledgedMilestone = allMilestones.find(
       (milestone) => milestone.slug === 'acknowledged'
     );
