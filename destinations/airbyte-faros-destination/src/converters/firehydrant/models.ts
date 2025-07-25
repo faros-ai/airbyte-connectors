@@ -92,7 +92,6 @@ export interface IncidentTicket {
   attachments: [any];
 }
 
-
 export interface Incident extends ObjectBase {
   created_at: string;
   started_at: string;
@@ -162,11 +161,6 @@ export enum IncidentEventTypeCategory {
   Custom = 'Custom',
 }
 
-export interface IncidentEventType {
-  category: IncidentEventTypeCategory;
-  detail: string;
-}
-
 export enum FirehydrantIncidentPriority {
   P1 = 'P1',
   P2 = 'P2',
@@ -207,6 +201,11 @@ export enum IncidentStatusCategory {
   Custom = 'Custom',
 }
 
+export interface IncidentStatus {
+  category: IncidentStatusCategory;
+  detail: string;
+}
+
 export interface IncidentPriority {
   category: IncidentPriorityCategory;
   detail: string;
@@ -232,13 +231,6 @@ export enum IncidentSeverityCategory {
 export interface IncidentSeverity {
   category: IncidentSeverityCategory;
   detail: string;
-}
-
-export enum IncidentTicketState {
-  open = 'open',
-  in_progress = 'in_progress',
-  cancelled = 'cancelled',
-  done = 'done',
 }
 
 export interface TaskStatus {

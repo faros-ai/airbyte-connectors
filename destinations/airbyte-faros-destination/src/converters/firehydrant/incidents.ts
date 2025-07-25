@@ -4,22 +4,17 @@ import {Utils} from 'faros-js-client';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {FireHydrantConverter} from './common';
-import {IncidentTicket} from './models';
+import {IncidentStatus} from './models';
 import {
   FirehydrantIncidentMilestone,
   FirehydrantIncidentPriority,
   FirehydrantIncidentSeverity,
   Incident,
-  IncidentEventType,
-  IncidentEventTypeCategory,
   IncidentPriority,
   IncidentPriorityCategory,
   IncidentSeverity,
   IncidentSeverityCategory,
   IncidentStatusCategory,
-  IncidentTicketState,
-  TaskStatus,
-  TaskStatusCategory,
 } from './models';
 
 export class Incidents extends FireHydrantConverter {
@@ -53,26 +48,34 @@ export class Incidents extends FireHydrantConverter {
     const startedAt = Utils.toDate(incident.started_at);
 
     // Extract timestamps from lifecycle_phases
-    const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
-    
+    const allMilestones =
+      incident.lifecycle_phases?.flatMap((phase) => phase.milestones) || [];
+
     // Get the latest milestone timestamp for updatedAt
-    const latestMilestone = allMilestones.length > 0 
-      ? allMilestones.reduce((latest, current) => 
-          new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0) ? current : latest
+    const latestMilestone = allMilestones.length
+      ? allMilestones.reduce((latest, current) =>
+          new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0)
+            ? current
+            : latest
         )
       : null;
-    const updatedAt = latestMilestone ? Utils.toDate(latestMilestone.occurred_at) : createdAt;
-    const acknowledgedMilestone = allMilestones.find(milestone => milestone.slug === 'acknowledged');
-    const resolvedMilestone = allMilestones.find(milestone => milestone.slug === 'resolved');
+    const updatedAt = latestMilestone
+      ? Utils.toDate(latestMilestone.occurred_at)
+      : createdAt;
+    const acknowledgedMilestone = allMilestones.find(
+      (milestone) => milestone.slug === 'acknowledged'
+    );
+    const resolvedMilestone = allMilestones.find(
+      (milestone) => milestone.slug === 'resolved'
+    );
 
     const acknowledgedAt = Utils.toDate(acknowledgedMilestone?.occurred_at);
     const resolvedAt = Utils.toDate(resolvedMilestone?.occurred_at);
 
     for (const milestone of allMilestones) {
       if (!milestone.id || !milestone.occurred_at) continue;
-      
-      const eventType = this.getIncidentStatus(milestone.slug);
 
+      const eventType = this.getIncidentStatus(milestone.slug);
       res.push({
         model: 'ims_IncidentEvent',
         record: {
@@ -138,18 +141,6 @@ export class Incidents extends FireHydrantConverter {
       });
     }
 
-    for (const ticket of incident.incident_tickets) {
-      // TODO: Figure out proper source for task - ticket might have different source than incident
-      const task = {uid: ticket.id, source};
-      res.push({
-        model: 'ims_IncidentTasks',
-        record: {
-          task,
-          incident: incidentRef,
-        },
-      });
-    }
-
     for (const tag of incident.tag_list) {
       if (!this.seenTags.has(tag)) {
         this.seenTags.add(tag);
@@ -171,42 +162,6 @@ export class Incidents extends FireHydrantConverter {
     return res;
   }
 
-  private getTaskDestinationRecord(
-    ticket: IncidentTicket,
-    source: string,
-    maxDescriptionLength: number,
-    occurredAt: Date
-  ): DestinationRecord {
-    return {
-      model: 'tms_Task',
-      record: {
-        uid: ticket.id,
-        name: ticket.summary,
-        description: Utils.cleanAndTruncate(
-          ticket.description,
-          maxDescriptionLength
-        ),
-        source,
-        url: undefined,
-        type: {
-          detail: ticket.type,
-          category: 'Task',
-        },
-        priority: undefined,
-        status: this.getTaskStatus(ticket.state),
-        points: 0,
-        additionalFields: [],
-        createdAt: occurredAt,
-        updatedAt: occurredAt,
-        statusChangedAt: undefined,
-        statusChangelog: undefined,
-        parent: undefined,
-        creator: {uid: ticket.created_by.id, source},
-        epic: undefined,
-        sprint: undefined,
-      },
-    };
-  }
   private getPriority(priority: string): IncidentPriority {
     const detail: string = priority;
     switch (priority) {
@@ -241,11 +196,8 @@ export class Incidents extends FireHydrantConverter {
     }
   }
 
-  //https://docs.firehydrant.com/docs/incident-milestones-lifecycle-phases
-  private getIncidentStatus(milestone: string): {
-    category: string;
-    detail: string;
-  } {
+  // https://docs.firehydrant.com/docs/incident-milestones-lifecycle-phases
+  private getIncidentStatus(milestone: string): IncidentStatus {
     const detail = milestone;
     switch (milestone) {
       case FirehydrantIncidentMilestone.started:
@@ -265,20 +217,6 @@ export class Incidents extends FireHydrantConverter {
         return {category: IncidentStatusCategory.Resolved, detail};
       default:
         return {category: IncidentStatusCategory.Custom, detail};
-    }
-  }
-
-  private getTaskStatus(status: string): TaskStatus {
-    const detail: string = status;
-    switch (status) {
-      case IncidentTicketState.open:
-        return {category: TaskStatusCategory.Todo, detail};
-      case IncidentTicketState.in_progress:
-        return {category: TaskStatusCategory.InProgress, detail};
-      case IncidentTicketState.done:
-        return {category: TaskStatusCategory.Done, detail};
-      default:
-        return {category: TaskStatusCategory.Custom, detail};
     }
   }
 }
