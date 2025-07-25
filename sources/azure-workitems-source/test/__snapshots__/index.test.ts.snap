@@ -100,6 +100,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     ],
     "fields": {
       "Faros": {
+        "EpicId": 100,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "New",
@@ -220,6 +221,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     ],
     "fields": {
       "Faros": {
+        "EpicId": 100,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "To Do",
@@ -358,6 +360,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     "fields": {
       "Custom.TestName": "Zephyr",
       "Faros": {
+        "EpicId": 101,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "To Do",
