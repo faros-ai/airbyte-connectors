@@ -21,7 +21,7 @@ export class Iterations extends AzureWorkitemsConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     this.initialize();
-    
+
     const Iteration = record.record.data as WorkItemClassificationNode;
     const startedAt = Iteration.attributes?.startDate
       ? Utils.toDate(Iteration.attributes.startDate)
@@ -41,7 +41,11 @@ export class Iterations extends AzureWorkitemsConverter {
           uid: String(Iteration.id),
           name: Iteration.name,
           description: Utils.cleanAndTruncate(Iteration.path),
-          state: this.toState(Iteration.attributes?.timeFrame, startedAt, endedAt),
+          state: this.toState(
+            Iteration.attributes?.timeFrame,
+            startedAt,
+            endedAt
+          ),
           startedAt,
           openedAt,
           endedAt,
@@ -72,17 +76,17 @@ export class Iterations extends AzureWorkitemsConverter {
     if (endDate && endDate < this.now) {
       return 'Closed';
     }
-    
+
     // If we have a start date that's in the future, iteration is future
     if (startDate && startDate > this.now) {
       return 'Future';
     }
-    
+
     // If we're between start and end dates, then we're in an active iteration
     if (startDate && startDate <= this.now && endDate && endDate >= this.now) {
       return 'Active';
     }
-    
+
     // Handle edge case: start date exists and has passed, but no end date
     // Note: Sprints with start date but no end date are treated as Active if started.
     // This handles cases where sprints are created but end date hasn't been set yet,
@@ -91,7 +95,7 @@ export class Iterations extends AzureWorkitemsConverter {
     if (startDate && startDate <= this.now && !endDate) {
       return 'Active';
     }
-    
+
     // Default: no dates set, or only future start date, or only future end date
     return 'Future';
   }

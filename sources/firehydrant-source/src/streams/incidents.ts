@@ -1,10 +1,10 @@
 import {
   AirbyteLogger,
   AirbyteStreamBase,
+  calculateUpdatedStreamState,
   StreamKey,
   StreamState,
   SyncMode,
-  calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
@@ -39,7 +39,7 @@ export class Incidents extends AirbyteStreamBase {
       syncMode === SyncMode.INCREMENTAL
         ? Utils.toDate(state?.cutoff)
         : undefined;
-    
+
     const firehydrant = FireHydrant.instance(this.config, this.logger);
     yield* firehydrant.getIncidents(lastUpdatedAt);
   }
@@ -48,21 +48,26 @@ export class Incidents extends AirbyteStreamBase {
    * Computes the updated timestamp for an incident based on the latest lifecycle phase milestone.
    * This method examines all milestones across all lifecycle phases and returns the most recent
    * milestone occurrence time. Falls back to the incident's created_at if no milestones exist.
-   * 
+   *
    * @param incident - The incident to compute the updated timestamp for
    * @returns The computed updated timestamp as a Date object
    */
   private getIncidentUpdatedAt(incident: Incident): Date {
-    const allMilestones = incident.lifecycle_phases?.flatMap(phase => phase.milestones) || [];
-    
+    const allMilestones =
+      incident.lifecycle_phases?.flatMap((phase) => phase.milestones) || [];
+
     if (!allMilestones.length) {
       return new Date(incident.created_at);
     }
-    
-    const latestMilestone = allMilestones.reduce((latest, current) => 
-      new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0) ? current : latest
-    , allMilestones[0]);
-    
+
+    const latestMilestone = allMilestones.reduce(
+      (latest, current) =>
+        new Date(current.occurred_at || 0) > new Date(latest.occurred_at || 0)
+          ? current
+          : latest,
+      allMilestones[0]
+    );
+
     return new Date(latestMilestone.occurred_at || incident.created_at);
   }
 
@@ -71,7 +76,7 @@ export class Incidents extends AirbyteStreamBase {
     latestRecord: Incident
   ): StreamState {
     const lastUpdatedAt = this.getIncidentUpdatedAt(latestRecord);
-    
+
     return calculateUpdatedStreamState(
       lastUpdatedAt,
       currentStreamState,

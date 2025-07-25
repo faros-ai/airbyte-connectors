@@ -95,7 +95,7 @@ describe('index', () => {
     for await (const incident of incidentsIter) {
       incidents.push(incident);
     }
-    expect(fnIncidentsList).toHaveBeenCalledTimes(4);
+    expect(fnIncidentsList).toHaveBeenCalledTimes(1);
     expect(incidents).toStrictEqual(readTestFileAsJSON('incidents.json'));
   });
 
