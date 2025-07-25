@@ -11,6 +11,12 @@
         "name": "mytestsource__cursor__members"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__cursor__usage_events"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

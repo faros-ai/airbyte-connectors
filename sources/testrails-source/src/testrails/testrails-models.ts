@@ -38,6 +38,10 @@ export interface TestRailsSuite {
   readonly completed_on: number;
 }
 
+export interface PagedSuites extends PagedResponse {
+  readonly suites: TestRailsSuite[];
+}
+
 export interface TestRailsCase {
   readonly id: number;
   readonly title: string;

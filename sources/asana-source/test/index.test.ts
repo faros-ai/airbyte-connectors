@@ -123,6 +123,23 @@ describe('index', () => {
           resource_subtype: 'marked_complete',
           created_at: '2021-01-01T00:00:00.000Z',
         },
+        {
+          gid: 's2',
+          resource_subtype: 'comment_added',
+          created_at: '2021-01-01T01:00:00.000Z',
+          created_by: {
+            gid: 'u1',
+            resource_type: 'user',
+            name: 'John Doe',
+          },
+          text: 'This is a test comment on the task',
+          type: 'comment',
+        },
+        {
+          gid: 's3',
+          resource_subtype: 'assigned',
+          created_at: '2021-01-01T02:00:00.000Z',
+        },
       ],
     };
 

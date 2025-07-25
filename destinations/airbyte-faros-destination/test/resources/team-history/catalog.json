@@ -1,0 +1,10 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__team-history__team_membership_history"
+      },
+      "destination_sync_mode": "append"
+    }
+  ]
+}

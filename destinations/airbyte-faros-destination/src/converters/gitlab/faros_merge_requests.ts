@@ -3,6 +3,7 @@ import {FarosMergeRequestOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
+import {BranchCollector} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
 
@@ -13,12 +14,15 @@ interface DiffStatsSummary {
 }
 
 export class FarosMergeRequests extends GitlabConverter {
+  private readonly branchCollector = new BranchCollector();
+
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_PullRequest',
     'vcs_PullRequestComment',
     'vcs_PullRequestReview',
     'vcs_PullRequestLabel',
     'vcs_Label',
+    'vcs_Branch',
   ];
 
   id(record: AirbyteRecord): string {
@@ -48,6 +52,28 @@ export class FarosMergeRequests extends GitlabConverter {
 
     const res: DestinationRecord[] = [];
 
+    // Build source repository for cross-project MRs
+    const sourceRepository =
+      mergeRequest.sourceProjectId === mergeRequest.targetProjectId
+        ? repository
+        : {
+            name: mergeRequest.sourceProject?.path?.toLowerCase(),
+            uid: mergeRequest.sourceProject?.path?.toLowerCase(),
+            organization: {
+              uid: mergeRequest.sourceProject?.group?.id?.toLowerCase(),
+              source,
+            },
+          };
+
+    const sourceBranch = this.branchCollector.collectBranch(
+      mergeRequest.sourceBranch,
+      sourceRepository
+    );
+    const targetBranch = this.branchCollector.collectBranch(
+      mergeRequest.targetBranch,
+      repository
+    );
+
     // Create main vcs_PullRequest record
     res.push({
       model: 'vcs_PullRequest',
@@ -62,18 +88,31 @@ export class FarosMergeRequests extends GitlabConverter {
         mergedAt: Utils.toDate(mergeRequest.mergedAt),
         commentCount: mergeRequest.userNotesCount,
         commitCount: mergeRequest.commitCount,
-        diffStats: mergeRequest.diffStatsSummary ? {
-          linesAdded: (mergeRequest.diffStatsSummary as DiffStatsSummary).additions,
-          linesDeleted: (mergeRequest.diffStatsSummary as DiffStatsSummary).deletions,
-          filesChanged: (mergeRequest.diffStatsSummary as DiffStatsSummary).fileCount,
-        } : null,
-        author: mergeRequest.author_username 
+        diffStats: mergeRequest.diffStatsSummary
+          ? {
+              linesAdded: (mergeRequest.diffStatsSummary as DiffStatsSummary)
+                .additions,
+              linesDeleted: (mergeRequest.diffStatsSummary as DiffStatsSummary)
+                .deletions,
+              filesChanged: (mergeRequest.diffStatsSummary as DiffStatsSummary)
+                .fileCount,
+            }
+          : null,
+        author: mergeRequest.author_username
           ? {uid: mergeRequest.author_username, source}
           : null,
         mergeCommit: mergeRequest.mergeCommitSha
-          ? {repository, sha: mergeRequest.mergeCommitSha, uid: mergeRequest.mergeCommitSha}
+          ? {
+              repository,
+              sha: mergeRequest.mergeCommitSha,
+              uid: mergeRequest.mergeCommitSha,
+            }
           : null,
         repository,
+        sourceBranch,
+        sourceBranchName: mergeRequest.sourceBranch,
+        targetBranch,
+        targetBranchName: mergeRequest.targetBranch,
       },
     });
 
@@ -87,13 +126,13 @@ export class FarosMergeRequests extends GitlabConverter {
     if (mergeRequest.notes) {
       for (const note of mergeRequest.notes) {
         const numericId = this.extractIdFromGid(String(note.id));
-        
+
         res.push({
           model: 'vcs_PullRequestComment',
           record: {
             number: numericId,
             uid: note.id,
-            author: note.author_username 
+            author: note.author_username
               ? {uid: note.author_username, source}
               : null,
             comment: Utils.cleanAndTruncate(note.body),
@@ -116,7 +155,7 @@ export class FarosMergeRequests extends GitlabConverter {
               uid: reviewId.toString(),
               htmlUrl: null,
               pullRequest,
-              reviewer: note.author_username 
+              reviewer: note.author_username
                 ? {uid: note.author_username, source}
                 : null,
               submittedAt: createdAt,
@@ -151,13 +190,19 @@ export class FarosMergeRequests extends GitlabConverter {
     return res;
   }
 
+  async onProcessingComplete(
+    ctx: StreamContext
+  ): Promise<ReadonlyArray<DestinationRecord>> {
+    return this.branchCollector.convertBranches();
+  }
+
   private extractIdFromGid(gid: string): number | null {
     // Extract numeric ID from GitLab GID format (e.g., gid://gitlab/Note/2559908301)
     // If it's already a number, return it as is
     if (/^\d+$/.test(gid)) {
       return parseInt(gid, 10);
     }
-    
+
     // Extract the numeric part from GID format
     const parts = gid.split('/');
     const numericPart = parts.pop();
@@ -165,11 +210,11 @@ export class FarosMergeRequests extends GitlabConverter {
       return null;
     }
     const parsed = parseInt(numericPart, 10);
-    
+
     if (isNaN(parsed)) {
       return null;
     }
-    
+
     return parsed;
   }
 

@@ -1,0 +1,60 @@
+{
+  "totalUsageEventsCount": 3,
+  "pagination": {
+    "numPages": 1,
+    "currentPage": 1,
+    "pageSize": 10,
+    "hasNextPage": false,
+    "hasPreviousPage": false
+  },
+  "usageEvents": [
+    {
+      "timestamp": "1750979225854",
+      "model": "claude-4-opus",
+      "kindLabel": "Usage-based",
+      "maxMode": true,
+      "requestsCosts": 5,
+      "isTokenBasedCall": true,
+      "tokenUsage": {
+        "inputTokens": 126,
+        "outputTokens": 450,
+        "cacheWriteTokens": 6112,
+        "cacheReadTokens": 11964,
+        "totalCents": 20.18232
+      },
+      "isFreeBugbot": false,
+      "userEmail": "developer@company.com"
+    },
+    {
+      "timestamp": "1750979173824",
+      "model": "claude-4-opus",
+      "kindLabel": "Usage-based",
+      "maxMode": true,
+      "requestsCosts": 10,
+      "isTokenBasedCall": true,
+      "tokenUsage": {
+        "inputTokens": 5805,
+        "outputTokens": 311,
+        "cacheWriteTokens": 11964,
+        "cacheReadTokens": 0,
+        "totalCents": 40.16699999999999
+      },
+      "isFreeBugbot": false,
+      "userEmail": "developer@company.com"
+    },
+    {
+      "timestamp": "1750978339901",
+      "model": "claude-4-sonnet-thinking",
+      "kindLabel": "Included in Business",
+      "maxMode": true,
+      "requestsCosts": 1.4,
+      "isTokenBasedCall": false,
+      "isFreeBugbot": false,
+      "userEmail": "admin@company.com"
+    }
+  ],
+  "period": {
+    "startDate": 1748411762359,
+    "endDate": 1751003762359
+  }
+}

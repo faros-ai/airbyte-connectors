@@ -2,15 +2,15 @@ import {
   AirbyteLogger,
   AirbyteStreamBase,
   StreamKey,
+  StreamState,
   SyncMode,
+  calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {FireHydrant, FireHydrantConfig} from '../firehydrant/firehydrant';
 import {Incident} from '../firehydrant/models';
-interface IncidentState {
-  lastUpdatedAt?: Date;
-}
 export class Incidents extends AirbyteStreamBase {
   constructor(
     private readonly config: FireHydrantConfig,
@@ -32,11 +32,12 @@ export class Incidents extends AirbyteStreamBase {
     syncMode: SyncMode,
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
-    streamState?: IncidentState
+    streamState?: StreamState
   ): AsyncGenerator<Incident> {
+    const state = streamState?.['incidents'];
     const lastUpdatedAt =
       syncMode === SyncMode.INCREMENTAL
-        ? streamState?.lastUpdatedAt
+        ? Utils.toDate(state?.cutoff)
         : undefined;
     
     const firehydrant = FireHydrant.instance(this.config, this.logger);
@@ -66,17 +67,15 @@ export class Incidents extends AirbyteStreamBase {
   }
 
   getUpdatedState(
-    currentStreamState: IncidentState,
+    currentStreamState: StreamState,
     latestRecord: Incident
-  ): IncidentState {
+  ): StreamState {
     const lastUpdatedAt = this.getIncidentUpdatedAt(latestRecord);
     
-    return {
-      lastUpdatedAt:
-        lastUpdatedAt >
-        new Date(currentStreamState?.lastUpdatedAt ?? 0)
-          ? lastUpdatedAt
-          : currentStreamState?.lastUpdatedAt,
-    };
+    return calculateUpdatedStreamState(
+      lastUpdatedAt,
+      currentStreamState,
+      'incidents'
+    );
   }
 }

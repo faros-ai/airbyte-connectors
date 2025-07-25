@@ -2,11 +2,476 @@
 
 exports[`circleci process records from all streams 1`] = `
 Array [
-  "Processed 4 records",
-  "Processed records by stream: {\\\\\\"mytestsource__circleci__pipelines\\\\\\":1,\\\\\\"mytestsource__circleci__projects\\\\\\":1,\\\\\\"mytestsource__circleci__tests\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 14 records",
-  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"qa_TestCase\\\\\\":2,\\\\\\"qa_TestCaseResult\\\\\\":2,\\\\\\"qa_TestExecution\\\\\\":1,\\\\\\"qa_TestExecutionCommitAssociation\\\\\\":1,\\\\\\"qa_TestSuite\\\\\\":1,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 5 records",
+  "Processed records by stream: {\\\\\\"mytestsource__circleci__pipelines\\\\\\":1,\\\\\\"mytestsource__circleci__projects\\\\\\":1,\\\\\\"mytestsource__circleci__tests\\\\\\":2,\\\\\\"mytestsource__circleci__usage\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 33 records",
+  "Would write records by model: {\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":18,\\\\\\"qa_TestCase\\\\\\":2,\\\\\\"qa_TestCaseResult\\\\\\":2,\\\\\\"qa_TestExecution\\\\\\":1,\\\\\\"qa_TestExecutionCommitAssociation\\\\\\":1,\\\\\\"qa_TestSuite\\\\\\":1,\\\\\\"qa_TestSuiteTestCaseAssociation\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
+]
+`;
+
+exports[`circleci process records from all streams 2`] = `
+Array [
+  Object {
+    "cicd_Organization": Object {
+      "name": "CircleCI-Public",
+      "source": "CircleCI",
+      "uid": "circleci-public",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "name": "api-preview-docs",
+      "organization": Object {
+        "source": "CircleCI",
+        "uid": "circleci-public",
+      },
+      "source": "CircleCI",
+      "uid": "api-preview-docs",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2019-08-24T14:15:22.000Z",
+      "endedAt": "2019-08-24T14:15:22.000Z",
+      "name": "api-preview-docs_25_build-and-test",
+      "number": "25",
+      "pipeline": Object {
+        "organization": Object {
+          "source": "CircleCI",
+          "uid": "circleci-public",
+        },
+        "uid": "api-preview-docs",
+      },
+      "source": "CircleCI",
+      "startedAt": "2019-08-24T14:15:22.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "CircleCI",
+            "uid": "circleci-public",
+          },
+          "uid": "api-preview-docs",
+        },
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "api-preview-docs",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "circleci-public",
+          },
+          "uid": "api-preview-docs",
+        },
+        "sha": "f454a02b5d10fcccfd7d9dd7608a76d6493a98b4",
+        "uid": "f454a02b5d10fcccfd7d9dd7608a76d6493a98b4",
+      },
+      "source": "CircleCI",
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "CircleCI",
+            "uid": "circleci-public",
+          },
+          "uid": "api-preview-docs",
+        },
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      },
+      "endedAt": "2019-08-24T14:15:22.000Z",
+      "name": "string",
+      "source": "CircleCI",
+      "startedAt": "2019-08-24T14:15:22.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "build",
+      },
+      "uid": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "/path/to/main.java: Main",
+      "name": "api-preview-docs: Tasty Main",
+      "source": "CircleCI",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Main",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "CircleCI",
+      "testCase": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Main",
+      },
+      "testSuite": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main",
+      },
+    },
+  },
+  Object {
+    "qa_TestSuite": Object {
+      "name": "build-and-test",
+      "source": "CircleCI",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main",
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "description": "seems to work",
+      "source": "CircleCI",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "testCase": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Main",
+      },
+      "testExecution": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__undefined",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Main__undefined",
+    },
+  },
+  Object {
+    "qa_TestCase": Object {
+      "description": "/path/to/util.java: Main",
+      "name": "api-preview-docs: Tasty Util",
+      "source": "CircleCI",
+      "type": Object {
+        "category": "Custom",
+        "detail": "unknown",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Util",
+    },
+  },
+  Object {
+    "qa_TestSuiteTestCaseAssociation": Object {
+      "source": "CircleCI",
+      "testCase": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Util",
+      },
+      "testSuite": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main",
+      },
+    },
+  },
+  Object {
+    "qa_TestCaseResult": Object {
+      "description": "Error: division by zero",
+      "source": "CircleCI",
+      "status": Object {
+        "category": "Failure",
+        "detail": "failure",
+      },
+      "testCase": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Util",
+      },
+      "testExecution": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__undefined",
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__Tasty Util__undefined",
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "description": "Credit usage metrics by CircleCI jobs",
+      "name": "CircleCI Job Usage",
+      "scorecardCompatible": false,
+      "source": "CircleCI",
+      "uid": "circleci_job_usage",
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": "Credits used per job, by type",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_compute_credits",
+      "value": "5",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_dlc_credits",
+      "value": "1",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_user_credits",
+      "value": "2",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_storage_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_network_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_lease_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_lease_overage_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_ipranges_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "725f4757-test-4fa5-b8c0-9c811969fc64_total_credits",
+      "value": "8",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_compute_credits",
+      "value": "10",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_dlc_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_user_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_storage_credits",
+      "value": "1",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_network_credits",
+      "value": "2",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_lease_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_lease_overage_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_ipranges_credits",
+      "value": "0",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2025-07-02T00:00:00.000Z",
+      "definition": Object {
+        "uid": "circleci_job_usage",
+      },
+      "source": "CircleCI",
+      "uid": "835f4757-test-4fa5-b8c0-9c811969fc64_total_credits",
+      "value": "13",
+    },
+  },
+  Object {
+    "qa_TestExecution": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "CircleCI",
+            "uid": "circleci-public",
+          },
+          "uid": "api-preview-docs",
+        },
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      },
+      "endedAt": "2019-08-24T14:15:22.000Z",
+      "name": "build-and-test - 0",
+      "source": "CircleCI",
+      "startedAt": "2019-08-24T14:15:22.000Z",
+      "status": Object {
+        "category": "Failure",
+        "detail": null,
+      },
+      "suite": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main",
+      },
+      "testCaseResultsStats": Object {
+        "custom": 0,
+        "failure": 1,
+        "skipped": 0,
+        "success": 0,
+        "total": 1,
+        "unknown": 0,
+      },
+      "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__undefined",
+    },
+  },
+  Object {
+    "qa_TestExecutionCommitAssociation": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "api-preview-docs",
+          "organization": Object {
+            "source": "GitHub",
+            "uid": "circleci-public",
+          },
+          "uid": "api-preview-docs",
+        },
+        "sha": "f454a02b5d10fcccfd7d9dd7608a76d6493a98b4",
+        "uid": "f454a02b5d10fcccfd7d9dd7608a76d6493a98b4",
+      },
+      "source": "CircleCI",
+      "testExecution": Object {
+        "source": "CircleCI",
+        "uid": "5034460f-c7c4-4c43-9457-de07e2029e7b__build-and-test__Main__undefined",
+      },
+    },
+  },
 ]
 `;

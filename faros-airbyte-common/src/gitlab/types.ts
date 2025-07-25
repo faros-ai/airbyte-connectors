@@ -81,6 +81,17 @@ export type FarosMergeRequestOutput = {
     NoteSchema,
     'id' | 'body' | 'created_at' | 'updated_at'
   >)[];
+  sourceBranch?: string;
+  targetBranch?: string;
+  sourceProjectId?: string;
+  targetProjectId?: string;
+  sourceProject?: {
+    id: string;
+    path: string;
+    group: {
+      id: string;
+    };
+  };
 } & Pick<
   Camelize<MergeRequestSchema>,
   | 'iid'

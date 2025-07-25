@@ -143,6 +143,40 @@
         "title": "Cutoff Days",
         "default": 90,
         "description": "Only fetch data updated after cutoff"
+      },
+      "usage_export_min_gap_hours": {
+        "order": 17,
+        "type": "integer",
+        "title": "Usage Export Minimum Gap Hours",
+        "default": 24,
+        "description": "Minimum hours that must pass between the latest usage export window end and now() before creating a new export"
+      },
+      "run_mode": {
+        "order": 18,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Standard",
+        "enum": [
+          "Standard",
+          "Usage",
+          "Custom"
+        ]
+      },
+      "custom_streams": {
+        "order": 19,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "projects",
+          "pipelines",
+          "tests",
+          "usage"
+        ]
       }
     }
   }

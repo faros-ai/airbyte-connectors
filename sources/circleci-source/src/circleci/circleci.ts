@@ -21,12 +21,40 @@ import {maxBy, toLower} from 'lodash';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
 
-const DEFAULT_API_URL = 'https://circleci.com/api/v2';
-const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_CUTOFF_DAYS = 90;
-const DEFAULT_REQUEST_TIMEOUT = 120000;
+export const DEFAULT_API_URL = 'https://circleci.com/api/v2';
+export const DEFAULT_MAX_RETRIES = 3;
+export const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_USAGE_EXPORT_MIN_GAP_HOURS = 24;
+export const DEFAULT_REQUEST_TIMEOUT = 120000;
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
+
+export interface Organization {
+  id: string;
+  slug: string;
+  name: string;
+  vcs_type: string;
+  avatar_url?: string;
+}
+
+export interface UsageExportJob {
+  usage_export_job_id: string;
+  state: 'created' | 'processing' | 'completed' | 'failed';
+  download_urls: string[] | null;
+}
+
+export interface UsageExportJobGet extends UsageExportJob {
+  start?: never;
+  end?: never;
+  error_reason?: string;
+}
+
+export interface UsageExportJobCreate extends UsageExportJob {
+  start: string;
+  end: string;
+  error_reason?: never;
+}
+
 export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly token: string;
   readonly url?: string;
@@ -38,8 +66,11 @@ export interface CircleCIConfig extends AirbyteConfig, RoundRobinConfig {
   readonly faros_graph_name?: string;
   readonly reject_unauthorized: boolean;
   readonly cutoff_days?: number;
+  readonly usage_export_min_gap_hours?: number;
   readonly request_timeout?: number;
   readonly max_retries?: number;
+  readonly run_mode?: string;
+  readonly custom_streams?: ReadonlyArray<string>;
 }
 
 export class CircleCI {
@@ -258,6 +289,39 @@ export class CircleCI {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
+  private async withRetry<T>(
+    operation: () => Promise<T>,
+    path: string,
+    attempt: number = 1,
+    sleepMs: number = 1000
+  ): Promise<T> {
+    try {
+      const result = await operation();
+      if (result && typeof result === 'object' && 'headers' in result) {
+        await this.maybeSleepOnResponse(path, result as any);
+      }
+      return result;
+    } catch (err: any) {
+      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" was rate limited. Retrying... ` +
+            `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.maybeSleepOnResponse(path, err?.response);
+        return await this.withRetry(operation, path, attempt + 1, sleepMs);
+      } else if (attempt <= this.maxRetries) {
+        this.logger.warn(
+          `Request to "${path}" failed. Retrying in ${
+            sleepMs / 1000
+          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
+        );
+        await this.sleep(sleepMs);
+        return await this.withRetry(operation, path, attempt + 1, sleepMs * 2);
+      }
+      throw wrapApiError(err, `Failed to request "${path}"`);
+    }
+  }
+
   private async get<T = any, D = any>({
     path,
     api = this.v2,
@@ -271,35 +335,35 @@ export class CircleCI {
     attempt?: number;
     sleepMs?: number;
   }): Promise<AxiosResponse<T> | undefined> {
-    try {
-      const res = await api.get<T, AxiosResponse<T>>(path, config);
-      await this.maybeSleepOnResponse(path, res);
-      return res;
-    } catch (err: any) {
-      if (err?.response?.status === 429 && attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" was rate limited. Retrying... ` +
-            `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.maybeSleepOnResponse(path, err?.response);
-        return await this.get({path, api, config, attempt: attempt + 1});
-      } else if (attempt <= this.maxRetries) {
-        this.logger.warn(
-          `Request to "${path}" failed. Retrying in ${
-            sleepMs / 1000
-          } second(s)... ` + `(attempt ${attempt} of ${this.maxRetries})`
-        );
-        await this.sleep(sleepMs);
-        return await this.get({
-          path,
-          api,
-          config,
-          attempt: attempt + 1,
-          sleepMs: sleepMs * 2,
-        });
-      }
-      throw wrapApiError(err, `Failed to get "${path}"`);
-    }
+    return this.withRetry(
+      () => api.get<T, AxiosResponse<T>>(path, config),
+      path,
+      attempt,
+      sleepMs
+    );
+  }
+
+  private async post<T = any, D = any>({
+    path,
+    api = this.v2,
+    data,
+    config = {},
+    attempt = 1,
+    sleepMs = 1000,
+  }: {
+    path: string;
+    api?: AxiosInstance;
+    data?: D;
+    config?: AxiosRequestConfig<D>;
+    attempt?: number;
+    sleepMs?: number;
+  }): Promise<AxiosResponse<T> | undefined> {
+    return this.withRetry(
+      () => api.post<T, AxiosResponse<T>>(path, data, config),
+      path,
+      attempt,
+      sleepMs
+    );
   }
 
   @Memoize()
@@ -401,6 +465,72 @@ export class CircleCI {
         }),
       (item: any) => item
     );
+  }
+
+  async getAllOrganizations(): Promise<Organization[]> {
+    try {
+      this.logger.debug('Getting all organizations from CircleCI');
+      const res = await this.get({path: '/me/collaborations'});
+      return res.data || [];
+    } catch (error: any) {
+      throw new Error(
+        `Failed to get organizations from CircleCI. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
+  }
+
+  async createUsageExport(
+    orgId: string,
+    start: string,
+    end: string
+  ): Promise<UsageExportJobCreate | undefined> {
+    try {
+      this.logger.debug(
+        `Creating usage export for org ${orgId} from ${start} to ${end}`
+      );
+      const res = await this.post({
+        path: `/organizations/${orgId}/usage_export_job`,
+        data: {start, end},
+      });
+      return res.data;
+    } catch (error: any) {
+      const res = error.jse_info?.res;
+      // catch error for orgs returning 404 when creating usage export
+      if (res?.status === 404) {
+        this.logger.warn(
+          `Couldn't create usage export for org ${orgId}. Status: ${res.status}. Body ${JSON.stringify(res.data)}`
+        );
+        return;
+      }
+      throw new Error(
+        `Failed to create usage export for org ${orgId}. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
+  }
+
+  async getUsageExport(
+    orgId: string,
+    jobId: string
+  ): Promise<UsageExportJobGet> {
+    try {
+      this.logger.debug(
+        `Getting usage export status for org ${orgId}, job ${jobId}`
+      );
+      const res = await this.get({
+        path: `/organizations/${orgId}/usage_export_job/${jobId}`,
+      });
+      return res.data;
+    } catch (error: any) {
+      throw new Error(
+        `Failed to get usage export status for org ${orgId}, job ${jobId}. Error: ${wrapApiError(
+          error
+        )}`
+      );
+    }
   }
 }
 

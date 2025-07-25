@@ -92,6 +92,37 @@
     },
     "mergeCommitSha": {
       "type": ["string", "null"]
+    },
+    "sourceBranch": {
+      "type": ["string", "null"]
+    },
+    "targetBranch": {
+      "type": ["string", "null"]
+    },
+    "sourceProjectId": {
+      "type": ["string", "null"]
+    },
+    "targetProjectId": {
+      "type": ["string", "null"]
+    },
+    "sourceProject": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "group": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "required": [

@@ -175,6 +175,17 @@
           "fileCount": 1
         },
         "mergeCommitSha": null,
+        "sourceBranch": "feature/add-new-feature",
+        "targetBranch": "main",
+        "sourceProjectId": "gid://gitlab/Project/40360007",
+        "targetProjectId": "gid://gitlab/Project/40360007",
+        "sourceProject": {
+          "id": "gid://gitlab/Project/40360007",
+          "path": "testy",
+          "group": {
+            "id": "12372707"
+          }
+        },
         "group_id": "12372707",
         "project_path": "testy"
       }

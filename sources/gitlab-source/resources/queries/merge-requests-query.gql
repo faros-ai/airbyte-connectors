@@ -42,6 +42,17 @@ query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String, $updat
         state
         title
         webUrl
+        sourceBranch
+        targetBranch
+        sourceProjectId
+        targetProjectId
+        sourceProject {
+          id
+          path
+          group {
+            id
+          }
+        }
         notes(first: $pageSize) {
           pageInfo {
             endCursor
