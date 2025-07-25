@@ -123,13 +123,17 @@ export class AzureWorkitems extends types.AzureDevOps {
 
     // Build epic cache
     const epicStates = stateCategories.get('Epic');
-    const epicCache = await this.buildWorkitemToEpicCache(project, epicStates, dateRange.startDate);
-    
+    const epicCache = await this.buildWorkitemToEpicCache(
+      project,
+      epicStates,
+      dateRange.startDate
+    );
+
     // Extract epic IDs we already fetched
     const epicIds = Array.from(new Set(epicCache.values()));
 
     // Process non-epic work item types only (epics already fetched for cache)
-    const nonEpicTypes = WORK_ITEM_TYPES.filter(type => type !== "'Epic'");
+    const nonEpicTypes = WORK_ITEM_TYPES.filter((type) => type !== "'Epic'");
     const promises = nonEpicTypes.map((type) =>
       this.getIdsFromAWorkItemType(project.name, type, dateRange)
     );
@@ -188,35 +192,38 @@ export class AzureWorkitems extends types.AzureDevOps {
     cutoffDate: Date
   ): string {
     const quotedProject = `'${projectName}'`;
-    
+
     // Build state conditions
     const stateConditions: string[] = [];
-    
+
     if (inProgressStates.length) {
       stateConditions.push(`[System.State] IN (${inProgressStates.join(',')})`);
     }
-    
+
     if (proposedStates.length) {
       stateConditions.push(`[System.State] IN (${proposedStates.join(',')})`);
     }
-    
+
     if (completedStates.length) {
-      const completedCondition = 
-        `([System.State] IN (${completedStates.join(',')}) AND [Microsoft.VSTS.Common.ClosedDate] >= '${cutoffDate.toISOString()}')`;
+      const completedCondition =
+        `([System.State] IN (${completedStates.join(',')}) ` +
+        `AND [Microsoft.VSTS.Common.ClosedDate] >= '${cutoffDate.toISOString()}')`;
       stateConditions.push(completedCondition);
     }
-    
-    const stateClause = stateConditions.length 
-      ? `AND (${stateConditions.join(' OR ')})` 
+
+    const stateClause = stateConditions.length
+      ? `AND (${stateConditions.join(' OR ')})`
       : '';
-    
+
     return [
       'SELECT [System.Id] FROM WorkItems',
       "WHERE [System.WorkItemType] = 'Epic'",
       `AND [System.TeamProject] = ${quotedProject}`,
       stateClause,
-      'ORDER BY [System.ChangedDate] DESC'
-    ].filter(Boolean).join(' ');
+      'ORDER BY [System.ChangedDate] DESC',
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   private async getAllEpics(
@@ -233,47 +240,62 @@ export class AzureWorkitems extends types.AzureDevOps {
         statesByCategory.set(category, states);
       }
     } else {
-      this.logger.warn(`No state categories found for Epic work item type in project ${project.name}. Fetching all epics.`);
+      this.logger.warn(
+        'No state categories found for Epic work item type in project ' +
+          `${project.name}. Fetching all epics.`
+      );
     }
 
     const inProgressStates = statesByCategory.get('InProgress') || [];
     const proposedStates = statesByCategory.get('Proposed') || [];
     const completedStates = statesByCategory.get('Completed') || [];
 
-    const query = this.buildEpicQuery(project.name, inProgressStates, proposedStates, completedStates, cutoffDate);
+    const query = this.buildEpicQuery(
+      project.name,
+      inProgressStates,
+      proposedStates,
+      completedStates,
+      cutoffDate
+    );
 
-    this.logger.debug(`Fetching epics for project ${project.name} with query: ${query}`);
+    this.logger.debug(
+      `Fetching epics for project ${project.name} with query: ${query}`
+    );
 
     const result = await this.client.wit.queryByWiql(
-      { query },
+      {query},
       undefined,
       true,
       MAX_WIQL_ITEMS
     );
 
-    return result.workItems.map(item => item.id);
+    return result.workItems.map((item) => item.id);
   }
 
   private async getDescendantsForEpic(
     epicId: number,
     project: ProjectReference
   ): Promise<ReadonlyArray<number>> {
-    const query = 
+    const query =
       'SELECT [System.Id] FROM workitemLinks' +
       ` WHERE ([Source].[System.Id] = ${epicId})` +
       " AND ([System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward')" +
       ' MODE (Recursive)';
 
-    this.logger.debug(`Fetching descendants for epic ${epicId} in project ${project.name}`);
+    this.logger.debug(
+      `Fetching descendants for epic ${epicId} in project ${project.name}`
+    );
 
     const result = await this.client.wit.queryByWiql(
-      { query },
+      {query},
       undefined,
       true,
       MAX_WIQL_ITEMS
     );
 
-    return result.workItemRelations?.map(relation => relation.target.id) || [];
+    return (
+      result.workItemRelations?.map((relation) => relation.target.id) || []
+    );
   }
 
   private async buildWorkitemToEpicCache(
@@ -282,10 +304,12 @@ export class AzureWorkitems extends types.AzureDevOps {
     cutoffDate: Date
   ): Promise<Map<number, number>> {
     const cache = new Map<number, number>();
-    
+
     // Get all epics
     const epicIds = await this.getAllEpics(project, epicStates, cutoffDate);
-    this.logger.debug(`Found ${epicIds.length} epics in project ${project.name}`);
+    this.logger.debug(
+      `Found ${epicIds.length} epics in project ${project.name}`
+    );
 
     // For each epic, get all its descendants and map them to the epic
     for (const epicId of epicIds) {
@@ -488,15 +512,15 @@ export class AzureWorkitems extends types.AzureDevOps {
   /**
    * Retrieves all iterations for a given project in Azure DevOps using
    * the Classification Nodes API to get the iteration hierarchy recursively.
-   * 
+   *
    * We use the Classification Nodes API instead of the Teams/Iterations API because:
    * - Classification Nodes API returns ALL iterations defined in the project
    * - Teams/Iterations API only returns iterations explicitly assigned to specific teams
    * - Classification Nodes API provides the complete iteration hierarchy structure
    * - No team context is required, making it more comprehensive for data extraction
-   * 
-   * Note: The Classification Nodes API doesn't include the calculated 'timeFrame' 
-   * attribute (past/current/future), but this is calculated in the converter based 
+   *
+   * Note: The Classification Nodes API doesn't include the calculated 'timeFrame'
+   * attribute (past/current/future), but this is calculated in the converter based
    * on the iteration's startDate and finishDate compared to the current date.
    */
   async *getIterations(

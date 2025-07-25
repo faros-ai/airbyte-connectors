@@ -158,10 +158,12 @@ describe('index', () => {
               ),
             queryByWiql: workitemIdsFunc
               // First call: epic query
-              .mockResolvedValueOnce({ workItems: [{ id: 100 }, { id: 101 }] })
+              .mockResolvedValueOnce({workItems: [{id: 100}, {id: 101}]})
               // Next calls: descendant queries for each epic
-              .mockResolvedValueOnce({ workItemRelations: [{ target: { id: 297 } }, { target: { id: 299 } }] })
-              .mockResolvedValueOnce({ workItemRelations: [{ target: { id: 300 } }] })
+              .mockResolvedValueOnce({
+                workItemRelations: [{target: {id: 297}}, {target: {id: 299}}],
+              })
+              .mockResolvedValueOnce({workItemRelations: [{target: {id: 300}}]})
               // Remaining calls: workitem queries
               .mockResolvedValue(readTestFileAsJSON('workitem_ids.json')),
           },
@@ -237,10 +239,12 @@ describe('index', () => {
               ),
             queryByWiql: workitemIdsFunc
               // First call: epic query
-              .mockResolvedValueOnce({ workItems: [{ id: 100 }, { id: 101 }] })
+              .mockResolvedValueOnce({workItems: [{id: 100}, {id: 101}]})
               // Next calls: descendant queries for each epic
-              .mockResolvedValueOnce({ workItemRelations: [{ target: { id: 297 } }, { target: { id: 299 } }] })
-              .mockResolvedValueOnce({ workItemRelations: [{ target: { id: 300 } }] })
+              .mockResolvedValueOnce({
+                workItemRelations: [{target: {id: 297}}, {target: {id: 299}}],
+              })
+              .mockResolvedValueOnce({workItemRelations: [{target: {id: 300}}]})
               // Remaining calls: workitem queries
               .mockResolvedValue(readTestFileAsJSON('workitem_ids.json')),
           },
