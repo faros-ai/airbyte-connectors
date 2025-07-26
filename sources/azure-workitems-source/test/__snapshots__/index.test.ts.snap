@@ -98,6 +98,21 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "value": 8,
       },
     ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
+      },
+    ],
     "fields": {
       "Faros": {
         "EpicId": 100,
@@ -217,6 +232,21 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       {
         "name": "Remaining Work",
         "value": 4,
+      },
+    ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
       },
     ],
     "fields": {
@@ -355,6 +385,21 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       {
         "name": "Test Name",
         "value": "Zephyr",
+      },
+    ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
       },
     ],
     "fields": {

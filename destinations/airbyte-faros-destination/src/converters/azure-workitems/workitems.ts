@@ -57,7 +57,9 @@ export class Workitems extends AzureWorkitemsConverter {
             uid: String(comment.id),
             comment: Utils.cleanAndTruncate(comment.text, 10000),
             createdAt: Utils.toDate(comment.createdDate),
-            updatedAt: Utils.toDate(comment.createdDate),
+            updatedAt: Utils.toDate(
+              comment.modifiedDate ?? comment.createdDate
+            ),
             author: comment.createdBy?.id
               ? {uid: comment.createdBy.id, source}
               : undefined,
