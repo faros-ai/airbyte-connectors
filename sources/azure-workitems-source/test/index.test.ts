@@ -156,6 +156,9 @@ describe('index', () => {
               .mockResolvedValue(
                 readTestFileAsJSON('workitem_updates.json').value
               ),
+            getComments: jest
+              .fn()
+              .mockResolvedValue(readTestFileAsJSON('comments.json')),
             queryByWiql: workitemIdsFunc
               // First call: epic query
               .mockResolvedValueOnce({workItems: [{id: 100}, {id: 101}]})
@@ -172,7 +175,8 @@ describe('index', () => {
         90,
         100,
         logger,
-        additionalFields
+        additionalFields,
+        true
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -253,7 +257,8 @@ describe('index', () => {
         null,
         100,
         logger,
-        additionalFields
+        additionalFields,
+        false
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);

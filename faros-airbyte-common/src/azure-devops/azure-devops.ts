@@ -17,6 +17,15 @@ import VError from 'verror';
 
 import * as types from './types';
 
+interface ResponseWithContinuationToken {
+  continuationToken?: string;
+}
+
+type ItemFromResponseWithContinuationToken<
+  T extends ResponseWithContinuationToken,
+  K extends keyof T,
+> = T[K] extends (infer U)[] ? U : never;
+
 const CLOUD_API_URL = 'https://dev.azure.com';
 const DEFAULT_GRAPH_API_URL = 'https://vssps.dev.azure.com';
 const DEFAULT_GRAPH_API_VERSION = '7.1-preview.1';
@@ -203,20 +212,64 @@ export abstract class AzureDevOps {
     );
   }
 
-  protected async *getPaginated<T>(
+  // Overload for standard skip-based pagination (no options)
+  protected getPaginated<T>(
+    getFn: (top: number, skipOrToken: number | string) => Promise<Array<T>>
+  ): AsyncGenerator<T>;
+
+  // Overload for continuation token pagination workaround
+  protected getPaginated<T>(
     getFn: (top: number, skipOrToken: number | string) => Promise<Array<T>>,
-    options?: {
-      useContinuationToken: boolean;
+    options: {
+      useContinuationToken: true;
       continuationTokenParam: string;
     }
-  ): AsyncGenerator<T> {
+  ): AsyncGenerator<T>;
+
+  // Overload for continuation token pagination
+  protected getPaginated<
+    T extends ResponseWithContinuationToken,
+    K extends keyof T,
+  >(
+    getFn: (top: number, skipOrToken: number | string) => Promise<T>,
+    options: {
+      useContinuationToken: true;
+      itemsField: K;
+    }
+  ): AsyncGenerator<ItemFromResponseWithContinuationToken<T, K>>;
+
+  // Implementation signature
+  protected async *getPaginated<T, K extends keyof T = any>(
+    getFn: (top: number, skipOrToken: number | string) => Promise<Array<T> | T>,
+    options?: {
+      useContinuationToken?: boolean;
+      continuationTokenParam?: string;
+      itemsField?: string;
+    }
+  ): AsyncGenerator<T | ItemFromResponseWithContinuationToken<T, K>> {
     if (options?.useContinuationToken) {
-      yield* this.paginateWithContinuationToken(
-        getFn,
-        options.continuationTokenParam
-      );
+      if (!options?.itemsField) {
+        yield* this.paginateWithContinuationTokenWorkaround(
+          getFn as (
+            top: number,
+            continuationToken: number | string
+          ) => Promise<Array<T>>,
+          options.continuationTokenParam
+        );
+      } else {
+        yield* this.paginateWithContinuationToken(
+          getFn as (
+            top: number,
+            continuationToken: number | string
+          ) => Promise<T>,
+          options.itemsField
+        );
+      }
     } else {
-      yield* this.paginateWithSkip(getFn);
+      // Skip-based pagination
+      yield* this.paginateWithSkip(
+        getFn as (top: number, skip: number) => Promise<Array<T>>
+      );
     }
   }
 
@@ -237,7 +290,7 @@ export abstract class AzureDevOps {
 
   // Workaround for Azure DevOps API pagination not returning the continuation token
   // https://github.com/microsoft/azure-devops-node-api/issues/609
-  private async *paginateWithContinuationToken<T>(
+  private async *paginateWithContinuationTokenWorkaround<T>(
     getFn: (
       top: number,
       continuationToken: string | number
@@ -281,6 +334,55 @@ export abstract class AzureDevOps {
       this.logger.debug(
         hasNext
           ? `Fetching next page using continuation token ${continuationToken}`
+          : `Finished fetching ${pages} pages`
+      );
+    } while (hasNext);
+  }
+
+  // Handle responses with nested arrays and response-level continuation tokens
+  private async *paginateWithContinuationToken<
+    T extends ResponseWithContinuationToken,
+    K extends keyof T,
+  >(
+    getFn: (top: number, continuationToken: string | number) => Promise<T>,
+    itemsField: string
+  ): AsyncGenerator<ItemFromResponseWithContinuationToken<T, K>> {
+    const top = this.top;
+    let hasNext = false;
+    let pages = 0;
+    let continuationToken = undefined;
+
+    do {
+      const result = await getFn(top, continuationToken);
+      if (!result) {
+        this.logger.warn(
+          'Failed to fetch results, received empty result. Skipping...'
+        );
+        return;
+      }
+
+      // Extract the items array from the nested response
+      const items = result[itemsField] as Array<
+        ItemFromResponseWithContinuationToken<T, K>
+      >;
+      if (!Array.isArray(items)) {
+        throw new VError(
+          `Expected array at ${itemsField} but got ${typeof items} ${JSON.stringify(
+            items
+          )}`
+        );
+      }
+
+      yield* items;
+
+      // Get continuation token from the response level
+      continuationToken = result.continuationToken;
+      hasNext = Boolean(continuationToken);
+      pages++;
+
+      this.logger.debug(
+        hasNext
+          ? `Fetched page ${pages} with ${items.length} items, continuing with token ${continuationToken}`
           : `Finished fetching ${pages} pages`
       );
     } while (hasNext);
