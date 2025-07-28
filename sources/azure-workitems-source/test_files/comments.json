@@ -1,0 +1,20 @@
+{
+  "count": 1,
+  "comments": [
+    {
+      "id": 1,
+      "workItemId": 297,
+      "text": "This is a test comment on the work item.",
+      "createdBy": {
+        "displayName": "John Doe",
+        "id": "user-123",
+        "uniqueName": "john.doe@example.com"
+      },
+      "createdDate": "2024-01-15T10:30:00.000Z",
+      "modifiedDate": "2024-01-15T14:45:00.000Z",
+      "isDeleted": false,
+      "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1"
+    }
+  ],
+  "continuationToken": null
+}

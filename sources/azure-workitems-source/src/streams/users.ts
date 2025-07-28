@@ -25,7 +25,8 @@ export class Users extends AirbyteStreamBase {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger,
-      this.config.additional_fields
+      this.config.additional_fields,
+      this.config.fetch_work_item_comments
     );
     yield* azureWorkitem.getUsers(this.config.projects);
   }

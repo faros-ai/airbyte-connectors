@@ -19,7 +19,8 @@ export class Iterations extends StreamWithProjectSlices {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger,
-      this.config.additional_fields
+      this.config.additional_fields,
+      this.config.fetch_work_item_comments
     );
     const projectId = streamSlice?.id;
     yield* azureWorkitem.getIterations(projectId);

@@ -21,7 +21,8 @@ export abstract class StreamWithProjectSlices extends StreamBase {
     const azureWorkitems = await AzureWorkitems.instance(
       this.config,
       this.logger,
-      this.config.additional_fields
+      this.config.additional_fields,
+      this.config.fetch_work_item_comments
     );
     const projects = await azureWorkitems.getProjects(this.config.projects);
     for (const project of projects) {
