@@ -55,7 +55,7 @@ export class Workitems extends AzureWorkitemsConverter {
           record: {
             task: taskKey,
             uid: String(comment.id),
-            comment: Utils.cleanAndTruncate(comment.text, 10000),
+            comment: Utils.cleanAndTruncate(comment.text),
             createdAt: Utils.toDate(comment.createdDate),
             updatedAt: Utils.toDate(
               comment.modifiedDate ?? comment.createdDate
