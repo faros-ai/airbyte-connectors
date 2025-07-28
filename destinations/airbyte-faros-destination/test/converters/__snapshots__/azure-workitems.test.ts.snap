@@ -683,7 +683,7 @@ Array [
     "tms_TaskComment": Object {
       "author": Object {
         "source": "Azure-Workitems",
-        "uid": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uid": "jamal.hartnett@example.com",
       },
       "comment": "This looks good to me, let's proceed with the implementation.",
       "createdAt": "2014-12-30T10:15:30.000Z",

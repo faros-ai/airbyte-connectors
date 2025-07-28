@@ -60,8 +60,8 @@ export class Workitems extends AzureWorkitemsConverter {
             updatedAt: Utils.toDate(
               comment.modifiedDate ?? comment.createdDate
             ),
-            author: comment.createdBy?.id
-              ? {uid: comment.createdBy.id, source}
+            author: comment.createdBy?.uniqueName
+              ? {uid: comment.createdBy.uniqueName, source}
               : undefined,
           },
         });

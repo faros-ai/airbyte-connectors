@@ -103,6 +103,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "createdBy": {
           "displayName": "John Doe",
           "id": "user-123",
+          "uniqueName": "john.doe@example.com",
         },
         "createdDate": "2024-01-15T10:30:00.000Z",
         "id": 1,
@@ -239,6 +240,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "createdBy": {
           "displayName": "John Doe",
           "id": "user-123",
+          "uniqueName": "john.doe@example.com",
         },
         "createdDate": "2024-01-15T10:30:00.000Z",
         "id": 1,
@@ -392,6 +394,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "createdBy": {
           "displayName": "John Doe",
           "id": "user-123",
+          "uniqueName": "john.doe@example.com",
         },
         "createdDate": "2024-01-15T10:30:00.000Z",
         "id": 1,
