@@ -183,6 +183,7 @@ export class FarosPullRequests extends GitHubConverter {
           createdAt: Utils.toDate(pr.createdAt),
           updatedAt: Utils.toDate(pr.updatedAt),
           mergedAt: Utils.toDate(pr.mergedAt),
+          closedAt: Utils.toDate(pr.closedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
           commentCount:

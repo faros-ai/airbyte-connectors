@@ -16,6 +16,7 @@
           },
           "body": "**Related issues**\r\nhttps://github.com/faros-ai/tickets/issues/120\r\n\r\n**Describe the proposed solution**\r\nOptional `employee` param changes DORA app behavior to return metrics rolled-up by owner.\r\n\r\n**Describe alternatives you've considered**\r\nA clear and concise description of any alternative solutions or features you've considered.\r\n\r\n**Additional context**\r\nAdd any other context about the changes here.\r\n",
           "changedFiles": 21,
+          "closedAt": "2021-02-16T17:15:27Z",
           "createdAt": "2021-02-12T05:35:19Z",
           "commits": {
             "totalCount": 13,
@@ -155,6 +156,7 @@
           },
           "body": "**Related issues**\r\nEnsures we only expose the apps that can run on the latest Faros API \r\n\r\n**Describe the proposed solution**\r\nMoving all apps that are not compatible with our new schema and/or do not have feed and model support yet. As we add more feeds re-add them after full testing.\r\n\r\n**Describe alternatives you've considered**\r\nN/A\r\n\r\n",
           "changedFiles": 140,
+          "closedAt": "2021-02-10T19:22:08Z",
           "createdAt": "2021-02-04T23:54:56Z",
           "commits": {
             "totalCount": 2
@@ -243,6 +245,7 @@
           },
           "body": "Handle cases and add tests for when:\r\n1. Deployments have no associated builds\r\n2. Builds have no associated commits",
           "changedFiles": 2,
+          "closedAt": "2021-02-04T21:53:00Z",
           "createdAt": "2021-02-04T15:49:42Z",
           "commits": {
             "totalCount": 9
