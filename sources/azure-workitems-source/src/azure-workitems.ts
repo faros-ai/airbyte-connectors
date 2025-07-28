@@ -172,10 +172,9 @@ export class AzureWorkitems extends types.AzureDevOps {
         );
 
         // Conditionally fetch comments if enabled
-        let comments: ReadonlyArray<Comment> | undefined;
-        if (this.fetchWorkItemComments) {
-          comments = await this.getWorkItemComments(item.id, project.id);
-        }
+        const comments = this.fetchWorkItemComments
+          ? await this.getWorkItemComments(item.id, project.id)
+          : undefined;
 
         yield {
           ...item,
