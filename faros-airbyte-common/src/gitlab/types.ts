@@ -102,6 +102,7 @@ export type FarosMergeRequestOutput = {
   | 'createdAt'
   | 'updatedAt'
   | 'mergedAt'
+  | 'closedAt'
   | 'commitCount'
   | 'userNotesCount'
   | 'diffStatsSummary'
