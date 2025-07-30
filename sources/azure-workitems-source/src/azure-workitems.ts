@@ -1,5 +1,6 @@
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {
+  Comment,
   TreeStructureGroup,
   WorkItemClassificationNode,
   WorkItemExpand,
@@ -39,10 +40,12 @@ export class AzureWorkitems extends types.AzureDevOps {
     protected readonly cutoffDays: number,
     protected readonly top: number,
     protected readonly logger: AirbyteLogger,
-    private readonly additionalFields?: ReadonlyArray<string>
+    private readonly additionalFields?: ReadonlyArray<string>,
+    private readonly fetchWorkItemComments?: boolean
   ) {
     super(client, instanceType, cutoffDays, top, logger);
     this.additionalFields = additionalFields;
+    this.fetchWorkItemComments = fetchWorkItemComments ?? false;
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -167,6 +170,12 @@ export class AzureWorkitems extends types.AzureDevOps {
           project.id,
           states
         );
+
+        // Conditionally fetch comments if enabled
+        const comments = this.fetchWorkItemComments
+          ? await this.getWorkItemComments(item.id, project.id)
+          : undefined;
+
         yield {
           ...item,
           fields: {
@@ -179,6 +188,7 @@ export class AzureWorkitems extends types.AzureDevOps {
           revisions,
           additionalFields,
           project,
+          comments,
         };
       }
     }
@@ -333,6 +343,28 @@ export class AzureWorkitems extends types.AzureDevOps {
       assignees: this.getAssigneeRevisions(updates),
       iterations: this.getIterationRevisions(updates),
     };
+  }
+
+  async getWorkItemComments(
+    workItemId: number,
+    projectId: string
+  ): Promise<ReadonlyArray<Comment>> {
+    const getCommentFn = (top: number, continuationToken: string | number) =>
+      this.client.wit.getComments(
+        projectId,
+        workItemId,
+        top,
+        String(continuationToken)
+      );
+
+    const comments: Comment[] = [];
+    for await (const comment of this.getPaginated(getCommentFn, {
+      useContinuationToken: true,
+      itemsField: 'comments',
+    })) {
+      comments.push(comment);
+    }
+    return comments;
   }
 
   private async getWorkItemUpdates(
