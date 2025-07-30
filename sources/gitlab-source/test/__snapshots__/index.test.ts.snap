@@ -449,6 +449,7 @@ exports[`index streams - faros merge requests 1`] = `
       "username": "testuser",
       "webUrl": "https://gitlab.com/testuser",
     },
+    "closedAt": null,
     "commitCount": 2,
     "createdAt": "2021-01-01T00:00:00Z",
     "diffStatsSummary": {

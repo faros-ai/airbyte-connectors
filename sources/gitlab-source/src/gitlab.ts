@@ -397,6 +397,7 @@ export class GitLab {
             'createdAt',
             'updatedAt',
             'mergedAt',
+            'closedAt',
             'commitCount',
             'userNotesCount',
             'diffStatsSummary',

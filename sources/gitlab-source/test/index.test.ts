@@ -303,6 +303,7 @@ describe('index', () => {
         createdAt: '2021-01-01T00:00:00Z',
         updatedAt: '2021-01-02T00:00:00Z',
         mergedAt: null,
+        closedAt: null,
         author: {
           name: 'Test User',
           publicEmail: 'test@example.com',
