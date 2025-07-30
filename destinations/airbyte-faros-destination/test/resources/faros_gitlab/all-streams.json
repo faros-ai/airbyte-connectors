@@ -167,7 +167,7 @@
         "createdAt": "2025-06-13T00:58:27Z",
         "updatedAt": "2025-06-13T01:52:18Z",
         "mergedAt": null,
-        "closed_at": "2025-06-13T02:15:30Z",
+        "closedAt": "2025-06-13T02:15:30Z",
         "commitCount": 1,
         "userNotesCount": 2,
         "diffStatsSummary": {
