@@ -221,6 +221,7 @@ Array [
         "source": "GitLab",
         "uid": "ypc-faros",
       },
+      "closedAt": "2025-06-13T02:15:30.000Z",
       "commentCount": 2,
       "commitCount": 1,
       "createdAt": "2025-06-13T00:58:27.000Z",
@@ -256,8 +257,8 @@ Array [
       },
       "sourceBranchName": "feature/add-new-feature",
       "state": Object {
-        "category": "Open",
-        "detail": "opened",
+        "category": "Closed",
+        "detail": "closed",
       },
       "targetBranch": Object {
         "name": "main",

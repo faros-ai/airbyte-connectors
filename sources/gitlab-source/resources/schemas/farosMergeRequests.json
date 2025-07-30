@@ -70,6 +70,10 @@
       "type": ["string", "null"],
       "format": "date-time"
     },
+    "closedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
     "commitCount": {
       "type": "integer"
     },
