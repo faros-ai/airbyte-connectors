@@ -1,0 +1,52 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_epics",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "updated_at"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["id"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    },
+    {
+      "stream": {
+        "name": "faros_issues",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "updated_at"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["id"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    }
+  ]
+}

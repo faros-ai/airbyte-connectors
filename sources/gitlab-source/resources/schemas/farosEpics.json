@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "__brand": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "parent_id": {
+      "type": ["integer", "null"]
+    },
+    "parent_iid": {
+      "type": ["integer", "null"]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string",
+      "enum": ["opened", "closed"]
+    },
+    "confidential": {
+      "type": "boolean"
+    },
+    "start_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "due_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "start_date_is_fixed": {
+      "type": ["boolean", "null"]
+    },
+    "start_date_fixed": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "start_date_from_inherited_source": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "due_date_is_fixed": {
+      "type": ["boolean", "null"]
+    },
+    "due_date_fixed": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "due_date_from_inherited_source": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "closed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "author_username": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "required": [
+    "__brand",
+    "id",
+    "iid",
+    "group_id",
+    "title",
+    "state",
+    "confidential",
+    "created_at",
+    "updated_at",
+    "labels",
+    "author_username",
+    "web_url"
+  ]
+}

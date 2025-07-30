@@ -350,6 +350,35 @@ Implements requested functionality",
 ]
 `;
 
+exports[`index streams - faros epics 1`] = `
+[
+  {
+    "author": {
+      "username": "hkmshb",
+    },
+    "created_at": "2024-01-01T10:00:00.000Z",
+    "description": "Epic for implementing comprehensive user authentication system",
+    "group_id": "test-group",
+    "id": 1001,
+    "state": "opened",
+    "title": "User Authentication Epic",
+    "updated_at": "2024-02-15T14:30:00.000Z",
+  },
+  {
+    "author": {
+      "username": "testuser",
+    },
+    "created_at": "2024-01-15T09:00:00.000Z",
+    "description": "Sub-epic for OAuth provider integrations",
+    "group_id": "test-group",
+    "id": 1002,
+    "state": "closed",
+    "title": "OAuth Integration",
+    "updated_at": "2024-02-28T16:00:00.000Z",
+  },
+]
+`;
+
 exports[`index streams - faros groups 1`] = `
 [
   {
@@ -379,6 +408,7 @@ exports[`index streams - faros issues 1`] = `
     },
     "created_at": "2021-02-27T15:50:47.923Z",
     "description": "The repository needs to be set up.",
+    "epic_id": 1001,
     "group_id": "1",
     "id": 79927767,
     "labels": [

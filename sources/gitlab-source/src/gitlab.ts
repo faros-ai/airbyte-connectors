@@ -2,7 +2,9 @@ import {
   Camelize,
   CommitSchema,
   DeploymentSchema,
+  EpicSchemaWithExpandedLabels,
   EventSchema,
+  GitbeakerRequestError,
   Gitlab as GitlabClient,
   GroupSchema,
   IssueSchema,
@@ -18,6 +20,7 @@ import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   FarosCommitOutput,
   FarosDeploymentOutput,
+  FarosEpicOutput,
   FarosGroupOutput,
   FarosIssueOutput,
   FarosMergeRequestOutput,
@@ -103,9 +106,9 @@ export class GitLab {
       this.logger.debug('Verifying GitLab credentials by fetching metadata');
       const metadata = await this.client.Metadata.show();
       if (metadata?.version) {
-        this.logger.debug(
+        this.logger.info(
           'GitLab credentials verified.',
-          `Connected to GitLab version ${metadata.version}`
+          `Connected to GitLab version ${metadata.version} (enterprise: ${metadata.enterprise})`
         );
       } else {
         this.logger.error(
@@ -614,6 +617,7 @@ export class GitLab {
         author_username: typedIssue.author.username,
         assignee_usernames:
           typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
+        epic_id: typedIssue.epic?.id ?? null,
       };
     }
   }
@@ -726,6 +730,60 @@ export class GitLab {
           'environment',
         ]),
       };
+    }
+  }
+
+  async *getEpics(
+    groupId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosEpicOutput, 'group_id'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    try {
+      for await (const epic of this.offsetPagination((paginationOptions) =>
+        this.client.Epics.all(groupId, {...options, ...paginationOptions})
+      )) {
+        const typedEpic = epic as EpicSchemaWithExpandedLabels;
+        this.userCollector.collectUser(typedEpic.author);
+
+        yield {
+          __brand: 'FarosEpic',
+          ...pick(typedEpic, [
+            'id',
+            'title',
+            'description',
+            'state',
+            'created_at',
+            'updated_at',
+          ]),
+        };
+      }
+    } catch (err: any) {
+      if (err instanceof GitbeakerRequestError) {
+        if (err.cause?.description?.includes('403')) {
+          this.logger.info(
+            `Epics feature is not available for group ${groupId}. This is expected for groups without Premium/Ultimate license.`
+          );
+          return;
+        }
+      }
+      this.logger.error(
+        `Failed to fetch epics for group ${groupId}: ${err.message}`
+      );
+      throw new VError(err, `Error fetching epics for group ${groupId}`);
     }
   }
 }

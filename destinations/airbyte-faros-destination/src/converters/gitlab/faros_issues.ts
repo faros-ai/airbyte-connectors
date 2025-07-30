@@ -34,7 +34,6 @@ export class FarosIssues extends GitlabConverter {
     const uid = String(issue.id);
     const taskKey = {uid, source: this.streamName.source};
 
-    
     // Create project key from project_path and group_id
     const projectKey = {
       uid: `${toLower(issue.group_id)}/${toLower(issue.project_path)}`,
@@ -86,6 +85,9 @@ export class FarosIssues extends GitlabConverter {
         creator: issue.author_username
           ? {uid: issue.author_username, source: this.streamName.source}
           : null,
+        epic: issue.epic_id
+          ? {uid: String(issue.epic_id), source: this.streamName.source}
+          : undefined,
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
         source: this.streamName.source,
