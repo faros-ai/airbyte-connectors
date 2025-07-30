@@ -47,6 +47,7 @@ export class MergeRequests extends GitlabConverter {
           createdAt: Utils.toDate(mr.created_at),
           updatedAt: Utils.toDate(mr.updated_at),
           mergedAt: Utils.toDate(mr.merged_at),
+          closedAt: Utils.toDate(mr.closed_at),
           commentCount: Utils.parseInteger(mr.user_notes_count),
           author: username ? {uid: username, source} : null,
           mergeCommit: mr.merge_commit_sha
