@@ -1696,6 +1696,7 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context about the changes here.
 ",
     "changedFiles": 21,
+    "closedAt": "2021-02-16T17:15:27Z",
     "comments": {
       "totalCount": 3,
     },
@@ -1823,6 +1824,7 @@ N/A
 
 ",
     "changedFiles": 140,
+    "closedAt": "2021-02-10T19:22:08Z",
     "comments": {
       "totalCount": 1,
     },
@@ -1892,6 +1894,7 @@ N/A
 1. Deployments have no associated builds
 2. Builds have no associated commits",
     "changedFiles": 2,
+    "closedAt": "2021-02-04T21:53:00Z",
     "comments": {
       "totalCount": 0,
     },
@@ -2049,6 +2052,7 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context about the changes here.
 ",
     "changedFiles": 21,
+    "closedAt": "2021-02-16T17:15:27Z",
     "comments": {
       "totalCount": 3,
     },
@@ -2174,6 +2178,7 @@ N/A
 
 ",
     "changedFiles": 140,
+    "closedAt": "2021-02-10T19:22:08Z",
     "comments": {
       "totalCount": 1,
     },
@@ -2227,6 +2232,7 @@ N/A
 1. Deployments have no associated builds
 2. Builds have no associated commits",
     "changedFiles": 2,
+    "closedAt": "2021-02-04T21:53:00Z",
     "comments": {
       "totalCount": 0,
     },

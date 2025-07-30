@@ -506,6 +506,7 @@ Array [
         "source": "Azure-Repos",
         "uid": "test@gmail.com",
       },
+      "closedAt": "2023-01-07T01:20:34.356Z",
       "commentCount": 5,
       "createdAt": "2023-01-07T01:20:10.168Z",
       "diffStats": Object {
@@ -685,6 +686,7 @@ Array [
         "source": "Azure-Repos",
         "uid": "test@gmail.com",
       },
+      "closedAt": "2023-01-05T18:05:31.840Z",
       "commentCount": 3,
       "createdAt": "2023-01-05T18:04:45.699Z",
       "diffStats": Object {
