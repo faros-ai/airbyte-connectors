@@ -21,7 +21,7 @@ export abstract class VantaConverter extends Converter {
   protected isCICDArtifactVulnerability(
     vulnerableAsset: VulnerableAssetSummary
   ): boolean {
-    return this.getCommitSha(vulnerableAsset.imageTags)?.length > 0;
+    return vulnerableAsset.type === 'CONTAINER_REPOSITORY';
   }
 
   protected getCommitSha(imageTags?: string[]): string | null {
