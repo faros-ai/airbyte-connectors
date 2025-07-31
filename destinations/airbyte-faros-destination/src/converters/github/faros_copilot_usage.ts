@@ -570,21 +570,19 @@ export class FarosCopilotUsage extends GitHubConverter {
     const res: DestinationRecord[] = [];
     // make sure we delete old records without model for the same partition
     // that could have been written to avoid duplicated / redundant data
-    res.push(
-      ...Object.entries(this.recordsWithoutModelForDeletion).map(
-        ([uid, {day}]) => ({
-          model: 'vcs_AssistantMetric__Deletion',
-          record: {
-            flushRequired: false,
-            where: {
-              uid,
-              startedAt: day, // include to benefit from the index on startedAt and improve performance
-            },
+    for (const [uid, {day}] of Object.entries(this.recordsWithoutModelForDeletion)) {
+      res.push({
+        model: 'vcs_AssistantMetric__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            uid,
+            startedAt: day, // include to benefit from the index on startedAt and improve performance
           },
-        })
-      ),
-      FLUSH
-    );
+        },
+      });
+    }
+    res.push(FLUSH);
     return res;
   }
 }
