@@ -2,9 +2,9 @@ import {ProjectVisibility} from 'azure-devops-node-api/interfaces/CoreInterfaces
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Repository} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {OrgTypeCategory} from '../common/vcs';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureReposConverter} from './common';
 
 export class Repositories extends AzureReposConverter {
@@ -17,11 +17,12 @@ export class Repositories extends AzureReposConverter {
   private readonly seenOrganizations = new Set<string>();
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const repositoryItem = record.record.data as Repository;
     const res: DestinationRecord[] = [];
-    const organizationName = getOrganizationFromUrl(repositoryItem.url);
+    const organizationName = getOrganization(ctx, repositoryItem.url);
     const organization = this.getOrgKey(organizationName);
     const repository = this.getProjectRepo(repositoryItem, organization);
 

@@ -4,7 +4,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {CategoryDetail, Common} from '../common/common';
 import {
   BranchCollector,
@@ -131,7 +131,8 @@ export class PullRequests extends AzureReposConverter {
       return [];
     }
 
-    const organizationName = getOrganizationFromUrl(
+    const organizationName = getOrganization(
+      ctx,
       pullRequestItem.repository.url
     );
     const organization = this.getOrgKey(organizationName);
