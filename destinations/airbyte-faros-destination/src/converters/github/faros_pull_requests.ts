@@ -293,11 +293,23 @@ export class FarosPullRequests extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
-    res.push(...this.convertBranches());
-    res.push(...this.convertLabels());
-    res.push(...this.convertUsers());
-    res.push(...this.fileCollector.convertFiles());
-    res.push(...this.convertPRFileAssociations());
+    
+    for (const record of this.convertBranches()) {
+      res.push(record);
+    }
+    for (const record of this.convertLabels()) {
+      res.push(record);
+    }
+    for (const record of this.convertUsers()) {
+      res.push(record);
+    }
+    for (const record of this.fileCollector.convertFiles()) {
+      res.push(record);
+    }
+    for (const record of this.convertPRFileAssociations()) {
+      res.push(record);
+    }
+    
     return res;
   }
 
