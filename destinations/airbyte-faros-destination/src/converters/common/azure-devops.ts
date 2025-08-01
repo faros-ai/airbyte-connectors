@@ -1,9 +1,19 @@
 import {User} from 'faros-airbyte-common/azure-devops';
 
-export function getOrganizationFromUrl(
+import {StreamContext} from '../converter';
+
+export function getOrganization(
+  ctx: StreamContext,
   url: string,
   lookBack: 1 | 2 = 2
 ): string | undefined {
+  // Try source config first
+  const orgFromSource = ctx.getSourceConfig()?.organization;
+  if (orgFromSource) {
+    return orgFromSource.toLowerCase();
+  }
+
+  // Fallback to URL parsing
   try {
     const {hostname, pathNameParts} = parseUrl(url);
 

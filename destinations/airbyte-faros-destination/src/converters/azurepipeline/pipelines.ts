@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Pipeline} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzurePipelineConverter} from './common';
 
@@ -20,8 +20,7 @@ export class Pipelines extends AzurePipelineConverter {
     const pipeline = record.record.data as Pipeline;
     const res: DestinationRecord[] = [];
 
-    const organizationName = this.getOrganizationFromSourceConfig(ctx) ??
-      getOrganizationFromUrl(pipeline.url);
+    const organizationName = getOrganization(ctx, pipeline.url);
 
     if (!organizationName) {
       ctx.logger.error(

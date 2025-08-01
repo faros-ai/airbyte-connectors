@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {User} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganizationFromUrl, getUniqueName} from '../common/azure-devops';
+import {getOrganization, getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {UserTypeCategory} from '../common/vcs';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureReposConverter} from './common';
 
 export class Users extends AzureReposConverter {
@@ -18,7 +18,8 @@ export class Users extends AzureReposConverter {
   }
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const userItem = record.record.data as User;
@@ -28,7 +29,7 @@ export class Users extends AzureReposConverter {
     }
 
     const url = userItem._links?.self?.href ?? userItem.url;
-    const organizationName = getOrganizationFromUrl(url, 1);
+    const organizationName = getOrganization(ctx, url, 1);
     const organization = this.getOrgKey(organizationName);
     const type: CategoryDetail = {
       category: UserTypeCategory.User,
