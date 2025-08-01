@@ -303,6 +303,7 @@ describe('index', () => {
         createdAt: '2021-01-01T00:00:00Z',
         updatedAt: '2021-01-02T00:00:00Z',
         mergedAt: null,
+        closedAt: null,
         author: {
           name: 'Test User',
           publicEmail: 'test@example.com',
@@ -516,9 +517,13 @@ describe('index', () => {
   });
 
   test('streams - faros deployments', async () => {
-    const deployments = readTestResourceAsJSON('faros_deployments/deployments.json');
+    const deployments = readTestResourceAsJSON(
+      'faros_deployments/deployments.json'
+    );
     const {gitlab} = setupBasicMocks();
-    gitlab.getDeployments.mockReturnValue(createAsyncGeneratorMock(deployments));
+    gitlab.getDeployments.mockReturnValue(
+      createAsyncGeneratorMock(deployments)
+    );
 
     await sourceReadTest({
       source,

@@ -8255,6 +8255,7 @@ export type PullRequestsQuery = {
         additions: number;
         body: string;
         changedFiles: number;
+        closedAt?: string | null;
         createdAt: string;
         deletions: number;
         isDraft: boolean;

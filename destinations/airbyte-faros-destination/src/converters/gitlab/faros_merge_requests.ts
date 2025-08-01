@@ -86,6 +86,7 @@ export class FarosMergeRequests extends GitlabConverter {
         createdAt: Utils.toDate(mergeRequest.createdAt),
         updatedAt: Utils.toDate(mergeRequest.updatedAt),
         mergedAt: Utils.toDate(mergeRequest.mergedAt),
+        closedAt: Utils.toDate(mergeRequest.closedAt),
         commentCount: mergeRequest.userNotesCount,
         commitCount: mergeRequest.commitCount,
         diffStats: mergeRequest.diffStatsSummary

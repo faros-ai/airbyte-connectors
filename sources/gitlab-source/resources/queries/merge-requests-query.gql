@@ -13,6 +13,7 @@ query mergeRequests($fullPath: ID!, $pageSize: Int = 40, $cursor: String, $updat
         createdAt
         updatedAt
         mergedAt
+        closedAt
         author {
           id
           name
