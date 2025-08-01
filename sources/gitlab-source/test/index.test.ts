@@ -517,9 +517,13 @@ describe('index', () => {
   });
 
   test('streams - faros deployments', async () => {
-    const deployments = readTestResourceAsJSON('faros_deployments/deployments.json');
+    const deployments = readTestResourceAsJSON(
+      'faros_deployments/deployments.json'
+    );
     const {gitlab} = setupBasicMocks();
-    gitlab.getDeployments.mockReturnValue(createAsyncGeneratorMock(deployments));
+    gitlab.getDeployments.mockReturnValue(
+      createAsyncGeneratorMock(deployments)
+    );
 
     await sourceReadTest({
       source,

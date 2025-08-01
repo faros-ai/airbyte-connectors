@@ -293,7 +293,7 @@ export class FarosPullRequests extends GitHubConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
-    
+
     for (const record of this.convertBranches()) {
       res.push(record);
     }
@@ -309,7 +309,7 @@ export class FarosPullRequests extends GitHubConverter {
     for (const record of this.convertPRFileAssociations()) {
       res.push(record);
     }
-    
+
     return res;
   }
 
