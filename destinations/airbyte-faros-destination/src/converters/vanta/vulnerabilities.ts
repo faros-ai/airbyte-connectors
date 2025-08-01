@@ -72,6 +72,7 @@ export abstract class Vulnerabilities extends VantaConverter {
           : [],
         // If the vulnerability is deactivated indefinitely, the remediatedAt field will be set to deactivatedOnDate:
         remediatedAt: this.getResolvedAt(data),
+        resolvedAt: this.getResolvedAt(data),
         status: {
           category: data.deactivateMetadata ? 'Ignored' : 'Open',
           detail: data.deactivateMetadata?.deactivationReason || '',
