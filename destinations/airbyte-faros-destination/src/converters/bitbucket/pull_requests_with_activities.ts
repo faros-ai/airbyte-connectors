@@ -100,6 +100,7 @@ export class PullRequestsWithActivities extends BitbucketConverter {
         createdAt: Utils.toDate(pullRequest.createdOn),
         updatedAt: Utils.toDate(pullRequest.updatedOn),
         mergedAt: Utils.toDate(pullRequest.calculatedActivity?.mergedAt),
+        closedAt: Utils.toDate(pullRequest.closedOn),
         commentCount: pullRequest.commentCount,
         commitCount: pullRequest.calculatedActivity?.commitCount,
         diffStats: this.calculateDiffStats(pullRequest),

@@ -968,6 +968,7 @@ export class Bitbucket {
       taskCount: data.task_count,
       reason: data.reason,
       updatedOn: data.updated_on,
+      closedOn: data.closed_on,
       links: {
         declineUrl: data.links?.decline?.href,
         diffstatUrl: data.links?.diffstat?.href,

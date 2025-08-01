@@ -305,6 +305,7 @@ export interface PullRequest {
   readonly state: string;
   readonly reason: string;
   readonly updatedOn: string;
+  readonly closedOn?: string;
   readonly closeSourceBranch: boolean;
   readonly id: number;
   readonly commentCount: number;

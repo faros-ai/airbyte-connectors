@@ -6,10 +6,16 @@
     "id": 2,
     "title": "Another test to open PR",
     "description": "",
-    "state": "OPEN",
+    "state": "DECLINED",
     "merge_commit": null,
     "close_source_branch": false,
-    "closed_by": null,
+    "closed_on": "2024-09-06T13:15:30.000Z",
+    "closed_by": {
+      "display_name": "Anonymous User",
+      "uuid": "{anonymized-uuid}",
+      "type": "user",
+      "account_id": "anonymized-account-id"
+    },
     "author": {
       "display_name": "Anonymous User",
       "links": {

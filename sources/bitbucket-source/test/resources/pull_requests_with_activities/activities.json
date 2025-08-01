@@ -14,7 +14,7 @@
       }
     },
     "update": {
-      "state": "OPEN",
+      "state": "DECLINED",
       "title": "Another test to open PR",
       "description": "",
       "reviewers": [],
