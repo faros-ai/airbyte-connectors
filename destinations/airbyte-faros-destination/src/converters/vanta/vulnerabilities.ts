@@ -10,6 +10,7 @@ import {
 import {getVCSRepositoriesFromNames, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VantaConverter} from './common';
+import {VulnRemediationMetadata} from './utils';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -50,6 +51,8 @@ export abstract class Vulnerabilities extends VantaConverter {
     const identifierRecords = this.processVulnerabilityIdentifier(data, ctx);
     records.push(...identifierRecords);
 
+    const vulnRemediationMetadata = this.grabRemediationMetadataFromVuln(data);
+
     // Creating the base sec_Vulnerability record
     const vulnRecord: DestinationRecord = {
       model: 'sec_Vulnerability',
@@ -69,6 +72,8 @@ export abstract class Vulnerabilities extends VantaConverter {
         affectedVersions: data.packageIdentifier
           ? [data.packageIdentifier]
           : [],
+        // If the vulnerability is deactivated indefinitely, the remediatedAt field will be set to deactivatedOnDate:
+        remediatedAt: this.getResolvedAt(vulnRemediationMetadata),
       },
     };
     records.push(vulnRecord);
@@ -84,7 +89,9 @@ export abstract class Vulnerabilities extends VantaConverter {
       this.collectedRepoNames.add(vulnAsset.name);
     } else if (this.isCICDArtifactVulnerability(vulnAsset)) {
       const commitSha = this.getCommitSha(vulnAsset.imageTags);
-      this.collectedArtifactCommitShas.add(commitSha);
+      if (commitSha) {
+        this.collectedArtifactCommitShas.add(commitSha);
+      }
     }
 
     return records;
@@ -103,10 +110,24 @@ export abstract class Vulnerabilities extends VantaConverter {
       ctx
     );
     for (const vuln of this.collectedVulnerabilities) {
+      const vulnRemediationMetadata =
+        this.grabRemediationMetadataFromVuln(vuln);
       if (this.isVCSRepoVulnerability(vuln.asset)) {
-        this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
+        this.convertRepositoryVulnerability(
+          vcsRepos,
+          vuln,
+          ctx,
+          vulnRemediationMetadata,
+          records
+        );
       } else if (this.isCICDArtifactVulnerability(vuln.asset)) {
-        this.convertArtifactVulnerability(vuln, ctx, cicdArtifacts, records);
+        this.convertArtifactVulnerability(
+          vuln,
+          ctx,
+          cicdArtifacts,
+          vulnRemediationMetadata,
+          records
+        );
       }
     }
     // Log warnings for different cases of missing data
@@ -138,10 +159,44 @@ export abstract class Vulnerabilities extends VantaConverter {
     return records;
   }
 
+  private grabRemediationMetadataFromVuln(
+    data: Vulnerability
+  ): VulnRemediationMetadata {
+    const isDeactivated = !!data.deactivateMetadata;
+
+    return {
+      isDeactivated,
+      deactivateMetadata: {
+        deactivatedBy: data.deactivateMetadata?.deactivatedBy || null,
+        deactivatedOnDate: data.deactivateMetadata?.deactivatedOnDate
+          ? new Date(data.deactivateMetadata.deactivatedOnDate)
+          : null,
+        deactivationReason: data.deactivateMetadata?.deactivationReason || null,
+        deactivatedUntilDate: data.deactivateMetadata?.deactivatedUntilDate
+          ? new Date(data.deactivateMetadata.deactivatedUntilDate)
+          : null,
+        isVulnDeactivatedIndefinitely:
+          data.deactivateMetadata?.isVulnDeactivatedIndefinitely ?? null,
+      },
+    };
+  }
+
+  private getResolvedAt(
+    vulnRemediationMetadata: VulnRemediationMetadata
+  ): Date | null {
+    return vulnRemediationMetadata.deactivateMetadata
+      ?.isVulnDeactivatedIndefinitely
+      ? Utils.toDate(
+          vulnRemediationMetadata.deactivateMetadata?.deactivatedOnDate
+        )
+      : null;
+  }
+
   private convertRepositoryVulnerability(
     vcsRepos: RepoKey[],
     vuln: Vulnerability,
     ctx: StreamContext,
+    vulnRemediationMetadata: VulnRemediationMetadata,
     records: DestinationRecord[]
   ) {
     const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.asset.name);
@@ -157,6 +212,7 @@ export abstract class Vulnerabilities extends VantaConverter {
         url: vuln.externalURL,
         dueAt: Utils.toDate(vuln.remediateByDate),
         createdAt: Utils.toDate(vuln.firstDetectedDate),
+        resolvedAt: this.getResolvedAt(vulnRemediationMetadata),
         status: {
           category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
           detail: vuln.deactivateMetadata?.deactivationReason || '',
@@ -260,6 +316,7 @@ export abstract class Vulnerabilities extends VantaConverter {
     vuln: Vulnerability,
     ctx: StreamContext,
     cicdArtifacts: ArtifactKey[],
+    vulnRemediationMetadata: VulnRemediationMetadata,
     records: DestinationRecord[]
   ) {
     const commitSha = this.getCommitSha(vuln.asset.imageTags);
@@ -282,6 +339,7 @@ export abstract class Vulnerabilities extends VantaConverter {
         url: vuln.externalURL,
         dueAt: Utils.toDate(vuln.remediateByDate),
         createdAt: Utils.toDate(vuln.firstDetectedDate),
+        resolvedAt: this.getResolvedAt(vulnRemediationMetadata),
         status: {
           category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
           detail: vuln.deactivateMetadata?.deactivationReason || '',
