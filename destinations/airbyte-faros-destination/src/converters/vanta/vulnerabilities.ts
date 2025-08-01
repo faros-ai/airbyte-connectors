@@ -51,8 +51,6 @@ export abstract class Vulnerabilities extends VantaConverter {
     const identifierRecords = this.processVulnerabilityIdentifier(data, ctx);
     records.push(...identifierRecords);
 
-    const vulnRemediationMetadata = this.grabRemediationMetadataFromVuln(data);
-
     // Creating the base sec_Vulnerability record
     const vulnRecord: DestinationRecord = {
       model: 'sec_Vulnerability',
@@ -73,7 +71,11 @@ export abstract class Vulnerabilities extends VantaConverter {
           ? [data.packageIdentifier]
           : [],
         // If the vulnerability is deactivated indefinitely, the remediatedAt field will be set to deactivatedOnDate:
-        remediatedAt: this.getResolvedAt(vulnRemediationMetadata),
+        remediatedAt: this.getResolvedAt(data),
+        status: {
+          category: data.deactivateMetadata ? 'Ignored' : 'Open',
+          detail: data.deactivateMetadata?.deactivationReason || '',
+        },
       },
     };
     records.push(vulnRecord);
@@ -110,8 +112,6 @@ export abstract class Vulnerabilities extends VantaConverter {
       ctx
     );
     for (const vuln of this.collectedVulnerabilities) {
-      const vulnRemediationMetadata =
-        this.grabRemediationMetadataFromVuln(vuln);
       if (this.isVCSRepoVulnerability(vuln.asset)) {
         this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
       } else if (this.isCICDArtifactVulnerability(vuln.asset)) {
@@ -169,9 +169,8 @@ export abstract class Vulnerabilities extends VantaConverter {
     };
   }
 
-  private getResolvedAt(
-    vulnRemediationMetadata: VulnRemediationMetadata
-  ): Date | null {
+  private getResolvedAt(vuln: Vulnerability): Date | null {
+    const vulnRemediationMetadata = this.grabRemediationMetadataFromVuln(vuln);
     return vulnRemediationMetadata.deactivateMetadata
       ?.isVulnDeactivatedIndefinitely
       ? Utils.toDate(
