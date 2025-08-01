@@ -2,6 +2,7 @@ import {
   Camelize,
   CommitSchema,
   DeploymentSchema,
+  EpicSchema,
   EventSchema,
   GroupSchema,
   IssueSchema,
@@ -129,6 +130,7 @@ export type FarosIssueOutput = {
   project_path: string;
   author_username: string;
   assignee_usernames: string[];
+  epic_id?: number | null;
 } & Pick<
   IssueSchema,
   | 'id'
@@ -166,4 +168,12 @@ export type FarosDeploymentOutput = {
   | 'status'
   | 'deployable'
   | 'environment'
+>;
+
+export type FarosEpicOutput = {
+  readonly __brand: 'FarosEpic';
+  group_id: string;
+} & Pick<
+  EpicSchema,
+  'id' | 'title' | 'description' | 'state' | 'created_at' | 'updated_at'
 >;

@@ -126,6 +126,7 @@ function setupBasicMocks(): any {
     getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getReleases: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getDeployments: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getEpics: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     userCollector: mockUserCollector,
   };
 
@@ -536,6 +537,27 @@ describe('index', () => {
 
     expect(gitlab.getDeployments).toHaveBeenCalledWith(
       'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros epics', async () => {
+    const epics = readTestResourceAsJSON('faros_epics/epics.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getEpics.mockReturnValue(createAsyncGeneratorMock(epics));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_epics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getEpics).toHaveBeenCalledWith(
+      'test-group',
       expect.any(Date),
       expect.any(Date)
     );
