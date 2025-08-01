@@ -71,8 +71,6 @@ export const MinimumStreamNames = [
 
 export const FullStreamNames = [
   'faros_commits',
-  'faros_copilot_seats',
-  'faros_copilot_usage',
   'faros_organizations',
   'faros_pull_requests',
   'faros_pull_request_comments',
