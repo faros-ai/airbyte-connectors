@@ -31,6 +31,9 @@
         "updatedOn": {
           "type": "string"
         },
+        "closedOn": {
+          "type": "string"
+        },
         "closeSourceBranch": {
           "type": "boolean"
         },
