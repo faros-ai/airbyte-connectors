@@ -113,21 +113,9 @@ export abstract class Vulnerabilities extends VantaConverter {
       const vulnRemediationMetadata =
         this.grabRemediationMetadataFromVuln(vuln);
       if (this.isVCSRepoVulnerability(vuln.asset)) {
-        this.convertRepositoryVulnerability(
-          vcsRepos,
-          vuln,
-          ctx,
-          vulnRemediationMetadata,
-          records
-        );
+        this.convertRepositoryVulnerability(vcsRepos, vuln, ctx, records);
       } else if (this.isCICDArtifactVulnerability(vuln.asset)) {
-        this.convertArtifactVulnerability(
-          vuln,
-          ctx,
-          cicdArtifacts,
-          vulnRemediationMetadata,
-          records
-        );
+        this.convertArtifactVulnerability(vuln, ctx, cicdArtifacts, records);
       }
     }
     // Log warnings for different cases of missing data
@@ -196,7 +184,6 @@ export abstract class Vulnerabilities extends VantaConverter {
     vcsRepos: RepoKey[],
     vuln: Vulnerability,
     ctx: StreamContext,
-    vulnRemediationMetadata: VulnRemediationMetadata,
     records: DestinationRecord[]
   ) {
     const vcsRepo = vcsRepos?.find((repo) => repo.name === vuln.asset.name);
@@ -212,7 +199,6 @@ export abstract class Vulnerabilities extends VantaConverter {
         url: vuln.externalURL,
         dueAt: Utils.toDate(vuln.remediateByDate),
         createdAt: Utils.toDate(vuln.firstDetectedDate),
-        resolvedAt: this.getResolvedAt(vulnRemediationMetadata),
         status: {
           category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
           detail: vuln.deactivateMetadata?.deactivationReason || '',
@@ -316,7 +302,6 @@ export abstract class Vulnerabilities extends VantaConverter {
     vuln: Vulnerability,
     ctx: StreamContext,
     cicdArtifacts: ArtifactKey[],
-    vulnRemediationMetadata: VulnRemediationMetadata,
     records: DestinationRecord[]
   ) {
     const commitSha = this.getCommitSha(vuln.asset.imageTags);
@@ -339,7 +324,6 @@ export abstract class Vulnerabilities extends VantaConverter {
         url: vuln.externalURL,
         dueAt: Utils.toDate(vuln.remediateByDate),
         createdAt: Utils.toDate(vuln.firstDetectedDate),
-        resolvedAt: this.getResolvedAt(vulnRemediationMetadata),
         status: {
           category: vuln.deactivateMetadata ? 'Ignored' : 'Open',
           detail: vuln.deactivateMetadata?.deactivationReason || '',
