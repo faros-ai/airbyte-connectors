@@ -1,6 +1,17 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+export interface VulnRemediationMetadata {
+  isDeactivated: boolean;
+  deactivateMetadata: {
+    deactivatedBy: string | null;
+    deactivatedOnDate: Date | null;
+    deactivationReason: string | null;
+    deactivatedUntilDate: Date | null;
+    isVulnDeactivatedIndefinitely: boolean | null;
+  };
+}
+
 // Function to find a specific parent directory
 function findParentDirectory(
   currentDir: string,

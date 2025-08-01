@@ -10,6 +10,7 @@ import {
 import {getVCSRepositoriesFromNames, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {VantaConverter} from './common';
+import {VulnRemediationMetadata} from './utils';
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
@@ -69,6 +70,13 @@ export abstract class Vulnerabilities extends VantaConverter {
         affectedVersions: data.packageIdentifier
           ? [data.packageIdentifier]
           : [],
+        // If the vulnerability is deactivated indefinitely, the remediatedAt field will be set to deactivatedOnDate:
+        remediatedAt: this.getResolvedAt(data),
+        resolvedAt: this.getResolvedAt(data),
+        status: {
+          category: data.deactivateMetadata ? 'Ignored' : 'Open',
+          detail: data.deactivateMetadata?.deactivationReason || '',
+        },
       },
     };
     records.push(vulnRecord);
@@ -84,7 +92,9 @@ export abstract class Vulnerabilities extends VantaConverter {
       this.collectedRepoNames.add(vulnAsset.name);
     } else if (this.isCICDArtifactVulnerability(vulnAsset)) {
       const commitSha = this.getCommitSha(vulnAsset.imageTags);
-      this.collectedArtifactCommitShas.add(commitSha);
+      if (commitSha) {
+        this.collectedArtifactCommitShas.add(commitSha);
+      }
     }
 
     return records;
@@ -136,6 +146,38 @@ export abstract class Vulnerabilities extends VantaConverter {
       'Vulnerabilities with no catalog identifier found'
     );
     return records;
+  }
+
+  private grabRemediationMetadataFromVuln(
+    data: Vulnerability
+  ): VulnRemediationMetadata {
+    const isDeactivated = !!data.deactivateMetadata;
+
+    return {
+      isDeactivated,
+      deactivateMetadata: {
+        deactivatedBy: data.deactivateMetadata?.deactivatedBy || null,
+        deactivatedOnDate: data.deactivateMetadata?.deactivatedOnDate
+          ? new Date(data.deactivateMetadata.deactivatedOnDate)
+          : null,
+        deactivationReason: data.deactivateMetadata?.deactivationReason || null,
+        deactivatedUntilDate: data.deactivateMetadata?.deactivatedUntilDate
+          ? new Date(data.deactivateMetadata.deactivatedUntilDate)
+          : null,
+        isVulnDeactivatedIndefinitely:
+          data.deactivateMetadata?.isVulnDeactivatedIndefinitely ?? null,
+      },
+    };
+  }
+
+  private getResolvedAt(vuln: Vulnerability): Date | null {
+    const vulnRemediationMetadata = this.grabRemediationMetadataFromVuln(vuln);
+    return vulnRemediationMetadata.deactivateMetadata
+      ?.isVulnDeactivatedIndefinitely
+      ? Utils.toDate(
+          vulnRemediationMetadata.deactivateMetadata?.deactivatedOnDate
+        )
+      : null;
   }
 
   private convertRepositoryVulnerability(
