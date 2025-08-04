@@ -318,6 +318,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             // ensure all queries run against primary
             noStaleReads: true,
           };
+          // TODO: Remove
+          console.log(query);
           return await client.rawGql(graph, query, finalVars);
         },
       };
