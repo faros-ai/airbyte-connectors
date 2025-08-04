@@ -43,3 +43,5 @@ export abstract class VantaConverter extends Converter {
     }
   }
 }
+
+export type RepoKey = {name: string; organization: OrgKey};
