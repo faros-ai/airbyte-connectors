@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "change_id": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "string"
+    },
+    "submitted": {
+      "type": ["string", "null"]
+    },
+    "submitter": {
+      "type": ["object", "null"]
+    },
+    "insertions": {
+      "type": "integer"
+    },
+    "deletions": {
+      "type": "integer"
+    },
+    "total_comment_count": {
+      "type": ["integer", "null"]
+    },
+    "unresolved_comment_count": {
+      "type": ["integer", "null"]
+    },
+    "has_review_started": {
+      "type": ["boolean", "null"]
+    },
+    "_number": {
+      "type": "integer"
+    },
+    "owner": {
+      "type": "object"
+    },
+    "topic": {
+      "type": ["string", "null"]
+    },
+    "hashtags": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "current_revision": {
+      "type": ["string", "null"]
+    },
+    "revisions": {
+      "type": ["object", "null"]
+    },
+    "labels": {
+      "type": ["object", "null"]
+    },
+    "requirements": {
+      "type": ["array", "null"]
+    },
+    "submit_records": {
+      "type": ["array", "null"]
+    }
+  },
+  "required": ["id", "project", "branch", "status", "created", "updated", "_number", "owner"]
+}

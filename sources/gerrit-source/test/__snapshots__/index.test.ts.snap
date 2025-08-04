@@ -1,0 +1,173 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gerrit source spec 1`] = `
+{
+  "spec": {
+    "connectionSpecification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": true,
+      "properties": {
+        "authentication": {
+          "description": "Choose your Gerrit authentication method",
+          "oneOf": [
+            {
+              "properties": {
+                "password": {
+                  "airbyte_secret": true,
+                  "description": "HTTP password from Gerrit account settings",
+                  "order": 2,
+                  "title": "HTTP Password",
+                  "type": "string",
+                },
+                "type": {
+                  "const": "basic",
+                  "order": 0,
+                  "type": "string",
+                },
+                "username": {
+                  "description": "Gerrit username",
+                  "order": 1,
+                  "title": "Username",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+                "username",
+                "password",
+              ],
+              "title": "HTTP Basic Authentication",
+              "type": "object",
+            },
+            {
+              "properties": {
+                "password": {
+                  "airbyte_secret": true,
+                  "description": "HTTP password from Gerrit account settings",
+                  "order": 2,
+                  "title": "HTTP Password",
+                  "type": "string",
+                },
+                "type": {
+                  "const": "digest",
+                  "order": 0,
+                  "type": "string",
+                },
+                "username": {
+                  "description": "Gerrit username",
+                  "order": 1,
+                  "title": "Username",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+                "username",
+                "password",
+              ],
+              "title": "HTTP Digest Authentication",
+              "type": "object",
+            },
+          ],
+          "order": 1,
+          "title": "Authentication",
+          "type": "object",
+        },
+        "concurrency_limit": {
+          "default": 4,
+          "description": "Maximum number of concurrent API requests",
+          "order": 8,
+          "title": "Concurrency limit",
+          "type": "integer",
+        },
+        "cutoff_days": {
+          "default": 90,
+          "description": "Only fetch data updated after cutoff",
+          "order": 5,
+          "title": "Cutoff Days",
+          "type": "integer",
+        },
+        "end_date": {
+          "description": "The date at which to stop syncing data. If not specified, uses the current date.",
+          "format": "date-time",
+          "order": 10,
+          "title": "End Date",
+          "type": "string",
+        },
+        "excluded_projects": {
+          "description": "List of Gerrit projects from which data won't be fetched. By default, no projects are excluded.",
+          "examples": [
+            "test/experimental",
+            "archive/old-project",
+          ],
+          "items": {
+            "type": "string",
+          },
+          "order": 4,
+          "title": "Excluded Projects list",
+          "type": "array",
+        },
+        "page_size": {
+          "default": 100,
+          "description": "Maximum number of items in a paginated response",
+          "order": 6,
+          "title": "Page Size",
+          "type": "integer",
+        },
+        "projects": {
+          "description": "List of Gerrit projects from which to fetch data. If none passed, all visible projects will be used.",
+          "examples": [
+            "openstack/nova",
+            "chromium/src",
+          ],
+          "items": {
+            "type": "string",
+          },
+          "order": 3,
+          "title": "Projects list",
+          "type": "array",
+        },
+        "reject_unauthorized": {
+          "default": true,
+          "description": "Enable certificate validation for the Gerrit server",
+          "order": 2,
+          "title": "Enable certificate validation",
+          "type": "boolean",
+        },
+        "server_url": {
+          "description": "The URL of the Gerrit server (e.g., https://gerrit.example.com)",
+          "examples": [
+            "https://gerrit-review.googlesource.com",
+            "https://review.opendev.org",
+          ],
+          "order": 0,
+          "title": "Gerrit Server URL",
+          "type": "string",
+        },
+        "start_date": {
+          "description": "The date from which to start syncing data. If not specified, uses cutoff_days to calculate the start date.",
+          "format": "date-time",
+          "order": 9,
+          "title": "Start Date",
+          "type": "string",
+        },
+        "timeout": {
+          "default": 120000,
+          "description": "Timeout in milliseconds for each request to the Gerrit API",
+          "order": 7,
+          "title": "Request Timeout",
+          "type": "integer",
+        },
+      },
+      "required": [
+        "server_url",
+        "authentication",
+      ],
+      "title": "Gerrit Spec",
+      "type": "object",
+    },
+    "documentationUrl": "https://docs.faros.ai",
+  },
+  "type": "SPEC",
+}
+`;

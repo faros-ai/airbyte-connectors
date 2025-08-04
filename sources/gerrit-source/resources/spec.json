@@ -1,0 +1,166 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gerrit Spec",
+    "type": "object",
+    "required": [
+      "server_url",
+      "authentication"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "server_url": {
+        "order": 0,
+        "type": "string",
+        "title": "Gerrit Server URL",
+        "description": "The URL of the Gerrit server (e.g., https://gerrit.example.com)",
+        "examples": [
+          "https://gerrit-review.googlesource.com",
+          "https://review.opendev.org"
+        ]
+      },
+      "authentication": {
+        "title": "Authentication",
+        "description": "Choose your Gerrit authentication method",
+        "type": "object",
+        "order": 1,
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "HTTP Basic Authentication",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "basic",
+                "order": 0
+              },
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Gerrit username",
+                "order": 1
+              },
+              "password": {
+                "type": "string",
+                "title": "HTTP Password",
+                "description": "HTTP password from Gerrit account settings",
+                "airbyte_secret": true,
+                "order": 2
+              }
+            },
+            "required": [
+              "type",
+              "username",
+              "password"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "HTTP Digest Authentication",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "digest",
+                "order": 0
+              },
+              "username": {
+                "type": "string",
+                "title": "Username",
+                "description": "Gerrit username",
+                "order": 1
+              },
+              "password": {
+                "type": "string",
+                "title": "HTTP Password",
+                "description": "HTTP password from Gerrit account settings",
+                "airbyte_secret": true,
+                "order": 2
+              }
+            },
+            "required": [
+              "type",
+              "username",
+              "password"
+            ]
+          }
+        ]
+      },
+      "reject_unauthorized": {
+        "order": 2,
+        "type": "boolean",
+        "title": "Enable certificate validation",
+        "description": "Enable certificate validation for the Gerrit server",
+        "default": true
+      },
+      "projects": {
+        "order": 3,
+        "title": "Projects list",
+        "description": "List of Gerrit projects from which to fetch data. If none passed, all visible projects will be used.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "openstack/nova",
+          "chromium/src"
+        ]
+      },
+      "excluded_projects": {
+        "order": 4,
+        "title": "Excluded Projects list",
+        "description": "List of Gerrit projects from which data won't be fetched. By default, no projects are excluded.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "test/experimental",
+          "archive/old-project"
+        ]
+      },
+      "cutoff_days": {
+        "order": 5,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch data updated after cutoff"
+      },
+      "page_size": {
+        "order": 6,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Maximum number of items in a paginated response",
+        "default": 100
+      },
+      "timeout": {
+        "order": 7,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the Gerrit API",
+        "default": 120000
+      },
+      "concurrency_limit": {
+        "order": 8,
+        "type": "integer",
+        "title": "Concurrency limit",
+        "description": "Maximum number of concurrent API requests",
+        "default": 4
+      },
+      "start_date": {
+        "order": 9,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data. If not specified, uses cutoff_days to calculate the start date.",
+        "format": "date-time"
+      },
+      "end_date": {
+        "order": 10,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date at which to stop syncing data. If not specified, uses the current date.",
+        "format": "date-time"
+      }
+    }
+  }
+}
