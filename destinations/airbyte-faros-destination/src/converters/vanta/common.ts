@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {VulnerableAssetSummary} from 'faros-airbyte-common/lib/vanta';
 
+import {OrgKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
 import {looksLikeGitCommitShaOrVersion} from './utils';
 
@@ -44,4 +45,4 @@ export abstract class VantaConverter extends Converter {
   }
 }
 
-export type RepoKey = {name: string; organization: OrgKey};
+export type VcsRepoKey = {name: string; organization: OrgKey};
