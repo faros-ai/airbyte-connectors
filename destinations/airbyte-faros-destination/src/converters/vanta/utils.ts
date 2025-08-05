@@ -38,6 +38,12 @@ export function getQueryFromName(name: string): string {
   return fs.readFileSync(`${gql_dir}/${fn}`, 'utf8');
 }
 
-export function looksLikeGitCommitSha(sha: string): boolean {
-  return /^[a-f0-9]{40}$/i.test(sha);
+export function looksLikeGitCommitShaOrVersion(tag: string): boolean {
+  // Match Git commit SHA (40 hex characters)
+  const gitShaRegex = /^[a-f0-9]{40}$/i;
+
+  // Match semantic version (v1.2.3, v1.2.3-alpha, v1.2.3.4, etc.)
+  const versionRegex = /^v\d+\.\d+\.\d+(?:[.-]\w+)*$/i;
+
+  return gitShaRegex.test(tag) || versionRegex.test(tag);
 }

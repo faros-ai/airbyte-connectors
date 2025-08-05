@@ -23,5 +23,40 @@
         }
       }
     ]
+  },
+  "cicdArtifactVulnerabilityQuery": {
+    "cicd_ArtifactVulnerability": [
+      {
+        "vulnerability": {
+          "uid": "123"
+        },
+        "artifact": {
+          "uid": "abc",
+          "repository": {
+            "uid": "def",
+            "organization": {
+              "uid": "ghi",
+              "source": "Vanta"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "vcsRepositoryVulnerabilityQuery": {
+    "vcs_RepositoryVulnerability": [
+      {
+        "vulnerability": {
+          "uid": "123"
+        },
+        "repository": {
+          "name": "abc",
+          "organization": {
+            "uid": "ghi",
+            "source": "Vanta"
+          }
+        }
+      }
+    ]
   }
 }

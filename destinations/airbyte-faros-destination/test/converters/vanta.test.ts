@@ -20,9 +20,8 @@ function getQueryResponse(
   const split_query = query.split(' ');
   let query_name = split_query[1];
   query_name = query_name.split('(')[0];
-  if (
-    ['cicdArtifactQueryByCommitSha', 'vcsRepositoryQuery'].includes(query_name)
-  ) {
+  // Check if query name is in mockQueryToResponse
+  if (query_name in mockQueryToResponse) {
     return {
       data: mockQueryToResponse[query_name],
     };
