@@ -8,6 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {applyRoundRobinBucketing} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {
@@ -71,6 +72,11 @@ export class AzureActiveDirectorySource extends AirbyteSourceBase<AzureActiveDir
       streamNames.includes(stream.stream.name)
     );
 
-    return {config, catalog: {streams}, state};
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+    return {config: newConfig, catalog: {streams}, state: newState};
   }
 }

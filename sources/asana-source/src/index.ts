@@ -10,6 +10,7 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {AirbyteSourceLogger} from 'faros-airbyte-cdk';
+import {applyRoundRobinBucketing} from 'faros-airbyte-common/common';
 import {get, isNil} from 'lodash';
 import VError from 'verror';
 
@@ -122,6 +123,11 @@ export class AsanaSource extends AirbyteSourceBase<AsanaConfig> {
       streams = streams.filter((stream) => stream.stream.name !== 'tasks_full');
     }
 
-    return {config, catalog: {streams}, state};
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+    return {config: newConfig, catalog: {streams}, state: newState};
   }
 }

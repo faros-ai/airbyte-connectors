@@ -8,7 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange} from 'faros-airbyte-common/common';
+import {
+  applyRoundRobinBucketing,
+  calculateDateRange,
+} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Cursor, DEFAULT_CUTOFF_DAYS} from './cursor';
@@ -66,14 +69,19 @@ export class CursorSource extends AirbyteSourceBase<CursorConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
     return {
       config: {
-        ...config,
+        ...newConfig,
         startDate,
         endDate,
       } as CursorConfig,
       catalog,
-      state,
+      state: newState,
     };
   }
 }
