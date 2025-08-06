@@ -38,7 +38,7 @@ export const MinimumStreamNames = [
   'faros_merge_requests',
   'faros_merge_request_reviews',
   'faros_projects',
-  'faros_tags',
+  'faros_users',
 ];
 
 export const FullStreamNames = [

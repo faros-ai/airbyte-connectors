@@ -34,7 +34,6 @@ export class FarosIssues extends GitlabConverter {
     const uid = String(issue.id);
     const taskKey = {uid, source: this.streamName.source};
 
-    
     // Create project key from project_path and group_id
     const projectKey = {
       uid: `${toLower(issue.group_id)}/${toLower(issue.project_path)}`,
@@ -92,12 +91,15 @@ export class FarosIssues extends GitlabConverter {
       },
     });
 
-    // Link task to project
+    // Link task to project (at group level)
     res.push({
       model: 'tms_TaskProjectRelationship',
       record: {
         task: taskKey,
-        project: projectKey,
+        project: {
+          uid: `${toLower(issue.group_id)}`,
+          source: this.streamName.source,
+        },
       },
     });
 
@@ -106,7 +108,10 @@ export class FarosIssues extends GitlabConverter {
       model: 'tms_TaskBoardRelationship',
       record: {
         task: taskKey,
-        board: projectKey,
+        board: {
+          uid: `${toLower(issue.group_id)}/${toLower(issue.project_path)}`,
+          source: this.streamName.source,
+        },
       },
     });
 

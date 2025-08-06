@@ -33,4 +33,5 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
+  enabledStreams?: ReadonlyArray<string>;
 }
