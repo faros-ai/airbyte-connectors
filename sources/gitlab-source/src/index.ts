@@ -108,6 +108,9 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       streamNames.includes(stream.stream.name)
     );
 
+    const tmsEnabled = streamNames.includes('faros_issues');
+    const cicdEnabled = streamNames.includes('faros_deployments');
+
     const {startDate, endDate} = calculateDateRange({
       start_date: config.start_date,
       end_date: config.end_date,
@@ -128,7 +131,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
           ...newConfig,
           startDate,
           endDate,
-          enabledStreams: streamNames as ReadonlyArray<string>,
+          tmsEnabled,
+          cicdEnabled,
         } as GitLabConfig,
         catalog: {streams},
         state: newState,
@@ -201,7 +205,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
         excluded_groups: undefined,
         startDate,
         endDate,
-        enabledStreams: streamNames as ReadonlyArray<string>,
+        tmsEnabled,
+        cicdEnabled,
       } as GitLabConfig,
       catalog: {streams},
       state: newState,

@@ -206,13 +206,11 @@ export abstract class GitlabConverter extends Converter {
   }
 
   protected cicdEnabled(ctx: StreamContext): boolean {
-    const enabledStreams = ctx.getSourceConfig()?.enabledStreams ?? [];
-    return enabledStreams.includes('faros_deployments');
+    return ctx.getSourceConfig()?.cicdEnabled ?? false;
   }
 
   protected tmsEnabled(ctx: StreamContext): boolean {
-    const enabledStreams = ctx.getSourceConfig()?.enabledStreams ?? [];
-    return enabledStreams.includes('faros_issues');
+    return ctx.getSourceConfig()?.tmsEnabled ?? false;
   }
 }
 

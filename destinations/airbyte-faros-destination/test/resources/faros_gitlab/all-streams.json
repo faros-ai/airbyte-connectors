@@ -20,18 +20,8 @@
       ],
       "startDate": "2025-07-29T22:28:16.191Z",
       "endDate": "2025-08-05T22:28:16.191Z",
-      "enabledStreams": [
-        "faros_commits",
-        "faros_deployments",
-        "faros_groups",
-        "faros_issues",
-        "faros_merge_requests",
-        "faros_merge_request_reviews",
-        "faros_projects",
-        "faros_releases",
-        "faros_tags",
-        "faros_users"
-      ]
+      "tmsEnabled": true,
+      "cicdEnabled": true
     },
     "sourceType": "gitlab",
     "sourceVersion": "unknown"
