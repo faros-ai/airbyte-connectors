@@ -1,0 +1,6347 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`faros-event process records from all streams 1`] = `
+Array [
+  "Processed 34 records",
+  "Processed records by stream: {\\\\\\"faros-event__cd_events\\\\\\":20,\\\\\\"faros-event__ci_events\\\\\\":14}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 370 records",
+  "Would write records by model: {\\\\\\"cicd_Agent\\\\\\":7,\\\\\\"cicd_AgentTag\\\\\\":14,\\\\\\"cicd_Artifact\\\\\\":15,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":17,\\\\\\"cicd_ArtifactDeployment\\\\\\":14,\\\\\\"cicd_Build\\\\\\":27,\\\\\\"cicd_BuildCommitAssociation\\\\\\":13,\\\\\\"cicd_BuildMetric\\\\\\":2,\\\\\\"cicd_BuildStep\\\\\\":7,\\\\\\"cicd_BuildStepMetric\\\\\\":1,\\\\\\"cicd_BuildStepTag\\\\\\":14,\\\\\\"cicd_BuildTag\\\\\\":2,\\\\\\"cicd_Deployment\\\\\\":20,\\\\\\"cicd_DeploymentTag\\\\\\":4,\\\\\\"cicd_Organization\\\\\\":42,\\\\\\"cicd_Pipeline\\\\\\":27,\\\\\\"cicd_Repository\\\\\\":15,\\\\\\"compute_Application\\\\\\":20,\\\\\\"compute_ApplicationPath\\\\\\":6,\\\\\\"compute_ApplicationTag\\\\\\":6,\\\\\\"compute_Instance\\\\\\":7,\\\\\\"faros_MetricDefinition\\\\\\":3,\\\\\\"faros_MetricValue\\\\\\":3,\\\\\\"faros_Path\\\\\\":6,\\\\\\"faros_Tag\\\\\\":40,\\\\\\"vcs_Branch\\\\\\":18,\\\\\\"vcs_BranchCommitAssociation\\\\\\":18,\\\\\\"vcs_PullRequestCommit\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`faros-event process records from all streams 2`] = `
+Array [
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "commit_source",
+      "uid": "commit_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "commit_source",
+        "uid": "commit_organization",
+      },
+      "source": "faros-event",
+      "uid": "commit_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": null,
+      "repository": Object {
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+        "source": "faros-event",
+        "uid": "commit_repository",
+      },
+      "source": "faros-event",
+      "uid": "commit_sha",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": null,
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.054Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.054Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2022-04-08T19:47:43.054Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2025-08-06T22:49:59.730Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2025-08-06T22:49:59.730Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2025-08-06T22:49:59.730Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2025-08-06T22:49:59.730Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2025-08-06T22:49:59.730Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2025-08-06T22:49:59.730Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": null,
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "vcs_PullRequestCommit": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "commit_source",
+      "uid": "commit_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "commit_source",
+        "uid": "commit_organization",
+      },
+      "source": "faros-event",
+      "uid": "commit_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": null,
+      "repository": Object {
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+        "source": "faros-event",
+        "uid": "commit_repository",
+      },
+      "source": "faros-event",
+      "uid": "commit_sha",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "1",
+      ],
+      "path": "a/b/1",
+      "source": "faros-event",
+      "uid": "a/b/1",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "1",
+        ],
+        "path": "a/b/1",
+        "source": "faros-event",
+        "uid": "a/b/1",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "2",
+      ],
+      "path": "a/b/2",
+      "source": "faros-event",
+      "uid": "a/b/2",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "2",
+        ],
+        "path": "a/b/2",
+        "source": "faros-event",
+        "uid": "a/b/2",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": null,
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "deploy_tag_1",
+      "source": "faros-event",
+      "uid": "deploy_tag_1__value1",
+      "value": "value1",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "deploy_tag_2",
+      "source": "faros-event",
+      "uid": "deploy_tag_2__value2",
+      "value": "value2",
+    },
+  },
+  Object {
+    "cicd_DeploymentTag": Object {
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "deploy_tag_1__value1",
+      },
+    },
+  },
+  Object {
+    "cicd_DeploymentTag": Object {
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "deploy_tag_2__value2",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "1",
+      ],
+      "path": "a/b/1",
+      "source": "faros-event",
+      "uid": "a/b/1",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "1",
+        ],
+        "path": "a/b/1",
+        "source": "faros-event",
+        "uid": "a/b/1",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "2",
+      ],
+      "path": "a/b/2",
+      "source": "faros-event",
+      "uid": "a/b/2",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "2",
+        ],
+        "path": "a/b/2",
+        "source": "faros-event",
+        "uid": "a/b/2",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "deploy_tag_1",
+      "source": "faros-event",
+      "uid": "deploy_tag_1__value1",
+      "value": "value1",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "deploy_tag_2",
+      "source": "faros-event",
+      "uid": "deploy_tag_2__value2",
+      "value": "value2",
+    },
+  },
+  Object {
+    "cicd_DeploymentTag": Object {
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "deploy_tag_1__value1",
+      },
+    },
+  },
+  Object {
+    "cicd_DeploymentTag": Object {
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "deploy_tag_2__value2",
+      },
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "compute_ApplicationTag": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "1",
+      ],
+      "path": "a/b/1",
+      "source": "faros-event",
+      "uid": "a/b/1",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "1",
+        ],
+        "path": "a/b/1",
+        "source": "faros-event",
+        "uid": "a/b/1",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Path": Object {
+      "parts": Array [
+        "a",
+        "b",
+        "2",
+      ],
+      "path": "a/b/2",
+      "source": "faros-event",
+      "uid": "a/b/2",
+    },
+  },
+  Object {
+    "compute_ApplicationPath": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "path": Object {
+        "parts": Array [
+          "a",
+          "b",
+          "2",
+        ],
+        "path": "a/b/2",
+        "source": "faros-event",
+        "uid": "a/b/2",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__Prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__Prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__prod__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__prod__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Custom",
+        "detail": " - deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application____deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application____deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": null,
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Custom",
+        "detail": " - deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application____deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Custom",
+        "detail": "unknown - deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_application__unknown__deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_application__unknown__deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "compute_Application": Object {
+      "name": "deploy_application",
+      "platform": "deploy_application_platform",
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Deployment": Object {
+      "application": Object {
+        "name": "deploy_application",
+        "platform": "deploy_application_platform",
+        "source": "faros-event",
+      },
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "env": Object {
+        "category": "Prod",
+        "detail": "deploy_environment_details",
+      },
+      "requestedAt": "2021-10-22T18:10:57.000Z",
+      "source": "deploy_source",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "deploy_status_detail",
+      },
+      "uid": "deploy_id",
+      "url": "https://test.faros.ai/deploy/1",
+    },
+  },
+  Object {
+    "cicd_ArtifactDeployment": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "deployment": Object {
+        "source": "deploy_source",
+        "uid": "deploy_id",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "commit_source",
+      "uid": "commit_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "commit_source",
+        "uid": "commit_organization",
+      },
+      "source": "faros-event",
+      "uid": "commit_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": null,
+      "repository": Object {
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+        "source": "faros-event",
+        "uid": "commit_repository",
+      },
+      "source": "faros-event",
+      "uid": "commit_sha",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_PullRequestCommit": Object {
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "pullRequest": Object {
+        "number": 1,
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.054Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.054Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.054Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2022-04-08T19:47:43.055Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2022-04-08T19:47:43.054Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2022-04-08T19:47:43.055Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2022-04-08T19:47:43.054Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2025-08-06T22:49:59.739Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2025-08-06T22:49:59.739Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2025-08-06T22:49:59.739Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2025-08-06T22:49:59.739Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2025-08-06T22:49:59.739Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2025-08-06T22:49:59.739Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "artifact_source",
+      "uid": "artifact_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "artifact_source",
+        "uid": "artifact_organization",
+      },
+      "source": "faros-event",
+      "uid": "artifact_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "repository": Object {
+        "organization": Object {
+          "source": "artifact_source",
+          "uid": "artifact_organization",
+        },
+        "source": "faros-event",
+        "uid": "artifact_repository",
+      },
+      "source": "faros-event",
+      "uid": "artifact_id.jar",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "artifact_source",
+            "uid": "artifact_organization",
+          },
+          "source": "faros-event",
+          "uid": "artifact_repository",
+        },
+        "uid": "artifact_id.jar",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "test_tag1",
+      "source": "faros-event",
+      "uid": "test_tag1__test_value1",
+      "value": "test_value1",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "test_tag2",
+      "source": "faros-event",
+      "uid": "test_tag2__test_value2",
+      "value": "test_value2",
+    },
+  },
+  Object {
+    "cicd_BuildTag": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "test_tag1__test_value1",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildTag": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "test_tag2__test_value2",
+      },
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "commit_source",
+      "uid": "commit_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "commit_source",
+        "uid": "commit_organization",
+      },
+      "source": "faros-event",
+      "uid": "commit_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": null,
+      "repository": Object {
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+        "source": "faros-event",
+        "uid": "commit_repository",
+      },
+      "source": "faros-event",
+      "uid": "commit_sha",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "test_metric1",
+      "source": "faros-event",
+      "uid": "test_metric1",
+      "valueSource": Object {
+        "category": "MetricValueEntries",
+        "detail": "FAROS_EVENT_API",
+      },
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": "<type_details>",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "definition": Object {
+        "uid": "test_metric1",
+      },
+      "source": "faros-event",
+      "uid": "run_source__run_organization__run_pipeline__run_id__test_metric1",
+      "value": "1",
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "test_metric2",
+      "source": "faros-event",
+      "uid": "test_metric2",
+      "valueSource": Object {
+        "category": "MetricValueEntries",
+        "detail": "FAROS_EVENT_API",
+      },
+      "valueType": Object {
+        "category": "Numeric",
+        "detail": "<type_details>",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "definition": Object {
+        "uid": "test_metric2",
+      },
+      "source": "faros-event",
+      "uid": "run_source__run_organization__run_pipeline__run_id__test_metric2",
+      "value": "20",
+    },
+  },
+  Object {
+    "cicd_BuildMetric": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "source": "faros-event",
+      "value": Object {
+        "definition": Object {
+          "uid": "test_metric1",
+        },
+        "uid": "run_source__run_organization__run_pipeline__run_id__test_metric1",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildMetric": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "source": "faros-event",
+      "value": Object {
+        "definition": Object {
+          "uid": "test_metric2",
+        },
+        "uid": "run_source__run_organization__run_pipeline__run_id__test_metric2",
+      },
+    },
+  },
+  Object {
+    "compute_Instance": Object {
+      "launchedAt": "2022-02-01T15:00:57.000Z",
+      "name": "agent_host_name",
+      "os": Object {
+        "category": "Linux",
+        "detail": "CentOS",
+      },
+      "source": "agent_host_source",
+      "tags": Array [
+        Object {
+          "key": "host_tag_1",
+          "value": "host_tag_1_value",
+        },
+        Object {
+          "key": "host_tag_2",
+          "value": "host_tag_2_value",
+        },
+      ],
+      "uid": "agent_host_id",
+    },
+  },
+  Object {
+    "cicd_Agent": Object {
+      "createdAt": "2023-02-01T15:00:57+0000",
+      "host": Object {
+        "source": "agent_host_source",
+        "uid": "agent_host_id",
+      },
+      "name": "agent_name",
+      "source": "agent_source",
+      "uid": "agent_id",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_AgentTag": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStep": Object {
+      "agent": Object {
+        "source": "agent_source",
+        "uid": "agent_id",
+      },
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "uid": "run_pipeline",
+        },
+        "uid": "run_id",
+      },
+      "command": "run_step_command",
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "name": "run_step_name",
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_step_status_details",
+      },
+      "type": Object {
+        "category": "Manual",
+        "detail": "run_step_type_details",
+      },
+      "uid": "run_step_id",
+      "url": "run_step_url",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_1",
+      "source": "faros-event",
+      "uid": "tag_1__tag_1_value",
+      "value": "tag_1_value",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "tag_2",
+      "source": "faros-event",
+      "uid": "tag_2__tag_2_value",
+      "value": "tag_2_value",
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_1__tag_1_value",
+      },
+    },
+  },
+  Object {
+    "cicd_BuildStepTag": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "tag": Object {
+        "uid": "tag_2__tag_2_value",
+      },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "test_metric1",
+      "source": "faros-event",
+      "uid": "test_metric1",
+      "valueSource": Object {
+        "category": "MetricValueEntries",
+        "detail": "FAROS_EVENT_API",
+      },
+      "valueType": null,
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "definition": Object {
+        "uid": "test_metric1",
+      },
+      "source": "faros-event",
+      "uid": "run_source__run_organization__run_pipeline__run_id__run_step_id__test_metric1",
+      "value": "1",
+    },
+  },
+  Object {
+    "cicd_BuildStepMetric": Object {
+      "buildStep": Object {
+        "build": Object {
+          "pipeline": Object {
+            "organization": Object {
+              "source": "run_source",
+              "uid": "run_organization",
+            },
+            "uid": "run_pipeline",
+          },
+          "uid": "run_id",
+        },
+        "uid": "run_step_id",
+      },
+      "source": "faros-event",
+      "value": Object {
+        "definition": Object {
+          "uid": "test_metric1",
+        },
+        "uid": "run_source__run_organization__run_pipeline__run_id__run_step_id__test_metric1",
+      },
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "run_source",
+      "uid": "run_organization",
+    },
+  },
+  Object {
+    "cicd_Pipeline": Object {
+      "organization": Object {
+        "source": "run_source",
+        "uid": "run_organization",
+      },
+      "source": "faros-event",
+      "uid": "run_pipeline",
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2021-10-22T18:10:57.000Z",
+      "endedAt": "2021-10-22T18:10:57.000Z",
+      "number": 1,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "run_source",
+          "uid": "run_organization",
+        },
+        "source": "faros-event",
+        "uid": "run_pipeline",
+      },
+      "source": "faros-event",
+      "startedAt": "2021-10-22T18:10:57.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "run_status_detail",
+      },
+      "uid": "run_id",
+      "url": "run_url",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "commit_branch",
+      "repository": Object {
+        "name": "commit_repository",
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "commit_branch",
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "source": "faros-event",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "createdAt": "2021-10-22T18:10:57.000Z",
+        "endedAt": "2021-10-22T18:10:57.000Z",
+        "number": 1,
+        "pipeline": Object {
+          "organization": Object {
+            "source": "run_source",
+            "uid": "run_organization",
+          },
+          "source": "faros-event",
+          "uid": "run_pipeline",
+        },
+        "source": "faros-event",
+        "startedAt": "2021-10-22T18:10:57.000Z",
+        "status": Object {
+          "category": "Success",
+          "detail": "run_status_detail",
+        },
+        "uid": "run_id",
+        "url": "run_url",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+  Object {
+    "cicd_Organization": Object {
+      "source": "commit_source",
+      "uid": "commit_organization",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "organization": Object {
+        "source": "commit_source",
+        "uid": "commit_organization",
+      },
+      "source": "faros-event",
+      "uid": "commit_repository",
+    },
+  },
+  Object {
+    "cicd_Artifact": Object {
+      "build": null,
+      "repository": Object {
+        "organization": Object {
+          "source": "commit_source",
+          "uid": "commit_organization",
+        },
+        "source": "faros-event",
+        "uid": "commit_repository",
+      },
+      "source": "faros-event",
+      "uid": "commit_sha",
+    },
+  },
+  Object {
+    "cicd_ArtifactCommitAssociation": Object {
+      "artifact": Object {
+        "repository": Object {
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+          "source": "faros-event",
+          "uid": "commit_repository",
+        },
+        "uid": "commit_sha",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "commit_repository",
+          "organization": Object {
+            "source": "commit_source",
+            "uid": "commit_organization",
+          },
+        },
+        "sha": "commit_sha",
+      },
+      "source": "faros-event",
+    },
+  },
+]
+`;
