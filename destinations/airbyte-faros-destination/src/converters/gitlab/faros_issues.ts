@@ -34,12 +34,6 @@ export class FarosIssues extends GitlabConverter {
     const uid = String(issue.id);
     const taskKey = {uid, source: this.streamName.source};
 
-    // Create project key from project_path and group_id
-    const projectKey = {
-      uid: `${toLower(issue.group_id)}/${toLower(issue.project_path)}`,
-      source: this.streamName.source,
-    };
-
     // Handle assignees
     issue.assignee_usernames?.forEach((username: string) => {
       if (username) {
