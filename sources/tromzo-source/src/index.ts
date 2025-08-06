@@ -8,10 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {
-  applyRoundRobinBucketing,
-  calculateDateRange,
-} from 'faros-airbyte-common/common';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Findings} from './streams/findings';
@@ -65,19 +62,14 @@ export class TromzoSource extends AirbyteSourceBase<TromzoConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
-      config,
-      state,
-      this.logger.info.bind(this.logger)
-    );
     return {
       config: {
-        ...newConfig,
+        ...config,
         startDate,
         endDate,
       } as TromzoConfig,
       catalog,
-      state: newState,
+      state,
     };
   }
 }

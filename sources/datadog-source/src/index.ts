@@ -8,7 +8,6 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {applyRoundRobinBucketing} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Datadog, DatadogConfig} from './datadog';
@@ -69,16 +68,10 @@ export class DatadogSource extends AirbyteSourceBase<DatadogConfig> {
           config.custom_streams.includes(stream.stream.name)
         )
       : catalog.streams;
-
-    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
-      config,
-      state,
-      this.logger.info.bind(this.logger)
-    );
     return {
-      config: newConfig,
+      config,
       catalog: {streams},
-      state: newState,
+      state,
     };
   }
 }
