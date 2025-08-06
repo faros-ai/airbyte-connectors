@@ -1,5 +1,32 @@
 [
   {
+    "state": {
+      "data": {
+        "format": "base64/gzip",
+        "data": "H4sIAAAAAAAAE6uuBQBDv6ajAgAAAA=="
+      }
+    },
+    "type": "STATE",
+    "redactedConfig": {
+      "authentication": {
+        "type": "token",
+        "personal_access_token": "REDACTED"
+      },
+      "url": "https://gitlab.com",
+      "run_mode": "Full",
+      "cutoff_days": 7,
+      "groups": [
+        "111811331"
+      ],
+      "startDate": "2025-07-29T22:28:16.191Z",
+      "endDate": "2025-08-05T22:28:16.191Z",
+      "tmsEnabled": true,
+      "cicdEnabled": true
+    },
+    "sourceType": "gitlab",
+    "sourceVersion": "unknown"
+  },
+  {
     "record": {
       "stream": "mytestsource__gitlab__faros_groups",
       "emitted_at": 1747764794080,

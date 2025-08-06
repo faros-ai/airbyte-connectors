@@ -103,9 +103,8 @@ export class GitLab {
       this.logger.debug('Verifying GitLab credentials by fetching metadata');
       const metadata = await this.client.Metadata.show();
       if (metadata?.version) {
-        this.logger.debug(
-          'GitLab credentials verified.',
-          `Connected to GitLab version ${metadata.version}`
+        this.logger.info(
+          `GitLab credentials verified. Connected to GitLab version ${metadata.version} (enterprise: ${metadata.enterprise})`
         );
       } else {
         this.logger.error(
@@ -132,7 +131,6 @@ export class GitLab {
       (options) =>
         this.client.Groups.all({
           ...options,
-          withProjects: false,
           allAvailable: this.fetchPublicGroups,
         }),
       {orderBy: 'id', sort: 'asc'}

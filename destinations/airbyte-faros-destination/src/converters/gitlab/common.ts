@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Utils} from 'faros-js-client';
 
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface CategoryRef {
   readonly category: string;
@@ -203,6 +203,14 @@ export abstract class GitlabConverter extends Converter {
    */
   id(record: AirbyteRecord): any {
     return record?.record?.data?.id;
+  }
+
+  protected cicdEnabled(ctx: StreamContext): boolean {
+    return ctx.getSourceConfig()?.cicdEnabled ?? false;
+  }
+
+  protected tmsEnabled(ctx: StreamContext): boolean {
+    return ctx.getSourceConfig()?.tmsEnabled ?? false;
   }
 }
 

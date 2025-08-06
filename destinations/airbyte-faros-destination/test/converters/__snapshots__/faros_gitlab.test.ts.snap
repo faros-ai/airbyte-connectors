@@ -36,6 +36,15 @@ Array [
     },
   },
   Object {
+    "tms_Project": Object {
+      "createdAt": "2021-06-11T22:27:18.521Z",
+      "description": "",
+      "name": "farosai",
+      "source": "GitLab",
+      "uid": "12372707",
+    },
+  },
+  Object {
     "vcs_Repository": Object {
       "archived": false,
       "createdAt": "2022-10-19T16:40:22.162Z",
@@ -55,16 +64,6 @@ Array [
     },
   },
   Object {
-    "tms_Project": Object {
-      "createdAt": "2022-10-19T16:40:22.162Z",
-      "description": "Test project for FarosCE GitLab integration",
-      "name": "FarosCE test",
-      "source": "GitLab",
-      "uid": "12372707/farosce-test",
-      "updatedAt": "2024-10-15T18:38:58.340Z",
-    },
-  },
-  Object {
     "tms_TaskBoard": Object {
       "name": "FarosCE test",
       "source": "GitLab",
@@ -79,7 +78,7 @@ Array [
       },
       "project": Object {
         "source": "GitLab",
-        "uid": "12372707/farosce-test",
+        "uid": "12372707",
       },
       "source": "GitLab",
     },
@@ -467,7 +466,7 @@ Array [
     "tms_TaskProjectRelationship": Object {
       "project": Object {
         "source": "GitLab",
-        "uid": "12372707/testy",
+        "uid": "12372707",
       },
       "source": "GitLab",
       "task": Object {

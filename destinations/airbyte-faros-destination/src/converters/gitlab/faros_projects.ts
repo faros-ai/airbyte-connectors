@@ -10,7 +10,6 @@ import {GitlabConverter} from './common';
 export class FarosProjects extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Repository',
-    'tms_Project',
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
     'cicd_Pipeline',
@@ -19,7 +18,7 @@ export class FarosProjects extends GitlabConverter {
 
   async convert(
     record: AirbyteRecord,
-    ctx: StreamContext,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data as FarosProjectOutput;
     const organization = {
@@ -48,59 +47,51 @@ export class FarosProjects extends GitlabConverter {
       },
     ];
 
-    // Create TMS entities for the project
-    const projectKey = {
-      uid: `${organization.uid}/${projectName}`,
-      source: this.streamName.source,
-    };
+    if (this.tmsEnabled(ctx)) {
+      const projectKey = {
+        uid: `${organization.uid}/${projectName}`,
+        source: this.streamName.source,
+      };
 
-    res.push({
-      model: 'tms_Project',
-      record: {
-        ...projectKey,
-        name: project.name ?? projectName,
-        description: Utils.cleanAndTruncate(project.description),
-        createdAt: Utils.toDate(project.created_at),
-        updatedAt: Utils.toDate(project.updated_at),
-      },
-    });
+      res.push({
+        model: 'tms_TaskBoard',
+        record: {
+          ...projectKey,
+          name: project.name ?? projectName,
+        },
+      });
 
-    res.push({
-      model: 'tms_TaskBoard',
-      record: {
-        ...projectKey,
-        name: project.name ?? projectName,
-      },
-    });
+      res.push({
+        model: 'tms_TaskBoardProjectRelationship',
+        record: {
+          board: projectKey,
+          project: organization,
+        },
+      });
+    }
 
-    res.push({
-      model: 'tms_TaskBoardProjectRelationship',
-      record: {
-        board: projectKey,
-        project: projectKey,
-      },
-    });
+    if (this.cicdEnabled(ctx)) {
+      res.push({
+        model: 'cicd_Pipeline',
+        record: {
+          uid: projectName,
+          organization,
+          name: project.name ?? projectName,
+          description: Utils.cleanAndTruncate(project.description),
+          url: project.web_url,
+        },
+      });
 
-    res.push({
-      model: 'cicd_Pipeline',
-      record: {
-        uid: projectName,
-        organization,
-        name: project.name ?? projectName,
-        description: Utils.cleanAndTruncate(project.description),
-        url: project.web_url,
-      },
-    });
-
-    res.push({
-      model: 'compute_Application',
-      record: {
-        name: project.path,
-        platform: this.streamName.source,
-        displayName: project.name,
-        included: true,
-      },
-    });
+      res.push({
+        model: 'compute_Application',
+        record: {
+          name: project.path,
+          platform: this.streamName.source,
+          displayName: project.name,
+          included: true,
+        },
+      });
+    }
 
     const isCommunity =
       ctx?.config?.edition_configs?.edition === Edition.COMMUNITY;
