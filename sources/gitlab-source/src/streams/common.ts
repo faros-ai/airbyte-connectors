@@ -34,7 +34,6 @@ export enum RunMode {
 export const MinimumStreamNames = [
   'faros_commits',
   'faros_groups',
-  'faros_issues',
   'faros_merge_requests',
   'faros_merge_request_reviews',
   'faros_projects',
@@ -43,9 +42,7 @@ export const MinimumStreamNames = [
 
 export const FullStreamNames = [
   'faros_commits',
-  'faros_deployments',
   'faros_groups',
-  'faros_issues',
   'faros_merge_requests',
   'faros_merge_request_reviews',
   'faros_projects',
