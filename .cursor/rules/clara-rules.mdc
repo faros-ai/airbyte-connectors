@@ -1,0 +1,7 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+Read [AGENT.md](../../AGENT.md) for guidelines on working with code in this repository.
