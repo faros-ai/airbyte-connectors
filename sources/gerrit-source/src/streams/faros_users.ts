@@ -108,7 +108,7 @@ export class FarosUsers extends AirbyteStreamBase {
         }
       } catch (error) {
         // Some queries might fail due to permissions
-        this.logger.warn(`Failed to search users with query "${searchQuery}": ${error.message}`);
+        this.logger.warn(`Failed to search users with query "${searchQuery}": ${(error as any).message}`);
       }
     }
 

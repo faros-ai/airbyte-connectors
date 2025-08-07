@@ -10,6 +10,8 @@ export class FarosUsers extends GerritConverter {
     'tms_User',
   ];
 
+  source = 'gerrit';
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext

@@ -11,6 +11,8 @@ export class FarosChanges extends GerritConverter {
     'tms_Task',
   ];
 
+  source = 'gerrit';
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext

@@ -12,6 +12,8 @@ export class FarosProjects extends GerritConverter {
     'tms_TaskBoardProjectRelationship',
   ];
 
+  source = 'gerrit';
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext

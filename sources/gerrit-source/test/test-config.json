@@ -4,5 +4,6 @@
     "type": "basic",
     "username": "test-user",
     "password": "test-password"
-  }
+  },
+  "cutoff_days": 90
 }

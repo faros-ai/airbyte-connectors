@@ -263,10 +263,10 @@ export class GerritClient {
 
     try {
       const url = `${this.baseUrl}/a${path}`;
-      const headers: Record<string, string> = {
+      const headers = {
         Accept: 'application/json',
         ...options.headers,
-      };
+      } as Record<string, string>;
 
       if (this.auth.type === 'basic' || this.auth.type === 'digest') {
         const credentials = Buffer.from(

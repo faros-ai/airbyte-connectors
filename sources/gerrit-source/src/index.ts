@@ -33,7 +33,7 @@ export class GerritSource extends AirbyteSourceBase<GerritConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: GerritConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: GerritConfig): Promise<[boolean, any]> {
     try {
       const client = new GerritClient(config, this.logger);
       await client.checkConnection();
