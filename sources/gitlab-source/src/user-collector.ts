@@ -18,10 +18,10 @@ export class UserCollector {
    * Collect a user from any GitLab entity (member, commit author, etc.)
    * Handles deduplication and merging of user data
    */
-  collectUser(user?: GitLabUserResponse): void {
+  collectUser(user?: GitLabUserResponse, groupId?: string): void {
     if (!user?.username) {
       this.logger.debug(
-        `User has no username. Skipping collection. ${JSON.stringify(user)}`,
+        `User has no username. Skipping collection. ${JSON.stringify(user)}`
       );
       return;
     }
@@ -31,9 +31,17 @@ export class UserCollector {
     if (existingUser) {
       // Merge user data if new data has additional fields
       const mergedUser = this.mergeUsers(existingUser, user);
-      this.collectedUsers.set(user.username, mergedUser);
+      this.collectedUsers.set(user.username, {
+        ...mergedUser,
+        group_ids: groupId
+          ? [...existingUser.group_ids, groupId]
+          : existingUser.group_ids,
+      });
     } else {
-      this.collectedUsers.set(user.username, user);
+      this.collectedUsers.set(user.username, {
+        ...user,
+        group_ids: groupId ? [groupId] : [],
+      });
     }
 
     // Update name mappings if user has a name
@@ -53,7 +61,7 @@ export class UserCollector {
     const usernames = this.userNameMappings.get(authorName);
     if (!usernames || usernames.size === 0) {
       this.logger.debug(
-        `Failed to find a username for commit author "${authorName}" (commit: ${commitId})`,
+        `Failed to find a username for commit author "${authorName}" (commit: ${commitId})`
       );
       return null;
     }
@@ -62,7 +70,7 @@ export class UserCollector {
       this.logger.debug(
         `Commit ${commitId} author name "${authorName}" maps to multiple usernames: ${[
           ...usernames,
-        ].join(', ')}. Will skip author association.`,
+        ].join(', ')}. Will skip author association.`
       );
       return null;
     }
@@ -78,7 +86,7 @@ export class UserCollector {
       Array.from(this.collectedUsers.entries()).map(([username, user]) => [
         username,
         UserCollector.toOutput(user),
-      ]),
+      ])
     );
   }
 
@@ -115,7 +123,7 @@ export class UserCollector {
   // Private helper methods
   private mergeUsers(
     existing: GitLabUserResponse,
-    newUser: GitLabUserResponse,
+    newUser: GitLabUserResponse
   ): GitLabUserResponse {
     // Use logic similar to getFinalUser in destinations/airbyte-faros-destination
     const finalUser: Partial<GitLabUserResponse> = {};
@@ -132,10 +140,11 @@ export class UserCollector {
   static toOutput(user: GitLabUserResponse): FarosUserOutput {
     return {
       __brand: 'FarosUser' as const,
-      ...pick(user, ['name', 'state', 'group_id']),
+      ...pick(user, ['name', 'state']),
       username: user.username,
       email: user.email ?? user.public_email ?? user.publicEmail ?? null,
       web_url: user.web_url ?? user.webUrl ?? null,
+      group_ids: [...new Set(user.group_ids)],
     };
   }
 }
