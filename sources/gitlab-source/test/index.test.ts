@@ -98,7 +98,7 @@ function setupBasicMocks(): any {
         new Map(
           testUsers.map((user) => [
             user.username,
-            UserCollector.toOutput({...user, group_id: testGroup.id}),
+            UserCollector.toOutput({...user, group_ids: [testGroup.id]}),
           ])
         )
       ),
@@ -109,12 +109,12 @@ function setupBasicMocks(): any {
     getGroups: jest.fn().mockResolvedValue([testGroup]),
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
-    getGroupMembers: jest.fn().mockResolvedValue(testUsers),
     fetchGroupMembers: jest.fn().mockImplementation(async (groupId: string) => {
       for (const user of testUsers) {
-        mockUserCollector.collectUser({...user, group_id: groupId});
+        mockUserCollector.collectUser(user, groupId);
       }
     }),
+    fetchProjectMembers: jest.fn().mockImplementation(),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getMergeRequestsWithNotes: jest

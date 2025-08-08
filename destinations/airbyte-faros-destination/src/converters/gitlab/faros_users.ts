@@ -14,7 +14,7 @@ export class FarosUsers extends GitlabConverter {
 
   id(record: AirbyteRecord): string {
     const user = record?.record?.data as FarosUserOutput;
-    return `${user?.group_id}_${user?.username}`;
+    return `${user?.username}`;
   }
   async convert(
     record: AirbyteRecord
@@ -38,14 +38,14 @@ export class FarosUsers extends GitlabConverter {
       });
     }
 
-    // Create membership record if group_id exists
-    if (user.group_id && !isEmpty(user.group_id)) {
+    // Create membership record for each group_id
+    for (const groupId of user.group_ids) {
       res.push({
         model: 'vcs_Membership',
         record: {
           user: {uid: user.username, source: this.streamName.source},
           organization: {
-            uid: toLower(user.group_id),
+            uid: toLower(groupId),
             source: this.streamName.source,
           },
         },

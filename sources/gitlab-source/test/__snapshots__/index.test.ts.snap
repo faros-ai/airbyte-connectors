@@ -578,7 +578,9 @@ exports[`index streams - faros users 1`] = `
   {
     "__brand": "FarosUser",
     "email": "user1@example.com",
-    "group_id": "1",
+    "group_ids": [
+      "1",
+    ],
     "name": "Test User 1",
     "state": "active",
     "username": "user1",
@@ -587,7 +589,9 @@ exports[`index streams - faros users 1`] = `
   {
     "__brand": "FarosUser",
     "email": "user2@example.com",
-    "group_id": "1",
+    "group_ids": [
+      "1",
+    ],
     "name": "Test User 2",
     "state": "active",
     "username": "user2",

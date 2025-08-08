@@ -23,7 +23,7 @@ export class FarosUsers extends StreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['group_id', 'username'];
+    return ['username'];
   }
 
   // Although not actually an incremental stream, we run it in incremental mode
@@ -42,6 +42,10 @@ export class FarosUsers extends StreamBase {
     for (const group of await this.groupFilter.getGroups()) {
       this.logger.info(`Fetching users for group ${group}`);
       await gitlab.fetchGroupMembers(group);
+      for (const project of await this.groupFilter.getProjects(group)) {
+        this.logger.info(`Fetching users for project ${project}`);
+        await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+      }
     }
     const users = gitlab.userCollector.getCollectedUsers();
     for (const user of users.values()) {

@@ -37,7 +37,7 @@ export type FarosProjectOutput = {
 
 export type FarosUserOutput = {
   readonly __brand: 'FarosUser';
-  group_id?: string;
+  group_ids: string[];
 } & Pick<UserSchema, 'username'> &
   Partial<Pick<UserSchema, 'email' | 'name' | 'state' | 'web_url'>>;
 

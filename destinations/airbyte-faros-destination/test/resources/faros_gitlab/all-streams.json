@@ -85,7 +85,9 @@
         "web_url": "https://gitlab.com/ypc-faros",
         "created_at": "2022-08-11T20:36:01.136Z",
         "updated_at": null,
-        "group_id": "12372707"
+        "group_ids": [
+          "12372707"
+        ]
       }
     },
     "type": "RECORD"

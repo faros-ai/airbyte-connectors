@@ -205,10 +205,18 @@ export class GitLab {
         includeInherited: true,
       })
     )) {
-      this.userCollector.collectUser({
-        ...member,
-        group_id: groupId,
-      });
+      this.userCollector.collectUser(member, groupId);
+    }
+  }
+
+  async fetchProjectMembers(projectPath: string): Promise<void> {
+    for await (const member of this.offsetPagination((options) =>
+      this.client.ProjectMembers.all(projectPath, {
+        ...options,
+        includeInherited: true,
+      })
+    )) {
+      this.userCollector.collectUser(member);
     }
   }
 
