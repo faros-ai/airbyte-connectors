@@ -399,7 +399,7 @@ export const commitValidationSchema = {
     },
   ],
   errorMessage: {
-    onOf: ONE_OF_URI_OR_COMMIT_IDS_ERROR_MESSAGE,
+    oneOf: ONE_OF_URI_OR_COMMIT_IDS_ERROR_MESSAGE,
   },
 };
 
