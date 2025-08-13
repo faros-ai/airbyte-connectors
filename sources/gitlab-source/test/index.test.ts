@@ -734,22 +734,5 @@ describe('index', () => {
 
       expect(newConfig.groups).toEqual(['1']); // Only group 1 is included, 2 and 3 are not
     });
-
-    test('should skip group filtering when use_faros_graph_projects_selection is true', async () => {
-      const config = {
-        ...readTestResourceAsJSON('config.json'),
-        use_faros_graph_projects_selection: true,
-        groups: ['1'],
-        excluded_groups: ['2'],
-      };
-
-      const {config: newConfig} = await source.onBeforeRead(config, catalog);
-
-      // Groups and excluded_groups should be preserved
-      expect(newConfig.groups).toEqual(['1']);
-      expect(newConfig.excluded_groups).toEqual(['2']);
-      expect(newConfig.startDate).toBeDefined();
-      expect(newConfig.endDate).toBeDefined();
-    });
   });
 });

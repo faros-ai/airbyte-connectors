@@ -124,21 +124,6 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       this.logger.info.bind(this.logger)
     );
 
-    if (config.use_faros_graph_projects_selection) {
-      // No need to resolve groups, we'll use the Faros Graph to filter
-      return {
-        config: {
-          ...newConfig,
-          startDate,
-          endDate,
-          tmsEnabled,
-          cicdEnabled,
-        } as GitLabConfig,
-        catalog: {streams},
-        state: newState,
-      };
-    }
-
     const gitlab = await GitLab.instance(config, this.logger);
     const visibleGroups = await gitlab.getGroups();
 

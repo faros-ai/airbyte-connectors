@@ -61,8 +61,8 @@
           "type": "string"
         },
         "examples": [
-          "gitlab-org",
-          "mygroup"
+          "12345678",
+          "98765432"
         ]
       },
       "excluded_groups": {
@@ -74,8 +74,8 @@
           "type": "string"
         },
         "examples": [
-          "gitlab-org",
-          "mygroup"
+          "12345678",
+          "98765432"
         ]
       },
       "use_faros_graph_projects_selection": {
@@ -94,8 +94,8 @@
           "type": "string"
         },
         "examples": [
-          "gitlab-org/project1",
-          "mygroup/project2"
+          "12345678/project1",
+          "98765432/project2"
         ]
       },
       "excluded_projects": {
@@ -107,8 +107,8 @@
           "type": "string"
         },
         "examples": [
-          "gitlab-org/project1",
-          "mygroup/project2"
+          "12345678/project1",
+          "98765432/project2"
         ]
       },
       "run_mode": {

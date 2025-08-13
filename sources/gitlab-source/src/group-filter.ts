@@ -119,7 +119,7 @@ export class GroupFilter {
 
   @Memoize()
   async getGroups(): Promise<ReadonlyArray<string>> {
-    return await this.vcsFilter.getOrgs();
+    return this.vcsFilter.getOrgs();
   }
 
   @Memoize()
