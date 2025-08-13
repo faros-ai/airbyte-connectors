@@ -119,14 +119,20 @@ export class GroupFilter {
 
   @Memoize()
   async getGroups(): Promise<ReadonlyArray<string>> {
-    return await this.vcsFilter.getOrgs();
+    const res = await this.vcsFilter.getOrgs();
+    this.logger.info(`getGroups`);
+    this.logger.info(JSON.stringify(res, null, 2));
+    return res;
   }
 
   @Memoize()
   async getProjects(
     group: string
   ): Promise<ReadonlyArray<RepoInclusion<FarosProjectOutput>>> {
-    return this.vcsFilter.getRepos(group);
+    const res = await this.vcsFilter.getRepos(group);
+    this.logger.info(`getProjects ${group}`);
+    this.logger.info(JSON.stringify(res, null, 2));
+    return res;
   }
 
   async getProjectInclusion(
