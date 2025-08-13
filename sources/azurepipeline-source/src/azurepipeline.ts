@@ -20,13 +20,14 @@ import {
   CodeCoverageStatistics,
   CoverageDetailedSummaryStatus,
 } from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
   Pipeline,
   Run,
   TimelineRecord,
 } from 'faros-airbyte-common/azure-devops';
+import {bucket} from 'faros-airbyte-common/common';
 import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
@@ -35,6 +36,31 @@ import {VError} from 'verror';
 import {Build, PipelineReference} from './types';
 
 export class AzurePipelines extends AzureDevOps {
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
+
+  constructor(
+    client: any,
+    instanceType: 'cloud' | 'server',
+    cutoffDays: number,
+    top: number,
+    logger: AirbyteLogger,
+    bucketId: number,
+    bucketTotal: number
+  ) {
+    super(client, instanceType, cutoffDays, top, logger);
+    this.bucketId = bucketId;
+    this.bucketTotal = bucketTotal;
+  }
+
+  isPipelineInBucket(projectName: string, pipelineName: string): boolean {
+    const pipelineKey = `${projectName}:${pipelineName}`;
+    return (
+      bucket('farosai/airbyte-azurepipeline-source', pipelineKey, this.bucketTotal) ===
+      this.bucketId
+    );
+  }
+
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
     try {
       const allProjects = await this.getProjects(projects);
@@ -64,10 +90,12 @@ export class AzurePipelines extends AzureDevOps {
     const pipelines = [];
     const result = await this.client.pipelines.listPipelines(project.id);
     for (const pipeline of result) {
-      pipelines.push({
-        project,
-        ...pipeline,
-      });
+      if (this.isPipelineInBucket(project.name, pipeline.name)) {
+        pipelines.push({
+          project,
+          ...pipeline,
+        });
+      }
     }
     return pipelines;
   }

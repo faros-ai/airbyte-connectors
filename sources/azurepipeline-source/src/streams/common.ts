@@ -21,7 +21,9 @@ export abstract class ProjectsStreamBase extends AzurePipelinesStreamBase {
   async *streamSlices(): AsyncGenerator<ProjectReference> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
     for (const project of await azurePipelines.getProjects(
       this.config.projects

@@ -7,8 +7,9 @@ import {
   AzureDevOpsConfig,
   TimelineRecord,
 } from 'faros-airbyte-common/azure-devops';
+import {RoundRobinConfig} from 'faros-airbyte-common/common';
 
-export interface AzurePipelineConfig extends AzureDevOpsConfig {
+export interface AzurePipelineConfig extends AzureDevOpsConfig, RoundRobinConfig {
   pipelines?: string[];
 }
 
