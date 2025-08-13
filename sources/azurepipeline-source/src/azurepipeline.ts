@@ -20,7 +20,7 @@ import {
   CodeCoverageStatistics,
   CoverageDetailedSummaryStatus,
 } from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {wrapApiError} from 'faros-airbyte-cdk';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {
   AzureDevOps,
   Pipeline,
@@ -44,7 +44,7 @@ export class AzurePipelines extends AzureDevOps {
     instanceType: 'cloud' | 'server',
     cutoffDays: number,
     top: number,
-    logger: any,
+    logger: AirbyteLogger,
     bucketId: number,
     bucketTotal: number
   ) {
