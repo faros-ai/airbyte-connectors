@@ -20,6 +20,7 @@ import {
   Repository,
   Tag,
 } from 'faros-airbyte-common/azure-devops';
+import {bucket} from 'faros-airbyte-common/common';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -35,6 +36,9 @@ export class AzureRepos extends AzureDevOps {
   private readonly fetchTags: boolean;
   private readonly fetchBranchCommits: boolean;
   private readonly repositoriesByProject: Map<string, Set<string>>;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
+  
   constructor(
     protected readonly client: AzureDevOpsClient,
     protected readonly instanceType: 'cloud' | 'server',
@@ -44,9 +48,13 @@ export class AzureRepos extends AzureDevOps {
     branchPattern: string,
     repositories?: ReadonlyArray<string>,
     fetchTags: boolean = false,
-    fetchBranchCommits: boolean = false
+    fetchBranchCommits: boolean = false,
+    bucketId: number = 1,
+    bucketTotal: number = 1
   ) {
     super(client, instanceType, cutoffDays, top, logger);
+    this.bucketId = bucketId;
+    this.bucketTotal = bucketTotal;
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
     this.logger.debug(
       `Fetching commits from branches matching pattern: ` +
@@ -65,6 +73,14 @@ export class AzureRepos extends AzureDevOps {
         (this.repositoriesByProject.get(projectName) || new Set()).add(repoName)
       );
     }
+  }
+
+  isRepoInBucket(projectName: string, repoName: string): boolean {
+    const repoKey = `${projectName}:${repoName}`;
+    return (
+      bucket('farosai/airbyte-azure-repos-source', repoKey, this.bucketTotal) ===
+      this.bucketId
+    );
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -133,11 +149,17 @@ export class AzureRepos extends AzureDevOps {
     const filterRepos = this.repositoriesByProject.get(
       project.name.toLowerCase()
     );
-    if (!filterRepos?.size) {
-      return repositories;
-    }
-    return repositories.filter((repository) =>
-      filterRepos.has(repository.name.toLowerCase())
+    
+    // Apply explicit repository filter if provided
+    const explicitlyFiltered = filterRepos?.size 
+      ? repositories.filter((repository) =>
+          filterRepos.has(repository.name.toLowerCase())
+        )
+      : repositories;
+    
+    // Apply bucketing filter
+    return explicitlyFiltered.filter((repository) =>
+      this.isRepoInBucket(project.name, repository.name)
     );
   }
 
