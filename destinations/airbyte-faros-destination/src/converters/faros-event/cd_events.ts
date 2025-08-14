@@ -85,9 +85,7 @@ export class CdEvents extends FarosEventConverter {
   }
 }
 
-export function handleCDEvent(
-  args: CdEventArgs
-): ReadonlyArray<DestinationRecord> {
+export function handleCDEvent(args: CdEventArgs): DestinationRecord[] {
   const {data, params} = args;
   const {skipSavingRun, noDeployUidPrefix} = params || {};
   const records: DestinationRecord[] = [];

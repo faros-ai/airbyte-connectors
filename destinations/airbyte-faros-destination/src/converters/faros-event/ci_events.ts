@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {DestinationRecord, StreamContext} from '../converter';
-import {lift} from '../faros-org-import/common';
 import {
   createArtifactRecords,
   createBuildRecords,
