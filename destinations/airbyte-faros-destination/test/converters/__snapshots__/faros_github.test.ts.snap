@@ -5886,6 +5886,7 @@ N/A
     "cicd_Artifact": Object {
       "createdAt": "2024-01-15T10:30:00.000Z",
       "repository": Object {
+        "name": "hello-world",
         "organization": Object {
           "source": "GitHub",
           "uid": "github",
@@ -5900,6 +5901,7 @@ N/A
     "cicd_ArtifactCommitAssociation": Object {
       "artifact": Object {
         "repository": Object {
+          "name": "hello-world",
           "organization": Object {
             "source": "GitHub",
             "uid": "github",
@@ -5927,6 +5929,7 @@ N/A
     "cicd_ArtifactDeployment": Object {
       "artifact": Object {
         "repository": Object {
+          "name": "hello-world",
           "organization": Object {
             "source": "GitHub",
             "uid": "github",
@@ -5966,6 +5969,7 @@ N/A
     "cicd_Artifact": Object {
       "createdAt": "2024-01-15T09:00:00.000Z",
       "repository": Object {
+        "name": "hello-world",
         "organization": Object {
           "source": "GitHub",
           "uid": "github",
@@ -5980,6 +5984,7 @@ N/A
     "cicd_ArtifactCommitAssociation": Object {
       "artifact": Object {
         "repository": Object {
+          "name": "hello-world",
           "organization": Object {
             "source": "GitHub",
             "uid": "github",
@@ -6007,6 +6012,7 @@ N/A
     "cicd_ArtifactDeployment": Object {
       "artifact": Object {
         "repository": Object {
+          "name": "hello-world",
           "organization": Object {
             "source": "GitHub",
             "uid": "github",

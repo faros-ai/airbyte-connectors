@@ -115,14 +115,9 @@ export class FarosRepositories extends GitHubConverter {
       res.push({
         model: 'cicd_Repository',
         record: {
-          uid: repoKey.uid,
-          name: repoKey.name,
+          ...repoKey,
           description: Utils.cleanAndTruncate(repo.description),
           url: repo.html_url,
-          organization: {
-            uid: repoKey.organization.uid,
-            source: this.streamName.source,
-          },
         },
       });
     }

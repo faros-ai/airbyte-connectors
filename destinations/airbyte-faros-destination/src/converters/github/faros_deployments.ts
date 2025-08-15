@@ -59,10 +59,8 @@ export class FarosDeployments extends GitHubConverter {
       const artifactUid = deployment.commitOid;
       const cicdRepository = {
         uid: repoKey.uid,
-        organization: {
-          uid: repoKey.organization.uid,
-          source,
-        },
+        name: repoKey.name,
+        organization: repoKey.organization,
       };
 
       // Create dummy artifact
