@@ -1,5 +1,5 @@
-import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {
   GitBranchStats,
   GitCommitRef,
