@@ -73,7 +73,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -96,7 +101,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -126,7 +136,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -152,7 +167,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -238,7 +258,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -379,7 +404,12 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        1,
+        1
       );
     });
 

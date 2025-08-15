@@ -78,7 +78,9 @@ export abstract class StreamWithBranchSlices extends AzureReposStreamBase {
       this.config.branch_pattern,
       this.config.repositories,
       this.config.fetch_tags,
-      this.config.fetch_branch_commits
+      this.config.fetch_branch_commits,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
 
     for await (const repository of this.iterateRepositories(azureRepos)) {
@@ -138,7 +140,9 @@ export abstract class StreamWithRepoSlices extends AzureReposStreamBase {
       this.config.branch_pattern,
       this.config.repositories,
       this.config.fetch_tags,
-      this.config.fetch_branch_commits
+      this.config.fetch_branch_commits,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
 
     for await (const repository of this.iterateRepositories(azureRepos)) {

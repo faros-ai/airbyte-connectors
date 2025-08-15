@@ -25,6 +25,8 @@ import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
 import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
 
+import {RoundRobinConfig} from '../common/bucketing';
+
 export type DevOpsCloud = {
   type: 'cloud';
 };
@@ -34,7 +36,7 @@ export type DevOpsServer = {
 };
 export type AzureDevOpsInstance = DevOpsCloud | DevOpsServer;
 
-export interface AzureDevOpsConfig {
+export interface AzureDevOpsConfig extends RoundRobinConfig {
   readonly instance?: AzureDevOpsInstance;
   readonly access_token: string;
   readonly organization: string;
