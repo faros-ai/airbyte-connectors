@@ -12,6 +12,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {PullRequestKey, RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
+
 export interface CategoryRef {
   readonly category: string;
   readonly detail: string;

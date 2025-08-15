@@ -22,6 +22,9 @@ export class FarosDeployments extends GitHubConverter {
       deployment.latestStatus?.state || deployment.state
     );
     const environment = this.mapEnvironment(deployment.environment);
+    const isTerminalState = this.isTerminalState(
+      deployment.latestStatus?.state || deployment.state
+    );
 
     res.push({
       model: 'cicd_Deployment',
@@ -29,7 +32,7 @@ export class FarosDeployments extends GitHubConverter {
         uid: `${deployment.databaseId}`,
         requestedAt: Utils.toDate(deployment.createdAt),
         startedAt: Utils.toDate(deployment.createdAt),
-        endedAt: Utils.toDate(deployment.updatedAt),
+        endedAt: isTerminalState ? Utils.toDate(deployment.updatedAt) : null,
         env: environment,
         status: deploymentStatus,
         source,
@@ -37,6 +40,15 @@ export class FarosDeployments extends GitHubConverter {
     });
 
     return res;
+  }
+
+  private isTerminalState(state?: string): boolean {
+    if (!state) {
+      return false;
+    }
+
+    const lowerState = toLower(state);
+    return ['success', 'failure', 'error', 'inactive'].includes(lowerState);
   }
 
   private mapDeploymentStatus(state?: string): CategoryRef {

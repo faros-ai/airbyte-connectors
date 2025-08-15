@@ -5831,7 +5831,7 @@ N/A
   },
   Object {
     "cicd_Deployment": Object {
-      "endedAt": "2024-01-15T09:01:00.000Z",
+      "endedAt": null,
       "env": Object {
         "category": "Staging",
         "detail": "staging",
