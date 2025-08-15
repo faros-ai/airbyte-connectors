@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "databaseId": {
+      "type": "number"
+    },
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "environment": {
+      "type": ["string", "null"]
+    },
+    "createdAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "state": {
+      "type": ["string", "null"]
+    },
+    "task": {
+      "type": ["string", "null"]
+    },
+    "commitOid": {
+      "type": ["string", "null"]
+    },
+    "ref": {
+      "type": ["object", "null"],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "latestStatus": {
+      "type": ["object", "null"],
+      "properties": {
+        "state": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

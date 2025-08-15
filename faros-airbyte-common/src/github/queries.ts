@@ -60,6 +60,9 @@ export const PROJECTS_QUERY = loadQuery('projects-query.gql');
 export const ISSUES_QUERY =
   ASSIGNEE_FIELDS_FRAGMENT + loadQuery('issues-query.gql');
 
+// GraphQL query used to get repo deployments
+export const DEPLOYMENTS_QUERY = loadQuery('deployments-query.gql');
+
 // Graphql query used to get an enterprise
 export const ENTERPRISE_QUERY = loadQuery('enterprise-query.gql');
 

@@ -88,6 +88,7 @@ export const CustomStreamNames = [
   'faros_copilot_seats',
   'faros_copilot_usage',
   'faros_dependabot_alerts',
+  'faros_deployments',
   'faros_enterprises',
   'faros_enterprise_copilot_seats',
   'faros_enterprise_copilot_usage',

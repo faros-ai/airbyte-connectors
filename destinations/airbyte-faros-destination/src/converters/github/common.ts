@@ -7,11 +7,17 @@ import {
   User,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, omitBy, toLower} from 'lodash';
+import {isEmpty, isNil, omitBy, pick, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {CicdRepoKey} from '../common/cicd';
 import {PullRequestKey, RepoKey} from '../common/vcs';
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
+
+export interface CategoryRef {
+  readonly category: string;
+  readonly detail: string;
+}
 
 export type PartialUser = Partial<Omit<User, 'type'> & {type: string}>;
 
@@ -215,6 +221,10 @@ export class GitHubCommon {
         source,
       },
     };
+  }
+
+  static cicdRepoKey(repoKey: RepoKey): CicdRepoKey {
+    return pick(repoKey, ['uid', 'organization']) as CicdRepoKey;
   }
 
   static pullRequestKey(
@@ -421,6 +431,10 @@ export abstract class GitHubConverter extends Converter {
       }
     }
     return finalUser;
+  }
+
+  protected cicdEnabled(ctx: StreamContext): boolean {
+    return ctx.getSourceConfig()?.cicdEnabled ?? false;
   }
 }
 

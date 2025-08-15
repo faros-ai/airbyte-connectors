@@ -7898,6 +7898,33 @@ export type CommitsQuery = {
   } | null;
 };
 
+export type DeploymentsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  repo: Scalars['String']['input'];
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type DeploymentsQuery = {
+  repository?: {
+    deployments: {
+      pageInfo: {endCursor?: string | null; hasNextPage: boolean};
+      nodes?: Array<{
+        databaseId?: number | null;
+        description?: string | null;
+        environment?: string | null;
+        createdAt: string;
+        updatedAt: string;
+        state?: DeploymentState | null;
+        task?: string | null;
+        commitOid: string;
+        ref?: {name: string} | null;
+        latestStatus?: {state: DeploymentStatusState} | null;
+      } | null> | null;
+    };
+  } | null;
+};
+
 export type EnterpriseQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;

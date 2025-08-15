@@ -122,6 +122,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__github__faros_deployments"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__github__faros_secret_scanning_alerts"
       },
       "destination_sync_mode": "append"
