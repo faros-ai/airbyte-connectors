@@ -27,6 +27,7 @@ export class FarosDeployments extends GitHubConverter {
       source
     );
 
+    const deploymentUid = `${deployment.databaseId}`;
     const deploymentStatus = this.mapDeploymentStatus(
       deployment.latestStatus?.state || deployment.state
     );
@@ -43,7 +44,7 @@ export class FarosDeployments extends GitHubConverter {
     res.push({
       model: 'cicd_Deployment',
       record: {
-        uid: `${deployment.databaseId}`,
+        uid: deploymentUid,
         application,
         requestedAt: Utils.toDate(deployment.createdAt),
         startedAt: Utils.toDate(deployment.createdAt),
@@ -93,7 +94,8 @@ export class FarosDeployments extends GitHubConverter {
             repository: repoKey,
           },
           deployment: {
-            uid: `${deployment.databaseId}`,
+            uid: deploymentUid,
+            source,
           },
         },
       });

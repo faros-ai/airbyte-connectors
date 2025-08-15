@@ -5939,6 +5939,7 @@ N/A
         "uid": "a1b2c3d4e5f6",
       },
       "deployment": Object {
+        "source": "GitHub",
         "uid": "123456789",
       },
       "source": "GitHub",
@@ -6022,6 +6023,7 @@ N/A
         "uid": "b2c3d4e5f6a7",
       },
       "deployment": Object {
+        "source": "GitHub",
         "uid": "123456790",
       },
       "source": "GitHub",
