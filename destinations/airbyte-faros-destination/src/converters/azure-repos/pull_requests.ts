@@ -114,6 +114,7 @@ export class PullRequests extends AzureReposConverter {
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
+    'tms_TaskPullRequestAssociation',
   ];
 
   // TODO: Review commits and work items associations
@@ -240,6 +241,22 @@ export class PullRequests extends AzureReposConverter {
 
       if (reviewerUser?.uid && !this.partialUserRecords[reviewerUser.uid]) {
         this.partialUserRecords[reviewerUser.uid] = reviewerUser;
+      }
+    }
+
+    // Create task pull request associations for work items
+    if (pullRequestItem.workItems?.length) {
+      for (const workItem of pullRequestItem.workItems) {
+        res.push({
+          model: 'tms_TaskPullRequestAssociation',
+          record: {
+            task: {
+              uid: workItem.id,
+              source: 'Azure-Workitems',
+            },
+            pullRequest,
+          },
+        });
       }
     }
 
