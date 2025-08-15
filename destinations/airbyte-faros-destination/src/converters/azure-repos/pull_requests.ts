@@ -20,6 +20,8 @@ import {
   PartialUserRecord,
 } from './common';
 
+const AZURE_WORKITEMS_SOURCE = 'Azure-Workitems';
+
 const BRANCH_REF_NAME_PREFIX = 'refs/heads/';
 
 interface ReviewThread {
@@ -252,7 +254,7 @@ export class PullRequests extends AzureReposConverter {
           record: {
             task: {
               uid: workItem.id,
-              source: 'Azure-Workitems',
+              source: AZURE_WORKITEMS_SOURCE,
             },
             pullRequest,
           },

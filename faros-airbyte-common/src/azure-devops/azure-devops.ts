@@ -509,5 +509,4 @@ export abstract class AzureDevOps {
     }
     this.logger.debug(`Fetched ${seenUsers.size} members from ${teams} teams`);
   }
-
 }
