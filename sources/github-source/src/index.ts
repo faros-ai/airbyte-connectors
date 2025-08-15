@@ -200,6 +200,9 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
         startDate,
         endDate,
         tmsEnabled: streams.map((s) => s.stream.name).includes('faros_issues'),
+        cicdEnabled: streams
+          .map((s) => s.stream.name)
+          .includes('faros_deployments'),
       } as GitHubConfig,
       catalog: {streams},
       state: newState,

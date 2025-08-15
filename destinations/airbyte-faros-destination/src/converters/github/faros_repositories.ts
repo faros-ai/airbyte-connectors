@@ -8,6 +8,7 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'compute_Application',
     'tms_Project',
     'tms_TaskBoard',
     'tms_TaskBoardProjectRelationship',
@@ -47,6 +48,16 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
+
+    if (this.cicdEnabled(ctx)) {
+      res.push({
+        model: 'compute_Application',
+        record: {
+          name: `${repoKey.organization.uid}/${repoKey.name}`,
+          platform: this.streamName.source,
+        },
+      });
+    }
 
     if (repo.languages) {
       for (const {language, bytes} of repo.languages) {

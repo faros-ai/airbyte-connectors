@@ -11,7 +11,7 @@ import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
 import {PullRequestKey, RepoKey} from '../common/vcs';
-import {Converter, DestinationRecord} from '../converter';
+import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface CategoryRef {
   readonly category: string;
@@ -426,6 +426,10 @@ export abstract class GitHubConverter extends Converter {
       }
     }
     return finalUser;
+  }
+
+  protected cicdEnabled(ctx: StreamContext): boolean {
+    return ctx.getSourceConfig()?.cicdEnabled ?? false;
   }
 }
 

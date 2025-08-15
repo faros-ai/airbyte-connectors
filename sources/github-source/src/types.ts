@@ -42,6 +42,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;
   tmsEnabled?: boolean;
+  cicdEnabled?: boolean;
 }
 
 type GitHubToken = {

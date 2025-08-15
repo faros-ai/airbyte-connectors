@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {CategoryRef, GitHubConverter} from './common';
+import {CategoryRef, GitHubCommon, GitHubConverter} from './common';
 
 export class FarosDeployments extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -18,6 +18,12 @@ export class FarosDeployments extends GitHubConverter {
     const deployment = record.record.data as Deployment;
     const res: DestinationRecord[] = [];
 
+    const repoKey = GitHubCommon.repoKey(
+      deployment.org,
+      deployment.repo,
+      source
+    );
+
     const deploymentStatus = this.mapDeploymentStatus(
       deployment.latestStatus?.state || deployment.state
     );
@@ -26,10 +32,16 @@ export class FarosDeployments extends GitHubConverter {
       deployment.latestStatus?.state || deployment.state
     );
 
+    const application = {
+      name: `${repoKey.organization.uid}/${repoKey.name}`,
+      platform: source,
+    };
+
     res.push({
       model: 'cicd_Deployment',
       record: {
         uid: `${deployment.databaseId}`,
+        application,
         requestedAt: Utils.toDate(deployment.createdAt),
         startedAt: Utils.toDate(deployment.createdAt),
         endedAt: isTerminalState ? Utils.toDate(deployment.updatedAt) : null,
