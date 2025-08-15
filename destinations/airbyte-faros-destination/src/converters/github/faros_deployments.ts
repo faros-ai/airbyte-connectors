@@ -8,6 +8,9 @@ import {CategoryRef, GitHubCommon, GitHubConverter} from './common';
 
 export class FarosDeployments extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Artifact',
+    'cicd_ArtifactCommitAssociation',
+    'cicd_ArtifactDeployment',
     'cicd_Deployment',
   ];
 
@@ -50,6 +53,62 @@ export class FarosDeployments extends GitHubConverter {
         source,
       },
     });
+
+    // Create dummy artifact to link deployment to commit
+    if (deployment.commitOid) {
+      const artifactUid = deployment.commitOid;
+      const cicdRepository = {
+        uid: repoKey.uid,
+        organization: {
+          uid: repoKey.organization.uid,
+          source,
+        },
+      };
+
+      // Create dummy artifact
+      res.push({
+        model: 'cicd_Artifact',
+        record: {
+          uid: artifactUid,
+          repository: cicdRepository,
+          createdAt: Utils.toDate(deployment.createdAt),
+        },
+      });
+
+      // Link artifact to commit
+      res.push({
+        model: 'cicd_ArtifactCommitAssociation',
+        record: {
+          artifact: {
+            uid: artifactUid,
+            repository: cicdRepository,
+          },
+          commit: {
+            repository: {
+              uid: repoKey.uid,
+              name: repoKey.name,
+              organization: repoKey.organization,
+            },
+            sha: deployment.commitOid,
+            uid: deployment.commitOid,
+          },
+        },
+      });
+
+      // Link artifact to deployment
+      res.push({
+        model: 'cicd_ArtifactDeployment',
+        record: {
+          artifact: {
+            uid: artifactUid,
+            repository: cicdRepository,
+          },
+          deployment: {
+            uid: `${deployment.databaseId}`,
+          },
+        },
+      });
+    }
 
     return res;
   }

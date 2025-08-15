@@ -8,6 +8,7 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosRepositories extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Repository',
     'compute_Application',
     'tms_Project',
     'tms_TaskBoard',
@@ -48,16 +49,6 @@ export class FarosRepositories extends GitHubConverter {
         },
       },
     ];
-
-    if (this.cicdEnabled(ctx)) {
-      res.push({
-        model: 'compute_Application',
-        record: {
-          name: `${repoKey.organization.uid}/${repoKey.name}`,
-          platform: this.streamName.source,
-        },
-      });
-    }
 
     if (repo.languages) {
       for (const {language, bytes} of repo.languages) {
@@ -111,6 +102,31 @@ export class FarosRepositories extends GitHubConverter {
         },
       });
     }
+
+    if (this.cicdEnabled(ctx)) {
+      res.push({
+        model: 'compute_Application',
+        record: {
+          name: `${repoKey.organization.uid}/${repoKey.name}`,
+          platform: this.streamName.source,
+        },
+      });
+
+      res.push({
+        model: 'cicd_Repository',
+        record: {
+          uid: repoKey.uid,
+          name: repoKey.name,
+          description: Utils.cleanAndTruncate(repo.description),
+          url: repo.html_url,
+          organization: {
+            uid: repoKey.organization.uid,
+            source: this.streamName.source,
+          },
+        },
+      });
+    }
+
     return res;
   }
 }
