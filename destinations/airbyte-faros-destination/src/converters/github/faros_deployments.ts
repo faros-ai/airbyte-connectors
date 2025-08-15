@@ -110,7 +110,14 @@ export class FarosDeployments extends GitHubConverter {
     }
 
     const lowerState = toLower(state);
-    return ['success', 'failure', 'error', 'inactive'].includes(lowerState);
+    return [
+      'success',
+      'failure',
+      'error',
+      'inactive',
+      'abandoned',
+      'destroyed',
+    ].includes(lowerState);
   }
 
   private mapDeploymentStatus(state?: string): CategoryRef {
@@ -128,10 +135,14 @@ export class FarosDeployments extends GitHubConverter {
         return {category: 'Failed', detail: lowerState};
       case 'in_progress':
       case 'pending':
+      case 'active':
         return {category: 'Running', detail: lowerState};
       case 'queued':
+      case 'waiting':
         return {category: 'Queued', detail: lowerState};
       case 'inactive':
+      case 'abandoned':
+      case 'destroyed':
         return {category: 'Canceled', detail: lowerState};
       default:
         return {category: 'Custom', detail: lowerState};
