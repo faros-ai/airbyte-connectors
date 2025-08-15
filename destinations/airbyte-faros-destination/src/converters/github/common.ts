@@ -7,9 +7,10 @@ import {
   User,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
-import {isEmpty, isNil, omitBy, toLower} from 'lodash';
+import {isEmpty, isNil, omitBy, pick, toLower} from 'lodash';
 import {Dictionary} from 'ts-essentials';
 
+import {CicdRepoKey} from '../common/cicd';
 import {PullRequestKey, RepoKey} from '../common/vcs';
 import {Converter, DestinationRecord, StreamContext} from '../converter';
 
@@ -220,6 +221,10 @@ export class GitHubCommon {
         source,
       },
     };
+  }
+
+  static cicdRepoKey(repoKey: RepoKey): CicdRepoKey {
+    return pick(repoKey, ['uid', 'organization']) as CicdRepoKey;
   }
 
   static pullRequestKey(
