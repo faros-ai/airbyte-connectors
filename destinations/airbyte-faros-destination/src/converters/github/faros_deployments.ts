@@ -57,18 +57,13 @@ export class FarosDeployments extends GitHubConverter {
     // Create dummy artifact to link deployment to commit
     if (deployment.commitOid) {
       const artifactUid = deployment.commitOid;
-      const cicdRepository = {
-        uid: repoKey.uid,
-        name: repoKey.name,
-        organization: repoKey.organization,
-      };
 
       // Create dummy artifact
       res.push({
         model: 'cicd_Artifact',
         record: {
           uid: artifactUid,
-          repository: cicdRepository,
+          repository: repoKey,
           createdAt: Utils.toDate(deployment.createdAt),
         },
       });
@@ -79,14 +74,10 @@ export class FarosDeployments extends GitHubConverter {
         record: {
           artifact: {
             uid: artifactUid,
-            repository: cicdRepository,
+            repository: repoKey,
           },
           commit: {
-            repository: {
-              uid: repoKey.uid,
-              name: repoKey.name,
-              organization: repoKey.organization,
-            },
+            repository: repoKey,
             sha: deployment.commitOid,
             uid: deployment.commitOid,
           },
@@ -99,7 +90,7 @@ export class FarosDeployments extends GitHubConverter {
         record: {
           artifact: {
             uid: artifactUid,
-            repository: cicdRepository,
+            repository: repoKey,
           },
           deployment: {
             uid: `${deployment.databaseId}`,
