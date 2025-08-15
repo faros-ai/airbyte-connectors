@@ -60,8 +60,6 @@ export interface AzureDevOpsClient {
 
 export type User = GraphUser | IdentityRef;
 
-export {ResourceRef};
-
 export interface GraphUserResponse {
   count: number;
   value: GraphUser[];

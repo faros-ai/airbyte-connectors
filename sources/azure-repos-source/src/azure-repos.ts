@@ -1,4 +1,5 @@
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import {
   GitBranchStats,
   GitCommitRef,
@@ -337,6 +338,26 @@ export class AzureRepos extends AzureDevOps {
       );
     }
     return branchNames;
+  }
+
+  private async getWorkItemsForPullRequest(
+    repositoryId: string,
+    pullRequestId: number,
+    projectId: string
+  ): Promise<ResourceRef[]> {
+    try {
+      const workItems = await this.client.git.getPullRequestWorkItemRefs(
+        repositoryId,
+        pullRequestId,
+        projectId
+      );
+      return workItems || [];
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to fetch work items for PR ${pullRequestId}: ${err.message}`
+      );
+      return [];
+    }
   }
 }
 
