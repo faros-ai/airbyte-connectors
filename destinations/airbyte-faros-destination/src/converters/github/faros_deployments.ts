@@ -67,7 +67,6 @@ export class FarosDeployments extends GitHubConverter {
         model: 'cicd_Artifact',
         record: {
           ...artifactKey,
-          createdAt: Utils.toDate(deployment.createdAt),
         },
       });
 

@@ -5884,7 +5884,6 @@ N/A
   },
   Object {
     "cicd_Artifact": Object {
-      "createdAt": "2024-01-15T10:30:00.000Z",
       "repository": Object {
         "organization": Object {
           "source": "GitHub",
@@ -5965,7 +5964,6 @@ N/A
   },
   Object {
     "cicd_Artifact": Object {
-      "createdAt": "2024-01-15T09:00:00.000Z",
       "repository": Object {
         "organization": Object {
           "source": "GitHub",

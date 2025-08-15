@@ -1,4 +1,4 @@
-import {StreamKey} from 'faros-airbyte-cdk';
+import {StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Deployment} from 'faros-airbyte-common/github';
 import {Dictionary} from 'ts-essentials';
 
@@ -19,8 +19,8 @@ export class FarosDeployments extends StreamWithRepoSlices {
   }
 
   async *readRecords(
-    _syncMode: unknown,
-    _cursorField?: string[],
+    syncMode: SyncMode,
+    cursorField?: string[],
     streamSlice?: RepoStreamSlice
   ): AsyncGenerator<Deployment> {
     const org = streamSlice?.org;
