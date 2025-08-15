@@ -34,6 +34,7 @@ export class AzureRepos extends AzureDevOps {
   private readonly branchPattern: RegExp;
   private readonly fetchTags: boolean;
   private readonly fetchBranchCommits: boolean;
+  private readonly fetchPullRequestWorkItems: boolean;
   private readonly repositoriesByProject: Map<string, Set<string>>;
   constructor(
     protected readonly client: AzureDevOpsClient,
@@ -44,7 +45,8 @@ export class AzureRepos extends AzureDevOps {
     branchPattern: string,
     repositories?: ReadonlyArray<string>,
     fetchTags: boolean = false,
-    fetchBranchCommits: boolean = false
+    fetchBranchCommits: boolean = false,
+    fetchPullRequestWorkItems: boolean = false
   ) {
     super(client, instanceType, cutoffDays, top, logger);
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
@@ -55,6 +57,7 @@ export class AzureRepos extends AzureDevOps {
 
     this.fetchTags = fetchTags;
     this.fetchBranchCommits = fetchBranchCommits;
+    this.fetchPullRequestWorkItems = fetchPullRequestWorkItems;
     this.repositoriesByProject = new Map();
     for (const repository of repositories ?? []) {
       const [project, repo] = repository.split('/');
@@ -295,10 +298,19 @@ export class AzureRepos extends AzureDevOps {
         pullRequest.pullRequestId,
         repo.project.id
       );
+
+      const workItems = this.fetchPullRequestWorkItems
+        ? await this.getWorkItemsForPullRequest(
+            repo.id,
+            pullRequest.pullRequestId,
+            repo.project.id
+          )
+        : undefined;
+
       const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
       const mergeStatus =
         PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
-      yield {...pullRequest, status, mergeStatus, threads};
+      yield {...pullRequest, status, mergeStatus, threads, workItems};
     }
   }
 

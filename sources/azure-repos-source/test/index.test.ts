@@ -238,12 +238,73 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        [],
+        false,
+        false,
+        false
       );
     });
 
     const source = new sut.AzureRepoSource(logger);
     const streams = source.streams(config);
+
+    const pullrequestsStream = streams[1];
+    const pullrequestIter = pullrequestsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {repository: repo, branch: 'main'}
+    );
+    const pullrequests = [];
+    for await (const pullrequest of pullrequestIter) {
+      pullrequests.push(pullrequest);
+    }
+    expect(pullrequests).toMatchSnapshot();
+  });
+
+  test('streams - pullrequests with work items enabled, use full_refresh sync mode', async () => {
+    const repos = readTestFileAsJSON('repositories.json');
+    const repo = {...repos[0], project: {id: 'project', name: 'project'}};
+    AzureRepos.instance = jest.fn().mockImplementation(() => {
+      const rawPullrequests: any[] = readTestFileAsJSON('pullrequests.json');
+      const pullrequests = rawPullrequests.map((p) => omit(p, 'threads'));
+      const threads = rawPullrequests.map((r) => r.threads);
+      
+      // Mock work items for pull requests
+      const mockWorkItems = [
+        [{id: '123', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/123'}],
+        [{id: '456', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/456'}, {id: '789', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/789'}]
+      ];
+      
+      return new AzureRepos(
+        {
+          git: {
+            getPullRequests: jest.fn().mockResolvedValueOnce(pullrequests),
+            getThreads: jest
+              .fn()
+              .mockResolvedValueOnce(threads[0])
+              .mockResolvedValueOnce(threads[1]),
+            getPullRequestWorkItemRefs: jest
+              .fn()
+              .mockResolvedValueOnce(mockWorkItems[0])
+              .mockResolvedValueOnce(mockWorkItems[1]),
+          },
+        } as unknown as AzureDevOpsClient,
+        instanceType,
+        cutoffDays,
+        top,
+        logger,
+        ALL_BRANCHES_PATTERN,
+        [],
+        false,
+        false,
+        true // Enable work items fetching
+      );
+    });
+
+    const configWithWorkItems = {...config, fetch_pull_request_work_items: true};
+    const source = new sut.AzureRepoSource(logger);
+    const streams = source.streams(configWithWorkItems);
 
     const pullrequestsStream = streams[1];
     const pullrequestIter = pullrequestsStream.readRecords(

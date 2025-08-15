@@ -7,7 +7,7 @@ import {
   BuildRepository,
   TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {IdentityRef, ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {
@@ -60,6 +60,8 @@ export interface AzureDevOpsClient {
 
 export type User = GraphUser | IdentityRef;
 
+export {ResourceRef};
+
 export interface GraphUserResponse {
   count: number;
   value: GraphUser[];
@@ -110,6 +112,7 @@ export interface PullRequest
   status: string;
   mergeStatus: string;
   threads: GitInterfaces.GitPullRequestCommentThread[];
+  workItems?: ResourceRef[];
 }
 
 export interface Commit extends GitInterfaces.GitCommitRef {

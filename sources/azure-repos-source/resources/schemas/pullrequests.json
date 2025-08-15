@@ -331,6 +331,20 @@
           }
         }
       }
+    },
+    "workItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

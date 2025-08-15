@@ -509,4 +509,24 @@ export abstract class AzureDevOps {
     }
     this.logger.debug(`Fetched ${seenUsers.size} members from ${teams} teams`);
   }
+
+  protected async getWorkItemsForPullRequest(
+    repositoryId: string,
+    pullRequestId: number,
+    projectId: string
+  ): Promise<types.ResourceRef[]> {
+    try {
+      const workItems = await this.client.git.getPullRequestWorkItemRefs(
+        repositoryId,
+        pullRequestId,
+        projectId
+      );
+      return workItems || [];
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to fetch work items for PR ${pullRequestId}: ${err.message}`
+      );
+      return [];
+    }
+  }
 }
