@@ -12,16 +12,7 @@ export class FarosProjectVersionIssues extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const issue = record.record.data;
-    const source = this.initializeSource(ctx);
-    return [
-      {
-        model: 'tms_TaskReleaseRelationship',
-        record: {
-          task: {uid: issue.key, source},
-          release: {uid: issue.projectVersionId, source},
-        },
-      },
-    ];
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }

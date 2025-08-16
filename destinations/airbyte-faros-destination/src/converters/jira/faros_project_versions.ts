@@ -14,7 +14,7 @@ export class FarosProjectVersions extends JiraConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    this.source = this.initializeSource(ctx);
-    return this.alias.convert(record, ctx);
+    ctx.logger.info(JSON.stringify(record));
+    return [];
   }
 }
