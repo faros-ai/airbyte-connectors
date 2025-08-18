@@ -32,6 +32,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly end_date?: string;
   readonly fetch_pull_request_diff_coverage?: boolean;
   readonly pull_request_cutoff_lag_seconds?: number;
+  readonly max_deployment_duration_days?: number;
   readonly fetch_public_organizations?: boolean;
   readonly skip_repos_without_recent_push?: boolean;
   readonly copilot_metrics_teams?: ReadonlyArray<string>;
@@ -42,6 +43,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   reposByOrg?: Map<string, Set<string>>;
   excludedReposByOrg?: Map<string, Set<string>>;
   tmsEnabled?: boolean;
+  cicdEnabled?: boolean;
 }
 
 type GitHubToken = {

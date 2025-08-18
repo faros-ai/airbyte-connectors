@@ -19,6 +19,7 @@ For common build, test, and run instructions, see the [common source documentati
 | Copilot Seats ( ** )   | read:org             | Organization: Administration                     |
 | Copilot Usage ( ** )   | read:org             | Organization: Administration & Members           |
 | Dependabot Alerts      | repo                 | Repository: Metadata & Dependabot Alerts         |
+| Deployments            | repo                 | Repository: Metadata & Deployments               |
 | Issues                 | repo                 | Repository: Metadata & Issues                    |
 | Issue Comments         | repo                 | Repository: Metadata & (Pull Requests \| Issues) |
 | Labels                 | repo                 | Repository: Metadata & (Pull Requests \| Issues) |

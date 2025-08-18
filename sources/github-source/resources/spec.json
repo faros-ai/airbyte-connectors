@@ -332,22 +332,29 @@
         "type": "integer",
         "default": 0
       },
-      "fetch_public_organizations": {
+      "max_deployment_duration_days": {
         "order": 32,
+        "type": "integer",
+        "title": "Max Deployment Duration (days)",
+        "description": "Maximum number of days to consider for a deployment to be completed.",
+        "default": 7
+      },
+      "fetch_public_organizations": {
+        "order": 33,
         "type": "boolean",
         "title": "Fetch Public Organizations",
         "description": "Fetch public organizations",
         "default": false
       },
       "skip_repos_without_recent_push": {
-        "order": 33,
+        "order": 34,
         "type": "boolean",
         "title": "Skip Repositories Without Recent Push",
         "description": "Skip repositories without recent push. Being recent depends on cutoff_days / start_date configuration.",
         "default": false
       },
       "copilot_metrics_teams": {
-        "order": 34,
+        "order": 35,
         "type": "array",
         "title": "Copilot Metrics Teams",
         "description": "List of teams to fetch Copilot metrics for. If not specified, all teams for the organization/enterprise will be fetched.",
@@ -356,7 +363,7 @@
         }
       },
       "proxy_url": {
-        "order": 35,
+        "order": 36,
         "type": "string",
         "title": "Proxy URL",
         "description": "Proxy URL to use for the GitHub API"

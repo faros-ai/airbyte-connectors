@@ -16,6 +16,7 @@ import {
   CopilotUsageSummary,
   CoverageReport,
   DependabotAlert,
+  Deployment,
   Enterprise,
   EnterpriseCopilotSeat,
   EnterpriseCopilotSeatsEmpty,
@@ -55,6 +56,7 @@ import {
 import {
   CommitsQuery,
   CommitsQueryVariables,
+  DeploymentsQuery,
   EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
@@ -69,6 +71,7 @@ import {
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_QUERY,
+  DEPLOYMENTS_QUERY,
   ENTERPRISE_QUERY,
   FILES_FRAGMENT,
   ISSUES_QUERY,
@@ -120,6 +123,7 @@ export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
+export const DEFAULT_MAX_DEPLOYMENT_DURATION_DAYS = 7;
 export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
@@ -1329,6 +1333,42 @@ export abstract class GitHub {
             'published_at',
             'tag_name',
           ]),
+        };
+      }
+    }
+  }
+
+  async *getDeployments(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<Deployment> {
+    const iter = this.octokit(org).graphql.paginate.iterator<DeploymentsQuery>(
+      DEPLOYMENTS_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: this.pageSize,
+      }
+    );
+
+    for await (const res of iter) {
+      for (const deployment of res.repository.deployments.nodes) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(deployment.createdAt) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(deployment.createdAt) < startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...deployment,
         };
       }
     }
