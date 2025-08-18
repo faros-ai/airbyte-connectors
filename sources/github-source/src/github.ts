@@ -123,6 +123,7 @@ export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
+export const DEFAULT_MAX_DEPLOYMENT_DURATION_DAYS = 7;
 export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
