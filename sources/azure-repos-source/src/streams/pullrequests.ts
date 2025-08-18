@@ -48,7 +48,8 @@ export class PullRequests extends StreamWithRepoSlices {
       this.config.branch_pattern,
       this.config.repositories,
       this.config.fetch_tags,
-      this.config.fetch_branch_commits
+      this.config.fetch_branch_commits,
+      this.config.fetch_pull_request_work_items
     );
 
     const since = this.getCutoff(syncMode, streamSlice, streamState);

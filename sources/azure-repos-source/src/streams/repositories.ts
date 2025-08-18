@@ -22,7 +22,8 @@ export class Repositories extends AzureReposStreamBase {
       this.config.branch_pattern,
       this.config.repositories,
       this.config.fetch_tags,
-      this.config.fetch_branch_commits
+      this.config.fetch_branch_commits,
+      this.config.fetch_pull_request_work_items
     );
     const projects = await azureRepos.getProjects(this.config.projects);
     yield* projects;
@@ -39,7 +40,8 @@ export class Repositories extends AzureReposStreamBase {
       this.config.branch_pattern,
       this.config.repositories,
       this.config.fetch_tags,
-      this.config.fetch_branch_commits
+      this.config.fetch_branch_commits,
+      this.config.fetch_pull_request_work_items
     );
     yield* azureRepos.getRepositories(streamSlice);
   }

@@ -20,6 +20,8 @@ import {
   PartialUserRecord,
 } from './common';
 
+const AZURE_WORKITEMS_SOURCE = 'Azure-Workitems';
+
 const BRANCH_REF_NAME_PREFIX = 'refs/heads/';
 
 interface ReviewThread {
@@ -114,6 +116,7 @@ export class PullRequests extends AzureReposConverter {
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
+    'tms_TaskPullRequestAssociation',
   ];
 
   // TODO: Review commits and work items associations
@@ -240,6 +243,22 @@ export class PullRequests extends AzureReposConverter {
 
       if (reviewerUser?.uid && !this.partialUserRecords[reviewerUser.uid]) {
         this.partialUserRecords[reviewerUser.uid] = reviewerUser;
+      }
+    }
+
+    // Create task pull request associations for work items
+    if (pullRequestItem.workItems?.length) {
+      for (const workItem of pullRequestItem.workItems) {
+        res.push({
+          model: 'tms_TaskPullRequestAssociation',
+          record: {
+            task: {
+              uid: workItem.id,
+              source: AZURE_WORKITEMS_SOURCE,
+            },
+            pullRequest,
+          },
+        });
       }
     }
 

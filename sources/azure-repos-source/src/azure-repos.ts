@@ -1,3 +1,4 @@
+import {ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {
   GitBranchStats,
@@ -35,10 +36,11 @@ export class AzureRepos extends AzureDevOps {
   private readonly branchPattern: RegExp;
   private readonly fetchTags: boolean;
   private readonly fetchBranchCommits: boolean;
+  private readonly fetchPullRequestWorkItems: boolean;
   private readonly repositoriesByProject: Map<string, Set<string>>;
   private readonly bucketId: number;
   private readonly bucketTotal: number;
-  
+
   constructor(
     protected readonly client: AzureDevOpsClient,
     protected readonly instanceType: 'cloud' | 'server',
@@ -49,6 +51,7 @@ export class AzureRepos extends AzureDevOps {
     repositories?: ReadonlyArray<string>,
     fetchTags: boolean = false,
     fetchBranchCommits: boolean = false,
+    fetchPullRequestWorkItems: boolean = false,
     bucketId: number = 1,
     bucketTotal: number = 1
   ) {
@@ -63,6 +66,7 @@ export class AzureRepos extends AzureDevOps {
 
     this.fetchTags = fetchTags;
     this.fetchBranchCommits = fetchBranchCommits;
+    this.fetchPullRequestWorkItems = fetchPullRequestWorkItems;
     this.repositoriesByProject = new Map();
     for (const repository of repositories ?? []) {
       const [project, repo] = repository.split('/');
@@ -149,14 +153,14 @@ export class AzureRepos extends AzureDevOps {
     const filterRepos = this.repositoriesByProject.get(
       project.name.toLowerCase()
     );
-    
+
     // Apply explicit repository filter if provided
-    const explicitlyFiltered = filterRepos?.size 
+    const explicitlyFiltered = filterRepos?.size
       ? repositories.filter((repository) =>
           filterRepos.has(repository.name.toLowerCase())
         )
       : repositories;
-    
+
     // Apply bucketing filter
     return explicitlyFiltered.filter((repository) =>
       this.isRepoInBucket(project.name, repository.name)
@@ -317,10 +321,19 @@ export class AzureRepos extends AzureDevOps {
         pullRequest.pullRequestId,
         repo.project.id
       );
+
+      const workItems = this.fetchPullRequestWorkItems
+        ? await this.getWorkItemsForPullRequest(
+            repo.id,
+            pullRequest.pullRequestId,
+            repo.project.id
+          )
+        : undefined;
+
       const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
       const mergeStatus =
         PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
-      yield {...pullRequest, status, mergeStatus, threads};
+      yield {...pullRequest, status, mergeStatus, threads, workItems};
     }
   }
 
@@ -347,6 +360,26 @@ export class AzureRepos extends AzureDevOps {
       );
     }
     return branchNames;
+  }
+
+  private async getWorkItemsForPullRequest(
+    repositoryId: string,
+    pullRequestId: number,
+    projectId: string
+  ): Promise<ResourceRef[]> {
+    try {
+      const workItems = await this.client.git.getPullRequestWorkItemRefs(
+        repositoryId,
+        pullRequestId,
+        projectId
+      );
+      return workItems || [];
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to fetch work items for PR ${pullRequestId}: ${err.message}`
+      );
+      return [];
+    }
   }
 }
 

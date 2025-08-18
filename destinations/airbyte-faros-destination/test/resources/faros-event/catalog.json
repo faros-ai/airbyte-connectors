@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros-event__cd_events"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "faros-event__ci_events"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

@@ -46,6 +46,7 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureReposConfig> {
         config.repositories,
         config.fetch_tags,
         config.fetch_branch_commits,
+        config.fetch_pull_request_work_items,
         config.bucket_id,
         config.bucket_total
       );

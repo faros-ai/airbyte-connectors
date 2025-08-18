@@ -126,8 +126,15 @@
         "description": "Fetch repository annotated tags",
         "default": false
       },
-      "page_size": {
+      "fetch_pull_request_work_items": {
         "order": 10,
+        "type": "boolean",
+        "title": "Fetch Pull Request Work Items",
+        "description": "Fetch work items linked to pull requests",
+        "default": false
+      },
+      "page_size": {
+        "order": 11,
         "type": "integer",
         "title": "Page Size",
         "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
@@ -135,13 +142,13 @@
       },
       "max_retries": {
         "type": "integer",
-        "order": 11,
+        "order": 12,
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
       },
       "request_timeout": {
-        "order": 12,
+        "order": 13,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
