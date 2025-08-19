@@ -52,7 +52,7 @@ export class IssueTransformer {
     private readonly logger?: AirbyteLogger
   ) {}
 
-  private static assigneeChangelog(
+  static assigneeChangelog(
     changelog: ReadonlyArray<any>,
     currentAssignee: any,
     created: Date
@@ -70,13 +70,24 @@ export class IssueTransformer {
       // case where task was already assigned at creation
       const firstChange = assigneeChanges[0];
       if (firstChange.from) {
-        const assignee = {uid: firstChange.from, assignedAt: created};
-        assigneeChangelog.push(assignee);
+        assigneeChangelog.push({
+          uid: firstChange.from,
+          assignedAt: created,
+          unassignedAt: firstChange.changed,
+        });
       }
 
+      let assignee = null;
       for (const change of assigneeChanges) {
-        // TODO: Review handling unassignment
-        const assignee = {uid: change.value, assignedAt: change.changed};
+        if (assignee) {
+          assignee.unassignedAt = change.changed;
+          assigneeChangelog.push(assignee);
+        }
+        assignee = change.value
+          ? {uid: change.value, assignedAt: change.changed}
+          : null;
+      }
+      if (assignee) {
         assigneeChangelog.push(assignee);
       }
     } else if (currentAssignee) {
