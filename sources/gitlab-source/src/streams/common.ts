@@ -47,6 +47,7 @@ export const CustomStreamNames = [
   'faros_issues',
   'faros_merge_requests',
   'faros_merge_request_reviews',
+  'faros_pipelines',
   'faros_projects',
   'faros_releases',
   'faros_tags',

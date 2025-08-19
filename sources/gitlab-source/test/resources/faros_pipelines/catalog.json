@@ -1,0 +1,88 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_pipelines",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "iid": {
+              "type": "integer"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "group_id": {
+              "type": "string"
+            },
+            "project_path": {
+              "type": "string"
+            },
+            "sha": {
+              "type": "string"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "started_at": {
+              "type": ["string", "null"]
+            },
+            "finished_at": {
+              "type": ["string", "null"]
+            },
+            "duration": {
+              "type": ["number", "null"]
+            },
+            "web_url": {
+              "type": "string"
+            },
+            "user": {
+              "type": ["object", "null"]
+            },
+            "tag": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "id",
+            "project_id",
+            "group_id",
+            "project_path",
+            "sha",
+            "ref",
+            "status",
+            "created_at",
+            "updated_at",
+            "web_url"
+          ]
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": ["updated_at"],
+        "source_defined_primary_key": [["id"]]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": ["updated_at"],
+      "destination_sync_mode": "append"
+    }
+  ]
+}
