@@ -81,8 +81,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: null,
-              toString: 'user1',
+              from: null,
+              to: 'user1',
             },
           ],
         },
@@ -103,8 +103,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: null,
-              toString: 'user1',
+              from: null,
+              to: 'user1',
             },
           ],
         },
@@ -113,8 +113,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: 'user1',
-              toString: 'user2',
+              from: 'user1',
+              to: 'user2',
             },
           ],
         },
@@ -123,8 +123,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: 'user2',
-              toString: 'user3',
+              from: 'user2',
+              to: 'user3',
             },
           ],
         },
@@ -145,8 +145,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: 'user1',
-              toString: 'user2',
+              from: 'user1',
+              to: 'user2',
             },
           ],
         },
@@ -167,8 +167,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: null,
-              toString: 'user1',
+              from: null,
+              to: 'user1',
             },
           ],
         },
@@ -177,8 +177,8 @@ describe('IssueTransformer', () => {
           items: [
             {
               field: 'assignee',
-              fromString: 'user1',
-              toString: null,
+              from: 'user1',
+              to: null,
             },
           ],
         },
