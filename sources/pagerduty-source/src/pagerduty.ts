@@ -7,7 +7,6 @@ import {VError} from 'verror';
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_OVERVIEW = true;
 const DEFAULT_PAGE_SIZE = 25; // 25 is API default
-export const DEFAULT_FETCH_TEAMS = true;
 
 enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
@@ -39,7 +38,6 @@ export interface PagerdutyConfig {
   readonly exclude_services?: ReadonlyArray<string>;
   readonly service_details?: ReadonlyArray<string>;
   readonly max_retries?: number;
-  readonly fetch_teams?: boolean;
 }
 
 export interface PagerdutyResponse<Type> {
@@ -66,11 +64,6 @@ export interface User extends PagerdutyObject {
   readonly role: string;
   readonly description: string;
   readonly job_title: string;
-}
-
-export interface Team extends PagerdutyObject {
-  readonly name: string;
-  readonly description: string;
 }
 
 export interface LogEntry extends PagerdutyObject {
@@ -234,12 +227,6 @@ export class Pagerduty {
     const resource = `/users`;
     this.logger.debug(`Fetching Users at ${resource}`);
     yield* this.paginate<User>(() => this.client.get(resource));
-  }
-
-  async *getTeams(): AsyncGenerator<Team> {
-    const resource = `/teams`;
-    this.logger.debug(`Fetching Team at ${resource}`);
-    yield* this.paginate<Team>(() => this.client.get(resource));
   }
 
   async *getIncidents(
