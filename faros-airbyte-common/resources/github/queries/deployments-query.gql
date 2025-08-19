@@ -1,0 +1,26 @@
+query deployments($owner: String!, $repo: String!, $page_size: Int = 25, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
+    deployments(first: $page_size, after: $cursor, orderBy: {field: CREATED_AT, direction: DESC}) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        databaseId
+        description
+        environment
+        createdAt
+        updatedAt
+        state
+        task
+        commitOid
+        ref {
+          name
+        }
+        latestStatus {
+          state
+        }
+      }
+    }
+  }
+}

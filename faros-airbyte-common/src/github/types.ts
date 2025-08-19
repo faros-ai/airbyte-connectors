@@ -3,6 +3,7 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 import {
   CommitsQuery,
+  DeploymentsQuery,
   EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
@@ -325,6 +326,13 @@ export type SecretScanningAlert = {
     resolved_by: string | null;
     push_protection_bypassed_by: string | null;
   };
+
+type DeploymentNode = DeploymentsQuery['repository']['deployments']['nodes'][0];
+
+export type Deployment = {
+  org: string;
+  repo: string;
+} & DeploymentNode;
 
 export type Workflow = {
   org: string;
