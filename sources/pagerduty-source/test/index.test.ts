@@ -279,6 +279,43 @@ describe('index', () => {
     expect(service).toStrictEqual(readTestFileAsJSON('services.json'));
   });
 
+  test('streams - teams, use full_refresh sync mode', async () => {
+    const fnTeamsList = jest.fn();
+
+    Pagerduty.instance = jest.fn().mockImplementation(() => {
+      return new Pagerduty(
+        {
+          get: fnTeamsList.mockImplementation(async (path: string) => {
+            const isPathMatch = path.match(/^\/teams/);
+            if (isPathMatch) {
+              return {
+                resource: readTestFileAsJSON('teams.json'),
+                response: {
+                  ok: true,
+                },
+              };
+            }
+          }),
+        } as unknown as PartialCall,
+        logger
+      );
+    });
+    const source = new sut.PagerdutySource(logger);
+    const streams = source.streams({
+      token: 'pass',
+    });
+
+    const TeamsStream = streams[4];
+    const TeamsIter = TeamsStream.readRecords(SyncMode.FULL_REFRESH);
+    const priorities = [];
+    for await (const priority of TeamsIter) {
+      priorities.push(priority);
+    }
+
+    expect(fnTeamsList).toHaveBeenCalledTimes(1);
+    expect(priorities).toStrictEqual(readTestFileAsJSON('teams.json'));
+  });
+
   test('streams - users, use full_refresh sync mode', async () => {
     const fnUsersList = jest.fn();
 
@@ -302,7 +339,7 @@ describe('index', () => {
       token: 'pass',
     });
 
-    const usersStream = streams[4];
+    const usersStream = streams[5];
     const usersIter = usersStream.readRecords(SyncMode.FULL_REFRESH);
     const users = [];
     for await (const user of usersIter) {

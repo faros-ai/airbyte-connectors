@@ -26,6 +26,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__pagerduty__teams"
+      },
+      "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
         "name": "mytestsource__pagerduty__users"
       },
       "destination_sync_mode": "append"
