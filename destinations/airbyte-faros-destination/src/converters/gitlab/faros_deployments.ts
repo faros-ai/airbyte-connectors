@@ -2,14 +2,12 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosDeploymentOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
-import {pipeline} from 'stream';
 
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CategoryRef, GitlabConverter} from './common';
 
 export class FarosDeployments extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_Application',
     'cicd_Build',
     'cicd_BuildCommitAssociation',
     'cicd_Deployment',
