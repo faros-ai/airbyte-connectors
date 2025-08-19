@@ -79,7 +79,9 @@ export abstract class StreamWithBranchSlices extends AzureReposStreamBase {
       this.config.repositories,
       this.config.fetch_tags,
       this.config.fetch_branch_commits,
-      this.config.fetch_pull_request_work_items
+      this.config.fetch_pull_request_work_items,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
 
     for await (const repository of this.iterateRepositories(azureRepos)) {
@@ -140,7 +142,9 @@ export abstract class StreamWithRepoSlices extends AzureReposStreamBase {
       this.config.repositories,
       this.config.fetch_tags,
       this.config.fetch_branch_commits,
-      this.config.fetch_pull_request_work_items
+      this.config.fetch_pull_request_work_items,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
 
     for await (const repository of this.iterateRepositories(azureRepos)) {
