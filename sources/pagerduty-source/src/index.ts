@@ -1,14 +1,16 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Pagerduty, PagerdutyConfig} from './pagerduty';
+import {DEFAULT_FETCH_TEAMS,Pagerduty, PagerdutyConfig} from './pagerduty';
 import {
   IncidentLogEntries,
   Incidents,
@@ -53,5 +55,31 @@ export class PagerdutySource extends AirbyteSourceBase<PagerdutyConfig> {
       Teams,
       Users,
     ].map((Stream) => new Stream(config, this.logger));
+  }
+
+  async onBeforeRead(
+    config: PagerdutyConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: PagerdutyConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const streams = catalog.streams.filter((stream) => {
+      if (stream.stream.name === 'teams') {
+        return config.fetch_teams ?? DEFAULT_FETCH_TEAMS;
+      }
+      return true;
+    });
+
+    return {
+      config,
+      catalog: {
+        ...catalog,
+        streams,
+      },
+      state,
+    };
   }
 }
