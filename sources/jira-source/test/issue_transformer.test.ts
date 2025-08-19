@@ -75,16 +75,24 @@ describe('IssueTransformer', () => {
     });
 
     test('should handle issue created unassigned then assigned', () => {
-      const changelog = [{
-        created: '2024-01-02T10:00:00.000Z',
-        items: [{
-          field: 'assignee',
-          fromString: null,
-          toString: 'user1'
-        }]
-      }];
+      const changelog = [
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              fromString: null,
+              toString: 'user1',
+            },
+          ],
+        },
+      ];
 
-      const result = IssueTransformer.assigneeChangelog(changelog, 'user1', created);
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user1',
+        created
+      );
       expect(result).toMatchSnapshot();
     });
 
@@ -92,45 +100,63 @@ describe('IssueTransformer', () => {
       const changelog = [
         {
           created: '2024-01-01T12:00:00.000Z',
-          items: [{
-            field: 'assignee',
-            fromString: null,
-            toString: 'user1'
-          }]
+          items: [
+            {
+              field: 'assignee',
+              fromString: null,
+              toString: 'user1',
+            },
+          ],
         },
         {
           created: '2024-01-02T10:00:00.000Z',
-          items: [{
-            field: 'assignee',
-            fromString: 'user1',
-            toString: 'user2'
-          }]
+          items: [
+            {
+              field: 'assignee',
+              fromString: 'user1',
+              toString: 'user2',
+            },
+          ],
         },
         {
           created: '2024-01-03T10:00:00.000Z',
-          items: [{
-            field: 'assignee',
-            fromString: 'user2',
-            toString: 'user3'
-          }]
-        }
+          items: [
+            {
+              field: 'assignee',
+              fromString: 'user2',
+              toString: 'user3',
+            },
+          ],
+        },
       ];
 
-      const result = IssueTransformer.assigneeChangelog(changelog, 'user3', created);
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user3',
+        created
+      );
       expect(result).toMatchSnapshot();
     });
 
     test('should handle issue assigned at creation then changed', () => {
-      const changelog = [{
-        created: '2024-01-02T10:00:00.000Z',
-        items: [{
-          field: 'assignee',
-          fromString: 'user1',
-          toString: 'user2'
-        }]
-      }];
+      const changelog = [
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              fromString: 'user1',
+              toString: 'user2',
+            },
+          ],
+        },
+      ];
 
-      const result = IssueTransformer.assigneeChangelog(changelog, 'user2', created);
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user2',
+        created
+      );
       expect(result).toMatchSnapshot();
     });
 
@@ -138,23 +164,31 @@ describe('IssueTransformer', () => {
       const changelog = [
         {
           created: '2024-01-01T12:00:00.000Z',
-          items: [{
-            field: 'assignee',
-            fromString: null,
-            toString: 'user1'
-          }]
+          items: [
+            {
+              field: 'assignee',
+              fromString: null,
+              toString: 'user1',
+            },
+          ],
         },
         {
           created: '2024-01-02T10:00:00.000Z',
-          items: [{
-            field: 'assignee',
-            fromString: 'user1',
-            toString: null
-          }]
-        }
+          items: [
+            {
+              field: 'assignee',
+              fromString: 'user1',
+              toString: null,
+            },
+          ],
+        },
       ];
 
-      const result = IssueTransformer.assigneeChangelog(changelog, null, created);
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        null,
+        created
+      );
       expect(result).toMatchSnapshot();
     });
 

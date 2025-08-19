@@ -69,7 +69,9 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
         try {
           JSON.parse(config.custom_headers);
         } catch (error) {
-          throw new VError('Invalid JSON format in custom_headers configuration');
+          throw new VError(
+            'Invalid JSON format in custom_headers configuration'
+          );
         }
       }
 
