@@ -2,12 +2,9 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosDeploymentOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
+import {pipeline} from 'stream';
 
-import {
-  DestinationModel,
-  DestinationRecord,
-  StreamContext,
-} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CategoryRef, GitlabConverter} from './common';
 
 export class FarosDeployments extends GitlabConverter {
@@ -34,6 +31,10 @@ export class FarosDeployments extends GitlabConverter {
       organization: cicdOrganization,
       uid: toLower(deployment.project_path),
     };
+    const cicdRepository = {
+      uid: toLower(deployment.project_path),
+      organization: cicdOrganization,
+    };
 
     const vcsOrganization = {uid: toLower(deployment.group_id), source};
     const vcsRepository = {
@@ -43,11 +44,6 @@ export class FarosDeployments extends GitlabConverter {
     };
 
     const application = {name: deployment.project_path, platform: source};
-
-    res.push({
-      model: 'compute_Application',
-      record: application,
-    });
 
     if (deployment.deployable) {
       const buildStatus = this.mapBuildStatus(deployment.deployable.status);
@@ -108,7 +104,10 @@ export class FarosDeployments extends GitlabConverter {
       },
     });
 
-    if (deployment.deployable?.artifacts && Array.isArray(deployment.deployable.artifacts)) {
+    if (
+      deployment.deployable?.artifacts &&
+      Array.isArray(deployment.deployable.artifacts)
+    ) {
       for (const artifact of deployment.deployable.artifacts as any[]) {
         const artifactUid = `${deployment.deployable.id}-${artifact.filename}`;
 
@@ -116,6 +115,7 @@ export class FarosDeployments extends GitlabConverter {
           model: 'cicd_Artifact',
           record: {
             uid: artifactUid,
+            repository: cicdRepository,
             name: artifact.filename,
             type: artifact.file_type,
             createdAt: Utils.toDate(
@@ -182,17 +182,11 @@ export class FarosDeployments extends GitlabConverter {
 
     if (lowerName.includes('prod')) {
       return {category: 'Prod', detail: environmentName};
-    } else if (
-      lowerName.includes('staging') ||
-      lowerName.includes('stage')
-    ) {
+    } else if (lowerName.includes('staging') || lowerName.includes('stage')) {
       return {category: 'Staging', detail: environmentName};
     } else if (lowerName.includes('qa') || lowerName.includes('test')) {
       return {category: 'QA', detail: environmentName};
-    } else if (
-      lowerName.includes('dev') ||
-      lowerName.includes('development')
-    ) {
+    } else if (lowerName.includes('dev') || lowerName.includes('development')) {
       return {category: 'Dev', detail: environmentName};
     } else if (lowerName.includes('sandbox')) {
       return {category: 'Sandbox', detail: environmentName};

@@ -28,19 +28,17 @@ export class FarosPipelines extends GitlabConverter {
 
     const vcsOrganization = {uid: toLower(pipeline.group_id), source};
     const vcsRepository = {
-      name: toLower(
-        pipeline.project_path.split('/').pop() || pipeline.project_path
-      ),
+      name: toLower(pipeline.project_path),
       uid: toLower(pipeline.project_path),
       organization: vcsOrganization,
     };
 
     // Convert pipeline status to Faros build status
     const status = this.convertBuildStatus(pipeline.status);
-    const endedAt =
-      status.category === 'Running' || status.category === 'Queued'
-        ? null
-        : Utils.toDate(pipeline.updated_at);
+
+    // Use finished_at if available, otherwise use updated_at for non-running pipelines
+    const endedAt = this.getEndedAt(pipeline, status);
+    const startedAt = this.getStartedAt(pipeline);
 
     const buildKey = {
       uid: String(pipeline.id),
@@ -57,9 +55,7 @@ export class FarosPipelines extends GitlabConverter {
         name: pipeline.project_path,
         url: pipeline.web_url,
         createdAt: Utils.toDate(pipeline.created_at),
-        startedAt: pipeline.started_at
-          ? Utils.toDate(pipeline.started_at as string)
-          : Utils.toDate(pipeline.created_at),
+        startedAt,
         endedAt,
         duration: pipeline.duration,
       },
@@ -85,6 +81,28 @@ export class FarosPipelines extends GitlabConverter {
     return res;
   }
 
+  private getEndedAt(
+    pipeline: FarosPipelineOutput,
+    status: {category: string}
+  ): Date | null {
+    // For running or queued pipelines, there's no end time yet
+    if (status.category === 'Running' || status.category === 'Queued') {
+      return null;
+    }
+
+    // Prefer finished_at if available, fall back to updated_at
+    return pipeline.finished_at
+      ? Utils.toDate(pipeline.finished_at as string)
+      : Utils.toDate(pipeline.updated_at);
+  }
+
+  private getStartedAt(pipeline: FarosPipelineOutput): Date {
+    // Prefer started_at if available, fall back to created_at
+    return pipeline.started_at
+      ? Utils.toDate(pipeline.started_at as string)
+      : Utils.toDate(pipeline.created_at);
+  }
+
   private convertBuildStatus(status: string): {
     category: string;
     detail: string;
@@ -93,26 +111,23 @@ export class FarosPipelines extends GitlabConverter {
 
     switch (lowerStatus) {
       case 'success':
-        return {category: 'Success', detail: 'Success'};
+        return {category: 'Success', detail: status};
       case 'failed':
-        return {category: 'Failure', detail: 'Failed'};
+        return {category: 'Failure', detail: status};
       case 'canceled':
       case 'cancelled':
-        return {category: 'Canceled', detail: 'Canceled'};
+        return {category: 'Canceled', detail: status};
       case 'running':
-        return {category: 'Running', detail: 'Running'};
+        return {category: 'Running', detail: status};
       case 'pending':
-        return {category: 'Queued', detail: 'Pending'};
       case 'created':
-        return {category: 'Queued', detail: 'Created'};
       case 'manual':
-        return {category: 'Queued', detail: 'Manual'};
       case 'preparing':
-        return {category: 'Queued', detail: 'Preparing'};
       case 'scheduled':
-        return {category: 'Queued', detail: 'Scheduled'};
+      case 'waiting_for_resource':
+        return {category: 'Queued', detail: status};
       case 'skipped':
-        return {category: 'Skipped', detail: 'Skipped'};
+        return {category: 'Skipped', detail: status};
       default:
         return {category: 'Unknown', detail: status};
     }
