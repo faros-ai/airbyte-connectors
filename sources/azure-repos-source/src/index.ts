@@ -1,11 +1,17 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {
+  applyRoundRobinBucketing,
+  validateBucketingConfig,
+} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {AzureRepos} from './azure-repos';
@@ -40,7 +46,9 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureReposConfig> {
         config.repositories,
         config.fetch_tags,
         config.fetch_branch_commits,
-        config.fetch_pull_request_work_items
+        config.fetch_pull_request_work_items,
+        config.bucket_id,
+        config.bucket_total
       );
       await azureRepos.checkConnection(config.projects);
     } catch (err: any) {
@@ -48,6 +56,29 @@ export class AzureRepoSource extends AirbyteSourceBase<AzureReposConfig> {
     }
     return [true, undefined];
   }
+
+  async onBeforeRead(
+    config: AzureReposConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: AzureReposConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    validateBucketingConfig(config, this.logger.info.bind(this.logger));
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+    return {
+      config: newConfig as AzureReposConfig,
+      catalog,
+      state: newState,
+    };
+  }
+
   streams(config: AzureReposConfig): AirbyteStreamBase[] {
     return [
       new Commits(config, this.logger),

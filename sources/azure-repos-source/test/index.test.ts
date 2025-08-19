@@ -73,7 +73,13 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -96,7 +102,13 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -126,7 +138,13 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        false,
+        1,
+        1
       );
     });
 
@@ -152,7 +170,13 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        false,
+        1,
+        1
       );
     });
     const source = new sut.AzureRepoSource(logger);
@@ -242,7 +266,9 @@ describe('index', () => {
         [],
         false,
         false,
-        false
+        false,
+        1,
+        1
       );
     });
 
@@ -269,13 +295,13 @@ describe('index', () => {
       const rawPullrequests: any[] = readTestFileAsJSON('pullrequests.json');
       const pullrequests = rawPullrequests.map((p) => omit(p, 'threads'));
       const threads = rawPullrequests.map((r) => r.threads);
-      
+
       // Mock work items for pull requests
       const mockWorkItems = [
         [{id: '123', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/123'}],
         [{id: '456', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/456'}, {id: '789', url: 'https://dev.azure.com/org/project/_apis/wit/workItems/789'}]
       ];
-      
+
       return new AzureRepos(
         {
           git: {
@@ -440,7 +466,13 @@ describe('index', () => {
         cutoffDays,
         top,
         logger,
-        ALL_BRANCHES_PATTERN
+        ALL_BRANCHES_PATTERN,
+        undefined,
+        false,
+        false,
+        false,
+        1,
+        1
       );
     });
 
