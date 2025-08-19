@@ -563,7 +563,7 @@
         },
         "tag": false,
         "group_id": "1001",
-        "project_path": "test-group/test-project"
+        "project_path": "test-project"
       }
     },
     "type": "RECORD"

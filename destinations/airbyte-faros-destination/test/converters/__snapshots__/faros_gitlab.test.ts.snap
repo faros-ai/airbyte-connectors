@@ -857,14 +857,14 @@ Array [
       "createdAt": "2023-01-15T10:25:00.000Z",
       "duration": 1140,
       "endedAt": "2023-01-15T10:45:00.000Z",
-      "name": "test-group/test-project",
+      "name": "test-project",
       "number": 301,
       "pipeline": Object {
         "organization": Object {
           "source": "GitLab",
           "uid": "1001",
         },
-        "uid": "test-group/test-project",
+        "uid": "test-project",
       },
       "source": "GitLab",
       "startedAt": "2023-01-15T10:26:00.000Z",
@@ -884,18 +884,18 @@ Array [
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "test-group/test-project",
+          "uid": "test-project",
         },
         "uid": "301",
       },
       "commit": Object {
         "repository": Object {
-          "name": "test-group/test-project",
+          "name": "test-project",
           "organization": Object {
             "source": "GitLab",
             "uid": "1001",
           },
-          "uid": "test-group/test-project",
+          "uid": "test-project",
         },
         "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
         "uid": "a1b2c3d4e5f6789012345678901234567890abcd",
