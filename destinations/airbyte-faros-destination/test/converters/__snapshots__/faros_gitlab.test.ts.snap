@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 13 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_deployments\\\\\\":3,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 14 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_deployments\\\\\\":3,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_pipelines\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 48 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":2,\\\\\\"cicd_BuildCommitAssociation\\\\\\":2,\\\\\\"cicd_Deployment\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"compute_Application\\\\\\":4,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":3,\\\\\\"cicd_BuildCommitAssociation\\\\\\":3,\\\\\\"cicd_Deployment\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -81,6 +81,19 @@ Array [
         "uid": "12372707",
       },
       "source": "GitLab",
+    },
+  },
+  Object {
+    "cicd_Repository": Object {
+      "description": "Test project for FarosCE GitLab integration",
+      "name": "FarosCE test",
+      "organization": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "source": "GitLab",
+      "uid": "farosce-test",
+      "url": "https://gitlab.com/farosai/farosce-test",
     },
   },
   Object {
@@ -553,13 +566,6 @@ Array [
     },
   },
   Object {
-    "compute_Application": Object {
-      "name": "project",
-      "platform": "GitLab",
-      "source": "GitLab",
-    },
-  },
-  Object {
     "cicd_Build": Object {
       "createdAt": "2023-07-03T09:10:08.234Z",
       "endedAt": "2023-07-03T09:11:04.805Z",
@@ -614,7 +620,6 @@ Array [
       "application": Object {
         "name": "project",
         "platform": "GitLab",
-        "source": "GitLab",
       },
       "build": Object {
         "pipeline": Object {
@@ -646,6 +651,13 @@ Array [
     "cicd_Artifact": Object {
       "createdAt": "2023-07-03T09:11:04.805Z",
       "name": "artifacts.zip",
+      "repository": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "1001",
+        },
+        "uid": "project",
+      },
       "source": "GitLab",
       "type": "archive",
       "uid": "2001-artifacts.zip",
@@ -689,6 +701,13 @@ Array [
     "cicd_Artifact": Object {
       "createdAt": "2023-07-03T09:11:04.805Z",
       "name": "job.log",
+      "repository": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "1001",
+        },
+        "uid": "project",
+      },
       "source": "GitLab",
       "type": "trace",
       "uid": "2001-job.log",
@@ -725,13 +744,6 @@ Array [
         "source": "GitLab",
         "uid": "101",
       },
-      "source": "GitLab",
-    },
-  },
-  Object {
-    "compute_Application": Object {
-      "name": "project",
-      "platform": "GitLab",
       "source": "GitLab",
     },
   },
@@ -790,7 +802,6 @@ Array [
       "application": Object {
         "name": "project",
         "platform": "GitLab",
-        "source": "GitLab",
       },
       "build": Object {
         "pipeline": Object {
@@ -819,18 +830,10 @@ Array [
     },
   },
   Object {
-    "compute_Application": Object {
-      "name": "another-project",
-      "platform": "GitLab",
-      "source": "GitLab",
-    },
-  },
-  Object {
     "cicd_Deployment": Object {
       "application": Object {
         "name": "another-project",
         "platform": "GitLab",
-        "source": "GitLab",
       },
       "build": null,
       "endedAt": null,
@@ -847,6 +850,57 @@ Array [
       },
       "uid": "103",
       "url": null,
+    },
+  },
+  Object {
+    "cicd_Build": Object {
+      "createdAt": "2023-01-15T10:25:00.000Z",
+      "duration": 1140,
+      "endedAt": "2023-01-15T10:45:00.000Z",
+      "name": "test-project",
+      "number": 301,
+      "pipeline": Object {
+        "organization": Object {
+          "source": "GitLab",
+          "uid": "1001",
+        },
+        "uid": "test-project",
+      },
+      "source": "GitLab",
+      "startedAt": "2023-01-15T10:26:00.000Z",
+      "status": Object {
+        "category": "Success",
+        "detail": "success",
+      },
+      "uid": "301",
+      "url": "https://gitlab.com/test-group/test-project/-/pipelines/301",
+    },
+  },
+  Object {
+    "cicd_BuildCommitAssociation": Object {
+      "build": Object {
+        "pipeline": Object {
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "test-project",
+        },
+        "uid": "301",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "test-project",
+          "organization": Object {
+            "source": "GitLab",
+            "uid": "1001",
+          },
+          "uid": "test-project",
+        },
+        "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "uid": "a1b2c3d4e5f6789012345678901234567890abcd",
+      },
+      "source": "GitLab",
     },
   },
   Object {

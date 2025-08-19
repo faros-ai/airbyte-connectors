@@ -59,6 +59,12 @@
         "name": "mytestsource__gitlab__faros_deployments"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__gitlab__faros_pipelines"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

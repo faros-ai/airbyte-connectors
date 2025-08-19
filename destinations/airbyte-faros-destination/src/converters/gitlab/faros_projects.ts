@@ -22,7 +22,7 @@ export class FarosProjects extends GitlabConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data as FarosProjectOutput;
     const organization = {
-      uid: project.group_id,
+      uid: toLower(project.group_id),
       source: this.streamName.source,
     };
 
@@ -71,6 +71,17 @@ export class FarosProjects extends GitlabConverter {
     }
 
     if (this.cicdEnabled(ctx)) {
+      res.push({
+        model: 'cicd_Repository',
+        record: {
+          uid: projectName,
+          organization,
+          name: project.name ?? projectName,
+          description: Utils.cleanAndTruncate(project.description),
+          url: project.web_url,
+        },
+      });
+
       res.push({
         model: 'cicd_Pipeline',
         record: {

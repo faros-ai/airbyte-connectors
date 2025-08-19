@@ -28,6 +28,7 @@ import {FarosGroups} from './streams/faros_groups';
 import {FarosIssues} from './streams/faros_issues';
 import {FarosMergeRequestReviews} from './streams/faros_merge_request_reviews';
 import {FarosMergeRequests} from './streams/faros_merge_requests';
+import {FarosPipelines} from './streams/faros_pipelines';
 import {FarosProjects} from './streams/faros_projects';
 import {FarosReleases} from './streams/faros_releases';
 import {FarosTags} from './streams/faros_tags';
@@ -79,6 +80,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       new FarosIssues(config, this.logger, farosClient),
       new FarosMergeRequests(config, this.logger, farosClient),
       new FarosMergeRequestReviews(config, this.logger, farosClient),
+      new FarosPipelines(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
       new FarosReleases(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),
@@ -109,7 +111,9 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     );
 
     const tmsEnabled = streamNames.includes('faros_issues');
-    const cicdEnabled = streamNames.includes('faros_deployments');
+    const cicdEnabled =
+      streamNames.includes('faros_deployments') ||
+      streamNames.includes('faros_pipelines');
 
     const {startDate, endDate} = calculateDateRange({
       start_date: config.start_date,

@@ -126,6 +126,7 @@ function setupBasicMocks(): any {
     getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getReleases: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getDeployments: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getPipelines: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     userCollector: mockUserCollector,
   };
 
@@ -535,6 +536,27 @@ describe('index', () => {
     });
 
     expect(gitlab.getDeployments).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros pipelines', async () => {
+    const pipelines = readTestResourceAsJSON('faros_pipelines/pipelines.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getPipelines.mockReturnValue(createAsyncGeneratorMock(pipelines));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_pipelines/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getPipelines).toHaveBeenCalledWith(
       'test-group/test-project',
       expect.any(Date),
       expect.any(Date)
