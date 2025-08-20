@@ -836,7 +836,6 @@ export class GitLab {
             'duration',
             'web_url',
             'user',
-            'pipeline',
             'ref',
             'commit',
             'tag',
