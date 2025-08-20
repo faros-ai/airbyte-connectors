@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {CategoryRef, GitlabCommon, GitlabConverter} from './common';
+import {CategoryRef, GitlabConverter} from './common';
 
 export class FarosJobs extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -38,7 +38,7 @@ export class FarosJobs extends GitlabConverter {
           createdAt: Utils.toDate(job.created_at),
           startedAt: Utils.toDate(job.started_at),
           endedAt: Utils.toDate(job.finished_at),
-          status: GitlabCommon.convertBuildStatus(job.status),
+          status: this.convertJobStatus(job.status),
           url: job.web_url,
           build: buildKey,
         },
@@ -62,6 +62,34 @@ export class FarosJobs extends GitlabConverter {
         return {category: 'Script', detail};
       case 'manual':
         return {category: 'Manual', detail};
+      default:
+        return {category: 'Custom', detail};
+    }
+  }
+
+  private convertJobStatus(status?: string): CategoryRef {
+    if (!status) {
+      return {category: 'Unknown', detail: 'undefined'};
+    }
+    const detail = status?.toLowerCase();
+    switch (detail) {
+      case 'canceled':
+      case 'canceling':
+        return {category: 'Canceled', detail};
+      case 'failed':
+        return {category: 'Failed', detail};
+      case 'running':
+        return {category: 'Running', detail};
+      case 'success':
+        return {category: 'Success', detail};
+      case 'created':
+      case 'manual':
+      case 'pending':
+      case 'preparing':
+      case 'scheduled':
+      case 'waiting_for_resource':
+        return {category: 'Queued', detail};
+      case 'skipped':
       default:
         return {category: 'Custom', detail};
     }
