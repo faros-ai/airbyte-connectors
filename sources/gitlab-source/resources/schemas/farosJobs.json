@@ -39,9 +39,6 @@
     "user": {
       "type": ["object", "null"]
     },
-    "pipeline": {
-      "type": ["object", "null"]
-    },
     "ref": {
       "type": ["string", "null"]
     },
