@@ -165,7 +165,8 @@ export class GitlabCommon {
   // GitLab defined status for:
   // >> pipelines (aka builds): created, waiting_for_resource, preparing, pending,
   //    running, success, failed, canceled, skipped, manual, scheduled
-  // >> jobs: created, pending, running, failed, success, canceled, skipped, or manual.
+  // >> jobs: created, pending, running, failed, success, canceled, canceling, skipped,
+  //    manual, preparing, scheduled, waiting_for_resource
   static convertBuildStatus(status?: string): CategoryRef {
     if (!status) {
       return {category: 'Unknown', detail: 'undefined'};
@@ -173,6 +174,7 @@ export class GitlabCommon {
     const detail = status?.toLowerCase();
     switch (detail) {
       case 'canceled':
+      case 'canceling':
         return {category: 'Canceled', detail};
       case 'failed':
         return {category: 'Failed', detail};
