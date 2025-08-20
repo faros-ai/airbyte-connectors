@@ -126,7 +126,8 @@ function setupBasicMocks(): any {
     getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getReleases: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getDeployments: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
-    getPipelines: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getPipelines: jest.fn().mockResolvedValue([]),
+    getJobs: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     userCollector: mockUserCollector,
   };
 
@@ -545,7 +546,7 @@ describe('index', () => {
   test('streams - faros pipelines', async () => {
     const pipelines = readTestResourceAsJSON('faros_pipelines/pipelines.json');
     const {gitlab} = setupBasicMocks();
-    gitlab.getPipelines.mockReturnValue(createAsyncGeneratorMock(pipelines));
+    gitlab.getPipelines.mockResolvedValue(pipelines);
 
     await sourceReadTest({
       source,
@@ -561,6 +562,23 @@ describe('index', () => {
       expect.any(Date),
       expect.any(Date)
     );
+  });
+
+  test('streams - faros jobs', async () => {
+    const jobs = readTestResourceAsJSON('faros_jobs/jobs.json');
+    const {gitlab} = setupBasicMocks();
+    // Mock pipelines to return at least one pipeline so jobs can be fetched
+    gitlab.getPipelines.mockResolvedValue([{id: 301}]);
+    gitlab.getJobs.mockReturnValue(createAsyncGeneratorMock(jobs));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_jobs/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   test('round robin bucket execution', async () => {

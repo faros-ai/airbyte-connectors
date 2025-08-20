@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1001,
+    "pipeline_id": 301,
+    "name": "build",
+    "stage": "build",
+    "status": "success",
+    "created_at": "2023-01-15T10:25:00Z",
+    "started_at": "2023-01-15T10:26:00Z",
+    "finished_at": "2023-01-15T10:30:00Z",
+    "duration": 240,
+    "web_url": "https://gitlab.com/test-group/test-project/-/jobs/1001",
+    "user": {
+      "id": 1,
+      "username": "john.doe",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+      "web_url": "https://gitlab.com/john.doe"
+    },
+    "pipeline": {
+      "id": 301,
+      "project_id": 123,
+      "status": "success",
+      "ref": "main",
+      "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+      "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301"
+    },
+    "ref": "main",
+    "commit": {
+      "id": "a1b2c3d4e5f6789012345678901234567890abcd",
+      "short_id": "a1b2c3d4",
+      "title": "Add new feature",
+      "message": "Add new feature\n\nThis adds the requested functionality",
+      "author_name": "John Doe",
+      "author_email": "john.doe@example.com"
+    },
+    "tag": false,
+    "allow_failure": false,
+    "artifacts": [
+      {
+        "file_type": "archive",
+        "size": 1024000,
+        "filename": "artifacts.zip",
+        "file_format": "zip"
+      }
+    ],
+    "runner": {
+      "id": 42,
+      "description": "GitLab Runner",
+      "active": true,
+      "is_shared": true,
+      "name": "gitlab-runner"
+    }
+  }
+]
