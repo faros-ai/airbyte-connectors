@@ -7,7 +7,6 @@ import {VError} from 'verror';
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_OVERVIEW = true;
 const DEFAULT_PAGE_SIZE = 25; // 25 is API default
-export const DEFAULT_FETCH_TEAMS = true;
 
 enum IncidentSeverityCategory {
   Sev1 = 'Sev1',
@@ -39,7 +38,6 @@ export interface PagerdutyConfig {
   readonly exclude_services?: ReadonlyArray<string>;
   readonly service_details?: ReadonlyArray<string>;
   readonly max_retries?: number;
-  readonly fetch_teams?: boolean;
 }
 
 export interface PagerdutyResponse<Type> {

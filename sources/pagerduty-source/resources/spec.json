@@ -82,12 +82,6 @@
         "default": 5,
         "title": "Max Retries",
         "description": "Maximum number of PagerDuty API request retries to perform upon connection errors. The source will pause for an exponentially increasing number of seconds before retrying."
-      },
-      "fetch_teams": {
-        "type": "boolean",
-        "title": "Fetch Teams",
-        "description": "Fetch teams from organization. Disable if your PagerDuty account doesn't include the teams ability.",
-        "default": true
       }
     }
   }
