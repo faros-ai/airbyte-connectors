@@ -16,9 +16,6 @@ export const airtableSurveysAllStreamsLog = readTestResourceFile(
   'abstract-surveys/surveys/all-streams.log'
 );
 export const asanaAllStreamsLog = readTestResourceFile('asana/all-streams.log');
-export const gitlabCiAllStreamsLog = readTestResourceFile(
-  'gitlab-ci/all-streams.log'
-);
 export const phabricatorAllStreamsLog = readTestResourceFile(
   'phabricator/all-streams.log'
 );
