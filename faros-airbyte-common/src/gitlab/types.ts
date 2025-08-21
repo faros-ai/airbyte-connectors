@@ -5,6 +5,7 @@ import {
   EventSchema,
   GroupSchema,
   IssueSchema,
+  JobSchema,
   MergeRequestSchema,
   NoteSchema,
   PipelineSchema,
@@ -190,4 +191,29 @@ export type FarosPipelineOutput = {
   | 'web_url'
   | 'user'
   | 'tag'
+>;
+
+export type FarosJobOutput = {
+  readonly __brand: 'FarosJob';
+  group_id: string;
+  project_path: string;
+  pipeline_id: number;
+} & Pick<
+  JobSchema,
+  | 'id'
+  | 'name'
+  | 'stage'
+  | 'status'
+  | 'created_at'
+  | 'started_at'
+  | 'finished_at'
+  | 'duration'
+  | 'web_url'
+  | 'user'
+  | 'ref'
+  | 'commit'
+  | 'tag'
+  | 'allow_failure'
+  | 'artifacts'
+  | 'runner'
 >;

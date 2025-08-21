@@ -6,6 +6,7 @@ import {
   Gitlab as GitlabClient,
   GroupSchema,
   IssueSchema,
+  JobSchema,
   LabelSchema,
   NoteSchema,
   PipelineSchema,
@@ -21,6 +22,7 @@ import {
   FarosDeploymentOutput,
   FarosGroupOutput,
   FarosIssueOutput,
+  FarosJobOutput,
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
   FarosPipelineOutput,
@@ -738,11 +740,15 @@ export class GitLab {
     }
   }
 
-  async *getPipelines(
+  @Memoize()
+  async getPipelines(
     projectPath: string,
     since?: Date,
     until?: Date
-  ): AsyncGenerator<Omit<FarosPipelineOutput, 'group_id' | 'project_path'>> {
+  ): Promise<Array<Omit<FarosPipelineOutput, 'group_id' | 'project_path'>>> {
+    const pipelines: Array<
+      Omit<FarosPipelineOutput, 'group_id' | 'project_path'>
+    > = [];
     const options: any = {
       orderBy: 'updated_at',
       sort: 'desc',
@@ -775,7 +781,7 @@ export class GitLab {
         this.userCollector.collectUser(typedPipeline.user);
       }
 
-      yield {
+      pipelines.push({
         __brand: 'FarosPipeline',
         project_id: toLower(`${typedPipeline.project_id}`),
         ...pick(typedPipeline, [
@@ -794,7 +800,51 @@ export class GitLab {
           'user',
           'tag',
         ]),
-      };
+      });
+    }
+
+    return pipelines;
+  }
+
+  async *getJobs(
+    projectPath: string
+  ): AsyncGenerator<Omit<FarosJobOutput, 'group_id' | 'project_path'>> {
+    const pipelines = await this.getPipelines(projectPath);
+
+    for (const pipeline of pipelines) {
+      for await (const job of this.offsetPagination((options) =>
+        this.client.Jobs.all(projectPath, {pipelineId: pipeline.id, ...options})
+      )) {
+        const typedJob = job as JobSchema;
+
+        // Collect user who triggered the job
+        if (typedJob.user) {
+          this.userCollector.collectUser(typedJob.user);
+        }
+
+        yield {
+          __brand: 'FarosJob',
+          pipeline_id: pipeline.id,
+          ...pick(typedJob, [
+            'id',
+            'name',
+            'stage',
+            'status',
+            'created_at',
+            'started_at',
+            'finished_at',
+            'duration',
+            'web_url',
+            'user',
+            'ref',
+            'commit',
+            'tag',
+            'allow_failure',
+            'artifacts',
+            'runner',
+          ]),
+        };
+      }
     }
   }
 }

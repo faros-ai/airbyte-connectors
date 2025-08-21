@@ -41,11 +41,13 @@ export class FarosPipelines extends StreamWithProjectSlices {
         ? this.getUpdateRange(state?.cutoff)
         : this.getUpdateRange();
 
-    for await (const pipeline of gitlab.getPipelines(
+    const pipelines = await gitlab.getPipelines(
       streamSlice.path_with_namespace,
       startDate,
       endDate
-    )) {
+    );
+
+    for (const pipeline of pipelines) {
       yield {
         ...pipeline,
         group_id: streamSlice.group_id,
