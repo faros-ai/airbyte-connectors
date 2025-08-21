@@ -8,6 +8,7 @@ import {CategoryRef, GitHubCommon, GitHubConverter} from './common';
 
 export class FarosDeployments extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'cicd_Application',
     'cicd_Artifact',
     'cicd_ArtifactCommitAssociation',
     'cicd_ArtifactDeployment',
@@ -40,6 +41,14 @@ export class FarosDeployments extends GitHubConverter {
       name: `${repoKey.organization.uid}/${repoKey.name}`,
       platform: source,
     };
+
+    // Create application record
+    res.push({
+      model: 'cicd_Application',
+      record: {
+        ...application,
+      },
+    });
 
     res.push({
       model: 'cicd_Deployment',
