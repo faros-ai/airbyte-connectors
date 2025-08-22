@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IssueTransformer assigneeChangelog should handle assignee being unassigned 1`] = `
+[
+  {
+    "assignedAt": 2024-01-01T12:00:00.000Z,
+    "uid": "user1",
+    "unassignedAt": 2024-01-02T10:00:00.000Z,
+  },
+]
+`;
+
+exports[`IssueTransformer assigneeChangelog should handle issue assigned at creation then changed 1`] = `
+[
+  {
+    "assignedAt": 2024-01-01T10:00:00.000Z,
+    "uid": "user1",
+    "unassignedAt": 2024-01-02T10:00:00.000Z,
+  },
+  {
+    "assignedAt": 2024-01-02T10:00:00.000Z,
+    "uid": "user2",
+  },
+]
+`;
+
+exports[`IssueTransformer assigneeChangelog should handle issue created unassigned then assigned 1`] = `
+[
+  {
+    "assignedAt": 2024-01-02T10:00:00.000Z,
+    "uid": "user1",
+  },
+]
+`;
+
+exports[`IssueTransformer assigneeChangelog should handle issue with assignee at creation and no changes 1`] = `
+[
+  {
+    "assignedAt": 2024-01-01T10:00:00.000Z,
+    "uid": "user1",
+  },
+]
+`;
+
+exports[`IssueTransformer assigneeChangelog should handle issue with no assignee history 1`] = `[]`;
+
+exports[`IssueTransformer assigneeChangelog should handle multiple assignee changes 1`] = `
+[
+  {
+    "assignedAt": 2024-01-01T12:00:00.000Z,
+    "uid": "user1",
+    "unassignedAt": 2024-01-02T10:00:00.000Z,
+  },
+  {
+    "assignedAt": 2024-01-02T10:00:00.000Z,
+    "uid": "user2",
+    "unassignedAt": 2024-01-03T10:00:00.000Z,
+  },
+  {
+    "assignedAt": 2024-01-03T10:00:00.000Z,
+    "uid": "user3",
+  },
+]
+`;

@@ -69,6 +69,7 @@ export interface Status {
 export interface Assignee {
   readonly uid: string;
   readonly assignedAt: Date;
+  readonly unassignedAt?: Date;
 }
 
 export interface SprintHistory {

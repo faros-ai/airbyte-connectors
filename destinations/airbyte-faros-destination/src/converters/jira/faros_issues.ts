@@ -174,6 +174,7 @@ export class FarosIssues extends JiraConverter {
               task: {uid: issue.key, source},
               assignee: {uid: assignee.uid, source},
               assignedAt: assignee.assignedAt,
+              unassignedAt: assignee.unassignedAt,
             },
           });
         }

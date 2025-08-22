@@ -65,4 +65,136 @@ describe('IssueTransformer', () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe('assigneeChangelog', () => {
+    const created = new Date('2024-01-01T10:00:00.000Z');
+
+    test('should handle issue with assignee at creation and no changes', () => {
+      const result = IssueTransformer.assigneeChangelog([], 'user1', created);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('should handle issue created unassigned then assigned', () => {
+      const changelog = [
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: null,
+              to: 'user1',
+            },
+          ],
+        },
+      ];
+
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user1',
+        created
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('should handle multiple assignee changes', () => {
+      const changelog = [
+        {
+          created: '2024-01-01T12:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: null,
+              to: 'user1',
+            },
+          ],
+        },
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: 'user1',
+              to: 'user2',
+            },
+          ],
+        },
+        {
+          created: '2024-01-03T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: 'user2',
+              to: 'user3',
+            },
+          ],
+        },
+      ];
+
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user3',
+        created
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('should handle issue assigned at creation then changed', () => {
+      const changelog = [
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: 'user1',
+              to: 'user2',
+            },
+          ],
+        },
+      ];
+
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        'user2',
+        created
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('should handle assignee being unassigned', () => {
+      const changelog = [
+        {
+          created: '2024-01-01T12:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: null,
+              to: 'user1',
+            },
+          ],
+        },
+        {
+          created: '2024-01-02T10:00:00.000Z',
+          items: [
+            {
+              field: 'assignee',
+              from: 'user1',
+              to: null,
+            },
+          ],
+        },
+      ];
+
+      const result = IssueTransformer.assigneeChangelog(
+        changelog,
+        null,
+        created
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('should handle issue with no assignee history', () => {
+      const result = IssueTransformer.assigneeChangelog([], null, created);
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

@@ -4,8 +4,8 @@ exports[`faros_jira faros_issues 1`] = `
 Array [
   "Processed 1 records",
   "Processed records by stream: {\\\\\\"mytestsource__jira__faros_issues\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 25 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_TaskTag__Deletion\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 26 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":2,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":2,\\\\\\"tms_SprintHistory\\\\\\":11,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskDependency\\\\\\":1,\\\\\\"tms_TaskDependency__Deletion\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_TaskTag__Deletion\\\\\\":1,\\\\\\"tms_Task__Update\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -109,6 +109,22 @@ Array [
         "source": "Jira",
         "uid": "PLAYG-6",
       },
+      "unassignedAt": "2021-10-08T14:30:15.123Z",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2021-10-08T14:30:15.123Z",
+      "assignee": Object {
+        "source": "Jira",
+        "uid": "6025c1954fb89e0070d00ae4",
+      },
+      "source": "Jira",
+      "task": Object {
+        "source": "Jira",
+        "uid": "PLAYG-6",
+      },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -657,6 +673,7 @@ Array [
         "source": "Jira",
         "uid": "PLAYG-1",
       },
+      "unassignedAt": "2022-01-15T09:22:33.445Z",
     },
   },
   Object {
@@ -1948,6 +1965,7 @@ Array [
         "source": "Jira_Instance2",
         "uid": "PLAYG-1",
       },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -2956,6 +2974,7 @@ Array [
         "source": "Jira",
         "uid": "PLAYG-18",
       },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -3075,6 +3094,7 @@ Array [
         "source": "Jira",
         "uid": "PLAYG-7",
       },
+      "unassignedAt": null,
     },
   },
   Object {
