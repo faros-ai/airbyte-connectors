@@ -450,9 +450,11 @@ export class AzureWorkitems extends types.AzureDevOps {
     updates: ReadonlyArray<WorkItemUpdate>
   ): ReadonlyArray<types.WorkItemAssigneeRevision> {
     const changes = this.getFieldChanges('System.AssignedTo', updates);
-    return changes.map((change) => ({
+    return changes.map((change, index) => ({
       assignee: change.value,
-      changedDate: change.changedDate,
+      assignedAt: change.changedDate,
+      unassignedAt:
+        index < changes.length - 1 ? changes[index + 1].changedDate : undefined,
     }));
   }
 

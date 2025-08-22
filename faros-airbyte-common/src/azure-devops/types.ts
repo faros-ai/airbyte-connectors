@@ -132,7 +132,8 @@ export interface WorkItemStateRevision {
 
 export interface WorkItemAssigneeRevision {
   readonly assignee: IdentityRef;
-  readonly changedDate: string;
+  readonly assignedAt: string;
+  readonly unassignedAt?: string;
 }
 
 export interface WorkItemIterationRevision {
