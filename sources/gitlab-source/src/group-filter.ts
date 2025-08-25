@@ -132,6 +132,9 @@ export class GroupFilter {
     // Apply bucketing filter if bucket configuration is set
     if (this.config.bucket_total > 1) {
       return allProjects.filter(({repo}) => {
+        // projectKey is constructed as "{group}/{project}" (e.g., "mygroup/myproject").
+        // This is the partitioning entity used for bucketing, as specified in the spec,
+        // and is crucial for ensuring consistent bucketing behavior.
         const projectKey = `${group}/${repo.path}`;
         return (
           bucket('farosai/airbyte-gitlab-source', projectKey, this.config.bucket_total) ===
