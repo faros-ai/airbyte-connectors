@@ -647,7 +647,6 @@ describe('index', () => {
       .filter(p => p.group_id === '1')
       .filter(p => {
         const projectKey = `1/${p.path}`;
-        const {bucket} = require('faros-airbyte-common/common');
         return bucket('farosai/airbyte-gitlab-source', projectKey, 3) === 1;
       });
 
