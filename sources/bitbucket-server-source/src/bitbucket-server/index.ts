@@ -12,7 +12,7 @@ import {
   Tag,
   User,
 } from 'faros-airbyte-common/bitbucket-server';
-import {bucket} from 'faros-airbyte-common/common';
+import {bucket, RoundRobinConfig, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {pick} from 'lodash';
 import parseDiff from 'parse-diff';
 import {createInterface} from 'readline';
@@ -27,7 +27,7 @@ import {
 } from './more-endpoint-methods';
 import {ProjectRepoFilter} from './project-repo-filter';
 
-export interface BitbucketServerConfig extends AirbyteConfig {
+export interface BitbucketServerConfig extends AirbyteConfig, RoundRobinConfig {
   readonly server_url?: string;
   readonly username?: string;
   readonly password?: string;
@@ -38,8 +38,6 @@ export interface BitbucketServerConfig extends AirbyteConfig {
   readonly cutoff_days?: number;
   readonly max_retries?: number;
   readonly reject_unauthorized?: boolean;
-  readonly repo_bucket_id?: number;
-  readonly repo_bucket_total?: number;
 }
 
 const DEFAULT_CUTOFF_DAYS = 90;
@@ -78,8 +76,8 @@ export class BitbucketServer {
     private readonly maxRetries: number,
     private readonly logger: AirbyteLogger,
     private readonly startDate: Date,
-    private readonly repoBucketId: number,
-    private readonly repoBucketTotal: number
+    private readonly bucketId: number,
+    private readonly bucketTotal: number
   ) {}
 
   static instance(
@@ -132,8 +130,8 @@ export class BitbucketServer {
       config.max_retries ?? 5,
       logger,
       startDate,
-      config.repo_bucket_id ?? 1,
-      config.repo_bucket_total ?? 1
+      config.bucket_id ?? 1,
+      config.bucket_total ?? 1
     );
     BitbucketServer.bitbucket = bb;
     logger.debug(`Created Bitbucket Server instance with ${auth.type} auth`);
@@ -157,13 +155,10 @@ export class BitbucketServer {
           'Bitbucket access token OR a Bitbucket username and password',
       ];
     }
-    const repoBucketTotal = config.repo_bucket_total ?? 1;
-    if (repoBucketTotal < 1) {
-      return [false, 'repo_bucket_total must be a positive integer'];
-    }
-    const repoBucketId = config.repo_bucket_id ?? 1;
-    if (repoBucketId < 1 || repoBucketId > repoBucketTotal) {
-      return [false, `repo_bucket_id must be between 1 and ${repoBucketTotal}`];
+    try {
+      validateBucketingConfig(config);
+    } catch (error: any) {
+      return [false, error.message];
     }
     return [true, undefined];
   }
@@ -543,8 +538,8 @@ export class BitbucketServer {
               bucket(
                 'farosai/airbyte-bitbucket-server-source',
                 repoFullName,
-                this.repoBucketTotal
-              ) === this.repoBucketId,
+                this.bucketTotal
+              ) === this.bucketId,
             shouldBreakEarly: false,
           };
         }

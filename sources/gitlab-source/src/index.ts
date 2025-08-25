@@ -11,6 +11,7 @@ import {
 import {
   applyRoundRobinBucketing,
   calculateDateRange,
+  validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
@@ -54,6 +55,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
+      validateBucketingConfig(config, this.logger.warn.bind(this.logger));
       const gitlab = await GitLab.instance(config, this.logger);
       await gitlab.checkConnection();
     } catch (err: any) {
