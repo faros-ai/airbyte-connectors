@@ -78,17 +78,39 @@
         "default": true,
         "description": "Enforce certificate validation for the Bitbucket Server"
       },
-      "repo_bucket_id": {
+      "bucket_id": {
+        "order": 11,
         "type": "integer",
         "title": "Bucket Number",
-        "description": "Bucket number for this source to determine which portion of repos to pull. Use it when distributing the load between multiple sources",
+        "description": "Bucket number for this source to determine which portion of repositories to pull. Use it when distributing the load between multiple sources.",
         "default": 1
       },
-      "repo_bucket_total": {
+      "bucket_total": {
+        "order": 12,
         "type": "integer",
         "title": "Total Number of Buckets",
-        "description": "Total number of buckets to distribute repos across. Use it when distributing the load between multiple sources",
+        "description": "Total number of buckets to distribute repositories across. Use it when distributing the load between multiple sources",
         "default": 1
+      },
+      "round_robin_bucket_execution": {
+        "order": 13,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "When enabled, syncs rotate through all buckets, processing one bucket per sync. When disabled, only the bucket specified by 'bucket_id' is synced.",
+        "default": false
+      },
+      "bucket_ranges": {
+        "order": 14,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "List of bucket ranges to process when round robin bucket execution is enabled. Each element can be either a single bucket number (e.g., '7') or a range of buckets (e.g., '3-5'). All bucket numbers must be between 1 and 'bucket_total'.",
+        "examples": [
+          "3-5",
+          "7"
+        ]
       }
     }
   }

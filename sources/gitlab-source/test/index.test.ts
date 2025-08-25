@@ -10,6 +10,7 @@ import {
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
+import {bucket} from 'faros-airbyte-common/common';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
@@ -603,6 +604,54 @@ describe('index', () => {
     );
     expect(newConfig.bucket_id).toBe(2);
     expect(newState).toMatchSnapshot();
+  });
+
+  test('entity-level bucketing filters projects correctly', async () => {
+    // Mock multiple projects across different groups
+    const mockProjects = [
+      {id: '1', path: 'project-1', group_id: '1'},
+      {id: '2', path: 'project-2', group_id: '1'},
+      {id: '3', path: 'project-3', group_id: '2'},
+      {id: '4', path: 'project-4', group_id: '2'},
+    ];
+
+    jest.spyOn(GitLab, 'instance').mockResolvedValue({
+      checkConnection: jest.fn().mockResolvedValue(undefined),
+      getGroups: jest.fn().mockResolvedValue([
+        {id: '1', path: 'group1'},
+        {id: '2', path: 'group2'},
+      ]),
+      getProjects: jest.fn().mockImplementation(async function* (groupId: string) {
+        for (const project of mockProjects) {
+          if (project.group_id === groupId) {
+            yield project;
+          }
+        }
+      }),
+    } as any);
+
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      bucket_id: 1,
+      bucket_total: 3,
+    };
+
+    // Test that bucketing filters projects correctly
+    const groupFilter = GroupFilter.instance(config, logger);
+    
+    // Get projects for group1 - should only return projects that belong to bucket 1
+    const group1Projects = await groupFilter.getProjects('1');
+    
+    // Verify that only projects assigned to bucket 1 are returned
+    // Using the same logic as implemented in the source
+    const expectedGroup1Projects = mockProjects
+      .filter(p => p.group_id === '1')
+      .filter(p => {
+        const projectKey = `1/${p.path}`;
+        return bucket('farosai/airbyte-gitlab-source', projectKey, 3) === 1;
+      });
+
+    expect(group1Projects.length).toBe(expectedGroup1Projects.length);
   });
 
   describe('onBeforeRead - groups inclusion/exclusion logic', () => {

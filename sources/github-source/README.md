@@ -38,3 +38,9 @@ For common build, test, and run instructions, see the [common source documentati
 | Workflows              | repo                 | Repository: Metadata & Actions                   |
 | Workflow Jobs          | repo                 | Repository: Metadata & Actions                   |
 | Workflow Runs          | repo                 | Repository: Metadata & Actions                   |
+
+## Bucketing Support
+
+This connector implements bucketing and round-robin execution as specified in the [Bucketing and Round-Robin Execution Spec](../../docs/specs/bucketing_round_robin_spec.md).
+
+Repositories are deterministically assigned to buckets based on their `{org}/{repo}` path, ensuring consistent partitioning across sync instances and runs.

@@ -1,5 +1,6 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
+  bucket,
   RepoInclusion,
   VCSAdapter,
   VCSFilter,
@@ -126,7 +127,19 @@ export class GroupFilter {
   async getProjects(
     group: string
   ): Promise<ReadonlyArray<RepoInclusion<FarosProjectOutput>>> {
-    return this.vcsFilter.getRepos(group);
+    const allProjects = await this.vcsFilter.getRepos(group);
+    
+    // Apply bucketing filter - when bucket_total=1 (default), all projects pass through
+    return allProjects.filter(({repo}) => {
+      // projectKey is constructed as "{group}/{project}" (e.g., "mygroup/myproject").
+      // This is the partitioning entity used for bucketing, as specified in the spec,
+      // and is crucial for ensuring consistent bucketing behavior.
+      const projectKey = `${group}/${repo.path}`;
+      return (
+        bucket('farosai/airbyte-gitlab-source', projectKey, this.config.bucket_total) ===
+        this.config.bucket_id
+      );
+    });
   }
 
   async getProjectInclusion(
