@@ -10,6 +10,7 @@ import {
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
+import {bucket} from 'faros-airbyte-common/common';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
