@@ -1,6 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
-import * as jwt from 'jsonwebtoken';
 import VError from 'verror';
 
 import {Incident, IncidentRest, Pagination, User} from './models';
@@ -26,8 +25,7 @@ interface BasicAuthCredentials {
 interface OAuthCredentials {
   readonly auth_type: 'oauth';
   readonly client_id: string;
-  readonly private_key: string;
-  readonly user_email: string;
+  readonly client_secret: string;
 }
 
 export interface ServiceNowConfig {
@@ -261,23 +259,11 @@ export class ServiceNow {
     credentials: OAuthCredentials, 
     instanceUrl: string
   ): Promise<string> {
-    const now = Math.floor(Date.now() / 1000);
-    const payload = {
-      aud: credentials.client_id,
-      sub: credentials.user_email,
-      iss: credentials.client_id,
-      exp: now + (30 * 60),
-    };
-
-    const jwtToken = jwt.sign(payload, credentials.private_key, { 
-      algorithm: 'RS256' 
-    });
-
     const tokenEndpoint = `${instanceUrl}/oauth_token.do`;
     const response = await axios.post(tokenEndpoint, {
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      grant_type: 'client_credentials',
       client_id: credentials.client_id,
-      assertion: jwtToken,
+      client_secret: credentials.client_secret,
     }, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

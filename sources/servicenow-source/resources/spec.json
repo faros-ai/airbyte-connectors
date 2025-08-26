@@ -37,9 +37,9 @@
             }
           },
           {
-            "title": "OAuth 2.0 (JWT Bearer)",
+            "title": "OAuth 2.0 (Client Credentials)",
             "type": "object",
-            "required": ["auth_type", "client_id", "private_key", "user_email"],
+            "required": ["auth_type", "client_id", "client_secret"],
             "properties": {
               "auth_type": {
                 "type": "string",
@@ -50,21 +50,14 @@
                 "order": 1,
                 "type": "string",
                 "title": "OAuth Client ID",
-                "description": "Client ID from ServiceNow OAuth JWT API endpoint configuration"
+                "description": "Client ID from ServiceNow OAuth Client Credentials endpoint configuration"
               },
-              "private_key": {
+              "client_secret": {
                 "order": 2,
                 "type": "string",
-                "title": "Private Key",
-                "description": "RSA private key (PEM format) corresponding to the public certificate uploaded to ServiceNow",
-                "airbyte_secret": true,
-                "multiline": true
-              },
-              "user_email": {
-                "order": 3,
-                "type": "string",
-                "title": "User Email",
-                "description": "Email address of the ServiceNow user to authenticate as"
+                "title": "Client Secret",
+                "description": "Client secret from ServiceNow OAuth Client Credentials endpoint configuration",
+                "airbyte_secret": true
               }
             }
           }

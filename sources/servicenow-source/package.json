@@ -28,7 +28,6 @@
   "dependencies": {
     "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
-    "jsonwebtoken": "^9.0.0",
     "verror": "^1.10.1"
   },
   "jest": {
