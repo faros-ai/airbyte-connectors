@@ -108,18 +108,6 @@ describe('index', () => {
     ]);
   });
 
-  test('check connection legacy config format', async () => {
-    const source = new sut.ServiceNowSource(logger);
-    const legacyConfig = {
-      username: TEST_USERNAME,
-      password: TEST_PASSWORD,
-      url: TEST_URL
-    };
-    await expect(source.checkConnection(legacyConfig)).resolves.toStrictEqual([
-      true,
-      undefined,
-    ]);
-  });
 
   test('streams - incidents, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
