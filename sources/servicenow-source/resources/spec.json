@@ -4,23 +4,74 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "ServiceNow Spec",
     "type": "object",
-    "required": ["username", "password", "url"],
+    "required": ["credentials", "url"],
     "additionalProperties": true,
     "properties": {
-      "username": {
+      "credentials": {
         "order": 0,
-        "type": "string",
-        "title": "ServiceNow Username",
-        "description": "The users should have the roles: sn_incident_read, cmdb_query_builder_read"
-      },
-      "password": {
-        "order": 1,
-        "type": "string",
-        "title": "ServiceNow Password",
-        "airbyte_secret": true
+        "type": "object",
+        "title": "Authentication",
+        "oneOf": [
+          {
+            "title": "Basic Authentication",
+            "type": "object",
+            "required": ["auth_type", "username", "password"],
+            "properties": {
+              "auth_type": {
+                "type": "string",
+                "const": "basic",
+                "order": 0
+              },
+              "username": {
+                "order": 1,
+                "type": "string",
+                "title": "ServiceNow Username",
+                "description": "The user should have the roles: sn_incident_read, cmdb_query_builder_read"
+              },
+              "password": {
+                "order": 2,
+                "type": "string",
+                "title": "ServiceNow Password",
+                "airbyte_secret": true
+              }
+            }
+          },
+          {
+            "title": "OAuth 2.0 (JWT Bearer)",
+            "type": "object",
+            "required": ["auth_type", "client_id", "private_key", "user_email"],
+            "properties": {
+              "auth_type": {
+                "type": "string",
+                "const": "oauth",
+                "order": 0
+              },
+              "client_id": {
+                "order": 1,
+                "type": "string",
+                "title": "OAuth Client ID",
+                "description": "Client ID from ServiceNow OAuth JWT API endpoint configuration"
+              },
+              "private_key": {
+                "order": 2,
+                "type": "string",
+                "title": "Private Key",
+                "description": "RSA private key (PEM format) corresponding to the public certificate uploaded to ServiceNow",
+                "airbyte_secret": true,
+                "multiline": true
+              },
+              "user_email": {
+                "order": 3,
+                "type": "string",
+                "title": "User Email",
+                "description": "Email address of the ServiceNow user to authenticate as"
+              }
+            }
+          }
+        ]
       },
       "url": {
-        "order": 2,
+        "order": 1,
         "type": "string",
         "title": "ServiceNow url",
         "description": "ServiceNow instance url"

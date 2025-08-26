@@ -1,5 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import * as jwt from 'jsonwebtoken';
 import VError from 'verror';
 
 import {Incident, IncidentRest, Pagination, User} from './models';
@@ -16,9 +17,21 @@ const CMDB_CI_SERVICE_API = '/api/now/table/cmdb_ci_service/';
 const USER_API = '/api/now/table/sys_user';
 const USER_FIELDS = 'name,sys_id,email,sys_updated_on';
 
-export interface ServiceNowConfig {
+interface BasicAuthCredentials {
+  readonly auth_type: 'basic';
   readonly username: string;
   readonly password: string;
+}
+
+interface OAuthCredentials {
+  readonly auth_type: 'oauth';
+  readonly client_id: string;
+  readonly private_key: string;
+  readonly user_email: string;
+}
+
+export interface ServiceNowConfig {
+  readonly credentials: BasicAuthCredentials | OAuthCredentials;
   readonly url: string;
   readonly service_id_field?: string;
   readonly cutoff_days?: number;
@@ -61,10 +74,10 @@ export class ServiceNow {
     this.cutOff = threshold.toISOString();
   }
 
-  static instance(config: ServiceNowConfig, logger: AirbyteLogger): ServiceNow {
+  static async instance(config: ServiceNowConfig, logger: AirbyteLogger): Promise<ServiceNow> {
     if (ServiceNow.servicenow) return ServiceNow.servicenow;
 
-    const client = this.makeClient(config);
+    const client = await this.makeClient(config);
 
     ServiceNow.servicenow = new ServiceNow(client, config, logger);
     return ServiceNow.servicenow;
@@ -244,13 +257,59 @@ export class ServiceNow {
     } while (hasNext);
   }
 
-  private static makeClient(config: ServiceNowConfig): ServiceNowClient {
-    const serviceIdField = config.service_id_field ?? DEFAULT_SERVICE_ID_FIELD;
-    const httpClient = axios.create({
-      baseURL: `${config.url}`,
-      timeout: config.timeout ?? DEFAULT_TIMEOUT,
-      auth: {username: config.username, password: config.password},
+  private static async generateAccessToken(
+    credentials: OAuthCredentials, 
+    instanceUrl: string
+  ): Promise<string> {
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+      aud: credentials.client_id,
+      sub: credentials.user_email,
+      iss: credentials.client_id,
+      exp: now + (30 * 60),
+    };
+
+    const jwtToken = jwt.sign(payload, credentials.private_key, { 
+      algorithm: 'RS256' 
     });
+
+    const tokenEndpoint = `${instanceUrl}/oauth_token.do`;
+    const response = await axios.post(tokenEndpoint, {
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      client_id: credentials.client_id,
+      assertion: jwtToken,
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    return response.data.access_token;
+  }
+
+  private static async makeClient(config: ServiceNowConfig): Promise<ServiceNowClient> {
+    const serviceIdField = config.service_id_field ?? DEFAULT_SERVICE_ID_FIELD;
+    
+    let httpClient;
+    if (config.credentials.auth_type === 'basic') {
+      httpClient = axios.create({
+        baseURL: `${config.url}`,
+        timeout: config.timeout ?? DEFAULT_TIMEOUT,
+        auth: {
+          username: config.credentials.username, 
+          password: config.credentials.password
+        },
+      });
+    } else {
+      const accessToken = await this.generateAccessToken(config.credentials, config.url);
+      httpClient = axios.create({
+        baseURL: `${config.url}`,
+        timeout: config.timeout ?? DEFAULT_TIMEOUT,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+    }
 
     const client = {
       incidents: {

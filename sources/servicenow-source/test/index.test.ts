@@ -41,7 +41,7 @@ describe('index', () => {
     getCmdbCi.mockResolvedValue('Storage Area Network 001');
     getCmdbCiService.mockResolvedValue('Email');
     checkConnection.mockResolvedValue({});
-    ServiceNow.instance = jest.fn().mockReturnValue(
+    ServiceNow.instance = jest.fn().mockResolvedValue(
       new ServiceNow(
         {
           incidents: {
@@ -76,11 +76,25 @@ describe('index', () => {
     const expectedError = new VError('Bad Connection');
     checkConnection.mockRejectedValueOnce(expectedError);
     await expect(
-      source.checkConnection({username: 'bad', password: 'bad', url: 'bad'})
+      source.checkConnection({
+        credentials: {
+          auth_type: 'basic' as const,
+          username: 'bad',
+          password: 'bad'
+        },
+        url: 'bad'
+      })
     ).resolves.toStrictEqual([false, expectedError]);
   });
 
-  const sourceConfig = {username: 'good', password: 'good', url: 'good'};
+  const sourceConfig = {
+    credentials: {
+      auth_type: 'basic' as const,
+      username: 'good',
+      password: 'good'
+    },
+    url: 'good'
+  };
 
   test('check connection good token', async () => {
     const source = new sut.ServiceNowSource(logger);
