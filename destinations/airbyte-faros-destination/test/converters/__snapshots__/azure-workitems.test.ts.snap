@@ -4,8 +4,8 @@ exports[`azure-workitems process records from all streams 1`] = `
 Array [
   "Processed 12 records",
   "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":3,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":3,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 42 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":3,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskComment\\\\\\":1,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 43 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":3,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":5,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskComment\\\\\\":1,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -105,6 +105,7 @@ Array [
         "source": "Azure-Workitems",
         "uid": "297",
       },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -251,6 +252,7 @@ Array [
         "source": "Azure-Workitems",
         "uid": "299",
       },
+      "unassignedAt": "2017-09-05T00:00:00.000Z",
     },
   },
   Object {
@@ -265,6 +267,7 @@ Array [
         "source": "Azure-Workitems",
         "uid": "299",
       },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -426,6 +429,22 @@ Array [
         "source": "Azure-Workitems",
         "uid": "300",
       },
+      "unassignedAt": "2017-09-04T12:15:30.000Z",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T12:15:30.000Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "christie.church@fabrikam.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+      "unassignedAt": null,
     },
   },
   Object {

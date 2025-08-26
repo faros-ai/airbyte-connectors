@@ -251,7 +251,8 @@ export class Workitems extends AzureWorkitemsConverter {
             record: {
               task,
               assignee: {uid: uid, source: this.source},
-              assignedAt: Utils.toDate(revision.changedDate),
+              assignedAt: Utils.toDate(revision.assignedAt),
+              unassignedAt: Utils.toDate(revision.unassignedAt),
             },
           };
         } else {
