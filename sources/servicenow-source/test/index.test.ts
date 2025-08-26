@@ -18,6 +18,10 @@ import {
 } from '../src/servicenow/servicenow';
 
 describe('index', () => {
+  const TEST_USERNAME = 'test_user';
+  const TEST_PASSWORD = 'test_pass';
+  const TEST_URL = 'https://test.service-now.com';
+  
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
@@ -79,10 +83,10 @@ describe('index', () => {
       source.checkConnection({
         credentials: {
           auth_type: 'basic' as const,
-          username: 'bad',
-          password: 'bad'
+          username: 'invalid_user',
+          password: 'invalid_pass'
         },
-        url: 'bad'
+        url: 'https://invalid.service-now.com'
       })
     ).resolves.toStrictEqual([false, expectedError]);
   });
@@ -90,10 +94,10 @@ describe('index', () => {
   const sourceConfig = {
     credentials: {
       auth_type: 'basic' as const,
-      username: 'good',
-      password: 'good'
+      username: TEST_USERNAME,
+      password: TEST_PASSWORD
     },
-    url: 'good'
+    url: TEST_URL
   };
 
   test('check connection good token', async () => {
