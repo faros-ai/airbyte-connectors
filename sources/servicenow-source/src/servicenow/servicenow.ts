@@ -30,7 +30,17 @@ interface OAuthCredentials {
   readonly user_email: string;
 }
 
-export interface ServiceNowConfig {
+interface LegacyServiceNowConfig {
+  readonly username: string;
+  readonly password: string;
+  readonly url: string;
+  readonly service_id_field?: string;
+  readonly cutoff_days?: number;
+  readonly page_size?: number;
+  readonly timeout?: number;
+}
+
+interface NewServiceNowConfig {
   readonly credentials: BasicAuthCredentials | OAuthCredentials;
   readonly url: string;
   readonly service_id_field?: string;
@@ -38,6 +48,8 @@ export interface ServiceNowConfig {
   readonly page_size?: number;
   readonly timeout?: number;
 }
+
+export type ServiceNowConfig = LegacyServiceNowConfig | NewServiceNowConfig;
 
 export interface ServiceNowClient {
   readonly incidents: {
@@ -291,24 +303,38 @@ export class ServiceNow {
     const serviceIdField = config.service_id_field ?? DEFAULT_SERVICE_ID_FIELD;
     
     let httpClient;
-    if (config.credentials.auth_type === 'basic') {
+    
+    if ('username' in config && 'password' in config) {
       httpClient = axios.create({
         baseURL: `${config.url}`,
         timeout: config.timeout ?? DEFAULT_TIMEOUT,
         auth: {
-          username: config.credentials.username, 
-          password: config.credentials.password
+          username: config.username, 
+          password: config.password
         },
       });
+    } else if ('credentials' in config) {
+      if (config.credentials.auth_type === 'basic') {
+        httpClient = axios.create({
+          baseURL: `${config.url}`,
+          timeout: config.timeout ?? DEFAULT_TIMEOUT,
+          auth: {
+            username: config.credentials.username, 
+            password: config.credentials.password
+          },
+        });
+      } else {
+        const accessToken = await this.generateAccessToken(config.credentials, config.url);
+        httpClient = axios.create({
+          baseURL: `${config.url}`,
+          timeout: config.timeout ?? DEFAULT_TIMEOUT,
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+      }
     } else {
-      const accessToken = await this.generateAccessToken(config.credentials, config.url);
-      httpClient = axios.create({
-        baseURL: `${config.url}`,
-        timeout: config.timeout ?? DEFAULT_TIMEOUT,
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
+      throw new VError('Invalid ServiceNow configuration: missing authentication credentials');
     }
 
     const client = {

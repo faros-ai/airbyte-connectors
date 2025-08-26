@@ -18,9 +18,9 @@ import {
 } from '../src/servicenow/servicenow';
 
 describe('index', () => {
-  const TEST_USERNAME = 'test_user';
-  const TEST_PASSWORD = 'test_pass';
-  const TEST_URL = 'https://test.service-now.com';
+  const TEST_USERNAME = process.env.SERVICENOW_TEST_USERNAME || 'test_user';
+  const TEST_PASSWORD = process.env.SERVICENOW_TEST_PASSWORD || 'test_pass';
+  const TEST_URL = process.env.SERVICENOW_TEST_URL || 'https://test.service-now.com';
   
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
@@ -83,10 +83,10 @@ describe('index', () => {
       source.checkConnection({
         credentials: {
           auth_type: 'basic' as const,
-          username: 'invalid_user',
-          password: 'invalid_pass'
+          username: process.env.SERVICENOW_INVALID_USERNAME || 'invalid_user',
+          password: process.env.SERVICENOW_INVALID_PASSWORD || 'invalid_pass'
         },
-        url: 'https://invalid.service-now.com'
+        url: process.env.SERVICENOW_INVALID_URL || 'https://invalid.service-now.com'
       })
     ).resolves.toStrictEqual([false, expectedError]);
   });
@@ -103,6 +103,19 @@ describe('index', () => {
   test('check connection good token', async () => {
     const source = new sut.ServiceNowSource(logger);
     await expect(source.checkConnection(sourceConfig)).resolves.toStrictEqual([
+      true,
+      undefined,
+    ]);
+  });
+
+  test('check connection legacy config format', async () => {
+    const source = new sut.ServiceNowSource(logger);
+    const legacyConfig = {
+      username: TEST_USERNAME,
+      password: TEST_PASSWORD,
+      url: TEST_URL
+    };
+    await expect(source.checkConnection(legacyConfig)).resolves.toStrictEqual([
       true,
       undefined,
     ]);
