@@ -168,12 +168,30 @@ export class Tasks extends AsanaConverter {
       },
     });
 
-    if (task.assignee) {
+    // Process assignee revisions for complete assignment history
+    if (task.assigneeRevisions && task.assigneeRevisions.length > 0) {
+      for (const revision of task.assigneeRevisions) {
+        if (revision.assignee?.gid) {
+          res.push({
+            model: 'tms_TaskAssignment',
+            record: {
+              task: taskKey,
+              assignee: {uid: revision.assignee.gid, source},
+              assignedAt: Utils.toDate(revision.assignedAt),
+              unassignedAt: Utils.toDate(revision.unassignedAt),
+            },
+          });
+        }
+      }
+    } else if (task.assignee) {
+      // Fallback to current assignee if no revision history
       res.push({
         model: 'tms_TaskAssignment',
         record: {
           task: taskKey,
           assignee: {uid: task.assignee.gid, source},
+          assignedAt: null,
+          unassignedAt: null,
         },
       });
     }

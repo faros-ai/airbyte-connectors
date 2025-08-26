@@ -103,6 +103,33 @@ describe('asana', () => {
       expect(res).toMatchSnapshot();
     });
 
+    test('assignee revisions changelog', async () => {
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        assigneeRevisions: [
+          {
+            assignee: {
+              gid: '7440298482110',
+              name: 'John Doe',
+              resource_type: 'user',
+            },
+            assignedAt: '2023-08-24T10:00:00.000Z',
+            unassignedAt: '2023-08-24T16:00:00.000Z',
+          },
+          {
+            assignee: {
+              gid: '7440298482111',
+              name: 'Jane Smith',
+              resource_type: 'user',
+            },
+            assignedAt: '2023-08-24T16:00:00.000Z',
+          },
+        ],
+      });
+      const res = await converter.convert(record);
+      expect(res).toMatchSnapshot();
+    });
+
     test('parent', async () => {
       const record = AirbyteRecord.make('tasks', {
         ...TASK,

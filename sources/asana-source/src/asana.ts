@@ -13,6 +13,7 @@ import {
   Story,
   Tag,
   Task,
+  TaskAssigneeRevision,
   User,
   Workspace,
 } from './models';
@@ -239,10 +240,12 @@ export class Asana {
         seenIdsCurrentPage.add(task.gid);
         modified_at_after = task.modified_at;
         const {stories, comments} = await this.getStoriesAndComments(task.gid);
+        const assigneeRevisions = this.getAssigneeRevisions(stories);
         yield {
           ...task,
           stories,
           comments,
+          assigneeRevisions,
         };
       }
 
@@ -319,6 +322,24 @@ export class Asana {
     }
 
     return {stories, comments};
+  }
+
+  private getAssigneeRevisions(
+    stories: ReadonlyArray<Story>
+  ): ReadonlyArray<TaskAssigneeRevision> {
+    const assignmentChanges = stories
+      .filter((story) => 
+        story.resource_subtype === 'assigned' || 
+        story.resource_subtype === 'unassigned'
+      )
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    return assignmentChanges.map((change, index) => ({
+      assignee: change.resource_subtype === 'assigned' ? change.assignee : undefined,
+      assignedAt: change.created_at,
+      unassignedAt:
+        index < assignmentChanges.length - 1 ? assignmentChanges[index + 1].created_at : undefined,
+    })).filter((revision) => revision.assignee); // Only include actual assignments, not unassignments
   }
 
   async *getTags(workspace: string): AsyncGenerator<Tag> {

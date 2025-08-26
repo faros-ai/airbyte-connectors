@@ -152,6 +152,7 @@ export type Task = {
   };
   stories?: ReadonlyArray<Story>;
   comments?: ReadonlyArray<Story>;
+  assigneeRevisions?: ReadonlyArray<TaskAssigneeRevision>;
 };
 
 export type Project = {
@@ -304,3 +305,13 @@ export type Tag = {
     name?: string;
   };
 };
+
+export interface TaskAssigneeRevision {
+  readonly assignee?: {
+    gid?: string;
+    resource_type?: string;
+    name?: string;
+  };
+  readonly assignedAt: string;
+  readonly unassignedAt?: string;
+}
