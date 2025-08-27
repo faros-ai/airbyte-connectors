@@ -15,7 +15,7 @@ export interface IncidentsState {
 
 export class Incidents extends AirbyteStreamBase {
   constructor(
-    private readonly servicenow: ServiceNow | Promise<ServiceNow>,
+    private readonly servicenow: Promise<ServiceNow>,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -53,7 +53,7 @@ export class Incidents extends AirbyteStreamBase {
     _streamSlice?: Dictionary<any, string>,
     streamState?: IncidentsState
   ): AsyncGenerator<Dictionary<any, string>, any, unknown> {
-    const servicenow = await Promise.resolve(this.servicenow);
+    const servicenow = await this.servicenow;
     const state = syncMode === SyncMode.INCREMENTAL ? streamState : undefined;
     yield* servicenow.getIncidents(state?.sys_updated_on);
   }
