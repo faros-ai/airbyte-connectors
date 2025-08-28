@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@atlassian/bitbucket-server": "^0.0.6",
-    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "parse-diff": "^0.11.1",

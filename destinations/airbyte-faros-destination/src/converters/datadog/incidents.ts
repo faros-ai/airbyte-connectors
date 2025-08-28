@@ -106,7 +106,7 @@ export class Incidents extends DatadogConverter {
         default:
           return {
             category: IncidentSeverityCategory.Custom,
-            detail: severity === 'UNKNOWN' ? severity : String(severity._data),
+            detail: severity === 'UNKNOWN' ? severity : String(severity),
           };
       }
     }

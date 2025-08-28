@@ -26,7 +26,6 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "typescript-memoize": "^1.1.0",
     "nock": "^13.1.0",

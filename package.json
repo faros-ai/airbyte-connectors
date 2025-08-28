@@ -59,9 +59,10 @@
   },
   "overrides": {
     "@octokit/types": "14.0.0",
-    "axios": "^1.8.3",
+    "axios": "^1.11.0",
     "cross-spawn": "^7.0.6",
     "degenerator": "^5.0.0",
+    "form-data": "4.0.4",
     "protobufjs": "^7.2.6",
     "semver": "^7.5.4",
     "markdown-it": "^14.0.0",
