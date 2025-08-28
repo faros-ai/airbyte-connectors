@@ -29,7 +29,6 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "^1.41.0",
     "@esm2cjs/p-queue": "^7.3.0",
     "@segment/analytics-node": "^2.0.0",
     "ajv": "^8.6.3",
