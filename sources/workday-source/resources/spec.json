@@ -120,6 +120,27 @@
                 "default": 60000,
                 "description": "The time allowed for a request to timeout (in milliseconds)."
             },
+            "reportParams": {
+                "type": "array",
+                "title": "Custom Report Parameters",
+                "description": "Optional list of additional HTTP query parameters to include when calling custom reports (beyond the hardcoded format=json).",
+                "items": {
+                    "type": "object",
+                    "required": ["name", "value"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "title": "Parameter Name",
+                            "description": "The name of the query parameter"
+                        },
+                        "value": {
+                            "type": "string", 
+                            "title": "Parameter Value",
+                            "description": "The value of the query parameter"
+                        }
+                    }
+                }
+            },
             "skipConnectionCheck": {
                 "type": "boolean",
                 "title": "Skip Connection Check",
