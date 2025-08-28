@@ -33,7 +33,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.9",
+    "@apidevtools/json-schema-ref-parser": "^14.1.1",
     "enquirer": "^2.3.6",
     "fast-redact": "^3.0.2",
     "json-schema-traverse": "^1.0.0",
