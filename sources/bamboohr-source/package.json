@@ -27,7 +27,6 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "verror": "^1.10.1"
   },

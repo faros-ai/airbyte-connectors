@@ -26,6 +26,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
+    "@datadog/datadog-api-client": "^1.41.0",
     "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",

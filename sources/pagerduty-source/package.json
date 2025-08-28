@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@pagerduty/pdjs": "^2.2.4",
-    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "luxon": "^3.4.4",
     "verror": "^1.10.1"
