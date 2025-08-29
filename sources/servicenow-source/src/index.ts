@@ -28,7 +28,7 @@ export class ServiceNowSource extends AirbyteSourceBase<ServiceNowConfig> {
   }
   async checkConnection(config: ServiceNowConfig): Promise<[boolean, VError]> {
     try {
-      const servicenow = ServiceNow.instance(config, this.logger);
+      const servicenow = await ServiceNow.instance(config, this.logger);
       await servicenow.checkConnection();
     } catch (err: any) {
       return [false, err];
@@ -36,10 +36,10 @@ export class ServiceNowSource extends AirbyteSourceBase<ServiceNowConfig> {
     return [true, undefined];
   }
   streams(config: ServiceNowConfig): AirbyteStreamBase[] {
-    const servicenow = ServiceNow.instance(config, this.logger);
+    const servicenowPromise = ServiceNow.instance(config, this.logger);
     return [
-      new Incidents(servicenow, this.logger),
-      new Users(servicenow, this.logger),
+      new Incidents(servicenowPromise, this.logger),
+      new Users(servicenowPromise, this.logger),
     ];
   }
 }

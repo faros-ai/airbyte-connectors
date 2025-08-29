@@ -18,6 +18,10 @@ import {
 } from '../src/servicenow/servicenow';
 
 describe('index', () => {
+  const TEST_USERNAME = process.env.SERVICENOW_TEST_USERNAME || 'test_user';
+  const TEST_PASSWORD = process.env.SERVICENOW_TEST_PASSWORD || 'test_pass';
+  const TEST_URL = process.env.SERVICENOW_TEST_URL || 'https://test.service-now.com';
+  
   const logger = new AirbyteSourceLogger(
     // Shush messages in tests, unless in debug
     process.env.LOG_LEVEL === 'debug'
@@ -41,7 +45,7 @@ describe('index', () => {
     getCmdbCi.mockResolvedValue('Storage Area Network 001');
     getCmdbCiService.mockResolvedValue('Email');
     checkConnection.mockResolvedValue({});
-    ServiceNow.instance = jest.fn().mockReturnValue(
+    ServiceNow.instance = jest.fn().mockResolvedValue(
       new ServiceNow(
         {
           incidents: {
@@ -76,11 +80,25 @@ describe('index', () => {
     const expectedError = new VError('Bad Connection');
     checkConnection.mockRejectedValueOnce(expectedError);
     await expect(
-      source.checkConnection({username: 'bad', password: 'bad', url: 'bad'})
+      source.checkConnection({
+        credentials: {
+          auth_type: 'basic' as const,
+          username: process.env.SERVICENOW_INVALID_USERNAME || 'invalid_user',
+          password: process.env.SERVICENOW_INVALID_PASSWORD || 'invalid_pass'
+        },
+        url: process.env.SERVICENOW_INVALID_URL || 'https://invalid.service-now.com'
+      })
     ).resolves.toStrictEqual([false, expectedError]);
   });
 
-  const sourceConfig = {username: 'good', password: 'good', url: 'good'};
+  const sourceConfig = {
+    credentials: {
+      auth_type: 'basic' as const,
+      username: TEST_USERNAME,
+      password: TEST_PASSWORD
+    },
+    url: TEST_URL
+  };
 
   test('check connection good token', async () => {
     const source = new sut.ServiceNowSource(logger);
@@ -89,6 +107,7 @@ describe('index', () => {
       undefined,
     ]);
   });
+
 
   test('streams - incidents, use incremental sync mode', async () => {
     const source = new sut.ServiceNowSource(logger);
