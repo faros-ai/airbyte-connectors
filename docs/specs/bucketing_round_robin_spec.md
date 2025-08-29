@@ -13,11 +13,11 @@ This spec standardizes how connectors in this repo partition work via determinis
 ## Motivation
 Many sources contain more entities than a single sync can process efficiently or within time windows. Bucketing enables deterministic partitioning of work so that:
 - Multiple workers can run in parallel by assigning distinct `bucket_id`s, reducing end-to-end sync time.
-- A single worker can time-slice large datasets by enabling `round_robin_bucket_execution`, distributing work evenly across runs and smoothing API usage.
+- A single worker can slice large datasets by enabling `round_robin_bucket_execution`, distributing work evenly across runs and smoothing API usage.
 - Teams can roll out or restrict processing to a subset of buckets via `bucket_ranges` (e.g., canary or phased deployments).
 
 Primary outcomes:
-- Faster syncs through parallelization, or predictable time-sliced progress on a single worker.
+- Faster syncs through parallelization, or predictable sliced progress on a single worker.
 - Stable, repeatable partitioning to avoid duplicate processing across workers.
 - Fair rotation across buckets to balance load over time.
 
