@@ -9,6 +9,7 @@ import {
 import VError from 'verror';
 
 import {AutocompleteAnalytics} from './streams/autocomplete_analytics';
+import {CascadeLinesAnalytics} from './streams/cascade_lines_analytics';
 import {UserPageAnalytics} from './streams/user_page_analytics';
 import {WindsurfConfig} from './types';
 import {Windsurf} from './windsurf';
@@ -42,6 +43,7 @@ export class WindsurfSource extends AirbyteSourceBase<WindsurfConfig> {
     return [
       new UserPageAnalytics(config, this.logger),
       new AutocompleteAnalytics(config, this.logger),
+      new CascadeLinesAnalytics(config, this.logger),
     ];
   }
 }

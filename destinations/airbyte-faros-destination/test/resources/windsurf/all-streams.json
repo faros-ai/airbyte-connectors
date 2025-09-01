@@ -65,5 +65,31 @@
       }
     },
     "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_lines_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "day": "2024-01-15",
+        "linesSuggested": 150,
+        "linesAccepted": 80
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_lines_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "day": "2024-01-15",
+        "linesSuggested": 200,
+        "linesAccepted": 120
+      }
+    },
+    "type": "RECORD"
   }
 ]

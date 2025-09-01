@@ -44,6 +44,35 @@ exports[`index streams - autocomplete analytics 1`] = `
 ]
 `;
 
+exports[`index streams - cascade lines 1`] = `
+[
+  {
+    "day": "2024-01-15",
+    "email": "john@company.com",
+    "linesAccepted": 80,
+    "linesSuggested": 150,
+  },
+  {
+    "day": "2024-01-16",
+    "email": "john@company.com",
+    "linesAccepted": 120,
+    "linesSuggested": 200,
+  },
+  {
+    "day": "2024-01-15",
+    "email": "jane@company.com",
+    "linesAccepted": 80,
+    "linesSuggested": 150,
+  },
+  {
+    "day": "2024-01-16",
+    "email": "jane@company.com",
+    "linesAccepted": 120,
+    "linesSuggested": 200,
+  },
+]
+`;
+
 exports[`index streams - user page analytics 1`] = `
 [
   {

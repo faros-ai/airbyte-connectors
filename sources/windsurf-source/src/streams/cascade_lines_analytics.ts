@@ -6,14 +6,14 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AutocompleteAnalyticsItem, WindsurfConfig} from '../types';
+import {CascadeLinesItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
 
 type StreamState = {
   cutoff?: string;
 };
 
-export class AutocompleteAnalytics extends AirbyteStreamBase {
+export class CascadeLinesAnalytics extends AirbyteStreamBase {
   constructor(
     private readonly config: WindsurfConfig,
     protected readonly logger: AirbyteLogger
@@ -22,23 +22,23 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/autocompleteAnalytics.json');
+    return require('../../resources/schemas/cascadeLinesAnalytics.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['email', 'date'];
+    return ['email', 'day'];
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'day';
   }
 
   async *readRecords(
     syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
+    _cursorField?: string[],
+    _streamSlice?: Dictionary<any>,
     streamState?: StreamState
-  ): AsyncGenerator<AutocompleteAnalyticsItem> {
+  ): AsyncGenerator<CascadeLinesItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
 
     // For incremental sync, use the cutoff date from state
@@ -47,7 +47,7 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
         ? streamState.cutoff
         : undefined;
 
-    const items = await windsurf.getAutocompleteAnalytics(startDate);
+    const items = await windsurf.getCascadeLinesAnalytics(startDate);
 
     for (const item of items) {
       yield item;
@@ -56,10 +56,10 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: AutocompleteAnalyticsItem
+    latestRecord: CascadeLinesItem
   ): StreamState {
     const currentCutoff = currentStreamState?.cutoff;
-    const recordDate = latestRecord.date;
+    const recordDate = latestRecord.day;
 
     // Update state with the latest date seen
     if (!currentCutoff || recordDate > currentCutoff) {

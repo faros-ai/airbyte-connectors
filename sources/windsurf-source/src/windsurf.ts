@@ -6,6 +6,10 @@ import VError from 'verror';
 
 import {
   AutocompleteAnalyticsItem,
+  CascadeAnalyticsRequest,
+  CascadeAnalyticsResponse,
+  CascadeDataSource,
+  CascadeLinesItem,
   CustomAnalyticsRequest,
   CustomAnalyticsResponse,
   QueryAggregationFunction,
@@ -198,5 +202,71 @@ export class Windsurf {
       }
       throw new VError(error, 'Failed to fetch autocomplete analytics');
     }
+  }
+
+  async getCascadeLinesAnalytics(
+    startDate?: string,
+    endDate?: string
+  ): Promise<CascadeLinesItem[]> {
+    // Ensure we have the user list first
+    const users = await this.getUserPageAnalytics();
+
+    const results: CascadeLinesItem[] = [];
+
+    // Query cascade analytics for each user individually
+    for (const user of users) {
+      if (!user.email) {
+        continue; // Skip users without email
+      }
+
+      const request: CascadeAnalyticsRequest = {
+        service_key: this.config.service_key,
+        emails: [user.email], // Query for single user
+        query_requests: [
+          {
+            data_source: CascadeDataSource.CASCADE_LINES,
+          },
+        ],
+      };
+
+      // Add date filters if provided
+      if (startDate) {
+        request.start_timestamp = startDate;
+      }
+      if (endDate) {
+        request.end_timestamp = endDate;
+      }
+
+      try {
+        const response = await this.api.post<CascadeAnalyticsResponse>(
+          '/CascadeAnalytics',
+          request
+        );
+
+        if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
+          for (const cascadeLineItem of response.data.queryResults[0]
+            .cascadeLines.cascadeLines) {
+            results.push({
+              email: user.email, // Add email since API response won't include it
+              day: cascadeLineItem.day,
+              linesSuggested: cascadeLineItem.linesSuggested
+                ? parseInt(cascadeLineItem.linesSuggested, 10)
+                : undefined,
+              linesAccepted: cascadeLineItem.linesAccepted
+                ? parseInt(cascadeLineItem.linesAccepted, 10)
+                : undefined,
+            });
+          }
+        }
+      } catch (error: any) {
+        // Log warning but continue with other users
+        this.logger.warn(
+          `Failed to fetch cascade analytics for user ${user.email}: ${error.message}`
+        );
+        continue;
+      }
+    }
+
+    return results;
   }
 }

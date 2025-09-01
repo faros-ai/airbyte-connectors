@@ -105,4 +105,28 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - cascade lines', async () => {
+    const userPageRes = readTestResourceAsJSON(
+      'user_page_analytics/user_page_analytics.json'
+    );
+    const cascadeRes = readTestResourceAsJSON(
+      'cascade_lines_analytics/cascade_lines_analytics.json'
+    );
+    setupWindsurfInstance({
+      post: jest
+        .fn()
+        .mockResolvedValueOnce({data: userPageRes})
+        .mockResolvedValueOnce({data: cascadeRes})
+        .mockResolvedValueOnce({data: cascadeRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'cascade_lines_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

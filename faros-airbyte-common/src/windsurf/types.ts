@@ -21,3 +21,10 @@ export interface AutocompleteAnalyticsItem {
   ide?: string;
   version?: string;
 }
+
+export interface CascadeLinesItem {
+  email: string; // Added since API response won't include it
+  day: string;
+  linesSuggested?: number;
+  linesAccepted?: number;
+}

@@ -1,12 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {digest} from 'faros-airbyte-common/common';
 import {AutocompleteAnalyticsItem} from 'faros-airbyte-common/windsurf';
 import {Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {WindsurfConverter} from './common';
+import {WindsurfConverter, WindsurfFeature} from './common';
 
 export class AutocompleteAnalytics extends WindsurfConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -40,7 +38,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           undefined,
-          undefined,
+          WindsurfFeature.Autocompletion,
           item.ide,
           item.language
         )
@@ -58,7 +56,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           undefined,
-          undefined,
+          WindsurfFeature.Autocompletion,
           item.ide,
           item.language
         )
@@ -66,72 +64,5 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     }
 
     return res;
-  }
-
-  private getAssistantMetric(
-    startedAt: Date,
-    endedAt: Date,
-    assistantMetricType: AssistantMetric,
-    value: number,
-    org: string,
-    userEmail: string,
-    customMetricName?: string,
-    model?: string,
-    feature?: string,
-    editor?: string,
-    language?: string
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'vcs_AssistantMetric',
-        record: {
-          uid: digest(
-            []
-              .concat(
-                // original fields (required) to be included in the digest
-                ...[
-                  VCSToolDetail.Windsurf,
-                  assistantMetricType,
-                  startedAt.toISOString(),
-                  org,
-                  userEmail,
-                  customMetricName,
-                ],
-                // newer fields (optional) to be included in the digest
-                ...[
-                  {key: 'model', value: model},
-                  {key: 'feature', value: feature},
-                  {key: 'editor', value: editor},
-                  {key: 'language', value: language},
-                ]
-                  .filter((v) => !isNil(v.value))
-                  .map((v) => `${v.key}:${v.value}`)
-              )
-              .join('__')
-          ),
-          source: this.source,
-          startedAt,
-          endedAt,
-          type: {
-            category: assistantMetricType,
-            ...(customMetricName && {detail: customMetricName}),
-          },
-          valueType: 'Int',
-          value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
-          user: {uid: userEmail, source: this.streamName.source},
-          tool: {
-            category: VCSToolCategory.CodingAssistant,
-            detail: VCSToolDetail.Windsurf,
-          },
-          ...(model && {model}),
-          ...(feature && {feature}),
-          ...(editor && {editor}),
-        },
-      },
-    ];
   }
 }

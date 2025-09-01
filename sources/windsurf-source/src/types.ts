@@ -12,6 +12,7 @@ export interface UserPageAnalyticsRequest {
 export {
   UserTableStatsItem,
   AutocompleteAnalyticsItem,
+  CascadeLinesItem,
 } from 'faros-airbyte-common/windsurf';
 
 // Import types for local use
@@ -90,4 +91,60 @@ export interface QueryResult {
 
 export interface CustomAnalyticsResponse {
   queryResults: QueryResult[];
+}
+
+export enum CascadeDataSource {
+  CASCADE_LINES = 'cascade_lines',
+  CASCADE_RUNS = 'cascade_runs',
+  CASCADE_TOOL_USAGE = 'cascade_tool_usage',
+}
+
+export interface CascadeAnalyticsRequest {
+  service_key: string;
+  group_name?: string;
+  start_timestamp?: string;
+  end_timestamp?: string;
+  emails?: string[];
+  ide_types?: string[];
+  query_requests: CascadeQueryRequest[];
+}
+
+export interface CascadeQueryRequest {
+  data_source: CascadeDataSource;
+}
+
+export interface CascadeLinesData {
+  day: string;
+  linesSuggested: string;
+  linesAccepted: string;
+}
+
+export interface CascadeRunsData {
+  day: string;
+  model: string;
+  mode: string;
+  messagesSent: string;
+  cascadeId: string;
+  promptsUsed: string;
+}
+
+export interface CascadeToolUsageData {
+  tool: string;
+  count: string;
+}
+
+export interface CascadeQueryResult {
+  cascadeLines?: {
+    cascadeLines: CascadeLinesData[];
+  };
+  cascadeRuns?: {
+    cascadeRuns: CascadeRunsData[];
+  };
+  cascadeToolUsage?: {
+    cascadeToolUsage: CascadeToolUsageData[];
+  };
+}
+
+export interface CascadeAnalyticsResponse {
+  queryResults: CascadeQueryResult[];
 }
