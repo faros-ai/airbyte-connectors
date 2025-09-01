@@ -175,9 +175,8 @@ export class Workday {
     if (!reportFormat) {
       reportFormat = 'json';
     }
-
-    // Start with base parameters, always force format to json
-    const format = 'json';
+    // Start with base parameters, using reportFormat
+    const format = reportFormat;
     const params: Record<string, string> = {format};
     
     // Merge in user-provided parameters (last-wins for duplicates)

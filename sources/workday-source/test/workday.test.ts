@@ -64,7 +64,7 @@ describe('customReports with reportParams', () => {
       expect.stringContaining('/ccx/service/customreport2/test-tenant/test-report'),
       {
         params: {
-          format: 'json',
+          format: 'csv',
         },
       }
     );
@@ -93,7 +93,7 @@ describe('customReports with reportParams', () => {
       expect.stringContaining('/ccx/service/customreport2/test-tenant/test-report'),
       {
         params: {
-          format: 'json',
+          format: 'csv',
           startDate: '2023-01-01',
           endDate: '2023-12-31',
         },
@@ -121,7 +121,7 @@ describe('customReports with reportParams', () => {
       expect.stringContaining('/ccx/service/customreport2/test-tenant/test-report'),
       {
         params: {
-          format: 'json',
+          format: 'csv',
         },
       }
     );
