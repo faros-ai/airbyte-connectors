@@ -17,9 +17,14 @@ export {
 // Import types for local use
 import {UserTableStatsItem} from 'faros-airbyte-common/windsurf';
 
+// API response type that includes apiKey (internal use only)
+interface UserTableStatsApiItem extends UserTableStatsItem {
+  apiKey: string;
+}
+
 // API request/response types (source-specific implementation details)
 export interface UserPageAnalyticsResponse {
-  userTableStats: UserTableStatsItem[];
+  userTableStats: UserTableStatsApiItem[];
 }
 
 export enum QueryDataSource {

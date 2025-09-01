@@ -15,10 +15,6 @@
       "type": "string",
       "description": "Timestamp of last activity"
     },
-    "apiKey": {
-      "type": "string",
-      "description": "Hashed API key"
-    },
     "activeDays": {
       "type": "number",
       "description": "Total active days in timeframe"
@@ -44,7 +40,6 @@
     "name",
     "email",
     "lastUpdateTime",
-    "apiKey",
     "activeDays",
     "lastAutocompleteUsageTime",
     "lastChatUsageTime",

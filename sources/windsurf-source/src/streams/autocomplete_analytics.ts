@@ -26,7 +26,7 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['api_key', 'date'];
+    return ['email', 'date'];
   }
 
   get cursorField(): string | string[] {

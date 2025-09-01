@@ -22,7 +22,7 @@ export const DEFAULT_TIMEOUT = 60000;
 export class Windsurf {
   private static windsurf: Windsurf;
   private readonly api: AxiosInstance;
-  private apiKeyToEmailMap: Map<string, string> = new Map();
+  private readonly apiKeyToEmailMap: Record<string, string> = {};
 
   constructor(
     private readonly config: WindsurfConfig,
@@ -76,14 +76,18 @@ export class Windsurf {
         );
       }
 
-      // Build the API key to email mapping
+      // Build the API key to email mapping and remove apiKey from results
+      const results: UserTableStatsItem[] = [];
       for (const user of response.data.userTableStats) {
         if (user.apiKey && user.email) {
-          this.apiKeyToEmailMap.set(user.apiKey, user.email);
+          this.apiKeyToEmailMap[user.apiKey] = user.email;
         }
+        // Remove apiKey from the emitted record
+        const {apiKey, ...userWithoutApiKey} = user;
+        results.push(userWithoutApiKey as UserTableStatsItem);
       }
 
-      return response.data.userTableStats;
+      return results;
     } catch (error: any) {
       if (error.response?.status === 401) {
         throw new VError('Invalid service key or insufficient permissions');
@@ -96,7 +100,7 @@ export class Windsurf {
     }
   }
 
-  getApiKeyToEmailMap(): Map<string, string> {
+  getApiKeyToEmailMap(): Record<string, string> {
     return this.apiKeyToEmailMap;
   }
 
@@ -167,12 +171,14 @@ export class Windsurf {
         const item = responseItem.item;
         const apiKey = item.api_key;
 
-        // Map api_key to email
-        const email = this.apiKeyToEmailMap.get(apiKey);
+        // Map api_key to email - skip records without email mapping
+        const email = this.apiKeyToEmailMap[apiKey];
+        if (!email) {
+          continue; // Skip this record if we can't map to an email
+        }
 
         results.push({
-          api_key: apiKey,
-          email: email,
+          email,
           date: item.date,
           num_acceptances: item.num_acceptances
             ? parseInt(item.num_acceptances, 10)

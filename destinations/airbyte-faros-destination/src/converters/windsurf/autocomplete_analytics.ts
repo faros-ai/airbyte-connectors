@@ -13,7 +13,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
 
   id(record: AirbyteRecord): string {
     const item = record.record.data as AutocompleteAnalyticsItem;
-    return `${item.api_key}__${item.date}`;
+    return `${item.email}__${item.date}`;
   }
 
   async convert(
@@ -22,11 +22,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const item = record.record.data as AutocompleteAnalyticsItem;
 
-    // Skip records without email mapping
-    if (!item.email) {
-      ctx.logger.warn(`No email mapping found for api_key: ${item.api_key}`);
-      return [];
-    }
+    // Email is now required - no need to check for it
 
     const res: DestinationRecord[] = [];
 

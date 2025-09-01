@@ -7,7 +7,6 @@
         "name": "John Developer",
         "email": "user1@example.com",
         "lastUpdateTime": "2024-01-15T10:30:00Z",
-        "apiKey": "test-api-key-1",
         "activeDays": 15,
         "disableCodeium": false,
         "lastAutocompleteUsageTime": "2024-01-15T09:45:00Z",
@@ -25,7 +24,6 @@
         "name": "Jane Engineer",
         "email": "user2@example.com",
         "lastUpdateTime": "2024-01-14T15:45:00Z",
-        "apiKey": "test-api-key-2",
         "activeDays": 8,
         "lastAutocompleteUsageTime": "2024-01-14T15:00:00Z",
         "lastChatUsageTime": "2024-01-14T14:30:00Z",
@@ -39,7 +37,6 @@
       "stream": "mytestsource__windsurf__autocomplete_analytics",
       "emitted_at": 1735689600000,
       "data": {
-        "api_key": "test-api-key-1",
         "email": "user1@example.com",
         "date": "2024-01-15",
         "num_acceptances": 45,
@@ -57,7 +54,6 @@
       "stream": "mytestsource__windsurf__autocomplete_analytics",
       "emitted_at": 1735689600000,
       "data": {
-        "api_key": "test-api-key-2",
         "email": "user2@example.com",
         "date": "2024-01-15",
         "num_acceptances": 32,

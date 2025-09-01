@@ -3,12 +3,8 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
-    "api_key": {
-      "type": "string",
-      "description": "User's API key (hashed)"
-    },
     "email": {
-      "type": ["string", "null"],
+      "type": "string",
       "description": "User's email address (mapped from api_key)"
     },
     "date": {
@@ -41,7 +37,7 @@
     }
   },
   "required": [
-    "api_key",
+    "email",
     "date"
   ]
 }

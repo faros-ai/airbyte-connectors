@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 
-import {VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {Converter} from '../converter';
 
 export interface WindsurfConfig {

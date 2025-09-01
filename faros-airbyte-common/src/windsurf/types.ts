@@ -4,7 +4,6 @@ export interface UserTableStatsItem {
   name: string;
   email: string;
   lastUpdateTime: string;
-  apiKey: string;
   activeDays: number;
   disableCodeium?: boolean;
   lastAutocompleteUsageTime: string;
@@ -13,8 +12,7 @@ export interface UserTableStatsItem {
 }
 
 export interface AutocompleteAnalyticsItem {
-  api_key: string;
-  email?: string; // Will be populated from the api_key to email mapping
+  email: string; // Populated from the api_key to email mapping
   date: string;
   num_acceptances?: number;
   num_lines_accepted?: number;
