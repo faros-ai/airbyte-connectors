@@ -58,9 +58,7 @@ export class Windsurf {
     }
   }
 
-  @Memoize({
-    hashFunction: () => 'getUserPageAnalytics',
-  })
+  @Memoize()
   async getUserPageAnalytics(): Promise<UserTableStatsItem[]> {
     try {
       const response = await this.api.post<UserPageAnalyticsResponse>(
@@ -98,10 +96,6 @@ export class Windsurf {
       }
       throw error;
     }
-  }
-
-  getApiKeyToEmailMap(): Record<string, string> {
-    return this.apiKeyToEmailMap;
   }
 
   async getAutocompleteAnalytics(

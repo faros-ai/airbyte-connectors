@@ -89,8 +89,8 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
+      "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "vscode",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -103,9 +103,8 @@ Array [
       },
       "type": Object {
         "category": "SuggestionsAccepted",
-        "detail": "acceptances_typescript",
       },
-      "uid": "cb6904e8468804bb2ee383f2fb3efb8d495d3013c88730946001f2851c3b6bf0",
+      "uid": "91adbbe2075acf387c2c0d2f2b88a3daa78cd76a04a0739e05c92e64c538985f",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -116,8 +115,8 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
+      "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "vscode",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -130,9 +129,8 @@ Array [
       },
       "type": Object {
         "category": "LinesAccepted",
-        "detail": "lines_typescript",
       },
-      "uid": "5686b357248fb8439dae5be25e2b9e1a4b55c55c90eddb53e7de56cec547f37e",
+      "uid": "ea751580751f0dd3d2a1da5c8e88f5cc87e1fde212ce6105a40af0d8b52565bf",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -143,8 +141,8 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
+      "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "windsurf",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -157,9 +155,8 @@ Array [
       },
       "type": Object {
         "category": "SuggestionsAccepted",
-        "detail": "acceptances_python",
       },
-      "uid": "bc40c9a170c0d81a34262676d7f2e677d7edb6c3e5ad033edf362a2368556f87",
+      "uid": "1a0c5dea828203c18473aaceb6f30f3cdc3c7991038efccd784b49f627e9a452",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
@@ -170,8 +167,8 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
+      "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "windsurf",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -184,9 +181,8 @@ Array [
       },
       "type": Object {
         "category": "LinesAccepted",
-        "detail": "lines_python",
       },
-      "uid": "ef6c7f30e13bbfba532022f37bc4f2ee6b82c4748e0d97189da96e3df350eaf5",
+      "uid": "ed9aa4c86da52235d4bbb8a9f6a41c88912d4b334d09368cb4cd00a689b1808b",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",

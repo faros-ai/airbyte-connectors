@@ -24,54 +24,43 @@ export class AutocompleteAnalytics extends WindsurfConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const item = record.record.data as AutocompleteAnalyticsItem;
 
-    // Email is now required - no need to check for it
-
     const res: DestinationRecord[] = [];
 
-    // Parse date to create daily timestamp range
-    const dateStr = `${item.date}T00:00:00Z`;
-    const timestamp = Utils.toDate(dateStr);
-    const endTimestamp = new Date(timestamp);
-    endTimestamp.setDate(endTimestamp.getDate() + 1);
+    const startedAt = Utils.toDate(item.date);
+    const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    // Track suggestions accepted - include language and IDE
     if (item.num_acceptances !== undefined && item.num_acceptances > 0) {
-      const detailName = item.language
-        ? `acceptances_${item.language.toLowerCase()}`
-        : undefined;
-
       res.push(
         ...this.getAssistantMetric(
-          timestamp,
-          endTimestamp,
+          startedAt,
+          endedAt,
           AssistantMetric.SuggestionsAccepted,
           item.num_acceptances,
           VCSToolDetail.Windsurf,
           item.email,
-          detailName,
           undefined,
-          item.ide
+          undefined,
+          undefined,
+          item.ide,
+          item.language
         )
       );
     }
 
-    // Track lines accepted - include language and IDE
     if (item.num_lines_accepted !== undefined && item.num_lines_accepted > 0) {
-      const detailName = item.language
-        ? `lines_${item.language.toLowerCase()}`
-        : undefined;
-
       res.push(
         ...this.getAssistantMetric(
-          timestamp,
-          endTimestamp,
+          startedAt,
+          endedAt,
           AssistantMetric.LinesAccepted,
           item.num_lines_accepted,
           VCSToolDetail.Windsurf,
           item.email,
-          detailName,
           undefined,
-          item.ide
+          undefined,
+          undefined,
+          item.ide,
+          item.language
         )
       );
     }
@@ -89,7 +78,8 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     customMetricName?: string,
     model?: string,
     feature?: string,
-    editor?: string
+    editor?: string,
+    language?: string
   ): DestinationRecord[] {
     return [
       {
@@ -111,6 +101,8 @@ export class AutocompleteAnalytics extends WindsurfConverter {
                 ...[
                   {key: 'model', value: model},
                   {key: 'feature', value: feature},
+                  {key: 'editor', value: editor},
+                  {key: 'language', value: language},
                 ]
                   .filter((v) => !isNil(v.value))
                   .map((v) => `${v.key}:${v.value}`)
@@ -137,6 +129,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
           },
           ...(model && {model}),
           ...(feature && {feature}),
+          ...(editor && {editor}),
         },
       },
     ];
