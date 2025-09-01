@@ -1,6 +1,8 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {digest} from 'faros-airbyte-common/common';
 import {AutocompleteAnalyticsItem} from 'faros-airbyte-common/windsurf';
 import {Utils} from 'faros-js-client';
+import {isNil} from 'lodash';
 
 import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -97,24 +99,30 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     model?: string,
     feature?: string
   ): DestinationRecord[] {
-    const digest = require('faros-airbyte-common/common').digest;
-
     return [
       {
         model: 'vcs_AssistantMetric',
         record: {
           uid: digest(
-            [
-              VCSToolDetail.Windsurf,
-              assistantMetricType,
-              startedAt.toISOString(),
-              org,
-              userEmail,
-              customMetricName,
-              model,
-              feature,
-            ]
-              .filter((v) => v !== undefined)
+            []
+              .concat(
+                // original fields (required) to be included in the digest
+                ...[
+                  VCSToolDetail.Windsurf,
+                  assistantMetricType,
+                  startedAt.toISOString(),
+                  org,
+                  userEmail,
+                  customMetricName,
+                ],
+                // newer fields (optional) to be included in the digest
+                ...[
+                  {key: 'model', value: model},
+                  {key: 'feature', value: feature},
+                ]
+                  .filter((v) => !isNil(v.value))
+                  .map((v) => `${v.key}:${v.value}`)
+              )
               .join('__')
           ),
           source: this.source,
