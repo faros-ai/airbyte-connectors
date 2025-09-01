@@ -34,8 +34,12 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     const endTimestamp = new Date(timestamp);
     endTimestamp.setDate(endTimestamp.getDate() + 1);
 
-    // Track suggestions accepted
+    // Track suggestions accepted - include language and IDE
     if (item.num_acceptances !== undefined && item.num_acceptances > 0) {
+      const detailName = item.language
+        ? `acceptances_${item.language.toLowerCase()}`
+        : undefined;
+
       res.push(
         ...this.getAssistantMetric(
           timestamp,
@@ -44,15 +48,19 @@ export class AutocompleteAnalytics extends WindsurfConverter {
           item.num_acceptances,
           VCSToolDetail.Windsurf,
           item.email,
-          undefined,
+          detailName,
           undefined,
           item.ide
         )
       );
     }
 
-    // Track lines accepted
+    // Track lines accepted - include language and IDE
     if (item.num_lines_accepted !== undefined && item.num_lines_accepted > 0) {
+      const detailName = item.language
+        ? `lines_${item.language.toLowerCase()}`
+        : undefined;
+
       res.push(
         ...this.getAssistantMetric(
           timestamp,
@@ -61,24 +69,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
           item.num_lines_accepted,
           VCSToolDetail.Windsurf,
           item.email,
-          undefined,
-          undefined,
-          item.ide
-        )
-      );
-    }
-
-    // Track usage by language as custom metric
-    if (item.language && item.num_acceptances > 0) {
-      res.push(
-        ...this.getAssistantMetric(
-          timestamp,
-          endTimestamp,
-          AssistantMetric.Custom,
-          item.num_acceptances,
-          VCSToolDetail.Windsurf,
-          item.email,
-          `acceptances_${item.language.toLowerCase()}`,
+          detailName,
           undefined,
           item.ide
         )
@@ -97,7 +88,8 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     userEmail: string,
     customMetricName?: string,
     model?: string,
-    feature?: string
+    feature?: string,
+    editor?: string
   ): DestinationRecord[] {
     return [
       {

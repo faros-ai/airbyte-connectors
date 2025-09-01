@@ -4,8 +4,8 @@ exports[`windsurf process records from all streams 1`] = `
 Array [
   "Processed 4 records",
   "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 13 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 11 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":4,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -103,8 +103,9 @@ Array [
       },
       "type": Object {
         "category": "SuggestionsAccepted",
+        "detail": "acceptances_typescript",
       },
-      "uid": "ac288b8ce620e787d3f3e296d2914165a9ccc6650e23eaea68f7b27454363777",
+      "uid": "cb6904e8468804bb2ee383f2fb3efb8d495d3013c88730946001f2851c3b6bf0",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -129,40 +130,14 @@ Array [
       },
       "type": Object {
         "category": "LinesAccepted",
+        "detail": "lines_typescript",
       },
-      "uid": "6b689fa4a33f2d926d0c2b524261ac348e5406409d7fdaca3573204327fec88f",
+      "uid": "5686b357248fb8439dae5be25e2b9e1a4b55c55c90eddb53e7de56cec547f37e",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
       },
       "value": "280",
-      "valueType": "Int",
-    },
-  },
-  Object {
-    "vcs_AssistantMetric": Object {
-      "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "vscode",
-      "organization": Object {
-        "source": "Windsurf",
-        "uid": "Windsurf",
-      },
-      "source": "Windsurf",
-      "startedAt": "2024-01-15T00:00:00.000Z",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Windsurf",
-      },
-      "type": Object {
-        "category": "Custom",
-        "detail": "acceptances_typescript",
-      },
-      "uid": "5632e0a9e8997a89133a2903aebd8f9c537695951adf32210dea5fe8557b83b2",
-      "user": Object {
-        "source": "Windsurf",
-        "uid": "user1@example.com",
-      },
-      "value": "45",
       "valueType": "Int",
     },
   },
@@ -182,8 +157,9 @@ Array [
       },
       "type": Object {
         "category": "SuggestionsAccepted",
+        "detail": "acceptances_python",
       },
-      "uid": "3bde1756c119b294e9afae2b4b9ec422c7fe8018bb7b06b588463e1cbaf36803",
+      "uid": "bc40c9a170c0d81a34262676d7f2e677d7edb6c3e5ad033edf362a2368556f87",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
@@ -208,40 +184,14 @@ Array [
       },
       "type": Object {
         "category": "LinesAccepted",
+        "detail": "lines_python",
       },
-      "uid": "3e860d1861b0024cb5b053e38b08a1144ec01cd13e8405d961870b697ac0e0fa",
+      "uid": "ef6c7f30e13bbfba532022f37bc4f2ee6b82c4748e0d97189da96e3df350eaf5",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
       },
       "value": "180",
-      "valueType": "Int",
-    },
-  },
-  Object {
-    "vcs_AssistantMetric": Object {
-      "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "windsurf",
-      "organization": Object {
-        "source": "Windsurf",
-        "uid": "Windsurf",
-      },
-      "source": "Windsurf",
-      "startedAt": "2024-01-15T00:00:00.000Z",
-      "tool": Object {
-        "category": "CodingAssistant",
-        "detail": "Windsurf",
-      },
-      "type": Object {
-        "category": "Custom",
-        "detail": "acceptances_python",
-      },
-      "uid": "e2982f7bc7a9a62ce4a218fd42916d7c9a6565d14b87a53125acf54dfddb144c",
-      "user": Object {
-        "source": "Windsurf",
-        "uid": "user2@example.com",
-      },
-      "value": "32",
       "valueType": "Int",
     },
   },
