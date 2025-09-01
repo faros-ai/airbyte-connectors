@@ -38,6 +38,7 @@
     "./googledrive": "./lib/googledrive/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
+    "./windsurf": "./lib/windsurf/index.js",
     "./wolken": "./lib/wolken/index.js",
     "./xray": "./lib/xray/index.js"
   },
@@ -84,6 +85,9 @@
       ],
       "vanta": [
         "./lib/vanta/index.d.ts"
+      ],
+      "windsurf": [
+        "./lib/windsurf/index.d.ts"
       ],
       "wolken": [
         "./lib/wolken/index.d.ts"

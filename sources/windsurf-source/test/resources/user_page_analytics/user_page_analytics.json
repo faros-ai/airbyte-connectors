@@ -1,0 +1,25 @@
+{
+  "userTableStats": [
+    {
+      "name": "John Developer",
+      "email": "john@company.com",
+      "lastUpdateTime": "2024-03-18T10:30:00Z",
+      "apiKey": "hashed_api_key_123",
+      "activeDays": 15,
+      "disableCodeium": false,
+      "lastAutocompleteUsageTime": "2024-03-18T09:45:00Z",
+      "lastChatUsageTime": "2024-03-18T10:15:00Z",
+      "lastCommandUsageTime": "2024-03-18T10:20:00Z"
+    },
+    {
+      "name": "Jane Engineer",
+      "email": "jane@company.com",
+      "lastUpdateTime": "2024-03-17T14:20:00Z",
+      "apiKey": "hashed_api_key_456",
+      "activeDays": 22,
+      "lastAutocompleteUsageTime": "2024-03-17T14:00:00Z",
+      "lastChatUsageTime": "2024-03-17T13:30:00Z",
+      "lastCommandUsageTime": "2024-03-17T14:10:00Z"
+    }
+  ]
+}

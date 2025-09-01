@@ -1,0 +1,5 @@
+{
+  "service_key": "test-service-key",
+  "windsurf_api_url": "https://server.codeium.com/api/v1",
+  "timeout": 60000
+}

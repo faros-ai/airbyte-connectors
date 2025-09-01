@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "User's display name"
+    },
+    "email": {
+      "type": "string",
+      "description": "User's email address"
+    },
+    "lastUpdateTime": {
+      "type": "string",
+      "description": "Timestamp of last activity"
+    },
+    "apiKey": {
+      "type": "string",
+      "description": "Hashed API key"
+    },
+    "activeDays": {
+      "type": "number",
+      "description": "Total active days in timeframe"
+    },
+    "disableCodeium": {
+      "type": "boolean",
+      "description": "Indicates if Windsurf access is disabled"
+    },
+    "lastAutocompleteUsageTime": {
+      "type": "string",
+      "description": "Most recent Tab/Autocomplete usage"
+    },
+    "lastChatUsageTime": {
+      "type": "string",
+      "description": "Most recent Cascade modality usage"
+    },
+    "lastCommandUsageTime": {
+      "type": "string",
+      "description": "Most recent command modality usage"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "lastUpdateTime",
+    "apiKey",
+    "activeDays",
+    "lastAutocompleteUsageTime",
+    "lastChatUsageTime",
+    "lastCommandUsageTime"
+  ]
+}

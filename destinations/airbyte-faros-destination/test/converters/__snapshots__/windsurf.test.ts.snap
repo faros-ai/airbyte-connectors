@@ -1,0 +1,255 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`windsurf process records from all streams 1`] = `
+Array [
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 13 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`windsurf process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_User": Object {
+      "email": "user1@example.com",
+      "name": "John Developer",
+      "source": "Windsurf",
+      "type": "User",
+      "uid": "user1@example.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "user1@example.com",
+      "source": "Windsurf",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "user2@example.com",
+      "name": "Jane Engineer",
+      "source": "Windsurf",
+      "type": "User",
+      "uid": "user2@example.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "user2@example.com",
+      "source": "Windsurf",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": false,
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "vscode",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "7423a7cda248e055e914cb67aff404e2cb6597b9f78d22862a5df82e3a3cc9b2",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+      "value": "45",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "vscode",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "720090d8d1ab77f70a81b12e9f1574a671881d25d6b652aded4b22b102f83085",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+      "value": "280",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "vscode",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "acceptances_typescript",
+      },
+      "uid": "c66c93dd33c54809100aee819514b8c5b50a2de39a7ed6fe43791c5ef0abeb85",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+      "value": "45",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "windsurf",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "6580df690a88ca53e4c3b9f7e9d9c5cce8749a6127c638e8c53ea86b04dec006",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+      "value": "32",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "windsurf",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "LinesAccepted",
+      },
+      "uid": "5a24bb808298567b2e70a874cd2f4347e888b2d76f1f89ee41e2b8bf7288628d",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+      "value": "180",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "windsurf",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "acceptances_python",
+      },
+      "uid": "9245f268fc1cc28822022e163f3176eb1504072de4f38edf33a8072a99ce587d",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+      "value": "32",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "source": "Windsurf",
+      "uid": "Windsurf",
+    },
+  },
+]
+`;

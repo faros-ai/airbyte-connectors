@@ -1,0 +1,10 @@
+{
+  "extends": "../../../faros-airbyte-cdk/test/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out",
+    "experimentalDecorators": true
+  },
+  "references": [
+    {"path": "../src"}
+  ]
+}

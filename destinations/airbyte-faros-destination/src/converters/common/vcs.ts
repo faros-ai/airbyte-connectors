@@ -73,6 +73,7 @@ export enum VCSToolCategory {
 
 export enum VCSToolDetail {
   Cursor = 'Cursor',
+  Windsurf = 'Windsurf',
 }
 
 export enum AssistantMetric {

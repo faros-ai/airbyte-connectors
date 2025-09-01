@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - invalid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Failed to connect to Windsurf API. Please check your service key.: Invalid service key",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - autocomplete analytics 1`] = `
+[
+  {
+    "api_key": "test-api-key-1",
+    "date": "2024-01-15",
+    "email": undefined,
+    "ide": "vscode",
+    "language": "typescript",
+    "num_acceptances": 45,
+    "num_bytes_accepted": 6200,
+    "num_lines_accepted": 280,
+    "version": "1.2.3",
+  },
+  {
+    "api_key": "test-api-key-2",
+    "date": "2024-01-15",
+    "email": undefined,
+    "ide": "windsurf",
+    "language": "python",
+    "num_acceptances": 32,
+    "num_bytes_accepted": 4100,
+    "num_lines_accepted": 180,
+    "version": "1.2.4",
+  },
+]
+`;
+
+exports[`index streams - user page analytics 1`] = `
+[
+  {
+    "activeDays": 15,
+    "apiKey": "hashed_api_key_123",
+    "disableCodeium": false,
+    "email": "john@company.com",
+    "lastAutocompleteUsageTime": "2024-03-18T09:45:00Z",
+    "lastChatUsageTime": "2024-03-18T10:15:00Z",
+    "lastCommandUsageTime": "2024-03-18T10:20:00Z",
+    "lastUpdateTime": "2024-03-18T10:30:00Z",
+    "name": "John Developer",
+  },
+  {
+    "activeDays": 22,
+    "apiKey": "hashed_api_key_456",
+    "email": "jane@company.com",
+    "lastAutocompleteUsageTime": "2024-03-17T14:00:00Z",
+    "lastChatUsageTime": "2024-03-17T13:30:00Z",
+    "lastCommandUsageTime": "2024-03-17T14:10:00Z",
+    "lastUpdateTime": "2024-03-17T14:20:00Z",
+    "name": "Jane Engineer",
+  },
+]
+`;

@@ -1,0 +1,30 @@
+{
+  "queryResults": [{
+    "responseItems": [
+      {
+        "item": {
+          "api_key": "test-api-key-1",
+          "date": "2024-01-15",
+          "num_acceptances": "45",
+          "num_lines_accepted": "280",
+          "num_bytes_accepted": "6200",
+          "language": "typescript",
+          "ide": "vscode",
+          "version": "1.2.3"
+        }
+      },
+      {
+        "item": {
+          "api_key": "test-api-key-2",
+          "date": "2024-01-15",
+          "num_acceptances": "32",
+          "num_lines_accepted": "180",
+          "num_bytes_accepted": "4100",
+          "language": "python",
+          "ide": "windsurf",
+          "version": "1.2.4"
+        }
+      }
+    ]
+  }]
+}
