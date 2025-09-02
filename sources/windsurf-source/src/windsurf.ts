@@ -27,6 +27,7 @@ export class Windsurf {
   private static windsurf: Windsurf;
   private readonly api: AxiosInstance;
   private readonly apiKeyToEmailMap: Record<string, string> = {};
+  private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
     private readonly config: WindsurfConfig,
@@ -76,6 +77,24 @@ export class Windsurf {
     for (const user of response.data.userTableStats) {
       if (user.apiKey && user.email) {
         this.apiKeyToEmailMap[user.apiKey] = user.email;
+
+        // Track minimum usage timestamp from user page analytics timestamps
+        const timestamps = [
+          user.lastUpdateTime,
+          user.lastAutocompleteUsageTime,
+          user.lastChatUsageTime,
+          user.lastCommandUsageTime,
+        ].filter(Boolean);
+
+        if (timestamps.length > 0) {
+          const minTimestamp = Math.min(
+            ...timestamps.map((ts) => new Date(ts).getTime())
+          );
+          this.minUsageTimestampPerEmail[user.email] = Math.min(
+            this.minUsageTimestampPerEmail[user.email] ?? Infinity,
+            minTimestamp
+          );
+        }
       }
       // Remove apiKey from the emitted record
       const {apiKey: _, ...userWithoutApiKey} = user;
@@ -153,6 +172,15 @@ export class Windsurf {
         continue; // Skip this record if we can't map to an email
       }
 
+      // Track minimum usage timestamp from analytics date
+      if (item.date) {
+        const timestamp = new Date(item.date).getTime();
+        this.minUsageTimestampPerEmail[email] = Math.min(
+          this.minUsageTimestampPerEmail[email] ?? Infinity,
+          timestamp
+        );
+      }
+
       yield {
         email,
         date: item.date,
@@ -203,6 +231,15 @@ export class Windsurf {
     if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
       for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
         .cascadeLines) {
+        // Track minimum usage timestamp from cascade analytics day
+        if (cascadeLineItem.day) {
+          const timestamp = new Date(cascadeLineItem.day).getTime();
+          this.minUsageTimestampPerEmail[email] = Math.min(
+            this.minUsageTimestampPerEmail[email] ?? Infinity,
+            timestamp
+          );
+        }
+
         yield {
           email, // Add email since API response won't include it
           day: cascadeLineItem.day,
@@ -215,5 +252,9 @@ export class Windsurf {
         };
       }
     }
+  }
+
+  getMinUsageTimestampForEmail(email: string): number | undefined {
+    return this.minUsageTimestampPerEmail[email];
   }
 }

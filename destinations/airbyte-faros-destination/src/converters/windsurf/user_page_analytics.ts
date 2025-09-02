@@ -1,5 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {UserTableStatsItem} from 'faros-airbyte-common/windsurf';
+import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
@@ -17,12 +18,6 @@ export class UserPageAnalytics extends WindsurfConverter {
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data as UserTableStatsItem;
-
-    // TODO: The Windsurf API doesn't provide a clear "first usage" date.
-    // The activeDays field represents "Total active days in timeframe" but
-    // it's unclear if this means consecutive days or days with actual usage.
-    // For now, we don't set startedAt. Consider using the earliest of the
-    // last usage timestamps or requesting this field from the Windsurf API.
 
     return [
       {
@@ -55,6 +50,9 @@ export class UserPageAnalytics extends WindsurfConverter {
             detail: VCSToolDetail.Windsurf,
           },
           inactive: user.disableCodeium === true,
+          ...(user.minUsageTimestamp && {
+            startedAt: Utils.toDate(user.minUsageTimestamp).toISOString(),
+          }),
         },
       },
     ];
