@@ -83,8 +83,14 @@ exports[`index streams - user page analytics 1`] = `
     "lastChatUsageTime": "2024-03-18T10:15:00Z",
     "lastCommandUsageTime": "2024-03-18T10:20:00Z",
     "lastUpdateTime": "2024-03-18T10:30:00Z",
-    "minUsageTimestamp": 1710755100000,
+    "minUsageTimestamp": "2024-03-18T09:45:00.000Z",
     "name": "John Developer",
+    "usageTimestamps": [
+      "2024-03-18T09:45:00.000Z",
+      "2024-03-18T10:15:00.000Z",
+      "2024-03-18T10:20:00.000Z",
+      "2024-03-18T10:30:00.000Z",
+    ],
   },
   {
     "activeDays": 22,
@@ -93,8 +99,14 @@ exports[`index streams - user page analytics 1`] = `
     "lastChatUsageTime": "2024-03-17T13:30:00Z",
     "lastCommandUsageTime": "2024-03-17T14:10:00Z",
     "lastUpdateTime": "2024-03-17T14:20:00Z",
-    "minUsageTimestamp": 1710682200000,
+    "minUsageTimestamp": "2024-03-17T13:30:00.000Z",
     "name": "Jane Engineer",
+    "usageTimestamps": [
+      "2024-03-17T13:30:00.000Z",
+      "2024-03-17T14:00:00.000Z",
+      "2024-03-17T14:10:00.000Z",
+      "2024-03-17T14:20:00.000Z",
+    ],
   },
 ]
 `;

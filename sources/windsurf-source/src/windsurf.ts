@@ -28,6 +28,7 @@ export class Windsurf {
   private readonly api: AxiosInstance;
   private readonly apiKeyToEmailMap: Record<string, string> = {};
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
+  private readonly usageTimestampsPerEmail: {[email: string]: Set<number>} = {};
 
   constructor(
     private readonly config: WindsurfConfig,
@@ -78,7 +79,7 @@ export class Windsurf {
       if (user.apiKey && user.email) {
         this.apiKeyToEmailMap[user.apiKey] = user.email;
 
-        // Track minimum usage timestamp from user page analytics timestamps
+        // Track minimum and all usage timestamps from user page analytics timestamps
         const timestamps = [
           user.lastUpdateTime,
           user.lastAutocompleteUsageTime,
@@ -87,12 +88,23 @@ export class Windsurf {
         ].filter(Boolean);
 
         if (timestamps.length > 0) {
-          const minTimestamp = Math.min(
-            ...timestamps.map((ts) => new Date(ts).getTime())
+          const timestampValues = timestamps.map((ts) =>
+            new Date(ts).getTime()
           );
+          const minTimestamp = Math.min(...timestampValues);
+
+          // Track minimum timestamp
           this.minUsageTimestampPerEmail[user.email] = Math.min(
             this.minUsageTimestampPerEmail[user.email] ?? Infinity,
             minTimestamp
+          );
+
+          // Track all timestamps in set to avoid duplicates
+          if (!this.usageTimestampsPerEmail[user.email]) {
+            this.usageTimestampsPerEmail[user.email] = new Set();
+          }
+          timestampValues.forEach((ts) =>
+            this.usageTimestampsPerEmail[user.email].add(ts)
           );
         }
       }
@@ -172,13 +184,21 @@ export class Windsurf {
         continue; // Skip this record if we can't map to an email
       }
 
-      // Track minimum usage timestamp from analytics date
+      // Track minimum and all usage timestamps from analytics date
       if (item.date) {
         const timestamp = new Date(item.date).getTime();
+
+        // Track minimum timestamp
         this.minUsageTimestampPerEmail[email] = Math.min(
           this.minUsageTimestampPerEmail[email] ?? Infinity,
           timestamp
         );
+
+        // Track all timestamps in set to avoid duplicates
+        if (!this.usageTimestampsPerEmail[email]) {
+          this.usageTimestampsPerEmail[email] = new Set();
+        }
+        this.usageTimestampsPerEmail[email].add(timestamp);
       }
 
       yield {
@@ -231,13 +251,21 @@ export class Windsurf {
     if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
       for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
         .cascadeLines) {
-        // Track minimum usage timestamp from cascade analytics day
+        // Track minimum and all usage timestamps from cascade analytics day
         if (cascadeLineItem.day) {
           const timestamp = new Date(cascadeLineItem.day).getTime();
+
+          // Track minimum timestamp
           this.minUsageTimestampPerEmail[email] = Math.min(
             this.minUsageTimestampPerEmail[email] ?? Infinity,
             timestamp
           );
+
+          // Track all timestamps in set to avoid duplicates
+          if (!this.usageTimestampsPerEmail[email]) {
+            this.usageTimestampsPerEmail[email] = new Set();
+          }
+          this.usageTimestampsPerEmail[email].add(timestamp);
         }
 
         yield {
@@ -256,5 +284,10 @@ export class Windsurf {
 
   getMinUsageTimestampForEmail(email: string): number | undefined {
     return this.minUsageTimestampPerEmail[email];
+  }
+
+  getUsageTimestampsForEmail(email: string): number[] {
+    const timestamps = this.usageTimestampsPerEmail[email];
+    return timestamps ? Array.from(timestamps).sort() : [];
   }
 }

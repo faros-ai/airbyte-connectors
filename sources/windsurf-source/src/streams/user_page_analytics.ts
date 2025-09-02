@@ -53,9 +53,19 @@ export class UserPageAnalytics extends AirbyteStreamBase {
         minUsageTimestampPerEmail[user.email] ?? Infinity,
         windsurf.getMinUsageTimestampForEmail(user.email) ?? Infinity
       );
+
+      const allUsageTimestamps = windsurf.getUsageTimestampsForEmail(
+        user.email
+      );
+
       yield {
         ...user,
-        ...(minUsageTimestamp !== Infinity && {minUsageTimestamp}),
+        usageTimestamps: allUsageTimestamps.map((ts) =>
+          new Date(ts).toISOString()
+        ),
+        ...(minUsageTimestamp !== Infinity && {
+          minUsageTimestamp: new Date(minUsageTimestamp).toISOString(),
+        }),
       };
     }
   }
@@ -67,10 +77,12 @@ export class UserPageAnalytics extends AirbyteStreamBase {
     if (!latestRecord.minUsageTimestamp) {
       return currentStreamState;
     }
+    // Convert ISO string back to timestamp for state storage
+    const timestamp = new Date(latestRecord.minUsageTimestamp).getTime();
     return {
       minUsageTimestampPerEmail: {
         ...currentStreamState?.minUsageTimestampPerEmail,
-        [latestRecord.email]: latestRecord.minUsageTimestamp,
+        [latestRecord.email]: timestamp,
       },
     };
   }

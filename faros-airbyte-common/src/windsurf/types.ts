@@ -9,7 +9,8 @@ export interface UserTableStatsItem {
   lastAutocompleteUsageTime: string;
   lastChatUsageTime: string;
   lastCommandUsageTime: string;
-  minUsageTimestamp?: number;
+  usageTimestamps: string[];
+  minUsageTimestamp?: string;
 }
 
 export interface AutocompleteAnalyticsItem {
