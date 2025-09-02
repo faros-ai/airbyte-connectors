@@ -64,42 +64,25 @@ export class Windsurf {
 
   @Memoize()
   async getUserPageAnalytics(): Promise<UserTableStatsItem[]> {
-    try {
-      const response = await this.api.post<UserPageAnalyticsResponse>(
-        '/UserPageAnalytics',
-        {
-          service_key: this.config.service_key,
-        }
-      );
-
-      if (!response.data || !Array.isArray(response.data.userTableStats)) {
-        throw new VError(
-          'Invalid response from Windsurf API: missing userTableStats'
-        );
+    const response = await this.api.post<UserPageAnalyticsResponse>(
+      '/UserPageAnalytics',
+      {
+        service_key: this.config.service_key,
       }
+    );
 
-      // Build the API key to email mapping and remove apiKey from results
-      const results: UserTableStatsItem[] = [];
-      for (const user of response.data.userTableStats) {
-        if (user.apiKey && user.email) {
-          this.apiKeyToEmailMap[user.apiKey] = user.email;
-        }
-        // Remove apiKey from the emitted record
-        const {apiKey, ...userWithoutApiKey} = user;
-        results.push(userWithoutApiKey as UserTableStatsItem);
+    // Build the API key to email mapping and remove apiKey from results
+    const results: UserTableStatsItem[] = [];
+    for (const user of response.data.userTableStats) {
+      if (user.apiKey && user.email) {
+        this.apiKeyToEmailMap[user.apiKey] = user.email;
       }
-
-      return results;
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new VError('Invalid service key or insufficient permissions');
-      } else if (error.response?.status === 403) {
-        throw new VError(
-          'Service key does not have Teams Read-only permissions'
-        );
-      }
-      throw error;
+      // Remove apiKey from the emitted record
+      const {apiKey: _, ...userWithoutApiKey} = user;
+      results.push(userWithoutApiKey as UserTableStatsItem);
     }
+
+    return results;
   }
 
   async *getAutocompleteAnalytics(
@@ -159,11 +142,8 @@ export class Windsurf {
       request
     );
 
-    if (!response.data?.queryResults?.[0]?.responseItems) {
-      throw new VError('Invalid response from Windsurf Analytics API');
-    }
-
-    for (const responseItem of response.data.queryResults[0].responseItems) {
+    for (const responseItem of response.data?.queryResults?.[0]
+      ?.responseItems || []) {
       const item = responseItem.item;
       const apiKey = item.api_key;
 
@@ -192,64 +172,47 @@ export class Windsurf {
     }
   }
 
-  async *getCascadeLinesAnalytics(
+  async *getCascadeLinesAnalyticsForUser(
+    userEmail: string,
     startDate?: string,
     endDate?: string
   ): AsyncGenerator<CascadeLinesItem> {
-    // Ensure we have the user list first
-    const users = await this.getUserPageAnalytics();
+    const request: CascadeAnalyticsRequest = {
+      service_key: this.config.service_key,
+      emails: [userEmail], // Query for single user
+      query_requests: [
+        {
+          data_source: CascadeDataSource.CASCADE_LINES,
+        },
+      ],
+    };
 
-    // Query cascade analytics for each user individually
-    for (const user of users) {
-      if (!user.email) {
-        continue; // Skip users without email
-      }
+    // Add date filters if provided
+    if (startDate) {
+      request.start_timestamp = startDate;
+    }
+    if (endDate) {
+      request.end_timestamp = endDate;
+    }
 
-      const request: CascadeAnalyticsRequest = {
-        service_key: this.config.service_key,
-        emails: [user.email], // Query for single user
-        query_requests: [
-          {
-            data_source: CascadeDataSource.CASCADE_LINES,
-          },
-        ],
-      };
+    const response = await this.api.post<CascadeAnalyticsResponse>(
+      '/CascadeAnalytics',
+      request
+    );
 
-      // Add date filters if provided
-      if (startDate) {
-        request.start_timestamp = startDate;
-      }
-      if (endDate) {
-        request.end_timestamp = endDate;
-      }
-
-      try {
-        const response = await this.api.post<CascadeAnalyticsResponse>(
-          '/CascadeAnalytics',
-          request
-        );
-
-        if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
-          for (const cascadeLineItem of response.data.queryResults[0]
-            .cascadeLines.cascadeLines) {
-            yield {
-              email: user.email, // Add email since API response won't include it
-              day: cascadeLineItem.day,
-              linesSuggested: cascadeLineItem.linesSuggested
-                ? parseInt(cascadeLineItem.linesSuggested, 10)
-                : undefined,
-              linesAccepted: cascadeLineItem.linesAccepted
-                ? parseInt(cascadeLineItem.linesAccepted, 10)
-                : undefined,
-            };
-          }
-        }
-      } catch (error: any) {
-        // Log warning but continue with other users
-        this.logger.warn(
-          `Failed to fetch cascade analytics for user ${user.email}: ${error.message}`
-        );
-        continue;
+    if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
+      for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
+        .cascadeLines) {
+        yield {
+          email: userEmail, // Add email since API response won't include it
+          day: cascadeLineItem.day,
+          linesSuggested: cascadeLineItem.linesSuggested
+            ? parseInt(cascadeLineItem.linesSuggested, 10)
+            : undefined,
+          linesAccepted: cascadeLineItem.linesAccepted
+            ? parseInt(cascadeLineItem.linesAccepted, 10)
+            : undefined,
+        };
       }
     }
   }

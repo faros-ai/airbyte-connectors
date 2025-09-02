@@ -9,8 +9,14 @@ import {Dictionary} from 'ts-essentials';
 import {CascadeLinesItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
 
-type StreamState = {
-  cutoff?: string;
+export type UserStreamSlice = {
+  email: string;
+};
+
+export type StreamState = {
+  readonly [email: string]: {
+    cutoff: string;
+  };
 };
 
 export class CascadeLinesAnalytics extends AirbyteStreamBase {
@@ -33,35 +39,57 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
     return 'day';
   }
 
+  async *streamSlices(): AsyncGenerator<UserStreamSlice> {
+    const windsurf = Windsurf.instance(this.config, this.logger);
+    const users = await windsurf.getUserPageAnalytics();
+
+    for (const user of users) {
+      if (user.email) {
+        yield {email: user.email};
+      }
+    }
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     _cursorField?: string[],
-    _streamSlice?: Dictionary<any>,
+    streamSlice?: UserStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<CascadeLinesItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
+    const email = streamSlice?.email;
 
-    // For incremental sync, use the cutoff date from state
+    if (!email) {
+      return; // Skip if no email
+    }
+
+    // For incremental sync, use the cutoff date from state for this specific email
+    const emailState = streamState?.[email];
     const startDate =
-      syncMode === SyncMode.INCREMENTAL && streamState?.cutoff
-        ? streamState.cutoff
+      syncMode === SyncMode.INCREMENTAL && emailState?.cutoff
+        ? emailState.cutoff
         : undefined;
 
-    // Yield items directly from the async generator
-    yield* windsurf.getCascadeLinesAnalytics(startDate);
+    // Yield items directly from the async generator for this specific user
+    yield* windsurf.getCascadeLinesAnalyticsForUser(email, startDate);
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: CascadeLinesItem
+    latestRecord: CascadeLinesItem,
+    slice: UserStreamSlice
   ): StreamState {
-    const currentCutoff = currentStreamState?.cutoff;
+    const email = slice.email;
+    const currentEmailState = currentStreamState?.[email];
     const recordDate = latestRecord.day;
 
-    // Update state with the latest date seen
-    if (!currentCutoff || recordDate > currentCutoff) {
+    // Update state with the latest date seen for this email
+    if (!currentEmailState?.cutoff || recordDate > currentEmailState.cutoff) {
       return {
-        cutoff: recordDate,
+        ...currentStreamState,
+        [email]: {
+          cutoff: recordDate,
+        },
       };
     }
 
