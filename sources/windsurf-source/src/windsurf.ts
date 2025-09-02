@@ -154,50 +154,41 @@ export class Windsurf {
       });
     }
 
-    try {
-      const response = await this.api.post<CustomAnalyticsResponse>(
-        '/Analytics',
-        request
-      );
+    const response = await this.api.post<CustomAnalyticsResponse>(
+      '/Analytics',
+      request
+    );
 
-      if (!response.data?.queryResults?.[0]?.responseItems) {
-        throw new VError('Invalid response from Windsurf Analytics API');
+    if (!response.data?.queryResults?.[0]?.responseItems) {
+      throw new VError('Invalid response from Windsurf Analytics API');
+    }
+
+    for (const responseItem of response.data.queryResults[0].responseItems) {
+      const item = responseItem.item;
+      const apiKey = item.api_key;
+
+      // Map api_key to email - skip records without email mapping
+      const email = this.apiKeyToEmailMap[apiKey];
+      if (!email) {
+        continue; // Skip this record if we can't map to an email
       }
 
-      for (const responseItem of response.data.queryResults[0].responseItems) {
-        const item = responseItem.item;
-        const apiKey = item.api_key;
-
-        // Map api_key to email - skip records without email mapping
-        const email = this.apiKeyToEmailMap[apiKey];
-        if (!email) {
-          continue; // Skip this record if we can't map to an email
-        }
-
-        yield {
-          email,
-          date: item.date,
-          num_acceptances: item.num_acceptances
-            ? parseInt(item.num_acceptances, 10)
-            : undefined,
-          num_lines_accepted: item.num_lines_accepted
-            ? parseInt(item.num_lines_accepted, 10)
-            : undefined,
-          num_bytes_accepted: item.num_bytes_accepted
-            ? parseInt(item.num_bytes_accepted, 10)
-            : undefined,
-          language: item.language,
-          ide: item.ide,
-          version: item.version,
-        };
-      }
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new VError(
-          'Invalid service key or insufficient permissions for Analytics API'
-        );
-      }
-      throw new VError(error, 'Failed to fetch autocomplete analytics');
+      yield {
+        email,
+        date: item.date,
+        num_acceptances: item.num_acceptances
+          ? parseInt(item.num_acceptances, 10)
+          : undefined,
+        num_lines_accepted: item.num_lines_accepted
+          ? parseInt(item.num_lines_accepted, 10)
+          : undefined,
+        num_bytes_accepted: item.num_bytes_accepted
+          ? parseInt(item.num_bytes_accepted, 10)
+          : undefined,
+        language: item.language,
+        ide: item.ide,
+        version: item.version,
+      };
     }
   }
 
