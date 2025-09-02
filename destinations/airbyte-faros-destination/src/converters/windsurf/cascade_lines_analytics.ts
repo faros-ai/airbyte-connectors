@@ -37,9 +37,7 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           undefined,
-          WindsurfFeature.Cascade,
-          undefined, // No IDE info from cascade_lines API
-          undefined // No language info from cascade_lines API
+          WindsurfFeature.Cascade
         )
       );
     }
@@ -61,9 +59,7 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           undefined,
-          WindsurfFeature.Cascade,
-          undefined, // No IDE info from cascade_lines API
-          undefined // No language info from cascade_lines API
+          WindsurfFeature.Cascade
         )
       );
     }
