@@ -47,11 +47,8 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
         ? streamState.cutoff
         : undefined;
 
-    const items = await windsurf.getCascadeLinesAnalytics(startDate);
-
-    for (const item of items) {
-      yield item;
-    }
+    // Yield items directly from the async generator
+    yield* windsurf.getCascadeLinesAnalytics(startDate);
   }
 
   getUpdatedState(

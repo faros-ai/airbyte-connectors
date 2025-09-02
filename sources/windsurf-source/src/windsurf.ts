@@ -102,10 +102,10 @@ export class Windsurf {
     }
   }
 
-  async getAutocompleteAnalytics(
+  async *getAutocompleteAnalytics(
     startDate?: string,
     endDate?: string
-  ): Promise<AutocompleteAnalyticsItem[]> {
+  ): AsyncGenerator<AutocompleteAnalyticsItem> {
     // Ensure we have the email mapping first
     await this.getUserPageAnalytics();
 
@@ -164,7 +164,6 @@ export class Windsurf {
         throw new VError('Invalid response from Windsurf Analytics API');
       }
 
-      const results: AutocompleteAnalyticsItem[] = [];
       for (const responseItem of response.data.queryResults[0].responseItems) {
         const item = responseItem.item;
         const apiKey = item.api_key;
@@ -175,7 +174,7 @@ export class Windsurf {
           continue; // Skip this record if we can't map to an email
         }
 
-        results.push({
+        yield {
           email,
           date: item.date,
           num_acceptances: item.num_acceptances
@@ -190,10 +189,8 @@ export class Windsurf {
           language: item.language,
           ide: item.ide,
           version: item.version,
-        });
+        };
       }
-
-      return results;
     } catch (error: any) {
       if (error.response?.status === 401) {
         throw new VError(
@@ -204,14 +201,12 @@ export class Windsurf {
     }
   }
 
-  async getCascadeLinesAnalytics(
+  async *getCascadeLinesAnalytics(
     startDate?: string,
     endDate?: string
-  ): Promise<CascadeLinesItem[]> {
+  ): AsyncGenerator<CascadeLinesItem> {
     // Ensure we have the user list first
     const users = await this.getUserPageAnalytics();
-
-    const results: CascadeLinesItem[] = [];
 
     // Query cascade analytics for each user individually
     for (const user of users) {
@@ -246,7 +241,7 @@ export class Windsurf {
         if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
           for (const cascadeLineItem of response.data.queryResults[0]
             .cascadeLines.cascadeLines) {
-            results.push({
+            yield {
               email: user.email, // Add email since API response won't include it
               day: cascadeLineItem.day,
               linesSuggested: cascadeLineItem.linesSuggested
@@ -255,7 +250,7 @@ export class Windsurf {
               linesAccepted: cascadeLineItem.linesAccepted
                 ? parseInt(cascadeLineItem.linesAccepted, 10)
                 : undefined,
-            });
+            };
           }
         }
       } catch (error: any) {
@@ -266,7 +261,5 @@ export class Windsurf {
         continue;
       }
     }
-
-    return results;
   }
 }

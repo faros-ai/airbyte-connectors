@@ -47,11 +47,8 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
         ? streamState.cutoff
         : undefined;
 
-    const items = await windsurf.getAutocompleteAnalytics(startDate);
-
-    for (const item of items) {
-      yield item;
-    }
+    // Yield items directly from the async generator
+    yield* windsurf.getAutocompleteAnalytics(startDate);
   }
 
   getUpdatedState(
