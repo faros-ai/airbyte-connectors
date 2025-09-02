@@ -9,7 +9,7 @@ import {Dictionary} from 'ts-essentials';
 import {CascadeLinesItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
 
-export type UserStreamSlice = {
+export type EmailStreamSlice = {
   email: string;
 };
 
@@ -39,7 +39,7 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
     return 'day';
   }
 
-  async *streamSlices(): AsyncGenerator<UserStreamSlice> {
+  async *streamSlices(): AsyncGenerator<EmailStreamSlice> {
     const windsurf = Windsurf.instance(this.config, this.logger);
     const users = await windsurf.getUserPageAnalytics();
 
@@ -53,7 +53,7 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     _cursorField?: string[],
-    streamSlice?: UserStreamSlice,
+    streamSlice?: EmailStreamSlice,
     streamState?: StreamState
   ): AsyncGenerator<CascadeLinesItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
@@ -70,14 +70,14 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
         ? emailState.cutoff
         : undefined;
 
-    // Yield items directly from the async generator for this specific user
-    yield* windsurf.getCascadeLinesAnalyticsForUser(email, startDate);
+    // Yield items directly from the async generator for this specific email
+    yield* windsurf.getCascadeLinesAnalyticsForEmail(email, startDate);
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: CascadeLinesItem,
-    slice: UserStreamSlice
+    slice: EmailStreamSlice
   ): StreamState {
     const email = slice.email;
     const currentEmailState = currentStreamState?.[email];

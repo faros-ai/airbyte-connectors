@@ -172,14 +172,14 @@ export class Windsurf {
     }
   }
 
-  async *getCascadeLinesAnalyticsForUser(
-    userEmail: string,
+  async *getCascadeLinesAnalyticsForEmail(
+    email: string,
     startDate?: string,
     endDate?: string
   ): AsyncGenerator<CascadeLinesItem> {
     const request: CascadeAnalyticsRequest = {
       service_key: this.config.service_key,
-      emails: [userEmail], // Query for single user
+      emails: [email], // Query for single user
       query_requests: [
         {
           data_source: CascadeDataSource.CASCADE_LINES,
@@ -204,7 +204,7 @@ export class Windsurf {
       for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
         .cascadeLines) {
         yield {
-          email: userEmail, // Add email since API response won't include it
+          email, // Add email since API response won't include it
           day: cascadeLineItem.day,
           linesSuggested: cascadeLineItem.linesSuggested
             ? parseInt(cascadeLineItem.linesSuggested, 10)
