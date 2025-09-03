@@ -93,11 +93,8 @@ export class Windsurf {
           );
 
           // Track all timestamps in set to avoid duplicates
-          if (!this.usageTimestampsPerEmail[user.email]) {
-            this.usageTimestampsPerEmail[user.email] = new Set();
-          }
           timestampValues.forEach((ts) =>
-            this.usageTimestampsPerEmail[user.email].add(ts)
+            this.addUsageTimestamp(user.email, ts)
           );
         }
       }
@@ -196,12 +193,7 @@ export class Windsurf {
           numBytesAccepted > 0
         ) {
           const timestamp = new Date(item.date).getTime();
-
-          // Track all timestamps in set to avoid duplicates
-          if (!this.usageTimestampsPerEmail[email]) {
-            this.usageTimestampsPerEmail[email] = new Set();
-          }
-          this.usageTimestampsPerEmail[email].add(timestamp);
+          this.addUsageTimestamp(email, timestamp);
         }
       }
 
@@ -267,12 +259,7 @@ export class Windsurf {
           // Only track timestamp if there's meaningful usage
           if (linesSuggested > 0 || linesAccepted > 0) {
             const timestamp = new Date(cascadeLineItem.day).getTime();
-
-            // Track all timestamps in set to avoid duplicates
-            if (!this.usageTimestampsPerEmail[email]) {
-              this.usageTimestampsPerEmail[email] = new Set();
-            }
-            this.usageTimestampsPerEmail[email].add(timestamp);
+            this.addUsageTimestamp(email, timestamp);
           }
         }
 
@@ -288,6 +275,13 @@ export class Windsurf {
         };
       }
     }
+  }
+
+  private addUsageTimestamp(email: string, timestamp: number): void {
+    if (!this.usageTimestampsPerEmail[email]) {
+      this.usageTimestampsPerEmail[email] = new Set();
+    }
+    this.usageTimestampsPerEmail[email].add(timestamp);
   }
 
   getUsageTimestampsForEmail(email: string): number[] {
