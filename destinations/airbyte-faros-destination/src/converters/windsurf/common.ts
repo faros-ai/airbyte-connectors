@@ -5,10 +5,6 @@ import {isNil} from 'lodash';
 import {AssistantMetric, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {Converter, DestinationRecord} from '../converter';
 
-export interface WindsurfConfig {
-  // Add any windsurf-specific configuration here in the future
-}
-
 export enum WindsurfFeature {
   Autocompletion = 'Autocompletion',
   Cascade = 'Cascade',

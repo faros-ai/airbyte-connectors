@@ -26,7 +26,7 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
     const startedAt = Utils.toDate(item.day);
     const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    if (item.linesAccepted !== undefined && item.linesAccepted > 0) {
+    if (item.linesAccepted > 0) {
       res.push(
         ...this.getAssistantMetric(
           startedAt,
@@ -43,11 +43,7 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
     }
 
     // Calculate lines discarded = lines suggested - lines accepted
-    if (
-      item.linesSuggested !== undefined &&
-      item.linesAccepted !== undefined &&
-      item.linesSuggested > item.linesAccepted
-    ) {
+    if (item.linesSuggested > item.linesAccepted) {
       const linesDiscarded = item.linesSuggested - item.linesAccepted;
       res.push(
         ...this.getAssistantMetric(

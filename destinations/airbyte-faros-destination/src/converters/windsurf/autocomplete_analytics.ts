@@ -27,7 +27,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     const startedAt = Utils.toDate(item.date);
     const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    if (item.num_acceptances !== undefined && item.num_acceptances > 0) {
+    if (item.num_acceptances > 0) {
       res.push(
         ...this.getAssistantMetric(
           startedAt,
@@ -45,7 +45,7 @@ export class AutocompleteAnalytics extends WindsurfConverter {
       );
     }
 
-    if (item.num_lines_accepted !== undefined && item.num_lines_accepted > 0) {
+    if (item.num_lines_accepted > 0) {
       res.push(
         ...this.getAssistantMetric(
           startedAt,
