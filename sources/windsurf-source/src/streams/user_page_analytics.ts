@@ -49,13 +49,21 @@ export class UserPageAnalytics extends AirbyteStreamBase {
     const userStats = await windsurf.getUserPageAnalytics();
 
     for (const user of userStats) {
-      const minUsageTimestamp = Math.min(
-        minUsageTimestampPerEmail[user.email] ?? Infinity,
-        windsurf.getMinUsageTimestampForEmail(user.email) ?? Infinity
-      );
-
       const allUsageTimestamps = windsurf.getUsageTimestampsForEmail(
         user.email
+      );
+
+      // Calculate minimum usage timestamp from collected timestamps and state
+      const stateMinTimestamp = minUsageTimestampPerEmail[user.email]
+        ? new Date(minUsageTimestampPerEmail[user.email]).getTime()
+        : Infinity;
+      const collectedMinTimestamp =
+        allUsageTimestamps.length > 0
+          ? Math.min(...allUsageTimestamps)
+          : Infinity;
+      const minUsageTimestamp = Math.min(
+        stateMinTimestamp,
+        collectedMinTimestamp
       );
 
       yield {
