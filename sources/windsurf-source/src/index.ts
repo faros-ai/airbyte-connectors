@@ -44,9 +44,9 @@ export class WindsurfSource extends AirbyteSourceBase<WindsurfConfig> {
 
   streams(config: WindsurfConfig): AirbyteStreamBase[] {
     return [
-      new UserPageAnalytics(config, this.logger),
       new AutocompleteAnalytics(config, this.logger),
       new CascadeLinesAnalytics(config, this.logger),
+      new UserPageAnalytics(config, this.logger),
     ];
   }
 
