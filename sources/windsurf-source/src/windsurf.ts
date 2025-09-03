@@ -288,6 +288,6 @@ export class Windsurf {
 
   getUsageTimestampsForEmail(email: string): number[] {
     const timestamps = this.usageTimestampsPerEmail[email];
-    return timestamps ? Array.from(timestamps).sort() : [];
+    return timestamps ? Array.from(timestamps) : [];
   }
 }
