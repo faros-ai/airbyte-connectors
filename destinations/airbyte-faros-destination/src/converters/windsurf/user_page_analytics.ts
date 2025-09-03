@@ -11,6 +11,7 @@ export class UserPageAnalytics extends WindsurfConverter {
     'vcs_User',
     'vcs_UserEmail',
     'vcs_UserTool',
+    'vcs_UserToolUsage',
   ];
 
   async convert(
@@ -18,13 +19,7 @@ export class UserPageAnalytics extends WindsurfConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data as UserTableStatsItem;
 
-    // TODO: The Windsurf API doesn't provide a clear "first usage" date.
-    // The activeDays field represents "Total active days in timeframe" but
-    // it's unclear if this means consecutive days or days with actual usage.
-    // For now, we don't set startedAt. Consider using the earliest of the
-    // last usage timestamps or requesting this field from the Windsurf API.
-
-    return [
+    const results: DestinationRecord[] = [
       {
         model: 'vcs_User',
         record: {
@@ -55,9 +50,36 @@ export class UserPageAnalytics extends WindsurfConverter {
             detail: VCSToolDetail.Windsurf,
           },
           inactive: user.disableCodeium === true,
+          ...(user.minUsageTimestamp && {
+            startedAt: user.minUsageTimestamp,
+          }),
         },
       },
     ];
+
+    // Add vcs_UserToolUsage records for each usage timestamp
+    for (const usageTimestamp of user.usageTimestamps) {
+      results.push({
+        model: 'vcs_UserToolUsage',
+        record: {
+          userTool: {
+            user: {uid: user.email, source: this.streamName.source},
+            organization: {
+              uid: VCSToolDetail.Windsurf,
+              source: this.streamName.source,
+            },
+            tool: {
+              category: VCSToolCategory.CodingAssistant,
+              detail: VCSToolDetail.Windsurf,
+            },
+          },
+          usedAt: usageTimestamp,
+          recordedAt: usageTimestamp,
+        },
+      });
+    }
+
+    return results;
   }
 
   async onProcessingComplete(): Promise<ReadonlyArray<DestinationRecord>> {

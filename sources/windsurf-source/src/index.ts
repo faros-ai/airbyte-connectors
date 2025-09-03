@@ -1,18 +1,21 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {AutocompleteAnalytics} from './streams/autocomplete_analytics';
 import {CascadeLinesAnalytics} from './streams/cascade_lines_analytics';
 import {UserPageAnalytics} from './streams/user_page_analytics';
 import {WindsurfConfig} from './types';
-import {Windsurf} from './windsurf';
+import {DEFAULT_CUTOFF_DAYS, Windsurf} from './windsurf';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -41,9 +44,36 @@ export class WindsurfSource extends AirbyteSourceBase<WindsurfConfig> {
 
   streams(config: WindsurfConfig): AirbyteStreamBase[] {
     return [
-      new UserPageAnalytics(config, this.logger),
       new AutocompleteAnalytics(config, this.logger),
       new CascadeLinesAnalytics(config, this.logger),
+      new UserPageAnalytics(config, this.logger),
     ];
+  }
+
+  async onBeforeRead(
+    config: WindsurfConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: WindsurfConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const {startDate, endDate} = calculateDateRange({
+      start_date: config.start_date,
+      end_date: config.end_date,
+      cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
+      logger: this.logger.info.bind(this.logger),
+    });
+
+    return {
+      config: {
+        ...config,
+        startDate,
+        endDate,
+      } as WindsurfConfig,
+      catalog,
+      state,
+    };
   }
 }

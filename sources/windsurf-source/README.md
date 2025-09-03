@@ -7,3 +7,7 @@ For common build, test, and run instructions, see the [common source documentati
 ## Authentication
 
 Uses service key authentication with the service key passed in the request body.
+
+## API Docs
+
+https://docs.windsurf.com/windsurf/accounts/api-reference/introduction

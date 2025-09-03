@@ -41,14 +41,16 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
   ): AsyncGenerator<AutocompleteAnalyticsItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
 
-    // For incremental sync, use the cutoff date from state
+    // For incremental sync, use the cutoff date from state, otherwise use configured date range
     const startDate =
       syncMode === SyncMode.INCREMENTAL && streamState?.cutoff
         ? streamState.cutoff
-        : undefined;
+        : this.config.startDate?.toISOString();
+
+    const endDate = this.config.endDate?.toISOString();
 
     // Yield items directly from the async generator
-    yield* windsurf.getAutocompleteAnalytics(startDate);
+    yield* windsurf.getAutocompleteAnalytics(startDate, endDate);
   }
 
   getUpdatedState(

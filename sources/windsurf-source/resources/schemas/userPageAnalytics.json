@@ -34,6 +34,17 @@
     "lastCommandUsageTime": {
       "type": "string",
       "description": "Most recent command modality usage"
+    },
+    "usageTimestamps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "All unique usage timestamps collected from analytics sources (ISO 8601 format)"
+    },
+    "minUsageTimestamp": {
+      "type": "string",
+      "description": "Minimum usage timestamp computed from all analytics sources (ISO 8601 format)"
     }
   },
   "required": [
@@ -43,6 +54,7 @@
     "activeDays",
     "lastAutocompleteUsageTime",
     "lastChatUsageTime",
-    "lastCommandUsageTime"
+    "lastCommandUsageTime",
+    "usageTimestamps"
   ]
 }

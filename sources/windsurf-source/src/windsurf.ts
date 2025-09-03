@@ -21,12 +21,14 @@ import {
 } from './types';
 
 export const DEFAULT_WINDSURF_API_URL = 'https://server.codeium.com/api/v1';
+export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 
 export class Windsurf {
   private static windsurf: Windsurf;
   private readonly api: AxiosInstance;
   private readonly apiKeyToEmailMap: Record<string, string> = {};
+  private readonly usageTimestampsPerEmail: {[email: string]: Set<number>} = {};
 
   constructor(
     private readonly config: WindsurfConfig,
@@ -76,6 +78,25 @@ export class Windsurf {
     for (const user of response.data.userTableStats) {
       if (user.apiKey && user.email) {
         this.apiKeyToEmailMap[user.apiKey] = user.email;
+
+        // Track minimum and all usage timestamps from user page analytics timestamps
+        const timestamps = [
+          user.lastUpdateTime,
+          user.lastAutocompleteUsageTime,
+          user.lastChatUsageTime,
+          user.lastCommandUsageTime,
+        ].filter(Boolean);
+
+        if (timestamps.length > 0) {
+          const timestampValues = timestamps.map((ts) =>
+            new Date(ts).getTime()
+          );
+
+          // Track all timestamps in set to avoid duplicates
+          timestampValues.forEach((ts) =>
+            this.addUsageTimestamp(user.email, ts)
+          );
+        }
       }
       // Remove apiKey from the emitted record
       const {apiKey: _, ...userWithoutApiKey} = user;
@@ -153,6 +174,29 @@ export class Windsurf {
         continue; // Skip this record if we can't map to an email
       }
 
+      // Only track usage timestamps when there's actual usage (any metric > 0)
+      if (item.date) {
+        const numAcceptances = item.num_acceptances
+          ? parseInt(item.num_acceptances, 10)
+          : 0;
+        const numLinesAccepted = item.num_lines_accepted
+          ? parseInt(item.num_lines_accepted, 10)
+          : 0;
+        const numBytesAccepted = item.num_bytes_accepted
+          ? parseInt(item.num_bytes_accepted, 10)
+          : 0;
+
+        // Only track timestamp if there's meaningful usage
+        if (
+          numAcceptances > 0 ||
+          numLinesAccepted > 0 ||
+          numBytesAccepted > 0
+        ) {
+          const timestamp = new Date(item.date).getTime();
+          this.addUsageTimestamp(email, timestamp);
+        }
+      }
+
       yield {
         email,
         date: item.date,
@@ -203,6 +247,22 @@ export class Windsurf {
     if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
       for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
         .cascadeLines) {
+        // Only track usage timestamps when there's actual usage (lines > 0)
+        if (cascadeLineItem.day) {
+          const linesSuggested = cascadeLineItem.linesSuggested
+            ? parseInt(cascadeLineItem.linesSuggested, 10)
+            : 0;
+          const linesAccepted = cascadeLineItem.linesAccepted
+            ? parseInt(cascadeLineItem.linesAccepted, 10)
+            : 0;
+
+          // Only track timestamp if there's meaningful usage
+          if (linesSuggested > 0 || linesAccepted > 0) {
+            const timestamp = new Date(cascadeLineItem.day).getTime();
+            this.addUsageTimestamp(email, timestamp);
+          }
+        }
+
         yield {
           email, // Add email since API response won't include it
           day: cascadeLineItem.day,
@@ -215,5 +275,17 @@ export class Windsurf {
         };
       }
     }
+  }
+
+  private addUsageTimestamp(email: string, timestamp: number): void {
+    if (!this.usageTimestampsPerEmail[email]) {
+      this.usageTimestampsPerEmail[email] = new Set();
+    }
+    this.usageTimestampsPerEmail[email].add(timestamp);
+  }
+
+  getUsageTimestampsForEmail(email: string): number[] {
+    const timestamps = this.usageTimestampsPerEmail[email];
+    return timestamps ? Array.from(timestamps) : [];
   }
 }

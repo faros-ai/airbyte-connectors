@@ -11,7 +11,12 @@
         "disableCodeium": false,
         "lastAutocompleteUsageTime": "2024-01-15T09:45:00Z",
         "lastChatUsageTime": "2024-01-15T10:15:00Z",
-        "lastCommandUsageTime": "2024-01-15T10:20:00Z"
+        "lastCommandUsageTime": "2024-01-15T10:20:00Z",
+        "usageTimestamps": [
+          "2024-01-15T09:45:00.000Z",
+          "2024-01-15T10:30:00.000Z"
+        ],
+        "minUsageTimestamp": "2024-01-15T09:45:00.000Z"
       }
     },
     "type": "RECORD"
@@ -27,7 +32,12 @@
         "activeDays": 8,
         "lastAutocompleteUsageTime": "2024-01-14T15:00:00Z",
         "lastChatUsageTime": "2024-01-14T14:30:00Z",
-        "lastCommandUsageTime": "2024-01-14T15:10:00Z"
+        "lastCommandUsageTime": "2024-01-14T15:10:00Z",
+        "usageTimestamps": [
+          "2024-01-14T14:30:00.000Z",
+          "2024-01-14T15:45:00.000Z"
+        ],
+        "minUsageTimestamp": "2024-01-14T14:30:00.000Z"
       }
     },
     "type": "RECORD"
