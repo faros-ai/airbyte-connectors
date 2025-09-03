@@ -1,0 +1,18 @@
+{
+  "queryResults": [{
+    "cascadeLines": {
+      "cascadeLines": [
+        {
+          "day": "2024-01-15",
+          "linesSuggested": "150",
+          "linesAccepted": "80"
+        },
+        {
+          "day": "2024-01-16",
+          "linesSuggested": "200",
+          "linesAccepted": "120"
+        }
+      ]
+    }
+  }]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "User email address"
+    },
+    "day": {
+      "type": "string",
+      "description": "Date in YYYY-MM-DD format"
+    },
+    "linesSuggested": {
+      "type": ["null", "integer"],
+      "description": "Number of lines suggested by Cascade"
+    },
+    "linesAccepted": {
+      "type": ["null", "integer"],
+      "description": "Number of lines accepted by the user"
+    }
+  },
+  "required": ["email", "day"]
+}

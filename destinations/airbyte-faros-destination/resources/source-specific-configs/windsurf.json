@@ -1,0 +1,17 @@
+{
+  "title": "Windsurf",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Configuration",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "const": "Windsurf",
+          "order": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "user_page_analytics"
+      }
+    }
+  ]
+}

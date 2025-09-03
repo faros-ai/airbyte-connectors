@@ -1,0 +1,95 @@
+[
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__user_page_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "name": "John Developer",
+        "email": "user1@example.com",
+        "lastUpdateTime": "2024-01-15T10:30:00Z",
+        "activeDays": 15,
+        "disableCodeium": false,
+        "lastAutocompleteUsageTime": "2024-01-15T09:45:00Z",
+        "lastChatUsageTime": "2024-01-15T10:15:00Z",
+        "lastCommandUsageTime": "2024-01-15T10:20:00Z"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__user_page_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "name": "Jane Engineer",
+        "email": "user2@example.com",
+        "lastUpdateTime": "2024-01-14T15:45:00Z",
+        "activeDays": 8,
+        "lastAutocompleteUsageTime": "2024-01-14T15:00:00Z",
+        "lastChatUsageTime": "2024-01-14T14:30:00Z",
+        "lastCommandUsageTime": "2024-01-14T15:10:00Z"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__autocomplete_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "date": "2024-01-15",
+        "num_acceptances": 45,
+        "num_lines_accepted": 280,
+        "num_bytes_accepted": 6200,
+        "language": "typescript",
+        "ide": "vscode",
+        "version": "1.2.3"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__autocomplete_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "date": "2024-01-15",
+        "num_acceptances": 32,
+        "num_lines_accepted": 180,
+        "num_bytes_accepted": 4100,
+        "language": "python",
+        "ide": "windsurf",
+        "version": "1.2.4"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_lines_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "day": "2024-01-15",
+        "linesSuggested": 150,
+        "linesAccepted": 80
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_lines_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "day": "2024-01-15",
+        "linesSuggested": 200,
+        "linesAccepted": 120
+      }
+    },
+    "type": "RECORD"
+  }
+]
