@@ -63,15 +63,17 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
       return; // Skip if no email
     }
 
-    // For incremental sync, use the cutoff date from state for this specific email
+    // For incremental sync, use the cutoff date from state for this specific email, otherwise use configured date range
     const emailState = streamState?.[email];
     const startDate =
       syncMode === SyncMode.INCREMENTAL && emailState?.cutoff
         ? emailState.cutoff
-        : undefined;
+        : this.config.startDate?.toISOString();
+
+    const endDate = this.config.endDate?.toISOString();
 
     // Yield items directly from the async generator for this specific email
-    yield* windsurf.getCascadeLinesAnalyticsForEmail(email, startDate);
+    yield* windsurf.getCascadeLinesAnalyticsForEmail(email, startDate, endDate);
   }
 
   getUpdatedState(

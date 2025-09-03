@@ -1,7 +1,13 @@
 export interface WindsurfConfig {
   readonly service_key: string;
   readonly windsurf_api_url?: string;
+  readonly cutoff_days?: number;
   readonly timeout?: number;
+  readonly backfill?: boolean;
+  readonly start_date?: string;
+  readonly end_date?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export interface UserPageAnalyticsRequest {

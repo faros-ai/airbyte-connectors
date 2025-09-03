@@ -21,6 +21,7 @@ import {
 } from './types';
 
 export const DEFAULT_WINDSURF_API_URL = 'https://server.codeium.com/api/v1';
+export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 
 export class Windsurf {
