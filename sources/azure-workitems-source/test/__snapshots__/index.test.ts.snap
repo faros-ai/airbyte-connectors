@@ -166,6 +166,15 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "id": "123",
       "name": "test",
     },
+    "relations": [
+      {
+        "attributes": {
+          "isLocked": false,
+        },
+        "rel": "Microsoft.VSTS.Common.TestedBy-Reverse",
+        "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/301",
+      },
+    ],
     "rev": 1,
     "revisions": {
       "assignees": [
@@ -334,6 +343,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "id": "123",
       "name": "test",
     },
+    "relations": [],
     "rev": 7,
     "revisions": {
       "assignees": [
@@ -493,6 +503,15 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       "id": "123",
       "name": "test",
     },
+    "relations": [
+      {
+        "attributes": {
+          "isLocked": false,
+        },
+        "rel": "Microsoft.VSTS.Common.TestedBy-Forward",
+        "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/297",
+      },
+    ],
     "rev": 1,
     "revisions": {
       "assignees": [
@@ -568,6 +587,164 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
       ],
     },
     "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300",
+  },
+  {
+    "additionalFields": [
+      {
+        "name": "Area Path",
+        "value": "Fabrikam-Fiber-Git",
+      },
+    ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+          "uniqueName": "john.doe@example.com",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
+      },
+    ],
+    "fields": {
+      "Faros": {
+        "EpicId": undefined,
+        "WorkItemStateCategory": {
+          "category": undefined,
+          "name": "Design",
+        },
+      },
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.ChangedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.ChangedDate": "2014-12-29T20:49:23.103Z",
+      "System.CreatedBy": {
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+          },
+        },
+        "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+        "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      "System.CreatedDate": "2014-12-29T20:49:23.103Z",
+      "System.Description": "Verify that users can successfully authenticate using Microsoft Account credentials",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Reason": "New test case",
+      "System.State": "Design",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Test Microsoft Account Authentication",
+      "System.WorkItemType": "Test Case",
+    },
+    "id": 301,
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
+    "relations": [
+      {
+        "attributes": {
+          "isLocked": false,
+        },
+        "rel": "Microsoft.VSTS.Common.TestedBy-Forward",
+        "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/297",
+      },
+    ],
+    "rev": 1,
+    "revisions": {
+      "assignees": [
+        {
+          "assignedAt": "2017-09-04T02:28:56.253Z",
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+              },
+            },
+            "descriptor": "aad.YTkzODFkODYtNTYxYS03ZDdiLWJjM2QtZDUzMjllMjM5OTAz",
+            "displayName": "Jamal Hartnett",
+            "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "fabrikamfiber4@hotmail.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "unassignedAt": "2017-09-04T02:36:41.253Z",
+        },
+        {
+          "assignedAt": "2017-09-04T02:36:41.253Z",
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+              },
+            },
+            "descriptor": "aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+            "displayName": "Sarah Connor",
+            "id": "e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "sarah.connor@fabrikam.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "unassignedAt": undefined,
+        },
+      ],
+      "iterations": [
+        {
+          "addedAt": "2017-09-04T02:08:16.6Z",
+          "iteration": 3,
+          "removedAt": "2017-09-04T02:36:18.75Z",
+        },
+        {
+          "addedAt": "2017-09-04T02:36:18.75Z",
+          "iteration": 4,
+          "removedAt": null,
+        },
+      ],
+      "states": [
+        {
+          "changedDate": "2017-09-04T02:08:16.6Z",
+          "state": {
+            "category": "Proposed",
+            "name": "New",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:18.75Z",
+          "state": {
+            "category": "InProgress",
+            "name": "Active",
+          },
+        },
+        {
+          "changedDate": "2017-09-04T02:36:41.253Z",
+          "state": {
+            "category": "Resolved",
+            "name": "Resolved",
+          },
+        },
+      ],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/301",
   },
 ]
 `;
