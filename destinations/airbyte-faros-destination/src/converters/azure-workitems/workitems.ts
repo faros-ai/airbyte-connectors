@@ -452,43 +452,52 @@ export class Workitems extends AzureWorkitemsConverter {
     WorkItem: WorkItemWithRevisions,
     source: string
   ): ReadonlyArray<DestinationRecord> {
-    const res: DestinationRecord[] = [];
     const relations = (WorkItem as any).relations || [];
     const workItemUid = String(WorkItem.id);
     const workItemType = WorkItem.fields['System.WorkItemType'];
 
-    for (const relation of relations) {
-      if (!relation.rel || !relation.url) continue;
+    return relations
+      .filter(relation => this.isTestRelation(relation))
+      .map(relation => this.createTestAssociation(relation, workItemUid, workItemType, source))
+      .filter(Boolean);
+  }
 
-      const relatedWorkItemId = this.extractWorkItemIdFromUrl(relation.url);
-      if (!relatedWorkItemId) continue;
+  private isTestRelation(relation: any): boolean {
+    return relation?.rel && relation?.url && 
+           (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Forward' || 
+            relation.rel === 'Microsoft.VSTS.Common.TestedBy-Reverse');
+  }
 
-      const relatedWorkItemUid = String(relatedWorkItemId);
+  private createTestAssociation(
+    relation: any, 
+    workItemUid: string, 
+    workItemType: string, 
+    source: string
+  ): DestinationRecord | null {
+    const relatedWorkItemId = this.extractWorkItemIdFromUrl(relation.url);
+    if (!relatedWorkItemId) return null;
 
-      if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Forward') {
-        if (workItemType === 'Test Case') {
-          res.push({
-            model: 'qa_TestCaseWorkItemAssociation',
-            record: {
-              testCase: {uid: workItemUid, source},
-              workItem: {uid: relatedWorkItemUid, source},
-            },
-          });
-        }
-      } else if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Reverse') {
-        if (workItemType !== 'Test Case') {
-          res.push({
-            model: 'qa_TestCaseWorkItemAssociation',
-            record: {
-              testCase: {uid: relatedWorkItemUid, source},
-              workItem: {uid: workItemUid, source},
-            },
-          });
-        }
-      }
+    const relatedWorkItemUid = String(relatedWorkItemId);
+
+    if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Forward' && workItemType === 'Test Case') {
+      return this.createTestCaseAssociation(workItemUid, relatedWorkItemUid, source);
+    }
+    
+    if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Reverse' && workItemType !== 'Test Case') {
+      return this.createTestCaseAssociation(relatedWorkItemUid, workItemUid, source);
     }
 
-    return res;
+    return null;
+  }
+
+  private createTestCaseAssociation(testCaseUid: string, workItemUid: string, source: string): DestinationRecord {
+    return {
+      model: 'qa_TestCaseWorkItemAssociation',
+      record: {
+        testCase: {uid: testCaseUid, source},
+        workItem: {uid: workItemUid, source},
+      },
+    };
   }
 
   private extractWorkItemIdFromUrl(url: string): number | null {
