@@ -188,8 +188,9 @@ export class AzureWorkitems extends types.AzureDevOps {
           revisions,
           additionalFields,
           project,
+          relations: item.relations || [],
           comments,
-        };
+        } as any;
       }
     }
   }
@@ -455,7 +456,7 @@ export class AzureWorkitems extends types.AzureDevOps {
       assignedAt: change.changedDate,
       unassignedAt:
         index < changes.length - 1 ? changes[index + 1].changedDate : undefined,
-    }));
+    })) as any;
   }
 
   /**

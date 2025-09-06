@@ -32,6 +32,8 @@ export class Workitems extends AzureWorkitemsConverter {
     'tms_TaskProjectRelationship',
     'tms_TaskTag',
     'tms_TaskComment',
+    'qa_TestCase',
+    'qa_TestCaseWorkItemAssociation',
   ];
 
   async convert(
@@ -42,14 +44,19 @@ export class Workitems extends AzureWorkitemsConverter {
     const WorkItem = record.record.data as WorkItemWithRevisions;
     const taskKey = {uid: String(WorkItem.id), source};
     const projectId = String(WorkItem.project.id);
+    const workItemType = WorkItem.fields['System.WorkItemType'];
+
+    if (workItemType === 'Test Case') {
+      return this.convertTestCase(WorkItem, source);
+    }
 
     // Track this work item for comment deletion
     this.seenWorkItems.add(String(WorkItem.id));
 
     // Process comments if present
-    if (WorkItem.comments) {
+    if ((WorkItem as any).comments) {
       this.fetchWorkItemComments = true;
-      for (const comment of WorkItem.comments) {
+      for (const comment of (WorkItem as any).comments) {
         this.workItemComments.push({
           model: 'tms_TaskComment',
           record: {
@@ -149,6 +156,7 @@ export class Workitems extends AzureWorkitemsConverter {
       ...taskBoard,
       ...sprintHistory,
       ...epic,
+      ...this.convertTestRelationships(WorkItem, source),
     ];
   }
 
@@ -251,8 +259,8 @@ export class Workitems extends AzureWorkitemsConverter {
             record: {
               task,
               assignee: {uid: uid, source: this.source},
-              assignedAt: Utils.toDate(revision.assignedAt),
-              unassignedAt: Utils.toDate(revision.unassignedAt),
+              assignedAt: Utils.toDate((revision as any).assignedAt),
+              unassignedAt: Utils.toDate((revision as any).unassignedAt),
             },
           };
         } else {
@@ -414,5 +422,77 @@ export class Workitems extends AzureWorkitemsConverter {
       // Insert all new comments
       ...this.workItemComments,
     ];
+  }
+
+  private convertTestCase(
+    WorkItem: WorkItemWithRevisions,
+    source: string
+  ): ReadonlyArray<DestinationRecord> {
+    const res: DestinationRecord[] = [];
+    const uid = String(WorkItem.id);
+
+    res.push({
+      model: 'qa_TestCase',
+      record: {
+        uid,
+        name: WorkItem.fields['System.Title'],
+        description: Utils.cleanAndTruncate(
+          WorkItem.fields['System.Description']
+        ),
+        source,
+        type: {category: 'Manual', detail: 'manual'},
+      },
+    });
+
+    res.push(...this.convertTestRelationships(WorkItem, source));
+    return res;
+  }
+
+  private convertTestRelationships(
+    WorkItem: WorkItemWithRevisions,
+    source: string
+  ): ReadonlyArray<DestinationRecord> {
+    const res: DestinationRecord[] = [];
+    const relations = (WorkItem as any).relations || [];
+    const workItemUid = String(WorkItem.id);
+    const workItemType = WorkItem.fields['System.WorkItemType'];
+
+    for (const relation of relations) {
+      if (!relation.rel || !relation.url) continue;
+
+      const relatedWorkItemId = this.extractWorkItemIdFromUrl(relation.url);
+      if (!relatedWorkItemId) continue;
+
+      const relatedWorkItemUid = String(relatedWorkItemId);
+
+      if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Forward') {
+        if (workItemType === 'Test Case') {
+          res.push({
+            model: 'qa_TestCaseWorkItemAssociation',
+            record: {
+              testCase: {uid: workItemUid, source},
+              workItem: {uid: relatedWorkItemUid, source},
+            },
+          });
+        }
+      } else if (relation.rel === 'Microsoft.VSTS.Common.TestedBy-Reverse') {
+        if (workItemType !== 'Test Case') {
+          res.push({
+            model: 'qa_TestCaseWorkItemAssociation',
+            record: {
+              testCase: {uid: relatedWorkItemUid, source},
+              workItem: {uid: workItemUid, source},
+            },
+          });
+        }
+      }
+    }
+
+    return res;
+  }
+
+  private extractWorkItemIdFromUrl(url: string): number | null {
+    const match = url.match(/workItems\/(\d+)$/);
+    return match ? parseInt(match[1], 10) : null;
   }
 }
