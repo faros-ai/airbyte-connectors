@@ -117,4 +117,21 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - ai commit metrics', async () => {
+    const res = readTestResourceAsJSON(
+      'ai_commit_metrics/ai_commit_metrics.json'
+    );
+    setupCursorInstance({
+      get: jest.fn().mockResolvedValue({data: res}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'ai_commit_metrics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

@@ -2,10 +2,10 @@
 
 exports[`cursor process records from all streams 1`] = `
 Array [
-  "Processed 7 records",
-  "Processed records by stream: {\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2,\\\\\\"mytestsource__cursor__usage_events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 31 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":21,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__cursor__ai_commit_metrics\\\\\\":4,\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2,\\\\\\"mytestsource__cursor__usage_events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 38 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":28,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -689,6 +689,237 @@ Array [
         "uid": "admin@company.com",
       },
       "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T00:23:15.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "faros-ai",
+      },
+      "repository": Object {
+        "name": "gains",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T00:23:15.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "tabLinesAdded",
+      },
+      "uid": "1011459b73692e03c09440d995356f433116f49991f82311e5c5da23178d4157",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "21",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T00:23:15.000Z",
+      "feature": "Manual",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "faros-ai",
+      },
+      "repository": Object {
+        "name": "gains",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T00:23:15.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "nonAiLinesAdded",
+      },
+      "uid": "61fbcbe525da7de5b0dfd9aa6f2d26eab2029a98278aeb6569c1c38e5c41ec3b",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "98",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T13:52:19.000Z",
+      "feature": "Manual",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T13:52:19.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "nonAiLinesAdded",
+      },
+      "uid": "7e8b666cd145daeeec1ef16681e00360f7669aec0796fe4780084048e18afacb",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+      "value": "4",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T02:41:24.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "faros-ai",
+      },
+      "repository": Object {
+        "name": "gains",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T02:41:24.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "tabLinesAdded",
+      },
+      "uid": "593d831d6fb307359b37b5b10064ed2a488fb2dd2f6733038deb499cf02ec915",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T02:41:24.000Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "faros-ai",
+      },
+      "repository": Object {
+        "name": "gains",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "faros-ai",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T02:41:24.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "composerLinesAdded",
+      },
+      "uid": "92517dc7e239e85b364a2490e38580857916685198f2681b1cdb33715766d879",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "118",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T14:05:04.539Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "company",
+      },
+      "repository": Object {
+        "name": "repo",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "company",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T14:05:04.539Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "tabLinesAdded",
+      },
+      "uid": "e25f0c5f936d6f97768cb81122fe983752ff0947e1d2343134ead474729b997a",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T14:05:04.539Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "company",
+      },
+      "repository": Object {
+        "name": "repo",
+        "organization": Object {
+          "source": "Cursor",
+          "uid": "company",
+        },
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T14:05:04.539Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "Custom",
+        "detail": "composerLinesAdded",
+      },
+      "uid": "c5690bb02dc288b7090aaac9562327f8255b1855bd92f56f4eb6b97d3bf7aff1",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "11",
       "valueType": "Int",
     },
   },

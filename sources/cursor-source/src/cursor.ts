@@ -2,6 +2,7 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   ActiveMemberItem,
+  AiCommitMetricItem,
   DailyUsageItem,
   InactiveMemberItem,
   MemberItem,
@@ -11,6 +12,7 @@ import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import VError from 'verror';
 
 import {
+  AiCommitMetricsResponse,
   CursorConfig,
   DailyUsageResponse,
   MembersResponse,
@@ -130,6 +132,34 @@ export class Cursor {
       }
 
       hasNextPage = res.data.pagination.hasNextPage;
+      page++;
+    }
+  }
+
+  async *getAiCommitMetrics(
+    startDate: string,
+    endDate: string
+  ): AsyncGenerator<AiCommitMetricItem> {
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const params = new URLSearchParams({
+        startDate,
+        endDate,
+        page: page.toString(),
+        pageSize: DEFAULT_PAGE_SIZE.toString(),
+      });
+
+      const res = await this.api.get<AiCommitMetricsResponse>(
+        `/analytics/ai-code/commits?${params.toString()}`
+      );
+
+      for (const commit of res.data.items) {
+        yield commit;
+      }
+
+      hasMore = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
       page++;
     }
   }

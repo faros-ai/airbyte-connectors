@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "commitHash": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "repoName": {
+      "type": ["string", "null"]
+    },
+    "branchName": {
+      "type": ["string", "null"]
+    },
+    "isPrimaryBranch": {
+      "type": ["boolean", "null"]
+    },
+    "totalLinesAdded": {
+      "type": "integer"
+    },
+    "totalLinesDeleted": {
+      "type": "integer"
+    },
+    "tabLinesAdded": {
+      "type": "integer"
+    },
+    "tabLinesDeleted": {
+      "type": "integer"
+    },
+    "composerLinesAdded": {
+      "type": "integer"
+    },
+    "composerLinesDeleted": {
+      "type": "integer"
+    },
+    "nonAiLinesAdded": {
+      "type": ["integer", "null"]
+    },
+    "nonAiLinesDeleted": {
+      "type": ["integer", "null"]
+    },
+    "message": {
+      "type": ["string", "null"]
+    },
+    "commitTs": {
+      "type": ["string", "null"]
+    },
+    "createdAt": {
+      "type": "string"
+    }
+  }
+}

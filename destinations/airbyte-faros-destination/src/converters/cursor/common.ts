@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {digest} from 'faros-airbyte-common/common';
-import {DailyUsageItem} from 'faros-airbyte-common/cursor';
+import {AiCommitMetricItem,DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {isNil} from 'lodash';
 
 import {VCSToolCategory, VCSToolDetail} from '../common/vcs';
@@ -8,6 +8,16 @@ import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface CursorConfig {
   custom_metrics?: ReadonlyArray<keyof DailyUsageItem>;
+}
+
+export enum Feature {
+  Tab = 'Tab',
+  Composer = 'Composer',
+  Chat = 'Chat',
+  Agent = 'Agent',
+  CmdK = 'Cmd+K',
+  BugBot = 'BugBot',
+  Manual = 'Manual',
 }
 
 export abstract class CursorConverter extends Converter {
@@ -28,9 +38,10 @@ export abstract class CursorConverter extends Converter {
     value: number | string | boolean,
     org: string,
     userEmail: string,
-    customMetricName?: keyof DailyUsageItem,
+    customMetricName?: keyof DailyUsageItem | keyof AiCommitMetricItem,
     model?: string,
-    feature?: string
+    feature?: string,
+    repository?: {name: string; organization: {uid: string; source: string}}
   ): DestinationRecord[] {
     return [
       {
@@ -78,6 +89,7 @@ export abstract class CursorConverter extends Converter {
           },
           ...(model && {model}),
           ...(feature && {feature}),
+          ...(repository && {repository}),
         },
       },
     ];

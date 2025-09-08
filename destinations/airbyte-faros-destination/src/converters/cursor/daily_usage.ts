@@ -5,7 +5,7 @@ import {isNil} from 'lodash';
 
 import {AssistantMetric, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {CursorConverter} from './common';
+import {CursorConverter, Feature} from './common';
 
 const DailyUsageItemToAssistantMetricType: Partial<
   Record<keyof DailyUsageItem, AssistantMetric>
@@ -14,15 +14,6 @@ const DailyUsageItemToAssistantMetricType: Partial<
   totalAccepts: AssistantMetric.SuggestionsAccepted,
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
-
-enum Feature {
-  Tab = 'Tab',
-  Composer = 'Composer',
-  Chat = 'Chat',
-  Agent = 'Agent',
-  CmdK = 'Cmd+K',
-  BugBot = 'BugBot',
-}
 
 const DailyUsageItemToFeature: Partial<Record<keyof DailyUsageItem, Feature>> =
   {

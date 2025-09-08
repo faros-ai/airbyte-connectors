@@ -12,6 +12,7 @@ import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Cursor, DEFAULT_CUTOFF_DAYS} from './cursor';
+import {AiCommitMetrics} from './streams/ai_commit_metrics';
 import {DailyUsage} from './streams/daily_usage';
 import {Members} from './streams/members';
 import {UsageEvents} from './streams/usage_events';
@@ -44,6 +45,7 @@ export class CursorSource extends AirbyteSourceBase<CursorConfig> {
 
   streams(config: CursorConfig): AirbyteStreamBase[] {
     return [
+      new AiCommitMetrics(config, this.logger),
       new DailyUsage(config, this.logger),
       new Members(config, this.logger),
       new UsageEvents(config, this.logger),
