@@ -698,14 +698,7 @@ Array [
       "feature": "Tab",
       "organization": Object {
         "source": "Cursor",
-        "uid": "faros-ai",
-      },
-      "repository": Object {
-        "name": "gains",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "faros-ai",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T00:23:15.000Z",
@@ -717,7 +710,7 @@ Array [
         "category": "Custom",
         "detail": "tabLinesAdded",
       },
-      "uid": "1011459b73692e03c09440d995356f433116f49991f82311e5c5da23178d4157",
+      "uid": "a2cc52f8db5cb47097ec6e27407cf952d6c6f04271df9c9d6923e7e63134f1db",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -732,14 +725,7 @@ Array [
       "feature": "Manual",
       "organization": Object {
         "source": "Cursor",
-        "uid": "faros-ai",
-      },
-      "repository": Object {
-        "name": "gains",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "faros-ai",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T00:23:15.000Z",
@@ -751,7 +737,7 @@ Array [
         "category": "Custom",
         "detail": "nonAiLinesAdded",
       },
-      "uid": "61fbcbe525da7de5b0dfd9aa6f2d26eab2029a98278aeb6569c1c38e5c41ec3b",
+      "uid": "0ddae53a04ab0e9734889ea4228f9a4350ad30cbfa8caf4e796514c507e46ec8",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -766,7 +752,7 @@ Array [
       "feature": "Manual",
       "organization": Object {
         "source": "Cursor",
-        "uid": "cursor",
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T13:52:19.000Z",
@@ -778,7 +764,7 @@ Array [
         "category": "Custom",
         "detail": "nonAiLinesAdded",
       },
-      "uid": "7e8b666cd145daeeec1ef16681e00360f7669aec0796fe4780084048e18afacb",
+      "uid": "7afe0681df6fbc64201e5ef339de1cfc476dd2160766e0b0056b6b430fab2af0",
       "user": Object {
         "source": "Cursor",
         "uid": "admin@company.com",
@@ -793,14 +779,7 @@ Array [
       "feature": "Tab",
       "organization": Object {
         "source": "Cursor",
-        "uid": "faros-ai",
-      },
-      "repository": Object {
-        "name": "gains",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "faros-ai",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T02:41:24.000Z",
@@ -812,7 +791,7 @@ Array [
         "category": "Custom",
         "detail": "tabLinesAdded",
       },
-      "uid": "593d831d6fb307359b37b5b10064ed2a488fb2dd2f6733038deb499cf02ec915",
+      "uid": "b17b44295bca51c8302caedcef618e7a7c71e0ea01dd5ef3ca4c5a0fa348e1cf",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -827,14 +806,7 @@ Array [
       "feature": "Composer",
       "organization": Object {
         "source": "Cursor",
-        "uid": "faros-ai",
-      },
-      "repository": Object {
-        "name": "gains",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "faros-ai",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T02:41:24.000Z",
@@ -846,7 +818,7 @@ Array [
         "category": "Custom",
         "detail": "composerLinesAdded",
       },
-      "uid": "92517dc7e239e85b364a2490e38580857916685198f2681b1cdb33715766d879",
+      "uid": "8a16f3861559f0fdfb67426d9c95998ec1dcd16d870348825bd6ae22c120d06e",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -861,14 +833,7 @@ Array [
       "feature": "Tab",
       "organization": Object {
         "source": "Cursor",
-        "uid": "company",
-      },
-      "repository": Object {
-        "name": "repo",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "company",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T14:05:04.539Z",
@@ -880,7 +845,7 @@ Array [
         "category": "Custom",
         "detail": "tabLinesAdded",
       },
-      "uid": "e25f0c5f936d6f97768cb81122fe983752ff0947e1d2343134ead474729b997a",
+      "uid": "2580b54ed990066a0edb85ba4bb6c2d13e5a28fe96ce454ca18e5edac3d7c235",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -895,14 +860,7 @@ Array [
       "feature": "Composer",
       "organization": Object {
         "source": "Cursor",
-        "uid": "company",
-      },
-      "repository": Object {
-        "name": "repo",
-        "organization": Object {
-          "source": "Cursor",
-          "uid": "company",
-        },
+        "uid": "Cursor",
       },
       "source": "Cursor",
       "startedAt": "2025-09-03T14:05:04.539Z",
@@ -914,7 +872,7 @@ Array [
         "category": "Custom",
         "detail": "composerLinesAdded",
       },
-      "uid": "c5690bb02dc288b7090aaac9562327f8255b1855bd92f56f4eb6b97d3bf7aff1",
+      "uid": "944acc4397478c49b0426f8c0fc4fa99d733712655fa68e56b289afbaf4ce1b8",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",

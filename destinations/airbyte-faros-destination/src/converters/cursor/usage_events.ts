@@ -53,7 +53,7 @@ export class UsageEvents extends CursorConverter {
         timestamp,
         AssistantMetric.Usages,
         1,
-        VCSToolDetail.Cursor,
+        {uid: this.streamName.source, source: this.streamName.source},
         usageEventItem.userEmail,
         undefined,
         usageEventItem.model

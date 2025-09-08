@@ -1,9 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {digest} from 'faros-airbyte-common/common';
-import {AiCommitMetricItem,DailyUsageItem} from 'faros-airbyte-common/cursor';
+import {AiCommitMetricItem, DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {isNil} from 'lodash';
 
-import {VCSToolCategory, VCSToolDetail} from '../common/vcs';
+import {OrgKey, RepoKey, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface CursorConfig {
@@ -36,12 +36,12 @@ export abstract class CursorConverter extends Converter {
     endedAt: Date,
     assistantMetricType: string,
     value: number | string | boolean,
-    org: string,
+    organization: OrgKey,
     userEmail: string,
     customMetricName?: keyof DailyUsageItem | keyof AiCommitMetricItem,
     model?: string,
     feature?: string,
-    repository?: {name: string; organization: {uid: string; source: string}}
+    repository?: RepoKey
   ): DestinationRecord[] {
     return [
       {
@@ -55,7 +55,7 @@ export abstract class CursorConverter extends Converter {
                   VCSToolDetail.Cursor,
                   assistantMetricType,
                   startedAt.toISOString(),
-                  org,
+                  organization.uid,
                   userEmail,
                   customMetricName,
                 ],
@@ -78,10 +78,7 @@ export abstract class CursorConverter extends Converter {
           },
           valueType: getValueType(value),
           value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
+          organization,
           user: {uid: userEmail, source: this.streamName.source},
           tool: {
             category: VCSToolCategory.CodingAssistant,

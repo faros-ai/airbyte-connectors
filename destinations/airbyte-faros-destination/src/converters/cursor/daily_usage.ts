@@ -50,6 +50,9 @@ export class DailyUsage extends CursorConverter {
     }
 
     const day = Utils.toDate(dailyUsageItem.date);
+
+    const org = {uid: this.streamName.source, source: this.streamName.source};
+
     const res: DestinationRecord[] = [];
 
     for (const [field, assistantMetricType] of Object.entries(
@@ -65,7 +68,7 @@ export class DailyUsage extends CursorConverter {
           Utils.toDate(day.getTime() + DAY_MS),
           assistantMetricType,
           value,
-          VCSToolDetail.Cursor,
+          org,
           dailyUsageItem.email
         )
       );
@@ -86,7 +89,7 @@ export class DailyUsage extends CursorConverter {
           Utils.toDate(day.getTime() + DAY_MS),
           AssistantMetric.Custom,
           value,
-          VCSToolDetail.Cursor,
+          org,
           dailyUsageItem.email,
           field
         )
@@ -104,7 +107,7 @@ export class DailyUsage extends CursorConverter {
           Utils.toDate(day.getTime() + DAY_MS),
           AssistantMetric.Usages,
           value,
-          VCSToolDetail.Cursor,
+          org,
           dailyUsageItem.email,
           undefined,
           undefined,
