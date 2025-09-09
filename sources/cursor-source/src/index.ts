@@ -68,13 +68,21 @@ export class CursorSource extends AirbyteSourceBase<CursorConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    // Filter streams based on configuration
+    let streams = catalog.streams;
+    if (!config.fetch_ai_commit_metrics) {
+      streams = streams.filter(
+        (stream) => stream.stream.name !== 'ai_commit_metrics'
+      );
+    }
+
     return {
       config: {
         ...config,
         startDate,
         endDate,
       } as CursorConfig,
-      catalog,
+      catalog: {streams},
       state,
     };
   }

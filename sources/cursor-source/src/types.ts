@@ -5,6 +5,7 @@ export interface CursorConfig {
   readonly timeout?: number;
   readonly start_date?: string;
   readonly end_date?: string;
+  readonly fetch_ai_commit_metrics?: boolean;
   startDate?: Date;
   endDate?: Date;
 }

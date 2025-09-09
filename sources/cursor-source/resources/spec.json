@@ -55,6 +55,13 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
+      },
+      "fetch_ai_commit_metrics": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Fetch AI Commit Metrics",
+        "description": "Fetch AI commit metrics (requires Cursor Enterprise API access). This stream tracks AI-assisted code contributions.",
+        "default": false
       }
     }
   }

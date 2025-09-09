@@ -2,6 +2,7 @@ import {
   AirbyteLogLevel,
   AirbyteSourceLogger,
   AirbyteSpec,
+  SyncMode,
 } from 'faros-airbyte-cdk';
 import {
   readResourceAsJSON,
@@ -125,13 +126,38 @@ describe('index', () => {
     setupCursorInstance({
       get: jest.fn().mockResolvedValue({data: res}),
     });
+    const config = readTestResourceAsJSON('config.json');
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: {...config, fetch_ai_commit_metrics: true},
       catalogOrPath: 'ai_commit_metrics/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },
     });
+  });
+
+  test('streams - ai commit metrics excluded when flag is false', async () => {
+    const config = readTestResourceAsJSON('config.json');
+    const catalog = {
+      streams: [
+        {
+          stream: {name: 'ai_commit_metrics', json_schema: {}},
+          sync_mode: SyncMode.FULL_REFRESH,
+        },
+        {
+          stream: {name: 'daily_usage', json_schema: {}},
+          sync_mode: SyncMode.FULL_REFRESH,
+        },
+      ],
+    };
+
+    const result = await source.onBeforeRead(
+      {...config, fetch_ai_commit_metrics: false},
+      catalog
+    );
+
+    expect(result.catalog.streams).toHaveLength(1);
+    expect(result.catalog.streams[0].stream.name).toBe('daily_usage');
   });
 });
