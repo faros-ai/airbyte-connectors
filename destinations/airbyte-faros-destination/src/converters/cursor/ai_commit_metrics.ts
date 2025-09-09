@@ -135,7 +135,10 @@ export class AiCommitMetrics extends CursorConverter {
     }
   }
 
-  private parseRepoName(repoName: string): {repoName: string; orgUid: string} {
+  private parseRepoName(repoName: string): {
+    repoName: string;
+    orgUid: string | null;
+  } {
     // Handle format: "org/repo"
     const parts = repoName.split('/');
     if (parts.length === 2) {
