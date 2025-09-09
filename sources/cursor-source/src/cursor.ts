@@ -28,17 +28,17 @@ export class Cursor {
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
-    config: CursorConfig,
+    private readonly config: CursorConfig,
     private readonly logger: AirbyteLogger
   ) {
-    const apiUrl = config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
+    const apiUrl = this.config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
     this.api = makeAxiosInstanceWithRetry({
       baseURL: apiUrl,
-      timeout: config.timeout ?? DEFAULT_TIMEOUT,
+      timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       auth: {
-        username: config.cursor_api_key,
+        username: this.config.cursor_api_key,
         password: '',
       },
       headers: {
@@ -115,7 +115,7 @@ export class Cursor {
           startDate,
           endDate,
           page,
-          pageSize: DEFAULT_PAGE_SIZE,
+          pageSize: this.config.page_size ?? DEFAULT_PAGE_SIZE,
         }
       );
 

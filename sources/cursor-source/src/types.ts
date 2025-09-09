@@ -3,6 +3,7 @@ export interface CursorConfig {
   readonly cursor_api_url?: string;
   readonly cutoff_days?: number;
   readonly timeout?: number;
+  readonly page_size?: number;
   readonly start_date?: string;
   readonly end_date?: string;
   startDate?: Date;
