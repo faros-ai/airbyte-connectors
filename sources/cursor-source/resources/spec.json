@@ -43,8 +43,7 @@
         "title": "Page Size",
         "description": "Number of records to fetch per API request",
         "default": 100,
-        "minimum": 1,
-        "maximum": 1000
+        "minimum": 1
       },
       "backfill": {
         "order": 5,
