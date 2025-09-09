@@ -151,16 +151,35 @@ export class Cursor {
         pageSize: DEFAULT_PAGE_SIZE.toString(),
       });
 
-      const res = await this.api.get<AiCommitMetricsResponse>(
-        `/analytics/ai-code/commits?${params.toString()}`
-      );
+      try {
+        const res = await this.api.get<AiCommitMetricsResponse>(
+          `/analytics/ai-code/commits?${params.toString()}`
+        );
 
-      for (const commit of res.data.items) {
-        yield commit;
+        for (const commit of res.data.items) {
+          yield commit;
+        }
+
+        hasNextPage = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
+        page++;
+      } catch (error: any) {
+        // Check for 401 unauthorized error indicating no enterprise access
+        if (error.response?.status === 401) {
+          const errorMessage =
+            error.response?.data?.message ||
+            'You must be a member of an enterprise team to access this resource';
+
+          this.logger.info(
+            `Cannot access AI commit metrics API: ${errorMessage}. ` +
+              'An enterprise Cursor account is required to access AI code analytics.'
+          );
+
+          return;
+        }
+
+        // Re-throw other errors
+        throw error;
       }
-
-      hasNextPage = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
-      page++;
     }
   }
 
