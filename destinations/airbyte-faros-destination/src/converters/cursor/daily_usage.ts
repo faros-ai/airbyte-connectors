@@ -51,7 +51,10 @@ export class DailyUsage extends CursorConverter {
 
     const day = Utils.toDate(dailyUsageItem.date);
 
-    const org = {uid: this.streamName.source, source: this.streamName.source};
+    const organization = {
+      uid: this.streamName.source,
+      source: this.streamName.source,
+    };
 
     const res: DestinationRecord[] = [];
 
@@ -63,14 +66,14 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
           assistantMetricType,
           value,
-          org,
-          dailyUsageItem.email
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+        })
       );
     }
 
@@ -84,15 +87,15 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
-          AssistantMetric.Custom,
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
+          assistantMetricType: AssistantMetric.Custom,
           value,
-          org,
-          dailyUsageItem.email,
-          field
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+          customMetricName: field,
+        })
       );
     }
 
@@ -102,17 +105,15 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
-          AssistantMetric.Usages,
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
+          assistantMetricType: AssistantMetric.Usages,
           value,
-          org,
-          dailyUsageItem.email,
-          undefined,
-          undefined,
-          feature
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+          feature,
+        })
       );
     }
     return res;

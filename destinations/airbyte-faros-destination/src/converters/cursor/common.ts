@@ -10,6 +10,19 @@ export interface CursorConfig {
   custom_metrics?: ReadonlyArray<keyof DailyUsageItem>;
 }
 
+export interface AssistantMetricConfig {
+  startedAt: Date;
+  endedAt: Date;
+  assistantMetricType: string;
+  value: number | string | boolean;
+  organization: OrgKey;
+  userEmail: string;
+  customMetricName?: keyof DailyUsageItem;
+  model?: string;
+  feature?: string;
+  repository?: RepoKey;
+}
+
 export enum Feature {
   Tab = 'Tab',
   Composer = 'Composer',
@@ -31,17 +44,20 @@ export abstract class CursorConverter extends Converter {
   }
 
   protected getAssistantMetric(
-    startedAt: Date,
-    endedAt: Date,
-    assistantMetricType: string,
-    value: number | string | boolean,
-    organization: OrgKey,
-    userEmail: string,
-    customMetricName?: keyof DailyUsageItem | keyof AiCommitMetricItem,
-    model?: string,
-    feature?: string,
-    repository?: RepoKey
+    config: AssistantMetricConfig
   ): DestinationRecord[] {
+    const {
+      startedAt,
+      endedAt,
+      assistantMetricType,
+      value,
+      organization,
+      userEmail,
+      customMetricName,
+      model,
+      feature,
+      repository,
+    } = config;
     return [
       {
         model: 'vcs_AssistantMetric',

@@ -43,62 +43,52 @@ export class AiCommitMetrics extends CursorConverter {
       : undefined;
 
     // Use organization from repository if found, otherwise use default
-    const org = repository?.organization || {
+    const organization = repository?.organization || {
       uid: this.streamName.source,
       source: this.streamName.source,
     };
 
-    // Tab metrics - only track lines added as accepted lines
-    if (metric.tabLinesAdded > 0) {
+    if (metric.tabLinesAdded) {
       res.push(
-        ...this.getAssistantMetric(
-          commitDate,
-          commitDate,
-          AssistantMetric.AILinesAdded,
-          metric.tabLinesAdded,
-          org,
-          metric.userEmail,
-          undefined,
-          undefined,
-          Feature.Tab,
-          repository
-        )
+        ...this.getAssistantMetric({
+          startedAt: commitDate,
+          endedAt: commitDate,
+          assistantMetricType: AssistantMetric.AILinesAdded,
+          value: metric.tabLinesAdded,
+          organization,
+          userEmail: metric.userEmail,
+          feature: Feature.Tab,
+          repository,
+        })
       );
     }
 
-    // Composer metrics - only track lines added as accepted lines
-    if (metric.composerLinesAdded > 0) {
+    if (metric.composerLinesAdded) {
       res.push(
-        ...this.getAssistantMetric(
-          commitDate,
-          commitDate,
-          AssistantMetric.AILinesAdded,
-          metric.composerLinesAdded,
-          org,
-          metric.userEmail,
-          undefined,
-          undefined,
-          Feature.Composer,
-          repository
-        )
+        ...this.getAssistantMetric({
+          startedAt: commitDate,
+          endedAt: commitDate,
+          assistantMetricType: AssistantMetric.AILinesAdded,
+          value: metric.composerLinesAdded,
+          organization,
+          userEmail: metric.userEmail,
+          feature: Feature.Composer,
+          repository,
+        })
       );
     }
 
-    // Non-AI (Manual) metrics - only track lines added
-    if (!isNil(metric.nonAiLinesAdded) && metric.nonAiLinesAdded > 0) {
+    if (metric.nonAiLinesAdded) {
       res.push(
-        ...this.getAssistantMetric(
-          commitDate,
-          commitDate,
-          AssistantMetric.NonAILinesAdded,
-          metric.nonAiLinesAdded,
-          org,
-          metric.userEmail,
-          undefined,
-          undefined,
-          undefined,
-          repository
-        )
+        ...this.getAssistantMetric({
+          startedAt: commitDate,
+          endedAt: commitDate,
+          assistantMetricType: AssistantMetric.NonAILinesAdded,
+          value: metric.nonAiLinesAdded,
+          organization,
+          userEmail: metric.userEmail,
+          repository,
+        })
       );
     }
 
@@ -109,13 +99,14 @@ export class AiCommitMetrics extends CursorConverter {
     repoName: string,
     ctx: StreamContext
   ): Promise<RepoKey | undefined> {
-    // Check cache first
-    if (this.repoCache.has(repoName)) {
-      return this.repoCache.get(repoName);
+    // Check if repo is already cached first
+    const repo = this.repoCache.get(repoName);
+    if (repo) {
+      return repo;
     }
 
-    const orgFromRepoName = this.extractOrgFromRepo(repoName);
-    if (!orgFromRepoName) {
+    const {repoName: parsedRepoName, orgUid} = this.parseRepoName(repoName);
+    if (!orgUid) {
       return undefined;
     }
 
@@ -125,8 +116,8 @@ export class AiCommitMetrics extends CursorConverter {
         ctx.graph,
         vcsRepositorySingleQuery,
         {
-          repoName: this.extractRepoName(repoName),
-          orgUid: orgFromRepoName,
+          repoName: parsedRepoName,
+          orgUid,
         }
       );
 
@@ -145,20 +136,15 @@ export class AiCommitMetrics extends CursorConverter {
     }
   }
 
-  private extractOrgFromRepo(repoName: string | null): string | null {
-    if (!repoName) return null;
-
+  private parseRepoName(repoName: string): {repoName: string; orgUid: string} {
     // Handle format: "org/repo"
     const parts = repoName.split('/');
-    if (parts.length >= 2) {
-      return parts[0].toLowerCase();
+    if (parts.length == 2) {
+      return {
+        orgUid: parts[0].toLowerCase(),
+        repoName: parts.slice(1).join('/'),
+      };
     }
-    return null;
-  }
-
-  private extractRepoName(repoName: string): string {
-    // Extract repo name without org prefix if present
-    const parts = repoName.split('/');
-    return parts.length >= 2 ? parts.slice(1).join('/') : repoName;
+    return {repoName, orgUid: null};
   }
 }

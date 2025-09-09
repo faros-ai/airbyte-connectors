@@ -48,16 +48,18 @@ export class UsageEvents extends CursorConverter {
       },
     });
     res.push(
-      ...this.getAssistantMetric(
-        timestamp,
-        timestamp,
-        AssistantMetric.Usages,
-        1,
-        {uid: this.streamName.source, source: this.streamName.source},
-        usageEventItem.userEmail,
-        undefined,
-        usageEventItem.model
-      )
+      ...this.getAssistantMetric({
+        startedAt: timestamp,
+        endedAt: timestamp,
+        assistantMetricType: AssistantMetric.Usages,
+        value: 1,
+        organization: {
+          uid: this.streamName.source,
+          source: this.streamName.source,
+        },
+        userEmail: usageEventItem.userEmail,
+        model: usageEventItem.model,
+      })
     );
     return res;
   }
