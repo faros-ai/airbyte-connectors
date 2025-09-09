@@ -46,7 +46,7 @@ export class FarosPullRequests extends GitHubConverter {
   ];
 
   private initialize(ctx: StreamContext): void {
-    if (this.fetchingPrFiles) {
+    if (this.fetchingPrFiles !== undefined) {
       return;
     }
     this.fetchingPrFiles = ctx.getSourceConfig()?.fetch_pull_request_files ?? false;
