@@ -141,9 +141,9 @@ export class Cursor {
     endDate: string
   ): AsyncGenerator<AiCommitMetricItem> {
     let page = 1;
-    let hasMore = true;
+    let hasNextPage = true;
 
-    while (hasMore) {
+    while (hasNextPage) {
       const params = new URLSearchParams({
         startDate,
         endDate,
@@ -159,7 +159,7 @@ export class Cursor {
         yield commit;
       }
 
-      hasMore = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
+      hasNextPage = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
       page++;
     }
   }

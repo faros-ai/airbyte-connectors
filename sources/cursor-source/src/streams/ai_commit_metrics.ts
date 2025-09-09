@@ -5,13 +5,14 @@ import {
   SyncMode,
 } from 'faros-airbyte-cdk';
 import {AiCommitMetricItem} from 'faros-airbyte-common/cursor';
+import {Utils} from 'faros-js-client';
 import {Dictionary} from 'ts-essentials';
 
 import {Cursor} from '../cursor';
 import {CursorConfig} from '../types';
 
 type StreamState = {
-  cutoff: string;
+  cutoff: number;
 };
 
 export class AiCommitMetrics extends AirbyteStreamBase {
@@ -46,25 +47,28 @@ export class AiCommitMetrics extends AirbyteStreamBase {
         ? this.getUpdateRange(cutoff)
         : this.getUpdateRange();
     const cursor = Cursor.instance(this.config, this.logger);
-    yield* cursor.getAiCommitMetrics(startDate, endDate);
+    yield* cursor.getAiCommitMetrics(
+      startDate.toISOString(),
+      endDate.toISOString()
+    );
   }
 
   getUpdatedState(
     currentStreamState: StreamState,
     latestRecord: AiCommitMetricItem
   ): StreamState {
-    const currentCutoff = currentStreamState?.cutoff;
-    const latestCommitCreatedAt = latestRecord.createdAt;
-
-    if (!currentCutoff || latestCommitCreatedAt > currentCutoff) {
-      return {cutoff: latestCommitCreatedAt};
-    }
-    return currentStreamState;
+    return {
+      cutoff: Math.max(
+        currentStreamState?.cutoff ?? 0,
+        Utils.toDate(latestRecord.createdAt)?.getTime()
+      ),
+    };
   }
 
-  getUpdateRange(cutoff?: string): [string, string] {
-    const startDate = cutoff || this.config.start_date || '7d';
-    const endDate = this.config.end_date || 'now';
-    return [startDate, endDate];
+  getUpdateRange(cutoff?: number): [Date, Date] {
+    return [
+      cutoff ? Utils.toDate(cutoff) : this.config.startDate,
+      this.config.endDate,
+    ];
   }
 }
