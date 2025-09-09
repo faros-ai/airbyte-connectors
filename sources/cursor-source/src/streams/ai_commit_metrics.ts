@@ -31,7 +31,7 @@ export class AiCommitMetrics extends AirbyteStreamBase {
   }
 
   get cursorField(): string | string[] {
-    return 'commitTs';
+    return 'createdAt';
   }
 
   async *readRecords(
@@ -54,10 +54,10 @@ export class AiCommitMetrics extends AirbyteStreamBase {
     latestRecord: AiCommitMetricItem
   ): StreamState {
     const currentCutoff = currentStreamState?.cutoff;
-    const latestCommitTs = latestRecord.commitTs || latestRecord.createdAt;
+    const latestCommitCreatedAt = latestRecord.createdAt;
 
-    if (!currentCutoff || latestCommitTs > currentCutoff) {
-      return {cutoff: latestCommitTs};
+    if (!currentCutoff || latestCommitCreatedAt > currentCutoff) {
+      return {cutoff: latestCommitCreatedAt};
     }
     return currentStreamState;
   }
