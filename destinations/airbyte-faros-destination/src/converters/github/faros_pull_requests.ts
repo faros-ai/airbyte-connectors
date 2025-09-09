@@ -31,6 +31,7 @@ export class FarosPullRequests extends GitHubConverter {
     ReadonlyArray<DestinationRecord>
   >();
   private readonly prKeyMap = new Map<string, PullRequestKey>();
+  private fetchingPrFiles: boolean | undefined;
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -44,10 +45,19 @@ export class FarosPullRequests extends GitHubConverter {
     'qa_CodeQuality',
   ];
 
+  private initialize(ctx: StreamContext): void {
+    if (this.fetchingPrFiles) {
+      return;
+    }
+    this.fetchingPrFiles = ctx.getSourceConfig()?.fetch_pull_request_files ?? false;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
+
     const pr = record.record.data as PullRequest;
 
     const prKey = GitHubCommon.pullRequestKey(
@@ -348,6 +358,11 @@ export class FarosPullRequests extends GitHubConverter {
   }
 
   private convertPRFileAssociations(): DestinationRecord[] {
+    // Only process PR file associations if we're fetching PR files from the source
+    if (!this.fetchingPrFiles) {
+      return [];
+    }
+
     return [
       ...Array.from(this.prFileAssoc.keys()).map((prKeyStr) => ({
         model: 'vcs_PullRequestFile__Deletion',
