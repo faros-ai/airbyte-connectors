@@ -138,7 +138,7 @@ export class AiCommitMetrics extends CursorConverter {
   private parseRepoName(repoName: string): {repoName: string; orgUid: string} {
     // Handle format: "org/repo"
     const parts = repoName.split('/');
-    if (parts.length == 2) {
+    if (parts.length === 2) {
       return {
         orgUid: parts[0].toLowerCase(),
         repoName: parts.slice(1).join('/'),
