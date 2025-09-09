@@ -63,6 +63,7 @@ export abstract class CursorConverter extends Converter {
                 ...[
                   {key: 'model', value: model},
                   {key: 'feature', value: feature},
+                  {key: 'repository', value: repository?.uid},
                 ]
                   .filter((v) => !isNil(v.value))
                   .map((v) => `${v.key}:${v.value}`)
