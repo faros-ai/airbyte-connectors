@@ -17,7 +17,6 @@ export enum Feature {
   Agent = 'Agent',
   CmdK = 'Cmd+K',
   BugBot = 'BugBot',
-  Manual = 'Manual',
 }
 
 export abstract class CursorConverter extends Converter {

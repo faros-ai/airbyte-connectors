@@ -707,10 +707,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "tabLinesAdded",
+        "category": "AILinesAdded",
       },
-      "uid": "a2cc52f8db5cb47097ec6e27407cf952d6c6f04271df9c9d6923e7e63134f1db",
+      "uid": "820fe744334e1d16acde2e550317ce3cff0137898b5f9570152a60e9ec056528",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -722,7 +721,6 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-09-03T00:23:15.000Z",
-      "feature": "Manual",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
@@ -734,10 +732,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "nonAiLinesAdded",
+        "category": "NonAILinesAdded",
       },
-      "uid": "0ddae53a04ab0e9734889ea4228f9a4350ad30cbfa8caf4e796514c507e46ec8",
+      "uid": "37a0e3dfbba6c7b74c5e0cc350f131db7e1c3e9f7a68c6ff1ff4da59904a4788",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -749,7 +746,6 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-09-03T13:52:19.000Z",
-      "feature": "Manual",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
@@ -761,10 +757,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "nonAiLinesAdded",
+        "category": "NonAILinesAdded",
       },
-      "uid": "7afe0681df6fbc64201e5ef339de1cfc476dd2160766e0b0056b6b430fab2af0",
+      "uid": "6387260a49d66564702b19974a2a18b4a890f3113eeec60dde8a9bf169ddff77",
       "user": Object {
         "source": "Cursor",
         "uid": "admin@company.com",
@@ -788,10 +783,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "tabLinesAdded",
+        "category": "AILinesAdded",
       },
-      "uid": "b17b44295bca51c8302caedcef618e7a7c71e0ea01dd5ef3ca4c5a0fa348e1cf",
+      "uid": "90c77d30d07242991cf25136c0fb657dfc633ef52eee3ea8c84e400f46694f1e",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -815,10 +809,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "composerLinesAdded",
+        "category": "AILinesAdded",
       },
-      "uid": "8a16f3861559f0fdfb67426d9c95998ec1dcd16d870348825bd6ae22c120d06e",
+      "uid": "038e069774e676b58ba09fa612d9201908b254d2e08d65aa2411bbb91412c8f8",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -842,10 +835,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "tabLinesAdded",
+        "category": "AILinesAdded",
       },
-      "uid": "2580b54ed990066a0edb85ba4bb6c2d13e5a28fe96ce454ca18e5edac3d7c235",
+      "uid": "f97d61e7531ce9e980189b3d51cfccfde4eebeab2804e83fc38919c804fdfd88",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",
@@ -869,10 +861,9 @@ Array [
         "detail": "Cursor",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": "composerLinesAdded",
+        "category": "AILinesAdded",
       },
-      "uid": "944acc4397478c49b0426f8c0fc4fa99d733712655fa68e56b289afbaf4ce1b8",
+      "uid": "81b0fcfeb1e2cc01861f02a89c2112f9aa7eee3de7d10b25f2c75ed659a3d955",
       "user": Object {
         "source": "Cursor",
         "uid": "developer@company.com",

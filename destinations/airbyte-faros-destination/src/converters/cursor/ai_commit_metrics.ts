@@ -54,11 +54,11 @@ export class AiCommitMetrics extends CursorConverter {
         ...this.getAssistantMetric(
           commitDate,
           commitDate,
-          AssistantMetric.Custom,
+          AssistantMetric.AILinesAdded,
           metric.tabLinesAdded,
           org,
           metric.userEmail,
-          'tabLinesAdded',
+          undefined,
           undefined,
           Feature.Tab,
           repository
@@ -72,11 +72,11 @@ export class AiCommitMetrics extends CursorConverter {
         ...this.getAssistantMetric(
           commitDate,
           commitDate,
-          AssistantMetric.Custom,
+          AssistantMetric.AILinesAdded,
           metric.composerLinesAdded,
           org,
           metric.userEmail,
-          'composerLinesAdded',
+          undefined,
           undefined,
           Feature.Composer,
           repository
@@ -90,13 +90,13 @@ export class AiCommitMetrics extends CursorConverter {
         ...this.getAssistantMetric(
           commitDate,
           commitDate,
-          AssistantMetric.Custom,
+          AssistantMetric.NonAILinesAdded,
           metric.nonAiLinesAdded,
           org,
           metric.userEmail,
-          'nonAiLinesAdded',
           undefined,
-          Feature.Manual,
+          undefined,
+          undefined,
           repository
         )
       );
