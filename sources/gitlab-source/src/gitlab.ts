@@ -61,6 +61,7 @@ export class GitLab {
   protected readonly graphqlPageSize: number;
   protected readonly fetchPublicGroups: boolean;
   public readonly userCollector: UserCollector;
+  private hasClosedAtField: boolean | null = null;
 
   constructor(
     readonly config: GitLabConfig,
@@ -298,6 +299,75 @@ export class GitLab {
     }
   }
 
+  private async checkMergeRequestClosedAtField(): Promise<boolean> {
+    if (this.hasClosedAtField !== null) {
+      return this.hasClosedAtField;
+    }
+
+    const introspectionQuery = `
+      query {
+        __type(name: "MergeRequest") {
+          name
+          fields {
+            name
+          }
+        }
+      }
+    `;
+
+    try {
+      this.logger.debug(
+        'Checking GitLab GraphQL schema for MergeRequest.closedAt field'
+      );
+      const result: any = await this.gqlClient.request(introspectionQuery);
+
+      if (result?.__type?.fields) {
+        const fieldNames = result.__type.fields.map((field: any) => field.name);
+        this.hasClosedAtField = fieldNames.includes('closedAt');
+
+        this.logger.info(
+          `GitLab GraphQL schema inspection: MergeRequest.closedAt field ${
+            this.hasClosedAtField ? 'is available' : 'is NOT available'
+          }`
+        );
+
+        if (!this.hasClosedAtField) {
+          this.logger.debug(
+            'MergeRequest.closedAt field not found in schema. This field will be excluded from queries.'
+          );
+        }
+
+        return this.hasClosedAtField;
+      }
+
+      this.logger.warn(
+        'Unable to determine if MergeRequest.closedAt exists, assuming it is available'
+      );
+      this.hasClosedAtField = true;
+      return this.hasClosedAtField;
+    } catch (error: any) {
+      this.logger.warn(
+        `Failed to introspect MergeRequest fields: ${error.message}. Assuming closedAt field is available.`
+      );
+      this.hasClosedAtField = true;
+      return this.hasClosedAtField;
+    }
+  }
+
+  private async buildMergeRequestQuery(): Promise<string> {
+    const hasClosedAt = await this.checkMergeRequestClosedAtField();
+
+    let query = MERGE_REQUESTS_QUERY;
+
+    if (!hasClosedAt) {
+      // Remove closedAt field from the query
+      query = query.replace(/\s*closedAt\s*\n?/g, '');
+      this.logger.debug('Removed closedAt field from merge request query');
+    }
+
+    return query;
+  }
+
   async *getMergeRequestsWithNotes(
     projectPath: string,
     since?: Date,
@@ -312,10 +382,13 @@ export class GitLab {
     let cursor: string | null = null;
     let hasNextPage = true;
 
+    // Get the appropriate query based on schema availability
+    const query = await this.buildMergeRequestQuery();
+
     // Phase 1: GraphQL MR + first page notes
     while (hasNextPage) {
       try {
-        const result: any = await this.gqlClient.request(MERGE_REQUESTS_QUERY, {
+        const result: any = await this.gqlClient.request(query, {
           fullPath: projectPath,
           pageSize: this.graphqlPageSize,
           cursor,
