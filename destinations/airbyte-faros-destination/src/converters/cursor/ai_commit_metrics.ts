@@ -109,17 +109,14 @@ export class AiCommitMetrics extends CursorConverter {
     repoName: string,
     ctx: StreamContext
   ): Promise<RepoKey | undefined> {
+    // Check cache first
+    if (this.repoCache.has(repoName)) {
+      return this.repoCache.get(repoName);
+    }
+
     const orgFromRepoName = this.extractOrgFromRepo(repoName);
     if (!orgFromRepoName) {
       return undefined;
-    }
-
-    const cacheKey = `${orgFromRepoName}/${this.extractRepoName(repoName)}`;
-
-    // Check cache first
-    if (this.repoCache.has(cacheKey)) {
-      const cached = this.repoCache.get(cacheKey);
-      return cached || undefined;
     }
 
     // Query Faros for repository
@@ -129,19 +126,21 @@ export class AiCommitMetrics extends CursorConverter {
         vcsRepositorySingleQuery,
         {
           repoName: this.extractRepoName(repoName),
-          orgUid: orgFromRepoName.toLowerCase(),
+          orgUid: orgFromRepoName,
         }
       );
 
       const repo = result?.vcs_Repository?.[0] as RepoKey | undefined;
 
       // Cache the result (including null for not found)
-      this.repoCache.set(cacheKey, repo || null);
+      this.repoCache.set(repoName, repo || null);
 
       return repo;
     } catch (error) {
-      // On error, cache null to avoid retrying
-      this.repoCache.set(cacheKey, null);
+      ctx.logger.warn(
+        `Failed to fetch repository ${repoName} from Faros: ${error}`
+      );
+      this.repoCache.set(repoName, null);
       return undefined;
     }
   }

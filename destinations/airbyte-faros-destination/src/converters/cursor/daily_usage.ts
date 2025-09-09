@@ -3,7 +3,7 @@ import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {CursorConverter, Feature} from './common';
 
