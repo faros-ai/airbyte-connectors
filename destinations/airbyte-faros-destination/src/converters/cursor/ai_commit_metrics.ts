@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {AiCommitMetricItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
-import {isNil} from 'lodash';
 
 import {AssistantMetric, RepoKey} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';

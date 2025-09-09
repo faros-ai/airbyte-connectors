@@ -1,6 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {digest} from 'faros-airbyte-common/common';
-import {AiCommitMetricItem, DailyUsageItem} from 'faros-airbyte-common/cursor';
+import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {isNil} from 'lodash';
 
 import {OrgKey, RepoKey, VCSToolCategory, VCSToolDetail} from '../common/vcs';
