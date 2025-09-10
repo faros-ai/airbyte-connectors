@@ -89,6 +89,8 @@ export enum AssistantMetric {
   LastActivity = 'LastActivity',
   Engagement = 'Engagement',
   Usages = 'Usages',
+  AILinesAdded = 'AILinesAdded',
+  NonAILinesAdded = 'NonAILinesAdded',
   Custom = 'Custom',
 }
 

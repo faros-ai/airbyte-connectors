@@ -19,6 +19,68 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
+exports[`index streams - ai commit metrics 1`] = `
+[
+  {
+    "branchName": "cr/import",
+    "commitHash": "d1175708387893edf0bc93e95748dadb88b762ce",
+    "commitTs": "2025-09-03T00:23:15.000Z",
+    "composerLinesAdded": 0,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T02:44:42.599Z",
+    "isPrimaryBranch": false,
+    "message": "add llm analysis",
+    "nonAiLinesAdded": 98,
+    "nonAiLinesDeleted": 2,
+    "repoName": "faros-ai/gains",
+    "tabLinesAdded": 21,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 119,
+    "totalLinesDeleted": 2,
+    "userEmail": "developer@company.com",
+    "userId": "user_cNEHgCQWLLsrRAMcuZWXgvB16J",
+  },
+  {
+    "branchName": null,
+    "commitHash": "8dabad06ce5d2b1ce35651ad5f04b177745738aa",
+    "commitTs": "2025-09-03T13:52:19.000Z",
+    "composerLinesAdded": 0,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T13:56:42.319Z",
+    "isPrimaryBranch": null,
+    "message": null,
+    "nonAiLinesAdded": 4,
+    "nonAiLinesDeleted": 11,
+    "repoName": null,
+    "tabLinesAdded": 0,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 4,
+    "totalLinesDeleted": 11,
+    "userEmail": "admin@company.com",
+    "userId": "user_2ovJ2j2BQ2GDTseAl7YHJVBo6b",
+  },
+  {
+    "branchName": "cr/import",
+    "commitHash": "9a1b3017dea20ddd12a012a817c61ab96ebb52c6",
+    "commitTs": "2025-09-03T02:41:24.000Z",
+    "composerLinesAdded": 118,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T02:44:42.110Z",
+    "isPrimaryBranch": false,
+    "message": "format and lint",
+    "nonAiLinesAdded": 0,
+    "nonAiLinesDeleted": 64,
+    "repoName": "faros-ai/gains",
+    "tabLinesAdded": 3,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 121,
+    "totalLinesDeleted": 64,
+    "userEmail": "developer@company.com",
+    "userId": "user_cNEHgCQWLLsrRAMcuZWXgvB16J",
+  },
+]
+`;
+
 exports[`index streams - daily usage 1`] = `
 [
   {

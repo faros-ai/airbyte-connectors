@@ -84,3 +84,29 @@ export type UsageEventsResponse = {
     endDate: number;
   };
 };
+
+// https://docs.cursor.com/en/account/teams/ai-code-tracking-api#get-ai-commit-metrics-json%2C-paginated
+export type AiCommitMetricsResponse = {
+  items: {
+    commitHash: string;
+    userId: string;
+    userEmail: string;
+    repoName: string | null;
+    branchName: string | null;
+    isPrimaryBranch: boolean | null;
+    totalLinesAdded: number;
+    totalLinesDeleted: number;
+    tabLinesAdded: number;
+    tabLinesDeleted: number;
+    composerLinesAdded: number;
+    composerLinesDeleted: number;
+    nonAiLinesAdded: number | null;
+    nonAiLinesDeleted: number | null;
+    message: string | null;
+    commitTs: string | null;
+    createdAt: string;
+  }[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+};

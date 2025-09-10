@@ -2,6 +2,7 @@ import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   ActiveMemberItem,
+  AiCommitMetricItem,
   DailyUsageItem,
   InactiveMemberItem,
   MemberItem,
@@ -11,6 +12,7 @@ import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import VError from 'verror';
 
 import {
+  AiCommitMetricsResponse,
   CursorConfig,
   DailyUsageResponse,
   MembersResponse,
@@ -131,6 +133,53 @@ export class Cursor {
 
       hasNextPage = res.data.pagination.hasNextPage;
       page++;
+    }
+  }
+
+  async *getAiCommitMetrics(
+    startDate: string,
+    endDate: string
+  ): AsyncGenerator<AiCommitMetricItem> {
+    let page = 1;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const params = new URLSearchParams({
+        startDate,
+        endDate,
+        page: page.toString(),
+        pageSize: DEFAULT_PAGE_SIZE.toString(),
+      });
+
+      try {
+        const res = await this.api.get<AiCommitMetricsResponse>(
+          `/analytics/ai-code/commits?${params.toString()}`
+        );
+
+        for (const commit of res.data.items) {
+          yield commit;
+        }
+
+        hasNextPage = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
+        page++;
+      } catch (error: any) {
+        // Check for 401 unauthorized error indicating no enterprise access
+        if (error.response?.status === 401) {
+          const errorMessage =
+            error.response?.data?.message ||
+            'You must be a member of an enterprise team to access this resource';
+
+          this.logger.info(
+            `Cannot access AI commit metrics API: ${errorMessage}. ` +
+              'An enterprise Cursor account is required to access AI code analytics.'
+          );
+
+          return;
+        }
+
+        // Re-throw other errors
+        throw error;
+      }
     }
   }
 

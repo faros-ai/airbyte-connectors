@@ -60,3 +60,23 @@ export type UsageEventItem = {
   isFreeBugbot: boolean;
   userEmail?: string;
 };
+
+export type AiCommitMetricItem = {
+  commitHash: string;
+  userId: string;
+  userEmail: string;
+  repoName: string | null;
+  branchName: string | null;
+  isPrimaryBranch: boolean | null;
+  totalLinesAdded: number;
+  totalLinesDeleted: number;
+  tabLinesAdded: number;
+  tabLinesDeleted: number;
+  composerLinesAdded: number;
+  composerLinesDeleted: number;
+  nonAiLinesAdded: number | null;
+  nonAiLinesDeleted: number | null;
+  message: string | null;
+  commitTs: string | null;
+  createdAt: string;
+};

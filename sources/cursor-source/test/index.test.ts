@@ -117,4 +117,61 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - ai commit metrics', async () => {
+    const res = readTestResourceAsJSON(
+      'ai_commit_metrics/ai_commit_metrics.json'
+    );
+    setupCursorInstance({
+      get: jest.fn().mockResolvedValue({data: res}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'ai_commit_metrics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - ai commit metrics handles 401 gracefully', async () => {
+    const error = {
+      response: {
+        status: 401,
+        data: {
+          code: 'error',
+          message:
+            'You must be a member of an enterprise team to access this resource',
+        },
+      },
+    };
+    setupCursorInstance({
+      get: jest.fn().mockImplementation((url) => {
+        if (url.includes('/analytics/ai-code/commits')) {
+          return Promise.reject(error);
+        }
+        // Return empty members for other calls
+        return Promise.resolve({data: {teamMembers: []}});
+      }),
+      post: jest.fn().mockResolvedValue({data: {data: []}}),
+    });
+
+    const logger = new AirbyteSourceLogger(AirbyteLogLevel.DEBUG);
+    const infoSpy = jest.spyOn(logger, 'info');
+    const source = new sut.CursorSource(logger);
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'ai_commit_metrics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toEqual([]);
+      },
+    });
+
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Cannot access AI commit metrics API')
+    );
+  });
 });

@@ -3,9 +3,9 @@ import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {CursorConverter} from './common';
+import {CursorConverter, Feature} from './common';
 
 const DailyUsageItemToAssistantMetricType: Partial<
   Record<keyof DailyUsageItem, AssistantMetric>
@@ -14,15 +14,6 @@ const DailyUsageItemToAssistantMetricType: Partial<
   totalAccepts: AssistantMetric.SuggestionsAccepted,
   totalRejects: AssistantMetric.SuggestionsDiscarded,
 };
-
-enum Feature {
-  Tab = 'Tab',
-  Composer = 'Composer',
-  Chat = 'Chat',
-  Agent = 'Agent',
-  CmdK = 'Cmd+K',
-  BugBot = 'BugBot',
-}
 
 const DailyUsageItemToFeature: Partial<Record<keyof DailyUsageItem, Feature>> =
   {
@@ -59,6 +50,12 @@ export class DailyUsage extends CursorConverter {
     }
 
     const day = Utils.toDate(dailyUsageItem.date);
+
+    const organization = {
+      uid: this.streamName.source,
+      source: this.streamName.source,
+    };
+
     const res: DestinationRecord[] = [];
 
     for (const [field, assistantMetricType] of Object.entries(
@@ -69,14 +66,14 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
           assistantMetricType,
           value,
-          VCSToolDetail.Cursor,
-          dailyUsageItem.email
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+        })
       );
     }
 
@@ -90,15 +87,15 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
-          AssistantMetric.Custom,
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
+          assistantMetricType: AssistantMetric.Custom,
           value,
-          VCSToolDetail.Cursor,
-          dailyUsageItem.email,
-          field
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+          customMetricName: field,
+        })
       );
     }
 
@@ -108,17 +105,15 @@ export class DailyUsage extends CursorConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
-          day,
-          Utils.toDate(day.getTime() + DAY_MS),
-          AssistantMetric.Usages,
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: Utils.toDate(day.getTime() + DAY_MS),
+          assistantMetricType: AssistantMetric.Usages,
           value,
-          VCSToolDetail.Cursor,
-          dailyUsageItem.email,
-          undefined,
-          undefined,
-          feature
-        )
+          organization,
+          userEmail: dailyUsageItem.email,
+          feature,
+        })
       );
     }
     return res;
