@@ -148,7 +148,7 @@ export class Cursor {
         startDate,
         endDate,
         page: page.toString(),
-        pageSize: DEFAULT_PAGE_SIZE.toString(),
+        pageSize: (this.config.page_size ?? DEFAULT_PAGE_SIZE).toString(),
       });
 
       try {
@@ -160,7 +160,7 @@ export class Cursor {
           yield commit;
         }
 
-        hasNextPage = page * DEFAULT_PAGE_SIZE < res.data.totalCount;
+        hasNextPage = page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) < res.data.totalCount;
         page++;
       } catch (error: any) {
         // Check for 401 unauthorized error indicating no enterprise access
