@@ -37,21 +37,28 @@
         "description": "Timeout in milliseconds for each request to the Cursor API",
         "default": 60000
       },
-      "backfill": {
+      "page_size": {
         "order": 4,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of records to fetch per API request",
+        "default": 100
+      },
+      "backfill": {
+        "order": 5,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 5,
+        "order": 6,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data."
       },
       "end_date": {
-        "order": 6,
+        "order": 7,
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
