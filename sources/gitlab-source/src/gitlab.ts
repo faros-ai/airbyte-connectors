@@ -360,8 +360,9 @@ export class GitLab {
     let query = MERGE_REQUESTS_QUERY;
 
     if (!hasClosedAt) {
-      // Remove closedAt field from the query
-      query = query.replace(/\s*closedAt\s*\n?/g, '');
+      // Remove only the line containing `closedAt` to avoid concatenating neighbors
+      // e.g., prevent `mergedAt` + `author` becoming `mergedAtauthor`
+      query = query.replace(/^[ \t]*closedAt\s*\r?\n/gm, '');
       this.logger.debug('Removed closedAt field from merge request query');
     }
 
