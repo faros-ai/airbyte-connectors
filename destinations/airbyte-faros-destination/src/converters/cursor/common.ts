@@ -3,11 +3,33 @@ import {digest} from 'faros-airbyte-common/common';
 import {DailyUsageItem} from 'faros-airbyte-common/cursor';
 import {isNil} from 'lodash';
 
-import {VCSToolCategory, VCSToolDetail} from '../common/vcs';
+import {OrgKey, RepoKey, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {Converter, DestinationRecord, StreamContext} from '../converter';
 
 export interface CursorConfig {
   custom_metrics?: ReadonlyArray<keyof DailyUsageItem>;
+}
+
+export interface AssistantMetricConfig {
+  startedAt: Date;
+  endedAt: Date;
+  assistantMetricType: string;
+  value: number | string | boolean;
+  organization: OrgKey;
+  userEmail: string;
+  customMetricName?: keyof DailyUsageItem;
+  model?: string;
+  feature?: string;
+  repository?: RepoKey;
+}
+
+export enum Feature {
+  Tab = 'Tab',
+  Composer = 'Composer',
+  Chat = 'Chat',
+  Agent = 'Agent',
+  CmdK = 'Cmd+K',
+  BugBot = 'BugBot',
 }
 
 export abstract class CursorConverter extends Converter {
@@ -22,16 +44,20 @@ export abstract class CursorConverter extends Converter {
   }
 
   protected getAssistantMetric(
-    startedAt: Date,
-    endedAt: Date,
-    assistantMetricType: string,
-    value: number | string | boolean,
-    org: string,
-    userEmail: string,
-    customMetricName?: keyof DailyUsageItem,
-    model?: string,
-    feature?: string
+    config: AssistantMetricConfig
   ): DestinationRecord[] {
+    const {
+      startedAt,
+      endedAt,
+      assistantMetricType,
+      value,
+      organization,
+      userEmail,
+      customMetricName,
+      model,
+      feature,
+      repository,
+    } = config;
     return [
       {
         model: 'vcs_AssistantMetric',
@@ -44,7 +70,7 @@ export abstract class CursorConverter extends Converter {
                   VCSToolDetail.Cursor,
                   assistantMetricType,
                   startedAt.toISOString(),
-                  org,
+                  organization.uid,
                   userEmail,
                   customMetricName,
                 ],
@@ -52,6 +78,7 @@ export abstract class CursorConverter extends Converter {
                 ...[
                   {key: 'model', value: model},
                   {key: 'feature', value: feature},
+                  {key: 'repository', value: repository?.uid},
                 ]
                   .filter((v) => !isNil(v.value))
                   .map((v) => `${v.key}:${v.value}`)
@@ -67,10 +94,7 @@ export abstract class CursorConverter extends Converter {
           },
           valueType: getValueType(value),
           value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
+          organization,
           user: {uid: userEmail, source: this.streamName.source},
           tool: {
             category: VCSToolCategory.CodingAssistant,
@@ -78,6 +102,7 @@ export abstract class CursorConverter extends Converter {
           },
           ...(model && {model}),
           ...(feature && {feature}),
+          ...(repository && {repository}),
         },
       },
     ];

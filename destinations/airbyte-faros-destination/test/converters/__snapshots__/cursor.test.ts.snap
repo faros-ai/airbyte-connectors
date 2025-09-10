@@ -2,10 +2,10 @@
 
 exports[`cursor process records from all streams 1`] = `
 Array [
-  "Processed 7 records",
-  "Processed records by stream: {\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2,\\\\\\"mytestsource__cursor__usage_events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 31 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":21,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__cursor__ai_commit_metrics\\\\\\":4,\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2,\\\\\\"mytestsource__cursor__usage_events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 38 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":28,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -689,6 +689,186 @@ Array [
         "uid": "admin@company.com",
       },
       "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T00:23:15.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T00:23:15.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "820fe744334e1d16acde2e550317ce3cff0137898b5f9570152a60e9ec056528",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "21",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T00:23:15.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T00:23:15.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "NonAILinesAdded",
+      },
+      "uid": "37a0e3dfbba6c7b74c5e0cc350f131db7e1c3e9f7a68c6ff1ff4da59904a4788",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "98",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T13:52:19.000Z",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T13:52:19.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "NonAILinesAdded",
+      },
+      "uid": "6387260a49d66564702b19974a2a18b4a890f3113eeec60dde8a9bf169ddff77",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "admin@company.com",
+      },
+      "value": "4",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T02:41:24.000Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T02:41:24.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "90c77d30d07242991cf25136c0fb657dfc633ef52eee3ea8c84e400f46694f1e",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T02:41:24.000Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T02:41:24.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "038e069774e676b58ba09fa612d9201908b254d2e08d65aa2411bbb91412c8f8",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "118",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T14:05:04.539Z",
+      "feature": "Tab",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T14:05:04.539Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "f97d61e7531ce9e980189b3d51cfccfde4eebeab2804e83fc38919c804fdfd88",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-09-03T14:05:04.539Z",
+      "feature": "Composer",
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "startedAt": "2025-09-03T14:05:04.539Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "81b0fcfeb1e2cc01861f02a89c2112f9aa7eee3de7d10b25f2c75ed659a3d955",
+      "user": Object {
+        "source": "Cursor",
+        "uid": "developer@company.com",
+      },
+      "value": "11",
       "valueType": "Int",
     },
   },

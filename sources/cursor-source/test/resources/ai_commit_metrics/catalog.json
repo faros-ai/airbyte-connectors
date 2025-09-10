@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "ai_commit_metrics"
+      }
+    }
+  ]
+}
