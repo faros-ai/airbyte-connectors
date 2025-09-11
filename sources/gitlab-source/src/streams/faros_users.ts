@@ -43,7 +43,9 @@ export class FarosUsers extends StreamBase {
       this.logger.info(`Fetching users for group ${group}`);
       await gitlab.fetchGroupMembers(group);
       for (const project of await this.groupFilter.getProjects(group)) {
-        this.logger.info(`Fetching users for project ${project}`);
+        this.logger.info(
+          `Fetching users for project ${project.repo.path_with_namespace}`
+        );
         await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
       }
     }
