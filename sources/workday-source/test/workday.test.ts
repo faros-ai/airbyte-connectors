@@ -134,7 +134,7 @@ describe('customReports with reportParams', () => {
     });
 
     const reportParams: ReportParam[] = [
-      {name: 'format', value: 'xml'}, // Should be overwritten by base format
+      {name: 'format', value: 'xml'}, // User param overwrites base format (last-wins)
       {name: 'limit', value: '10'},
       {name: 'limit', value: '20'}, // This should win
     ];
