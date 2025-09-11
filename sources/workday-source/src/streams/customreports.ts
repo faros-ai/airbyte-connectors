@@ -24,7 +24,8 @@ export class Customreports extends AirbyteStreamBase {
     if (this.cfg.customReportName) {
       yield* workday.customReports(
         this.cfg.customReportName,
-        (this.cfg.reportFormat ?? 'json').toLowerCase()
+        (this.cfg.reportFormat ?? 'json').toLowerCase(),
+        this.cfg.reportParams
       );
     } else {
       this.logger.warn('No custom report name provided. Skipping...');

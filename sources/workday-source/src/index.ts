@@ -22,6 +22,11 @@ export interface UsernamePasswordCredentials {
   readonly password: string;
 }
 
+export interface ReportParam {
+  readonly name: string;
+  readonly value: string;
+}
+
 export interface WorkdayConfig extends AirbyteConfig {
   readonly tenant: string;
   readonly baseUrl: string;
@@ -31,6 +36,8 @@ export interface WorkdayConfig extends AirbyteConfig {
   readonly customReportName?: string;
   readonly reportFormat?: string;
   readonly timeout?: number;
+  /** Optional list of additional HTTP query parameters for custom reports */
+  readonly reportParams?: ReportParam[];
 }
 
 /** The main entry point. */

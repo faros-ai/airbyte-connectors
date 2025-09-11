@@ -3,7 +3,7 @@ import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import Papa from 'papaparse';
 import {VError} from 'verror';
 
-import {WorkdayConfig} from '.';
+import {ReportParam, WorkdayConfig} from '.';
 import {
   Person,
   SupervisoryOrganization,
@@ -160,7 +160,8 @@ export class Workday {
 
   async *customReports(
     customReportName: string,
-    reportFormat: string | null
+    reportFormat: string | null,
+    reportParams?: ReportParam[]
   ): AsyncGenerator<any> {
     const finalPathURL = ccxUrl(
       `/service/customreport2/${this.tenant}/${customReportName}`,
@@ -174,8 +175,17 @@ export class Workday {
     if (!reportFormat) {
       reportFormat = 'json';
     }
+    // Start with base parameters, using reportFormat
+    const params: Record<string, string> = {format: reportFormat};
+    
+    // Merge in user-provided parameters (last-wins for duplicates)
+    if (reportParams) {
+      for (const param of reportParams) {
+        params[param.name] = param.value;
+      }
+    }
 
-    const res = await this.api.get(finalPath, {params: {format: reportFormat}});
+    const res = await this.api.get(finalPath, {params});
     if (reportFormat === 'json') {
       for (const item of res.data?.Report_Entry ?? []) {
         yield item;

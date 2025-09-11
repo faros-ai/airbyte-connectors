@@ -26,3 +26,33 @@ in order to use the destination, we require the field names to contain the follo
 ```
 For the Custom Report, the conventional credentials are a username and password.
 You can optionally include OAuth using a clientId, a clientSecret, and a refreshToken.
+
+## Custom Report Parameters
+
+You can provide additional HTTP query parameters when invoking custom reports using the `reportParams` configuration option:
+
+```json
+{
+  "tenant": "acme",
+  "baseUrl": "https://wd2-impl-services1.workday.com", 
+  "customReportName": "My_Custom_Report",
+  "reportFormat": "json",
+  "credentials": {
+    "credential_type": "userpassword",
+    "username": "your-username",
+    "password": "your-password"
+  },
+  "reportParams": [
+    {
+      "name": "startDate",
+      "value": "2023-01-01"
+    },
+    {
+      "name": "endDate", 
+      "value": "2023-12-31"
+    }
+  ]
+}
+```
+
+These parameters will be added to the API request URL alongside the hardcoded `format=json` parameter. If you provide a parameter with the same name as an existing parameter, your value will take precedence (last-wins behavior).
