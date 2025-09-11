@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical Details
 - Implements last-wins strategy for duplicate parameter names
 - Maintains backward compatibility (omitting `reportParams` yields identical behavior)
-- Always forces `format=json` in API requests while allowing other custom parameters
+- The `format` parameter in API requests defaults to the value of `reportFormat` but can be overridden by user-supplied parameters
 - Added JSDoc documentation for new configuration fields
 
 ## [0.0.1] - 2024-08-28
