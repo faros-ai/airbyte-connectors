@@ -32,8 +32,6 @@ export class Users extends AirbyteStreamBase {
     streamState?: any
   ): AsyncGenerator<UserItem> {
     const claudeCode = ClaudeCode.instance(this.config, this.logger);
-
-    // Get users from the API (simple full refresh)
     for await (const user of claudeCode.getUsers(this.config.page_size)) {
       yield user;
     }

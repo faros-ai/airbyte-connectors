@@ -28,6 +28,7 @@
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./circleci": "./lib/circleci/index.js",
+    "./claude-code": "./lib/claude-code/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
     "./cursor": "./lib/cursor/index.js",
@@ -55,6 +56,9 @@
       ],
       "circleci": [
         "./lib/circleci/index.d.ts"
+      ],
+      "claude-code": [
+        "./lib/claude-code/index.d.ts"
       ],
       "clickup": [
         "./lib/clickup/index.d.ts"
