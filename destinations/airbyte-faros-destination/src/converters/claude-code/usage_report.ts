@@ -174,6 +174,20 @@ export class UsageReport extends ClaudeCodeConverter {
       );
     }
 
+    // Core metrics: Sessions
+    if (usageItem.core_metrics?.num_sessions) {
+      res.push(
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: nextDay,
+          assistantMetricType: AssistantMetric.Usages,
+          value: usageItem.core_metrics.num_sessions,
+          organization,
+          userEmail,
+        })
+      );
+    }
+
     // Model breakdown: Cost per model
     if (usageItem.model_breakdown && usageItem.model_breakdown.length > 0) {
       for (const modelData of usageItem.model_breakdown) {

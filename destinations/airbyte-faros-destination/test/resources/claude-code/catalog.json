@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__claude_code__usage_report"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__claude_code__users"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}
