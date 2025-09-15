@@ -91,7 +91,11 @@ export enum AssistantMetric {
   Engagement = 'Engagement',
   Usages = 'Usages',
   AILinesAdded = 'AILinesAdded',
+  AILinesRemoved = 'AILinesRemoved',
   NonAILinesAdded = 'NonAILinesAdded',
+  CommitsCreated = 'CommitsCreated',
+  PullRequestsCreated = 'PullRequestsCreated',
+  Cost = 'Cost',
   Custom = 'Custom',
 }
 

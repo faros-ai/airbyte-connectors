@@ -23,7 +23,6 @@ export interface ClaudeCodeAssistantMetricConfig {
   customMetricName?: string;
   model?: string;
   feature?: ClaudeCodeFeature;
-  terminal?: string;
 }
 
 export class UsageReport extends ClaudeCodeConverter {
@@ -49,7 +48,6 @@ export class UsageReport extends ClaudeCodeConverter {
       customMetricName,
       model,
       feature,
-      terminal,
     } = config;
 
     return [
@@ -72,7 +70,6 @@ export class UsageReport extends ClaudeCodeConverter {
                 ...[
                   {key: 'model', value: model},
                   {key: 'feature', value: feature},
-                  {key: 'terminal', value: terminal},
                 ]
                   .filter((v) => !isNil(v.value))
                   .map((v) => `${v.key}:${v.value}`)
@@ -96,7 +93,6 @@ export class UsageReport extends ClaudeCodeConverter {
           },
           ...(model && {model}),
           ...(feature && {feature}),
-          ...(terminal && {terminal}),
         },
       },
     ];
@@ -121,20 +117,205 @@ export class UsageReport extends ClaudeCodeConverter {
     };
 
     const res: DestinationRecord[] = [];
+    const userEmail = usageItem.actor.email_address;
 
-    // TODO: Add specific Claude Code metric conversions here
-    // This is just the boilerplate structure - no records emitted yet
-    // Example usage:
-    // res.push(...this.getAssistantMetric({
-    //   startedAt: day,
-    //   endedAt: nextDay,
-    //   assistantMetricType: AssistantMetric.LinesAccepted,
-    //   value: usageItem.core_metrics.lines_of_code.added,
-    //   organization,
-    //   userEmail: usageItem.actor.email_address,
-    //   feature: ClaudeCodeFeature.UsageGeneral,
-    //   terminal: usageItem.terminal_type,
-    // }));
+    // Core metrics: Lines of code
+    if (usageItem.core_metrics?.lines_of_code?.added) {
+      res.push(
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: nextDay,
+          assistantMetricType: AssistantMetric.AILinesAdded,
+          value: usageItem.core_metrics.lines_of_code.added,
+          organization,
+          userEmail,
+        })
+      );
+    }
+
+    if (usageItem.core_metrics?.lines_of_code?.removed) {
+      res.push(
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: nextDay,
+          assistantMetricType: AssistantMetric.AILinesRemoved,
+          value: usageItem.core_metrics.lines_of_code.removed,
+          organization,
+          userEmail,
+        })
+      );
+    }
+
+    // Core metrics: Commits
+    if (usageItem.core_metrics?.commits_by_claude_code) {
+      res.push(
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: nextDay,
+          assistantMetricType: AssistantMetric.CommitsCreated,
+          value: usageItem.core_metrics.commits_by_claude_code,
+          organization,
+          userEmail,
+        })
+      );
+    }
+
+    // Core metrics: Pull Requests
+    if (usageItem.core_metrics?.pull_requests_by_claude_code) {
+      res.push(
+        ...this.getAssistantMetric({
+          startedAt: day,
+          endedAt: nextDay,
+          assistantMetricType: AssistantMetric.PullRequestsCreated,
+          value: usageItem.core_metrics.pull_requests_by_claude_code,
+          organization,
+          userEmail,
+        })
+      );
+    }
+
+    // Model breakdown: Cost per model
+    if (usageItem.model_breakdown && usageItem.model_breakdown.length > 0) {
+      for (const modelData of usageItem.model_breakdown) {
+        if (modelData.estimated_cost?.amount) {
+          res.push(
+            ...this.getAssistantMetric({
+              startedAt: day,
+              endedAt: nextDay,
+              assistantMetricType: AssistantMetric.Cost,
+              value: modelData.estimated_cost.amount,
+              organization,
+              userEmail,
+              model: modelData.model,
+            })
+          );
+        }
+      }
+    }
+
+    // Tool actions: Edit tool
+    if (usageItem.tool_actions?.edit_tool) {
+      if (usageItem.tool_actions.edit_tool.accepted) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsAccepted,
+            value: usageItem.tool_actions.edit_tool.accepted,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.EditTool,
+          })
+        );
+      }
+
+      if (usageItem.tool_actions.edit_tool.rejected) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsDiscarded,
+            value: usageItem.tool_actions.edit_tool.rejected,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.EditTool,
+          })
+        );
+      }
+    }
+
+    // Tool actions: Multi-edit tool
+    if (usageItem.tool_actions?.multi_edit_tool) {
+      if (usageItem.tool_actions.multi_edit_tool.accepted) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsAccepted,
+            value: usageItem.tool_actions.multi_edit_tool.accepted,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.MultiEditTool,
+          })
+        );
+      }
+
+      if (usageItem.tool_actions.multi_edit_tool.rejected) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsDiscarded,
+            value: usageItem.tool_actions.multi_edit_tool.rejected,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.MultiEditTool,
+          })
+        );
+      }
+    }
+
+    // Tool actions: Notebook edit tool
+    if (usageItem.tool_actions?.notebook_edit_tool) {
+      if (usageItem.tool_actions.notebook_edit_tool.accepted) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsAccepted,
+            value: usageItem.tool_actions.notebook_edit_tool.accepted,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.NotebookEditTool,
+          })
+        );
+      }
+
+      if (usageItem.tool_actions.notebook_edit_tool.rejected) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsDiscarded,
+            value: usageItem.tool_actions.notebook_edit_tool.rejected,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.NotebookEditTool,
+          })
+        );
+      }
+    }
+
+    // Tool actions: Write tool
+    if (usageItem.tool_actions?.write_tool) {
+      if (usageItem.tool_actions.write_tool.accepted) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsAccepted,
+            value: usageItem.tool_actions.write_tool.accepted,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.WriteTool,
+          })
+        );
+      }
+
+      if (usageItem.tool_actions.write_tool.rejected) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt: day,
+            endedAt: nextDay,
+            assistantMetricType: AssistantMetric.SuggestionsDiscarded,
+            value: usageItem.tool_actions.write_tool.rejected,
+            organization,
+            userEmail,
+            feature: ClaudeCodeFeature.WriteTool,
+          })
+        );
+      }
+    }
 
     return res;
   }

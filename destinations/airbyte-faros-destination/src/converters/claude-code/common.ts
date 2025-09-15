@@ -7,7 +7,6 @@ export enum ClaudeCodeFeature {
   MultiEditTool = 'MultiEditTool',
   NotebookEditTool = 'NotebookEditTool',
   WriteTool = 'WriteTool',
-  UsageGeneral = 'UsageGeneral',
 }
 
 export abstract class ClaudeCodeConverter extends Converter {
