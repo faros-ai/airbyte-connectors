@@ -112,7 +112,7 @@ export class UsageReport extends ClaudeCodeConverter {
     const nextDay = new Date(day.getTime() + 24 * 60 * 60 * 1000);
 
     const organization = {
-      uid: usageItem.organization_id.toLowerCase(),
+      uid: VCSToolDetail.ClaudeCode,
       source: this.streamName.source,
     };
 
