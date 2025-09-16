@@ -28,6 +28,7 @@ export interface ClaudeCodeAssistantMetricConfig {
 export class UsageReport extends ClaudeCodeConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
+    'vcs_UserToolUsage',
   ];
 
   id(record: AirbyteRecord): string {
@@ -186,6 +187,26 @@ export class UsageReport extends ClaudeCodeConverter {
           userEmail,
         })
       );
+
+      // Add UserToolUsage record for active usage
+      res.push({
+        model: 'vcs_UserToolUsage',
+        record: {
+          userTool: {
+            user: {uid: userEmail, source: this.streamName.source},
+            organization: {
+              uid: VCSToolDetail.ClaudeCode,
+              source: this.streamName.source,
+            },
+            tool: {
+              category: VCSToolCategory.CodingAssistant,
+              detail: VCSToolDetail.ClaudeCode,
+            },
+          },
+          usedAt: day.toISOString(),
+          recordedAt: day.toISOString(),
+        },
+      });
     }
 
     // Model breakdown: Cost per model
