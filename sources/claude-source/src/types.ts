@@ -1,4 +1,4 @@
-import {UsageReportItem, UserItem} from 'faros-airbyte-common/claude';
+import {ClaudeCodeUsageReportItem, UserItem} from 'faros-airbyte-common/claude';
 
 export interface ClaudeConfig {
   readonly anthropic_api_key: string;
@@ -12,8 +12,8 @@ export interface ClaudeConfig {
   endDate?: Date;
 }
 
-export interface UsageReportResponse {
-  data: UsageReportItem[];
+export interface ClaudeCodeUsageReportResponse {
+  data: ClaudeCodeUsageReportItem[];
   has_more: boolean;
   next_page?: string;
 }
@@ -35,4 +35,4 @@ export interface ApiUserItem {
 }
 
 // Re-export common types for convenience
-export {UsageReportItem, UserItem};
+export {ClaudeCodeUsageReportItem, UserItem};

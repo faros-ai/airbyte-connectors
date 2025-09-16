@@ -5,9 +5,9 @@ import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import {
+  ClaudeCodeUsageReportItem,
+  ClaudeCodeUsageReportResponse,
   ClaudeConfig,
-  UsageReportItem,
-  UsageReportResponse,
   UserItem,
   UsersResponse,
 } from './types';
@@ -68,7 +68,7 @@ export class Claude {
   async *getUsageReport(
     startDate: string,
     pageSize: number = DEFAULT_PAGE_SIZE
-  ): AsyncGenerator<UsageReportItem> {
+  ): AsyncGenerator<ClaudeCodeUsageReportItem> {
     let nextPage: string | undefined = undefined;
     let hasMore = true;
 
@@ -82,7 +82,7 @@ export class Claude {
         params.append('page', nextPage);
       }
 
-      const res = await this.api.get<UsageReportResponse>(
+      const res = await this.api.get<ClaudeCodeUsageReportResponse>(
         `/v1/organizations/usage_report/claude_code?${params.toString()}`
       );
 

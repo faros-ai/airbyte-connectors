@@ -8,7 +8,7 @@ import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Claude} from '../claude';
-import {ClaudeConfig, UsageReportItem} from '../types';
+import {ClaudeCodeUsageReportItem,ClaudeConfig} from '../types';
 
 type StreamState = {
   cutoff?: string;
@@ -39,7 +39,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
     cursorField?: string[],
     streamSlice?: Dictionary<any>,
     streamState?: StreamState
-  ): AsyncGenerator<UsageReportItem> {
+  ): AsyncGenerator<ClaudeCodeUsageReportItem> {
     const claude = Claude.instance(this.config, this.logger);
 
     // For incremental sync, use the cutoff date from state, otherwise use configured date range
@@ -81,7 +81,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
 
   getUpdatedState(
     currentStreamState: StreamState,
-    latestRecord: UsageReportItem
+    latestRecord: ClaudeCodeUsageReportItem
   ): StreamState {
     const currentCutoff = currentStreamState?.cutoff;
     const recordDate = latestRecord.date;
