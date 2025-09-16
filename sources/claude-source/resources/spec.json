@@ -1,0 +1,70 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Claude Code Spec",
+    "type": "object",
+    "required": [
+      "anthropic_api_key"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "anthropic_api_key": {
+        "order": 0,
+        "title": "Anthropic API Key",
+        "type": "string",
+        "description": "The Anthropic Admin API key to access the usage report API.",
+        "airbyte_secret": true
+      },
+      "anthropic_api_url": {
+        "order": 1,
+        "type": "string",
+        "title": "Anthropic API URL",
+        "description": "The Anthropic API URL.",
+        "default": "https://api.anthropic.com"
+      },
+      "cutoff_days": {
+        "order": 2,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 365,
+        "description": "Only fetch data from the last N days if start_date is not specified."
+      },
+      "timeout": {
+        "order": 3,
+        "type": "integer",
+        "title": "Request Timeout",
+        "description": "Timeout in milliseconds for each request to the API",
+        "default": 60000
+      },
+      "page_size": {
+        "order": 4,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of records to fetch per API request",
+        "default": 100,
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "backfill": {
+        "order": 5,
+        "type": "boolean",
+        "title": "Backfill",
+        "description": "Backfill data from the start date to the end date.",
+        "default": false
+      },
+      "start_date": {
+        "order": 6,
+        "type": "string",
+        "title": "Start Date",
+        "description": "The date from which to start syncing data (YYYY-MM-DD format)."
+      },
+      "end_date": {
+        "order": 7,
+        "type": "string",
+        "title": "End Date",
+        "description": "The date to stop syncing data (YYYY-MM-DD format)."
+      }
+    }
+  }
+}
