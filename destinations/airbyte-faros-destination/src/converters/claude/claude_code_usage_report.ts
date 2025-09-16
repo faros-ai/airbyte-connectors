@@ -11,9 +11,16 @@ import {
   VCSToolDetail,
 } from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {ClaudeCodeConverter, ClaudeCodeFeature} from './common';
+import {ClaudeConverter} from './common';
 
-export interface ClaudeCodeAssistantMetricConfig {
+export enum ClaudeCodeFeature {
+  EditTool = 'EditTool',
+  MultiEditTool = 'MultiEditTool',
+  NotebookEditTool = 'NotebookEditTool',
+  WriteTool = 'WriteTool',
+}
+
+export interface ClaudeAssistantMetricConfig {
   startedAt: Date;
   endedAt: Date;
   assistantMetricType: AssistantMetric;
@@ -26,14 +33,14 @@ export interface ClaudeCodeAssistantMetricConfig {
   feature?: ClaudeCodeFeature;
 }
 
-export class ClaudeCodeUsageReport extends ClaudeCodeConverter {
+export class ClaudeCodeUsageReport extends ClaudeConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
     'vcs_UserToolUsage',
   ];
 
   protected getAssistantMetric(
-    config: ClaudeCodeAssistantMetricConfig
+    config: ClaudeAssistantMetricConfig
   ): DestinationRecord[] {
     const {
       startedAt,

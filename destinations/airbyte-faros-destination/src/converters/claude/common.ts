@@ -2,14 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 
 import {Converter} from '../converter';
 
-export enum ClaudeCodeFeature {
-  EditTool = 'EditTool',
-  MultiEditTool = 'MultiEditTool',
-  NotebookEditTool = 'NotebookEditTool',
-  WriteTool = 'WriteTool',
-}
-
-export abstract class ClaudeCodeConverter extends Converter {
+export abstract class ClaudeConverter extends Converter {
   source = 'ClaudeCode';
 
   id(record: AirbyteRecord): any {

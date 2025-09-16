@@ -4,9 +4,9 @@ import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
-import {ClaudeCodeConverter} from './common';
+import {ClaudeConverter} from './common';
 
-export class Users extends ClaudeCodeConverter {
+export class Users extends ClaudeConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Organization',
     'vcs_User',
