@@ -13,6 +13,6 @@ export abstract class ClaudeCodeConverter extends Converter {
   source = 'ClaudeCode';
 
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.email || record?.record?.data?.id;
+    return record?.record?.data?.id;
   }
 }

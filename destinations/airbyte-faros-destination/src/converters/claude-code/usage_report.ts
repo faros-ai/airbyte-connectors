@@ -31,11 +31,6 @@ export class UsageReport extends ClaudeCodeConverter {
     'vcs_UserToolUsage',
   ];
 
-  id(record: AirbyteRecord): string {
-    const usageItem = record.record.data as UsageReportItem;
-    return `${usageItem.date}__${usageItem.organization_id}__${usageItem.actor?.email_address || 'unknown'}`;
-  }
-
   protected getAssistantMetric(
     config: ClaudeCodeAssistantMetricConfig
   ): DestinationRecord[] {

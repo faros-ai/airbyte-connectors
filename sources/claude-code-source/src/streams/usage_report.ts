@@ -45,13 +45,13 @@ export class UsageReport extends AirbyteStreamBase {
     // For incremental sync, use the cutoff date from state, otherwise use configured date range
     let startDate: DateTime;
     if (syncMode === SyncMode.INCREMENTAL && streamState?.cutoff) {
-      // Start from the day after the last synced date for incremental
+      // Start from the last synced date for incremental
       startDate = DateTime.fromISO(streamState.cutoff);
     } else {
       startDate = DateTime.fromJSDate(this.config.startDate);
     }
 
-    // End date is either configured or yesterday (API may not have today's data yet)
+    // End date is either configured or today
     const endDate = this.config.endDate
       ? DateTime.fromJSDate(this.config.endDate)
       : DateTime.now();
