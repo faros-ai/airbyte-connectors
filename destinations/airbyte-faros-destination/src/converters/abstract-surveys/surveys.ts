@@ -49,6 +49,8 @@ export interface SurveysConfig {
   exclude_columns?: ReadonlyArray<string>;
 }
 
+const RespondentTeamIdColumnFallback = 'What is your team?';
+
 export abstract class AbstractSurveys extends Converter {
   abstract getSurveyId(record: AirbyteRecord): string | undefined;
   abstract getTableName(record: AirbyteRecord): string | undefined;
@@ -542,7 +544,8 @@ export abstract class AbstractSurveys extends Converter {
           row,
           this.config.column_names_mapping.respondent_team_name_column_name
         )
-      );
+      ) ??
+      AbstractSurveys.getColumnValue(row, RespondentTeamIdColumnFallback);
 
     if (!uid) {
       return undefined;
