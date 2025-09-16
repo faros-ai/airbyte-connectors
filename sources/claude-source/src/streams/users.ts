@@ -25,6 +25,10 @@ export class Users extends AirbyteStreamBase {
     return ['id'];
   }
 
+  get cursorField(): string | string[] {
+    return 'added_at';
+  }
+
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
