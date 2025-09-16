@@ -1,6 +1,6 @@
-// Stream record types - data emitted by the claude-code source streams
+// Stream record types - data emitted by the claude source streams
 
-export interface UsageReportItem {
+export interface ClaudeCodeUsageReportItem {
   date: string;
   organization_id: string;
   actor: {

@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {UsageReportItem} from 'faros-airbyte-common/claude';
+import {ClaudeCodeUsageReportItem} from 'faros-airbyte-common/claude';
 import {digest} from 'faros-airbyte-common/common';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
@@ -20,7 +20,7 @@ export enum ClaudeCodeFeature {
   WriteTool = 'WriteTool',
 }
 
-export interface ClaudeAssistantMetricConfig {
+export interface ClaudeCodeAssistantMetricConfig {
   startedAt: Date;
   endedAt: Date;
   assistantMetricType: AssistantMetric;
@@ -40,7 +40,7 @@ export class ClaudeCodeUsageReport extends ClaudeConverter {
   ];
 
   protected getAssistantMetric(
-    config: ClaudeAssistantMetricConfig
+    config: ClaudeCodeAssistantMetricConfig
   ): DestinationRecord[] {
     const {
       startedAt,
@@ -110,7 +110,7 @@ export class ClaudeCodeUsageReport extends ClaudeConverter {
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const usageItem = record.record.data as UsageReportItem;
+    const usageItem = record.record.data as ClaudeCodeUsageReportItem;
 
     if (!usageItem.actor?.email_address) {
       return [];

@@ -34,7 +34,7 @@
         "order": 3,
         "type": "integer",
         "title": "Request Timeout",
-        "description": "Timeout in milliseconds for each request to the Claude Code API",
+        "description": "Timeout in milliseconds for each request to the API",
         "default": 60000
       },
       "page_size": {
