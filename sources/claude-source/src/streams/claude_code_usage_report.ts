@@ -7,8 +7,8 @@ import {
 import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
-import {ClaudeCode} from '../claude_code';
-import {ClaudeCodeConfig, UsageReportItem} from '../types';
+import {Claude} from '../claude';
+import {ClaudeConfig, UsageReportItem} from '../types';
 
 type StreamState = {
   cutoff?: string;
@@ -16,7 +16,7 @@ type StreamState = {
 
 export class ClaudeCodeUsageReport extends AirbyteStreamBase {
   constructor(
-    private readonly config: ClaudeCodeConfig,
+    private readonly config: ClaudeConfig,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -40,7 +40,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: StreamState
   ): AsyncGenerator<UsageReportItem> {
-    const claudeCode = ClaudeCode.instance(this.config, this.logger);
+    const claude = Claude.instance(this.config, this.logger);
 
     // For incremental sync, use the cutoff date from state, otherwise use configured date range
     let startDate: DateTime;
@@ -67,7 +67,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
       this.logger.info(`Fetching usage report for date: ${dateStr}`);
 
       // The API fetches data for a single date
-      for await (const item of claudeCode.getUsageReport(
+      for await (const item of claude.getUsageReport(
         dateStr,
         this.config.page_size
       )) {

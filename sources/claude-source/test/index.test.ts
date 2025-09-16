@@ -11,10 +11,10 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 
-import {ClaudeCode} from '../src/claude_code';
+import {Claude} from '../src/claude';
 import * as sut from '../src/index';
 
-const setupClaudeCodeInstance = (mockMethods: any) => {
+const setupClaudeInstance = (mockMethods: any) => {
   jest
     .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
     .mockReturnValue(mockMethods);
@@ -28,11 +28,11 @@ describe('index', () => {
       : AirbyteLogLevel.FATAL
   );
 
-  const source = new sut.ClaudeCodeSource(logger);
+  const source = new sut.ClaudeSource(logger);
 
   afterEach(() => {
     jest.restoreAllMocks();
-    (ClaudeCode as any).claudeCode = undefined;
+    (Claude as any).claude = undefined;
   });
 
   test('spec', async () => {
@@ -42,7 +42,7 @@ describe('index', () => {
   });
 
   test('check connection - valid config', async () => {
-    setupClaudeCodeInstance({
+    setupClaudeInstance({
       get: jest.fn().mockResolvedValue({data: {data: [], has_more: false}}),
     });
     await sourceCheckTest({
@@ -54,7 +54,7 @@ describe('index', () => {
   test('check connection - invalid config', async () => {
     const error = new Error('Invalid API key');
     (error as any).response = {status: 401};
-    setupClaudeCodeInstance({
+    setupClaudeInstance({
       get: jest.fn().mockRejectedValue(error),
     });
     await sourceCheckTest({
@@ -67,11 +67,13 @@ describe('index', () => {
     sourceSchemaTest(source, readTestResourceAsJSON('config.json'));
   });
 
-  test('streams - usage report', async () => {
-    const res = readTestResourceAsJSON('usage_report/usage_report.json');
+  test('streams - claude code usage report', async () => {
+    const res = readTestResourceAsJSON(
+      'claude_code_usage_report/claude_code_usage_report.json'
+    );
     // Mock should only return data once (for a single date)
     // The stream will iterate through dates, but only one will have data
-    setupClaudeCodeInstance({
+    setupClaudeInstance({
       get: jest
         .fn()
         .mockResolvedValueOnce({data: res}) // First date has data
@@ -80,7 +82,7 @@ describe('index', () => {
     await sourceReadTest({
       source,
       configOrPath: 'config.json',
-      catalogOrPath: 'usage_report/catalog.json',
+      catalogOrPath: 'claude_code_usage_report/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },
@@ -91,7 +93,7 @@ describe('index', () => {
     const usersRes = readTestResourceAsJSON('users/users.json');
 
     // Mock only the users API (no dependency on usage reports)
-    setupClaudeCodeInstance({
+    setupClaudeInstance({
       get: jest.fn().mockResolvedValue({data: usersRes}),
     });
 

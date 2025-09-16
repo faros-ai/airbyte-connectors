@@ -2,7 +2,7 @@
   "streams": [
     {
       "stream": {
-        "name": "usage_report"
+        "name": "claude_code_usage_report"
       }
     }
   ]

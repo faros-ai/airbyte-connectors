@@ -11,10 +11,10 @@ import {
 import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
-import {ClaudeCode, DEFAULT_CUTOFF_DAYS} from './claude_code';
+import {Claude, DEFAULT_CUTOFF_DAYS} from './claude';
 import {ClaudeCodeUsageReport} from './streams/claude_code_usage_report';
 import {Users} from './streams/users';
-import {ClaudeCodeConfig} from './types';
+import {ClaudeConfig} from './types';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -22,7 +22,7 @@ export function mainCommand(): Command {
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class ClaudeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
+export class ClaudeSource extends AirbyteSourceBase<ClaudeConfig> {
   get type(): string {
     return 'claude';
   }
@@ -31,17 +31,17 @@ export class ClaudeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
     return new AirbyteSpec(require('../resources/spec.json'));
   }
 
-  async checkConnection(config: ClaudeCodeConfig): Promise<[boolean, VError]> {
+  async checkConnection(config: ClaudeConfig): Promise<[boolean, VError]> {
     try {
-      const claudeCode = ClaudeCode.instance(config, this.logger);
-      await claudeCode.checkConnection();
+      const claude = Claude.instance(config, this.logger);
+      await claude.checkConnection();
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
 
-  streams(config: ClaudeCodeConfig): AirbyteStreamBase[] {
+  streams(config: ClaudeConfig): AirbyteStreamBase[] {
     return [
       new ClaudeCodeUsageReport(config, this.logger),
       new Users(config, this.logger),
@@ -49,11 +49,11 @@ export class ClaudeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
   }
 
   async onBeforeRead(
-    config: ClaudeCodeConfig,
+    config: ClaudeConfig,
     catalog: AirbyteConfiguredCatalog,
     state?: AirbyteState
   ): Promise<{
-    config: ClaudeCodeConfig;
+    config: ClaudeConfig;
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
@@ -69,7 +69,7 @@ export class ClaudeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
         ...config,
         startDate,
         endDate,
-      } as ClaudeCodeConfig,
+      } as ClaudeConfig,
       catalog,
       state,
     };

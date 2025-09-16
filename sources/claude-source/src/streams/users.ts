@@ -6,12 +6,12 @@ import {
 } from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {ClaudeCode} from '../claude_code';
-import {ClaudeCodeConfig, UserItem} from '../types';
+import {Claude} from '../claude';
+import {ClaudeConfig, UserItem} from '../types';
 
 export class Users extends AirbyteStreamBase {
   constructor(
-    private readonly config: ClaudeCodeConfig,
+    private readonly config: ClaudeConfig,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
@@ -31,8 +31,8 @@ export class Users extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: any
   ): AsyncGenerator<UserItem> {
-    const claudeCode = ClaudeCode.instance(this.config, this.logger);
-    for await (const user of claudeCode.getUsers(this.config.page_size)) {
+    const claude = Claude.instance(this.config, this.logger);
+    for await (const user of claude.getUsers(this.config.page_size)) {
       yield user;
     }
   }

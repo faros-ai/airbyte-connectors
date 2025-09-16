@@ -17,10 +17,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-09T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -31,7 +31,7 @@ Array [
       },
       "uid": "df69ee39f8cf74bb2bbf1105a7e2f6f17f8eba9129ed02a16c840fc9583b95fd",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "342",
@@ -42,10 +42,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-09T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -56,7 +56,7 @@ Array [
       },
       "uid": "0cfe0e0497d3057e3e9afab5b96253bef25579a67adbba325e978aba2c539821",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "128",
@@ -67,10 +67,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-09T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -81,7 +81,7 @@ Array [
       },
       "uid": "7e83824bb0ea521486e89d8f29ff41d60a7ad38166bd727143cd072bd129b0fd",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "8",
@@ -92,10 +92,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-09T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -106,7 +106,7 @@ Array [
       },
       "uid": "4f77d7f257be0970a4a9299f20007d1122aaa1c246799acf5a8b389d31c23b72",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "2",
@@ -117,10 +117,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-09T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -131,7 +131,7 @@ Array [
       },
       "uid": "9b212ecbe16ef1009f65626a98ebadd7a2b0af31b1bb157661a35ec033540dfa",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "15",
@@ -141,11 +141,11 @@ Array [
   Object {
     "vcs_UserToolUsage": Object {
       "recordedAt": "2025-08-08T00:00:00.000Z",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "usedAt": "2025-08-08T00:00:00.000Z",
       "userTool": Object {
         "organization": Object {
-          "source": "ClaudeCode",
+          "source": "Claude",
           "uid": "ClaudeCode",
         },
         "tool": Object {
@@ -153,7 +153,7 @@ Array [
           "detail": "ClaudeCode",
         },
         "user": Object {
-          "source": "ClaudeCode",
+          "source": "Claude",
           "uid": "user1@example.com",
         },
       },
@@ -164,10 +164,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "model": "claude-sonnet-4-20250514",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -179,7 +179,7 @@ Array [
       },
       "uid": "f843351a5b4952eedc30863c68b9298232848e58b882a16588823acc1983ed18",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "186",
@@ -191,10 +191,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "model": "claude-3-5-haiku-20241022",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -206,7 +206,7 @@ Array [
       },
       "uid": "5d19d93e1f943d9c5159a3b40b595b535c4303d67e5c6a9617865f26497c9a9b",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "42",
@@ -218,10 +218,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "EditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -232,7 +232,7 @@ Array [
       },
       "uid": "7748d6a30bb590b29e15417f390f3ee360cfb27ccef74ccdc592e08b77b2da0d",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "25",
@@ -244,10 +244,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "EditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -258,7 +258,7 @@ Array [
       },
       "uid": "35cbd034e6322978f3388a6c10b89d42bac0c98a1595db08548f5d991b500a31",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "3",
@@ -270,10 +270,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "MultiEditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -284,7 +284,7 @@ Array [
       },
       "uid": "067fa008f5a86a6abd2e494c1e1f99faacea54d94274c841e639656e862c8389",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "12",
@@ -296,10 +296,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "MultiEditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -310,7 +310,7 @@ Array [
       },
       "uid": "5a36e0c5393caea3a7d2f6c7e87820533339222ef6ba0b7bc9414be53f7bb9d5",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "1",
@@ -322,10 +322,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "NotebookEditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -336,7 +336,7 @@ Array [
       },
       "uid": "cd182bdb91e88a56689736e49c626117747f29e8066a1ab2b33f8324e840af4f",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "5",
@@ -348,10 +348,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "NotebookEditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -362,7 +362,7 @@ Array [
       },
       "uid": "577af81113ce9ab36b70a940f82fb2771ceb3f6315ba9a25d8d71a1bf028111e",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "2",
@@ -374,10 +374,10 @@ Array [
       "endedAt": "2025-08-09T00:00:00.000Z",
       "feature": "WriteTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-08T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -388,7 +388,7 @@ Array [
       },
       "uid": "36a340a7c0a5235ab3dd8f265d93f3027fc93b11d8c91ff75b44c9feb3bb81e2",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
       "value": "8",
@@ -399,10 +399,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-10T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -413,7 +413,7 @@ Array [
       },
       "uid": "3a09ab5aa430cb2081db359b2dad259fb9c287eb21ecb11a841a2d73e4004760",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "210",
@@ -424,10 +424,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-10T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -438,7 +438,7 @@ Array [
       },
       "uid": "08453d6fc3e9e6bf94ca75f41b5fdeab9c6cb64757238b8019b4869afcabb521",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "95",
@@ -449,10 +449,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-10T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -463,7 +463,7 @@ Array [
       },
       "uid": "c8898ebc3fab794abe8a9b8bc1f8d54092d22677f948e85c9c828026fec09dec",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "5",
@@ -474,10 +474,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-10T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -488,7 +488,7 @@ Array [
       },
       "uid": "c4cac287dffd15e8c6ffe36c04388bb1138f3da6b1d48a3c737f1c58f503f602",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "1",
@@ -499,10 +499,10 @@ Array [
     "vcs_AssistantMetric": Object {
       "endedAt": "2025-08-10T00:00:00.000Z",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -513,7 +513,7 @@ Array [
       },
       "uid": "cd1fa7334dc6edca36c955a5cb59f48f5d084225aa391ff017de77bcd2833423",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "10",
@@ -523,11 +523,11 @@ Array [
   Object {
     "vcs_UserToolUsage": Object {
       "recordedAt": "2025-08-09T00:00:00.000Z",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "usedAt": "2025-08-09T00:00:00.000Z",
       "userTool": Object {
         "organization": Object {
-          "source": "ClaudeCode",
+          "source": "Claude",
           "uid": "ClaudeCode",
         },
         "tool": Object {
@@ -535,7 +535,7 @@ Array [
           "detail": "ClaudeCode",
         },
         "user": Object {
-          "source": "ClaudeCode",
+          "source": "Claude",
           "uid": "user2@example.com",
         },
       },
@@ -546,10 +546,10 @@ Array [
       "endedAt": "2025-08-10T00:00:00.000Z",
       "model": "claude-sonnet-4-20250514",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -561,7 +561,7 @@ Array [
       },
       "uid": "59740f7ad86a4ecdbdd69bd118ed57c4efac4068abe1d2e45b2b44998421733d",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "125",
@@ -573,10 +573,10 @@ Array [
       "endedAt": "2025-08-10T00:00:00.000Z",
       "feature": "EditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -587,7 +587,7 @@ Array [
       },
       "uid": "8ff2b5ecf22de1ce5ad02411c506a7b853807ffeab36bdbabc60dc87d60cb96c",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "18",
@@ -599,10 +599,10 @@ Array [
       "endedAt": "2025-08-10T00:00:00.000Z",
       "feature": "EditTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -613,7 +613,7 @@ Array [
       },
       "uid": "2cb919f831ef42145994a64663eb9efd6068b55e6b2c591e99bb8ffe602532bd",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "2",
@@ -625,10 +625,10 @@ Array [
       "endedAt": "2025-08-10T00:00:00.000Z",
       "feature": "WriteTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -639,7 +639,7 @@ Array [
       },
       "uid": "f5104b9cc7072abcad771604edead1573881374d67e433438a94cba6f6e9c187",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "5",
@@ -651,10 +651,10 @@ Array [
       "endedAt": "2025-08-10T00:00:00.000Z",
       "feature": "WriteTool",
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-08-09T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
@@ -665,7 +665,7 @@ Array [
       },
       "uid": "579a8ec2481ca9574a19c1fb40e5b9ff1854e30db1483b032bd73c1f6e77fb80",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
       "value": "1",
@@ -676,7 +676,7 @@ Array [
     "vcs_User": Object {
       "email": "user1@example.com",
       "name": "User One",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "type": "User",
       "uid": "user1@example.com",
     },
@@ -684,9 +684,9 @@ Array [
   Object {
     "vcs_UserEmail": Object {
       "email": "user1@example.com",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
     },
@@ -695,17 +695,17 @@ Array [
     "vcs_UserTool": Object {
       "inactive": false,
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-07-01T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "ClaudeCode",
       },
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user1@example.com",
       },
     },
@@ -714,7 +714,7 @@ Array [
     "vcs_User": Object {
       "email": "user2@example.com",
       "name": "User Two",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "type": "User",
       "uid": "user2@example.com",
     },
@@ -722,9 +722,9 @@ Array [
   Object {
     "vcs_UserEmail": Object {
       "email": "user2@example.com",
-      "source": "ClaudeCode",
+      "source": "Claude",
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
     },
@@ -733,24 +733,24 @@ Array [
     "vcs_UserTool": Object {
       "inactive": false,
       "organization": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "ClaudeCode",
       },
-      "source": "ClaudeCode",
+      "source": "Claude",
       "startedAt": "2025-07-15T00:00:00.000Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "ClaudeCode",
       },
       "user": Object {
-        "source": "ClaudeCode",
+        "source": "Claude",
         "uid": "user2@example.com",
       },
     },
   },
   Object {
     "vcs_Organization": Object {
-      "source": "ClaudeCode",
+      "source": "Claude",
       "uid": "ClaudeCode",
     },
   },

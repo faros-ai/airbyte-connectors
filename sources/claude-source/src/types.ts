@@ -1,8 +1,8 @@
 import {UsageReportItem, UserItem} from 'faros-airbyte-common/claude';
 
-export interface ClaudeCodeConfig {
-  readonly api_key: string;
-  readonly api_url?: string;
+export interface ClaudeConfig {
+  readonly anthropic_api_key: string;
+  readonly anthropic_api_url?: string;
   readonly start_date?: string;
   readonly end_date?: string;
   readonly cutoff_days?: number;

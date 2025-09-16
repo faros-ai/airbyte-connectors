@@ -5,45 +5,45 @@ import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import {
-  ClaudeCodeConfig,
+  ClaudeConfig,
   UsageReportItem,
   UsageReportResponse,
   UserItem,
   UsersResponse,
 } from './types';
 
-export const DEFAULT_API_URL = 'https://api.anthropic.com';
+export const DEFAULT_ANTHROPIC_API_URL = 'https://api.anthropic.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
 
-export class ClaudeCode {
-  private static claudeCode: ClaudeCode;
+export class Claude {
+  private static claude: Claude;
   private readonly api: AxiosInstance;
 
   constructor(
-    private readonly config: ClaudeCodeConfig,
+    private readonly config: ClaudeConfig,
     private readonly logger: AirbyteLogger
   ) {
-    const apiUrl = this.config.api_url ?? DEFAULT_API_URL;
+    const apiUrl = this.config.anthropic_api_url ?? DEFAULT_ANTHROPIC_API_URL;
     this.api = makeAxiosInstanceWithRetry({
       baseURL: apiUrl,
       timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       headers: {
-        'x-api-key': this.config.api_key,
+        'x-api-key': this.config.anthropic_api_key,
         'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
       },
     });
   }
 
-  static instance(config: ClaudeCodeConfig, logger: AirbyteLogger): ClaudeCode {
-    if (!ClaudeCode.claudeCode) {
-      ClaudeCode.claudeCode = new ClaudeCode(config, logger);
+  static instance(config: ClaudeConfig, logger: AirbyteLogger): Claude {
+    if (!Claude.claude) {
+      Claude.claude = new Claude(config, logger);
     }
-    return ClaudeCode.claudeCode;
+    return Claude.claude;
   }
 
   async checkConnection(): Promise<void> {

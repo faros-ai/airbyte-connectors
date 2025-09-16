@@ -5,22 +5,22 @@
     "title": "Claude Code Spec",
     "type": "object",
     "required": [
-      "api_key"
+      "anthropic_api_key"
     ],
     "additionalProperties": true,
     "properties": {
-      "api_key": {
+      "anthropic_api_key": {
         "order": 0,
-        "title": "Claude Code Admin API Key",
+        "title": "Anthropic API Key",
         "type": "string",
-        "description": "The Claude Code Admin API key to access the usage report API.",
+        "description": "The Anthropic Admin API key to access the usage report API.",
         "airbyte_secret": true
       },
-      "api_url": {
+      "anthropic_api_url": {
         "order": 1,
         "type": "string",
-        "title": "Claude Code API URL",
-        "description": "The Claude Code API URL.",
+        "title": "Anthropic API URL",
+        "description": "The Anthropic API URL.",
         "default": "https://api.anthropic.com"
       },
       "cutoff_days": {

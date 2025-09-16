@@ -19,7 +19,7 @@ AirbyteConnectionStatusMessage {
 }
 `;
 
-exports[`index streams - usage report 1`] = `
+exports[`index streams - claude code usage report 1`] = `
 [
   {
     "actor": {
