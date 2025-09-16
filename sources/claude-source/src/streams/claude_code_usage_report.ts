@@ -14,7 +14,7 @@ type StreamState = {
   cutoff?: string;
 };
 
-export class UsageReport extends AirbyteStreamBase {
+export class ClaudeCodeUsageReport extends AirbyteStreamBase {
   constructor(
     private readonly config: ClaudeCodeConfig,
     protected readonly logger: AirbyteLogger
@@ -23,7 +23,7 @@ export class UsageReport extends AirbyteStreamBase {
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/usageReport.json');
+    return require('../../resources/schemas/claudeCodeUsageReport.json');
   }
 
   get primaryKey(): StreamKey {

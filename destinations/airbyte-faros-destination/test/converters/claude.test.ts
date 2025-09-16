@@ -5,7 +5,7 @@ import {
 } from 'faros-airbyte-testing-tools';
 import {getLocal} from 'mockttp';
 
-describe('claude-code', () => {
+describe('claude', () => {
   const mockttp = getLocal({debug: false, recordTraffic: false});
   let configPath: string;
 
@@ -24,8 +24,8 @@ describe('claude-code', () => {
   test('process records from all streams', async () => {
     await destinationWriteTest({
       configPath,
-      catalogPath: 'test/resources/claude-code/catalog.json',
-      inputRecordsPath: 'claude-code/all-streams.json',
+      catalogPath: 'test/resources/claude/catalog.json',
+      inputRecordsPath: 'claude/all-streams.json',
       checkRecordsData: (records) => expect(records).toMatchSnapshot(),
     });
   });

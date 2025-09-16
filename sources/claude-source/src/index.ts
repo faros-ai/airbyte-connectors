@@ -12,19 +12,19 @@ import {calculateDateRange} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {ClaudeCode, DEFAULT_CUTOFF_DAYS} from './claude_code';
-import {UsageReport} from './streams/usage_report';
+import {ClaudeCodeUsageReport} from './streams/claude_code_usage_report';
 import {Users} from './streams/users';
 import {ClaudeCodeConfig} from './types';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
-  const source = new ClaudeCodeSource(logger);
+  const source = new ClaudeSource(logger);
   return new AirbyteSourceRunner(logger, source).mainCommand();
 }
 
-export class ClaudeCodeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
+export class ClaudeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
   get type(): string {
-    return 'claude-code';
+    return 'claude';
   }
 
   async spec(): Promise<AirbyteSpec> {
@@ -43,7 +43,7 @@ export class ClaudeCodeSource extends AirbyteSourceBase<ClaudeCodeConfig> {
 
   streams(config: ClaudeCodeConfig): AirbyteStreamBase[] {
     return [
-      new UsageReport(config, this.logger),
+      new ClaudeCodeUsageReport(config, this.logger),
       new Users(config, this.logger),
     ];
   }

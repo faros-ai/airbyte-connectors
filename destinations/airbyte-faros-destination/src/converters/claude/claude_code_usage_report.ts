@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {UsageReportItem} from 'faros-airbyte-common/claude-code';
+import {UsageReportItem} from 'faros-airbyte-common/claude';
 import {digest} from 'faros-airbyte-common/common';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
@@ -26,7 +26,7 @@ export interface ClaudeCodeAssistantMetricConfig {
   feature?: ClaudeCodeFeature;
 }
 
-export class UsageReport extends ClaudeCodeConverter {
+export class ClaudeCodeUsageReport extends ClaudeCodeConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
     'vcs_UserToolUsage',

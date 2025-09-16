@@ -1,7 +1,7 @@
 [
   {
     "record": {
-      "stream": "mytestsource__claude_code__usage_report",
+      "stream": "mytestsource__claude__claude_code_usage_report",
       "emitted_at": 1735689600000,
       "data": {
         "date": "2025-08-08T00:00:00Z",
@@ -74,7 +74,7 @@
   },
   {
     "record": {
-      "stream": "mytestsource__claude_code__usage_report",
+      "stream": "mytestsource__claude__claude_code_usage_report",
       "emitted_at": 1735689600000,
       "data": {
         "date": "2025-08-09T00:00:00Z",
@@ -126,7 +126,7 @@
   },
   {
     "record": {
-      "stream": "mytestsource__claude_code__users",
+      "stream": "mytestsource__claude__users",
       "emitted_at": 1735689600000,
       "data": {
         "id": "user_001",
@@ -141,7 +141,7 @@
   },
   {
     "record": {
-      "stream": "mytestsource__claude_code__users",
+      "stream": "mytestsource__claude__users",
       "emitted_at": 1735689600000,
       "data": {
         "id": "user_002",

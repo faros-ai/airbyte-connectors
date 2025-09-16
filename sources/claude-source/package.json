@@ -1,13 +1,13 @@
 {
-  "name": "claude-code-source",
+  "name": "claude-source",
   "version": "0.0.1",
-  "description": "Claude Code Airbyte source",
+  "description": "Claude Airbyte source",
   "homepage": "https://www.faros.ai",
   "keywords": [
     "airbyte",
     "source",
     "faros",
-    "claude-code",
+    "claude",
     "anthropic"
   ],
   "author": "Faros AI, Inc.",

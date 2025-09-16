@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {UserItem} from 'faros-airbyte-common/claude-code';
+import {UserItem} from 'faros-airbyte-common/claude';
 import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';

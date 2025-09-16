@@ -1,4 +1,4 @@
-import {UsageReportItem, UserItem} from 'faros-airbyte-common/claude-code';
+import {UsageReportItem, UserItem} from 'faros-airbyte-common/claude';
 
 export interface ClaudeCodeConfig {
   readonly api_key: string;

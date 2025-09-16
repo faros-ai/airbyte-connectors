@@ -2,13 +2,13 @@
   "streams": [
     {
       "stream": {
-        "name": "mytestsource__claude_code__usage_report"
+        "name": "mytestsource__claude__claude_code_usage_report"
       },
       "destination_sync_mode": "overwrite"
     },
     {
       "stream": {
-        "name": "mytestsource__claude_code__users"
+        "name": "mytestsource__claude__users"
       },
       "destination_sync_mode": "overwrite"
     }

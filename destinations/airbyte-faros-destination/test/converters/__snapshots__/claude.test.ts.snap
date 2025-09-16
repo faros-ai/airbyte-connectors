@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`claude-code process records from all streams 1`] = `
+exports[`claude process records from all streams 1`] = `
 Array [
   "Processed 4 records",
-  "Processed records by stream: {\\\\\\"mytestsource__claude_code__usage_report\\\\\\":2,\\\\\\"mytestsource__claude_code__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed records by stream: {\\\\\\"mytestsource__claude__claude_code_usage_report\\\\\\":2,\\\\\\"mytestsource__claude__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Would write 33 records",
   "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":24,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
@@ -11,7 +11,7 @@ Array [
 ]
 `;
 
-exports[`claude-code process records from all streams 2`] = `
+exports[`claude process records from all streams 2`] = `
 Array [
   Object {
     "vcs_AssistantMetric": Object {
