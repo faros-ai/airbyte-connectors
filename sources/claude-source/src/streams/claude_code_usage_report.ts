@@ -8,7 +8,7 @@ import {DateTime} from 'luxon';
 import {Dictionary} from 'ts-essentials';
 
 import {Claude} from '../claude';
-import {ClaudeCodeUsageReportItem,ClaudeConfig} from '../types';
+import {ClaudeCodeUsageReportItem, ClaudeConfig} from '../types';
 
 type StreamState = {
   cutoff?: string;
@@ -27,7 +27,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['date', 'actor'];
+    return [['date'], ['actor', 'email_address']];
   }
 
   get cursorField(): string | string[] {
