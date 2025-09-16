@@ -175,6 +175,7 @@ Array [
       },
       "type": Object {
         "category": "Cost",
+        "detail": "USD",
       },
       "uid": "f843351a5b4952eedc30863c68b9298232848e58b882a16588823acc1983ed18",
       "user": Object {
@@ -201,6 +202,7 @@ Array [
       },
       "type": Object {
         "category": "Cost",
+        "detail": "USD",
       },
       "uid": "5d19d93e1f943d9c5159a3b40b595b535c4303d67e5c6a9617865f26497c9a9b",
       "user": Object {
@@ -555,6 +557,7 @@ Array [
       },
       "type": Object {
         "category": "Cost",
+        "detail": "USD",
       },
       "uid": "59740f7ad86a4ecdbdd69bd118ed57c4efac4068abe1d2e45b2b44998421733d",
       "user": Object {

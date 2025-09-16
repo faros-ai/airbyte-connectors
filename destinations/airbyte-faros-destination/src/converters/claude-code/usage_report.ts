@@ -17,6 +17,7 @@ export interface ClaudeCodeAssistantMetricConfig {
   startedAt: Date;
   endedAt: Date;
   assistantMetricType: AssistantMetric;
+  assistantMetricTypeDetail?: string;
   value: number;
   organization: OrgKey;
   userEmail: string;
@@ -38,6 +39,7 @@ export class UsageReport extends ClaudeCodeConverter {
       startedAt,
       endedAt,
       assistantMetricType,
+      assistantMetricTypeDetail,
       value,
       organization,
       userEmail,
@@ -77,6 +79,9 @@ export class UsageReport extends ClaudeCodeConverter {
           endedAt,
           type: {
             category: assistantMetricType,
+            ...(assistantMetricTypeDetail && {
+              detail: assistantMetricTypeDetail,
+            }),
             ...(customMetricName && {detail: customMetricName}),
           },
           valueType: 'Int',
@@ -213,6 +218,7 @@ export class UsageReport extends ClaudeCodeConverter {
               startedAt: day,
               endedAt: nextDay,
               assistantMetricType: AssistantMetric.Cost,
+              assistantMetricTypeDetail: modelData.estimated_cost.currency,
               value: modelData.estimated_cost.amount,
               organization,
               userEmail,
