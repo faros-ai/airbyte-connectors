@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "actor": {
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "type": ["string", "null"]
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "customer_type": {
+      "type": "string"
+    },
+    "subscription_type": {
+      "type": "string"
+    },
+    "terminal_type": {
+      "type": ["string", "null"]
+    },
+    "core_metrics": {
+      "type": "object",
+      "properties": {
+        "commits_by_claude_code": {
+          "type": "integer"
+        },
+        "pull_requests_by_claude_code": {
+          "type": "integer"
+        },
+        "lines_of_code": {
+          "type": "object",
+          "properties": {
+            "added": {
+              "type": "integer"
+            },
+            "removed": {
+              "type": "integer"
+            }
+          }
+        },
+        "num_sessions": {
+          "type": "integer"
+        }
+      }
+    },
+    "model_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "integer"
+              },
+              "output": {
+                "type": "integer"
+              },
+              "cache_creation": {
+                "type": "integer"
+              },
+              "cache_read": {
+                "type": "integer"
+              }
+            }
+          },
+          "estimated_cost": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tool_actions": {
+      "type": "object",
+      "properties": {
+        "edit_tool": {
+          "type": ["object", "null"],
+          "properties": {
+            "accepted": {
+              "type": "integer"
+            },
+            "rejected": {
+              "type": "integer"
+            }
+          }
+        },
+        "multi_edit_tool": {
+          "type": ["object", "null"],
+          "properties": {
+            "accepted": {
+              "type": "integer"
+            },
+            "rejected": {
+              "type": "integer"
+            }
+          }
+        },
+        "notebook_edit_tool": {
+          "type": ["object", "null"],
+          "properties": {
+            "accepted": {
+              "type": "integer"
+            },
+            "rejected": {
+              "type": "integer"
+            }
+          }
+        },
+        "write_tool": {
+          "type": ["object", "null"],
+          "properties": {
+            "accepted": {
+              "type": "integer"
+            },
+            "rejected": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}

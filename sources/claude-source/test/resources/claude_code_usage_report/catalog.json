@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "claude_code_usage_report"
+      }
+    }
+  ]
+}
