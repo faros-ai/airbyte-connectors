@@ -23,6 +23,7 @@ import {
   EnterpriseCopilotSeatsResponse,
   EnterpriseCopilotUsageSummary,
   EnterpriseCopilotUserEngagement,
+  EnterpriseCopilotUserUsage,
   EnterpriseTeam,
   EnterpriseTeamMembership,
   EnterpriseTeamMembershipsResponse,
@@ -99,6 +100,7 @@ import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
   CopilotUserEngagementResponse,
+  CopilotUserUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -2043,6 +2045,58 @@ export abstract class GitHub {
           date: record.date,
           ...parsedLine,
         };
+      }
+    }
+  }
+
+  async *getEnterpriseCopilotUserUsage(
+    enterprise: string,
+    cutoffDate: number
+  ): AsyncGenerator<EnterpriseCopilotUserUsage> {
+    const res: OctokitResponse<CopilotUserUsageResponse> =
+      await this.baseOctokit.request(
+        this.baseOctokit.enterpriseCopilotUserUsage,
+        {
+          enterprise,
+        }
+      );
+    const data = res.data;
+    if (isNil(data) || isEmpty(data?.download_links)) {
+      this.logger.warn(
+        `No GitHub Copilot user usage metrics found for enterprise ${enterprise}.`
+      );
+      return;
+    }
+
+    // Check if we already have the latest data
+    const reportEndDate = Utils.toDate(data.report_end_day).getTime();
+    if (reportEndDate <= cutoffDate) {
+      this.logger.info(
+        `GitHub Copilot user usage metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+      );
+      return;
+    }
+
+    const axios = makeAxiosInstanceWithRetry({
+      maxContentLength: Infinity,
+      timeout: this.timeoutMs,
+    });
+
+    for (const downloadLink of data.download_links) {
+      const blob = await axios.get<string>(downloadLink);
+      const parsedLines = blob.data
+        .split('\n')
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line));
+      for (const parsedLine of parsedLines) {
+        // Filter out records that we've already processed based on the day field
+        const recordDate = Utils.toDate(parsedLine.day).getTime();
+        if (recordDate > cutoffDate) {
+          yield {
+            enterprise,
+            ...parsedLine,
+          };
+        }
       }
     }
   }

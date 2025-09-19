@@ -1238,6 +1238,65 @@ describe('index', () => {
     });
   });
 
+  test('streams - enterprise copilot user usage', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_user_usage/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseCopilotUserUsageMockedImplementation(
+            readTestResourceAsJSON(
+              'enterprise_copilot_user_usage/response.json'
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+        getEnterpriseCopilotUserUsageBlobMockedImplementation(
+          readTestResourceFile(
+            'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - enterprise copilot user usage already up-to-date', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_user_usage/catalog.json',
+      stateOrPath: {
+        faros_enterprise_copilot_user_usage: {
+          github: {cutoff: new Date('2025-09-01').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          getEnterpriseCopilotUserUsageMockedImplementation(
+            readTestResourceAsJSON(
+              'enterprise_copilot_user_usage/response.json'
+            )
+          ),
+          logger,
+          enterpriseConfig
+        );
+        getEnterpriseCopilotUserUsageBlobMockedImplementation(
+          readTestResourceFile(
+            'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
+          )
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toHaveLength(0);
+      },
+    });
+  });
+
   test('onBeforeRead with run_mode Custom streams without filtering', async () => {
     await customStreamsTest(
       source,
@@ -1453,6 +1512,19 @@ const getEnterpriseCopilotUserEngagementMockedImplementation = (res: any) => ({
 const getEnterpriseCopilotUserEngagementBlobMockedImplementation = (
   res: any
 ) => {
+  const mockAxiosInstance = {
+    get: jest.fn().mockResolvedValue({data: res}),
+  };
+  jest
+    .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
+    .mockReturnValue(mockAxiosInstance);
+};
+
+const getEnterpriseCopilotUserUsageMockedImplementation = (res: any) => ({
+  enterpriseCopilotUserUsage: jest.fn().mockReturnValue({data: res}),
+});
+
+const getEnterpriseCopilotUserUsageBlobMockedImplementation = (res: any) => {
   const mockAxiosInstance = {
     get: jest.fn().mockResolvedValue({data: res}),
   };
