@@ -2083,8 +2083,8 @@ export abstract class GitHub {
     });
 
     for (const downloadLink of data.download_links) {
-      const blob = await axios.get<string>(downloadLink);
-      const parsedLines = blob.data
+      const jsonlReport = await axios.get<string>(downloadLink);
+      const parsedLines = jsonlReport.data
         .split('\n')
         .filter((line) => line.trim() !== '')
         .map((line) => JSON.parse(line));
