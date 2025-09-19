@@ -252,7 +252,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
   ): DestinationRecord {
     const isBoolean = typeof value === 'boolean';
     const valueType = isBoolean ? 'Bool' : 'Int';
-    const valueStr = isBoolean ? String(value) : String(value);
+    const valueStr = String(value);
 
     return {
       model: 'vcs_AssistantMetric',
