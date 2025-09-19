@@ -14,7 +14,7 @@ interface AssistantMetricConfig {
   value: number | boolean;
   organization: OrgKey;
   userUid: string;
-  ide?: string;
+  editor?: string;
   feature?: string;
   language?: string;
   model?: string;
@@ -36,7 +36,7 @@ interface ProcessMetricsConfig {
   day: Date;
   organization: OrgKey;
   userUid: string;
-  ide?: string;
+  editor?: string;
   feature?: string;
   language?: string;
   model?: string;
@@ -79,7 +79,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         day,
         organization,
         userUid,
-        ide: ideBreakdown.ide,
+        editor: ideBreakdown.ide,
       });
     }
 
@@ -144,7 +144,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
       day,
       organization,
       userUid,
-      ide,
+      editor,
       feature,
       language,
       model,
@@ -161,7 +161,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
           value: data.loc_added_sum,
           organization,
           userUid,
-          ide,
+          editor,
           feature,
           language,
           model,
@@ -179,7 +179,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
           value: data.loc_deleted_sum,
           organization,
           userUid,
-          ide,
+          editor,
           feature,
           language,
           model,
@@ -197,7 +197,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
           value: data.code_acceptance_activity_count,
           organization,
           userUid,
-          ide,
+          editor,
           feature,
           language,
           model,
@@ -222,7 +222,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
             value: discarded,
             organization,
             userUid,
-            ide,
+            editor,
             feature,
             language,
             model,
@@ -244,7 +244,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
           value: data.user_initiated_interaction_count,
           organization,
           userUid,
-          ide,
+          editor,
           feature,
           language,
           model,
@@ -299,7 +299,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
       value,
       organization,
       userUid,
-      ide,
+      editor,
       feature,
       language,
       model,
@@ -325,7 +325,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
               ],
               // Optional dimensional fields
               ...[
-                {key: 'ide', value: ide},
+                {key: 'editor', value: editor},
                 {key: 'feature', value: feature},
                 {key: 'language', value: language},
                 {key: 'model', value: model},
@@ -347,7 +347,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
           source: this.streamName.source,
         },
         tool: {category: VCSToolCategory.GitHubCopilot},
-        ...(ide && {editor: ide}),
+        ...(editor && {editor}),
         ...(feature && {feature}),
         ...(language && {language}),
         ...(model && {model}),
