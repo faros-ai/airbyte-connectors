@@ -27,7 +27,7 @@ export class ClaudeCodeUsageReport extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return [['date'], ['actor_email_address']];
+    return ['date', 'actor_email_address'];
   }
 
   get cursorField(): string | string[] {
