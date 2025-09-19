@@ -162,6 +162,16 @@ export class Workitems extends AzureWorkitemsConverter {
 
     return [
       {
+        model: 'tms_TaskBoardRelationship__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task,
+          },
+        },
+      },
+      FLUSH,
+      {
         model: 'tms_TaskBoardRelationship',
         record: {
           task,
