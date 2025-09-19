@@ -7,11 +7,23 @@ import {AssistantMetric, OrgKey, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
-export interface GitHubCopilotAssistantMetricConfig {
+interface AssistantMetricConfig {
   startedAt: Date;
   endedAt: Date;
   assistantMetricType: AssistantMetric;
   value: number | boolean;
+  organization: OrgKey;
+  userUid: string;
+  ide?: string;
+  feature?: string;
+  language?: string;
+  model?: string;
+}
+
+interface ProcessMetricsConfig {
+  res: DestinationRecord[];
+  data: any;
+  day: Date;
   organization: OrgKey;
   userUid: string;
   ide?: string;
@@ -44,94 +56,89 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     const userUid = data.user_login;
 
     // Process core metrics
-    this.processMetrics(res, data, day, organization, userUid);
+    this.processMetrics({res, data, day, organization, userUid});
 
     // Process engagement flags
     this.processEngagementFlags(res, data, day, organization, userUid);
 
     // Process IDE breakdown
     for (const ideBreakdown of data.totals_by_ide || []) {
-      this.processMetrics(
+      this.processMetrics({
         res,
-        ideBreakdown,
+        data: ideBreakdown,
         day,
         organization,
         userUid,
-        ideBreakdown.ide
-      );
+        ide: ideBreakdown.ide,
+      });
     }
 
     // Process feature breakdown
     for (const featureBreakdown of data.totals_by_feature || []) {
-      this.processMetrics(
+      this.processMetrics({
         res,
-        featureBreakdown,
+        data: featureBreakdown,
         day,
         organization,
         userUid,
-        undefined,
-        featureBreakdown.feature
-      );
+        feature: featureBreakdown.feature,
+      });
     }
 
     // Process language+feature breakdown
     for (const item of data.totals_by_language_feature || []) {
-      this.processMetrics(
+      this.processMetrics({
         res,
-        item,
+        data: item,
         day,
         organization,
         userUid,
-        undefined,
-        item.feature,
-        item.language
-      );
+        feature: item.feature,
+        language: item.language,
+      });
     }
 
     // Process language+model breakdown
     for (const item of data.totals_by_language_model || []) {
-      this.processMetrics(
+      this.processMetrics({
         res,
-        item,
+        data: item,
         day,
         organization,
         userUid,
-        undefined,
-        undefined,
-        item.language,
-        item.model
-      );
+        language: item.language,
+        model: item.model,
+      });
     }
 
     // Process model+feature breakdown
     for (const item of data.totals_by_model_feature || []) {
-      this.processMetrics(
+      this.processMetrics({
         res,
-        item,
+        data: item,
         day,
         organization,
         userUid,
-        undefined,
-        item.feature,
-        undefined,
-        item.model
-      );
+        feature: item.feature,
+        model: item.model,
+      });
     }
 
     return res;
   }
 
-  private processMetrics(
-    res: DestinationRecord[],
-    data: any,
-    day: Date,
-    organization: OrgKey,
-    userUid: string,
-    ide?: string,
-    feature?: string,
-    language?: string,
-    model?: string
-  ): void {
+  private processMetrics(config: ProcessMetricsConfig): void {
+    const {
+      res,
+      data,
+      day,
+      organization,
+      userUid,
+      ide,
+      feature,
+      language,
+      model,
+    } = config;
     const endedAt = Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000);
 
     // AILinesAdded
@@ -271,9 +278,7 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     }
   }
 
-  private getAssistantMetric(
-    config: GitHubCopilotAssistantMetricConfig
-  ): DestinationRecord {
+  private getAssistantMetric(config: AssistantMetricConfig): DestinationRecord {
     const {
       startedAt,
       endedAt,
