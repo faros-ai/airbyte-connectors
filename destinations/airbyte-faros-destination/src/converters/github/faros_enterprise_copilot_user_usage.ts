@@ -3,9 +3,22 @@ import {EnterpriseCopilotUserUsage} from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isNil} from 'lodash';
 
-import {AssistantMetric, VCSToolCategory} from '../common/vcs';
+import {AssistantMetric, OrgKey, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
+
+export interface GitHubCopilotAssistantMetricConfig {
+  startedAt: Date;
+  endedAt: Date;
+  assistantMetricType: AssistantMetric;
+  value: number | boolean;
+  organization: OrgKey;
+  userUid: string;
+  ide?: string;
+  feature?: string;
+  language?: string;
+  model?: string;
+}
 
 export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
@@ -24,18 +37,28 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     }
 
     const day = Utils.toDate(data.day);
-    const org = GitHubCommon.enterpriseUid(data.enterprise_id);
-    const user = data.user_login;
+    const organization = {
+      uid: GitHubCommon.enterpriseUid(data.enterprise_id),
+      source: this.streamName.source,
+    };
+    const userUid = data.user_login;
 
     // Process core metrics
-    this.processMetrics(res, data, day, org, user);
+    this.processMetrics(res, data, day, organization, userUid);
 
     // Process engagement flags
-    this.processEngagementFlags(res, data, day, org, user);
+    this.processEngagementFlags(res, data, day, organization, userUid);
 
     // Process IDE breakdown
     for (const ideBreakdown of data.totals_by_ide || []) {
-      this.processMetrics(res, ideBreakdown, day, org, user, ideBreakdown.ide);
+      this.processMetrics(
+        res,
+        ideBreakdown,
+        day,
+        organization,
+        userUid,
+        ideBreakdown.ide
+      );
     }
 
     // Process feature breakdown
@@ -44,8 +67,8 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         res,
         featureBreakdown,
         day,
-        org,
-        user,
+        organization,
+        userUid,
         undefined,
         featureBreakdown.feature
       );
@@ -57,8 +80,8 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         res,
         item,
         day,
-        org,
-        user,
+        organization,
+        userUid,
         undefined,
         item.feature,
         item.language
@@ -71,8 +94,8 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         res,
         item,
         day,
-        org,
-        user,
+        organization,
+        userUid,
         undefined,
         undefined,
         item.language,
@@ -86,8 +109,8 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         res,
         item,
         day,
-        org,
-        user,
+        organization,
+        userUid,
         undefined,
         item.feature,
         undefined,
@@ -102,61 +125,66 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     res: DestinationRecord[],
     data: any,
     day: Date,
-    org: string,
-    user: string,
+    organization: OrgKey,
+    userUid: string,
     ide?: string,
     feature?: string,
     language?: string,
     model?: string
   ): void {
+    const endedAt = Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000);
+
     // AILinesAdded
     if (data.loc_added_sum) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.AILinesAdded,
-          data.loc_added_sum,
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.AILinesAdded,
+          value: data.loc_added_sum,
+          organization,
+          userUid,
           ide,
           feature,
           language,
-          model
-        )
+          model,
+        })
       );
     }
 
     // AILinesRemoved
     if (data.loc_deleted_sum) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.AILinesRemoved,
-          data.loc_deleted_sum,
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.AILinesRemoved,
+          value: data.loc_deleted_sum,
+          organization,
+          userUid,
           ide,
           feature,
           language,
-          model
-        )
+          model,
+        })
       );
     }
 
     // SuggestionsAccepted
     if (data.code_acceptance_activity_count) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.SuggestionsAccepted,
-          data.code_acceptance_activity_count,
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.SuggestionsAccepted,
+          value: data.code_acceptance_activity_count,
+          organization,
+          userUid,
           ide,
           feature,
           language,
-          model
-        )
+          model,
+        })
       );
     }
 
@@ -170,17 +198,18 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         data.code_acceptance_activity_count;
       if (discarded > 0) {
         res.push(
-          this.getAssistantMetric(
-            day,
-            org,
-            user,
-            AssistantMetric.SuggestionsDiscarded,
-            discarded,
+          this.getAssistantMetric({
+            startedAt: day,
+            endedAt,
+            assistantMetricType: AssistantMetric.SuggestionsDiscarded,
+            value: discarded,
+            organization,
+            userUid,
             ide,
             feature,
             language,
-            model
-          )
+            model,
+          })
         );
       }
     }
@@ -188,17 +217,18 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     // Usages
     if (data.user_initiated_interaction_count) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.Usages,
-          data.user_initiated_interaction_count,
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.Usages,
+          value: data.user_initiated_interaction_count,
+          organization,
+          userUid,
           ide,
           feature,
           language,
-          model
-        )
+          model,
+        })
       );
     }
   }
@@ -207,49 +237,56 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     res: DestinationRecord[],
     data: EnterpriseCopilotUserUsage,
     day: Date,
-    org: string,
-    user: string
+    organization: OrgKey,
+    userUid: string
   ): void {
+    const endedAt = Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000);
+
     if (data.used_agent) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.Engagement,
-          true,
-          undefined,
-          'Agent'
-        )
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.Engagement,
+          value: true,
+          organization,
+          userUid,
+          feature: 'Agent',
+        })
       );
     }
 
     if (data.used_chat) {
       res.push(
-        this.getAssistantMetric(
-          day,
-          org,
-          user,
-          AssistantMetric.Engagement,
-          true,
-          undefined,
-          'Chat'
-        )
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.Engagement,
+          value: true,
+          organization,
+          userUid,
+          feature: 'Chat',
+        })
       );
     }
   }
 
   private getAssistantMetric(
-    day: Date,
-    org: string,
-    user: string,
-    assistantMetricType: AssistantMetric,
-    value: number | boolean,
-    ide?: string,
-    feature?: string,
-    language?: string,
-    model?: string
+    config: GitHubCopilotAssistantMetricConfig
   ): DestinationRecord {
+    const {
+      startedAt,
+      endedAt,
+      assistantMetricType,
+      value,
+      organization,
+      userUid,
+      ide,
+      feature,
+      language,
+      model,
+    } = config;
+
     const isBoolean = typeof value === 'boolean';
     const valueType = isBoolean ? 'Bool' : 'Int';
     const valueStr = String(value);
@@ -264,9 +301,9 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
               ...[
                 VCSToolCategory.GitHubCopilot,
                 assistantMetricType,
-                day.toISOString(),
-                org,
-                user,
+                startedAt.toISOString(),
+                organization.uid,
+                userUid,
               ],
               // Optional dimensional fields
               ...[
@@ -281,17 +318,14 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
             .join('__')
         ),
         source: this.streamName.source,
-        startedAt: day,
-        endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
+        startedAt,
+        endedAt,
         type: {category: assistantMetricType},
         valueType,
         value: valueStr,
-        organization: {
-          uid: org,
-          source: this.streamName.source,
-        },
+        organization,
         user: {
-          uid: user,
+          uid: userUid,
           source: this.streamName.source,
         },
         tool: {category: VCSToolCategory.GitHubCopilot},
