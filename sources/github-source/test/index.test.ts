@@ -1253,7 +1253,7 @@ describe('index', () => {
           logger,
           enterpriseConfig
         );
-        getEnterpriseCopilotUserUsageBlobMockedImplementation(
+        getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation(
           readTestResourceFile(
             'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
           )
@@ -1285,7 +1285,7 @@ describe('index', () => {
           logger,
           enterpriseConfig
         );
-        getEnterpriseCopilotUserUsageBlobMockedImplementation(
+        getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation(
           readTestResourceFile(
             'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
           )
@@ -1524,7 +1524,9 @@ const getEnterpriseCopilotUserUsageMockedImplementation = (res: any) => ({
   enterpriseCopilotUserUsage: jest.fn().mockReturnValue({data: res}),
 });
 
-const getEnterpriseCopilotUserUsageBlobMockedImplementation = (res: any) => {
+const getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation = (
+  res: any
+) => {
   const mockAxiosInstance = {
     get: jest.fn().mockResolvedValue({data: res}),
   };
