@@ -3,6 +3,7 @@
 export interface ClaudeCodeUsageReportItem {
   date: string;
   organization_id: string;
+  actor_email_address?: string;
   actor: {
     email_address?: string;
     type: string;

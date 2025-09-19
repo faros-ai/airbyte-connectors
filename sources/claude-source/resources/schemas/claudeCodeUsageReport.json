@@ -10,6 +10,9 @@
     "organization_id": {
       "type": "string"
     },
+    "actor_email_address": {
+      "type": ["string", "null"]
+    },
     "actor": {
       "type": "object",
       "properties": {
