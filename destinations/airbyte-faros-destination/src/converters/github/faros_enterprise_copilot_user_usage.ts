@@ -20,9 +20,19 @@ interface AssistantMetricConfig {
   model?: string;
 }
 
+type MetricsData =
+  | EnterpriseCopilotUserUsage
+  | NonNullable<EnterpriseCopilotUserUsage['totals_by_ide']>[number]
+  | NonNullable<EnterpriseCopilotUserUsage['totals_by_feature']>[number]
+  | NonNullable<
+      EnterpriseCopilotUserUsage['totals_by_language_feature']
+    >[number]
+  | NonNullable<EnterpriseCopilotUserUsage['totals_by_language_model']>[number]
+  | NonNullable<EnterpriseCopilotUserUsage['totals_by_model_feature']>[number];
+
 interface ProcessMetricsConfig {
   res: DestinationRecord[];
-  data: any;
+  data: MetricsData;
   day: Date;
   organization: OrgKey;
   userUid: string;
@@ -221,8 +231,11 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
       }
     }
 
-    // Usages
-    if (data.user_initiated_interaction_count) {
+    // Usages (only available in some breakdown types)
+    if (
+      'user_initiated_interaction_count' in data &&
+      data.user_initiated_interaction_count
+    ) {
       res.push(
         this.getAssistantMetric({
           startedAt: day,
