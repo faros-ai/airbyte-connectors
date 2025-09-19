@@ -4,8 +4,8 @@ exports[`azure-workitems process records from all streams 1`] = `
 Array [
   "Processed 12 records",
   "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":3,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":3,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 43 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":3,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":5,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskComment\\\\\\":1,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 49 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":4,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":3,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":5,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship__Deletion\\\\\\":3,\\\\\\"tms_TaskComment\\\\\\":1,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -106,6 +106,23 @@ Array [
         "uid": "297",
       },
       "unassignedAt": null,
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "297",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
     },
   },
   Object {
@@ -295,6 +312,23 @@ Array [
     },
   },
   Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "299",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
+    },
+  },
+  Object {
     "tms_TaskBoardRelationship": Object {
       "board": Object {
         "source": "Azure-Workitems",
@@ -445,6 +479,23 @@ Array [
         "uid": "300",
       },
       "unassignedAt": null,
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "300",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
     },
   },
   Object {
