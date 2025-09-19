@@ -492,3 +492,78 @@ export type EnterpriseCopilotUserEngagement = {
   panel_chat_engagement: 0 | 1;
   pull_request_summary_engagement: 0 | 1;
 };
+
+export type EnterpriseCopilotUserUsage = {
+  enterprise: string;
+  report_start_day: string;
+  report_end_day: string;
+  day: string;
+  enterprise_id?: string;
+  user_id: number;
+  user_login: string;
+  user_initiated_interaction_count: number;
+  code_generation_activity_count: number;
+  code_acceptance_activity_count: number;
+  loc_suggested_to_add_sum: number;
+  loc_suggested_to_delete_sum: number;
+  loc_added_sum: number;
+  loc_deleted_sum: number;
+  totals_by_ide?: Array<{
+    ide: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+    last_known_plugin_version?: {
+      sampled_at: string;
+      plugin: string;
+      plugin_version: string;
+    };
+  }>;
+  totals_by_feature?: Array<{
+    feature: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_language_feature?: Array<{
+    language: string;
+    feature: string;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_language_model?: Array<{
+    language: string;
+    model: string;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_model_feature?: Array<{
+    model: string;
+    feature: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  used_agent?: boolean;
+  used_chat?: boolean;
+};

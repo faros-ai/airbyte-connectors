@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 63 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_deployments\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_engagement\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 343 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":3,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":2,\\\\\\"cicd_Organization\\\\\\":2,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_Tag\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":151,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":8,\\\\\\"vcs_UserToolLicense\\\\\\":8,\\\\\\"vcs_UserToolUsage\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 64 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_deployments\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_engagement\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_usage\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 360 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":3,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":2,\\\\\\"cicd_Organization\\\\\\":2,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_Tag\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":168,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":8,\\\\\\"vcs_UserToolLicense\\\\\\":8,\\\\\\"vcs_UserToolUsage\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -6019,6 +6019,426 @@ N/A
         "uid": "123456790",
       },
       "source": "GitHub",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "e2c61e04a79fe6948243dbf5de5cf807a34d638e3bbe47d92b5a4f9a18f8bdb9",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "231",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesRemoved",
+      },
+      "uid": "e941e7979141488368b4a53ce79ecff596b8eab060aee810d2ac7f78bcf06226",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "63",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "9a762c674f24ccbfddbe21b8f979515c3f033461c5e1acfd6c9768d39cd991f6",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "54",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "081dbaffd7b403332c9a9c3951e24ab41d856eeb038a8f664635e7e4ab6d09d5",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "279",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "47133aec53957edc2ea2870906c5c8521dc09cbb1471457083c089d441fbff0d",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "210",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "Agent",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "Engagement",
+      },
+      "uid": "904b6aa14974333ce2a9d953dcb763dd96b0883959c48e52a1e16e7929158797",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "true",
+      "valueType": "Bool",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "Chat",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "Engagement",
+      },
+      "uid": "a06e7de5522cd15c39fa59e369404f04171a736886a12899c73a01e9de04bef7",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "true",
+      "valueType": "Bool",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "ee42dda2ac3fc467920cdc9a4546fa108625d0e980cdd831c579b21d8fa31399",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "195",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesRemoved",
+      },
+      "uid": "9879fc44891f41ae49448e50d56072b0b5c9614e6390985d2d28174d95fd007a",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "50",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "13feadc07b7142a226f05251d8a2d526ef30c91fd93559a5e4eb55beed5bf2d9",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "45",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "53519e7d5f856ae0682ff1be4a9284c1f230406da321e3b56bd15abd544149c7",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "235",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "3a584fc2055c28e77d803fc02f488613a459c3b7370fa0bdd87405b2a3d5c2a2",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "180",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "chat_panel_unknown_mode",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "26e9df017f903aeb40bb022396b1ca99e10917e7fa708ed4647e41fd9c3dccb1",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "140",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "chat_panel_unknown_mode",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "AILinesRemoved",
+      },
+      "uid": "02911f5fe9803becddca70fa5111691f64187b5103ad8251c5e8c758df749921",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "25",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "chat_panel_unknown_mode",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "327a8e481761374b7a55300909668ed1fbd61031b2ea6f77570bf755083c781c",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "30",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "chat_panel_unknown_mode",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "d0e64518ccaf57fc2b6381129e6186f4fb2eede711461e138fd2dca7fa10793d",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "154",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-07-13T00:00:00.000Z",
+      "feature": "chat_panel_unknown_mode",
+      "organization": Object {
+        "source": "GitHub",
+        "uid": "enterprise:github",
+      },
+      "source": "GitHub",
+      "startedAt": "2025-07-12T00:00:00.000Z",
+      "tool": Object {
+        "category": "GitHubCopilot",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "dcfa0134401a3d35d008ff1ce6be48674a56e28fbd2a637a5e7b0771f87c418b",
+      "user": Object {
+        "source": "GitHub",
+        "uid": "octocat",
+      },
+      "value": "120",
+      "valueType": "Int",
     },
   },
   Object {

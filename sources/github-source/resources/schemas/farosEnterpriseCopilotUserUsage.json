@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "enterprise": {
+      "type": "string"
+    },
+    "report_start_day": {
+      "type": "string",
+      "format": "date"
+    },
+    "report_end_day": {
+      "type": "string",
+      "format": "date"
+    },
+    "day": {
+      "type": "string",
+      "format": "date"
+    },
+    "enterprise_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "integer"
+    },
+    "user_login": {
+      "type": "string"
+    },
+    "user_initiated_interaction_count": {
+      "type": "integer"
+    },
+    "code_generation_activity_count": {
+      "type": "integer"
+    },
+    "code_acceptance_activity_count": {
+      "type": "integer"
+    },
+    "loc_suggested_to_add_sum": {
+      "type": "integer"
+    },
+    "loc_suggested_to_delete_sum": {
+      "type": "integer"
+    },
+    "loc_added_sum": {
+      "type": "integer"
+    },
+    "loc_deleted_sum": {
+      "type": "integer"
+    },
+    "totals_by_ide": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ide": {
+            "type": "string"
+          },
+          "user_initiated_interaction_count": {
+            "type": "integer"
+          },
+          "code_generation_activity_count": {
+            "type": "integer"
+          },
+          "code_acceptance_activity_count": {
+            "type": "integer"
+          },
+          "loc_suggested_to_add_sum": {
+            "type": "integer"
+          },
+          "loc_suggested_to_delete_sum": {
+            "type": "integer"
+          },
+          "loc_added_sum": {
+            "type": "integer"
+          },
+          "loc_deleted_sum": {
+            "type": "integer"
+          },
+          "last_known_plugin_version": {
+            "type": "object",
+            "properties": {
+              "sampled_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "plugin": {
+                "type": "string"
+              },
+              "plugin_version": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "totals_by_feature": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "feature": {
+            "type": "string"
+          },
+          "user_initiated_interaction_count": {
+            "type": "integer"
+          },
+          "code_generation_activity_count": {
+            "type": "integer"
+          },
+          "code_acceptance_activity_count": {
+            "type": "integer"
+          },
+          "loc_suggested_to_add_sum": {
+            "type": "integer"
+          },
+          "loc_suggested_to_delete_sum": {
+            "type": "integer"
+          },
+          "loc_added_sum": {
+            "type": "integer"
+          },
+          "loc_deleted_sum": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "totals_by_language_feature": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "feature": {
+            "type": "string"
+          },
+          "code_generation_activity_count": {
+            "type": "integer"
+          },
+          "code_acceptance_activity_count": {
+            "type": "integer"
+          },
+          "loc_suggested_to_add_sum": {
+            "type": "integer"
+          },
+          "loc_suggested_to_delete_sum": {
+            "type": "integer"
+          },
+          "loc_added_sum": {
+            "type": "integer"
+          },
+          "loc_deleted_sum": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "totals_by_language_model": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "code_generation_activity_count": {
+            "type": "integer"
+          },
+          "code_acceptance_activity_count": {
+            "type": "integer"
+          },
+          "loc_suggested_to_add_sum": {
+            "type": "integer"
+          },
+          "loc_suggested_to_delete_sum": {
+            "type": "integer"
+          },
+          "loc_added_sum": {
+            "type": "integer"
+          },
+          "loc_deleted_sum": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "totals_by_model_feature": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "feature": {
+            "type": "string"
+          },
+          "user_initiated_interaction_count": {
+            "type": "integer"
+          },
+          "code_generation_activity_count": {
+            "type": "integer"
+          },
+          "code_acceptance_activity_count": {
+            "type": "integer"
+          },
+          "loc_suggested_to_add_sum": {
+            "type": "integer"
+          },
+          "loc_suggested_to_delete_sum": {
+            "type": "integer"
+          },
+          "loc_added_sum": {
+            "type": "integer"
+          },
+          "loc_deleted_sum": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "used_agent": {
+      "type": "boolean"
+    },
+    "used_chat": {
+      "type": "boolean"
+    }
+  }
+}

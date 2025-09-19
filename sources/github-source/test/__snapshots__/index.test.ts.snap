@@ -1366,6 +1366,58 @@ exports[`index streams - enterprise copilot user engagement 1`] = `
 ]
 `;
 
+exports[`index streams - enterprise copilot user usage 1`] = `
+[
+  {
+    "code_acceptance_activity_count": 54,
+    "code_generation_activity_count": 333,
+    "day": "2025-07-12",
+    "enterprise": "github",
+    "enterprise_id": "2",
+    "loc_added_sum": 231,
+    "loc_deleted_sum": 63,
+    "loc_suggested_to_add_sum": 472,
+    "loc_suggested_to_delete_sum": 0,
+    "report_end_day": "2025-08-03",
+    "report_start_day": "2025-07-07",
+    "totals_by_feature": [
+      {
+        "code_acceptance_activity_count": 30,
+        "code_generation_activity_count": 184,
+        "feature": "chat_panel_unknown_mode",
+        "loc_added_sum": 140,
+        "loc_deleted_sum": 25,
+        "loc_suggested_to_add_sum": 280,
+        "loc_suggested_to_delete_sum": 0,
+        "user_initiated_interaction_count": 120,
+      },
+    ],
+    "totals_by_ide": [
+      {
+        "code_acceptance_activity_count": 45,
+        "code_generation_activity_count": 280,
+        "ide": "vscode",
+        "last_known_plugin_version": {
+          "plugin": "copilot-chat",
+          "plugin_version": "0.29.2025062508",
+          "sampled_at": "2025-07-12T02:55:30.4810000Z",
+        },
+        "loc_added_sum": 195,
+        "loc_deleted_sum": 50,
+        "loc_suggested_to_add_sum": 400,
+        "loc_suggested_to_delete_sum": 0,
+        "user_initiated_interaction_count": 180,
+      },
+    ],
+    "used_agent": true,
+    "used_chat": true,
+    "user_id": 19153140,
+    "user_initiated_interaction_count": 210,
+    "user_login": "octocat",
+  },
+]
+`;
+
 exports[`index streams - enterprise team memberships 1`] = `
 [
   {
