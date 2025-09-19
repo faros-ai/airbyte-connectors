@@ -6026,7 +6026,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6036,7 +6036,7 @@ N/A
       "type": Object {
         "category": "AILinesAdded",
       },
-      "uid": "bc00bb33c8fa986a7fc22d45924b7331919c9d250a871a74cb18b22a51f5e085",
+      "uid": "e2c61e04a79fe6948243dbf5de5cf807a34d638e3bbe47d92b5a4f9a18f8bdb9",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6050,7 +6050,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6060,7 +6060,7 @@ N/A
       "type": Object {
         "category": "AILinesRemoved",
       },
-      "uid": "1d9ed8ce5b29f124fe75e5cd6e799628d990848520ea45480e8b8077e841c067",
+      "uid": "e941e7979141488368b4a53ce79ecff596b8eab060aee810d2ac7f78bcf06226",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6074,7 +6074,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6084,7 +6084,7 @@ N/A
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "ca9cef50346384c390a5c44ff886d0440c9c66cf70700d74d527d149bc595e9f",
+      "uid": "9a762c674f24ccbfddbe21b8f979515c3f033461c5e1acfd6c9768d39cd991f6",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6098,7 +6098,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6108,7 +6108,7 @@ N/A
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "5307acf71f3f388bbef3bba3e3307c958670d1cf2ca77801ab762bde9d0e9cb4",
+      "uid": "081dbaffd7b403332c9a9c3951e24ab41d856eeb038a8f664635e7e4ab6d09d5",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6122,7 +6122,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6132,7 +6132,7 @@ N/A
       "type": Object {
         "category": "Usages",
       },
-      "uid": "5bd319e9ef849a4e03c7f22bb0494d9d73b9dd7e8c89d8bed3834e2fc95d5f87",
+      "uid": "47133aec53957edc2ea2870906c5c8521dc09cbb1471457083c089d441fbff0d",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6147,7 +6147,7 @@ N/A
       "feature": "Agent",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6157,7 +6157,7 @@ N/A
       "type": Object {
         "category": "Engagement",
       },
-      "uid": "b00b231e22020c2109de9c6470c6733cfd5d0818c573aaa1bfcc763d2cacf3fe",
+      "uid": "904b6aa14974333ce2a9d953dcb763dd96b0883959c48e52a1e16e7929158797",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6172,7 +6172,7 @@ N/A
       "feature": "Chat",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6182,7 +6182,7 @@ N/A
       "type": Object {
         "category": "Engagement",
       },
-      "uid": "295e088dca22df0f095f4e555175712470d4a6364dd06cc4c704538c1c7dd1e2",
+      "uid": "a06e7de5522cd15c39fa59e369404f04171a736886a12899c73a01e9de04bef7",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6197,7 +6197,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6207,7 +6207,7 @@ N/A
       "type": Object {
         "category": "AILinesAdded",
       },
-      "uid": "8e16250b5d728bc346b2ae534add40e17316eb6e06e5b574390420b1195d153d",
+      "uid": "ee42dda2ac3fc467920cdc9a4546fa108625d0e980cdd831c579b21d8fa31399",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6222,7 +6222,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6232,7 +6232,7 @@ N/A
       "type": Object {
         "category": "AILinesRemoved",
       },
-      "uid": "ded7fb3440bf00ef935b0a417e3f18594215a9843250f5bf4f25680e371985c2",
+      "uid": "9879fc44891f41ae49448e50d56072b0b5c9614e6390985d2d28174d95fd007a",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6247,7 +6247,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6257,7 +6257,7 @@ N/A
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "9ea3c189c761c6830dc044965c85118a27eeb5ff596187a4ea4a669d0509df65",
+      "uid": "13feadc07b7142a226f05251d8a2d526ef30c91fd93559a5e4eb55beed5bf2d9",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6272,7 +6272,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6282,7 +6282,7 @@ N/A
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "2c9a0bc128e7db1c033b658b89efe091d5397ab0f34aa4cfdaae4ac917eee58e",
+      "uid": "53519e7d5f856ae0682ff1be4a9284c1f230406da321e3b56bd15abd544149c7",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6297,7 +6297,7 @@ N/A
       "endedAt": "2025-07-13T00:00:00.000Z",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6307,7 +6307,7 @@ N/A
       "type": Object {
         "category": "Usages",
       },
-      "uid": "cc06652fdb356a75ad3930a1f90d55ec274cef7df352843ee218405e8f0b517a",
+      "uid": "3a584fc2055c28e77d803fc02f488613a459c3b7370fa0bdd87405b2a3d5c2a2",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6322,7 +6322,7 @@ N/A
       "feature": "chat_panel_unknown_mode",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6332,7 +6332,7 @@ N/A
       "type": Object {
         "category": "AILinesAdded",
       },
-      "uid": "64728a17a200e8e66197b00efb1ebf75457ff5786609db79517b08ad0614162e",
+      "uid": "26e9df017f903aeb40bb022396b1ca99e10917e7fa708ed4647e41fd9c3dccb1",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6347,7 +6347,7 @@ N/A
       "feature": "chat_panel_unknown_mode",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6357,7 +6357,7 @@ N/A
       "type": Object {
         "category": "AILinesRemoved",
       },
-      "uid": "e63d4483a9661b880e1fa01fe7a59dd3f2a6f8845f56066fd56b844d13c0cc33",
+      "uid": "02911f5fe9803becddca70fa5111691f64187b5103ad8251c5e8c758df749921",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6372,7 +6372,7 @@ N/A
       "feature": "chat_panel_unknown_mode",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6382,7 +6382,7 @@ N/A
       "type": Object {
         "category": "SuggestionsAccepted",
       },
-      "uid": "1029d698145c7aaa108cb328f23c37fddec251bf6cf2076cc9dc76c876751d52",
+      "uid": "327a8e481761374b7a55300909668ed1fbd61031b2ea6f77570bf755083c781c",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6397,7 +6397,7 @@ N/A
       "feature": "chat_panel_unknown_mode",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6407,7 +6407,7 @@ N/A
       "type": Object {
         "category": "SuggestionsDiscarded",
       },
-      "uid": "a5290ceb07af287640c04e5aa6ef61da1e458f2713f44cb73eb571c90435500c",
+      "uid": "d0e64518ccaf57fc2b6381129e6186f4fb2eede711461e138fd2dca7fa10793d",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",
@@ -6422,7 +6422,7 @@ N/A
       "feature": "chat_panel_unknown_mode",
       "organization": Object {
         "source": "GitHub",
-        "uid": "enterprise:2",
+        "uid": "enterprise:github",
       },
       "source": "GitHub",
       "startedAt": "2025-07-12T00:00:00.000Z",
@@ -6432,7 +6432,7 @@ N/A
       "type": Object {
         "category": "Usages",
       },
-      "uid": "9c15fdc86365f64eb43c7d77f62445eb864e23e827087d62f8b267a40a1d55ae",
+      "uid": "dcfa0134401a3d35d008ff1ce6be48674a56e28fbd2a637a5e7b0771f87c418b",
       "user": Object {
         "source": "GitHub",
         "uid": "octocat",

@@ -54,13 +54,13 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
     const res: DestinationRecord[] = [];
     const data = record.record.data as EnterpriseCopilotUserUsage;
 
-    if (!data.user_login || !data.enterprise_id) {
+    if (!data.user_login || !data.enterprise) {
       return [];
     }
 
     const day = Utils.toDate(data.day);
     const organization = {
-      uid: GitHubCommon.enterpriseUid(data.enterprise_id),
+      uid: GitHubCommon.enterpriseUid(data.enterprise),
       source: this.streamName.source,
     };
     const userUid = data.user_login;
