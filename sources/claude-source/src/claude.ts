@@ -87,7 +87,10 @@ export class Claude {
       );
 
       for (const item of res.data.data) {
-        yield item;
+        yield {
+          ...item,
+          actor_email_address: item.actor?.email_address,
+        };
       }
 
       hasMore = res.data.has_more;

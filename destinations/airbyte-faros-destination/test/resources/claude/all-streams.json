@@ -6,6 +6,7 @@
       "data": {
         "date": "2025-08-08T00:00:00Z",
         "organization_id": "12345678-1234-5678-1234-567812345678",
+        "actor_email_address": "user1@example.com",
         "actor": {
           "email_address": "user1@example.com",
           "type": "user_actor"
@@ -79,6 +80,7 @@
       "data": {
         "date": "2025-08-09T00:00:00Z",
         "organization_id": "12345678-1234-5678-1234-567812345678",
+        "actor_email_address": "user2@example.com",
         "actor": {
           "email_address": "user2@example.com",
           "type": "user_actor"

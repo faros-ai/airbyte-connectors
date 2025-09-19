@@ -26,6 +26,7 @@ exports[`index streams - claude code usage report 1`] = `
       "email_address": "user1@example.com",
       "type": "user_actor",
     },
+    "actor_email_address": "user1@example.com",
     "core_metrics": {
       "commits_by_claude_code": 8,
       "lines_of_code": {
@@ -92,6 +93,7 @@ exports[`index streams - claude code usage report 1`] = `
       "email_address": "user2@example.com",
       "type": "user_actor",
     },
+    "actor_email_address": "user2@example.com",
     "core_metrics": {
       "commits_by_claude_code": 5,
       "lines_of_code": {
