@@ -41,7 +41,7 @@ export class Members extends CursorConverter {
         record: {
           user: {uid: member.email, source: this.streamName.source},
           organization: {
-            uid: VCSToolDetail.Cursor,
+            uid: this.streamName.source,
             source: this.streamName.source,
           },
           tool: {
@@ -62,7 +62,7 @@ export class Members extends CursorConverter {
       {
         model: 'vcs_Organization',
         record: {
-          uid: VCSToolDetail.Cursor,
+          uid: this.streamName.source,
           source: this.streamName.source,
         },
       },

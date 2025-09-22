@@ -120,7 +120,7 @@ export class ClaudeCodeUsageReport extends ClaudeConverter {
     const nextDay = new Date(day.getTime() + 24 * 60 * 60 * 1000);
 
     const organization = {
-      uid: VCSToolDetail.ClaudeCode,
+      uid: this.streamName.source,
       source: this.streamName.source,
     };
 
@@ -202,7 +202,7 @@ export class ClaudeCodeUsageReport extends ClaudeConverter {
           userTool: {
             user: {uid: userEmail, source: this.streamName.source},
             organization: {
-              uid: VCSToolDetail.ClaudeCode,
+              uid: this.streamName.source,
               source: this.streamName.source,
             },
             tool: {

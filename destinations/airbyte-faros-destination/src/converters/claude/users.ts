@@ -47,7 +47,7 @@ export class Users extends ClaudeConverter {
         record: {
           user: {uid: user.email, source: this.streamName.source},
           organization: {
-            uid: VCSToolDetail.ClaudeCode,
+            uid: this.streamName.source,
             source: this.streamName.source,
           },
           tool: {
@@ -70,14 +70,14 @@ export class Users extends ClaudeConverter {
     res.push({
       model: 'vcs_Organization',
       record: {
-        uid: VCSToolDetail.ClaudeCode,
+        uid: this.streamName.source,
         source: this.streamName.source,
       },
     });
 
     if (!ctx.farosClient) {
       ctx.logger.warn(
-        `Skipping inactive Claude Code users inference. Faros client not configured.`
+        `Skipping inactive Claude users inference. Faros client not configured.`
       );
     } else {
       // Query for existing active users
@@ -88,7 +88,7 @@ export class Users extends ClaudeConverter {
         paginatedQueryV2,
         new Map<string, any>([
           ['source', this.streamName.source],
-          ['organizationUid', VCSToolDetail.ClaudeCode],
+          ['organizationUid', this.streamName.source],
           ['toolCategory', VCSToolCategory.CodingAssistant],
           ['toolDetail', VCSToolDetail.ClaudeCode],
           ['inactive', false],
@@ -107,7 +107,7 @@ export class Users extends ClaudeConverter {
                 source: this.streamName.source,
               },
               organization: {
-                uid: VCSToolDetail.ClaudeCode,
+                uid: this.streamName.source,
                 source: this.streamName.source,
               },
               tool: {

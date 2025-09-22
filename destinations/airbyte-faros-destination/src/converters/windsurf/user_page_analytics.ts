@@ -42,7 +42,7 @@ export class UserPageAnalytics extends WindsurfConverter {
         record: {
           user: {uid: user.email, source: this.streamName.source},
           organization: {
-            uid: VCSToolDetail.Windsurf,
+            uid: this.streamName.source,
             source: this.streamName.source,
           },
           tool: {
@@ -65,7 +65,7 @@ export class UserPageAnalytics extends WindsurfConverter {
           userTool: {
             user: {uid: user.email, source: this.streamName.source},
             organization: {
-              uid: VCSToolDetail.Windsurf,
+              uid: this.streamName.source,
               source: this.streamName.source,
             },
             tool: {
@@ -87,7 +87,7 @@ export class UserPageAnalytics extends WindsurfConverter {
       {
         model: 'vcs_Organization',
         record: {
-          uid: VCSToolDetail.Windsurf,
+          uid: this.streamName.source,
           source: this.streamName.source,
         },
       },
