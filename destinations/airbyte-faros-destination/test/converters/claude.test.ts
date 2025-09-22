@@ -15,6 +15,23 @@ describe('claude', () => {
       api_url: mockttp.url,
       log_records: true,
     });
+    await mockttp
+      .forPost('/graphs/test-graph/graphql')
+      .thenCallback(async (req) => {
+        const body = await req.body.getJson();
+        const query = body['query'];
+        if (query.includes('vcs_UserTool')) {
+          return {
+            status: 200,
+            body: JSON.stringify({
+              data: {
+                vcs_UserTool: [],
+              },
+            }),
+          };
+        }
+        throw new Error(`Not mocked`);
+      });
   });
 
   afterEach(async () => {
