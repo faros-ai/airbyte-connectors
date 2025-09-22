@@ -476,23 +476,6 @@ export type EnterpriseCopilotUsageSummary = {
   team: string | null;
 } & Omit<CopilotUsageSummary, 'org' | 'team'>;
 
-export type EnterpriseCopilotUserEngagement = {
-  enterprise: string;
-  date: string;
-  day: string;
-  login: string;
-  user_id: string;
-  cli_engagement: 0 | 1;
-  code_completion_engagement: 0 | 1;
-  code_review_engagement: 0 | 1;
-  dotcom_chat_engagement: 0 | 1;
-  inline_chat_engagement: 0 | 1;
-  knowledge_base_chat_engagement: 0 | 1;
-  mobile_chat_engagement: 0 | 1;
-  panel_chat_engagement: 0 | 1;
-  pull_request_summary_engagement: 0 | 1;
-};
-
 export type EnterpriseCopilotUserUsage = {
   enterprise: string;
   report_start_day: string;

@@ -1183,61 +1183,6 @@ describe('index', () => {
     });
   });
 
-  test('streams - enterprise copilot user engagement', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: enterpriseConfig,
-      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          getEnterpriseCopilotUserEngagementMockedImplementation(
-            readTestResourceAsJSON(
-              'enterprise_copilot_user_engagement/response.json'
-            )
-          ),
-          logger,
-          enterpriseConfig
-        );
-        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
-          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
-  });
-
-  test('streams - enterprise copilot user engagement already up-to-date', async () => {
-    await sourceReadTest({
-      source,
-      configOrPath: enterpriseConfig,
-      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
-      stateOrPath: {
-        faros_enterprise_copilot_user_engagement: {
-          github: {cutoff: new Date('2025-01-01').getTime()},
-        },
-      },
-      onBeforeReadResultConsumer: (res) => {
-        setupGitHubInstance(
-          getEnterpriseCopilotUserEngagementMockedImplementation(
-            readTestResourceAsJSON(
-              'enterprise_copilot_user_engagement/response.json'
-            )
-          ),
-          logger,
-          enterpriseConfig
-        );
-        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
-          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toHaveLength(0);
-      },
-    });
-  });
-
   test('streams - enterprise copilot user usage', async () => {
     await sourceReadTest({
       source,
@@ -1504,21 +1449,6 @@ const getEnterpriseCopilotMetricsMockedImplementation = (res: any) => ({
 const getEnterpriseCopilotMetricsForTeamMockedImplementation = (res: any) => ({
   enterpriseCopilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
 });
-
-const getEnterpriseCopilotUserEngagementMockedImplementation = (res: any) => ({
-  enterpriseCopilotUserEngagement: jest.fn().mockReturnValue({data: res}),
-});
-
-const getEnterpriseCopilotUserEngagementBlobMockedImplementation = (
-  res: any
-) => {
-  const mockAxiosInstance = {
-    get: jest.fn().mockResolvedValue({data: res}),
-  };
-  jest
-    .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
-    .mockReturnValue(mockAxiosInstance);
-};
 
 const getEnterpriseCopilotUserUsageMockedImplementation = (res: any) => ({
   enterpriseCopilotUserUsage: jest.fn().mockReturnValue({data: res}),

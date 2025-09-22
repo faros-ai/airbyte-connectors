@@ -128,11 +128,6 @@ export type CopilotMetricsResponse = {
   } | null;
 }[];
 
-export type CopilotUserEngagementResponse = {
-  date: string;
-  blob_uri: string;
-}[];
-
 export type CopilotUserUsageResponse = {
   download_links: string[];
   report_start_day: string;
