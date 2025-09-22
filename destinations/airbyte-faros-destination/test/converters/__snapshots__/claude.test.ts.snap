@@ -4,8 +4,8 @@ exports[`claude process records from all streams 1`] = `
 Array [
   "Processed 4 records",
   "Processed records by stream: {\\\\\\"mytestsource__claude__claude_code_usage_report\\\\\\":2,\\\\\\"mytestsource__claude__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 33 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":24,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 34 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":24,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -752,6 +752,24 @@ Array [
     "vcs_Organization": Object {
       "source": "Claude",
       "uid": "Claude",
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": true,
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "user": Object {
+        "source": "Claude",
+        "uid": "oldkit",
+      },
     },
   },
 ]
