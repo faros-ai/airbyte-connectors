@@ -8,6 +8,8 @@ export interface ClaudeConfig {
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly timeout?: number;
+  readonly retries?: number;
+  readonly retry_delay?: number;
   startDate?: Date;
   endDate?: Date;
 }
