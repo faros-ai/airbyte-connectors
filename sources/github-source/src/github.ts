@@ -22,7 +22,6 @@ import {
   EnterpriseCopilotSeatsEmpty,
   EnterpriseCopilotSeatsResponse,
   EnterpriseCopilotUsageSummary,
-  EnterpriseCopilotUserEngagement,
   EnterpriseCopilotUserUsage,
   EnterpriseTeam,
   EnterpriseTeamMembership,
@@ -99,7 +98,6 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
-  CopilotUserEngagementResponse,
   CopilotUserUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
@@ -1996,54 +1994,6 @@ export abstract class GitHub {
           enterprise,
           team: teamSlug,
           ...usage,
-        };
-      }
-    }
-  }
-
-  async *getEnterpriseCopilotUserEngagement(
-    enterprise: string,
-    cutoffDate: number
-  ): AsyncGenerator<EnterpriseCopilotUserEngagement> {
-    const res: OctokitResponse<CopilotUserEngagementResponse> =
-      await this.baseOctokit.request(
-        this.baseOctokit.enterpriseCopilotUserEngagement,
-        {
-          enterprise,
-        }
-      );
-    const data = res.data;
-    if (isNil(data) || isEmpty(data)) {
-      this.logger.warn(
-        `No GitHub Copilot user engagement metrics found for enterprise ${enterprise}.`
-      );
-      return;
-    }
-    const latestDay = Math.max(
-      0,
-      ...data.map((record) => Utils.toDate(record.date).getTime())
-    );
-    if (latestDay <= cutoffDate) {
-      this.logger.info(
-        `GitHub Copilot user engagement metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
-      );
-      return;
-    }
-    const axios = makeAxiosInstanceWithRetry({
-      maxContentLength: Infinity,
-      timeout: this.timeoutMs,
-    });
-    for (const record of data) {
-      const blob = await axios.get<string>(record.blob_uri);
-      const parsedLines = blob.data
-        .split('\n')
-        .filter((line) => line.trim() !== '')
-        .map((line) => JSON.parse(line));
-      for (const parsedLine of parsedLines) {
-        yield {
-          enterprise,
-          date: record.date,
-          ...parsedLine,
         };
       }
     }

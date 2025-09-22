@@ -1329,43 +1329,6 @@ exports[`index streams - enterprise copilot usage 1`] = `
 ]
 `;
 
-exports[`index streams - enterprise copilot user engagement 1`] = `
-[
-  {
-    "cli_engagement": 0,
-    "code_completion_engagement": 1,
-    "code_review_engagement": 0,
-    "date": "2025-01-01",
-    "day": "2025-01-01T00:00:00.0000000Z",
-    "dotcom_chat_engagement": 0,
-    "enterprise": "github",
-    "inline_chat_engagement": 0,
-    "knowledge_base_chat_engagement": 0,
-    "login": "github_login0",
-    "mobile_chat_engagement": 0,
-    "panel_chat_engagement": 0,
-    "pull_request_summary_engagement": 0,
-    "user_id": 198650010,
-  },
-  {
-    "cli_engagement": 0,
-    "code_completion_engagement": 1,
-    "code_review_engagement": 0,
-    "date": "2025-01-01",
-    "day": "2025-01-01T00:00:00.0000000Z",
-    "dotcom_chat_engagement": 0,
-    "enterprise": "github",
-    "inline_chat_engagement": 0,
-    "knowledge_base_chat_engagement": 0,
-    "login": "github_login1",
-    "mobile_chat_engagement": 0,
-    "panel_chat_engagement": 0,
-    "pull_request_summary_engagement": 0,
-    "user_id": 198650011,
-  },
-]
-`;
-
 exports[`index streams - enterprise copilot user usage 1`] = `
 [
   {

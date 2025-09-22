@@ -176,12 +176,6 @@
     },
     {
       "stream": {
-        "name": "mytestsource__github__faros_enterprise_copilot_user_engagement"
-      },
-      "destination_sync_mode": "append"
-    },
-    {
-      "stream": {
         "name": "mytestsource__github__faros_enterprise_copilot_user_usage"
       },
       "destination_sync_mode": "append"
