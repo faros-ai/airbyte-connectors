@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "commander": "^13.1.0",
-    "faros-js-client": "^0.7.6"
+    "faros-js-client": "^0.7.9"
   },
   "devDependencies": {
     "@types/analytics-node": "^3.1.8",
@@ -59,7 +59,7 @@
   },
   "overrides": {
     "@octokit/types": "14.0.0",
-    "axios": "^1.11.0",
+    "axios": "^1.12.2",
     "cross-spawn": "^7.0.6",
     "degenerator": "^5.0.0",
     "form-data": "4.0.4",
