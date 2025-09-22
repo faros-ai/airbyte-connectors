@@ -35,7 +35,7 @@ export class UsageEvents extends CursorConverter {
         userTool: {
           user: {uid: usageEventItem.userEmail, source: this.streamName.source},
           organization: {
-            uid: VCSToolDetail.Cursor,
+            uid: this.streamName.source,
             source: this.streamName.source,
           },
           tool: {
