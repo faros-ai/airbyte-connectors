@@ -693,6 +693,7 @@ Array [
   },
   Object {
     "vcs_UserTool": Object {
+      "endedAt": null,
       "inactive": false,
       "organization": Object {
         "source": "Claude",
@@ -731,6 +732,7 @@ Array [
   },
   Object {
     "vcs_UserTool": Object {
+      "endedAt": null,
       "inactive": false,
       "organization": Object {
         "source": "Claude",

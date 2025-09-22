@@ -56,6 +56,7 @@ export class Users extends ClaudeConverter {
           },
           inactive: false,
           startedAt: Utils.toDate(user.added_at).toISOString(),
+          endedAt: null,
         },
       },
     ];
@@ -66,7 +67,6 @@ export class Users extends ClaudeConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const res: DestinationRecord[] = [];
 
-    // Always add the organization (using the same uid as the tool detail)
     res.push({
       model: 'vcs_Organization',
       record: {
