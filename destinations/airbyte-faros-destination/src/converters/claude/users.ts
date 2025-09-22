@@ -1,7 +1,6 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {UserItem} from 'faros-airbyte-common/claude';
 import {paginatedQueryV2, Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
