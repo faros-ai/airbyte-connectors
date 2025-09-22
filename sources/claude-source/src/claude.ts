@@ -13,9 +13,13 @@ import {
 } from './types';
 
 export const DEFAULT_ANTHROPIC_API_URL = 'https://api.anthropic.com';
-export const DEFAULT_CUTOFF_DAYS = 365;
+export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_TIMEOUT = 60000;
-export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_PAGE_SIZE = 1000;
+export const DEFAULT_RETRIES = 3;
+export const DEFAULT_RETRY_DELAY = 1000;
+
+export const RATE_LIMIT_RESET_DELAY = 60 * 60 * 1000; // 1 hour
 
 export class Claude {
   private static claude: Claude;
@@ -26,17 +30,28 @@ export class Claude {
     private readonly logger: AirbyteLogger
   ) {
     const apiUrl = this.config.anthropic_api_url ?? DEFAULT_ANTHROPIC_API_URL;
-    this.api = makeAxiosInstanceWithRetry({
-      baseURL: apiUrl,
-      timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      headers: {
-        'x-api-key': this.config.anthropic_api_key,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
+    this.api = makeAxiosInstanceWithRetry(
+      {
+        baseURL: apiUrl,
+        timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: {
+          'x-api-key': this.config.anthropic_api_key,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        },
       },
-    });
+      this.logger.asPino(),
+      this.config.retries ?? DEFAULT_RETRIES,
+      (error, retryNumber?) => {
+        if (error.response?.status !== 429) {
+          return retryNumber * (this.config.retry_delay ?? DEFAULT_RETRY_DELAY);
+        }
+        // API doesn't return a retry-after header, so we use a fixed delay
+        return RATE_LIMIT_RESET_DELAY;
+      }
+    );
   }
 
   static instance(config: ClaudeConfig, logger: AirbyteLogger): Claude {

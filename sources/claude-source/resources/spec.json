@@ -27,40 +27,54 @@
         "order": 2,
         "type": "integer",
         "title": "Cutoff Days",
-        "default": 365,
+        "default": 90,
         "description": "Only fetch data from the last N days if start_date is not specified."
       },
-      "timeout": {
+      "page_size": {
         "order": 3,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of records to fetch per API request",
+        "default": 1000,
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "timeout": {
+        "order": 4,
         "type": "integer",
         "title": "Request Timeout",
         "description": "Timeout in milliseconds for each request to the API",
         "default": 60000
       },
-      "page_size": {
-        "order": 4,
+      "retries": {
+        "order": 5,
         "type": "integer",
-        "title": "Page Size",
-        "description": "Number of records to fetch per API request",
-        "default": 100,
-        "minimum": 1,
-        "maximum": 1000
+        "title": "Max Number of Retries",
+        "description": "The max number of retries before giving up on retrying requests to the API.",
+        "default": 3
+      },
+      "retry_delay": {
+        "order": 6,
+        "type": "integer",
+        "title": "Retry Delay",
+        "description": "The time to wait before retrying a request that errored with a a gateway timeout (in milliseconds).",
+        "default": 1000
       },
       "backfill": {
-        "order": 5,
+        "order": 7,
         "type": "boolean",
         "title": "Backfill",
         "description": "Backfill data from the start date to the end date.",
         "default": false
       },
       "start_date": {
-        "order": 6,
+        "order": 8,
         "type": "string",
         "title": "Start Date",
         "description": "The date from which to start syncing data (YYYY-MM-DD format)."
       },
       "end_date": {
-        "order": 7,
+        "order": 9,
         "type": "string",
         "title": "End Date",
         "description": "The date to stop syncing data (YYYY-MM-DD format)."
