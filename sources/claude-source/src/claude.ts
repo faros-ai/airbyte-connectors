@@ -1,4 +1,4 @@
-import {AxiosInstance} from 'axios';
+import {AxiosError, AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {DateTime} from 'luxon';
@@ -17,7 +17,9 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 1000;
 export const DEFAULT_RETRIES = 3;
-export const DEFAULT_RETRY_DELAY = 10000;
+export const DEFAULT_RETRY_DELAY = 1000;
+
+export const RATE_LIMIT_RESET_DELAY = 60 * 60 * 1000; // 1 hour
 
 export class Claude {
   private static claude: Claude;
@@ -42,7 +44,13 @@ export class Claude {
       },
       this.logger.asPino(),
       this.config.retries ?? DEFAULT_RETRIES,
-      this.config.retry_delay ?? DEFAULT_RETRY_DELAY
+      (error, retryNumber?) => {
+        if (error.response?.status !== 429) {
+          return retryNumber * (this.config.retry_delay ?? DEFAULT_RETRY_DELAY);
+        }
+        // API doesn't return a retry-after header, so we use a fixed delay
+        return RATE_LIMIT_RESET_DELAY;
+      }
     );
   }
 

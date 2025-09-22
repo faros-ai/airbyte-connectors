@@ -58,7 +58,7 @@
         "type": "integer",
         "title": "Retry Delay",
         "description": "The time to wait before retrying a request that errored with a a gateway timeout (in milliseconds).",
-        "default": 10000
+        "default": 1000
       },
       "backfill": {
         "order": 7,
