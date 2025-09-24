@@ -272,6 +272,75 @@ describe('abstract-surveys', () => {
       expect(res).toMatchSnapshot();
     });
 
+    test('uses "What is your team?" column as fallback for Team ID', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          'What is your team?': 'Engineering Team (eng-team-123)',
+          Name: 'John Doe',
+          Email: 'john@doe.xyz',
+        },
+      });
+      const res = await converter.convert(record, ctx);
+
+      // Check that the team was created with the extracted ID
+      const teamRecord = res.find((r) => r.model === 'survey_Team');
+      expect(teamRecord).toBeDefined();
+      expect(teamRecord.record.uid).toBe('eng-team-123');
+      expect(teamRecord.record.name).toBeNull(); // No Team Name column provided
+
+      // Also verify full snapshot
+      expect(res).toMatchSnapshot();
+    });
+
+    test('handles "What is your team?" column without parentheses', async () => {
+      const ctx = new StreamContext(
+        new AirbyteLogger(),
+        {
+          edition_configs: {},
+          source_specific_configs: {
+            surveys: DEFAULT_CONFIG,
+          },
+        },
+        {}
+      );
+      const record = AirbyteRecord.make('surveys', {
+        _airtable_id: 'rec1',
+        _airtable_created_time: '2023-10-09T14:09:37.000Z',
+        _airtable_table_id: 'app0z7JKgJ19t13fw/tbl1',
+        _airtable_table_name: 'my_surveys/Survey Responses',
+        row: {
+          'How much do you like ice cream?': 5,
+          'What is your team?': 'plain-team-id',
+          Name: 'John Doe',
+          Email: 'john@doe.xyz',
+        },
+      });
+      const res = await converter.convert(record, ctx);
+
+      // Check that the team was created with the plain value
+      const teamRecord = res.find((r) => r.model === 'survey_Team');
+      expect(teamRecord).toBeDefined();
+      expect(teamRecord.record.uid).toBe('plain-team-id');
+
+      // Also verify full snapshot
+      expect(res).toMatchSnapshot();
+    });
+
     test('response with survey metadata', async () => {
       const ctx = new StreamContext(
         new AirbyteLogger(),
