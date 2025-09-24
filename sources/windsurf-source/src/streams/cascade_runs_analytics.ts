@@ -3,7 +3,7 @@ import {Dictionary} from 'ts-essentials';
 
 import {CascadeRunsItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
-import {StreamWithUserSlices, UserStreamSlice,UserStreamState} from './common';
+import {StreamWithUserSlices, UserStreamSlice, UserStreamState} from './common';
 
 export class CascadeRunsAnalytics extends StreamWithUserSlices {
   constructor(config: WindsurfConfig, logger: AirbyteLogger) {

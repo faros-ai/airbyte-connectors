@@ -3,7 +3,7 @@ import {AutocompleteAnalyticsItem} from 'faros-airbyte-common/windsurf';
 import {Utils} from 'faros-js-client';
 
 import {AssistantMetric} from '../common/vcs';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {WindsurfConverter, WindsurfFeature} from './common';
 
 export class AutocompleteAnalytics extends WindsurfConverter {
