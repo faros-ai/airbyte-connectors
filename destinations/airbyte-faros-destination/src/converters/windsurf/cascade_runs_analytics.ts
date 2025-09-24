@@ -33,7 +33,7 @@ export class CascadeRunsAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           item.model,
-          WindsurfFeature.Cascade
+          item.mode
         )
       );
     }
@@ -50,7 +50,7 @@ export class CascadeRunsAnalytics extends WindsurfConverter {
           item.email,
           undefined,
           item.model,
-          WindsurfFeature.Cascade
+          item.mode
         )
       );
     }
