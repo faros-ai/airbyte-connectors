@@ -579,12 +579,20 @@ export abstract class AbstractSurveys extends Converter {
 
   // Get column value either from string or an array of single string (lookup result)
   static getColumnValue(row: any, columnName: string): string | null {
-    const columnValue = row[columnName];
+    let columnValue = row[columnName];
     if (!columnValue) {
       return null;
     }
     if (Array.isArray(columnValue)) {
       return columnValue.length === 0 ? null : columnValue[0];
+    }
+    // Handle OOTB Survey case where we are using the respondent team id column name fallback
+    // and value is in format "Team Name (team-uid)"
+    if (
+      columnName === RespondentTeamIdColumnFallback &&
+      typeof columnValue === 'string'
+    ) {
+      columnValue = columnValue.match(/\(([^)]+)\)/)?.[1] || columnValue;
     }
     return columnValue;
   }
