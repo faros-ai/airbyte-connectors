@@ -587,7 +587,7 @@ export abstract class AbstractSurveys extends Converter {
       return columnValue.length === 0 ? null : columnValue[0];
     }
     // Handle OOTB Survey case where we are using the respondent team id column name fallback
-    // and value is in format "Team Name (team-uid)"
+    // and value is in format "Team Name (team-uid)". It extracts the team-uid part.
     if (
       columnName === RespondentTeamIdColumnFallback &&
       typeof columnValue === 'string'
