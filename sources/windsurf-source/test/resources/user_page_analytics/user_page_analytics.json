@@ -3,6 +3,7 @@
     {
       "name": "John Developer",
       "email": "john@company.com",
+      "signupTime": "2024-01-15T08:00:00Z",
       "lastUpdateTime": "2024-03-18T10:30:00Z",
       "apiKey": "hashed_api_key_123",
       "activeDays": 15,
@@ -14,6 +15,7 @@
     {
       "name": "Jane Engineer",
       "email": "jane@company.com",
+      "signupTime": "2024-01-10T12:00:00Z",
       "lastUpdateTime": "2024-03-17T14:20:00Z",
       "apiKey": "hashed_api_key_456",
       "activeDays": 22,

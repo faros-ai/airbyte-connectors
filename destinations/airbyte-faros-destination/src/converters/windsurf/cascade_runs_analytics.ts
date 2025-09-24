@@ -1,12 +1,12 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {AutocompleteAnalyticsItem} from 'faros-airbyte-common/windsurf';
+import {CascadeRunsItem} from 'faros-airbyte-common/windsurf';
 import {Utils} from 'faros-js-client';
 
 import {AssistantMetric} from '../common/vcs';
-import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
+import {DestinationModel, DestinationRecord} from '../converter';
 import {WindsurfConverter, WindsurfFeature} from './common';
 
-export class AutocompleteAnalytics extends WindsurfConverter {
+export class CascadeRunsAnalytics extends WindsurfConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
   ];
@@ -14,45 +14,43 @@ export class AutocompleteAnalytics extends WindsurfConverter {
   async convert(
     record: AirbyteRecord
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    const item = record.record.data as AutocompleteAnalyticsItem;
+    const item = record.record.data as CascadeRunsItem;
 
     const res: DestinationRecord[] = [];
 
-    const startedAt = Utils.toDate(item.date);
+    const startedAt = Utils.toDate(item.day);
     const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    if (item.num_acceptances > 0) {
+    // Generate Usage metric for messagesSent
+    if (item.messagesSent && item.messagesSent > 0) {
       res.push(
         ...this.getAssistantMetric(
           startedAt,
           endedAt,
-          AssistantMetric.SuggestionsAccepted,
-          item.num_acceptances,
+          AssistantMetric.Usages,
+          item.messagesSent,
           this.streamName.source,
           item.email,
           undefined,
-          undefined,
-          WindsurfFeature.Autocompletion,
-          item.ide,
-          item.language
+          item.model,
+          WindsurfFeature.Cascade
         )
       );
     }
 
-    if (item.num_lines_accepted > 0) {
+    // Generate Cost metric for promptsUsed
+    if (item.promptsUsed && item.promptsUsed > 0) {
       res.push(
         ...this.getAssistantMetric(
           startedAt,
           endedAt,
-          AssistantMetric.LinesAccepted,
-          item.num_lines_accepted,
+          AssistantMetric.Cost,
+          item.promptsUsed,
           this.streamName.source,
           item.email,
           undefined,
-          undefined,
-          WindsurfFeature.Autocompletion,
-          item.ide,
-          item.language
+          item.model,
+          WindsurfFeature.Cascade
         )
       );
     }

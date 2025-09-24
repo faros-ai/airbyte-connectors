@@ -19,6 +19,7 @@ export {
   UserTableStatsItem,
   AutocompleteAnalyticsItem,
   CascadeLinesItem,
+  CascadeRunsItem,
 } from 'faros-airbyte-common/windsurf';
 
 // Import types for local use
@@ -42,8 +43,8 @@ export enum QueryDataSource {
 }
 
 export enum QueryAggregationFunction {
-  SUM = 'QUERY_AGGREGATION_SUM',
   COUNT = 'QUERY_AGGREGATION_COUNT',
+  SUM = 'QUERY_AGGREGATION_SUM',
   AVG = 'QUERY_AGGREGATION_AVG',
   MAX = 'QUERY_AGGREGATION_MAX',
   MIN = 'QUERY_AGGREGATION_MIN',
@@ -52,10 +53,10 @@ export enum QueryAggregationFunction {
 export enum QueryFilter {
   EQUAL = 'QUERY_FILTER_EQUAL',
   NOT_EQUAL = 'QUERY_FILTER_NOT_EQUAL',
-  GREATER = 'QUERY_FILTER_GREATER',
-  GREATER_EQUAL = 'QUERY_FILTER_GREATER_EQUAL',
-  LESS = 'QUERY_FILTER_LESS',
-  LESS_EQUAL = 'QUERY_FILTER_LESS_EQUAL',
+  GREATER = 'QUERY_FILTER_GREATER_THAN',
+  LESS = 'QUERY_FILTER_LESS_THAN',
+  GREATER_EQUAL = 'QUERY_FILTER_GE',
+  LESS_EQUAL = 'QUERY_FILTER_LE',
 }
 
 export interface QuerySelection {
@@ -116,7 +117,9 @@ export interface CascadeAnalyticsRequest {
 }
 
 export interface CascadeQueryRequest {
-  data_source: CascadeDataSource;
+  [CascadeDataSource.CASCADE_LINES]?: Record<string, never>;
+  [CascadeDataSource.CASCADE_RUNS]?: Record<string, never>;
+  [CascadeDataSource.CASCADE_TOOL_USAGE]?: Record<string, never>;
 }
 
 export interface CascadeLinesData {

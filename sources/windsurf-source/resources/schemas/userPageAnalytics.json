@@ -11,6 +11,14 @@
       "type": "string",
       "description": "User's email address"
     },
+    "apiKey": {
+      "type": "string",
+      "description": "Hashed version of the user's API key"
+    },
+    "signupTime": {
+      "type": "string",
+      "description": "User's signup timestamp"
+    },
     "lastUpdateTime": {
       "type": "string",
       "description": "Timestamp of last activity"
@@ -34,27 +42,17 @@
     "lastCommandUsageTime": {
       "type": "string",
       "description": "Most recent command modality usage"
-    },
-    "usageTimestamps": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "All unique usage timestamps collected from analytics sources (ISO 8601 format)"
-    },
-    "minUsageTimestamp": {
-      "type": "string",
-      "description": "Minimum usage timestamp computed from all analytics sources (ISO 8601 format)"
     }
   },
   "required": [
     "name",
     "email",
+    "apiKey",
+    "signupTime",
     "lastUpdateTime",
     "activeDays",
     "lastAutocompleteUsageTime",
     "lastChatUsageTime",
-    "lastCommandUsageTime",
-    "usageTimestamps"
+    "lastCommandUsageTime"
   ]
 }

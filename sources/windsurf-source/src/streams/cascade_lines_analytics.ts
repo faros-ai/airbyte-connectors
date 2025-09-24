@@ -1,30 +1,13 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {CascadeLinesItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
+import {StreamWithUserSlices, UserStreamSlice,UserStreamState} from './common';
 
-export type EmailStreamSlice = {
-  email: string;
-};
-
-export type StreamState = {
-  readonly [email: string]: {
-    cutoff: string;
-  };
-};
-
-export class CascadeLinesAnalytics extends AirbyteStreamBase {
-  constructor(
-    private readonly config: WindsurfConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
+export class CascadeLinesAnalytics extends StreamWithUserSlices {
+  constructor(config: WindsurfConfig, logger: AirbyteLogger) {
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -39,22 +22,11 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
     return 'day';
   }
 
-  async *streamSlices(): AsyncGenerator<EmailStreamSlice> {
-    const windsurf = Windsurf.instance(this.config, this.logger);
-    const users = await windsurf.getUserPageAnalytics();
-
-    for (const user of users) {
-      if (user.email) {
-        yield {email: user.email};
-      }
-    }
-  }
-
   async *readRecords(
     syncMode: SyncMode,
     _cursorField?: string[],
-    streamSlice?: EmailStreamSlice,
-    streamState?: StreamState
+    streamSlice?: UserStreamSlice,
+    streamState?: UserStreamState
   ): AsyncGenerator<CascadeLinesItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
     const email = streamSlice?.email;
@@ -64,37 +36,19 @@ export class CascadeLinesAnalytics extends AirbyteStreamBase {
     }
 
     // For incremental sync, use the cutoff date from state for this specific email, otherwise use configured date range
-    const emailState = streamState?.[email];
-    const startDate =
-      syncMode === SyncMode.INCREMENTAL && emailState?.cutoff
-        ? emailState.cutoff
-        : this.config.startDate?.toISOString();
-
-    const endDate = this.config.endDate?.toISOString();
+    const emailState = this.getEmailState(streamState, email);
+    const startDate = this.getStartDate(syncMode, emailState);
+    const endDate = this.getEndDate();
 
     // Yield items directly from the async generator for this specific email
-    yield* windsurf.getCascadeLinesAnalyticsForEmail(email, startDate, endDate);
+    yield* windsurf.getCascadeLinesAnalytics(email, startDate, endDate);
   }
 
   getUpdatedState(
-    currentStreamState: StreamState,
+    currentStreamState: UserStreamState,
     latestRecord: CascadeLinesItem,
-    slice: EmailStreamSlice
-  ): StreamState {
-    const email = slice.email;
-    const currentEmailState = currentStreamState?.[email];
-    const recordDate = latestRecord.day;
-
-    // Update state with the latest date seen for this email
-    if (!currentEmailState?.cutoff || recordDate > currentEmailState.cutoff) {
-      return {
-        ...currentStreamState,
-        [email]: {
-          cutoff: recordDate,
-        },
-      };
-    }
-
-    return currentStreamState;
+    slice: UserStreamSlice
+  ): UserStreamState {
+    return this.updateStreamState(currentStreamState, latestRecord, slice);
   }
 }

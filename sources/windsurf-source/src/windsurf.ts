@@ -10,6 +10,7 @@ import {
   CascadeAnalyticsResponse,
   CascadeDataSource,
   CascadeLinesItem,
+  CascadeRunsItem,
   CustomAnalyticsRequest,
   CustomAnalyticsResponse,
   QueryAggregationFunction,
@@ -28,7 +29,6 @@ export class Windsurf {
   private static windsurf: Windsurf;
   private readonly api: AxiosInstance;
   private readonly apiKeyToEmailMap: Record<string, string> = {};
-  private readonly usageTimestampsPerEmail: {[email: string]: Set<number>} = {};
 
   constructor(
     private readonly config: WindsurfConfig,
@@ -53,6 +53,52 @@ export class Windsurf {
     return Windsurf.windsurf;
   }
 
+  /**
+   * Logs a curl command equivalent for an API request
+   */
+  private logCurlCommand(
+    method: string,
+    path: string,
+    data?: any,
+    headers?: Record<string, string>
+  ): void {
+    const baseUrl = this.config.windsurf_api_url ?? DEFAULT_WINDSURF_API_URL;
+    const url = `${baseUrl}${path}`;
+
+    // Build headers
+    const curlHeaders = [];
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+      ...headers,
+    };
+
+    for (const [key, value] of Object.entries(defaultHeaders)) {
+      curlHeaders.push(`-H '${key}: ${value}'`);
+    }
+
+    // Build the curl command with -i for headers and -v for verbose output
+    let curlCommand = `curl -i -X ${method.toUpperCase()} '${url}'`;
+
+    if (curlHeaders.length > 0) {
+      curlCommand += ' ' + curlHeaders.join(' ');
+    }
+
+    if (data) {
+      // Redact service_key with $TOKEN
+      const redactedData = JSON.parse(JSON.stringify(data));
+      if (redactedData.service_key) {
+        redactedData.service_key = '$TOKEN';
+      }
+
+      const jsonData = JSON.stringify(redactedData);
+      // Escape single quotes in JSON for shell
+      const escapedData = jsonData.replace(/'/g, "'\\''");
+      curlCommand += ` -d '${escapedData}'`;
+    }
+
+    this.logger.debug(`Equivalent curl command: ${curlCommand}`);
+  }
+
   async checkConnection(): Promise<void> {
     try {
       await this.getUserPageAnalytics();
@@ -66,61 +112,47 @@ export class Windsurf {
 
   @Memoize()
   async getUserPageAnalytics(): Promise<UserTableStatsItem[]> {
+    const requestBody = {
+      service_key: this.config.service_key,
+    };
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/UserPageAnalytics', requestBody);
+
     const response = await this.api.post<UserPageAnalyticsResponse>(
       '/UserPageAnalytics',
-      {
-        service_key: this.config.service_key,
-      }
+      requestBody
     );
 
-    // Build the API key to email mapping and remove apiKey from results
+    // Build the API key to email mapping and keep apiKey in results
     const results: UserTableStatsItem[] = [];
     for (const user of response.data.userTableStats) {
       if (user.apiKey && user.email) {
         this.apiKeyToEmailMap[user.apiKey] = user.email;
-
-        // Track minimum and all usage timestamps from user page analytics timestamps
-        const timestamps = [
-          user.lastUpdateTime,
-          user.lastAutocompleteUsageTime,
-          user.lastChatUsageTime,
-          user.lastCommandUsageTime,
-        ].filter(Boolean);
-
-        if (timestamps.length > 0) {
-          const timestampValues = timestamps.map((ts) =>
-            new Date(ts).getTime()
-          );
-
-          // Track all timestamps in set to avoid duplicates
-          timestampValues.forEach((ts) =>
-            this.addUsageTimestamp(user.email, ts)
-          );
-        }
       }
-      // Remove apiKey from the emitted record
-      const {apiKey: _, ...userWithoutApiKey} = user;
-      results.push(userWithoutApiKey as UserTableStatsItem);
+      results.push(user as UserTableStatsItem);
     }
 
     return results;
   }
 
   async *getAutocompleteAnalytics(
-    startDate?: string,
-    endDate?: string
+    email: string,
+    apiKey: string,
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<AutocompleteAnalyticsItem> {
-    // Ensure we have the email mapping first
-    await this.getUserPageAnalytics();
-
     const request: CustomAnalyticsRequest = {
       service_key: this.config.service_key,
       query_requests: [
         {
           data_source: QueryDataSource.USER_DATA,
+          aggregations: [
+            {field: 'date', name: 'date'},
+            {field: 'language', name: 'language'},
+            {field: 'ide', name: 'ide'},
+          ],
           selections: [
-            {field: 'api_key'},
-            {field: 'date'},
             {
               field: 'num_acceptances',
               aggregation_function: QueryAggregationFunction.SUM,
@@ -129,15 +161,14 @@ export class Windsurf {
               field: 'num_lines_accepted',
               aggregation_function: QueryAggregationFunction.SUM,
             },
-            {
-              field: 'num_bytes_accepted',
-              aggregation_function: QueryAggregationFunction.SUM,
-            },
-            {field: 'language'},
-            {field: 'ide'},
-            {field: 'version'},
           ],
-          filters: [],
+          filters: [
+            {
+              name: 'api_key',
+              filter: QueryFilter.EQUAL,
+              value: apiKey,
+            },
+          ],
         },
       ],
     };
@@ -147,16 +178,19 @@ export class Windsurf {
       request.query_requests[0].filters.push({
         name: 'date',
         filter: QueryFilter.GREATER_EQUAL,
-        value: startDate,
+        value: startDate.toISOString().split('T')[0],
       });
     }
     if (endDate) {
       request.query_requests[0].filters.push({
         name: 'date',
         filter: QueryFilter.LESS_EQUAL,
-        value: endDate,
+        value: endDate.toISOString().split('T')[0],
       });
     }
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/Analytics', request);
 
     const response = await this.api.post<CustomAnalyticsResponse>(
       '/Analytics',
@@ -166,37 +200,6 @@ export class Windsurf {
     for (const responseItem of response.data?.queryResults?.[0]
       ?.responseItems || []) {
       const item = responseItem.item;
-      const apiKey = item.api_key;
-
-      // Map api_key to email - skip records without email mapping
-      const email = this.apiKeyToEmailMap[apiKey];
-      if (!email) {
-        continue; // Skip this record if we can't map to an email
-      }
-
-      // Only track usage timestamps when there's actual usage (any metric > 0)
-      if (item.date) {
-        const numAcceptances = item.num_acceptances
-          ? parseInt(item.num_acceptances, 10)
-          : 0;
-        const numLinesAccepted = item.num_lines_accepted
-          ? parseInt(item.num_lines_accepted, 10)
-          : 0;
-        const numBytesAccepted = item.num_bytes_accepted
-          ? parseInt(item.num_bytes_accepted, 10)
-          : 0;
-
-        // Only track timestamp if there's meaningful usage
-        if (
-          numAcceptances > 0 ||
-          numLinesAccepted > 0 ||
-          numBytesAccepted > 0
-        ) {
-          const timestamp = new Date(item.date).getTime();
-          this.addUsageTimestamp(email, timestamp);
-        }
-      }
-
       yield {
         email,
         date: item.date,
@@ -206,38 +209,37 @@ export class Windsurf {
         num_lines_accepted: item.num_lines_accepted
           ? parseInt(item.num_lines_accepted, 10)
           : undefined,
-        num_bytes_accepted: item.num_bytes_accepted
-          ? parseInt(item.num_bytes_accepted, 10)
-          : undefined,
         language: item.language,
         ide: item.ide,
-        version: item.version,
       };
     }
   }
 
-  async *getCascadeLinesAnalyticsForEmail(
+  async *getCascadeLinesAnalytics(
     email: string,
-    startDate?: string,
-    endDate?: string
+    startDate?: Date,
+    endDate?: Date
   ): AsyncGenerator<CascadeLinesItem> {
     const request: CascadeAnalyticsRequest = {
       service_key: this.config.service_key,
       emails: [email], // Query for single user
       query_requests: [
         {
-          data_source: CascadeDataSource.CASCADE_LINES,
+          [CascadeDataSource.CASCADE_LINES]: {},
         },
       ],
     };
 
     // Add date filters if provided
     if (startDate) {
-      request.start_timestamp = startDate;
+      request.start_timestamp = startDate.toISOString();
     }
     if (endDate) {
-      request.end_timestamp = endDate;
+      request.end_timestamp = endDate.toISOString();
     }
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/CascadeAnalytics', request);
 
     const response = await this.api.post<CascadeAnalyticsResponse>(
       '/CascadeAnalytics',
@@ -247,24 +249,8 @@ export class Windsurf {
     if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
       for (const cascadeLineItem of response.data.queryResults[0].cascadeLines
         .cascadeLines) {
-        // Only track usage timestamps when there's actual usage (lines > 0)
-        if (cascadeLineItem.day) {
-          const linesSuggested = cascadeLineItem.linesSuggested
-            ? parseInt(cascadeLineItem.linesSuggested, 10)
-            : 0;
-          const linesAccepted = cascadeLineItem.linesAccepted
-            ? parseInt(cascadeLineItem.linesAccepted, 10)
-            : 0;
-
-          // Only track timestamp if there's meaningful usage
-          if (linesSuggested > 0 || linesAccepted > 0) {
-            const timestamp = new Date(cascadeLineItem.day).getTime();
-            this.addUsageTimestamp(email, timestamp);
-          }
-        }
-
         yield {
-          email, // Add email since API response won't include it
+          email,
           day: cascadeLineItem.day,
           linesSuggested: cascadeLineItem.linesSuggested
             ? parseInt(cascadeLineItem.linesSuggested, 10)
@@ -277,15 +263,54 @@ export class Windsurf {
     }
   }
 
-  private addUsageTimestamp(email: string, timestamp: number): void {
-    if (!this.usageTimestampsPerEmail[email]) {
-      this.usageTimestampsPerEmail[email] = new Set();
-    }
-    this.usageTimestampsPerEmail[email].add(timestamp);
-  }
+  async *getCascadeRunsAnalytics(
+    email: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<CascadeRunsItem> {
+    const request: CascadeAnalyticsRequest = {
+      service_key: this.config.service_key,
+      emails: [email], // Query for single user
+      query_requests: [
+        {
+          [CascadeDataSource.CASCADE_RUNS]: {},
+        },
+      ],
+    };
 
-  getUsageTimestampsForEmail(email: string): number[] {
-    const timestamps = this.usageTimestampsPerEmail[email];
-    return timestamps ? Array.from(timestamps) : [];
+    // Add date filters if provided
+    if (startDate) {
+      request.start_timestamp = startDate.toISOString();
+    }
+    if (endDate) {
+      request.end_timestamp = endDate.toISOString();
+    }
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/CascadeAnalytics', request);
+
+    const response = await this.api.post<CascadeAnalyticsResponse>(
+      '/CascadeAnalytics',
+      request
+    );
+
+    if (response.data?.queryResults?.[0]?.cascadeRuns?.cascadeRuns) {
+      for (const cascadeRunItem of response.data.queryResults[0].cascadeRuns
+        .cascadeRuns) {
+        yield {
+          email,
+          day: cascadeRunItem.day,
+          model: cascadeRunItem.model,
+          mode: cascadeRunItem.mode,
+          messagesSent: cascadeRunItem.messagesSent
+            ? parseInt(cascadeRunItem.messagesSent, 10)
+            : undefined,
+          cascadeId: cascadeRunItem.cascadeId,
+          promptsUsed: cascadeRunItem.promptsUsed
+            ? parseInt(cascadeRunItem.promptsUsed, 10)
+            : undefined,
+        };
+      }
+    }
   }
 }

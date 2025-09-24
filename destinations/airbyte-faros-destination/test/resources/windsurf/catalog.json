@@ -17,6 +17,12 @@
         "name": "mytestsource__windsurf__cascade_lines_analytics"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__windsurf__cascade_runs_analytics"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

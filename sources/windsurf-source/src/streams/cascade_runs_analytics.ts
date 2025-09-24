@@ -1,25 +1,25 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {AutocompleteAnalyticsItem, WindsurfConfig} from '../types';
+import {CascadeRunsItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
 import {StreamWithUserSlices, UserStreamSlice,UserStreamState} from './common';
 
-export class AutocompleteAnalytics extends StreamWithUserSlices {
+export class CascadeRunsAnalytics extends StreamWithUserSlices {
   constructor(config: WindsurfConfig, logger: AirbyteLogger) {
     super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/autocompleteAnalytics.json');
+    return require('../../resources/schemas/cascadeRunsAnalytics.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['email', 'date'];
+    return ['email', 'day', 'model', 'mode', 'cascadeId'];
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'day';
   }
 
   async *readRecords(
@@ -27,13 +27,12 @@ export class AutocompleteAnalytics extends StreamWithUserSlices {
     _cursorField?: string[],
     streamSlice?: UserStreamSlice,
     streamState?: UserStreamState
-  ): AsyncGenerator<AutocompleteAnalyticsItem> {
+  ): AsyncGenerator<CascadeRunsItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
     const email = streamSlice?.email;
-    const apiKey = streamSlice?.apiKey;
 
-    if (!email || !apiKey) {
-      return; // Skip if no email or apiKey
+    if (!email) {
+      return; // Skip if no email
     }
 
     // For incremental sync, use the cutoff date from state for this specific email, otherwise use configured date range
@@ -42,28 +41,14 @@ export class AutocompleteAnalytics extends StreamWithUserSlices {
     const endDate = this.getEndDate();
 
     // Yield items directly from the async generator for this specific email
-    yield* windsurf.getAutocompleteAnalytics(email, apiKey, startDate, endDate);
+    yield* windsurf.getCascadeRunsAnalytics(email, startDate, endDate);
   }
 
   getUpdatedState(
     currentStreamState: UserStreamState,
-    latestRecord: AutocompleteAnalyticsItem,
+    latestRecord: CascadeRunsItem,
     slice: UserStreamSlice
   ): UserStreamState {
-    const email = slice.email;
-    const currentEmailState = currentStreamState?.[email];
-    const recordDate = latestRecord.date;
-
-    // Update state with the latest date seen for this email
-    if (!currentEmailState?.cutoff || recordDate > currentEmailState.cutoff) {
-      return {
-        ...currentStreamState,
-        [email]: {
-          cutoff: recordDate,
-        },
-      };
-    }
-
-    return currentStreamState;
+    return this.updateStreamState(currentStreamState, latestRecord, slice);
   }
 }
