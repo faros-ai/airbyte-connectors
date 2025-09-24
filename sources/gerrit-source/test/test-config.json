@@ -1,0 +1,8 @@
+{
+  "server_url": "https://gerrit.example.com",
+  "authentication": {
+    "type": "basic",
+    "username": "test-user",
+    "password": "test-password"
+  }
+}
