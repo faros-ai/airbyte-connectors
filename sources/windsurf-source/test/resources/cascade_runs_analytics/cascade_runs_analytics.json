@@ -5,7 +5,7 @@
         {
           "day": "2024-01-15",
           "model": "gpt-4",
-          "mode": "chat",
+          "mode": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
           "messagesSent": "5",
           "cascadeId": "cascade_123",
           "promptsUsed": "3"
@@ -13,7 +13,7 @@
         {
           "day": "2024-01-16",
           "model": "claude-3",
-          "mode": "completion",
+          "mode": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
           "messagesSent": "8",
           "cascadeId": "cascade_456",
           "promptsUsed": "6"

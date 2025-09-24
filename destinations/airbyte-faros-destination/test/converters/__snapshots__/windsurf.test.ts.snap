@@ -304,7 +304,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "chat",
+      "feature": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -319,7 +319,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "ae2460f8f1ce218e155a221817f31d7526c6ffb08a82ffec82acd8b34c38fbc6",
+      "uid": "fcab60ea8ca2c10b2a3d7bb4b5069b25f7c48bd14fa01d8f65e1cc7768fb5d29",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -331,7 +331,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "chat",
+      "feature": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -346,7 +346,7 @@ Array [
       "type": Object {
         "category": "Cost",
       },
-      "uid": "aa6306969a6be63f82c5105098c14fa87fc29a4f11cf6c9ec4feb1135c961a55",
+      "uid": "4cb8bf193131e9394fc88a096bf264caa6b9b51d84c8d7c011dc7f95f0789c61",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -358,7 +358,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "completion",
+      "feature": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -373,7 +373,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "618bc75dfcaf08a8b55b92766a928573e35de3bf37c6900cc1bd16547338052b",
+      "uid": "22d3641ee3d25b1a154ba1f5cd694d07b4e32c8d86241ecb08bc4d1b062c792e",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
@@ -385,7 +385,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "completion",
+      "feature": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -400,7 +400,7 @@ Array [
       "type": Object {
         "category": "Cost",
       },
-      "uid": "23c638d91d7aaf131cccdfe530203a32bcfd9fd595e7d78a73966c581be8221c",
+      "uid": "d54f24b3ea4f81ea79706c54042e129ff1c59a2ad3b8076ed7c0f0b1db73a680",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
