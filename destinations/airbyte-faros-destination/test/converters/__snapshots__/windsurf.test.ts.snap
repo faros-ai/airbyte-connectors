@@ -304,7 +304,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Cascade",
+      "feature": "chat",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -319,7 +319,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "ae75ad2c59e20ddc783d4384424800396b9fe1ccf791a01f467132a2cf958c8e",
+      "uid": "ae2460f8f1ce218e155a221817f31d7526c6ffb08a82ffec82acd8b34c38fbc6",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -331,7 +331,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Cascade",
+      "feature": "chat",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -346,7 +346,7 @@ Array [
       "type": Object {
         "category": "Cost",
       },
-      "uid": "01af67d6f3df3460c76e097d99d0da39a239a73a9601240743764ae6e1d8d51e",
+      "uid": "aa6306969a6be63f82c5105098c14fa87fc29a4f11cf6c9ec4feb1135c961a55",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -358,7 +358,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Cascade",
+      "feature": "completion",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -373,7 +373,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "53dfc5ef74040cb3460528cce1316b2eb55638d5f7b0b135fdba2fe05de99d99",
+      "uid": "618bc75dfcaf08a8b55b92766a928573e35de3bf37c6900cc1bd16547338052b",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
@@ -385,7 +385,7 @@ Array [
   Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Cascade",
+      "feature": "completion",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -400,7 +400,7 @@ Array [
       "type": Object {
         "category": "Cost",
       },
-      "uid": "c4d232ca369a1f37efa8d82bb87e03b1ea3c65a78cc2e9e062ab16365b7f8590",
+      "uid": "23c638d91d7aaf131cccdfe530203a32bcfd9fd595e7d78a73966c581be8221c",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
