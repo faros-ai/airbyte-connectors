@@ -592,8 +592,16 @@ export abstract class AbstractSurveys extends Converter {
       columnName === RespondentTeamIdColumnFallback &&
       typeof columnValue === 'string'
     ) {
-      columnValue = columnValue.match(/\(([^)]+)\)/)?.[1] || columnValue;
+      columnValue = AbstractSurveys.extractTeamIdFromParentheses(columnValue);
     }
     return columnValue;
+  }
+  /**
+   * Extracts the team id from a string in the format "Team Name (team-uid)".
+   * If the string does not contain parentheses, returns the original string.
+   */
+  private static extractTeamIdFromParentheses(value: string): string {
+    const match = value.match(/\(([^)]+)\)/);
+    return match ? match[1] : value;
   }
 }
