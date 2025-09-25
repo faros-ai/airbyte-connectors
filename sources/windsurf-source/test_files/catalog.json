@@ -1,0 +1,106 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "autocomplete_analytics",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "date"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["email"],
+          ["date"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    },
+    {
+      "stream": {
+        "name": "cascade_lines_analytics",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "day"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["email"],
+          ["day"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    },
+    {
+      "stream": {
+        "name": "cascade_runs_analytics",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "day"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["email"],
+          ["day"],
+          ["model"],
+          ["mode"],
+          ["cascadeId"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    },
+    {
+      "stream": {
+        "name": "user_page_analytics",
+        "jsonSchema": {
+          "properties": {}
+        },
+        "supportedSyncModes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "sourceDefinedCursor": true,
+        "defaultCursorField": [
+          "lastUpdateTime"
+        ],
+        "sourceDefinedPrimaryKey": [
+          ["email"]
+        ]
+      },
+      "config": {
+        "syncMode": "incremental",
+        "destinationSyncMode": "append",
+        "selected": true
+      }
+    }
+  ]
+}

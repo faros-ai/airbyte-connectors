@@ -3,14 +3,14 @@
 export interface UserTableStatsItem {
   name: string;
   email: string;
+  apiKey: string;
+  signupTime: string;
   lastUpdateTime: string;
   activeDays: number;
   disableCodeium?: boolean;
   lastAutocompleteUsageTime: string;
   lastChatUsageTime: string;
   lastCommandUsageTime: string;
-  usageTimestamps: string[];
-  minUsageTimestamp?: string;
 }
 
 export interface AutocompleteAnalyticsItem {
@@ -18,10 +18,8 @@ export interface AutocompleteAnalyticsItem {
   date: string;
   num_acceptances?: number;
   num_lines_accepted?: number;
-  num_bytes_accepted?: number;
   language?: string;
   ide?: string;
-  version?: string;
 }
 
 export interface CascadeLinesItem {
@@ -29,4 +27,14 @@ export interface CascadeLinesItem {
   day: string;
   linesSuggested?: number;
   linesAccepted?: number;
+}
+
+export interface CascadeRunsItem {
+  email: string; // Added since API response won't include it
+  day: string;
+  model?: string;
+  mode?: string;
+  messagesSent?: number;
+  cascadeId?: string;
+  promptsUsed?: number;
 }

@@ -6,17 +6,14 @@
       "data": {
         "name": "John Developer",
         "email": "user1@example.com",
+        "apiKey": "hashed_api_key_123",
+        "signupTime": "2024-01-01T08:00:00Z",
         "lastUpdateTime": "2024-01-15T10:30:00Z",
         "activeDays": 15,
         "disableCodeium": false,
         "lastAutocompleteUsageTime": "2024-01-15T09:45:00Z",
         "lastChatUsageTime": "2024-01-15T10:15:00Z",
-        "lastCommandUsageTime": "2024-01-15T10:20:00Z",
-        "usageTimestamps": [
-          "2024-01-15T09:45:00.000Z",
-          "2024-01-15T10:30:00.000Z"
-        ],
-        "minUsageTimestamp": "2024-01-15T09:45:00.000Z"
+        "lastCommandUsageTime": "2024-01-15T10:20:00Z"
       }
     },
     "type": "RECORD"
@@ -28,16 +25,13 @@
       "data": {
         "name": "Jane Engineer",
         "email": "user2@example.com",
+        "apiKey": "hashed_api_key_456",
+        "signupTime": "2023-12-20T12:00:00Z",
         "lastUpdateTime": "2024-01-14T15:45:00Z",
         "activeDays": 8,
         "lastAutocompleteUsageTime": "2024-01-14T15:00:00Z",
         "lastChatUsageTime": "2024-01-14T14:30:00Z",
-        "lastCommandUsageTime": "2024-01-14T15:10:00Z",
-        "usageTimestamps": [
-          "2024-01-14T14:30:00.000Z",
-          "2024-01-14T15:45:00.000Z"
-        ],
-        "minUsageTimestamp": "2024-01-14T14:30:00.000Z"
+        "lastCommandUsageTime": "2024-01-14T15:10:00Z"
       }
     },
     "type": "RECORD"
@@ -51,10 +45,8 @@
         "date": "2024-01-15",
         "num_acceptances": 45,
         "num_lines_accepted": 280,
-        "num_bytes_accepted": 6200,
         "language": "typescript",
-        "ide": "vscode",
-        "version": "1.2.3"
+        "ide": "vscode"
       }
     },
     "type": "RECORD"
@@ -68,10 +60,8 @@
         "date": "2024-01-15",
         "num_acceptances": 32,
         "num_lines_accepted": 180,
-        "num_bytes_accepted": 4100,
         "language": "python",
-        "ide": "windsurf",
-        "version": "1.2.4"
+        "ide": "windsurf"
       }
     },
     "type": "RECORD"
@@ -98,6 +88,38 @@
         "day": "2024-01-15",
         "linesSuggested": 200,
         "linesAccepted": 120
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_runs_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "day": "2024-01-15",
+        "model": "gpt-4",
+        "mode": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
+        "messagesSent": 5,
+        "cascadeId": "cascade_123",
+        "promptsUsed": 3
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__cascade_runs_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "day": "2024-01-15",
+        "model": "claude-3",
+        "mode": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
+        "messagesSent": 8,
+        "cascadeId": "cascade_456",
+        "promptsUsed": 6
       }
     },
     "type": "RECORD"

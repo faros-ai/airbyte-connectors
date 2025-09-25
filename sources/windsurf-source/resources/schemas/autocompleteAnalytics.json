@@ -19,10 +19,6 @@
       "type": ["number", "null"],
       "description": "Number of lines accepted from autocomplete"
     },
-    "num_bytes_accepted": {
-      "type": ["number", "null"],
-      "description": "Number of bytes accepted from autocomplete"
-    },
     "language": {
       "type": ["string", "null"],
       "description": "Programming language"
@@ -30,10 +26,6 @@
     "ide": {
       "type": ["string", "null"],
       "description": "IDE being used"
-    },
-    "version": {
-      "type": ["string", "null"],
-      "description": "Client version"
     }
   },
   "required": [

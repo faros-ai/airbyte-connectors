@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {CascadeLinesItem} from 'faros-airbyte-common/windsurf';
 import {Utils} from 'faros-js-client';
 
-import {AssistantMetric, VCSToolDetail} from '../common/vcs';
+import {AssistantMetric} from '../common/vcs';
 import {DestinationModel, DestinationRecord} from '../converter';
 import {WindsurfConverter, WindsurfFeature} from './common';
 
@@ -10,11 +10,6 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
   ];
-
-  id(record: AirbyteRecord): string {
-    const item = record.record.data as CascadeLinesItem;
-    return `${item.email}__${item.day}`;
-  }
 
   async convert(
     record: AirbyteRecord

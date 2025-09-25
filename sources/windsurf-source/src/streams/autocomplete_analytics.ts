@@ -1,24 +1,13 @@
-import {
-  AirbyteLogger,
-  AirbyteStreamBase,
-  StreamKey,
-  SyncMode,
-} from 'faros-airbyte-cdk';
+import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
 import {AutocompleteAnalyticsItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
+import {StreamWithUserSlices, UserStreamSlice,UserStreamState} from './common';
 
-type StreamState = {
-  cutoff?: string;
-};
-
-export class AutocompleteAnalytics extends AirbyteStreamBase {
-  constructor(
-    private readonly config: WindsurfConfig,
-    protected readonly logger: AirbyteLogger
-  ) {
-    super(logger);
+export class AutocompleteAnalytics extends StreamWithUserSlices {
+  constructor(config: WindsurfConfig, logger: AirbyteLogger) {
+    super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -35,35 +24,43 @@ export class AutocompleteAnalytics extends AirbyteStreamBase {
 
   async *readRecords(
     syncMode: SyncMode,
-    cursorField?: string[],
-    streamSlice?: Dictionary<any>,
-    streamState?: StreamState
+    _cursorField?: string[],
+    streamSlice?: UserStreamSlice,
+    streamState?: UserStreamState
   ): AsyncGenerator<AutocompleteAnalyticsItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
+    const email = streamSlice?.email;
+    const apiKey = streamSlice?.apiKey;
 
-    // For incremental sync, use the cutoff date from state, otherwise use configured date range
-    const startDate =
-      syncMode === SyncMode.INCREMENTAL && streamState?.cutoff
-        ? streamState.cutoff
-        : this.config.startDate?.toISOString();
+    if (!email || !apiKey) {
+      return; // Skip if no email or apiKey
+    }
 
-    const endDate = this.config.endDate?.toISOString();
+    // For incremental sync, use the cutoff date from state for this specific email, otherwise use configured date range
+    const emailState = this.getEmailState(streamState, email);
+    const startDate = this.getStartDate(syncMode, emailState);
+    const endDate = this.getEndDate();
 
-    // Yield items directly from the async generator
-    yield* windsurf.getAutocompleteAnalytics(startDate, endDate);
+    // Yield items directly from the async generator for this specific email
+    yield* windsurf.getAutocompleteAnalytics(email, apiKey, startDate, endDate);
   }
 
   getUpdatedState(
-    currentStreamState: StreamState,
-    latestRecord: AutocompleteAnalyticsItem
-  ): StreamState {
-    const currentCutoff = currentStreamState?.cutoff;
+    currentStreamState: UserStreamState,
+    latestRecord: AutocompleteAnalyticsItem,
+    slice: UserStreamSlice
+  ): UserStreamState {
+    const email = slice.email;
+    const currentEmailState = currentStreamState?.[email];
     const recordDate = latestRecord.date;
 
-    // Update state with the latest date seen
-    if (!currentCutoff || recordDate > currentCutoff) {
+    // Update state with the latest date seen for this email
+    if (!currentEmailState?.cutoff || recordDate > currentEmailState.cutoff) {
       return {
-        cutoff: recordDate,
+        ...currentStreamState,
+        [email]: {
+          cutoff: recordDate,
+        },
       };
     }
 

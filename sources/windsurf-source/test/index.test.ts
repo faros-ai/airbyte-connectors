@@ -14,7 +14,7 @@ import {
 import * as sut from '../src/index';
 import {Windsurf} from '../src/windsurf';
 
-const setupWindsurfInstance = (mockMethods: any) => {
+const setupWindsurfInstance = (mockMethods: any): void => {
   jest
     .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
     .mockReturnValue(mockMethods);
@@ -94,6 +94,7 @@ describe('index', () => {
       post: jest
         .fn()
         .mockResolvedValueOnce({data: userPageRes})
+        .mockResolvedValueOnce({data: autocompleteRes})
         .mockResolvedValueOnce({data: autocompleteRes}),
     });
     await sourceReadTest({
@@ -124,6 +125,30 @@ describe('index', () => {
       source,
       configOrPath: 'config.json',
       catalogOrPath: 'cascade_lines_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - cascade runs', async () => {
+    const userPageRes = readTestResourceAsJSON(
+      'user_page_analytics/user_page_analytics.json'
+    );
+    const cascadeRes = readTestResourceAsJSON(
+      'cascade_runs_analytics/cascade_runs_analytics.json'
+    );
+    setupWindsurfInstance({
+      post: jest
+        .fn()
+        .mockResolvedValueOnce({data: userPageRes})
+        .mockResolvedValueOnce({data: cascadeRes})
+        .mockResolvedValueOnce({data: cascadeRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'cascade_runs_analytics/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
       },

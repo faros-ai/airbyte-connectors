@@ -11,7 +11,6 @@ export class UserPageAnalytics extends WindsurfConverter {
     'vcs_User',
     'vcs_UserEmail',
     'vcs_UserTool',
-    'vcs_UserToolUsage',
   ];
 
   async convert(
@@ -50,34 +49,10 @@ export class UserPageAnalytics extends WindsurfConverter {
             detail: VCSToolDetail.Windsurf,
           },
           inactive: user.disableCodeium === true,
-          ...(user.minUsageTimestamp && {
-            startedAt: user.minUsageTimestamp,
-          }),
+          startedAt: user.signupTime,
         },
       },
     ];
-
-    // Add vcs_UserToolUsage records for each usage timestamp
-    for (const usageTimestamp of user.usageTimestamps) {
-      results.push({
-        model: 'vcs_UserToolUsage',
-        record: {
-          userTool: {
-            user: {uid: user.email, source: this.streamName.source},
-            organization: {
-              uid: this.streamName.source,
-              source: this.streamName.source,
-            },
-            tool: {
-              category: VCSToolCategory.CodingAssistant,
-              detail: VCSToolDetail.Windsurf,
-            },
-          },
-          usedAt: usageTimestamp,
-          recordedAt: usageTimestamp,
-        },
-      });
-    }
 
     return results;
   }

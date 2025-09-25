@@ -1,21 +1,21 @@
 import {AirbyteLogger, StreamKey, SyncMode} from 'faros-airbyte-cdk';
 import {Dictionary} from 'ts-essentials';
 
-import {CascadeLinesItem, WindsurfConfig} from '../types';
+import {CascadeRunsItem, WindsurfConfig} from '../types';
 import {Windsurf} from '../windsurf';
 import {StreamWithUserSlices, UserStreamSlice, UserStreamState} from './common';
 
-export class CascadeLinesAnalytics extends StreamWithUserSlices {
+export class CascadeRunsAnalytics extends StreamWithUserSlices {
   constructor(config: WindsurfConfig, logger: AirbyteLogger) {
     super(config, logger);
   }
 
   getJsonSchema(): Dictionary<any, string> {
-    return require('../../resources/schemas/cascadeLinesAnalytics.json');
+    return require('../../resources/schemas/cascadeRunsAnalytics.json');
   }
 
   get primaryKey(): StreamKey {
-    return ['email', 'day'];
+    return ['email', 'day', 'model', 'mode', 'cascadeId'];
   }
 
   get cursorField(): string | string[] {
@@ -27,7 +27,7 @@ export class CascadeLinesAnalytics extends StreamWithUserSlices {
     _cursorField?: string[],
     streamSlice?: UserStreamSlice,
     streamState?: UserStreamState
-  ): AsyncGenerator<CascadeLinesItem> {
+  ): AsyncGenerator<CascadeRunsItem> {
     const windsurf = Windsurf.instance(this.config, this.logger);
     const email = streamSlice?.email;
 
@@ -41,12 +41,12 @@ export class CascadeLinesAnalytics extends StreamWithUserSlices {
     const endDate = this.getEndDate();
 
     // Yield items directly from the async generator for this specific email
-    yield* windsurf.getCascadeLinesAnalytics(email, startDate, endDate);
+    yield* windsurf.getCascadeRunsAnalytics(email, startDate, endDate);
   }
 
   getUpdatedState(
     currentStreamState: UserStreamState,
-    latestRecord: CascadeLinesItem,
+    latestRecord: CascadeRunsItem,
     slice: UserStreamSlice
   ): UserStreamState {
     return this.updateStreamState(currentStreamState, latestRecord, slice);
