@@ -21,7 +21,7 @@
     "test-cov": "turbo run test-cov"
   },
   "dependencies": {
-    "commander": "^13.1.0",
+    "commander": "^14.0.1",
     "faros-js-client": "^0.7.9"
   },
   "devDependencies": {
