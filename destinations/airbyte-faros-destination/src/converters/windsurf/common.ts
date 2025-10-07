@@ -11,6 +11,21 @@ export enum WindsurfFeature {
   Chat = 'Chat',
 }
 
+export interface AssistantMetricConfig {
+  startedAt: Date;
+  endedAt: Date;
+  assistantMetricType: AssistantMetric;
+  value: number;
+  organization: string;
+  userEmail?: string;
+  customMetricName?: string;
+  model?: string;
+  feature?: string;
+  editor?: string;
+  language?: string;
+  valueType?: 'Int' | 'Percent';
+}
+
 export abstract class WindsurfConverter extends Converter {
   source = 'Windsurf';
 
@@ -19,18 +34,22 @@ export abstract class WindsurfConverter extends Converter {
   }
 
   protected getAssistantMetric(
-    startedAt: Date,
-    endedAt: Date,
-    assistantMetricType: AssistantMetric,
-    value: number,
-    org: string,
-    userEmail: string,
-    customMetricName?: string,
-    model?: string,
-    feature?: string,
-    editor?: string,
-    language?: string
+    config: AssistantMetricConfig
   ): DestinationRecord[] {
+    const {
+      startedAt,
+      endedAt,
+      assistantMetricType,
+      value,
+      organization,
+      userEmail,
+      customMetricName,
+      model,
+      feature,
+      editor,
+      language,
+      valueType = 'Int',
+    } = config;
     return [
       {
         model: 'vcs_AssistantMetric',
@@ -43,10 +62,10 @@ export abstract class WindsurfConverter extends Converter {
                   VCSToolDetail.Windsurf,
                   assistantMetricType,
                   startedAt.toISOString(),
-                  org,
+                  organization,
                   userEmail,
                   customMetricName,
-                ],
+                ].filter((v) => !isNil(v)),
                 // newer fields (optional) to be included in the digest
                 ...[
                   {key: 'model', value: model},
@@ -66,13 +85,15 @@ export abstract class WindsurfConverter extends Converter {
             category: assistantMetricType,
             ...(customMetricName && {detail: customMetricName}),
           },
-          valueType: 'Int',
+          valueType,
           value: String(value),
           organization: {
-            uid: org,
+            uid: organization,
             source: this.streamName.source,
           },
-          user: {uid: userEmail, source: this.streamName.source},
+          ...(userEmail && {
+            user: {uid: userEmail, source: this.streamName.source},
+          }),
           tool: {
             category: VCSToolCategory.CodingAssistant,
             detail: VCSToolDetail.Windsurf,

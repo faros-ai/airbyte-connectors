@@ -23,17 +23,15 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
 
     if (item.linesAccepted > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.LinesAccepted,
-          item.linesAccepted,
-          this.streamName.source,
-          item.email,
-          undefined,
-          undefined,
-          WindsurfFeature.Cascade
-        )
+          assistantMetricType: AssistantMetric.LinesAccepted,
+          value: item.linesAccepted,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          feature: WindsurfFeature.Cascade,
+        })
       );
     }
 
@@ -41,17 +39,15 @@ export class CascadeLinesAnalytics extends WindsurfConverter {
     if (item.linesSuggested > item.linesAccepted) {
       const linesDiscarded = item.linesSuggested - item.linesAccepted;
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.LinesDiscarded,
-          linesDiscarded,
-          this.streamName.source,
-          item.email,
-          undefined,
-          undefined,
-          WindsurfFeature.Cascade
-        )
+          assistantMetricType: AssistantMetric.LinesDiscarded,
+          value: linesDiscarded,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          feature: WindsurfFeature.Cascade,
+        })
       );
     }
 

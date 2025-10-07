@@ -24,34 +24,32 @@ export class CascadeRunsAnalytics extends WindsurfConverter {
     // Generate Usage metric for messagesSent
     if (item.messagesSent && item.messagesSent > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.Usages,
-          item.messagesSent,
-          this.streamName.source,
-          item.email,
-          undefined,
-          item.model,
-          item.mode
-        )
+          assistantMetricType: AssistantMetric.Usages,
+          value: item.messagesSent,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          model: item.model,
+          feature: item.mode,
+        })
       );
     }
 
     // Generate Cost metric for promptsUsed
     if (item.promptsUsed && item.promptsUsed > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.Cost,
-          item.promptsUsed,
-          this.streamName.source,
-          item.email,
-          undefined,
-          item.model,
-          item.mode
-        )
+          assistantMetricType: AssistantMetric.Cost,
+          value: item.promptsUsed,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          model: item.model,
+          feature: item.mode,
+        })
       );
     }
 

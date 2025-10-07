@@ -23,37 +23,33 @@ export class AutocompleteAnalytics extends WindsurfConverter {
 
     if (item.num_acceptances > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.SuggestionsAccepted,
-          item.num_acceptances,
-          this.streamName.source,
-          item.email,
-          undefined,
-          undefined,
-          WindsurfFeature.Autocompletion,
-          item.ide,
-          item.language
-        )
+          assistantMetricType: AssistantMetric.SuggestionsAccepted,
+          value: item.num_acceptances,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          feature: WindsurfFeature.Autocompletion,
+          editor: item.ide,
+          language: item.language,
+        })
       );
     }
 
     if (item.num_lines_accepted > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.LinesAccepted,
-          item.num_lines_accepted,
-          this.streamName.source,
-          item.email,
-          undefined,
-          undefined,
-          WindsurfFeature.Autocompletion,
-          item.ide,
-          item.language
-        )
+          assistantMetricType: AssistantMetric.LinesAccepted,
+          value: item.num_lines_accepted,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          feature: WindsurfFeature.Autocompletion,
+          editor: item.ide,
+          language: item.language,
+        })
       );
     }
 

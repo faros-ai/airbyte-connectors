@@ -23,19 +23,17 @@ export class ChatAnalytics extends WindsurfConverter {
 
     if (item.chat_loc_used > 0) {
       res.push(
-        ...this.getAssistantMetric(
+        ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          AssistantMetric.LinesAccepted,
-          item.chat_loc_used,
-          this.streamName.source,
-          item.email,
-          undefined,
-          undefined,
-          WindsurfFeature.Chat,
-          item.ide,
-          item.language
-        )
+          assistantMetricType: AssistantMetric.LinesAccepted,
+          value: item.chat_loc_used,
+          organization: this.streamName.source,
+          userEmail: item.email,
+          feature: WindsurfFeature.Chat,
+          editor: item.ide,
+          language: item.language,
+        })
       );
     }
 
