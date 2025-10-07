@@ -186,7 +186,11 @@ describe('index', () => {
     });
     await sourceReadTest({
       source,
-      configOrPath: 'config.json',
+      configOrPath: {
+        ...readTestResourceAsJSON('config.json'),
+        start_date: '2025-10-05',
+        end_date: '2025-10-07',
+      },
       catalogOrPath: 'pcw_analytics/catalog.json',
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
