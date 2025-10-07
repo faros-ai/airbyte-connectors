@@ -393,15 +393,27 @@ export class Windsurf {
     startDate?: Date,
     endDate?: Date
   ): AsyncGenerator<PCWAnalyticsItem> {
-    const queryPCW = async (
-      startTimestamp?: string,
-      endTimestamp?: string,
-      date?: string
-    ): Promise<PCWAnalyticsItem[]> => {
+    // Use fallback dates if not provided: yesterday 00:00:00 to today 00:00:00
+    const now = DateTime.utc().startOf('day');
+    const start = startDate
+      ? DateTime.fromJSDate(startDate).toUTC().startOf('day')
+      : now.minus({days: 1});
+    const end = endDate
+      ? DateTime.fromJSDate(endDate).toUTC().startOf('day')
+      : now;
+
+    // Iterate over each day in the date range
+    // We stop when the end_timestamp would exceed the end date
+    let currentDate = start;
+    while (currentDate < end) {
+      const dateStr = currentDate.toISODate();
+      const startTimestamp = currentDate.toISO();
+      const endTimestamp = currentDate.plus({days: 1}).toISO();
+
       const request: CustomAnalyticsRequest = {
         service_key: this.config.service_key,
-        ...(startTimestamp && {start_timestamp: startTimestamp}),
-        ...(endTimestamp && {end_timestamp: endTimestamp}),
+        start_timestamp: startTimestamp,
+        end_timestamp: endTimestamp,
         query_requests: [
           {
             data_source: QueryDataSource.PCW_DATA,
@@ -443,12 +455,11 @@ export class Windsurf {
         request
       );
 
-      const results: PCWAnalyticsItem[] = [];
       for (const responseItem of response.data?.queryResults?.[0]
         ?.responseItems || []) {
         const item = responseItem.item;
-        results.push({
-          date: date || DateTime.utc().toISODate(),
+        yield {
+          date: dateStr,
           percent_code_written: item.percent_code_written
             ? parseFloat(item.percent_code_written)
             : undefined,
@@ -467,35 +478,7 @@ export class Windsurf {
           codeium_bytes_by_command: item.codeium_bytes_by_command
             ? parseInt(item.codeium_bytes_by_command, 10)
             : undefined,
-        });
-      }
-      return results;
-    };
-
-    // If no date range provided, query without timestamps
-    if (!startDate || !endDate) {
-      const results = await queryPCW();
-      for (const result of results) {
-        yield result;
-      }
-      return;
-    }
-
-    // Normalize dates to midnight UTC using Luxon
-    const start = DateTime.fromJSDate(startDate).toUTC().startOf('day');
-    const end = DateTime.fromJSDate(endDate).toUTC().startOf('day');
-
-    // Iterate over each day in the date range
-    // We stop when the end_timestamp would exceed the end date
-    let currentDate = start;
-    while (currentDate < end) {
-      const dateStr = currentDate.toISODate();
-      const startTimestamp = currentDate.toISO();
-      const endTimestamp = currentDate.plus({days: 1}).toISO();
-
-      const results = await queryPCW(startTimestamp, endTimestamp, dateStr);
-      for (const result of results) {
-        yield result;
+        };
       }
 
       currentDate = currentDate.plus({days: 1});
