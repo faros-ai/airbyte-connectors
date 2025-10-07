@@ -20,6 +20,7 @@ export {
   AutocompleteAnalyticsItem,
   CascadeLinesItem,
   CascadeRunsItem,
+  ChatAnalyticsItem,
 } from 'faros-airbyte-common/windsurf';
 
 // Import types for local use

@@ -123,5 +123,33 @@
       }
     },
     "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__chat_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "date": "2024-01-15",
+        "chat_loc_used": 150,
+        "language": "typescript",
+        "ide": "vscode"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__chat_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "date": "2024-01-15",
+        "chat_loc_used": 200,
+        "language": "python",
+        "ide": "windsurf"
+      }
+    },
+    "type": "RECORD"
   }
 ]

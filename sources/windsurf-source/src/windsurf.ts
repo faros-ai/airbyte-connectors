@@ -11,6 +11,7 @@ import {
   CascadeDataSource,
   CascadeLinesItem,
   CascadeRunsItem,
+  ChatAnalyticsItem,
   CustomAnalyticsRequest,
   CustomAnalyticsResponse,
   QueryAggregationFunction,
@@ -311,6 +312,78 @@ export class Windsurf {
             : undefined,
         };
       }
+    }
+  }
+
+  async *getChatAnalytics(
+    email: string,
+    apiKey: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<ChatAnalyticsItem> {
+    const request: CustomAnalyticsRequest = {
+      service_key: this.config.service_key,
+      query_requests: [
+        {
+          data_source: QueryDataSource.USER_DATA,
+          aggregations: [
+            {field: 'date', name: 'date'},
+            {field: 'language', name: 'language'},
+            {field: 'ide', name: 'ide'},
+          ],
+          selections: [
+            {
+              field: 'chat_loc_used',
+              aggregation_function: QueryAggregationFunction.SUM,
+            },
+          ],
+          filters: [
+            {
+              name: 'api_key',
+              filter: QueryFilter.EQUAL,
+              value: apiKey,
+            },
+          ],
+        },
+      ],
+    };
+
+    // Add date filters if provided
+    if (startDate) {
+      request.query_requests[0].filters.push({
+        name: 'date',
+        filter: QueryFilter.GREATER_EQUAL,
+        value: startDate.toISOString().split('T')[0],
+      });
+    }
+    if (endDate) {
+      request.query_requests[0].filters.push({
+        name: 'date',
+        filter: QueryFilter.LESS_EQUAL,
+        value: endDate.toISOString().split('T')[0],
+      });
+    }
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/Analytics', request);
+
+    const response = await this.api.post<CustomAnalyticsResponse>(
+      '/Analytics',
+      request
+    );
+
+    for (const responseItem of response.data?.queryResults?.[0]
+      ?.responseItems || []) {
+      const item = responseItem.item;
+      yield {
+        email,
+        date: item.date,
+        chat_loc_used: item.chat_loc_used
+          ? parseInt(item.chat_loc_used, 10)
+          : undefined,
+        language: item.language,
+        ide: item.ide,
+      };
     }
   }
 }

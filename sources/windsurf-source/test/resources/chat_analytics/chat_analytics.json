@@ -1,0 +1,15 @@
+{
+  "queryResults": [{
+    "responseItems": [
+      {
+        "item": {
+          "api_key": "hashed_api_key_123",
+          "date": "2024-01-15",
+          "chat_loc_used": "150",
+          "language": "typescript",
+          "ide": "vscode"
+        }
+      }
+    ]
+  }]
+}

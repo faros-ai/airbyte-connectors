@@ -154,4 +154,28 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - chat analytics', async () => {
+    const userPageRes = readTestResourceAsJSON(
+      'user_page_analytics/user_page_analytics.json'
+    );
+    const chatRes = readTestResourceAsJSON(
+      'chat_analytics/chat_analytics.json'
+    );
+    setupWindsurfInstance({
+      post: jest
+        .fn()
+        .mockResolvedValueOnce({data: userPageRes})
+        .mockResolvedValueOnce({data: chatRes})
+        .mockResolvedValueOnce({data: chatRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'chat_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

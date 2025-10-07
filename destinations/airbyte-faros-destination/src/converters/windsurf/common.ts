@@ -8,6 +8,7 @@ import {Converter, DestinationRecord} from '../converter';
 export enum WindsurfFeature {
   Autocompletion = 'Autocompletion',
   Cascade = 'Cascade',
+  Chat = 'Chat',
 }
 
 export abstract class WindsurfConverter extends Converter {

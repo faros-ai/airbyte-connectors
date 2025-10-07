@@ -110,6 +110,25 @@ exports[`index streams - cascade runs 1`] = `
 ]
 `;
 
+exports[`index streams - chat analytics 1`] = `
+[
+  {
+    "chat_loc_used": 150,
+    "date": "2024-01-15",
+    "email": "john@company.com",
+    "ide": "vscode",
+    "language": "typescript",
+  },
+  {
+    "chat_loc_used": 150,
+    "date": "2024-01-15",
+    "email": "jane@company.com",
+    "ide": "vscode",
+    "language": "typescript",
+  },
+]
+`;
+
 exports[`index streams - user page analytics 1`] = `
 [
   {

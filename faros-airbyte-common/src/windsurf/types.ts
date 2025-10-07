@@ -38,3 +38,11 @@ export interface CascadeRunsItem {
   cascadeId?: string;
   promptsUsed?: number;
 }
+
+export interface ChatAnalyticsItem {
+  email: string; // Populated from the api_key to email mapping
+  date: string;
+  chat_loc_used?: number;
+  language?: string;
+  ide?: string;
+}

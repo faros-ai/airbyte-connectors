@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "User's email address (mapped from api_key)"
+    },
+    "date": {
+      "type": "string",
+      "description": "Date in YYYY-MM-DD format"
+    },
+    "chat_loc_used": {
+      "type": ["number", "null"],
+      "description": "Lines of code used in chat"
+    },
+    "language": {
+      "type": ["string", "null"],
+      "description": "Programming language"
+    },
+    "ide": {
+      "type": ["string", "null"],
+      "description": "IDE being used"
+    }
+  },
+  "required": [
+    "email",
+    "date"
+  ]
+}
