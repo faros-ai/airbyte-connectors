@@ -15,9 +15,9 @@
       "type": ["number", "null"],
       "description": "Lines of code used in chat"
     },
-    "language": {
+    "model": {
       "type": ["string", "null"],
-      "description": "Programming language"
+      "description": "Model ID used for chat"
     },
     "ide": {
       "type": ["string", "null"],

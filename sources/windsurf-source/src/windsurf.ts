@@ -330,7 +330,7 @@ export class Windsurf {
           data_source: QueryDataSource.CHAT_DATA,
           aggregations: [
             {field: 'date', name: 'date'},
-            {field: 'language', name: 'language'},
+            {field: 'model_id', name: 'model_id'},
             {field: 'ide', name: 'ide'},
           ],
           selections: [
@@ -383,7 +383,7 @@ export class Windsurf {
         chat_loc_used: item.chat_loc_used
           ? parseInt(item.chat_loc_used, 10)
           : undefined,
-        language: item.language,
+        model: item.model_id,
         ide: item.ide,
       };
     }

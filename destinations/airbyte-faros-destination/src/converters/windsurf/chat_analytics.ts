@@ -30,9 +30,9 @@ export class ChatAnalytics extends WindsurfConverter {
           value: item.chat_loc_used,
           organization: this.streamName.source,
           userEmail: item.email,
+          model: item.model,
           feature: WindsurfFeature.Chat,
           editor: item.ide,
-          language: item.language,
         })
       );
     }

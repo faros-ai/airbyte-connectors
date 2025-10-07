@@ -117,14 +117,14 @@ exports[`index streams - chat analytics 1`] = `
     "date": "2024-01-15",
     "email": "john@company.com",
     "ide": "vscode",
-    "language": "typescript",
+    "model": "gpt-4",
   },
   {
     "chat_loc_used": 150,
     "date": "2024-01-15",
     "email": "jane@company.com",
     "ide": "vscode",
-    "language": "typescript",
+    "model": "gpt-4",
   },
 ]
 `;

@@ -414,6 +414,7 @@ Array [
       "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
       "feature": "Chat",
+      "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -427,7 +428,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "5e25d265e78bd73c9d2c5ee5aef0971d405d98117540ce1d7c5577b8b1462139",
+      "uid": "20d8dfd62eb2cd8f96066abaa7c5b3f60cabb1c415b95fa8a76c97b9991146ec",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -441,6 +442,7 @@ Array [
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
       "feature": "Chat",
+      "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
         "uid": "Windsurf",
@@ -454,7 +456,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "95d274d5cfe474907fb77cd9a7492b833ed99db61fffe76f1a6f3f145b4be382",
+      "uid": "9de7c49b3fa85d9248571b9c87e20c517f843dc62838d1fe58e10a7f438653c2",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
