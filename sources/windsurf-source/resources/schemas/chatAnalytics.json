@@ -15,7 +15,7 @@
       "type": ["number", "null"],
       "description": "Lines of code used in chat"
     },
-    "model": {
+    "model_id": {
       "type": ["string", "null"],
       "description": "Model ID used for chat"
     },

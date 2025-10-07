@@ -383,7 +383,7 @@ export class Windsurf {
         chat_loc_used: item.chat_loc_used
           ? parseInt(item.chat_loc_used, 10)
           : undefined,
-        model: item.model_id,
+        model_id: item.model_id,
         ide: item.ide,
       };
     }

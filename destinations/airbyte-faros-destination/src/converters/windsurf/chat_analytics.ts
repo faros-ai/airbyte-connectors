@@ -30,7 +30,7 @@ export class ChatAnalytics extends WindsurfConverter {
           value: item.chat_loc_used,
           organization: this.streamName.source,
           userEmail: item.email,
-          model: item.model,
+          model: item.model_id,
           feature: WindsurfFeature.Chat,
           editor: item.ide,
         })
