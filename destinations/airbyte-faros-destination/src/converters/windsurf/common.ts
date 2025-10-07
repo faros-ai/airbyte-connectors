@@ -65,7 +65,7 @@ export abstract class WindsurfConverter extends Converter {
                   organization,
                   userEmail,
                   customMetricName,
-                ].filter((v) => !isNil(v)),
+                ],
                 // newer fields (optional) to be included in the digest
                 ...[
                   {key: 'model', value: model},
