@@ -327,7 +327,7 @@ export class Windsurf {
       service_key: this.config.service_key,
       query_requests: [
         {
-          data_source: QueryDataSource.USER_DATA,
+          data_source: QueryDataSource.CHAT_DATA,
           aggregations: [
             {field: 'date', name: 'date'},
             {field: 'language', name: 'language'},
