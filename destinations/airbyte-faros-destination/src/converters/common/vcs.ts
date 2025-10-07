@@ -96,6 +96,7 @@ export enum AssistantMetric {
   CommitsCreated = 'CommitsCreated',
   PullRequestsCreated = 'PullRequestsCreated',
   Cost = 'Cost',
+  PercentageOfCodeWritten = 'PercentageOfCodeWritten',
   Custom = 'Custom',
 }
 

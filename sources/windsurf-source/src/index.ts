@@ -15,6 +15,7 @@ import {AutocompleteAnalytics} from './streams/autocomplete_analytics';
 import {CascadeLinesAnalytics} from './streams/cascade_lines_analytics';
 import {CascadeRunsAnalytics} from './streams/cascade_runs_analytics';
 import {ChatAnalytics} from './streams/chat_analytics';
+import {PCWAnalytics} from './streams/pcw_analytics';
 import {UserPageAnalytics} from './streams/user_page_analytics';
 import {WindsurfConfig} from './types';
 import {DEFAULT_CUTOFF_DAYS, Windsurf} from './windsurf';
@@ -50,6 +51,7 @@ export class WindsurfSource extends AirbyteSourceBase<WindsurfConfig> {
       new CascadeLinesAnalytics(config, this.logger),
       new CascadeRunsAnalytics(config, this.logger),
       new ChatAnalytics(config, this.logger),
+      new PCWAnalytics(config, this.logger),
       new UserPageAnalytics(config, this.logger),
     ];
   }

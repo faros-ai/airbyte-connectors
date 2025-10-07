@@ -29,6 +29,12 @@
         "name": "mytestsource__windsurf__chat_analytics"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__windsurf__pcw_analytics"
+      },
+      "destination_sync_mode": "overwrite"
     }
   ]
 }

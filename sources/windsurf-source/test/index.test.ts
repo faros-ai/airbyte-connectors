@@ -178,4 +178,19 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - pcw analytics', async () => {
+    const pcwRes = readTestResourceAsJSON('pcw_analytics/pcw_analytics.json');
+    setupWindsurfInstance({
+      post: jest.fn().mockResolvedValue({data: pcwRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'pcw_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

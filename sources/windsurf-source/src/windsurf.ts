@@ -14,6 +14,7 @@ import {
   ChatAnalyticsItem,
   CustomAnalyticsRequest,
   CustomAnalyticsResponse,
+  PCWAnalyticsItem,
   QueryAggregationFunction,
   QueryDataSource,
   QueryFilter,
@@ -384,6 +385,130 @@ export class Windsurf {
         language: item.language,
         ide: item.ide,
       };
+    }
+  }
+
+  async *getPCWAnalytics(
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<PCWAnalyticsItem> {
+    const queryPCW = async (
+      startTimestamp?: string,
+      endTimestamp?: string,
+      date?: string
+    ): Promise<PCWAnalyticsItem[]> => {
+      const request: CustomAnalyticsRequest = {
+        service_key: this.config.service_key,
+        ...(startTimestamp && {start_timestamp: startTimestamp}),
+        ...(endTimestamp && {end_timestamp: endTimestamp}),
+        query_requests: [
+          {
+            data_source: QueryDataSource.PCW_DATA,
+            selections: [
+              {
+                field: 'percent_code_written',
+                name: 'percent_code_written',
+              },
+              {
+                field: 'codeium_bytes',
+                name: 'codeium_bytes',
+              },
+              {
+                field: 'user_bytes',
+                name: 'user_bytes',
+              },
+              {
+                field: 'total_bytes',
+                name: 'total_bytes',
+              },
+              {
+                field: 'codeium_bytes_by_autocomplete',
+                name: 'codeium_bytes_by_autocomplete',
+              },
+              {
+                field: 'codeium_bytes_by_command',
+                name: 'codeium_bytes_by_command',
+              },
+            ],
+          },
+        ],
+      };
+
+      // Log the curl command
+      this.logCurlCommand('POST', '/Analytics', request);
+
+      const response = await this.api.post<CustomAnalyticsResponse>(
+        '/Analytics',
+        request
+      );
+
+      const results: PCWAnalyticsItem[] = [];
+      for (const responseItem of response.data?.queryResults?.[0]
+        ?.responseItems || []) {
+        const item = responseItem.item;
+        results.push({
+          date: date || new Date().toISOString().split('T')[0],
+          percent_code_written: item.percent_code_written
+            ? parseFloat(item.percent_code_written)
+            : undefined,
+          codeium_bytes: item.codeium_bytes
+            ? parseInt(item.codeium_bytes, 10)
+            : undefined,
+          user_bytes: item.user_bytes
+            ? parseInt(item.user_bytes, 10)
+            : undefined,
+          total_bytes: item.total_bytes
+            ? parseInt(item.total_bytes, 10)
+            : undefined,
+          codeium_bytes_by_autocomplete: item.codeium_bytes_by_autocomplete
+            ? parseInt(item.codeium_bytes_by_autocomplete, 10)
+            : undefined,
+          codeium_bytes_by_command: item.codeium_bytes_by_command
+            ? parseInt(item.codeium_bytes_by_command, 10)
+            : undefined,
+        });
+      }
+      return results;
+    };
+
+    // If no date range provided, query without timestamps
+    if (!startDate || !endDate) {
+      const results = await queryPCW();
+      for (const result of results) {
+        yield result;
+      }
+      return;
+    }
+
+    // Normalize dates to midnight UTC
+    const normalizeDate = (date: Date): Date => {
+      const normalized = new Date(date);
+      normalized.setUTCHours(0, 0, 0, 0);
+      return normalized;
+    };
+
+    const start = normalizeDate(startDate);
+    const end = normalizeDate(endDate);
+
+    // Iterate over each day in the date range
+    // We stop when the end_timestamp would exceed the end date
+    for (
+      let currentDate = new Date(start);
+      currentDate < end;
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+    ) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const startTimestamp = `${dateStr}T00:00:00Z`;
+
+      // End timestamp is the next day at 00:00:00
+      const nextDate = new Date(currentDate);
+      nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+      const endTimestamp = `${nextDate.toISOString().split('T')[0]}T00:00:00Z`;
+
+      const results = await queryPCW(startTimestamp, endTimestamp, dateStr);
+      for (const result of results) {
+        yield result;
+      }
     }
   }
 }

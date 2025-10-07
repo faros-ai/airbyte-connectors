@@ -2,10 +2,10 @@
 
 exports[`windsurf process records from all streams 1`] = `
 Array [
-  "Processed 10 records",
-  "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_lines_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_runs_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__chat_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 21 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":14,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 11 records",
+  "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_lines_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_runs_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__chat_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__pcw_analytics\\\\\\":1,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 22 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":15,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -461,6 +461,27 @@ Array [
       },
       "value": "200",
       "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "PercentageOfCodeWritten",
+      },
+      "uid": "312b990c5d82c7f6ff5d6492ce4a396243d12c5d7b494f9a430cbe6da5bd705d",
+      "value": "0.68",
+      "valueType": "Percent",
     },
   },
   Object {

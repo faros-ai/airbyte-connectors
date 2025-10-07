@@ -46,3 +46,13 @@ export interface ChatAnalyticsItem {
   language?: string;
   ide?: string;
 }
+
+export interface PCWAnalyticsItem {
+  date: string; // Date for incremental sync tracking
+  percent_code_written?: number;
+  codeium_bytes?: number;
+  user_bytes?: number;
+  total_bytes?: number;
+  codeium_bytes_by_autocomplete?: number;
+  codeium_bytes_by_command?: number;
+}
