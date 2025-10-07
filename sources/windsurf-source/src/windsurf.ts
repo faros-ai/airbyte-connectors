@@ -1,6 +1,7 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -447,7 +448,7 @@ export class Windsurf {
         ?.responseItems || []) {
         const item = responseItem.item;
         results.push({
-          date: date || new Date().toISOString().split('T')[0],
+          date: date || DateTime.utc().toISODate(),
           percent_code_written: item.percent_code_written
             ? parseFloat(item.percent_code_written)
             : undefined,
@@ -480,35 +481,24 @@ export class Windsurf {
       return;
     }
 
-    // Normalize dates to midnight UTC
-    const normalizeDate = (date: Date): Date => {
-      const normalized = new Date(date);
-      normalized.setUTCHours(0, 0, 0, 0);
-      return normalized;
-    };
-
-    const start = normalizeDate(startDate);
-    const end = normalizeDate(endDate);
+    // Normalize dates to midnight UTC using Luxon
+    const start = DateTime.fromJSDate(startDate).toUTC().startOf('day');
+    const end = DateTime.fromJSDate(endDate).toUTC().startOf('day');
 
     // Iterate over each day in the date range
     // We stop when the end_timestamp would exceed the end date
-    for (
-      let currentDate = new Date(start);
-      currentDate < end;
-      currentDate.setUTCDate(currentDate.getUTCDate() + 1)
-    ) {
-      const dateStr = currentDate.toISOString().split('T')[0];
-      const startTimestamp = `${dateStr}T00:00:00Z`;
-
-      // End timestamp is the next day at 00:00:00
-      const nextDate = new Date(currentDate);
-      nextDate.setUTCDate(nextDate.getUTCDate() + 1);
-      const endTimestamp = `${nextDate.toISOString().split('T')[0]}T00:00:00Z`;
+    let currentDate = start;
+    while (currentDate < end) {
+      const dateStr = currentDate.toISODate();
+      const startTimestamp = currentDate.toISO();
+      const endTimestamp = currentDate.plus({days: 1}).toISO();
 
       const results = await queryPCW(startTimestamp, endTimestamp, dateStr);
       for (const result of results) {
         yield result;
       }
+
+      currentDate = currentDate.plus({days: 1});
     }
   }
 }
