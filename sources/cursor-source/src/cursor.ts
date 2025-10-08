@@ -1,4 +1,5 @@
 import {AxiosInstance} from 'axios';
+import Bottleneck from 'bottleneck';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   ActiveMemberItem,
@@ -27,6 +28,7 @@ export const DEFAULT_PAGE_SIZE = 100;
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
+  private readonly limiterAICodeTrackingAPI: Bottleneck;
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
@@ -46,6 +48,13 @@ export class Cursor {
       headers: {
         'Content-Type': 'application/json',
       },
+    });
+    // Rate limiter for AI commit metrics API: 50 requests per minute
+    // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
+    this.limiterAICodeTrackingAPI = new Bottleneck({
+      reservoir: 50, // Initial number of requests
+      reservoirRefreshAmount: 50, // Refill to 50 requests
+      reservoirRefreshInterval: 60 * 1000, // Every 60 seconds
     });
   }
 
@@ -152,15 +161,19 @@ export class Cursor {
       });
 
       try {
-        const res = await this.api.get<AiCommitMetricsResponse>(
-          `/analytics/ai-code/commits?${params.toString()}`
+        const res = await this.limiterAICodeTrackingAPI.schedule(() =>
+          this.api.get<AiCommitMetricsResponse>(
+            `/analytics/ai-code/commits?${params.toString()}`
+          )
         );
 
         for (const commit of res.data.items) {
           yield commit;
         }
 
-        hasNextPage = page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) < res.data.totalCount;
+        hasNextPage =
+          page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) <
+          res.data.totalCount;
         page++;
       } catch (error: any) {
         // Check for 401 unauthorized error indicating no enterprise access
