@@ -21,13 +21,13 @@ export class ChatAnalytics extends WindsurfConverter {
     const startedAt = Utils.toDate(item.date);
     const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    if (item.chat_loc_used > 0) {
+    if (item.sum_chat_loc_used > 0) {
       res.push(
         ...this.getAssistantMetric({
           startedAt,
           endedAt,
           assistantMetricType: AssistantMetric.LinesAccepted,
-          value: item.chat_loc_used,
+          value: item.sum_chat_loc_used,
           organization: this.streamName.source,
           userEmail: item.email,
           model: item.model_id,

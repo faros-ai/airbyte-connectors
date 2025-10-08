@@ -26,16 +26,16 @@ exports[`index streams - autocomplete analytics 1`] = `
     "email": "john@company.com",
     "ide": "vscode",
     "language": "typescript",
-    "num_acceptances": 45,
-    "num_lines_accepted": 280,
+    "sum_num_acceptances": 45,
+    "sum_num_lines_accepted": 280,
   },
   {
     "date": "2024-01-15",
     "email": "jane@company.com",
     "ide": "vscode",
     "language": "typescript",
-    "num_acceptances": 45,
-    "num_lines_accepted": 280,
+    "sum_num_acceptances": 45,
+    "sum_num_lines_accepted": 280,
   },
 ]
 `;
@@ -113,18 +113,18 @@ exports[`index streams - cascade runs 1`] = `
 exports[`index streams - chat analytics 1`] = `
 [
   {
-    "chat_loc_used": 150,
     "date": "2024-01-15",
     "email": "john@company.com",
     "ide": "vscode",
     "model_id": "gpt-4",
+    "sum_chat_loc_used": 150,
   },
   {
-    "chat_loc_used": 150,
     "date": "2024-01-15",
     "email": "jane@company.com",
     "ide": "vscode",
     "model_id": "gpt-4",
+    "sum_chat_loc_used": 150,
   },
 ]
 `;

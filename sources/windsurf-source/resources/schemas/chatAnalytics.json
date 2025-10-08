@@ -11,9 +11,9 @@
       "type": "string",
       "description": "Date in YYYY-MM-DD format"
     },
-    "chat_loc_used": {
+    "sum_chat_loc_used": {
       "type": ["number", "null"],
-      "description": "Lines of code used in chat"
+      "description": "Sum of lines of code used in chat"
     },
     "model_id": {
       "type": ["string", "null"],

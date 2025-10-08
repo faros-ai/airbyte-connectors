@@ -206,11 +206,11 @@ export class Windsurf {
       yield {
         email,
         date: item.date,
-        num_acceptances: item.num_acceptances
-          ? parseInt(item.num_acceptances, 10)
+        sum_num_acceptances: item.sum_num_acceptances
+          ? parseInt(item.sum_num_acceptances, 10)
           : undefined,
-        num_lines_accepted: item.num_lines_accepted
-          ? parseInt(item.num_lines_accepted, 10)
+        sum_num_lines_accepted: item.sum_num_lines_accepted
+          ? parseInt(item.sum_num_lines_accepted, 10)
           : undefined,
         language: item.language,
         ide: item.ide,
@@ -380,8 +380,8 @@ export class Windsurf {
       yield {
         email,
         date: item.date,
-        chat_loc_used: item.chat_loc_used
-          ? parseInt(item.chat_loc_used, 10)
+        sum_chat_loc_used: item.sum_chat_loc_used
+          ? parseInt(item.sum_chat_loc_used, 10)
           : undefined,
         model_id: item.model_id,
         ide: item.ide,

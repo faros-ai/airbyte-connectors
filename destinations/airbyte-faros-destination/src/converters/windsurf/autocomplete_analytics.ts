@@ -21,13 +21,13 @@ export class AutocompleteAnalytics extends WindsurfConverter {
     const startedAt = Utils.toDate(item.date);
     const endedAt = Utils.toDate(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
-    if (item.num_acceptances > 0) {
+    if (item.sum_num_acceptances > 0) {
       res.push(
         ...this.getAssistantMetric({
           startedAt,
           endedAt,
           assistantMetricType: AssistantMetric.SuggestionsAccepted,
-          value: item.num_acceptances,
+          value: item.sum_num_acceptances,
           organization: this.streamName.source,
           userEmail: item.email,
           feature: WindsurfFeature.Autocompletion,
@@ -37,13 +37,13 @@ export class AutocompleteAnalytics extends WindsurfConverter {
       );
     }
 
-    if (item.num_lines_accepted > 0) {
+    if (item.sum_num_lines_accepted > 0) {
       res.push(
         ...this.getAssistantMetric({
           startedAt,
           endedAt,
           assistantMetricType: AssistantMetric.LinesAccepted,
-          value: item.num_lines_accepted,
+          value: item.sum_num_lines_accepted,
           organization: this.streamName.source,
           userEmail: item.email,
           feature: WindsurfFeature.Autocompletion,

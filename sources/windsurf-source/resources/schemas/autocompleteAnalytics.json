@@ -11,13 +11,13 @@
       "type": "string",
       "description": "Date in YYYY-MM-DD format"
     },
-    "num_acceptances": {
+    "sum_num_acceptances": {
       "type": ["number", "null"],
-      "description": "Number of autocomplete suggestions accepted"
+      "description": "Sum of autocomplete suggestions accepted"
     },
-    "num_lines_accepted": {
+    "sum_num_lines_accepted": {
       "type": ["number", "null"],
-      "description": "Number of lines accepted from autocomplete"
+      "description": "Sum of lines accepted from autocomplete"
     },
     "language": {
       "type": ["string", "null"],

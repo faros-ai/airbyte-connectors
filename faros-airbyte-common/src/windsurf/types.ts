@@ -16,8 +16,8 @@ export interface UserTableStatsItem {
 export interface AutocompleteAnalyticsItem {
   email: string; // Populated from the api_key to email mapping
   date: string;
-  num_acceptances?: number;
-  num_lines_accepted?: number;
+  sum_num_acceptances?: number;
+  sum_num_lines_accepted?: number;
   language?: string;
   ide?: string;
 }
@@ -42,7 +42,7 @@ export interface CascadeRunsItem {
 export interface ChatAnalyticsItem {
   email: string; // Populated from the api_key to email mapping
   date: string;
-  chat_loc_used?: number;
+  sum_chat_loc_used?: number;
   model_id?: string;
   ide?: string;
 }
