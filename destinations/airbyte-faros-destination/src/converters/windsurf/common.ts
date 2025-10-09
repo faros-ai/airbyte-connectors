@@ -30,7 +30,7 @@ export abstract class WindsurfConverter extends Converter {
   source = 'Windsurf';
 
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.email;
+    return record?.record?.data?.id;
   }
 
   protected getAssistantMetric(

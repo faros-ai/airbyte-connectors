@@ -4,8 +4,8 @@ exports[`windsurf process records from all streams 1`] = `
 Array [
   "Processed 11 records",
   "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_lines_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_runs_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__chat_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__pcw_analytics\\\\\\":1,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 22 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":15,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 30 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":15,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -144,6 +144,27 @@ Array [
     },
   },
   Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user1@example.com",
+        },
+      },
+    },
+  },
+  Object {
     "vcs_AssistantMetric": Object {
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
@@ -195,6 +216,27 @@ Array [
       },
       "value": "180",
       "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user2@example.com",
+        },
+      },
     },
   },
   Object {
@@ -250,6 +292,27 @@ Array [
     },
   },
   Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user1@example.com",
+        },
+      },
+    },
+  },
+  Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
       "feature": "Cascade",
@@ -302,6 +365,27 @@ Array [
     },
   },
   Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user2@example.com",
+        },
+      },
+    },
+  },
+  Object {
     "vcs_AssistantMetric": Object {
       "endedAt": "2024-01-16T00:00:00.000Z",
       "feature": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
@@ -326,6 +410,27 @@ Array [
       },
       "value": "5",
       "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user1@example.com",
+        },
+      },
     },
   },
   Object {
@@ -380,6 +485,27 @@ Array [
       },
       "value": "8",
       "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user2@example.com",
+        },
+      },
     },
   },
   Object {
@@ -438,6 +564,27 @@ Array [
     },
   },
   Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user1@example.com",
+        },
+      },
+    },
+  },
+  Object {
     "vcs_AssistantMetric": Object {
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
@@ -463,6 +610,27 @@ Array [
       },
       "value": "200",
       "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2024-01-15T00:00:00.000Z",
+      "source": "Windsurf",
+      "usedAt": "2024-01-15T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Windsurf",
+          "uid": "Windsurf",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "Windsurf",
+        },
+        "user": Object {
+          "source": "Windsurf",
+          "uid": "user2@example.com",
+        },
+      },
     },
   },
   Object {
