@@ -155,5 +155,5 @@ export const ALL_MODEL_NAMES = [
   'vcs_UserEmail',
   'vcs_UserIdentity',
   'vcs_UserTool',
-  'vcs_UserToolUsage'
+  'vcs_UserToolUsage',
 ];
