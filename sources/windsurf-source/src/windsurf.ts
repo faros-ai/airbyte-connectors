@@ -1,6 +1,7 @@
 import {AxiosInstance} from 'axios';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -11,8 +12,10 @@ import {
   CascadeDataSource,
   CascadeLinesItem,
   CascadeRunsItem,
+  ChatAnalyticsItem,
   CustomAnalyticsRequest,
   CustomAnalyticsResponse,
+  PCWAnalyticsItem,
   QueryAggregationFunction,
   QueryDataSource,
   QueryFilter,
@@ -203,11 +206,11 @@ export class Windsurf {
       yield {
         email,
         date: item.date,
-        num_acceptances: item.num_acceptances
-          ? parseInt(item.num_acceptances, 10)
+        sum_num_acceptances: item.sum_num_acceptances
+          ? parseInt(item.sum_num_acceptances, 10)
           : undefined,
-        num_lines_accepted: item.num_lines_accepted
-          ? parseInt(item.num_lines_accepted, 10)
+        sum_num_lines_accepted: item.sum_num_lines_accepted
+          ? parseInt(item.sum_num_lines_accepted, 10)
           : undefined,
         language: item.language,
         ide: item.ide,
@@ -311,6 +314,174 @@ export class Windsurf {
             : undefined,
         };
       }
+    }
+  }
+
+  async *getChatAnalytics(
+    email: string,
+    apiKey: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<ChatAnalyticsItem> {
+    const request: CustomAnalyticsRequest = {
+      service_key: this.config.service_key,
+      query_requests: [
+        {
+          data_source: QueryDataSource.CHAT_DATA,
+          aggregations: [
+            {field: 'date', name: 'date'},
+            {field: 'model_id', name: 'model_id'},
+            {field: 'ide', name: 'ide'},
+          ],
+          selections: [
+            {
+              field: 'chat_loc_used',
+              aggregation_function: QueryAggregationFunction.SUM,
+            },
+          ],
+          filters: [
+            {
+              name: 'api_key',
+              filter: QueryFilter.EQUAL,
+              value: apiKey,
+            },
+          ],
+        },
+      ],
+    };
+
+    // Add date filters if provided
+    if (startDate) {
+      request.query_requests[0].filters.push({
+        name: 'date',
+        filter: QueryFilter.GREATER_EQUAL,
+        value: startDate.toISOString().split('T')[0],
+      });
+    }
+    if (endDate) {
+      request.query_requests[0].filters.push({
+        name: 'date',
+        filter: QueryFilter.LESS_EQUAL,
+        value: endDate.toISOString().split('T')[0],
+      });
+    }
+
+    // Log the curl command
+    this.logCurlCommand('POST', '/Analytics', request);
+
+    const response = await this.api.post<CustomAnalyticsResponse>(
+      '/Analytics',
+      request
+    );
+
+    for (const responseItem of response.data?.queryResults?.[0]
+      ?.responseItems || []) {
+      const item = responseItem.item;
+      yield {
+        email,
+        date: item.date,
+        sum_chat_loc_used: item.sum_chat_loc_used
+          ? parseInt(item.sum_chat_loc_used, 10)
+          : undefined,
+        model_id: item.model_id,
+        ide: item.ide,
+      };
+    }
+  }
+
+  async *getPCWAnalytics(
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<PCWAnalyticsItem> {
+    // Use fallback dates if not provided: yesterday 00:00:00 to today 00:00:00
+    const now = DateTime.utc().startOf('day');
+    const start = startDate
+      ? DateTime.fromJSDate(startDate).toUTC().startOf('day')
+      : now.minus({days: 1});
+    const end = endDate
+      ? DateTime.fromJSDate(endDate).toUTC().startOf('day')
+      : now;
+
+    // Iterate over each day in the date range
+    // We stop when the end_timestamp would exceed the end date
+    let currentDate = start;
+    while (currentDate < end) {
+      const dateStr = currentDate.toISODate();
+      const startTimestamp = currentDate.toISO();
+      const endTimestamp = currentDate.plus({days: 1}).toISO();
+
+      const request: CustomAnalyticsRequest = {
+        service_key: this.config.service_key,
+        start_timestamp: startTimestamp,
+        end_timestamp: endTimestamp,
+        query_requests: [
+          {
+            data_source: QueryDataSource.PCW_DATA,
+            selections: [
+              {
+                field: 'percent_code_written',
+                name: 'percent_code_written',
+              },
+              {
+                field: 'codeium_bytes',
+                name: 'codeium_bytes',
+              },
+              {
+                field: 'user_bytes',
+                name: 'user_bytes',
+              },
+              {
+                field: 'total_bytes',
+                name: 'total_bytes',
+              },
+              {
+                field: 'codeium_bytes_by_autocomplete',
+                name: 'codeium_bytes_by_autocomplete',
+              },
+              {
+                field: 'codeium_bytes_by_command',
+                name: 'codeium_bytes_by_command',
+              },
+            ],
+          },
+        ],
+      };
+
+      // Log the curl command
+      this.logCurlCommand('POST', '/Analytics', request);
+
+      const response = await this.api.post<CustomAnalyticsResponse>(
+        '/Analytics',
+        request
+      );
+
+      for (const responseItem of response.data?.queryResults?.[0]
+        ?.responseItems || []) {
+        const item = responseItem.item;
+        yield {
+          date: dateStr,
+          percent_code_written: item.percent_code_written
+            ? parseFloat(item.percent_code_written)
+            : undefined,
+          codeium_bytes: item.codeium_bytes
+            ? parseInt(item.codeium_bytes, 10)
+            : undefined,
+          user_bytes: item.user_bytes
+            ? parseInt(item.user_bytes, 10)
+            : undefined,
+          total_bytes: item.total_bytes
+            ? parseInt(item.total_bytes, 10)
+            : undefined,
+          codeium_bytes_by_autocomplete: item.codeium_bytes_by_autocomplete
+            ? parseInt(item.codeium_bytes_by_autocomplete, 10)
+            : undefined,
+          codeium_bytes_by_command: item.codeium_bytes_by_command
+            ? parseInt(item.codeium_bytes_by_command, 10)
+            : undefined,
+        };
+      }
+
+      currentDate = currentDate.plus({days: 1});
     }
   }
 }

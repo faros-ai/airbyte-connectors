@@ -16,8 +16,8 @@ export interface UserTableStatsItem {
 export interface AutocompleteAnalyticsItem {
   email: string; // Populated from the api_key to email mapping
   date: string;
-  num_acceptances?: number;
-  num_lines_accepted?: number;
+  sum_num_acceptances?: number;
+  sum_num_lines_accepted?: number;
   language?: string;
   ide?: string;
 }
@@ -37,4 +37,22 @@ export interface CascadeRunsItem {
   messagesSent?: number;
   cascadeId?: string;
   promptsUsed?: number;
+}
+
+export interface ChatAnalyticsItem {
+  email: string; // Populated from the api_key to email mapping
+  date: string;
+  sum_chat_loc_used?: number;
+  model_id?: string;
+  ide?: string;
+}
+
+export interface PCWAnalyticsItem {
+  date: string; // Date for incremental sync tracking
+  percent_code_written?: number;
+  codeium_bytes?: number;
+  user_bytes?: number;
+  total_bytes?: number;
+  codeium_bytes_by_autocomplete?: number;
+  codeium_bytes_by_command?: number;
 }

@@ -8,28 +8,48 @@ import {Converter, DestinationRecord} from '../converter';
 export enum WindsurfFeature {
   Autocompletion = 'Autocompletion',
   Cascade = 'Cascade',
+  Chat = 'Chat',
+}
+
+export interface AssistantMetricConfig {
+  startedAt: Date;
+  endedAt: Date;
+  assistantMetricType: AssistantMetric;
+  value: number;
+  organization: string;
+  userEmail?: string;
+  customMetricName?: string;
+  model?: string;
+  feature?: string;
+  editor?: string;
+  language?: string;
+  valueType?: 'Int' | 'Percent';
 }
 
 export abstract class WindsurfConverter extends Converter {
   source = 'Windsurf';
 
   id(record: AirbyteRecord): any {
-    return record?.record?.data?.email;
+    return record?.record?.data?.id;
   }
 
   protected getAssistantMetric(
-    startedAt: Date,
-    endedAt: Date,
-    assistantMetricType: AssistantMetric,
-    value: number,
-    org: string,
-    userEmail: string,
-    customMetricName?: string,
-    model?: string,
-    feature?: string,
-    editor?: string,
-    language?: string
+    config: AssistantMetricConfig
   ): DestinationRecord[] {
+    const {
+      startedAt,
+      endedAt,
+      assistantMetricType,
+      value,
+      organization,
+      userEmail,
+      customMetricName,
+      model,
+      feature,
+      editor,
+      language,
+      valueType = 'Int',
+    } = config;
     return [
       {
         model: 'vcs_AssistantMetric',
@@ -42,7 +62,7 @@ export abstract class WindsurfConverter extends Converter {
                   VCSToolDetail.Windsurf,
                   assistantMetricType,
                   startedAt.toISOString(),
-                  org,
+                  organization,
                   userEmail,
                   customMetricName,
                 ],
@@ -65,13 +85,15 @@ export abstract class WindsurfConverter extends Converter {
             category: assistantMetricType,
             ...(customMetricName && {detail: customMetricName}),
           },
-          valueType: 'Int',
+          valueType,
           value: String(value),
           organization: {
-            uid: org,
+            uid: organization,
             source: this.streamName.source,
           },
-          user: {uid: userEmail, source: this.streamName.source},
+          ...(userEmail && {
+            user: {uid: userEmail, source: this.streamName.source},
+          }),
           tool: {
             category: VCSToolCategory.CodingAssistant,
             detail: VCSToolDetail.Windsurf,

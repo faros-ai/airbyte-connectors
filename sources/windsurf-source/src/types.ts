@@ -20,6 +20,8 @@ export {
   AutocompleteAnalyticsItem,
   CascadeLinesItem,
   CascadeRunsItem,
+  ChatAnalyticsItem,
+  PCWAnalyticsItem,
 } from 'faros-airbyte-common/windsurf';
 
 // Import types for local use
@@ -85,6 +87,8 @@ export interface QueryRequest {
 
 export interface CustomAnalyticsRequest {
   service_key: string;
+  start_timestamp?: string;
+  end_timestamp?: string;
   query_requests: QueryRequest[];
 }
 

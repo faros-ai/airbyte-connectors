@@ -1,0 +1,16 @@
+{
+  "queryResults": [{
+    "responseItems": [
+      {
+        "item": {
+          "percent_code_written": "0.68",
+          "codeium_bytes": "6018",
+          "user_bytes": "2832",
+          "total_bytes": "8850",
+          "codeium_bytes_by_autocomplete": "4593",
+          "codeium_bytes_by_command": "1425"
+        }
+      }
+    ]
+  }]
+}

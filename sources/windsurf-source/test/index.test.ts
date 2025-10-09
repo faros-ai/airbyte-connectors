@@ -154,4 +154,47 @@ describe('index', () => {
       },
     });
   });
+
+  test('streams - chat analytics', async () => {
+    const userPageRes = readTestResourceAsJSON(
+      'user_page_analytics/user_page_analytics.json'
+    );
+    const chatRes = readTestResourceAsJSON(
+      'chat_analytics/chat_analytics.json'
+    );
+    setupWindsurfInstance({
+      post: jest
+        .fn()
+        .mockResolvedValueOnce({data: userPageRes})
+        .mockResolvedValueOnce({data: chatRes})
+        .mockResolvedValueOnce({data: chatRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'chat_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - pcw analytics', async () => {
+    const pcwRes = readTestResourceAsJSON('pcw_analytics/pcw_analytics.json');
+    setupWindsurfInstance({
+      post: jest.fn().mockResolvedValue({data: pcwRes}),
+    });
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('config.json'),
+        start_date: '2025-10-05',
+        end_date: '2025-10-07',
+      },
+      catalogOrPath: 'pcw_analytics/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
 });

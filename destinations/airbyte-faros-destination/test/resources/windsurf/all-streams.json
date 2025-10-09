@@ -43,8 +43,8 @@
       "data": {
         "email": "user1@example.com",
         "date": "2024-01-15",
-        "num_acceptances": 45,
-        "num_lines_accepted": 280,
+        "sum_num_acceptances": 45,
+        "sum_num_lines_accepted": 280,
         "language": "typescript",
         "ide": "vscode"
       }
@@ -58,8 +58,8 @@
       "data": {
         "email": "user2@example.com",
         "date": "2024-01-15",
-        "num_acceptances": 32,
-        "num_lines_accepted": 180,
+        "sum_num_acceptances": 32,
+        "sum_num_lines_accepted": 180,
         "language": "python",
         "ide": "windsurf"
       }
@@ -120,6 +120,50 @@
         "messagesSent": 8,
         "cascadeId": "cascade_456",
         "promptsUsed": 6
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__chat_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user1@example.com",
+        "date": "2024-01-15",
+        "sum_chat_loc_used": 150,
+        "model_id": "gpt-4",
+        "ide": "vscode"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__chat_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "email": "user2@example.com",
+        "date": "2024-01-15",
+        "sum_chat_loc_used": 200,
+        "model_id": "claude-3",
+        "ide": "windsurf"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__windsurf__pcw_analytics",
+      "emitted_at": 1735689600000,
+      "data": {
+        "date": "2024-01-15",
+        "percent_code_written": 0.68,
+        "codeium_bytes": 6018,
+        "user_bytes": 2832,
+        "total_bytes": 8850,
+        "codeium_bytes_by_autocomplete": 4593,
+        "codeium_bytes_by_command": 1425
       }
     },
     "type": "RECORD"
