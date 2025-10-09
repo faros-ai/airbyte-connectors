@@ -15,7 +15,7 @@ export class ChatAnalytics extends StreamWithUserSlices {
   }
 
   get primaryKey(): StreamKey {
-    return ['email', 'date'];
+    return ['email', 'date', 'model_id', 'ide'];
   }
 
   get cursorField(): string | string[] {
