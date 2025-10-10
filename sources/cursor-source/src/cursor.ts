@@ -26,7 +26,6 @@ export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
 export const RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE = 20;
 export const RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS = 60;
-export const RATE_LIMIT_FALLBACK_SECONDS = 60;
 
 export class Cursor {
   private static cursor: Cursor;
@@ -69,12 +68,6 @@ export class Cursor {
             );
             return delayMs + jitter;
           }
-          // Fallback if no retry-after header
-          this.logger.debug(
-            `Rate limited by Cursor API (no Retry-After header). ` +
-              `Waiting ${RATE_LIMIT_FALLBACK_SECONDS}s before retry ${retryNumber}`
-          );
-          return RATE_LIMIT_FALLBACK_SECONDS * 1000;
         }
         // Exponential backoff for other retryable errors
         return retryNumber * 1000;
