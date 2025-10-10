@@ -60,14 +60,14 @@ export class Cursor {
             const retryAfterSeconds = parseInt(retryAfter, 10);
             const delayMs = retryAfterSeconds * 1000;
             const jitter = Math.random() * 1000; // Add 0-1s jitter
-            this.logger.warn(
+            this.logger.debug(
               `Rate limited by Cursor API. Retry-After: ${retryAfterSeconds}s. ` +
                 `Waiting ${(delayMs + jitter) / 1000}s before retry ${retryNumber}`
             );
             return delayMs + jitter;
           }
           // Fallback if no retry-after header: wait 60 seconds
-          this.logger.warn(
+          this.logger.debug(
             `Rate limited by Cursor API (no Retry-After header). ` +
               `Waiting 60s before retry ${retryNumber}`
           );
