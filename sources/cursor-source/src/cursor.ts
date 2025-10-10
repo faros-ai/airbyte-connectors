@@ -10,6 +10,7 @@ import {
   UsageEventItem,
 } from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {random} from 'lodash';
 import VError from 'verror';
 
 import {
@@ -61,7 +62,7 @@ export class Cursor {
           if (retryAfter) {
             const retryAfterSeconds = parseInt(retryAfter, 10);
             const delayMs = retryAfterSeconds * 1000;
-            const jitter = Math.random() * 1000; // Add 0-1s jitter
+            const jitter = random(0, 1000); // Add 0-1s jitter
             this.logger.debug(
               `Rate limited by Cursor API. Retry-After: ${retryAfterSeconds}s. ` +
                 `Waiting ${(delayMs + jitter) / 1000}s before retry ${retryNumber}`
