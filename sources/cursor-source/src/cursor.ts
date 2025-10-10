@@ -36,24 +36,52 @@ export class Cursor {
     private readonly logger: AirbyteLogger
   ) {
     const apiUrl = this.config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
-    this.api = makeAxiosInstanceWithRetry({
-      baseURL: apiUrl,
-      timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      auth: {
-        username: this.config.cursor_api_key,
-        password: '',
+    this.api = makeAxiosInstanceWithRetry(
+      {
+        baseURL: apiUrl,
+        timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        auth: {
+          username: this.config.cursor_api_key,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    // Rate limiter for AI commit metrics API: 50 requests per minute
+      this.logger.asPino(),
+      3, // retries
+      (error, retryNumber) => {
+        // Handle 429 rate limit errors with retry-after header
+        if (error.response?.status === 429) {
+          const retryAfter = error.response.headers?.['retry-after'];
+          if (retryAfter) {
+            const retryAfterSeconds = parseInt(retryAfter, 10);
+            const delayMs = retryAfterSeconds * 1000;
+            const jitter = Math.random() * 1000; // Add 0-1s jitter
+            this.logger.warn(
+              `Rate limited by Cursor API. Retry-After: ${retryAfterSeconds}s. ` +
+                `Waiting ${(delayMs + jitter) / 1000}s before retry ${retryNumber}`
+            );
+            return delayMs + jitter;
+          }
+          // Fallback if no retry-after header: wait 60 seconds
+          this.logger.warn(
+            `Rate limited by Cursor API (no Retry-After header). ` +
+              `Waiting 60s before retry ${retryNumber}`
+          );
+          return 60000;
+        }
+        // Exponential backoff for other retryable errors
+        return retryNumber * 1000;
+      }
+    );
+    // Rate limiter for AI commit metrics API: 20 requests per minute per team, per endpoint
     // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
     this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: 50, // Initial number of requests
-      reservoirRefreshAmount: 50, // Refill to 50 requests
+      reservoir: 20, // Initial number of requests
+      reservoirRefreshAmount: 20, // Refill to 20 requests
       reservoirRefreshInterval: 60 * 1000, // Every 60 seconds
     });
   }
