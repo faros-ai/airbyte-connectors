@@ -24,6 +24,9 @@ export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
+export const RATE_LIMIT_REQUESTS_PER_MINUTE = 20;
+export const RATE_LIMIT_FALLBACK_SECONDS = 60;
+export const RATE_LIMIT_REFRESH_INTERVAL_MS = 60 * 1000;
 
 export class Cursor {
   private static cursor: Cursor;
@@ -66,23 +69,23 @@ export class Cursor {
             );
             return delayMs + jitter;
           }
-          // Fallback if no retry-after header: wait 60 seconds
+          // Fallback if no retry-after header
           this.logger.debug(
             `Rate limited by Cursor API (no Retry-After header). ` +
-              `Waiting 60s before retry ${retryNumber}`
+              `Waiting ${RATE_LIMIT_FALLBACK_SECONDS}s before retry ${retryNumber}`
           );
-          return 60000;
+          return RATE_LIMIT_FALLBACK_SECONDS * 1000;
         }
         // Exponential backoff for other retryable errors
         return retryNumber * 1000;
       }
     );
-    // Rate limiter for AI commit metrics API: 20 requests per minute per team, per endpoint
+    // Rate limiter for AI commit metrics API per team, per endpoint
     // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
     this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: 20, // Initial number of requests
-      reservoirRefreshAmount: 20, // Refill to 20 requests
-      reservoirRefreshInterval: 60 * 1000, // Every 60 seconds
+      reservoir: RATE_LIMIT_REQUESTS_PER_MINUTE,
+      reservoirRefreshAmount: RATE_LIMIT_REQUESTS_PER_MINUTE,
+      reservoirRefreshInterval: RATE_LIMIT_REFRESH_INTERVAL_MS,
     });
   }
 
