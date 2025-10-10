@@ -24,9 +24,9 @@ export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
-export const RATE_LIMIT_REQUESTS_PER_MINUTE = 20;
+export const RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE = 20;
+export const RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS = 60;
 export const RATE_LIMIT_FALLBACK_SECONDS = 60;
-export const RATE_LIMIT_REFRESH_INTERVAL_MS = 60 * 1000;
 
 export class Cursor {
   private static cursor: Cursor;
@@ -83,9 +83,11 @@ export class Cursor {
     // Rate limiter for AI commit metrics API per team, per endpoint
     // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
     this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: RATE_LIMIT_REQUESTS_PER_MINUTE,
-      reservoirRefreshAmount: RATE_LIMIT_REQUESTS_PER_MINUTE,
-      reservoirRefreshInterval: RATE_LIMIT_REFRESH_INTERVAL_MS,
+      reservoir: RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
+      reservoirRefreshAmount:
+        RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
+      reservoirRefreshInterval:
+        RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS * 1000,
     });
   }
 
