@@ -10,6 +10,7 @@ import {
   UsageEventItem,
 } from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {random} from 'lodash';
 import VError from 'verror';
 
 import {
@@ -24,6 +25,8 @@ export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
+export const RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE = 20;
+export const RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS = 60;
 
 export class Cursor {
   private static cursor: Cursor;
@@ -36,25 +39,49 @@ export class Cursor {
     private readonly logger: AirbyteLogger
   ) {
     const apiUrl = this.config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
-    this.api = makeAxiosInstanceWithRetry({
-      baseURL: apiUrl,
-      timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      auth: {
-        username: this.config.cursor_api_key,
-        password: '',
+    this.api = makeAxiosInstanceWithRetry(
+      {
+        baseURL: apiUrl,
+        timeout: this.config.timeout ?? DEFAULT_TIMEOUT,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        auth: {
+          username: this.config.cursor_api_key,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    // Rate limiter for AI commit metrics API: 50 requests per minute
+      this.logger.asPino(),
+      3, // retries
+      (error, retryNumber) => {
+        // Handle 429 rate limit errors with retry-after header
+        if (error.response?.status === 429) {
+          const retryAfter = error.response.headers?.['retry-after'];
+          if (retryAfter) {
+            const retryAfterSeconds = parseInt(retryAfter, 10);
+            const delayMs = retryAfterSeconds * 1000;
+            const jitter = random(0, 1000); // Add 0-1s jitter
+            this.logger.debug(
+              `Rate limited by Cursor API. Retry-After: ${retryAfterSeconds}s. ` +
+                `Waiting ${(delayMs + jitter) / 1000}s before retry ${retryNumber}`
+            );
+            return delayMs + jitter;
+          }
+        }
+        // Exponential backoff for other retryable errors
+        return retryNumber * 1000;
+      }
+    );
+    // Rate limiter for AI commit metrics API per team, per endpoint
     // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
     this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: 50, // Initial number of requests
-      reservoirRefreshAmount: 50, // Refill to 50 requests
-      reservoirRefreshInterval: 60 * 1000, // Every 60 seconds
+      reservoir: RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
+      reservoirRefreshAmount:
+        RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
+      reservoirRefreshInterval:
+        RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS * 1000,
     });
   }
 
