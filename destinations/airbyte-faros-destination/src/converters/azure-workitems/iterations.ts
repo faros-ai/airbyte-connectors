@@ -43,7 +43,7 @@ export class Iterations extends AzureWorkitemsConverter {
           description: Utils.cleanAndTruncate(Iteration.path),
           state: this.toState(
             Iteration.attributes?.timeFrame,
-            openedAt,
+            startedAt,
             closedAt
           ),
           startedAt,
@@ -56,7 +56,7 @@ export class Iterations extends AzureWorkitemsConverter {
     ];
   }
 
-  private toState(state?: string, openedAt?: Date, closedAt?: Date): string {
+  private toState(state?: string, startedAt?: Date, closedAt?: Date): string {
     // If timeFrame is provided (backward compatibility), use it
     if (state) {
       switch (state.toLowerCase()) {
@@ -72,31 +72,33 @@ export class Iterations extends AzureWorkitemsConverter {
     }
 
     // Calculate state based on dates if timeFrame is not available
-    // Check closed date first - if it's in the past, iteration is closed regardless of opened date
+    // Check closed date first - if it's in the past (end of day), iteration is closed
     if (closedAt && closedAt < this.now) {
       return 'Closed';
     }
 
-    // If we have a opened date that's in the future, iteration is future
-    if (openedAt && openedAt > this.now) {
+    // If we have a start date that's in the future, iteration is future
+    if (startedAt && startedAt > this.now) {
       return 'Future';
     }
 
-    // If we're between opened and closed dates, then we're in an active iteration
-    if (openedAt && openedAt <= this.now && closedAt && closedAt >= this.now) {
+    // If we're past the start date and before/on the close date, iteration is active
+    // Use startedAt to make sprint active from the day it starts (not end-of-day)
+    // Use closedAt (end-of-day) to keep sprint active through the entire end date
+    if (startedAt && startedAt <= this.now && closedAt && closedAt >= this.now) {
       return 'Active';
     }
 
-    // Handle edge case: opened date exists and has passed, but no closed date
-    // Note: Sprints with opened date but no closed date are treated as Active if opened.
-    // This handles cases where sprints are created but closed date hasn't been set yet,
+    // Handle edge case: start date exists and has passed, but no close date
+    // Note: Sprints with start date but no end date are treated as Active if started.
+    // This handles cases where sprints are created but end date hasn't been set yet,
     // or for indefinite iterations like "Backlog". Azure's exact behavior for this
-    // edge case is unclear, but treating opened iterations as Active seems reasonable.
-    if (openedAt && openedAt <= this.now && !closedAt) {
+    // edge case is unclear, but treating started iterations as Active seems reasonable.
+    if (startedAt && startedAt <= this.now && !closedAt) {
       return 'Active';
     }
 
-    // Default: no dates set, or only future opened date, or only future closed date
+    // Default: no dates set, or only future start date, or only future close date
     return 'Future';
   }
 
