@@ -41,12 +41,24 @@ export class FarosUsers extends StreamBase {
     const gitlab = await GitLab.instance(this.config, this.logger);
     for (const group of await this.groupFilter.getGroups()) {
       this.logger.info(`Fetching users for group ${group}`);
-      await gitlab.fetchGroupMembers(group);
+      try {
+        await gitlab.fetchGroupMembers(group);
+      } catch (err: any) {
+        this.logger.warn(
+          `Failed to fetch members for group ${group}, skipping: ${err.message}`
+        );
+      }
       for (const project of await this.groupFilter.getProjects(group)) {
         this.logger.info(
           `Fetching users for project ${project.repo.path_with_namespace}`
         );
-        await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+        try {
+          await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+        } catch (err: any) {
+          this.logger.warn(
+            `Failed to fetch members for project ${project.repo.path_with_namespace}, skipping: ${err.message}`
+          );
+        }
       }
     }
     const users = gitlab.userCollector.getCollectedUsers();
