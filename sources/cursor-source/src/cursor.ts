@@ -1,5 +1,4 @@
 import {AxiosInstance} from 'axios';
-import Bottleneck from 'bottleneck';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   ActiveMemberItem,
@@ -25,13 +24,10 @@ export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
-export const RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE = 20;
-export const RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS = 60;
 
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
-  private readonly limiterAICodeTrackingAPI: Bottleneck;
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
@@ -74,15 +70,6 @@ export class Cursor {
         return retryNumber * 1000;
       }
     );
-    // Rate limiter for AI commit metrics API per team, per endpoint
-    // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
-    this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
-      reservoirRefreshAmount:
-        RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
-      reservoirRefreshInterval:
-        RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS * 1000,
-    });
   }
 
   static instance(config: CursorConfig, logger: AirbyteLogger): Cursor {
@@ -188,10 +175,8 @@ export class Cursor {
       });
 
       try {
-        const res = await this.limiterAICodeTrackingAPI.schedule(() =>
-          this.api.get<AiCommitMetricsResponse>(
-            `/analytics/ai-code/commits?${params.toString()}`
-          )
+        const res = await this.api.get<AiCommitMetricsResponse>(
+          `/analytics/ai-code/commits?${params.toString()}`
         );
 
         for (const commit of res.data.items) {
