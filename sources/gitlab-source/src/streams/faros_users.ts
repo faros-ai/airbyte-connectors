@@ -41,12 +41,40 @@ export class FarosUsers extends StreamBase {
     const gitlab = await GitLab.instance(this.config, this.logger);
     for (const group of await this.groupFilter.getGroups()) {
       this.logger.info(`Fetching users for group ${group}`);
-      await gitlab.fetchGroupMembers(group);
+      try {
+        await gitlab.fetchGroupMembers(group);
+      } catch (err: any) {
+        if (
+          err.message?.includes('Forbidden') ||
+          err.cause?.message?.includes('Forbidden') ||
+          err.cause?.description === 'Forbidden'
+        ) {
+          this.logger.warn(
+            `Skipping group ${group} due to insufficient permissions to list members: ${err.message}`
+          );
+        } else {
+          throw err;
+        }
+      }
       for (const project of await this.groupFilter.getProjects(group)) {
         this.logger.info(
           `Fetching users for project ${project.repo.path_with_namespace}`
         );
-        await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+        try {
+          await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+        } catch (err: any) {
+          if (
+            err.message?.includes('Forbidden') ||
+            err.cause?.message?.includes('Forbidden') ||
+            err.cause?.description === 'Forbidden'
+          ) {
+            this.logger.warn(
+              `Skipping project ${project.repo.path_with_namespace} due to insufficient permissions to list members: ${err.message}`
+            );
+          } else {
+            throw err;
+          }
+        }
       }
     }
     const users = gitlab.userCollector.getCollectedUsers();
