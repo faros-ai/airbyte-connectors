@@ -44,17 +44,9 @@ export class FarosUsers extends StreamBase {
       try {
         await gitlab.fetchGroupMembers(group);
       } catch (err: any) {
-        if (
-          err.message?.includes('Forbidden') ||
-          err.cause?.message?.includes('Forbidden') ||
-          err.cause?.description === 'Forbidden'
-        ) {
-          this.logger.warn(
-            `Skipping group ${group} due to insufficient permissions to list members: ${err.message}`
-          );
-        } else {
-          throw err;
-        }
+        this.logger.warn(
+          `Failed to fetch members for group ${group}, skipping: ${err.message}`
+        );
       }
       for (const project of await this.groupFilter.getProjects(group)) {
         this.logger.info(
@@ -63,17 +55,9 @@ export class FarosUsers extends StreamBase {
         try {
           await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
         } catch (err: any) {
-          if (
-            err.message?.includes('Forbidden') ||
-            err.cause?.message?.includes('Forbidden') ||
-            err.cause?.description === 'Forbidden'
-          ) {
-            this.logger.warn(
-              `Skipping project ${project.repo.path_with_namespace} due to insufficient permissions to list members: ${err.message}`
-            );
-          } else {
-            throw err;
-          }
+          this.logger.warn(
+            `Failed to fetch members for project ${project.repo.path_with_namespace}, skipping: ${err.message}`
+          );
         }
       }
     }
