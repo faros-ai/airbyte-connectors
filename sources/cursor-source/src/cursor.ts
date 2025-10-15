@@ -25,6 +25,9 @@ export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
 
+// https://cursor.com/docs/account/teams/admin-api#get-daily-usage-data
+export const MAX_DAILY_USAGE_WINDOW_DAYS = 30; // Cursor API limit
+
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
@@ -116,14 +119,30 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<DailyUsageItem> {
-    const res = await this.api.post<DailyUsageResponse>(
-      '/teams/daily-usage-data',
-      {
-        startDate,
-        endDate,
-      }
-    );
-    yield* res.data.data;
+    const windowSizeMs = MAX_DAILY_USAGE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    let currentStart = startDate;
+
+    while (currentStart < endDate) {
+      // Calculate the end of the current window
+      const currentEnd = Math.min(currentStart + windowSizeMs, endDate);
+
+      this.logger.debug(
+        `Fetching daily usage from ${new Date(currentStart).toISOString()} to ${new Date(currentEnd).toISOString()}`
+      );
+
+      const res = await this.api.post<DailyUsageResponse>(
+        '/teams/daily-usage-data',
+        {
+          startDate: currentStart,
+          endDate: currentEnd,
+        }
+      );
+
+      yield* res.data.data;
+
+      // Move to the next window
+      currentStart = currentEnd;
+    }
   }
 
   async *getUsageEvents(
