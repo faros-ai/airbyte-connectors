@@ -1,5 +1,4 @@
 import {AxiosInstance} from 'axios';
-import Bottleneck from 'bottleneck';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   ActiveMemberItem,
@@ -25,13 +24,13 @@ export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
 export const DEFAULT_PAGE_SIZE = 100;
-export const RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE = 20;
-export const RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS = 60;
+
+// https://cursor.com/docs/account/teams/admin-api#get-daily-usage-data
+export const MAX_DAILY_USAGE_WINDOW_DAYS = 30; // Cursor API limit
 
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
-  private readonly limiterAICodeTrackingAPI: Bottleneck;
   private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
@@ -74,15 +73,6 @@ export class Cursor {
         return retryNumber * 1000;
       }
     );
-    // Rate limiter for AI commit metrics API per team, per endpoint
-    // https://cursor.com/docs/account/teams/ai-code-tracking-api#rate-limits
-    this.limiterAICodeTrackingAPI = new Bottleneck({
-      reservoir: RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
-      reservoirRefreshAmount:
-        RATE_LIMIT_AI_CODE_TRACKING_API_REQUESTS_PER_MINUTE,
-      reservoirRefreshInterval:
-        RATE_LIMIT_AI_CODE_TRACKING_API_REFRESH_INTERVAL_SECONDS * 1000,
-    });
   }
 
   static instance(config: CursorConfig, logger: AirbyteLogger): Cursor {
@@ -129,14 +119,30 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<DailyUsageItem> {
-    const res = await this.api.post<DailyUsageResponse>(
-      '/teams/daily-usage-data',
-      {
-        startDate,
-        endDate,
-      }
-    );
-    yield* res.data.data;
+    const windowSizeMs = MAX_DAILY_USAGE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    let currentStart = startDate;
+
+    while (currentStart < endDate) {
+      // Calculate the end of the current window
+      const currentEnd = Math.min(currentStart + windowSizeMs, endDate);
+
+      this.logger.debug(
+        `Fetching daily usage from ${new Date(currentStart).toISOString()} to ${new Date(currentEnd).toISOString()}`
+      );
+
+      const res = await this.api.post<DailyUsageResponse>(
+        '/teams/daily-usage-data',
+        {
+          startDate: currentStart,
+          endDate: currentEnd,
+        }
+      );
+
+      yield* res.data.data;
+
+      // Move to the next window
+      currentStart = currentEnd;
+    }
   }
 
   async *getUsageEvents(
@@ -188,10 +194,8 @@ export class Cursor {
       });
 
       try {
-        const res = await this.limiterAICodeTrackingAPI.schedule(() =>
-          this.api.get<AiCommitMetricsResponse>(
-            `/analytics/ai-code/commits?${params.toString()}`
-          )
+        const res = await this.api.get<AiCommitMetricsResponse>(
+          `/analytics/ai-code/commits?${params.toString()}`
         );
 
         for (const commit of res.data.items) {

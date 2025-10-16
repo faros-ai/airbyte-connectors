@@ -26,7 +26,6 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "bottleneck": "^2.19.5",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
     "verror": "^1.10.1"
