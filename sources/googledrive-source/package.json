@@ -31,7 +31,7 @@
     "googleapis": "^128.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "ts-essentials": "^9.4.1",
+    "ts-essentials": "^10.1.1",
     "typescript-memoize": "^1.1.1",
     "verror": "^1.10.1"
   },
