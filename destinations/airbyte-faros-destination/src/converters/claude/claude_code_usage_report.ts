@@ -233,6 +233,63 @@ export class ClaudeCodeUsageReport extends ClaudeConverter {
             })
           );
         }
+
+        // Token metrics per model
+        if (modelData.tokens?.input) {
+          res.push(
+            ...this.getAssistantMetric({
+              startedAt: day,
+              endedAt: nextDay,
+              assistantMetricType: AssistantMetric.InputTokens,
+              value: modelData.tokens.input,
+              organization,
+              userEmail,
+              model: modelData.model,
+            })
+          );
+        }
+
+        if (modelData.tokens?.output) {
+          res.push(
+            ...this.getAssistantMetric({
+              startedAt: day,
+              endedAt: nextDay,
+              assistantMetricType: AssistantMetric.OutputTokens,
+              value: modelData.tokens.output,
+              organization,
+              userEmail,
+              model: modelData.model,
+            })
+          );
+        }
+
+        if (modelData.tokens?.cache_read) {
+          res.push(
+            ...this.getAssistantMetric({
+              startedAt: day,
+              endedAt: nextDay,
+              assistantMetricType: AssistantMetric.CacheReadTokens,
+              value: modelData.tokens.cache_read,
+              organization,
+              userEmail,
+              model: modelData.model,
+            })
+          );
+        }
+
+        if (modelData.tokens?.cache_creation) {
+          res.push(
+            ...this.getAssistantMetric({
+              startedAt: day,
+              endedAt: nextDay,
+              assistantMetricType: AssistantMetric.CacheWriteTokens,
+              value: modelData.tokens.cache_creation,
+              organization,
+              userEmail,
+              model: modelData.model,
+            })
+          );
+        }
       }
     }
 
