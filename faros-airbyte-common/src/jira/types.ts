@@ -20,6 +20,7 @@ export interface Issue extends IssueCompact {
   readonly project: string;
   readonly priority: string;
   readonly labels: ReadonlyArray<string>;
+  readonly comments?: ReadonlyArray<Comment>;
   readonly dependencies: ReadonlyArray<Dependency>;
   readonly subtasks: ReadonlyArray<string>;
   readonly parent?: Parent;
@@ -43,6 +44,17 @@ export interface Parent {
   type?: string;
 }
 
+export interface Comment {
+  readonly id: string;
+  readonly body: string;
+  readonly created: Date;
+  readonly updated: Date;
+  readonly author?: {
+    readonly accountId: string;
+  };
+  readonly parentId?: string;
+}
+
 export interface Dependency {
   readonly key: string;
   readonly inward: string;
@@ -57,6 +69,7 @@ export interface Status {
 export interface Assignee {
   readonly uid: string;
   readonly assignedAt: Date;
+  readonly unassignedAt?: Date;
 }
 
 export interface SprintHistory {

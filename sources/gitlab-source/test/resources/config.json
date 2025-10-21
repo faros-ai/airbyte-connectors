@@ -4,7 +4,21 @@
     "personal_access_token": "gitlab_pat_1234567890"
   },
   "url": "https://gitlab.com",
-  "run_mode": "Full",
+  "run_mode": "Custom",
+  "custom_streams": [
+    "faros_commits",
+    "faros_deployments",
+    "faros_groups",
+    "faros_issues",
+    "faros_jobs",
+    "faros_merge_requests",
+    "faros_merge_request_reviews",
+    "faros_pipelines",
+    "faros_projects",
+    "faros_releases",
+    "faros_tags",
+    "faros_users"
+  ],
   "cutoff_days": 9999,
   "bucket_id": 1,
   "bucket_total": 1

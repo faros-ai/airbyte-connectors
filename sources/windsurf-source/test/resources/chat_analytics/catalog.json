@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "chat_analytics"
+      }
+    }
+  ]
+}

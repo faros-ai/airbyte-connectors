@@ -32,7 +32,7 @@ export function mainCommand(options?: {
   return program;
 }
 
-export {Edition, InvalidRecordStrategy} from './common/types';
+export {Edition, FLUSH, InvalidRecordStrategy} from './common/types';
 export {
   Converter,
   DestinationRecord,

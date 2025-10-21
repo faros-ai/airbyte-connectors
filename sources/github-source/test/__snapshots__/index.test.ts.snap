@@ -1329,39 +1329,54 @@ exports[`index streams - enterprise copilot usage 1`] = `
 ]
 `;
 
-exports[`index streams - enterprise copilot user engagement 1`] = `
+exports[`index streams - enterprise copilot user usage 1`] = `
 [
   {
-    "cli_engagement": 0,
-    "code_completion_engagement": 1,
-    "code_review_engagement": 0,
-    "date": "2025-01-01",
-    "day": "2025-01-01T00:00:00.0000000Z",
-    "dotcom_chat_engagement": 0,
+    "code_acceptance_activity_count": 54,
+    "code_generation_activity_count": 333,
+    "day": "2025-07-12",
     "enterprise": "github",
-    "inline_chat_engagement": 0,
-    "knowledge_base_chat_engagement": 0,
-    "login": "github_login0",
-    "mobile_chat_engagement": 0,
-    "panel_chat_engagement": 0,
-    "pull_request_summary_engagement": 0,
-    "user_id": 198650010,
-  },
-  {
-    "cli_engagement": 0,
-    "code_completion_engagement": 1,
-    "code_review_engagement": 0,
-    "date": "2025-01-01",
-    "day": "2025-01-01T00:00:00.0000000Z",
-    "dotcom_chat_engagement": 0,
-    "enterprise": "github",
-    "inline_chat_engagement": 0,
-    "knowledge_base_chat_engagement": 0,
-    "login": "github_login1",
-    "mobile_chat_engagement": 0,
-    "panel_chat_engagement": 0,
-    "pull_request_summary_engagement": 0,
-    "user_id": 198650011,
+    "enterprise_id": "2",
+    "loc_added_sum": 231,
+    "loc_deleted_sum": 63,
+    "loc_suggested_to_add_sum": 472,
+    "loc_suggested_to_delete_sum": 0,
+    "report_end_day": "2025-08-03",
+    "report_start_day": "2025-07-07",
+    "totals_by_feature": [
+      {
+        "code_acceptance_activity_count": 30,
+        "code_generation_activity_count": 184,
+        "feature": "chat_panel_unknown_mode",
+        "loc_added_sum": 140,
+        "loc_deleted_sum": 25,
+        "loc_suggested_to_add_sum": 280,
+        "loc_suggested_to_delete_sum": 0,
+        "user_initiated_interaction_count": 120,
+      },
+    ],
+    "totals_by_ide": [
+      {
+        "code_acceptance_activity_count": 45,
+        "code_generation_activity_count": 280,
+        "ide": "vscode",
+        "last_known_plugin_version": {
+          "plugin": "copilot-chat",
+          "plugin_version": "0.29.2025062508",
+          "sampled_at": "2025-07-12T02:55:30.4810000Z",
+        },
+        "loc_added_sum": 195,
+        "loc_deleted_sum": 50,
+        "loc_suggested_to_add_sum": 400,
+        "loc_suggested_to_delete_sum": 0,
+        "user_initiated_interaction_count": 180,
+      },
+    ],
+    "used_agent": true,
+    "used_chat": true,
+    "user_id": 19153140,
+    "user_initiated_interaction_count": 210,
+    "user_login": "octocat",
   },
 ]
 `;
@@ -1696,6 +1711,7 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context about the changes here.
 ",
     "changedFiles": 21,
+    "closedAt": "2021-02-16T17:15:27Z",
     "comments": {
       "totalCount": 3,
     },
@@ -1823,6 +1839,7 @@ N/A
 
 ",
     "changedFiles": 140,
+    "closedAt": "2021-02-10T19:22:08Z",
     "comments": {
       "totalCount": 1,
     },
@@ -1892,6 +1909,7 @@ N/A
 1. Deployments have no associated builds
 2. Builds have no associated commits",
     "changedFiles": 2,
+    "closedAt": "2021-02-04T21:53:00Z",
     "comments": {
       "totalCount": 0,
     },
@@ -2049,6 +2067,7 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context about the changes here.
 ",
     "changedFiles": 21,
+    "closedAt": "2021-02-16T17:15:27Z",
     "comments": {
       "totalCount": 3,
     },
@@ -2174,6 +2193,7 @@ N/A
 
 ",
     "changedFiles": 140,
+    "closedAt": "2021-02-10T19:22:08Z",
     "comments": {
       "totalCount": 1,
     },
@@ -2227,6 +2247,7 @@ N/A
 1. Deployments have no associated builds
 2. Builds have no associated commits",
     "changedFiles": 2,
+    "closedAt": "2021-02-04T21:53:00Z",
     "comments": {
       "totalCount": 0,
     },

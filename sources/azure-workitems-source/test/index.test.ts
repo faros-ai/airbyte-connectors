@@ -156,16 +156,27 @@ describe('index', () => {
               .mockResolvedValue(
                 readTestFileAsJSON('workitem_updates.json').value
               ),
-            queryByWiql: workitemIdsFunc.mockResolvedValue(
-              readTestFileAsJSON('workitem_ids.json')
-            ),
+            getComments: jest
+              .fn()
+              .mockResolvedValue(readTestFileAsJSON('comments.json')),
+            queryByWiql: workitemIdsFunc
+              // First call: epic query
+              .mockResolvedValueOnce({workItems: [{id: 100}, {id: 101}]})
+              // Next calls: descendant queries for each epic
+              .mockResolvedValueOnce({
+                workItemRelations: [{target: {id: 297}}, {target: {id: 299}}],
+              })
+              .mockResolvedValueOnce({workItemRelations: [{target: {id: 300}}]})
+              // Remaining calls: workitem queries
+              .mockResolvedValue(readTestFileAsJSON('workitem_ids.json')),
           },
         } as unknown as AzureDevOpsClient,
         instanceType,
         90,
         100,
         logger,
-        additionalFields
+        additionalFields,
+        true
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -187,7 +198,7 @@ describe('index', () => {
       workitems.push(workitem);
     }
 
-    expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
+    expect(workitemIdsFunc).toHaveBeenCalledTimes(13); // 1 epic query + 2 descendant queries + 10 non-epic workitem queries
     expect(workitems).toMatchSnapshot();
   });
 
@@ -230,16 +241,24 @@ describe('index', () => {
               .mockResolvedValue(
                 readTestFileAsJSON('workitem_updates.json').value
               ),
-            queryByWiql: workitemIdsFunc.mockResolvedValue(
-              readTestFileAsJSON('workitem_ids.json')
-            ),
+            queryByWiql: workitemIdsFunc
+              // First call: epic query
+              .mockResolvedValueOnce({workItems: [{id: 100}, {id: 101}]})
+              // Next calls: descendant queries for each epic
+              .mockResolvedValueOnce({
+                workItemRelations: [{target: {id: 297}}, {target: {id: 299}}],
+              })
+              .mockResolvedValueOnce({workItemRelations: [{target: {id: 300}}]})
+              // Remaining calls: workitem queries
+              .mockResolvedValue(readTestFileAsJSON('workitem_ids.json')),
           },
         } as unknown as AzureDevOpsClient,
         instanceType,
         null,
         100,
         logger,
-        additionalFields
+        additionalFields,
+        false
       );
     });
     const source = new sut.AzureWorkitemsSource(logger);
@@ -261,8 +280,8 @@ describe('index', () => {
       workitems.push(workitem);
     }
 
-    expect(workitemIdsFunc).toHaveBeenCalledTimes(11);
-    const call = workitemIdsFunc.mock.calls[0][0];
+    expect(workitemIdsFunc).toHaveBeenCalledTimes(13); // 1 epic query + 2 descendant queries + 10 non-epic workitem queries
+    const call = workitemIdsFunc.mock.calls[3][0];
     expect(call.query).toMatch(
       `[System.ChangedDate] >= '2025-04-01T00:00:00.000Z'`
     );

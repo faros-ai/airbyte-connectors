@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "User email address"
+    },
+    "day": {
+      "type": "string",
+      "description": "Date in YYYY-MM-DD format"
+    },
+    "model": {
+      "type": ["null", "string"],
+      "description": "Model used for the cascade run"
+    },
+    "mode": {
+      "type": ["null", "string"],
+      "description": "Mode of the cascade run"
+    },
+    "messagesSent": {
+      "type": ["null", "integer"],
+      "description": "Number of messages sent in the cascade run"
+    },
+    "cascadeId": {
+      "type": ["null", "string"],
+      "description": "Unique identifier for the cascade run"
+    },
+    "promptsUsed": {
+      "type": ["null", "integer"],
+      "description": "Number of prompts used in the cascade run"
+    }
+  },
+  "required": ["email", "day"]
+}

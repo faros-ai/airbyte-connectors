@@ -2,10 +2,10 @@
 
 exports[`azure-repos basic test process records from all streams 1`] = `
 Array [
-  "Processed 17 records",
-  "Processed records by stream: {\\\\\\"mytestsource__azure-repos__commits\\\\\\":7,\\\\\\"mytestsource__azure-repos__pull_requests\\\\\\":2,\\\\\\"mytestsource__azure-repos__repositories\\\\\\":5,\\\\\\"mytestsource__azure-repos__users\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 49 records",
-  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":8,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":2,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 18 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-repos__commits\\\\\\":7,\\\\\\"mytestsource__azure-repos__pull_requests\\\\\\":3,\\\\\\"mytestsource__azure-repos__repositories\\\\\\":5,\\\\\\"mytestsource__azure-repos__users\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 53 records",
+  "Would write records by model: {\\\\\\"tms_TaskPullRequestAssociation\\\\\\":2,\\\\\\"vcs_Branch\\\\\\":9,\\\\\\"vcs_BranchCommitAssociation\\\\\\":7,\\\\\\"vcs_Commit\\\\\\":7,\\\\\\"vcs_Membership\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":8,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":5,\\\\\\"vcs_User\\\\\\":4}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -506,6 +506,7 @@ Array [
         "source": "Azure-Repos",
         "uid": "test@gmail.com",
       },
+      "closedAt": "2023-01-07T01:20:34.356Z",
       "commentCount": 5,
       "createdAt": "2023-01-07T01:20:10.168Z",
       "diffStats": Object {
@@ -685,6 +686,7 @@ Array [
         "source": "Azure-Repos",
         "uid": "test@gmail.com",
       },
+      "closedAt": "2023-01-05T18:05:31.840Z",
       "commentCount": 3,
       "createdAt": "2023-01-05T18:04:45.699Z",
       "diffStats": Object {
@@ -1074,6 +1076,105 @@ Array [
     },
   },
   Object {
+    "vcs_PullRequest": Object {
+      "author": Object {
+        "source": "Azure-Repos",
+        "uid": "test@gmail.com",
+      },
+      "closedAt": null,
+      "commentCount": 0,
+      "createdAt": "2023-01-08T10:15:20.168Z",
+      "htmlUrl": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000000/_apis/git/repositories/00000000-0000-0000-0000-000000000000/pullRequests/3",
+      "mergeCommit": null,
+      "mergedAt": null,
+      "number": 3,
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "sourceBranch": Object {
+        "name": "feature/auth-fix",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "feature/auth-fix",
+      },
+      "sourceBranchName": "feature/auth-fix",
+      "state": Object {
+        "category": "Open",
+        "detail": "active",
+      },
+      "targetBranch": Object {
+        "name": "main",
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "main",
+      },
+      "targetBranchName": "main",
+      "title": "Fix bug in authentication module",
+      "uid": "3",
+      "updatedAt": "2023-01-08T10:15:20.168Z",
+    },
+  },
+  Object {
+    "tms_TaskPullRequestAssociation": Object {
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "3",
+      },
+      "source": "Azure-Repos",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "123",
+      },
+    },
+  },
+  Object {
+    "tms_TaskPullRequestAssociation": Object {
+      "pullRequest": Object {
+        "number": 3,
+        "repository": Object {
+          "name": "test:test",
+          "organization": Object {
+            "source": "Azure-Repos",
+            "uid": "test",
+          },
+          "uid": "test:test",
+        },
+        "uid": "3",
+      },
+      "source": "Azure-Repos",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "456",
+      },
+    },
+  },
+  Object {
     "vcs_User": Object {
       "email": "externaltest@gmail.com",
       "name": "External Test Tester",
@@ -1124,6 +1225,21 @@ Array [
       },
       "source": "Azure-Repos",
       "uid": "test1",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "feature/auth-fix",
+      "repository": Object {
+        "name": "test:test",
+        "organization": Object {
+          "source": "Azure-Repos",
+          "uid": "test",
+        },
+        "uid": "test:test",
+      },
+      "source": "Azure-Repos",
+      "uid": "feature/auth-fix",
     },
   },
 ]

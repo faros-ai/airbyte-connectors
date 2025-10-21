@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - invalid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Failed to connect to Windsurf API. Please check your service key.: Invalid service key",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - autocomplete analytics 1`] = `
+[
+  {
+    "date": "2024-01-15",
+    "email": "john@company.com",
+    "ide": "vscode",
+    "language": "typescript",
+    "sum_num_acceptances": 45,
+    "sum_num_lines_accepted": 280,
+  },
+  {
+    "date": "2024-01-15",
+    "email": "jane@company.com",
+    "ide": "vscode",
+    "language": "typescript",
+    "sum_num_acceptances": 45,
+    "sum_num_lines_accepted": 280,
+  },
+]
+`;
+
+exports[`index streams - cascade lines 1`] = `
+[
+  {
+    "day": "2024-01-15",
+    "email": "john@company.com",
+    "linesAccepted": 80,
+    "linesSuggested": 150,
+  },
+  {
+    "day": "2024-01-16",
+    "email": "john@company.com",
+    "linesAccepted": 120,
+    "linesSuggested": 200,
+  },
+  {
+    "day": "2024-01-15",
+    "email": "jane@company.com",
+    "linesAccepted": 80,
+    "linesSuggested": 150,
+  },
+  {
+    "day": "2024-01-16",
+    "email": "jane@company.com",
+    "linesAccepted": 120,
+    "linesSuggested": 200,
+  },
+]
+`;
+
+exports[`index streams - cascade runs 1`] = `
+[
+  {
+    "cascadeId": "cascade_123",
+    "day": "2024-01-15",
+    "email": "john@company.com",
+    "messagesSent": 5,
+    "mode": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
+    "model": "gpt-4",
+    "promptsUsed": 3,
+  },
+  {
+    "cascadeId": "cascade_456",
+    "day": "2024-01-16",
+    "email": "john@company.com",
+    "messagesSent": 8,
+    "mode": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
+    "model": "claude-3",
+    "promptsUsed": 6,
+  },
+  {
+    "cascadeId": "cascade_123",
+    "day": "2024-01-15",
+    "email": "jane@company.com",
+    "messagesSent": 5,
+    "mode": "CONVERSATIONAL_PLANNER_MODE_DEFAULT",
+    "model": "gpt-4",
+    "promptsUsed": 3,
+  },
+  {
+    "cascadeId": "cascade_456",
+    "day": "2024-01-16",
+    "email": "jane@company.com",
+    "messagesSent": 8,
+    "mode": "CONVERSATIONAL_PLANNER_MODE_READ_ONLY",
+    "model": "claude-3",
+    "promptsUsed": 6,
+  },
+]
+`;
+
+exports[`index streams - chat analytics 1`] = `
+[
+  {
+    "date": "2024-01-15",
+    "email": "john@company.com",
+    "ide": "vscode",
+    "model_id": "gpt-4",
+    "sum_chat_loc_used": 150,
+  },
+  {
+    "date": "2024-01-15",
+    "email": "jane@company.com",
+    "ide": "vscode",
+    "model_id": "gpt-4",
+    "sum_chat_loc_used": 150,
+  },
+]
+`;
+
+exports[`index streams - pcw analytics 1`] = `
+[
+  {
+    "codeium_bytes": 6018,
+    "codeium_bytes_by_autocomplete": 4593,
+    "codeium_bytes_by_command": 1425,
+    "date": "2025-10-05",
+    "percent_code_written": 0.68,
+    "total_bytes": 8850,
+    "user_bytes": 2832,
+  },
+  {
+    "codeium_bytes": 6018,
+    "codeium_bytes_by_autocomplete": 4593,
+    "codeium_bytes_by_command": 1425,
+    "date": "2025-10-06",
+    "percent_code_written": 0.68,
+    "total_bytes": 8850,
+    "user_bytes": 2832,
+  },
+]
+`;
+
+exports[`index streams - user page analytics 1`] = `
+[
+  {
+    "activeDays": 15,
+    "apiKey": "hashed_api_key_123",
+    "disableCodeium": false,
+    "email": "john@company.com",
+    "lastAutocompleteUsageTime": "2024-03-18T09:45:00Z",
+    "lastChatUsageTime": "2024-03-18T10:15:00Z",
+    "lastCommandUsageTime": "2024-03-18T10:20:00Z",
+    "lastUpdateTime": "2024-03-18T10:30:00Z",
+    "name": "John Developer",
+    "signupTime": "2024-01-15T08:00:00Z",
+  },
+  {
+    "activeDays": 22,
+    "apiKey": "hashed_api_key_456",
+    "email": "jane@company.com",
+    "lastAutocompleteUsageTime": "2024-03-17T14:00:00Z",
+    "lastChatUsageTime": "2024-03-17T13:30:00Z",
+    "lastCommandUsageTime": "2024-03-17T14:10:00Z",
+    "lastUpdateTime": "2024-03-17T14:20:00Z",
+    "name": "Jane Engineer",
+    "signupTime": "2024-01-10T12:00:00Z",
+  },
+]
+`;

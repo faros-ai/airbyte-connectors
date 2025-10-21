@@ -1,0 +1,16 @@
+{
+  "queryResults": [{
+    "responseItems": [
+      {
+        "item": {
+          "api_key": "hashed_api_key_123",
+          "date": "2024-01-15",
+          "sum_num_acceptances": "45",
+          "sum_num_lines_accepted": "280",
+          "language": "typescript",
+          "ide": "vscode"
+        }
+      }
+    ]
+  }]
+}

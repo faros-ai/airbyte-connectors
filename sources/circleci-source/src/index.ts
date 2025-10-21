@@ -15,7 +15,8 @@ import VError from 'verror';
 
 import {CircleCI, CircleCIConfig} from './circleci/circleci';
 import {Faros} from './faros/faros';
-import {Pipelines, Projects, Tests} from './streams';
+import {Pipelines, Projects, Tests, Usage} from './streams';
+import {DEFAULT_RUN_MODE, RunMode, RunModeStreams} from './streams/common';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -54,6 +55,18 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
     catalog: AirbyteConfiguredCatalog;
     state?: AirbyteState;
   }> {
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
+
     const circleCI = CircleCI.instance(config, this.logger);
     const projectSlugBlocklist = new Set(config.project_block_list ?? []);
     if (projectSlugBlocklist.has('*')) {
@@ -112,7 +125,11 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       this.logger.info.bind(this.logger)
     );
 
-    return {config: newConfig as CircleCIConfig, catalog, state: newState};
+    return {
+      config: newConfig as CircleCIConfig,
+      catalog: {streams},
+      state: newState,
+    };
   }
 
   streams(config: CircleCIConfig): AirbyteStreamBase[] {
@@ -120,6 +137,7 @@ export class CircleCISource extends AirbyteSourceBase<CircleCIConfig> {
       new Projects(config, this.logger),
       new Pipelines(config, this.logger),
       new Tests(config, this.logger),
+      new Usage(config, this.logger),
     ];
   }
 

@@ -90,28 +90,36 @@
           "Accepted By"
         ]
       },
-      "cutoff_days": {
+      "fetch_work_item_comments": {
         "order": 7,
+        "type": "boolean",
+        "title": "Fetch Work Item Comments",
+        "description": "Include work item comments in the data stream. Warning: This may significantly increase API response time and data volume.",
+        "default": false
+      },
+      "cutoff_days": {
+        "order": 8,
         "type": "integer",
         "title": "Cutoff Days",
         "description": "The threshold after which data should be synced.",
         "default": 90
       },
       "page_size": {
+        "order": 9,
         "type": "integer",
         "title": "Page Size",
         "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
         "default": 100
       },
       "max_retries": {
+        "order": 10,
         "type": "integer",
-        "order": 8,
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
       },
       "request_timeout": {
-        "order": 9,
+        "order": 11,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",

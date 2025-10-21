@@ -18,7 +18,7 @@ export class Users extends AirbyteStreamBase {
     return 'id';
   }
   async *readRecords(): AsyncGenerator<User> {
-    const buildkite = FireHydrant.instance(this.config, this.logger);
-    yield* buildkite.getUsers();
+    const firehydrant = FireHydrant.instance(this.config, this.logger);
+    yield* firehydrant.getUsers();
   }
 }

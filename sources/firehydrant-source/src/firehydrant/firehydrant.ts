@@ -2,19 +2,16 @@ import axios, {AxiosInstance} from 'axios';
 import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
 import {VError} from 'verror';
 
-import {
-  Incident,
-  IncidentEvent,
-  PageInfo,
-  PaginateResponse,
-  Team,
-  User,
-} from './models';
+import {Incident, PageInfo, PaginateResponse, Team, User} from './models';
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_VERSION = 'v1';
 const DEFAULT_BASE_URL = 'https://api.firehydrant.io/';
 const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_CUTOFF_DAYS = 90;
+
+// TODO: Migrate to official FireHydrant TypeScript SDK
+// https://github.com/firehydrant/firehydrant-typescript-sdk
 
 export interface FireHydrantConfig {
   readonly token: string;
@@ -42,9 +39,7 @@ export class FireHydrant {
     if (!config.token) {
       throw new VError('API Access token has to be provided');
     }
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
-    }
+    const cutoffDays = config.cutoff_days || DEFAULT_CUTOFF_DAYS;
 
     const auth = `Bearer ${config.token}`;
 
@@ -57,7 +52,7 @@ export class FireHydrant {
 
     const pageSize = config.page_size ?? DEFAULT_PAGE_SIZE;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
+    startDate.setDate(startDate.getDate() - cutoffDays);
 
     FireHydrant.fireHydrant = new FireHydrant(httpClient, startDate, pageSize);
     return FireHydrant.fireHydrant;
@@ -123,30 +118,26 @@ export class FireHydrant {
       pagination: data.pagination,
     };
   }
-  async *getIncidents(createdAt?: Date): AsyncGenerator<Incident> {
-    const createdAtMax =
-      createdAt > this.startDate ? createdAt : this.startDate;
+  async *getIncidents(updatedAfter?: Date): AsyncGenerator<Incident> {
+    const updatedAfterDate = updatedAfter ? updatedAfter : this.startDate;
+
     const func = async (
       pageInfo?: PageInfo
     ): Promise<PaginateResponse<Incident>> => {
       const page = pageInfo ? pageInfo?.page + 1 : 1;
+      const updatedAfterParam = `&updated_after=${updatedAfterDate.toISOString()}`;
+
       const response = await this.restClient.get<PaginateResponse<Incident>>(
-        `incidents?per_page=${this.pageSize}&page=${page}`
+        `incidents?per_page=${this.pageSize}&page=${page}${updatedAfterParam}`
       );
+
       const incidentPaginate = {
         pagination: response.data.pagination,
         data: [],
       };
+
       for (const incident of response?.data.data ?? []) {
-        if (new Date(incident.created_at) >= createdAtMax) {
-          const eventResponse = await this.restClient.get<
-            PaginateResponse<IncidentEvent>
-          >(`incidents/${incident.id}/events`);
-          const incidentItem = incident;
-          if (eventResponse.status === 200)
-            incidentItem.events = eventResponse.data.data;
-          incidentPaginate.data.push(incidentItem);
-        }
+        incidentPaginate.data.push(incident);
       }
       return this.getPaginateResponse<Incident>(incidentPaginate);
     };

@@ -16,12 +16,13 @@ import {
   CopilotUsageSummary,
   CoverageReport,
   DependabotAlert,
+  Deployment,
   Enterprise,
   EnterpriseCopilotSeat,
   EnterpriseCopilotSeatsEmpty,
   EnterpriseCopilotSeatsResponse,
   EnterpriseCopilotUsageSummary,
-  EnterpriseCopilotUserEngagement,
+  EnterpriseCopilotUserUsage,
   EnterpriseTeam,
   EnterpriseTeamMembership,
   EnterpriseTeamMembershipsResponse,
@@ -55,6 +56,7 @@ import {
 import {
   CommitsQuery,
   CommitsQueryVariables,
+  DeploymentsQuery,
   EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
@@ -69,6 +71,7 @@ import {
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_QUERY,
+  DEPLOYMENTS_QUERY,
   ENTERPRISE_QUERY,
   FILES_FRAGMENT,
   ISSUES_QUERY,
@@ -95,7 +98,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
-  CopilotUserEngagementResponse,
+  CopilotUserUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
 } from './types';
@@ -120,6 +123,7 @@ export const DEFAULT_CONCURRENCY = 4;
 export const DEFAULT_BACKFILL = false;
 export const DEFAULT_FETCH_PR_DIFF_COVERAGE = false;
 export const DEFAULT_PR_CUTOFF_LAG_SECONDS = 0;
+export const DEFAULT_MAX_DEPLOYMENT_DURATION_DAYS = 7;
 export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
@@ -1041,6 +1045,9 @@ export abstract class GitHub {
       for await (const res of iter) {
         const seats = (res.data as any).seats as CopilotSeatsResponse['seats'];
         for (const seat of seats) {
+          if (!seat.assignee?.login) {
+            continue;
+          }
           seatsFound = true;
           yield {
             org,
@@ -1326,6 +1333,42 @@ export abstract class GitHub {
             'published_at',
             'tag_name',
           ]),
+        };
+      }
+    }
+  }
+
+  async *getDeployments(
+    org: string,
+    repo: string,
+    startDate?: Date,
+    endDate?: Date
+  ): AsyncGenerator<Deployment> {
+    const iter = this.octokit(org).graphql.paginate.iterator<DeploymentsQuery>(
+      DEPLOYMENTS_QUERY,
+      {
+        owner: org,
+        repo,
+        page_size: this.pageSize,
+      }
+    );
+
+    for await (const res of iter) {
+      for (const deployment of res.repository.deployments.nodes) {
+        if (
+          this.backfill &&
+          endDate &&
+          Utils.toDate(deployment.createdAt) > endDate
+        ) {
+          continue;
+        }
+        if (startDate && Utils.toDate(deployment.createdAt) < startDate) {
+          return;
+        }
+        yield {
+          org,
+          repo,
+          ...deployment,
         };
       }
     }
@@ -1840,6 +1883,9 @@ export abstract class GitHub {
     for await (const res of iter) {
       for (const seat of res.data.seats) {
         seatsFound = true;
+        if (!seat.assignee?.login) {
+          continue;
+        }
         yield {
           enterprise,
           user: seat.assignee.login as string,
@@ -1953,50 +1999,54 @@ export abstract class GitHub {
     }
   }
 
-  async *getEnterpriseCopilotUserEngagement(
+  async *getEnterpriseCopilotUserUsage(
     enterprise: string,
     cutoffDate: number
-  ): AsyncGenerator<EnterpriseCopilotUserEngagement> {
-    const res: OctokitResponse<CopilotUserEngagementResponse> =
+  ): AsyncGenerator<EnterpriseCopilotUserUsage> {
+    const res: OctokitResponse<CopilotUserUsageResponse> =
       await this.baseOctokit.request(
-        this.baseOctokit.enterpriseCopilotUserEngagement,
+        this.baseOctokit.enterpriseCopilotUserUsage,
         {
           enterprise,
         }
       );
     const data = res.data;
-    if (isNil(data) || isEmpty(data)) {
+    if (isNil(data) || isEmpty(data?.download_links)) {
       this.logger.warn(
-        `No GitHub Copilot user engagement metrics found for enterprise ${enterprise}.`
+        `No GitHub Copilot user usage metrics found for enterprise ${enterprise}.`
       );
       return;
     }
-    const latestDay = Math.max(
-      0,
-      ...data.map((record) => Utils.toDate(record.date).getTime())
-    );
-    if (latestDay <= cutoffDate) {
+
+    // Check if we already have the latest data
+    const reportEndDate = Utils.toDate(data.report_end_day).getTime();
+    if (reportEndDate <= cutoffDate) {
       this.logger.info(
-        `GitHub Copilot user engagement metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
+        `GitHub Copilot user usage metrics for enterprise ${enterprise} is already up-to-date: ${new Date(cutoffDate).toISOString()}`
       );
       return;
     }
+
     const axios = makeAxiosInstanceWithRetry({
       maxContentLength: Infinity,
       timeout: this.timeoutMs,
     });
-    for (const record of data) {
-      const blob = await axios.get<string>(record.blob_uri);
-      const parsedLines = blob.data
+
+    for (const downloadLink of data.download_links) {
+      const jsonlReport = await axios.get<string>(downloadLink);
+      const parsedLines = jsonlReport.data
         .split('\n')
         .filter((line) => line.trim() !== '')
         .map((line) => JSON.parse(line));
       for (const parsedLine of parsedLines) {
-        yield {
-          enterprise,
-          date: record.date,
-          ...parsedLine,
-        };
+        // Filter out records that we've already processed based on the day field
+        const recordDate = Utils.toDate(parsedLine.day).getTime();
+        if (recordDate > cutoffDate) {
+          yield {
+            enterprise,
+            ...parsedLine,
+          };
+        }
       }
     }
   }

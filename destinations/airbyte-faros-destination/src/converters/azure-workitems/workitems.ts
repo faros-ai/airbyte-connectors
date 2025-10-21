@@ -1,4 +1,4 @@
-import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   WorkItemAssigneeRevision,
   WorkItemIterationRevision,
@@ -7,13 +7,18 @@ import {
 } from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
+import {FLUSH} from '../../common/types';
+import {getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 import {TaskKey, TaskStatusChange} from './models';
 export class Workitems extends AzureWorkitemsConverter {
   private readonly projectAreaPaths = new Map<string, Set<string>>();
   private readonly areaPathIterations = new Map<string, Set<string>>();
+  private readonly seenWorkItems: Set<string> = new Set();
+  private readonly workItemComments: DestinationRecord[] = [];
+  private fetchWorkItemComments: boolean = false;
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Epic',
@@ -26,15 +31,42 @@ export class Workitems extends AzureWorkitemsConverter {
     'tms_TaskBoardRelationship',
     'tms_TaskProjectRelationship',
     'tms_TaskTag',
+    'tms_TaskComment',
   ];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.source;
     const WorkItem = record.record.data as WorkItemWithRevisions;
     const taskKey = {uid: String(WorkItem.id), source};
     const projectId = String(WorkItem.project.id);
+
+    // Track this work item for comment deletion
+    this.seenWorkItems.add(String(WorkItem.id));
+
+    // Process comments if present
+    if (WorkItem.comments) {
+      this.fetchWorkItemComments = true;
+      for (const comment of WorkItem.comments) {
+        this.workItemComments.push({
+          model: 'tms_TaskComment',
+          record: {
+            task: taskKey,
+            uid: String(comment.id),
+            comment: Utils.cleanAndTruncate(comment.text),
+            createdAt: Utils.toDate(comment.createdDate),
+            updatedAt: Utils.toDate(
+              comment.modifiedDate ?? comment.createdDate
+            ),
+            author: comment.createdBy?.uniqueName
+              ? {uid: comment.createdBy.uniqueName, source}
+              : undefined,
+          },
+        });
+      }
+    }
 
     const areaPath = this.collectAreaPath(
       WorkItem.fields['System.AreaPath'],
@@ -46,7 +78,8 @@ export class Workitems extends AzureWorkitemsConverter {
     );
     const assignees = this.convertAssigneeRevisions(
       taskKey,
-      WorkItem.revisions.assignees
+      WorkItem.revisions.assignees,
+      ctx?.logger
     );
     const sprintHistory = this.convertIterationRevisions(
       taskKey,
@@ -81,12 +114,17 @@ export class Workitems extends AzureWorkitemsConverter {
             WorkItem.fields['Microsoft.VSTS.Common.StateChangeDate']
           ),
           updatedAt: Utils.toDate(WorkItem.fields['System.ChangedDate']),
-          creator: {
-            uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
-            source,
-          },
+          creator: WorkItem.fields['System.CreatedBy']?.['uniqueName']
+            ? {
+                uid: WorkItem.fields['System.CreatedBy']['uniqueName'],
+                source,
+              }
+            : null,
           sprint: WorkItem.fields['System.IterationId']
             ? {uid: String(WorkItem.fields['System.IterationId']), source}
+            : null,
+          epic: WorkItem.fields['Faros']?.['EpicId']
+            ? {uid: String(WorkItem.fields['Faros']['EpicId']), source}
             : null,
           priority: String(WorkItem.fields['Microsoft.VSTS.Common.Priority']),
           resolvedAt: Utils.toDate(
@@ -123,6 +161,16 @@ export class Workitems extends AzureWorkitemsConverter {
     }
 
     return [
+      {
+        model: 'tms_TaskBoardRelationship__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task,
+          },
+        },
+      },
+      FLUSH,
       {
         model: 'tms_TaskBoardRelationship',
         record: {
@@ -201,16 +249,30 @@ export class Workitems extends AzureWorkitemsConverter {
 
   private convertAssigneeRevisions(
     task: TaskKey,
-    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>
+    assigneeRevisions: ReadonlyArray<WorkItemAssigneeRevision>,
+    logger?: AirbyteLogger
   ): ReadonlyArray<DestinationRecord> {
-    return assigneeRevisions.map((revision) => ({
-      model: 'tms_TaskAssignment',
-      record: {
-        task,
-        assignee: {uid: revision.assignee?.uniqueName, source: this.source},
-        assignedAt: Utils.toDate(revision.changedDate),
-      },
-    }));
+    return assigneeRevisions
+      .map((revision) => {
+        const uid = getUniqueName(revision.assignee);
+        if (uid) {
+          return {
+            model: 'tms_TaskAssignment',
+            record: {
+              task,
+              assignee: {uid: uid, source: this.source},
+              assignedAt: Utils.toDate(revision.assignedAt),
+              unassignedAt: Utils.toDate(revision.unassignedAt),
+            },
+          };
+        } else {
+          logger?.warn(
+            `Missing assignee uniqueName in work item ${task.uid} revision. WorkItemId: ${task.uid}, Revision: ${JSON.stringify(revision)}`
+          );
+          return null;
+        }
+      })
+      .filter(Boolean) as DestinationRecord[];
   }
 
   private convertStateRevisions(
@@ -288,6 +350,7 @@ export class Workitems extends AzureWorkitemsConverter {
     return [
       ...this.processProjectAreaPaths(),
       ...this.processAreaPathIterations(),
+      ...this.convertComments(),
     ];
   }
 
@@ -340,5 +403,26 @@ export class Workitems extends AzureWorkitemsConverter {
           },
         }))
     );
+  }
+
+  private convertComments(): DestinationRecord[] {
+    if (!this.fetchWorkItemComments) {
+      return [];
+    }
+    return [
+      // Delete existing comments for all processed work items
+      ...Array.from(this.seenWorkItems.keys()).map((workItemId) => ({
+        model: 'tms_TaskComment__Deletion',
+        record: {
+          flushRequired: false,
+          where: {
+            task: {uid: workItemId, source: this.source},
+          },
+        },
+      })),
+      FLUSH,
+      // Insert all new comments
+      ...this.workItemComments,
+    ];
   }
 }

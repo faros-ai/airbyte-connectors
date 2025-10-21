@@ -3,6 +3,7 @@ import {GetResponseDataTypeFromEndpointMethod} from '@octokit/types';
 
 import {
   CommitsQuery,
+  DeploymentsQuery,
   EnterpriseQuery,
   IssuesQuery,
   LabelsQuery,
@@ -237,10 +238,6 @@ export type CopilotSeatsEmpty = {
   org: string;
 };
 
-export enum GitHubTool {
-  Copilot = 'GitHubCopilot',
-}
-
 export type CopilotUsageSummary = {
   org: string;
   team: string | null;
@@ -251,10 +248,10 @@ export type CopilotUsageSummary = {
   total_lines_suggested: number;
   total_lines_accepted: number;
   total_active_users: number;
-  total_active_chat_users: number;
   total_chats: number;
   total_chat_insertion_events: number;
   total_chat_copy_events: number;
+  total_active_chat_users: number;
   breakdown: {
     language: string;
     editor: string;
@@ -288,6 +285,8 @@ export type CopilotUsageSummary = {
 };
 
 export type LanguageEditorBreakdown = CopilotUsageSummary['breakdown'][0];
+
+export type ModelBreakdown = LanguageEditorBreakdown['model_breakdown'][0];
 
 export type ChatBreakdown = CopilotUsageSummary['chat_breakdown'][0];
 
@@ -327,6 +326,13 @@ export type SecretScanningAlert = {
     resolved_by: string | null;
     push_protection_bypassed_by: string | null;
   };
+
+type DeploymentNode = DeploymentsQuery['repository']['deployments']['nodes'][0];
+
+export type Deployment = {
+  org: string;
+  repo: string;
+} & DeploymentNode;
 
 export type Workflow = {
   org: string;
@@ -470,19 +476,77 @@ export type EnterpriseCopilotUsageSummary = {
   team: string | null;
 } & Omit<CopilotUsageSummary, 'org' | 'team'>;
 
-export type EnterpriseCopilotUserEngagement = {
+export type EnterpriseCopilotUserUsage = {
   enterprise: string;
-  date: string;
+  report_start_day: string;
+  report_end_day: string;
   day: string;
-  login: string;
-  user_id: string;
-  cli_engagement: 0 | 1;
-  code_completion_engagement: 0 | 1;
-  code_review_engagement: 0 | 1;
-  dotcom_chat_engagement: 0 | 1;
-  inline_chat_engagement: 0 | 1;
-  knowledge_base_chat_engagement: 0 | 1;
-  mobile_chat_engagement: 0 | 1;
-  panel_chat_engagement: 0 | 1;
-  pull_request_summary_engagement: 0 | 1;
+  enterprise_id?: string;
+  user_id: number;
+  user_login: string;
+  user_initiated_interaction_count: number;
+  code_generation_activity_count: number;
+  code_acceptance_activity_count: number;
+  loc_suggested_to_add_sum: number;
+  loc_suggested_to_delete_sum: number;
+  loc_added_sum: number;
+  loc_deleted_sum: number;
+  totals_by_ide?: Array<{
+    ide: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+    last_known_plugin_version?: {
+      sampled_at: string;
+      plugin: string;
+      plugin_version: string;
+    };
+  }>;
+  totals_by_feature?: Array<{
+    feature: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_language_feature?: Array<{
+    language: string;
+    feature: string;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_language_model?: Array<{
+    language: string;
+    model: string;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  totals_by_model_feature?: Array<{
+    model: string;
+    feature: string;
+    user_initiated_interaction_count: number;
+    code_generation_activity_count: number;
+    code_acceptance_activity_count: number;
+    loc_suggested_to_add_sum: number;
+    loc_suggested_to_delete_sum: number;
+    loc_added_sum: number;
+    loc_deleted_sum: number;
+  }>;
+  used_agent?: boolean;
+  used_chat?: boolean;
 };

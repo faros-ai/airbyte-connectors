@@ -35,7 +35,9 @@ export class Releases extends ProjectsStreamBase {
       syncMode === SyncMode.INCREMENTAL ? state?.cutoff : undefined;
     const azurePipelines = await AzurePipelines.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
     yield* azurePipelines.getReleases(project, cutoff);
   }

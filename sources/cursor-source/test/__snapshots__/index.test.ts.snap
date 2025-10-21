@@ -1,0 +1,207 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index check connection - invalid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Failed to connect to Cursor API. Please check your API key and URL.: Invalid API key",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection - valid config 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index streams - ai commit metrics 1`] = `
+[
+  {
+    "branchName": "cr/import",
+    "commitHash": "d1175708387893edf0bc93e95748dadb88b762ce",
+    "commitTs": "2025-09-03T00:23:15.000Z",
+    "composerLinesAdded": 0,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T02:44:42.599Z",
+    "isPrimaryBranch": false,
+    "message": "add llm analysis",
+    "nonAiLinesAdded": 98,
+    "nonAiLinesDeleted": 2,
+    "repoName": "faros-ai/gains",
+    "tabLinesAdded": 21,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 119,
+    "totalLinesDeleted": 2,
+    "userEmail": "developer@company.com",
+    "userId": "user_cNEHgCQWLLsrRAMcuZWXgvB16J",
+  },
+  {
+    "branchName": null,
+    "commitHash": "8dabad06ce5d2b1ce35651ad5f04b177745738aa",
+    "commitTs": "2025-09-03T13:52:19.000Z",
+    "composerLinesAdded": 0,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T13:56:42.319Z",
+    "isPrimaryBranch": null,
+    "message": null,
+    "nonAiLinesAdded": 4,
+    "nonAiLinesDeleted": 11,
+    "repoName": null,
+    "tabLinesAdded": 0,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 4,
+    "totalLinesDeleted": 11,
+    "userEmail": "admin@company.com",
+    "userId": "user_2ovJ2j2BQ2GDTseAl7YHJVBo6b",
+  },
+  {
+    "branchName": "cr/import",
+    "commitHash": "9a1b3017dea20ddd12a012a817c61ab96ebb52c6",
+    "commitTs": "2025-09-03T02:41:24.000Z",
+    "composerLinesAdded": 118,
+    "composerLinesDeleted": 0,
+    "createdAt": "2025-09-03T02:44:42.110Z",
+    "isPrimaryBranch": false,
+    "message": "format and lint",
+    "nonAiLinesAdded": 0,
+    "nonAiLinesDeleted": 64,
+    "repoName": "faros-ai/gains",
+    "tabLinesAdded": 3,
+    "tabLinesDeleted": 0,
+    "totalLinesAdded": 121,
+    "totalLinesDeleted": 64,
+    "userEmail": "developer@company.com",
+    "userId": "user_cNEHgCQWLLsrRAMcuZWXgvB16J",
+  },
+]
+`;
+
+exports[`index streams - daily usage 1`] = `
+[
+  {
+    "acceptedLinesAdded": 1102,
+    "acceptedLinesDeleted": 645,
+    "agentRequests": 12,
+    "apiKeyReqs": 0,
+    "applyMostUsedExtension": ".tsx",
+    "bugbotUsages": 3,
+    "chatRequests": 128,
+    "clientVersion": "0.25.1",
+    "cmdkUsages": 67,
+    "composerRequests": 45,
+    "date": 1710720000000,
+    "email": "developer@company.com",
+    "isActive": true,
+    "mostUsedModel": "gpt-4",
+    "subscriptionIncludedReqs": 180,
+    "tabMostUsedExtension": ".ts",
+    "totalAccepts": 73,
+    "totalApplies": 87,
+    "totalLinesAdded": 1543,
+    "totalLinesDeleted": 892,
+    "totalRejects": 14,
+    "totalTabsAccepted": 289,
+    "totalTabsShown": 342,
+    "usageBasedReqs": 5,
+  },
+  {
+    "acceptedLinesAdded": 1876,
+    "acceptedLinesDeleted": 987,
+    "agentRequests": 23,
+    "apiKeyReqs": 15,
+    "applyMostUsedExtension": ".py",
+    "bugbotUsages": 5,
+    "chatRequests": 156,
+    "clientVersion": "0.25.1",
+    "cmdkUsages": 89,
+    "composerRequests": 67,
+    "date": 1710806400000,
+    "email": "developer@company.com",
+    "isActive": true,
+    "mostUsedModel": "claude-3-opus",
+    "subscriptionIncludedReqs": 320,
+    "tabMostUsedExtension": ".py",
+    "totalAccepts": 91,
+    "totalApplies": 102,
+    "totalLinesAdded": 2104,
+    "totalLinesDeleted": 1203,
+    "totalRejects": 11,
+    "totalTabsAccepted": 398,
+    "totalTabsShown": 456,
+    "usageBasedReqs": 0,
+  },
+]
+`;
+
+exports[`index streams - members 1`] = `
+[
+  {
+    "active": true,
+    "email": "developer@company.com",
+    "minUsageTimestamp": 1750979173824,
+    "name": "Alex",
+    "role": "member",
+  },
+  {
+    "active": true,
+    "email": "admin@company.com",
+    "minUsageTimestamp": 1750978339901,
+    "name": "Sam",
+    "role": "owner",
+  },
+]
+`;
+
+exports[`index streams - usage events 1`] = `
+[
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": true,
+    "kindLabel": "Usage-based",
+    "maxMode": true,
+    "model": "claude-4-opus",
+    "requestsCosts": 5,
+    "timestamp": "1750979225854",
+    "tokenUsage": {
+      "cacheReadTokens": 11964,
+      "cacheWriteTokens": 6112,
+      "inputTokens": 126,
+      "outputTokens": 450,
+      "totalCents": 20.18232,
+    },
+    "userEmail": "developer@company.com",
+  },
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": true,
+    "kindLabel": "Usage-based",
+    "maxMode": true,
+    "model": "claude-4-opus",
+    "requestsCosts": 10,
+    "timestamp": "1750979173824",
+    "tokenUsage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 11964,
+      "inputTokens": 5805,
+      "outputTokens": 311,
+      "totalCents": 40.16699999999999,
+    },
+    "userEmail": "developer@company.com",
+  },
+  {
+    "isFreeBugbot": false,
+    "isTokenBasedCall": false,
+    "kindLabel": "Included in Business",
+    "maxMode": true,
+    "model": "claude-4-sonnet-thinking",
+    "requestsCosts": 1.4,
+    "timestamp": "1750978339901",
+    "userEmail": "admin@company.com",
+  },
+]
+`;

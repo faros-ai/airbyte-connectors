@@ -4,7 +4,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {PullRequest} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {CategoryDetail, Common} from '../common/common';
 import {
   BranchCollector,
@@ -19,6 +19,8 @@ import {
   MAX_DESCRIPTION_LENGTH,
   PartialUserRecord,
 } from './common';
+
+const AZURE_WORKITEMS_SOURCE = 'Azure-Workitems';
 
 const BRANCH_REF_NAME_PREFIX = 'refs/heads/';
 
@@ -114,6 +116,7 @@ export class PullRequests extends AzureReposConverter {
     'vcs_PullRequest',
     'vcs_PullRequestReview',
     'vcs_PullRequestComment',
+    'tms_TaskPullRequestAssociation',
   ];
 
   // TODO: Review commits and work items associations
@@ -131,7 +134,8 @@ export class PullRequests extends AzureReposConverter {
       return [];
     }
 
-    const organizationName = getOrganizationFromUrl(
+    const organizationName = getOrganization(
+      ctx,
       pullRequestItem.repository.url
     );
     const organization = this.getOrgKey(organizationName);
@@ -196,6 +200,7 @@ export class PullRequests extends AzureReposConverter {
       updatedAt:
         maxThreadLastUpdatedDate ?? Utils.toDate(pullRequestItem.creationDate),
       mergedAt: mergeCommitId ? Utils.toDate(mergedAtRawDate) : undefined,
+      closedAt: Utils.toDate(pullRequestItem.closedDate),
       commentCount: pullRequestItem.threads.length,
       author: author ? {uid: author.uid, source} : undefined,
       mergeCommit,
@@ -238,6 +243,22 @@ export class PullRequests extends AzureReposConverter {
 
       if (reviewerUser?.uid && !this.partialUserRecords[reviewerUser.uid]) {
         this.partialUserRecords[reviewerUser.uid] = reviewerUser;
+      }
+    }
+
+    // Create task pull request associations for work items
+    if (pullRequestItem.workItems?.length) {
+      for (const workItem of pullRequestItem.workItems) {
+        res.push({
+          model: 'tms_TaskPullRequestAssociation',
+          record: {
+            task: {
+              uid: workItem.id,
+              source: AZURE_WORKITEMS_SOURCE,
+            },
+            pullRequest,
+          },
+        });
       }
     }
 

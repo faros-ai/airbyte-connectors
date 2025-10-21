@@ -7,7 +7,7 @@ import {
   BuildRepository,
   TimelineRecord as BaseTimelineRecord,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {IdentityRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import {IdentityRef, ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {GraphUser} from 'azure-devops-node-api/interfaces/GraphInterfaces';
 import {
@@ -16,11 +16,16 @@ import {
 } from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
-import {WorkItem} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
+import {
+  Comment,
+  WorkItem,
+} from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
 import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
+
+import {RoundRobinConfig} from '../common/bucketing';
 
 export type DevOpsCloud = {
   type: 'cloud';
@@ -31,7 +36,7 @@ export type DevOpsServer = {
 };
 export type AzureDevOpsInstance = DevOpsCloud | DevOpsServer;
 
-export interface AzureDevOpsConfig {
+export interface AzureDevOpsConfig extends RoundRobinConfig {
   readonly instance?: AzureDevOpsInstance;
   readonly access_token: string;
   readonly organization: string;
@@ -40,6 +45,7 @@ export interface AzureDevOpsConfig {
   readonly page_size?: number;
   readonly max_retries?: number;
   readonly request_timeout?: number;
+  readonly fetch_work_item_comments?: boolean;
 }
 
 export interface AzureDevOpsClient {
@@ -106,6 +112,7 @@ export interface PullRequest
   status: string;
   mergeStatus: string;
   threads: GitInterfaces.GitPullRequestCommentThread[];
+  workItems?: ResourceRef[];
 }
 
 export interface Commit extends GitInterfaces.GitCommitRef {
@@ -125,7 +132,8 @@ export interface WorkItemStateRevision {
 
 export interface WorkItemAssigneeRevision {
   readonly assignee: IdentityRef;
-  readonly changedDate: string;
+  readonly assignedAt: string;
+  readonly unassignedAt?: string;
 }
 
 export interface WorkItemIterationRevision {
@@ -144,6 +152,7 @@ export interface WorkItemWithRevisions extends WorkItem {
   revisions: WorkItemRevisions;
   additionalFields: ReadonlyArray<AdditionalField>;
   project: ProjectReference;
+  comments?: ReadonlyArray<Comment>;
 }
 
 export interface AdditionalField {

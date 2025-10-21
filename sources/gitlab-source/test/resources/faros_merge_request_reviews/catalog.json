@@ -1,0 +1,9 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "faros_merge_request_reviews"
+      }
+    }
+  ]
+}

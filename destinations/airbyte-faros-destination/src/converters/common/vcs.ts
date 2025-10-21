@@ -66,6 +66,44 @@ export type BranchKey = {
   repository: RepoKey;
 };
 
+export enum VCSToolCategory {
+  CodingAssistant = 'CodingAssistant',
+  GitHubCopilot = 'GitHubCopilot', // deprecated, use CodingAssistant instead for new converters
+}
+
+export enum VCSToolDetail {
+  Cursor = 'Cursor',
+  Windsurf = 'Windsurf',
+  ClaudeCode = 'ClaudeCode',
+}
+
+export enum AssistantMetric {
+  SuggestionsDiscarded = 'SuggestionsDiscarded',
+  SuggestionsAccepted = 'SuggestionsAccepted',
+  LinesDiscarded = 'LinesDiscarded',
+  LinesAccepted = 'LinesAccepted',
+  ActiveUsers = 'ActiveUsers',
+  ChatConversations = 'ChatConversations',
+  ChatInsertionEvents = 'ChatInsertionEvents',
+  ChatCopyEvents = 'ChatCopyEvents',
+  ChatActiveUsers = 'ChatActiveUsers',
+  LastActivity = 'LastActivity',
+  Engagement = 'Engagement',
+  Usages = 'Usages',
+  AILinesAdded = 'AILinesAdded',
+  AILinesRemoved = 'AILinesRemoved',
+  NonAILinesAdded = 'NonAILinesAdded',
+  CommitsCreated = 'CommitsCreated',
+  PullRequestsCreated = 'PullRequestsCreated',
+  Cost = 'Cost',
+  InputTokens = 'InputTokens',
+  OutputTokens = 'OutputTokens',
+  CacheReadTokens = 'CacheReadTokens',
+  CacheWriteTokens = 'CacheWriteTokens',
+  PercentageOfCodeWritten = 'PercentageOfCodeWritten',
+  Custom = 'Custom',
+}
+
 export function fileKey(filePath: string, repoKey: RepoKey): FileKey {
   return {
     uid: filePath,
@@ -178,7 +216,7 @@ export class BranchCollector {
   private readonly collectedBranches = new Map<string, BranchKey>();
 
   collectBranch(branchName: string, repoKey: RepoKey): BranchKey | null {
-    if (!branchName) {
+    if (!branchName || !repoKey?.name || !repoKey?.organization?.uid) {
       return null;
     }
 

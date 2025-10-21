@@ -2,16 +2,16 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {
   ChatBreakdown,
   CopilotUsageSummary,
-  GitHubTool,
   LanguageEditorBreakdown,
+  ModelBreakdown,
 } from 'faros-airbyte-common/github';
 import {Utils} from 'faros-js-client';
 import {isNil, toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
-import {Common} from '../common/common';
+import {AssistantMetric, VCSToolCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
-import {AssistantMetric, GitHubCommon, GitHubConverter} from './common';
+import {GitHubCommon, GitHubConverter} from './common';
 
 const FarosMetricToAssistantMetricType = {
   DailySuggestionReferenceCount_Discard: AssistantMetric.SuggestionsDiscarded,
@@ -26,15 +26,7 @@ const FarosMetricToAssistantMetricType = {
 };
 
 export class FarosCopilotUsage extends GitHubConverter {
-  private readonly writtenTags = new Set<string>();
-  private writtenMetricDefinitions = false;
-
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
-    'compute_ApplicationMetric',
-    'faros_MetricDefinition',
-    'faros_MetricValue',
-    'faros_MetricValueTag',
-    'faros_Tag',
     'vcs_AssistantMetric',
   ];
 
@@ -63,50 +55,9 @@ export class FarosCopilotUsage extends GitHubConverter {
     ]);
 
     const org = toLower(usage.org);
-    const orgTagUid = getOrgTagUid(org);
-    if (!this.writtenTags.has(orgTagUid)) {
-      res.push({
-        model: 'faros_Tag',
-        record: {
-          uid: orgTagUid,
-          key: 'copilotOrg',
-          value: org,
-        },
-      });
-      this.writtenTags.add(orgTagUid);
-    }
     let team: string = null;
     if (usage.team) {
       team = toLower(usage.team);
-      const teamTagUid = getTeamTagUid(org, team);
-      if (!this.writtenTags.has(teamTagUid)) {
-        res.push({
-          model: 'faros_Tag',
-          record: {
-            uid: teamTagUid,
-            key: 'copilotTeam',
-            value: team,
-          },
-        });
-        this.writtenTags.add(teamTagUid);
-      }
-    }
-
-    if (!this.writtenMetricDefinitions) {
-      for (const farosMetric of metrics.values()) {
-        res.push({
-          model: 'faros_MetricDefinition',
-          record: {
-            uid: farosMetric,
-            name: farosMetric,
-            valueType: {
-              category: 'Numeric',
-              detail: null,
-            },
-          },
-        });
-      }
-      this.writtenMetricDefinitions = true;
     }
 
     this.processSummary(res, usage, metrics, org, team, isCommunity);
@@ -198,42 +149,21 @@ export class FarosCopilotUsage extends GitHubConverter {
     breakdownMetric: string,
     isCommunity: boolean
   ): void {
-    const normalizeDimension = (dimensionName: string): string => {
-      return toLower(dimensionName).split(' ').join('_');
-    };
-
-    // Example breakdownMetricValueUid:
-    // copilotOrg__faros-ai-DailyActiveUserTrend-angular2html-jetbrains-2024-01-15
-    const orgTagUid = getOrgTagUid(org);
-    const teamTagUid = team ? getTeamTagUid(org, team) : null;
-    const breakdownMetricValueUid = `${teamTagUid ? teamTagUid : orgTagUid}-${farosMetric}-${normalizeDimension(
-      breakdown.language
-    )}-${normalizeDimension(breakdown.editor)}-${summary.day}`;
     const day = Utils.toDate(summary.day);
-    res.push({
-      model: 'faros_MetricValue',
-      record: {
-        uid: breakdownMetricValueUid,
-        value: String(breakdown[breakdownMetric]),
-        computedAt: day,
-        definition: {uid: farosMetric},
-      },
-    });
     if (!isCommunity) {
       const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
       if (assistantMetricType) {
+        const assistantMetricWithoutModel = this.getAssistantMetric(
+          day,
+          assistantMetricType,
+          breakdown[breakdownMetric] as number,
+          org,
+          team,
+          breakdown.editor,
+          breakdown.language
+        );
         if (!breakdown.model_breakdown) {
-          res.push(
-            ...this.getAssistantMetric(
-              day,
-              assistantMetricType,
-              breakdown[breakdownMetric] as number,
-              org,
-              team,
-              breakdown.editor,
-              breakdown.language
-            )
-          );
+          res.push(assistantMetricWithoutModel);
         } else {
           for (const modelBreakdown of breakdown.model_breakdown) {
             if (
@@ -243,7 +173,7 @@ export class FarosCopilotUsage extends GitHubConverter {
               continue;
             }
             res.push(
-              ...this.getAssistantMetric(
+              this.getAssistantMetric(
                 day,
                 assistantMetricType,
                 modelBreakdown[breakdownMetric] as number,
@@ -258,68 +188,6 @@ export class FarosCopilotUsage extends GitHubConverter {
         }
       }
     }
-
-    const languageTagUid = `copilotLanguage__${normalizeDimension(
-      breakdown.language
-    )}`;
-    if (!this.writtenTags.has(languageTagUid)) {
-      res.push({
-        model: 'faros_Tag',
-        record: {
-          uid: languageTagUid,
-          key: 'copilotLanguage',
-          value: breakdown.language,
-        },
-      });
-      this.writtenTags.add(languageTagUid);
-    }
-
-    const editorTagUid = `copilotEditor__${normalizeDimension(
-      breakdown.editor
-    )}`;
-    if (!this.writtenTags.has(editorTagUid)) {
-      res.push({
-        model: 'faros_Tag',
-        record: {
-          uid: editorTagUid,
-          key: 'copilotEditor',
-          value: breakdown.editor,
-        },
-      });
-      this.writtenTags.add(editorTagUid);
-    }
-
-    for (const tagUid of [
-      languageTagUid,
-      editorTagUid,
-      orgTagUid,
-      teamTagUid,
-    ]) {
-      if (!tagUid) {
-        continue;
-      }
-      res.push({
-        model: 'faros_MetricValueTag',
-        record: {
-          tag: {uid: tagUid},
-          value: {
-            uid: breakdownMetricValueUid,
-            definition: {uid: farosMetric},
-          },
-        },
-      });
-    }
-
-    res.push({
-      model: 'compute_ApplicationMetric',
-      record: {
-        application: Common.computeApplication('copilot', ''),
-        value: {
-          uid: breakdownMetricValueUid,
-          definition: {uid: farosMetric},
-        },
-      },
-    });
   }
 
   private processChatBreakdownMetricValue(
@@ -350,7 +218,7 @@ export class FarosCopilotUsage extends GitHubConverter {
         continue;
       }
       res.push(
-        ...this.getAssistantMetric(
+        this.getAssistantMetric(
           day,
           assistantMetricType,
           modelBreakdown[breakdownMetric] as number,
@@ -373,24 +241,12 @@ export class FarosCopilotUsage extends GitHubConverter {
     metric: string,
     isCommunity: boolean
   ): void {
-    const orgTagUid = getOrgTagUid(org);
-    const teamTagUid = team ? getTeamTagUid(org, team) : null;
-    const metricValueUid = `${teamTagUid ? teamTagUid : orgTagUid}-${farosMetric}-${summary.day}`;
     const day = Utils.toDate(summary.day);
-    res.push({
-      model: 'faros_MetricValue',
-      record: {
-        uid: metricValueUid,
-        value: String(summary[metric]),
-        computedAt: day,
-        definition: {uid: farosMetric},
-      },
-    });
     if (!isCommunity) {
       const assistantMetricType = FarosMetricToAssistantMetricType[farosMetric];
       if (assistantMetricType) {
         res.push(
-          ...this.getAssistantMetric(
+          this.getAssistantMetric(
             day,
             assistantMetricType,
             summary[metric],
@@ -400,46 +256,11 @@ export class FarosCopilotUsage extends GitHubConverter {
         );
       }
     }
-
-    res.push({
-      model: 'faros_MetricValueTag',
-      record: {
-        tag: {uid: orgTagUid},
-        value: {
-          uid: metricValueUid,
-          definition: {uid: farosMetric},
-        },
-      },
-    });
-
-    if (teamTagUid) {
-      res.push({
-        model: 'faros_MetricValueTag',
-        record: {
-          tag: {uid: teamTagUid},
-          value: {
-            uid: metricValueUid,
-            definition: {uid: farosMetric},
-          },
-        },
-      });
-    }
-
-    res.push({
-      model: 'compute_ApplicationMetric',
-      record: {
-        application: Common.computeApplication('copilot', ''),
-        value: {
-          uid: metricValueUid,
-          definition: {uid: farosMetric},
-        },
-      },
-    });
   }
 
   private calculateDiscards(summary: CopilotUsageSummary): void {
     const calculateDifference = (
-      object: CopilotUsageSummary | LanguageEditorBreakdown,
+      object: CopilotUsageSummary | LanguageEditorBreakdown | ModelBreakdown,
       field1: string,
       field2: string,
       resultField: string
@@ -476,6 +297,26 @@ export class FarosCopilotUsage extends GitHubConverter {
           'lines_accepted',
           'lines_discarded'
         );
+
+        if (
+          !isNil(breakdown.model_breakdown) &&
+          Array.isArray(breakdown.model_breakdown)
+        ) {
+          for (const modelBreakdown of breakdown.model_breakdown) {
+            calculateDifference(
+              modelBreakdown,
+              'suggestions_count',
+              'acceptances_count',
+              'discards_count'
+            );
+            calculateDifference(
+              modelBreakdown,
+              'lines_suggested',
+              'lines_accepted',
+              'lines_discarded'
+            );
+          }
+        }
       }
     }
   }
@@ -489,57 +330,50 @@ export class FarosCopilotUsage extends GitHubConverter {
     editor?: string,
     language?: string,
     model?: string
-  ): DestinationRecord[] {
-    return [
-      {
-        model: 'vcs_AssistantMetric',
-        record: {
-          uid: GitHubCommon.digest(
-            []
-              .concat(
-                // original fields (required) to be included in the digest
-                ...[
-                  GitHubTool.Copilot,
-                  assistantMetricType,
-                  day.toISOString(),
-                  org,
-                  team,
-                  editor,
-                  language,
-                ],
-                // newer fields (optional) to be included in the digest
-                ...[{key: 'model', value: model}]
-                  .filter((v) => !isNil(v.value))
-                  .map((v) => `${v.key}:${v.value}`)
-              )
-              .join('__')
-          ),
+  ): DestinationRecord {
+    return {
+      model: 'vcs_AssistantMetric',
+      record: {
+        uid: GitHubCommon.digest(
+          []
+            .concat(
+              // original fields (required) to be included in the digest
+              ...[
+                VCSToolCategory.GitHubCopilot,
+                assistantMetricType,
+                day.toISOString(),
+                org,
+                team,
+                editor,
+                language,
+              ],
+              // newer fields (optional) to be included in the digest
+              ...[{key: 'model', value: model}]
+                .filter((v) => !isNil(v.value))
+                .map((v) => `${v.key}:${v.value}`)
+            )
+            .join('__')
+        ),
+        source: this.streamName.source,
+        startedAt: day,
+        endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
+        type: {category: assistantMetricType},
+        valueType: 'Int',
+        value: String(value),
+        organization: {
+          uid: org,
           source: this.streamName.source,
-          startedAt: day,
-          endedAt: Utils.toDate(day.getTime() + 24 * 60 * 60 * 1000),
-          type: {category: assistantMetricType},
-          valueType: 'Int',
-          value: String(value),
-          organization: {
-            uid: org,
-            source: this.streamName.source,
-          },
-          ...(team && {
-            team: {
-              uid: team,
-            },
-          }),
-          tool: {category: GitHubTool.Copilot},
-          editor,
-          language,
-          model,
         },
+        ...(team && {
+          team: {
+            uid: team,
+          },
+        }),
+        tool: {category: VCSToolCategory.GitHubCopilot},
+        editor,
+        language,
+        model,
       },
-    ];
+    };
   }
 }
-
-const getOrgTagUid = (org: string): string => `copilotOrg__${toLower(org)}`;
-
-const getTeamTagUid = (org: string, team: string): string =>
-  `copilotTeam__${toLower(org)}/${toLower(team)}`;

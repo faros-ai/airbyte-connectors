@@ -1,11 +1,14 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {applyRoundRobinBucketing, validateBucketingConfig} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {AzurePipelines} from './azurepipeline';
@@ -32,13 +35,43 @@ export class AzurePipelineSource extends AirbyteSourceBase<AzurePipelineConfig> 
     config: AzurePipelineConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azurePipelines = await AzurePipelines.instance(config, this.logger);
+      const azurePipelines = await AzurePipelines.instance(
+        config,
+        this.logger,
+        config.bucket_id,
+        config.bucket_total
+      );
       await azurePipelines.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];
     }
     return [true, undefined];
   }
+
+  async onBeforeRead(
+    config: AzurePipelineConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: AzurePipelineConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    validateBucketingConfig(config, this.logger.info.bind(this.logger));
+
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+
+    return {
+      config: newConfig as AzurePipelineConfig,
+      catalog,
+      state: newState,
+    };
+  }
+
   streams(config: AzurePipelineConfig): AirbyteStreamBase[] {
     return [
       new Pipelines(config, this.logger),

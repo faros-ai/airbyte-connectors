@@ -98,8 +98,25 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "value": 8,
       },
     ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+          "uniqueName": "john.doe@example.com",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
+      },
+    ],
     "fields": {
       "Faros": {
+        "EpicId": 100,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "New",
@@ -153,6 +170,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     "revisions": {
       "assignees": [
         {
+          "assignedAt": "2017-09-04T02:28:56.253Z",
           "assignee": {
             "_links": {
               "avatar": {
@@ -166,7 +184,24 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
             "uniqueName": "fabrikamfiber4@hotmail.com",
             "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
           },
-          "changedDate": "2017-09-04T02:28:56.253Z",
+          "unassignedAt": "2017-09-04T02:36:41.253Z",
+        },
+        {
+          "assignedAt": "2017-09-04T02:36:41.253Z",
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+              },
+            },
+            "descriptor": "aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+            "displayName": "Sarah Connor",
+            "id": "e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "sarah.connor@fabrikam.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "unassignedAt": undefined,
         },
       ],
       "iterations": [
@@ -218,8 +253,25 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "value": 4,
       },
     ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+          "uniqueName": "john.doe@example.com",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
+      },
+    ],
     "fields": {
       "Faros": {
+        "EpicId": 100,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "To Do",
@@ -286,6 +338,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     "revisions": {
       "assignees": [
         {
+          "assignedAt": "2017-09-04T02:28:56.253Z",
           "assignee": {
             "_links": {
               "avatar": {
@@ -299,7 +352,24 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
             "uniqueName": "fabrikamfiber4@hotmail.com",
             "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
           },
-          "changedDate": "2017-09-04T02:28:56.253Z",
+          "unassignedAt": "2017-09-04T02:36:41.253Z",
+        },
+        {
+          "assignedAt": "2017-09-04T02:36:41.253Z",
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+              },
+            },
+            "descriptor": "aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+            "displayName": "Sarah Connor",
+            "id": "e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "sarah.connor@fabrikam.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "unassignedAt": undefined,
         },
       ],
       "iterations": [
@@ -355,9 +425,26 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
         "value": "Zephyr",
       },
     ],
+    "comments": [
+      {
+        "createdBy": {
+          "displayName": "John Doe",
+          "id": "user-123",
+          "uniqueName": "john.doe@example.com",
+        },
+        "createdDate": "2024-01-15T10:30:00.000Z",
+        "id": 1,
+        "isDeleted": false,
+        "modifiedDate": "2024-01-15T14:45:00.000Z",
+        "text": "This is a test comment on the work item.",
+        "url": "https://dev.azure.com/organization/_apis/wit/workItems/297/comments/1",
+        "workItemId": 297,
+      },
+    ],
     "fields": {
       "Custom.TestName": "Zephyr",
       "Faros": {
+        "EpicId": 101,
         "WorkItemStateCategory": {
           "category": "Proposed",
           "name": "To Do",
@@ -410,6 +497,7 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
     "revisions": {
       "assignees": [
         {
+          "assignedAt": "2017-09-04T02:28:56.253Z",
           "assignee": {
             "_links": {
               "avatar": {
@@ -423,7 +511,24 @@ exports[`index streams - workitems, use full_refresh sync mode 1`] = `
             "uniqueName": "fabrikamfiber4@hotmail.com",
             "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
           },
-          "changedDate": "2017-09-04T02:28:56.253Z",
+          "unassignedAt": "2017-09-04T02:36:41.253Z",
+        },
+        {
+          "assignedAt": "2017-09-04T02:36:41.253Z",
+          "assignee": {
+            "_links": {
+              "avatar": {
+                "href": "https://dev.azure.com/mseng/_apis/GraphProfile/MemberAvatars/aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+              },
+            },
+            "descriptor": "aad.ZTFiMmMzZDQtYTA1Yy00ZWE2LThkZjEtNGI0MWQ1ZjM5ZWZm",
+            "displayName": "Sarah Connor",
+            "id": "e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+            "uniqueName": "sarah.connor@fabrikam.com",
+            "url": "https://vssps.dev.azure.com/fabrikam/_apis/Identities/e1b2c3d4-a05c-4ea6-8df1-4b41d5f39eff",
+          },
+          "unassignedAt": undefined,
         },
       ],
       "iterations": [

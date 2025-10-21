@@ -272,7 +272,7 @@ export class Datadog {
       const nextOffset = pagination.nextOffset;
       const offset = pagination.offset;
 
-      if (size && nextOffset) {
+      if (size !== undefined && nextOffset !== undefined) {
         if (size < pageSize || offset === nextOffset) {
           return;
         }

@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "author_username": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "author_username": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["author_username", "id", "body", "created_at", "updated_at"]
+      }
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "state": {
+      "type": "string"
+    },
+    "webUrl": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mergedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "closedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "commitCount": {
+      "type": "integer"
+    },
+    "userNotesCount": {
+      "type": "integer"
+    },
+    "diffStatsSummary": {
+      "type": "object",
+      "properties": {
+        "additions": {
+          "type": "integer"
+        },
+        "deletions": {
+          "type": "integer"
+        },
+        "fileCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "mergeCommitSha": {
+      "type": ["string", "null"]
+    },
+    "sourceBranch": {
+      "type": ["string", "null"]
+    },
+    "targetBranch": {
+      "type": ["string", "null"]
+    },
+    "sourceProjectId": {
+      "type": ["string", "null"]
+    },
+    "targetProjectId": {
+      "type": ["string", "null"]
+    },
+    "sourceProject": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "group": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "author_username",
+    "group_id",
+    "project_path",
+    "labels",
+    "notes",
+    "iid",
+    "title",
+    "description",
+    "state",
+    "webUrl",
+    "createdAt",
+    "updatedAt",
+    "mergedAt",
+    "commitCount",
+    "userNotesCount",
+    "diffStatsSummary",
+    "mergeCommitSha"
+  ]
+}

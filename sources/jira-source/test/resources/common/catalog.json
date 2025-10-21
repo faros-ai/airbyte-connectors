@@ -90,6 +90,13 @@
         "json_schema": {}
       },
       "sync_mode": "full_refresh"
+    },
+    {
+      "stream": {
+        "name": "faros_audit_events",
+        "json_schema": {}
+      },
+      "sync_mode": "incremental"
     }
   ]
 }

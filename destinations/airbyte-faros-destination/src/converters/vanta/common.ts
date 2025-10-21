@@ -1,8 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {VulnerableAssetSummary} from 'faros-airbyte-common/lib/vanta';
 
+import {OrgKey} from '../common/vcs';
 import {Converter, StreamContext} from '../converter';
-import {looksLikeGitCommitSha} from './utils';
+import {looksLikeGitCommitShaOrVersion} from './utils';
 
 export abstract class VantaConverter extends Converter {
   source = 'Vanta';
@@ -26,7 +27,7 @@ export abstract class VantaConverter extends Converter {
 
   protected getCommitSha(imageTags?: string[]): string | null {
     for (const imageTag of imageTags ?? []) {
-      if (looksLikeGitCommitSha(imageTag)) {
+      if (looksLikeGitCommitShaOrVersion(imageTag)) {
         return imageTag;
       }
     }
@@ -43,3 +44,5 @@ export abstract class VantaConverter extends Converter {
     }
   }
 }
+
+export type VcsRepoKey = {name: string; organization: OrgKey};

@@ -3,54 +3,54 @@ import {
   AirbyteStreamBase,
   calculateUpdatedStreamState,
 } from 'faros-airbyte-cdk';
-import {Project} from 'faros-airbyte-common/gitlab';
+import {FarosProjectOutput} from 'faros-airbyte-common/gitlab';
 import {FarosClient, Utils} from 'faros-js-client';
-import {toLower} from 'lodash';
+import {pick, toLower} from 'lodash';
 
 import {GroupFilter} from '../group-filter';
 import {GitLabConfig} from '../types';
 
-export type GroupStreamSlice = {
-  group: string;
-};
-
-export type ProjectStreamSlice = {
+export interface GroupStreamSlice {
   group_id: string;
-  project: Pick<Project, 'path_with_namespace' | 'default_branch' | 'path'>;
-};
+}
 
-export type StreamState = {
+export type ProjectStreamSlice = Pick<
+  FarosProjectOutput,
+  'default_branch' | 'group_id' | 'path' | 'path_with_namespace'
+>;
+
+export interface StreamState {
   readonly [key: string]: {
     cutoff: number;
   };
-};
+}
 
 export enum RunMode {
-  Minimum = 'Minimum',
   Full = 'Full',
   Custom = 'Custom',
 }
 
-export const MinimumStreamNames = [
-  'faros_commits',
-  'faros_groups',
-  'faros_projects',
-  'faros_tags',
-];
-
 export const FullStreamNames = [
   'faros_commits',
   'faros_groups',
+  'faros_merge_requests',
+  'faros_merge_request_reviews',
   'faros_projects',
-  'faros_tags',
   'faros_users',
 ];
 
 // fill as streams are developed
 export const CustomStreamNames = [
   'faros_commits',
+  'faros_deployments',
   'faros_groups',
+  'faros_issues',
+  'faros_jobs',
+  'faros_merge_requests',
+  'faros_merge_request_reviews',
+  'faros_pipelines',
   'faros_projects',
+  'faros_releases',
   'faros_tags',
   'faros_users',
 ];
@@ -58,7 +58,6 @@ export const CustomStreamNames = [
 export const RunModeStreams: {
   [key in RunMode]: string[];
 } = {
-  [RunMode.Minimum]: MinimumStreamNames,
   [RunMode.Full]: FullStreamNames,
   [RunMode.Custom]: CustomStreamNames,
 };
@@ -104,26 +103,32 @@ export abstract class StreamBase extends AirbyteStreamBase {
 
 export abstract class StreamWithGroupSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<GroupStreamSlice> {
-    for (const group of await this.groupFilter.getGroups()) {
-      yield {group};
+    for (const group_id of await this.groupFilter.getGroups()) {
+      yield {group_id};
     }
   }
 }
 
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
-    for (const group of await this.groupFilter.getGroups()) {
+    for (const group_id of await this.groupFilter.getGroups()) {
       for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-        group
+        group_id
       )) {
+        if (repo.empty_repo) {
+          this.logger.warn(
+            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`
+          );
+          continue;
+        }
         if (syncRepoData) {
           yield {
-            group_id: repo.group_id,
-            project: {
-              path_with_namespace: repo.path_with_namespace,
-              default_branch: repo.default_branch,
-              path: repo.path,
-            },
+            ...pick(repo, [
+              'default_branch',
+              'group_id',
+              'path',
+              'path_with_namespace',
+            ]),
           };
         }
       }

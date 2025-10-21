@@ -2,10 +2,10 @@
 
 exports[`azure-workitems process records from all streams 1`] = `
 Array [
-  "Processed 11 records",
-  "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":2,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":3,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 36 records",
-  "Would write records by model: {\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":2,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":4,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 13 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-workitems__iterations\\\\\\":4,\\\\\\"mytestsource__azure-workitems__projects\\\\\\":3,\\\\\\"mytestsource__azure-workitems__users\\\\\\":3,\\\\\\"mytestsource__azure-workitems__workitems\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 50 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":4,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Project\\\\\\":3,\\\\\\"tms_Sprint\\\\\\":4,\\\\\\"tms_SprintBoardRelationship\\\\\\":4,\\\\\\"tms_SprintHistory\\\\\\":4,\\\\\\"tms_Task\\\\\\":3,\\\\\\"tms_TaskAssignment\\\\\\":5,\\\\\\"tms_TaskBoard\\\\\\":2,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":2,\\\\\\"tms_TaskBoardRelationship\\\\\\":3,\\\\\\"tms_TaskBoardRelationship__Deletion\\\\\\":3,\\\\\\"tms_TaskComment\\\\\\":1,\\\\\\"tms_TaskComment__Deletion\\\\\\":3,\\\\\\"tms_TaskProjectRelationship\\\\\\":3,\\\\\\"tms_TaskTag\\\\\\":2,\\\\\\"tms_User\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -31,6 +31,7 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "Our authorization logic needs to allow for users with Microsoft accounts (formerly Live Ids) - http://msdn.microsoft.com/en-us/library/live/hh826547.aspx",
+      "epic": null,
       "name": "Customer can sign in using their Microsoft Account",
       "parent": null,
       "points": 3,
@@ -104,6 +105,24 @@ Array [
         "source": "Azure-Workitems",
         "uid": "297",
       },
+      "unassignedAt": null,
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "297",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
     },
   },
   Object {
@@ -170,6 +189,10 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "Follow the code samples from MSDN",
+      "epic": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
       "name": "JavaScript implementation for Microsoft Account",
       "parent": Object {
         "source": "Azure-Workitems",
@@ -246,6 +269,7 @@ Array [
         "source": "Azure-Workitems",
         "uid": "299",
       },
+      "unassignedAt": "2017-09-05T00:00:00.000Z",
     },
   },
   Object {
@@ -260,6 +284,7 @@ Array [
         "source": "Azure-Workitems",
         "uid": "299",
       },
+      "unassignedAt": null,
     },
   },
   Object {
@@ -284,6 +309,23 @@ Array [
         "source": "Azure-Workitems",
         "uid": "299",
       },
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "299",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
     },
   },
   Object {
@@ -351,6 +393,10 @@ Array [
         "uid": "fabrikamfiber4@hotmail.com",
       },
       "description": "We need to ensure we have coverage to prevent regressions",
+      "epic": Object {
+        "source": "Azure-Workitems",
+        "uid": "298",
+      },
       "name": "Unit Testing for MSA login",
       "parent": null,
       "points": 8,
@@ -417,6 +463,39 @@ Array [
         "source": "Azure-Workitems",
         "uid": "300",
       },
+      "unassignedAt": "2017-09-04T12:15:30.000Z",
+    },
+  },
+  Object {
+    "tms_TaskAssignment": Object {
+      "assignedAt": "2017-09-04T12:15:30.000Z",
+      "assignee": Object {
+        "source": "Azure-Workitems",
+        "uid": "christie.church@fabrikam.com",
+      },
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "300",
+      },
+      "unassignedAt": null,
+    },
+  },
+  Object {
+    "tms_TaskBoardRelationship__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "300",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
     },
   },
   Object {
@@ -456,7 +535,7 @@ Array [
       "openedAt": "2024-02-01T23:59:59.999Z",
       "source": "Azure-Workitems",
       "startedAt": "2024-02-01T00:00:00.000Z",
-      "state": null,
+      "state": "Active",
       "uid": "3",
     },
   },
@@ -471,6 +550,32 @@ Array [
       "startedAt": "2024-01-01T00:00:00.000Z",
       "state": "Closed",
       "uid": "4",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2050-12-31T23:59:59.999Z",
+      "description": "Fabrikam-Fiber\\\\Release 1\\\\Long Running Sprint",
+      "endedAt": "2050-12-31T00:00:00.000Z",
+      "name": "Long Running Sprint",
+      "openedAt": "2020-01-01T23:59:59.999Z",
+      "source": "Azure-Workitems",
+      "startedAt": "2020-01-01T00:00:00.000Z",
+      "state": "Active",
+      "uid": "5",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2030-01-31T23:59:59.999Z",
+      "description": "Fabrikam-Fiber\\\\Release 2\\\\Sprint 1",
+      "endedAt": "2030-01-31T00:00:00.000Z",
+      "name": "Future Sprint",
+      "openedAt": "2030-01-01T23:59:59.999Z",
+      "source": "Azure-Workitems",
+      "startedAt": "2030-01-01T00:00:00.000Z",
+      "state": "Future",
+      "uid": "6",
     },
   },
   Object {
@@ -614,6 +719,64 @@ Array [
         "source": "Azure-Workitems",
         "uid": "4",
       },
+    },
+  },
+  Object {
+    "tms_TaskComment__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "297",
+        },
+      },
+    },
+  },
+  Object {
+    "tms_TaskComment__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "299",
+        },
+      },
+    },
+  },
+  Object {
+    "tms_TaskComment__Deletion": Object {
+      "flushRequired": false,
+      "source": "Azure-Workitems",
+      "where": Object {
+        "task": Object {
+          "source": "Azure-Workitems",
+          "uid": "300",
+        },
+      },
+    },
+  },
+  Object {
+    "__Flush": Object {
+      "source": "Azure-Workitems",
+    },
+  },
+  Object {
+    "tms_TaskComment": Object {
+      "author": Object {
+        "source": "Azure-Workitems",
+        "uid": "jamal.hartnett@example.com",
+      },
+      "comment": "This looks good to me, let's proceed with the implementation.",
+      "createdAt": "2014-12-30T10:15:30.000Z",
+      "source": "Azure-Workitems",
+      "task": Object {
+        "source": "Azure-Workitems",
+        "uid": "297",
+      },
+      "uid": "1",
+      "updatedAt": "2014-12-30T15:20:45.000Z",
     },
   },
 ]

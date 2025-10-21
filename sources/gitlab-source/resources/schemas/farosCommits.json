@@ -2,59 +2,31 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "author_username": {
+      "type": ["string", "null"]
+    },
+    "branch": {
+      "type": "string"
+    },
     "group_id": {
       "type": "string"
     },
     "project_path": {
       "type": "string"
     },
-    "branch": {
-      "type": "string"
-    },
     "id": {
       "type": "string"
     },
-    "short_id": {
+    "message": {
       "type": "string"
     },
     "created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "parent_ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "title": {
-      "type": "string"
-    },
-    "message": {
-      "type": "string"
-    },
-    "author_name": {
-      "type": "string"
-    },
-    "author_email": {
-      "type": "string"
-    },
-    "authored_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "committer_name": {
-      "type": "string"
-    },
-    "committer_email": {
-      "type": "string"
-    },
-    "committed_date": {
-      "type": "string",
-      "format": "date-time"
-    },
     "web_url": {
       "type": "string"
     }
-  }
+  },
+  "required": ["author_username", "branch", "group_id", "project_path", "id", "message", "created_at", "web_url"]
 }

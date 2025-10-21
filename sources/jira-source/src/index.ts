@@ -23,6 +23,7 @@ import {
   JiraConfig,
 } from './jira';
 import {RunMode, RunModeStreams, TeamStreamNames} from './streams/common';
+import {FarosAuditEvents} from './streams/faros_audit_events';
 import {FarosBoardIssues} from './streams/faros_board_issues';
 import {FarosBoards} from './streams/faros_boards';
 import {FarosIssueAdditionalFields} from './streams/faros_issue_additional_fields';
@@ -63,6 +64,17 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   async checkConnection(config: JiraConfig): Promise<[boolean, VError]> {
     try {
+      // Validate custom_headers JSON format if provided
+      if (config.custom_headers) {
+        try {
+          JSON.parse(config.custom_headers);
+        } catch (error) {
+          throw new VError(
+            'Invalid JSON format in custom_headers configuration'
+          );
+        }
+      }
+
       const jira = await Jira.instance(config, this.logger);
       const projectKeys = config.projects
         ? new Set(config.projects)
@@ -105,6 +117,7 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       new FarosTeams(config, this.logger, farosClient),
       new FarosTeamMemberships(config, this.logger, farosClient),
       new FarosIssueAdditionalFields(config, this.logger, farosClient),
+      new FarosAuditEvents(config, this.logger, farosClient),
     ];
   }
 

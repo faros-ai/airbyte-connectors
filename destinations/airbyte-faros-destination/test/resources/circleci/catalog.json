@@ -17,6 +17,12 @@
         "name": "mytestsource__circleci__tests"
       },
       "destination_sync_mode": "append"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__circleci__usage"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

@@ -17,7 +17,6 @@ import * as sut from '../src/index';
 const agileacceleratorInstance = Agileaccelerator.instance;
 
 jest.mock('axios');
-
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('index', () => {

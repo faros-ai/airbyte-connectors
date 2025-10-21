@@ -20,7 +20,9 @@ export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectReference> {
     const azureWorkitems = await AzureWorkitems.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.additional_fields,
+      this.config.fetch_work_item_comments
     );
     const projects = await azureWorkitems.getProjects(this.config.projects);
     for (const project of projects) {

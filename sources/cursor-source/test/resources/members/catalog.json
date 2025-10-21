@@ -1,0 +1,14 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "members"
+      }
+    },
+    {
+      "stream": {
+        "name": "usage_events"
+      }
+    }
+  ]
+}

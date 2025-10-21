@@ -1,3 +1,4 @@
+import {ResourceRef} from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {
   GitBranchStats,
@@ -20,6 +21,7 @@ import {
   Repository,
   Tag,
 } from 'faros-airbyte-common/azure-devops';
+import {bucket} from 'faros-airbyte-common/common';
 import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import {VError} from 'verror';
@@ -34,7 +36,11 @@ export class AzureRepos extends AzureDevOps {
   private readonly branchPattern: RegExp;
   private readonly fetchTags: boolean;
   private readonly fetchBranchCommits: boolean;
+  private readonly fetchPullRequestWorkItems: boolean;
   private readonly repositoriesByProject: Map<string, Set<string>>;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
+
   constructor(
     protected readonly client: AzureDevOpsClient,
     protected readonly instanceType: 'cloud' | 'server',
@@ -44,17 +50,23 @@ export class AzureRepos extends AzureDevOps {
     branchPattern: string,
     repositories?: ReadonlyArray<string>,
     fetchTags: boolean = false,
-    fetchBranchCommits: boolean = false
+    fetchBranchCommits: boolean = false,
+    fetchPullRequestWorkItems: boolean = false,
+    bucketId: number = 1,
+    bucketTotal: number = 1
   ) {
     super(client, instanceType, cutoffDays, top, logger);
+    this.bucketId = bucketId;
+    this.bucketTotal = bucketTotal;
     this.branchPattern = new RegExp(branchPattern || DEFAULT_BRANCH_PATTERN);
     this.logger.debug(
-      `Fetching commits and pull requests from branches matching pattern: ` +
+      `Fetching commits from branches matching pattern: ` +
         `${this.branchPattern}`
     );
 
     this.fetchTags = fetchTags;
     this.fetchBranchCommits = fetchBranchCommits;
+    this.fetchPullRequestWorkItems = fetchPullRequestWorkItems;
     this.repositoriesByProject = new Map();
     for (const repository of repositories ?? []) {
       const [project, repo] = repository.split('/');
@@ -65,6 +77,14 @@ export class AzureRepos extends AzureDevOps {
         (this.repositoriesByProject.get(projectName) || new Set()).add(repoName)
       );
     }
+  }
+
+  isRepoInBucket(projectName: string, repoName: string): boolean {
+    const repoKey = `${projectName}:${repoName}`;
+    return (
+      bucket('farosai/airbyte-azure-repos-source', repoKey, this.bucketTotal) ===
+      this.bucketId
+    );
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -98,7 +118,6 @@ export class AzureRepos extends AzureDevOps {
   }
 
   async *getPullRequests(
-    branch: string,
     repository: GitRepository,
     since?: string
   ): AsyncGenerator<PullRequest> {
@@ -106,7 +125,7 @@ export class AzureRepos extends AzureDevOps {
       ? DateTime.fromISO(since)
       : DateTime.now().minus({days: this.cutoffDays});
 
-    yield* this.listPullRequests(repository, branch, sinceDate);
+    yield* this.listPullRequests(repository, sinceDate);
   }
 
   async *getCommits(
@@ -134,11 +153,17 @@ export class AzureRepos extends AzureDevOps {
     const filterRepos = this.repositoriesByProject.get(
       project.name.toLowerCase()
     );
-    if (!filterRepos?.size) {
-      return repositories;
-    }
-    return repositories.filter((repository) =>
-      filterRepos.has(repository.name.toLowerCase())
+
+    // Apply explicit repository filter if provided
+    const explicitlyFiltered = filterRepos?.size
+      ? repositories.filter((repository) =>
+          filterRepos.has(repository.name.toLowerCase())
+        )
+      : repositories;
+
+    // Apply bucketing filter
+    return explicitlyFiltered.filter((repository) =>
+      this.isRepoInBucket(project.name, repository.name)
     );
   }
 
@@ -251,7 +276,6 @@ export class AzureRepos extends AzureDevOps {
 
   /**
    * Lists 'all' of the pull requests within a given project and repository
-   * whose target branch is the given branch.
    *
    * @param repo            The repository whose pull requests should be retrieved
    * @param branch          The target branch of pull requests that should be retrieved
@@ -260,12 +284,10 @@ export class AzureRepos extends AzureDevOps {
    */
   private async *listPullRequests(
     repo: GitRepository,
-    branch: string,
     since?: DateTime
   ): AsyncGenerator<PullRequest> {
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: PullRequestStatus.All,
-      targetRefName: `refs/heads/${branch}`,
     };
 
     const getPullRequestsFn = (
@@ -299,10 +321,19 @@ export class AzureRepos extends AzureDevOps {
         pullRequest.pullRequestId,
         repo.project.id
       );
+
+      const workItems = this.fetchPullRequestWorkItems
+        ? await this.getWorkItemsForPullRequest(
+            repo.id,
+            pullRequest.pullRequestId,
+            repo.project.id
+          )
+        : undefined;
+
       const status = PullRequestStatus[pullRequest.status]?.toLowerCase();
       const mergeStatus =
         PullRequestAsyncStatus[pullRequest.mergeStatus]?.toLowerCase();
-      yield {...pullRequest, status, mergeStatus, threads};
+      yield {...pullRequest, status, mergeStatus, threads, workItems};
     }
   }
 
@@ -329,6 +360,26 @@ export class AzureRepos extends AzureDevOps {
       );
     }
     return branchNames;
+  }
+
+  private async getWorkItemsForPullRequest(
+    repositoryId: string,
+    pullRequestId: number,
+    projectId: string
+  ): Promise<ResourceRef[]> {
+    try {
+      const workItems = await this.client.git.getPullRequestWorkItemRefs(
+        repositoryId,
+        pullRequestId,
+        projectId
+      );
+      return workItems || [];
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to fetch work items for PR ${pullRequestId}: ${err.message}`
+      );
+      return [];
+    }
   }
 }
 

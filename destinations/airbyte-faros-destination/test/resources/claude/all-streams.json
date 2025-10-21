@@ -1,0 +1,159 @@
+[
+  {
+    "record": {
+      "stream": "mytestsource__claude__claude_code_usage_report",
+      "emitted_at": 1735689600000,
+      "data": {
+        "date": "2025-08-08T00:00:00Z",
+        "organization_id": "12345678-1234-5678-1234-567812345678",
+        "actor_email_address": "user1@example.com",
+        "actor": {
+          "email_address": "user1@example.com",
+          "type": "user_actor"
+        },
+        "customer_type": "api",
+        "subscription_type": "enterprise",
+        "terminal_type": "iTerm.app",
+        "core_metrics": {
+          "commits_by_claude_code": 8,
+          "pull_requests_by_claude_code": 2,
+          "lines_of_code": {
+            "added": 342,
+            "removed": 128
+          },
+          "num_sessions": 15
+        },
+        "model_breakdown": [
+          {
+            "model": "claude-sonnet-4-20250514",
+            "tokens": {
+              "input": 45230,
+              "output": 12450,
+              "cache_creation": 2340,
+              "cache_read": 8790
+            },
+            "estimated_cost": {
+              "amount": 186,
+              "currency": "USD"
+            }
+          },
+          {
+            "model": "claude-3-5-haiku-20241022",
+            "tokens": {
+              "input": 23100,
+              "output": 5680,
+              "cache_creation": 890,
+              "cache_read": 3420
+            },
+            "estimated_cost": {
+              "amount": 42,
+              "currency": "USD"
+            }
+          }
+        ],
+        "tool_actions": {
+          "edit_tool": {
+            "accepted": 25,
+            "rejected": 3
+          },
+          "multi_edit_tool": {
+            "accepted": 12,
+            "rejected": 1
+          },
+          "notebook_edit_tool": {
+            "accepted": 5,
+            "rejected": 2
+          },
+          "write_tool": {
+            "accepted": 8,
+            "rejected": 0
+          }
+        }
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__claude__claude_code_usage_report",
+      "emitted_at": 1735689600000,
+      "data": {
+        "date": "2025-08-09T00:00:00Z",
+        "organization_id": "12345678-1234-5678-1234-567812345678",
+        "actor_email_address": "user2@example.com",
+        "actor": {
+          "email_address": "user2@example.com",
+          "type": "user_actor"
+        },
+        "customer_type": "api",
+        "subscription_type": "enterprise",
+        "terminal_type": "VS Code",
+        "core_metrics": {
+          "commits_by_claude_code": 5,
+          "pull_requests_by_claude_code": 1,
+          "lines_of_code": {
+            "added": 210,
+            "removed": 95
+          },
+          "num_sessions": 10
+        },
+        "model_breakdown": [
+          {
+            "model": "claude-sonnet-4-20250514",
+            "tokens": {
+              "input": 32100,
+              "output": 8900,
+              "cache_creation": 1500,
+              "cache_read": 6200
+            },
+            "estimated_cost": {
+              "amount": 125,
+              "currency": "USD"
+            }
+          }
+        ],
+        "tool_actions": {
+          "edit_tool": {
+            "accepted": 18,
+            "rejected": 2
+          },
+          "write_tool": {
+            "accepted": 5,
+            "rejected": 1
+          }
+        }
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__claude__users",
+      "emitted_at": 1735689600000,
+      "data": {
+        "id": "user_001",
+        "email": "user1@example.com",
+        "name": "User One",
+        "role": "user",
+        "type": "user",
+        "added_at": "2025-07-01T00:00:00Z"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__claude__users",
+      "emitted_at": 1735689600000,
+      "data": {
+        "id": "user_002",
+        "email": "user2@example.com",
+        "name": "User Two",
+        "role": "user",
+        "type": "user",
+        "added_at": "2025-07-15T00:00:00Z"
+      }
+    },
+    "type": "RECORD"
+  }
+]

@@ -1,0 +1,618 @@
+[
+  {
+    "state": {
+      "data": {
+        "format": "base64/gzip",
+        "data": "H4sIAAAAAAAAE6uuBQBDv6ajAgAAAA=="
+      }
+    },
+    "type": "STATE",
+    "redactedConfig": {
+      "authentication": {
+        "type": "token",
+        "personal_access_token": "REDACTED"
+      },
+      "url": "https://gitlab.com",
+      "run_mode": "Full",
+      "cutoff_days": 7,
+      "groups": [
+        "111811331"
+      ],
+      "startDate": "2025-07-29T22:28:16.191Z",
+      "endDate": "2025-08-05T22:28:16.191Z",
+      "tmsEnabled": true,
+      "cicdEnabled": true
+    },
+    "sourceType": "gitlab",
+    "sourceVersion": "unknown"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_groups",
+      "emitted_at": 1747764794080,
+      "data": {
+        "id": "12372707",
+        "name": "farosai",
+        "path": "farosai",
+        "web_url": "https://gitlab.com/groups/farosai",
+        "description": "",
+        "visibility": "private",
+        "created_at": "2021-06-11T22:27:18.521Z",
+        "updated_at": null
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_projects",
+      "emitted_at": 1748613815838,
+      "data": {
+        "id": "40360007",
+        "name": "FarosCE test",
+        "path": "farosce-test",
+        "path_with_namespace": "farosai/farosce-test",
+        "web_url": "https://gitlab.com/farosai/farosce-test",
+        "description": "Test project for FarosCE GitLab integration",
+        "visibility": "private",
+        "created_at": "2022-10-19T16:40:22.162Z",
+        "updated_at": "2024-10-15T18:38:58.340Z",
+        "namespace": {
+          "id": "12372707",
+          "name": "farosai",
+          "path": "farosai",
+          "kind": "group",
+          "full_path": "farosai"
+        },
+        "default_branch": "master",
+        "archived": false,
+        "group_id": "12372707",
+        "syncRepoData": true
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_users",
+      "emitted_at": 1748972847044,
+      "data": {
+        "id": 12279282,
+        "username": "ypc-faros",
+        "name": "Yandry Perez",
+        "email": null,
+        "state": "active",
+        "web_url": "https://gitlab.com/ypc-faros",
+        "created_at": "2022-08-11T20:36:01.136Z",
+        "updated_at": null,
+        "group_ids": [
+          "12372707"
+        ]
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "type": "RECORD",
+    "record": {
+      "stream": "mytestsource__gitlab__faros_tags",
+      "emitted_at": 1749592209338,
+      "data": {
+        "name": "v0.4.0",
+        "title": "Release version 0.4.0",
+        "commit_id": "06a959fe1025f8eaa8ca7a6db1ac812ef1116e6d",
+        "group_id": "12372707",
+        "project_path": "faros-events-cli"
+      }
+    }
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_commits",
+      "emitted_at": 1749654331865,
+      "data": {
+        "id": "8617223c1e31c8454c65c397b54bac653c32c3f4",
+        "short_id": "8617223c",
+        "created_at": "2025-06-04T18:12:02.000+00:00",
+        "parent_ids": [
+          "e43e8c4678c8cc8942dd724dded62643a818a16d"
+        ],
+        "title": "ypc test commit 1",
+        "message": "ypc test commit 1",
+        "author_name": "Yandry Perez",
+        "author_email": "ypc@faros.ai",
+        "authored_date": "2025-06-04T18:12:02.000+00:00",
+        "committer_name": "Yandry Perez",
+        "committer_email": "ypc@faros.ai",
+        "committed_date": "2025-06-04T18:12:02.000+00:00",
+        "web_url": "https://gitlab.com/farosai/testy/-/commit/8617223c1e31c8454c65c397b54bac653c32c3f4",
+        "branch": "main",
+        "author_username": "ypc-faros",
+        "group_id": "12372707",
+        "project_path": "testy"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_commits",
+      "emitted_at": 1749654331866,
+      "data": {
+        "id": "123456789abcdef123456789abcdef1234567890",
+        "short_id": "123456789",
+        "created_at": "2025-06-05T10:30:00.000+00:00",
+        "parent_ids": [
+          "8617223c1e31c8454c65c397b54bac653c32c3f4"
+        ],
+        "title": "Automated commit without author",
+        "message": "This commit has no resolved author username",
+        "author_name": "Unknown Author",
+        "author_email": "unknown@example.com",
+        "authored_date": "2025-06-05T10:30:00.000+00:00",
+        "committer_name": "CI Bot",
+        "committer_email": "ci@example.com",
+        "committed_date": "2025-06-05T10:30:00.000+00:00",
+        "web_url": "https://gitlab.com/farosai/testy/-/commit/123456789abcdef123456789abcdef1234567890",
+        "branch": "main",
+        "author_username": null,
+        "group_id": "12372707",
+        "project_path": "testy"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "type": "RECORD",
+    "record": {
+      "stream": "mytestsource__gitlab__faros_merge_requests",
+      "emitted_at": 1750719249296,
+      "data": {
+        "__brand": "FarosMergeRequest",
+        "author_username": "ypc-faros",
+        "labels": [
+          "l2"
+        ],
+        "notes": [
+          {
+            "id": "gid://gitlab/Note/2559908301",
+            "body": "This is a comment on the MR",
+            "created_at": "2025-06-13T01:49:10Z",
+            "updated_at": "2025-06-13T01:49:10Z",
+            "author_username": "ypc-faros"
+          },
+          {
+            "id": "gid://gitlab/DiffNote/2559908669",
+            "body": "This is a comment on the diff",
+            "created_at": "2025-06-13T01:49:55Z",
+            "updated_at": "2025-06-13T01:49:55Z",
+            "author_username": "ypc-faros"
+          }
+        ],
+        "iid": 3,
+        "title": "test MR",
+        "state": "closed",
+        "webUrl": "https://gitlab.com/farosai/testy/-/merge_requests/3",
+        "createdAt": "2025-06-13T00:58:27Z",
+        "updatedAt": "2025-06-13T01:52:18Z",
+        "mergedAt": null,
+        "closedAt": "2025-06-13T02:15:30Z",
+        "commitCount": 1,
+        "userNotesCount": 2,
+        "diffStatsSummary": {
+          "additions": 1,
+          "deletions": 0,
+          "fileCount": 1
+        },
+        "mergeCommitSha": null,
+        "sourceBranch": "feature/add-new-feature",
+        "targetBranch": "main",
+        "sourceProjectId": "gid://gitlab/Project/40360007",
+        "targetProjectId": "gid://gitlab/Project/40360007",
+        "sourceProject": {
+          "id": "gid://gitlab/Project/40360007",
+          "path": "testy",
+          "group": {
+            "id": "12372707"
+          }
+        },
+        "group_id": "12372707",
+        "project_path": "testy"
+      }
+    }
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_issues",
+      "emitted_at": 1750696212087,
+      "data": {
+        "__brand": "FarosIssue",
+        "id": 168781674,
+        "title": "Test issue",
+        "description": "There's something clearly broken",
+        "state": "opened",
+        "created_at": "2025-06-12T00:42:24.388Z",
+        "updated_at": "2025-06-12T00:42:48.083Z",
+        "labels": [
+          "l1"
+        ],
+        "author_username": "ypc-faros",
+        "assignee_usernames": [
+          "test-assignee"
+        ],
+        "group_id": "12372707",
+        "project_path": "testy"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_merge_request_reviews",
+      "emitted_at": 1750789924527,
+      "data": {
+        "__brand": "FarosMergeRequestReview",
+        "action_name": "approved",
+        "author_username": "ypc-faros",
+        "created_at": "2025-06-13T01:52:18.939Z",
+        "id": 4346114969,
+        "target_iid": 3,
+        "target_type": "MergeRequest",
+        "group_id": "12372707",
+        "project_path": "testy"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_releases",
+      "emitted_at": 1735689600000,
+      "data": {
+        "__brand": "FarosRelease",
+        "tag_name": "v2.1.0",
+        "name": "Release 2.1.0",
+        "description": "Minor release with bug fixes and performance improvements",
+        "created_at": "2024-01-15T10:30:45.123Z",
+        "released_at": "2024-01-15T14:22:30.456Z",
+        "_links": {
+          "self": "https://gitlab.example.com/acme-corp/web-platform/backend-services/-/releases/v2.1.0"
+        },
+        "author_username": "john-doe",
+        "group_id": "42",
+        "project_path": "backend-services"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581483123,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 101,
+        "iid": 1,
+        "ref": "main",
+        "sha": "abc123def456789012345678901234567890abcd",
+        "created_at": "2023-07-03T09:10:08.691Z",
+        "updated_at": "2023-07-03T09:11:04.844Z",
+        "status": "success",
+        "user": {
+          "id": 1001,
+          "username": "john.doe",
+          "public_email": null,
+          "name": "John Doe",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/john.doe"
+        },
+        "environment": {
+          "id": 401,
+          "name": "production",
+          "slug": "production",
+          "external_url": "https://app.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-05-27T09:20:23.444Z"
+        },
+        "deployable": {
+          "id": 2001,
+          "status": "success",
+          "stage": "deploy",
+          "name": "deploy-job",
+          "ref": "main",
+          "tag": false,
+          "coverage": null,
+          "allow_failure": false,
+          "created_at": "2023-07-03T09:10:08.234Z",
+          "started_at": "2023-07-03T09:10:23.323Z",
+          "finished_at": "2023-07-03T09:11:04.805Z",
+          "erased_at": null,
+          "duration": 41.482176,
+          "queued_duration": 1.988106,
+          "user": {
+            "id": 1001,
+            "username": "john.doe",
+            "public_email": null,
+            "name": "John Doe",
+            "state": "active",
+            "locked": false,
+            "avatar_url": "https://secure.gravatar.com/avatar/example?s=80&d=identicon",
+            "web_url": "https://gitlab.example.com/john.doe",
+            "created_at": "2023-01-01T00:00:00.000Z",
+            "bio": "",
+            "location": "",
+            "job_title": "",
+            "bot": false,
+            "followers": 0,
+            "following": 0
+          },
+          "commit": {
+            "id": "abc123def456789012345678901234567890abcd",
+            "short_id": "abc123de",
+            "created_at": "2023-07-03T14:38:52.000Z",
+            "parent_ids": ["def456abc789012345678901234567890abcdef"],
+            "title": "Deploy application update",
+            "message": "Deploy application update\n\nImplements new features and bug fixes",
+            "author_name": "john.doe",
+            "author_email": "john.doe@example.com",
+            "authored_date": "2023-07-03T14:38:52.000Z",
+            "committer_name": "john.doe",
+            "committer_email": "john.doe@example.com",
+            "committed_date": "2023-07-03T14:38:52.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/commit/abc123def456789012345678901234567890abcd"
+          },
+          "pipeline": {
+            "id": 3001,
+            "iid": 10,
+            "project_id": 5001,
+            "sha": "abc123def456789012345678901234567890abcd",
+            "ref": "main",
+            "status": "success",
+            "source": "web",
+            "created_at": "2023-07-03T09:10:08.217Z",
+            "updated_at": "2023-07-03T09:12:08.858Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/pipelines/3001"
+          },
+          "web_url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2001",
+          "artifacts": [
+            {
+              "file_type": "archive",
+              "size": 1024000,
+              "filename": "artifacts.zip",
+              "file_format": "zip"
+            },
+            {
+              "file_type": "trace",
+              "size": 7914,
+              "filename": "job.log",
+              "file_format": null
+            }
+          ]
+        },
+        "group_id": "1001",
+        "project_path": "project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581490000,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 102,
+        "iid": 2,
+        "ref": "develop",
+        "sha": "def456abc789012345678901234567890abcdef",
+        "created_at": "2023-07-04T10:15:00.000Z",
+        "updated_at": "2023-07-04T10:20:00.000Z",
+        "status": "failed",
+        "user": {
+          "id": 1002,
+          "username": "jane.smith",
+          "public_email": null,
+          "name": "Jane Smith",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example2?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/jane.smith"
+        },
+        "environment": {
+          "id": 402,
+          "name": "staging",
+          "slug": "staging",
+          "external_url": "https://staging.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-07-04T10:20:00.000Z"
+        },
+        "deployable": {
+          "id": 2002,
+          "status": "failed",
+          "stage": "deploy",
+          "name": "deploy-staging",
+          "ref": "develop",
+          "tag": false,
+          "coverage": null,
+          "allow_failure": false,
+          "created_at": "2023-07-04T10:15:00.000Z",
+          "started_at": "2023-07-04T10:15:30.000Z",
+          "finished_at": "2023-07-04T10:20:00.000Z",
+          "erased_at": null,
+          "duration": 270.0,
+          "queued_duration": 2.0,
+          "user": {
+            "id": 1002,
+            "username": "jane.smith",
+            "public_email": null,
+            "name": "Jane Smith",
+            "state": "active",
+            "locked": false,
+            "avatar_url": "https://secure.gravatar.com/avatar/example2?s=80&d=identicon",
+            "web_url": "https://gitlab.example.com/jane.smith",
+            "created_at": "2023-01-01T00:00:00.000Z",
+            "bio": "",
+            "location": "",
+            "job_title": "Developer",
+            "bot": false,
+            "followers": 5,
+            "following": 3
+          },
+          "commit": {
+            "id": "def456abc789012345678901234567890abcdef",
+            "short_id": "def456ab",
+            "created_at": "2023-07-04T10:00:00.000Z",
+            "parent_ids": ["abc123def456789012345678901234567890abcd"],
+            "title": "Fix staging deployment",
+            "message": "Fix staging deployment\n\nAddress configuration issues",
+            "author_name": "jane.smith",
+            "author_email": "jane.smith@example.com",
+            "authored_date": "2023-07-04T10:00:00.000Z",
+            "committer_name": "jane.smith",
+            "committer_email": "jane.smith@example.com",
+            "committed_date": "2023-07-04T10:00:00.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/commit/def456abc789012345678901234567890abcdef"
+          },
+          "pipeline": {
+            "id": 3002,
+            "iid": 11,
+            "project_id": 5001,
+            "sha": "def456abc789012345678901234567890abcdef",
+            "ref": "develop",
+            "status": "failed",
+            "source": "push",
+            "created_at": "2023-07-04T10:15:00.000Z",
+            "updated_at": "2023-07-04T10:20:00.000Z",
+            "web_url": "https://gitlab.example.com/group/subgroup/project/-/pipelines/3002"
+          },
+          "web_url": "https://gitlab.example.com/group/subgroup/project/-/jobs/2002",
+          "artifacts": []
+        },
+        "group_id": "1001",
+        "project_path": "project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_deployments",
+      "emitted_at": 1751581500000,
+      "data": {
+        "__brand": "FarosDeployment",
+        "id": 103,
+        "iid": 3,
+        "ref": "feature/enhancement",
+        "sha": "fed789cba012345678901234567890abcdef123",
+        "created_at": "2023-07-05T15:30:00.000Z",
+        "updated_at": "2023-07-05T15:35:00.000Z",
+        "status": "running",
+        "user": {
+          "id": 1003,
+          "username": "bob.wilson",
+          "public_email": null,
+          "name": "Bob Wilson",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/example3?s=80&d=identicon",
+          "web_url": "https://gitlab.example.com/bob.wilson"
+        },
+        "environment": {
+          "id": 403,
+          "name": "development",
+          "slug": "development",
+          "external_url": "https://dev.example.com",
+          "created_at": "2023-05-27T09:20:23.444Z",
+          "updated_at": "2023-07-05T15:35:00.000Z"
+        },
+        "deployable": null,
+        "group_id": "1002",
+        "project_path": "another-project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_pipelines",
+      "emitted_at": 1751581600000,
+      "data": {
+        "__brand": "FarosPipeline",
+        "id": 301,
+        "iid": 1,
+        "project_id": "123",
+        "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "ref": "main",
+        "status": "success",
+        "source": "push",
+        "created_at": "2023-01-15T10:25:00.000Z",
+        "updated_at": "2023-01-15T10:45:00.000Z",
+        "started_at": "2023-01-15T10:26:00.000Z",
+        "finished_at": "2023-01-15T10:45:00.000Z",
+        "duration": 1140,
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301",
+        "user": {
+          "id": 1,
+          "name": "John Doe",
+          "username": "john.doe",
+          "email": "john.doe@example.com",
+          "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+          "web_url": "https://gitlab.com/john.doe"
+        },
+        "tag": false,
+        "group_id": "1001",
+        "project_path": "test-project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_jobs",
+      "emitted_at": 1751581700000,
+      "data": {
+        "__brand": "FarosJob",
+        "id": 401,
+        "name": "build-app",
+        "stage": "build",
+        "status": "success",
+        "created_at": "2023-01-15T10:26:00.000Z",
+        "started_at": "2023-01-15T10:27:00.000Z",
+        "finished_at": "2023-01-15T10:35:00.000Z",
+        "duration": 480,
+        "web_url": "https://gitlab.com/test-group/test-project/-/jobs/401",
+        "user": {
+          "id": 1,
+          "name": "John Doe",
+          "username": "john.doe",
+          "email": "john.doe@example.com",
+          "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+          "web_url": "https://gitlab.com/john.doe"
+        },
+        "pipeline_id": 301,
+        "ref": "main",
+        "commit": {
+          "id": "a1b2c3d4e5f6789012345678901234567890abcd",
+          "short_id": "a1b2c3d4",
+          "title": "Add build pipeline",
+          "author_name": "John Doe",
+          "author_email": "john.doe@example.com",
+          "web_url": "https://gitlab.com/test-group/test-project/-/commit/a1b2c3d4e5f6789012345678901234567890abcd"
+        },
+        "tag": false,
+        "allow_failure": false,
+        "artifacts": [],
+        "runner": {
+          "id": 1,
+          "description": "shared-runner-1",
+          "is_shared": true
+        },
+        "group_id": "1001",
+        "project_path": "test-project"
+      }
+    },
+    "type": "RECORD"
+  }
+]

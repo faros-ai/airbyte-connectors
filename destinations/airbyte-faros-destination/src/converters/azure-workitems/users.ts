@@ -3,14 +3,15 @@ import {User} from 'faros-airbyte-common/azure-devops';
 
 import {getUniqueName} from '../common/azure-devops';
 import {Common} from '../common/common';
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
 
 export class Users extends AzureWorkitemsConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_User'];
 
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const source = this.streamName.source;
     const userItem = record.record.data as User;
@@ -18,6 +19,9 @@ export class Users extends AzureWorkitemsConverter {
 
     const uniqueName = getUniqueName(userItem);
     if (!uniqueName) {
+      ctx.logger.warn(
+        `Cannot create tms_User record due to missing uniqueName/principalName. UserItem: ${JSON.stringify(userItem)}`
+      );
       return res;
     }
 

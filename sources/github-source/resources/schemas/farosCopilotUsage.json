@@ -18,28 +18,13 @@
     "total_acceptances_count": {
       "type": "number"
     },
-    "total_discards_count": {
-      "type": "number"
-    },
     "total_lines_suggested": {
       "type": "number"
     },
     "total_lines_accepted": {
       "type": "number"
     },
-    "total_lines_discarded": {
-      "type": "number"
-    },
     "total_active_users": {
-      "type": "number"
-    },
-    "total_chat_acceptances": {
-      "type": "number"
-    },
-    "total_chat_turns": {
-      "type": "number"
-    },
-    "total_active_chat_users": {
       "type": "number"
     },
     "total_chats": {
@@ -49,6 +34,9 @@
       "type": "number"
     },
     "total_chat_copy_events": {
+      "type": "number"
+    },
+    "total_active_chat_users": {
       "type": "number"
     },
     "breakdown": {
@@ -68,16 +56,10 @@
           "acceptances_count": {
             "type": "number"
           },
-          "discards_count": {
-            "type": "number"
-          },
           "lines_suggested": {
             "type": "number"
           },
           "lines_accepted": {
-            "type": "number"
-          },
-          "lines_discarded": {
             "type": "number"
           },
           "active_users": {
@@ -95,16 +77,10 @@
               "acceptances_count": {
                 "type": "number"
               },
-              "discards_count": {
-                "type": "number"
-              },
               "lines_suggested": {
                 "type": "number"
               },
               "lines_accepted": {
-                "type": "number"
-              },
-              "lines_discarded": {
                 "type": "number"
               },
               "active_users": {

@@ -8,7 +8,6 @@ import {
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
 import {FarosClient} from 'faros-js-client';
-import fs from 'fs-extra';
 
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
@@ -17,9 +16,18 @@ import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
 
-afterEach(() => {
+afterEach(async () => {
+  // Clear any pending timers before switching to real timers
+  jest.clearAllTimers();
   jest.useRealTimers();
+
+  // Wait for any pending promises to resolve
+  await new Promise(resolve => process.nextTick(resolve));
+
+  // Clear mocks after async operations complete
   jest.resetAllMocks();
+
+  // Reset singleton instances
   (Jira as any).jira = undefined;
   (ProjectBoardFilter as any)._instance = undefined;
 });
@@ -102,6 +110,21 @@ describe('index', () => {
       .mockResolvedValue(
         readTestResourceAsJSON('issue_pull_requests/dev_status_detail.json')
       ),
+    v2: {
+      ...getIssuesMockedImplementation(
+        true,
+        'issue_pull_requests/issues_with_pull_requests.json'
+      ).v2,
+      permissions: {
+        getMyPermissions: jest.fn().mockResolvedValueOnce({
+          permissions: {
+            VIEW_DEV_TOOLS: {
+              havePermission: true,
+            },
+          },
+        }),
+      },
+    },
   });
 
   const getSprintReportsMockedImplementation = () => ({
@@ -204,6 +227,40 @@ describe('index', () => {
       },
       checkRecordsData: (records) => {
         expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - issue_pull_requests without VIEW_DEV_TOOLS permission', async () => {
+    const loggerErrorSpy = jest.spyOn(logger, 'error');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'issue_pull_requests/config.json',
+      catalogOrPath: 'issue_pull_requests/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const mockImpl = getIssuePullRequestsMockedImplementation();
+        // Override permissions to return false for VIEW_DEV_TOOLS
+        mockImpl.v2.permissions.getMyPermissions = jest
+          .fn()
+          .mockResolvedValueOnce({
+            permissions: {
+              VIEW_DEV_TOOLS: {
+                havePermission: false,
+              },
+            },
+          });
+
+        setupJiraInstance(mockImpl, true, res.config as JiraConfig, logger);
+      },
+      checkRecordsData: (records) => {
+        // Should have no pull request records due to missing permission
+        expect(records).toMatchSnapshot();
+
+        // Verify error was logged
+        expect(loggerErrorSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Missing VIEW_DEV_TOOLS permission')
+        );
       },
     });
   });
@@ -793,85 +850,97 @@ describe('index', () => {
 
   test('streams - project versions', async () => {
     jest.useFakeTimers({now: new Date('2023-06-01')});
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'project_versions/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            v2: {
-              projectVersions: {
-                getProjectVersionsPaginated: paginate(
-                  readTestResourceAsJSON(
-                    'project_versions/project_versions.json'
-                  )
-                ),
-              },
-              projects: {
-                searchProjects: paginate(
-                  readTestResourceAsJSON('projects/projects.json'),
-                  'values',
-                  50
-                ),
+    try {
+      await sourceReadTest({
+        source,
+        configOrPath: config,
+        catalogOrPath: 'project_versions/catalog.json',
+        onBeforeReadResultConsumer: (res) => {
+          setupJiraInstance(
+            {
+              v2: {
+                projectVersions: {
+                  getProjectVersionsPaginated: paginate(
+                    readTestResourceAsJSON(
+                      'project_versions/project_versions.json'
+                    )
+                  ),
+                },
+                projects: {
+                  searchProjects: paginate(
+                    readTestResourceAsJSON('projects/projects.json'),
+                    'values',
+                    50
+                  ),
+                },
               },
             },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
+            true,
+            res.config as JiraConfig,
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    } finally {
+      // Ensure timers are properly cleaned up
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    }
   });
 
   test('streams - project version issues', async () => {
     jest.useFakeTimers({now: new Date('2023-06-01')});
-    const version = readTestResourceAsJSON(
-      'project_versions/project_versions.json'
-    )[2];
-    await sourceReadTest({
-      source,
-      configOrPath: config,
-      catalogOrPath: 'project_version_issues/catalog.json',
-      onBeforeReadResultConsumer: (res) => {
-        setupJiraInstance(
-          {
-            v2: {
-              issueSearch: {
-                searchForIssuesUsingJqlEnhancedSearchPost: paginate(
-                  readTestResourceAsJSON(
-                    'project_version_issues/project_version_issues.json'
+    try {
+      const version = readTestResourceAsJSON(
+        'project_versions/project_versions.json'
+      )[2];
+      await sourceReadTest({
+        source,
+        configOrPath: config,
+        catalogOrPath: 'project_version_issues/catalog.json',
+        onBeforeReadResultConsumer: (res) => {
+          setupJiraInstance(
+            {
+              v2: {
+                issueSearch: {
+                  searchForIssuesUsingJqlEnhancedSearchPost: paginate(
+                    readTestResourceAsJSON(
+                      'project_version_issues/project_version_issues.json'
+                    ),
+                    'issues',
+                    1,
+                    true
                   ),
-                  'issues',
-                  1,
-                  true
-                ),
-              },
-              projects: {
-                searchProjects: paginate(
-                  readTestResourceAsJSON('projects/projects.json'),
-                  'values',
-                  50
-                ),
-              },
-              projectVersions: {
-                getProjectVersionsPaginated: paginate([version]),
+                },
+                projects: {
+                  searchProjects: paginate(
+                    readTestResourceAsJSON('projects/projects.json'),
+                    'values',
+                    50
+                  ),
+                },
+                projectVersions: {
+                  getProjectVersionsPaginated: paginate([version]),
+                },
               },
             },
-          },
-          true,
-          res.config as JiraConfig,
-          logger
-        );
-      },
-      checkRecordsData: (records) => {
-        expect(records).toMatchSnapshot();
-      },
-    });
+            true,
+            res.config as JiraConfig,
+            logger
+          );
+        },
+        checkRecordsData: (records) => {
+          expect(records).toMatchSnapshot();
+        },
+      });
+    } finally {
+      // Ensure timers are properly cleaned up
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    }
   });
 
   test('streams - teams', async () => {
@@ -1075,6 +1144,87 @@ describe('index', () => {
       bucket_total: 2,
       bucket_id: 2,
       projects: ['TEST', 'TEST2', 'TEST3'],
+    });
+  });
+
+  test('streams - audit_events', async () => {
+    const auditRecords = readTestResourceAsJSON('audit_events/audit_records.json');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'audit_events/config.json',
+      catalogOrPath: 'audit_events/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const config = res.config as JiraConfig;
+
+        // Mock the ProjectBoardFilter to return projects with issueSync: true
+        ProjectBoardFilter.instance = jest.fn().mockReturnValue({
+          getProjects: jest.fn().mockResolvedValue([
+            { uid: 'TEST', issueSync: true },
+            { uid: 'OTHER', issueSync: false },
+          ]),
+        });
+
+        setupJiraInstance(
+          {
+            v2: {
+              auditRecords: {
+                getAuditRecords: paginate(auditRecords.records, 'records', 50, true),
+              },
+            },
+          },
+          true,
+          config,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
+  test('streams - audit_events with API not available (403)', async () => {
+    const loggerWarnSpy = jest.spyOn(logger, 'warn');
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'audit_events/config.json',
+      catalogOrPath: 'audit_events/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        const config = res.config as JiraConfig;
+
+        ProjectBoardFilter.instance = jest.fn().mockReturnValue({
+          getProjects: jest.fn().mockResolvedValue([
+            { uid: 'TEST', issueSync: true },
+          ]),
+        });
+
+        setupJiraInstance(
+          {
+            v2: {
+              auditRecords: {
+                getAuditRecords: jest.fn().mockRejectedValue({
+                  status: 403,
+                  code: 'FORBIDDEN',
+                }),
+              },
+            },
+          },
+          true,
+          config,
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        // Should have no records due to permission error
+        expect(records).toEqual([]);
+        
+        // Verify warning was logged
+        expect(loggerWarnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Fetching Audit events failed with status 403')
+        );
+      },
     });
   });
 });

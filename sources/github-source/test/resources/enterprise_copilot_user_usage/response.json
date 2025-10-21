@@ -1,0 +1,7 @@
+{
+  "download_links": [
+    "https://example.com/copilot-usage-report.jsonl"
+  ],
+  "report_start_day": "2025-07-07",
+  "report_end_day": "2025-08-03"
+}

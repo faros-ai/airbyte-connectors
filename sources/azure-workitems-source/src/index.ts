@@ -34,7 +34,12 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
     config: AzureWorkitemsConfig
   ): Promise<[boolean, VError]> {
     try {
-      const azureWorkItems = await AzureWorkitems.instance(config, this.logger);
+      const azureWorkItems = await AzureWorkitems.instance(
+        config,
+        this.logger,
+        config.additional_fields,
+        config.fetch_work_item_comments
+      );
       await azureWorkItems.checkConnection(config.projects);
     } catch (err: any) {
       return [false, err];

@@ -33,7 +33,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "GitLab authentication failed. Please check your API token and permissions: Response code 401 (Unauthorized)",
+    "message": "GitLab authentication failed. Please check your API token and permissions: Unauthorized",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
@@ -60,45 +60,27 @@ exports[`index round robin bucket execution 1`] = `
 exports[`index streams - faros commits 1`] = `
 [
   {
-    "author_email": "john.doe@example.com",
     "author_name": "John Doe",
-    "authored_date": "2024-01-15T10:25:00Z",
-    "committed_date": "2024-01-15T10:30:00Z",
-    "committer_email": "john.doe@example.com",
-    "committer_name": "John Doe",
+    "branch": "main",
     "created_at": "2024-01-15T10:30:00Z",
     "group_id": "1",
     "id": "abc123def456ghi789jkl012mno345pqr678stu",
     "message": "Add new feature for user authentication
 
 This commit implements OAuth2 integration for better security.",
-    "parent_ids": [
-      "def456ghi789jkl012mno345pqr678stu901vwx",
-    ],
     "project_path": "test-project",
-    "short_id": "abc123de",
-    "title": "Add new feature for user authentication",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
   },
   {
-    "author_email": "jane.smith@example.com",
     "author_name": "Jane Smith",
-    "authored_date": "2024-01-14T14:15:00Z",
-    "committed_date": "2024-01-14T14:20:00Z",
-    "committer_email": "jane.smith@example.com",
-    "committer_name": "Jane Smith",
+    "branch": "main",
     "created_at": "2024-01-14T14:20:00Z",
     "group_id": "1",
     "id": "def456ghi789jkl012mno345pqr678stu901vwx",
     "message": "Fix bug in payment processing
 
 Resolves issue where transactions were not properly validated.",
-    "parent_ids": [
-      "ghi789jkl012mno345pqr678stu901vwx234yz",
-    ],
     "project_path": "test-project",
-    "short_id": "def456gh",
-    "title": "Fix bug in payment processing",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
   },
 ]
@@ -107,13 +89,8 @@ Resolves issue where transactions were not properly validated.",
 exports[`index streams - faros commits with state 1`] = `
 [
   {
-    "author_email": "john.doe@example.com",
     "author_name": "John Doe",
-    "authored_date": "2024-01-15T10:25:00Z",
     "branch": "main",
-    "committed_date": "2024-01-15T10:30:00Z",
-    "committer_email": "john.doe@example.com",
-    "committer_name": "John Doe",
     "created_at": "2024-01-15T10:30:00Z",
     "group": "test-group",
     "group_id": "1",
@@ -121,23 +98,13 @@ exports[`index streams - faros commits with state 1`] = `
     "message": "Add new feature for user authentication
 
 This commit implements OAuth2 integration for better security.",
-    "parent_ids": [
-      "def456ghi789jkl012mno345pqr678stu901vwx",
-    ],
     "project": "test-group/test-project",
     "project_path": "test-project",
-    "short_id": "abc123de",
-    "title": "Add new feature for user authentication",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/abc123def456ghi789jkl012mno345pqr678stu",
   },
   {
-    "author_email": "jane.smith@example.com",
     "author_name": "Jane Smith",
-    "authored_date": "2024-01-14T14:15:00Z",
     "branch": "main",
-    "committed_date": "2024-01-14T14:20:00Z",
-    "committer_email": "jane.smith@example.com",
-    "committer_name": "Jane Smith",
     "created_at": "2024-01-14T14:20:00Z",
     "group": "test-group",
     "group_id": "1",
@@ -145,13 +112,8 @@ This commit implements OAuth2 integration for better security.",
     "message": "Fix bug in payment processing
 
 Resolves issue where transactions were not properly validated.",
-    "parent_ids": [
-      "ghi789jkl012mno345pqr678stu901vwx234yz",
-    ],
     "project": "test-group/test-project",
     "project_path": "test-project",
-    "short_id": "def456gh",
-    "title": "Fix bug in payment processing",
     "web_url": "https://gitlab.com/test-group/test-project/-/commit/def456ghi789jkl012mno345pqr678stu901vwx",
   },
 ]
@@ -167,6 +129,227 @@ exports[`index streams - faros commits with state 2`] = `
 }
 `;
 
+exports[`index streams - faros deployments 1`] = `
+[
+  {
+    "created_at": "2023-01-15T10:30:00Z",
+    "deployable": {
+      "commit": {
+        "author_email": "john.doe@example.com",
+        "author_name": "John Doe",
+        "authored_date": "2023-01-15T10:15:00Z",
+        "committed_date": "2023-01-15T10:15:00Z",
+        "committer_email": "john.doe@example.com",
+        "committer_name": "John Doe",
+        "id": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "message": "Deploy to production
+
+Updates deployment configuration",
+        "short_id": "a1b2c3d4",
+        "title": "Deploy to production",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/a1b2c3d4e5f6789012345678901234567890abcd",
+      },
+      "coverage": null,
+      "created_at": "2023-01-15T10:25:00Z",
+      "duration": 900,
+      "finished_at": "2023-01-15T10:45:00Z",
+      "id": 201,
+      "name": "deploy",
+      "pipeline": {
+        "id": 301,
+        "ref": "main",
+        "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "status": "success",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301",
+      },
+      "ref": "main",
+      "stage": "deploy",
+      "started_at": "2023-01-15T10:30:00Z",
+      "status": "success",
+      "tag": false,
+      "user": {
+        "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+        "email": "john.doe@example.com",
+        "id": 1,
+        "name": "John Doe",
+        "username": "john.doe",
+        "web_url": "https://gitlab.com/john.doe",
+      },
+    },
+    "environment": {
+      "created_at": "2023-01-01T00:00:00Z",
+      "description": "Production environment",
+      "external_url": "https://myapp.example.com",
+      "id": 401,
+      "name": "production",
+      "slug": "production",
+      "state": "available",
+      "updated_at": "2023-01-15T10:45:00Z",
+    },
+    "group_id": "1",
+    "id": 101,
+    "iid": 1,
+    "project_path": "test-project",
+    "ref": "main",
+    "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+    "status": "success",
+    "updated_at": "2023-01-15T10:45:00Z",
+    "user": {
+      "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+      "email": "john.doe@example.com",
+      "id": 1,
+      "name": "John Doe",
+      "username": "john.doe",
+      "web_url": "https://gitlab.com/john.doe",
+    },
+  },
+  {
+    "created_at": "2023-01-16T14:20:00Z",
+    "deployable": {
+      "commit": {
+        "author_email": "jane.smith@example.com",
+        "author_name": "Jane Smith",
+        "authored_date": "2023-01-16T14:10:00Z",
+        "committed_date": "2023-01-16T14:10:00Z",
+        "committer_email": "jane.smith@example.com",
+        "committer_name": "Jane Smith",
+        "id": "b2c3d4e5f6789012345678901234567890abcdef",
+        "message": "Fix deployment issue
+
+Attempt to resolve configuration problem",
+        "short_id": "b2c3d4e5",
+        "title": "Fix deployment issue",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/b2c3d4e5f6789012345678901234567890abcdef",
+      },
+      "coverage": null,
+      "created_at": "2023-01-16T14:15:00Z",
+      "duration": 300,
+      "finished_at": "2023-01-16T14:25:00Z",
+      "id": 202,
+      "name": "deploy",
+      "pipeline": {
+        "id": 302,
+        "ref": "develop",
+        "sha": "b2c3d4e5f6789012345678901234567890abcdef",
+        "status": "failed",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/302",
+      },
+      "ref": "develop",
+      "stage": "deploy",
+      "started_at": "2023-01-16T14:20:00Z",
+      "status": "failed",
+      "tag": false,
+      "user": {
+        "avatar_url": "https://gitlab.com/avatars/jane.smith.png",
+        "email": "jane.smith@example.com",
+        "id": 2,
+        "name": "Jane Smith",
+        "username": "jane.smith",
+        "web_url": "https://gitlab.com/jane.smith",
+      },
+    },
+    "environment": {
+      "created_at": "2023-01-01T00:00:00Z",
+      "description": "Staging environment",
+      "external_url": "https://staging.myapp.example.com",
+      "id": 402,
+      "name": "staging",
+      "slug": "staging",
+      "state": "available",
+      "updated_at": "2023-01-16T14:25:00Z",
+    },
+    "group_id": "1",
+    "id": 102,
+    "iid": 2,
+    "project_path": "test-project",
+    "ref": "develop",
+    "sha": "b2c3d4e5f6789012345678901234567890abcdef",
+    "status": "failed",
+    "updated_at": "2023-01-16T14:25:00Z",
+    "user": {
+      "avatar_url": "https://gitlab.com/avatars/jane.smith.png",
+      "email": "jane.smith@example.com",
+      "id": 2,
+      "name": "Jane Smith",
+      "username": "jane.smith",
+      "web_url": "https://gitlab.com/jane.smith",
+    },
+  },
+  {
+    "created_at": "2023-01-17T09:15:00Z",
+    "deployable": {
+      "commit": {
+        "author_email": "bob.johnson@example.com",
+        "author_name": "Bob Johnson",
+        "authored_date": "2023-01-17T09:05:00Z",
+        "committed_date": "2023-01-17T09:05:00Z",
+        "committer_email": "bob.johnson@example.com",
+        "committer_name": "Bob Johnson",
+        "id": "c3d4e5f6789012345678901234567890abcdef01",
+        "message": "Add new feature
+
+Implements requested functionality",
+        "short_id": "c3d4e5f6",
+        "title": "Add new feature",
+        "web_url": "https://gitlab.com/test-group/test-project/-/commit/c3d4e5f6789012345678901234567890abcdef01",
+      },
+      "coverage": null,
+      "created_at": "2023-01-17T09:10:00Z",
+      "duration": null,
+      "finished_at": null,
+      "id": 203,
+      "name": "deploy",
+      "pipeline": {
+        "id": 303,
+        "ref": "feature/new-feature",
+        "sha": "c3d4e5f6789012345678901234567890abcdef01",
+        "status": "running",
+        "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/303",
+      },
+      "ref": "feature/new-feature",
+      "stage": "deploy",
+      "started_at": "2023-01-17T09:15:00Z",
+      "status": "running",
+      "tag": false,
+      "user": {
+        "avatar_url": "https://gitlab.com/avatars/bob.johnson.png",
+        "email": "bob.johnson@example.com",
+        "id": 3,
+        "name": "Bob Johnson",
+        "username": "bob.johnson",
+        "web_url": "https://gitlab.com/bob.johnson",
+      },
+    },
+    "environment": {
+      "created_at": "2023-01-01T00:00:00Z",
+      "description": "Development environment",
+      "external_url": "https://dev.myapp.example.com",
+      "id": 403,
+      "name": "development",
+      "slug": "development",
+      "state": "available",
+      "updated_at": "2023-01-17T09:20:00Z",
+    },
+    "group_id": "1",
+    "id": 103,
+    "iid": 3,
+    "project_path": "test-project",
+    "ref": "feature/new-feature",
+    "sha": "c3d4e5f6789012345678901234567890abcdef01",
+    "status": "running",
+    "updated_at": "2023-01-17T09:20:00Z",
+    "user": {
+      "avatar_url": "https://gitlab.com/avatars/bob.johnson.png",
+      "email": "bob.johnson@example.com",
+      "id": 3,
+      "name": "Bob Johnson",
+      "username": "bob.johnson",
+      "web_url": "https://gitlab.com/bob.johnson",
+    },
+  },
+]
+`;
+
 exports[`index streams - faros groups 1`] = `
 [
   {
@@ -179,6 +362,232 @@ exports[`index streams - faros groups 1`] = `
     "updated_at": "2021-01-01T00:00:00Z",
     "visibility": "public",
     "web_url": "https://gitlab.com/test-group",
+  },
+]
+`;
+
+exports[`index streams - faros issues 1`] = `
+[
+  {
+    "assignees": [
+      {
+        "username": "hkmshb",
+      },
+    ],
+    "author": {
+      "username": "hkmshb",
+    },
+    "created_at": "2021-02-27T15:50:47.923Z",
+    "description": "The repository needs to be set up.",
+    "group_id": "1",
+    "id": 79927767,
+    "labels": [
+      "Enhancement",
+      "Project Setup",
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Setup Required!",
+    "updated_at": "2021-03-02T15:38:01.088Z",
+  },
+  {
+    "assignees": [],
+    "author": {
+      "username": "hkmshb",
+    },
+    "created_at": "2021-03-02T15:35:31.706Z",
+    "description": "The README.md file is to spare. Add more contents.",
+    "group_id": "1",
+    "id": 80103938,
+    "labels": [
+      "Enhancement",
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Update README file",
+    "updated_at": "2021-03-02T15:37:42.090Z",
+  },
+]
+`;
+
+exports[`index streams - faros jobs 1`] = `
+[
+  {
+    "allow_failure": false,
+    "artifacts": [
+      {
+        "file_format": "zip",
+        "file_type": "archive",
+        "filename": "artifacts.zip",
+        "size": 1024000,
+      },
+    ],
+    "commit": {
+      "author_email": "john.doe@example.com",
+      "author_name": "John Doe",
+      "id": "a1b2c3d4e5f6789012345678901234567890abcd",
+      "message": "Add new feature
+
+This adds the requested functionality",
+      "short_id": "a1b2c3d4",
+      "title": "Add new feature",
+    },
+    "created_at": "2023-01-15T10:25:00Z",
+    "duration": 240,
+    "finished_at": "2023-01-15T10:30:00Z",
+    "group_id": "1",
+    "id": 1001,
+    "name": "build",
+    "pipeline": {
+      "id": 301,
+      "project_id": 123,
+      "ref": "main",
+      "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+      "status": "success",
+      "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301",
+    },
+    "pipeline_id": 301,
+    "project_path": "test-project",
+    "ref": "main",
+    "runner": {
+      "active": true,
+      "description": "GitLab Runner",
+      "id": 42,
+      "is_shared": true,
+      "name": "gitlab-runner",
+    },
+    "stage": "build",
+    "started_at": "2023-01-15T10:26:00Z",
+    "status": "success",
+    "tag": false,
+    "user": {
+      "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+      "email": "john.doe@example.com",
+      "id": 1,
+      "name": "John Doe",
+      "username": "john.doe",
+      "web_url": "https://gitlab.com/john.doe",
+    },
+    "web_url": "https://gitlab.com/test-group/test-project/-/jobs/1001",
+  },
+]
+`;
+
+exports[`index streams - faros merge request reviews 1`] = `
+[
+  {
+    "action_name": "approved",
+    "author": {
+      "name": "Reviewer",
+      "public_email": "reviewer@example.com",
+      "username": "reviewer",
+      "web_url": "https://gitlab.com/reviewer",
+    },
+    "created_at": "2021-01-01T02:00:00Z",
+    "group_id": "1",
+    "id": "123",
+    "project_path": "test-project",
+    "target_iid": 1,
+    "target_type": "merge_request",
+  },
+]
+`;
+
+exports[`index streams - faros merge requests 1`] = `
+[
+  {
+    "assignees": {
+      "nodes": [
+        {
+          "name": "Assignee User",
+          "publicEmail": "assignee@example.com",
+          "username": "assigneeuser",
+          "webUrl": "https://gitlab.com/assigneeuser",
+        },
+      ],
+    },
+    "author": {
+      "name": "Test User",
+      "publicEmail": "test@example.com",
+      "username": "testuser",
+      "webUrl": "https://gitlab.com/testuser",
+    },
+    "closedAt": null,
+    "commitCount": 2,
+    "createdAt": "2021-01-01T00:00:00Z",
+    "diffStatsSummary": {
+      "additions": 10,
+      "deletions": 5,
+      "fileCount": 3,
+    },
+    "group_id": "1",
+    "id": "gid://gitlab/MergeRequest/1",
+    "iid": 1,
+    "labels": {
+      "nodes": [
+        {
+          "title": "bug",
+        },
+      ],
+      "pageInfo": {
+        "endCursor": null,
+        "hasNextPage": false,
+      },
+    },
+    "mergeCommitSha": null,
+    "mergedAt": null,
+    "notes": [
+      {
+        "author": {
+          "name": "Note Author",
+          "publicEmail": "noteauthor@example.com",
+          "username": "noteauthor",
+          "webUrl": "https://gitlab.com/noteauthor",
+        },
+        "body": "Test note",
+        "createdAt": "2021-01-01T01:00:00Z",
+        "id": "gid://gitlab/Note/1",
+        "system": false,
+        "updatedAt": "2021-01-01T01:00:00Z",
+      },
+    ],
+    "project_path": "test-project",
+    "state": "opened",
+    "title": "Test Merge Request",
+    "updatedAt": "2021-01-02T00:00:00Z",
+    "userNotesCount": 1,
+    "webUrl": "https://gitlab.com/test-group/test-project/-/merge_requests/1",
+  },
+]
+`;
+
+exports[`index streams - faros pipelines 1`] = `
+[
+  {
+    "created_at": "2023-01-15T10:25:00Z",
+    "duration": 1140,
+    "finished_at": "2023-01-15T10:45:00Z",
+    "group_id": "1",
+    "id": 301,
+    "iid": 1,
+    "project_id": 123,
+    "project_path": "test-project",
+    "ref": "main",
+    "sha": "a1b2c3d4e5f6789012345678901234567890abcd",
+    "source": "push",
+    "started_at": "2023-01-15T10:26:00Z",
+    "status": "success",
+    "tag": false,
+    "updated_at": "2023-01-15T10:45:00Z",
+    "user": {
+      "avatar_url": "https://gitlab.com/avatars/john.doe.png",
+      "email": "john.doe@example.com",
+      "id": 1,
+      "name": "John Doe",
+      "username": "john.doe",
+      "web_url": "https://gitlab.com/john.doe",
+    },
+    "web_url": "https://gitlab.com/test-group/test-project/-/pipelines/301",
   },
 ]
 `;
@@ -210,6 +619,35 @@ exports[`index streams - faros projects 1`] = `
 ]
 `;
 
+exports[`index streams - faros releases 1`] = `
+[
+  {
+    "_links": {
+      "self": "https://gitlab.com/test-group/test-project/-/releases/v1.0.0",
+    },
+    "created_at": "2021-01-01T00:00:00Z",
+    "description": "First major release",
+    "group_id": "1",
+    "name": "Release 1.0.0",
+    "project_path": "test-project",
+    "released_at": "2021-01-01T12:00:00Z",
+    "tag_name": "v1.0.0",
+  },
+  {
+    "_links": {
+      "self": "https://gitlab.com/test-group/test-project/-/releases/v0.9.0",
+    },
+    "created_at": "2020-12-01T00:00:00Z",
+    "description": "Beta release",
+    "group_id": "1",
+    "name": "Release 0.9.0",
+    "project_path": "test-project",
+    "released_at": "2020-12-01T12:00:00Z",
+    "tag_name": "v0.9.0",
+  },
+]
+`;
+
 exports[`index streams - faros tags 1`] = `
 [
   {
@@ -232,24 +670,24 @@ exports[`index streams - faros tags 1`] = `
 exports[`index streams - faros users 1`] = `
 [
   {
-    "created_at": "2021-01-01T00:00:00Z",
+    "__brand": "FarosUser",
     "email": "user1@example.com",
-    "group": "test-group",
-    "id": 1,
+    "group_ids": [
+      "1",
+    ],
     "name": "Test User 1",
     "state": "active",
-    "updated_at": "2021-01-01T00:00:00Z",
     "username": "user1",
     "web_url": "https://gitlab.com/user1",
   },
   {
-    "created_at": "2021-02-01T00:00:00Z",
+    "__brand": "FarosUser",
     "email": "user2@example.com",
-    "group": "test-group",
-    "id": 2,
+    "group_ids": [
+      "1",
+    ],
     "name": "Test User 2",
     "state": "active",
-    "updated_at": "2021-02-01T00:00:00Z",
     "username": "user2",
     "web_url": "https://gitlab.com/user2",
   },

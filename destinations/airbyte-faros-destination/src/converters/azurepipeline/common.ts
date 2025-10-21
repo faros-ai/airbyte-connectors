@@ -137,4 +137,5 @@ export abstract class AzurePipelineConverter extends Converter {
       source: source ?? this.streamName.source,
     };
   }
+
 }

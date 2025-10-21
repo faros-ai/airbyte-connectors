@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "user_001",
+      "email": "user1@example.com",
+      "name": "User One",
+      "role": "user",
+      "type": "user",
+      "added_at": "2025-07-01T00:00:00Z"
+    },
+    {
+      "id": "user_002",
+      "email": "user2@example.com",
+      "name": "User Two", 
+      "role": "user",
+      "type": "user",
+      "added_at": "2025-07-15T00:00:00Z"
+    }
+  ],
+  "has_more": false
+}

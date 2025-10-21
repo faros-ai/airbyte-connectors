@@ -126,8 +126,15 @@
         "description": "Fetch repository annotated tags",
         "default": false
       },
-      "page_size": {
+      "fetch_pull_request_work_items": {
         "order": 10,
+        "type": "boolean",
+        "title": "Fetch Pull Request Work Items",
+        "description": "Fetch work items linked to pull requests",
+        "default": false
+      },
+      "page_size": {
+        "order": 11,
         "type": "integer",
         "title": "Page Size",
         "description": "The number of items to retrieve per call. Corresponds to '$top' parameter in Azure DevOps API.",
@@ -135,17 +142,49 @@
       },
       "max_retries": {
         "type": "integer",
-        "order": 11,
+        "order": 12,
         "title": "Max Number of Retries",
         "description": "The max number of retries before giving up on retrying requests to Azure DevOps API.",
         "default": 3
       },
       "request_timeout": {
-        "order": 12,
+        "order": 13,
         "type": "integer",
         "title": "Request Timeout",
         "description": "The max time in milliseconds to wait for a request to complete (0 - no timeout).",
         "default": 300000
+      },
+      "bucket_id": {
+        "order": 13,
+        "type": "integer",
+        "title": "Bucket Number",
+        "description": "Bucket number for partitioning and parallel processing. Used to distribute repositories across multiple sync instances.",
+        "default": 1,
+        "minimum": 1
+      },
+      "bucket_total": {
+        "order": 14,
+        "type": "integer",
+        "title": "Total Number of Buckets",
+        "description": "Total number of buckets to partition repositories for parallel processing. bucket_id should be less than or equal to this number.",
+        "default": 1,
+        "minimum": 1
+      },
+      "round_robin_bucket_execution": {
+        "order": 15,
+        "type": "boolean",
+        "title": "Round Robin Bucket Execution",
+        "description": "Enable round-robin execution of buckets. When enabled, processes buckets sequentially instead of just the configured bucket_id.",
+        "default": false
+      },
+      "bucket_ranges": {
+        "order": 16,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Bucket Ranges",
+        "description": "Optional list of bucket ranges for round-robin execution (e.g., ['1-3', '5-7']). Only used when round_robin_bucket_execution is enabled."
       }
     }
   }

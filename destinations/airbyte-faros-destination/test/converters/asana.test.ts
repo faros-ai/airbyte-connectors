@@ -204,6 +204,51 @@ describe('asana', () => {
       const res = await converter.convert(record, ctx);
       expect(res).toMatchSnapshot();
     });
+
+    test('comments', async () => {
+      const converter = new Tasks();
+
+      // Process a task with comments
+      const record = AirbyteRecord.make('tasks', {
+        ...TASK,
+        comments: [
+          {
+            gid: 'comment_001',
+            resource_type: 'story',
+            created_at: '2023-08-24T16:00:00.000Z',
+            created_by: {
+              gid: '1201075972474976',
+              name: 'Roman Kyrnis',
+              resource_type: 'user',
+            },
+            resource_subtype: 'comment_added',
+            text: 'This is a test comment on the task',
+            type: 'comment',
+          },
+          {
+            gid: 'comment_002',
+            resource_type: 'story',
+            created_at: '2023-08-24T17:30:00.000Z',
+            created_by: {
+              gid: '7440298482110',
+              name: 'John Doe',
+              resource_type: 'user',
+            },
+            resource_subtype: 'comment_added',
+            text: 'Another comment with additional feedback',
+            type: 'comment',
+          },
+        ],
+      });
+
+      // Convert the task (this will collect comments but not emit them yet)
+      await converter.convert(record);
+
+      // Manually call onProcessingComplete to get the comment records
+      const commentRecords = await converter.onProcessingComplete();
+
+      expect(commentRecords).toMatchSnapshot();
+    });
   });
 
   describe('projects', () => {

@@ -28,14 +28,18 @@
     "./bitbucket": "./lib/bitbucket/index.js",
     "./bitbucket-server": "./lib/bitbucket-server/index.js",
     "./circleci": "./lib/circleci/index.js",
+    "./claude": "./lib/claude/index.js",
     "./clickup": "./lib/clickup/index.js",
     "./common": "./lib/common/index.js",
+    "./cursor": "./lib/cursor/index.js",
     "./github": "./lib/github/index.js",
     "./github/generated": "./lib/github/generated/index.js",
     "./github/queries": "./lib/github/queries.js",
     "./gitlab": "./lib/gitlab/index.js",
+    "./googledrive": "./lib/googledrive/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
+    "./windsurf": "./lib/windsurf/index.js",
     "./wolken": "./lib/wolken/index.js",
     "./xray": "./lib/xray/index.js"
   },
@@ -53,11 +57,17 @@
       "circleci": [
         "./lib/circleci/index.d.ts"
       ],
+      "claude": [
+        "./lib/claude/index.d.ts"
+      ],
       "clickup": [
         "./lib/clickup/index.d.ts"
       ],
       "common": [
         "./lib/common/index.d.ts"
+      ],
+      "cursor": [
+        "./lib/cursor/index.d.ts"
       ],
       "github": [
         "./lib/github/index.d.ts"
@@ -71,11 +81,17 @@
       "gitlab": [
         "./lib/gitlab/index.d.ts"
       ],
+      "googledrive": [
+        "./lib/googledrive/index.d.ts"
+      ],
       "jira": [
         "./lib/jira/index.d.ts"
       ],
       "vanta": [
         "./lib/vanta/index.d.ts"
+      ],
+      "windsurf": [
+        "./lib/windsurf/index.d.ts"
       ],
       "wolken": [
         "./lib/wolken/index.d.ts"
@@ -96,10 +112,12 @@
     "codegen:github": "graphql-codegen --config src/github/codegen.ts"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "1.32.0",
+    "@datadog/datadog-api-client": "1.41.0",
+    "@gitbeaker/rest": "^42.5.0",
     "@octokit/rest": "^20.1.2",
     "azure-devops-node-api": "^14.1.0",
     "faros-airbyte-cdk": "*",
+    "googleapis": "^144.0.0",
     "jira.js": "^4.1.3",
     "luxon": "^3.4.4",
     "typescript-memoize": "^1.0.0"

@@ -21,6 +21,27 @@ interface Milestone {
   duration: string;
 }
 
+export interface LifecycleMilestone {
+  id?: string;
+  name?: string;
+  description?: string;
+  slug?: string;
+  position?: number;
+  occurred_at?: string;
+  duration?: string;
+  updated_by?: object;
+  updated_at?: string;
+}
+
+export interface LifecyclePhase {
+  id?: string;
+  name?: string;
+  description?: string;
+  type?: string;
+  position?: number;
+  milestones: LifecycleMilestone[];
+}
+
 export interface User extends ObjectBase {
   email?: string;
   created_at: string;
@@ -71,16 +92,6 @@ export interface IncidentTicket {
   attachments: [any];
 }
 
-export interface IncidentEvent {
-  id: string;
-  incident_id: string;
-  occurred_at: string;
-  type: string;
-  visibility: string;
-  author: User;
-  data: any;
-}
-
 export interface Incident extends ObjectBase {
   created_at: string;
   started_at: string;
@@ -127,7 +138,7 @@ export interface Incident extends ObjectBase {
   context_object?: any;
   restricted: boolean;
   explicit_organization_user_ids: [any];
-  events: IncidentEvent[];
+  lifecycle_phases: LifecyclePhase[];
 }
 
 interface TeamMember {
@@ -150,11 +161,6 @@ export enum IncidentEventTypeCategory {
   Custom = 'Custom',
 }
 
-export interface IncidentEventType {
-  category: IncidentEventTypeCategory;
-  detail: string;
-}
-
 export enum FirehydrantIncidentPriority {
   P1 = 'P1',
   P2 = 'P2',
@@ -166,9 +172,13 @@ export enum FirehydrantIncidentMilestone {
   started = 'started',
   detected = 'detected',
   acknowledged = 'acknowledged',
-  firstaction = 'firstaction',
+  investigating = 'investigating',
+  identified = 'identified',
   mitigated = 'mitigated',
   resolved = 'resolved',
+  retrospective_started = 'retrospective_started',
+  retrospective_completed = 'retrospective_completed',
+  closed = 'closed',
 }
 
 export enum FirehydrantIncidentSeverity {
@@ -183,11 +193,17 @@ export enum FirehydrantIncidentSeverity {
 }
 
 export enum IncidentStatusCategory {
+  Created = 'Created',
   Identified = 'Identified',
   Investigating = 'Investigating',
   Monitoring = 'Monitoring',
   Resolved = 'Resolved',
   Custom = 'Custom',
+}
+
+export interface IncidentStatus {
+  category: IncidentStatusCategory;
+  detail: string;
 }
 
 export interface IncidentPriority {
@@ -215,13 +231,6 @@ export enum IncidentSeverityCategory {
 export interface IncidentSeverity {
   category: IncidentSeverityCategory;
   detail: string;
-}
-
-export enum IncidentTicketState {
-  open = 'open',
-  in_progress = 'in_progress',
-  cancelled = 'cancelled',
-  done = 'done',
 }
 
 export interface TaskStatus {

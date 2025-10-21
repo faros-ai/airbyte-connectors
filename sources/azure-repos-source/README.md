@@ -1,55 +1,16 @@
 # Azure-Repos Source
 
 This is the repository for the Azure-Repos source connector, written in Typescript.
-For information about how to use this connector within Airbyte, see [the
-documentation](https://docs.airbyte.io/integrations/sources/azure-repos).
 
-## Local development
+For common build, test, and run instructions, see the [common source documentation](../README.md#common-development-instructions).
 
-### Prerequisites
-
-**To iterate on this connector, make sure to complete this prerequisites
-section.**
-
-#### Minimum Node.js version required `= 14.5`
-
-#### Build connector
-
-From the root repository directory (NOT this folder), run:
-
-```
-npm i
-```
-
-This will install all required dependencies and build all included connectors,
-including the Azure-Repos source connector.
-
-Now you can cd into the Azure-Repos connector directory, `sources/azure-repos-source`,
-and iterate on the Azure-Repos source connector. After making code changes, run:
-
-```
-npm run build
-```
-
-#### Create credentials
-
-Follow the instructions in the
-[documentation](https://docs.airbyte.io/integrations/sources/azure-repos) to
-generate the necessary credentials. Then create a file `secrets/config.json`
-conforming to the `resources/spec.json` file. Note that any directory named
-`secrets` is gitignored across the entire `airbyte-connectors` repos, so there is
-no danger of accidentally checking in sensitive information. See
-`test_files/config.json` for a sample config file.
-
-
-#### Required Permissions
+## Required Permissions
 
 The Azure-Repos source connector requires the following permissions:
 
 - vso.code,vso.profile,vso.project
 
-
-### Streams
+## Streams
 
 | Name     | Full | Incremental | Required Permissions |
 |-----------|---|---|---|
@@ -58,44 +19,8 @@ The Azure-Repos source connector requires the following permissions:
 | Repositories | ✅ |  | vso.code,vso.profile,vso.project |
 | Users     | ✅ |   | Cloud - vso.graph / Server - vso.profile,vso.project |
 
-### Locally running the connector
+## Bucketing Support
 
-```
-bin/main spec
-bin/main check --config secrets/config.json
-bin/main discover --config secrets/config.json
-bin/main read --config secrets/config.json --catalog test_files/full_configured_catalog.json
-```
+This connector implements bucketing and round-robin execution as specified in the [Bucketing and Round-Robin Execution Spec](../../docs/specs/bucketing_round_robin_spec.md).
 
-### Locally running the connector docker image
-
-#### Build
-
-Go back to the root repository directory and run:
-First, make sure you build the latest Docker image:
-
-```
-docker build . --build-arg path=sources/azure-repos-source --build-arg version=0.0.1 -t azure-repos-source
-```
-
-#### Run
-
-Then return to the Azure-Repos connector directory and run any of the connector
-commands as follows:
-
-```
-docker run --rm azure-repos-source spec
-docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source check --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets azure-repos-source discover --config /secrets/config.json
-docker run --rm -v $(pwd)/secrets:/secrets -v $(pwd)/test_files:/test_files azure-repos-source read --config /secrets/config.json --catalog /test_files/full_configured_catalog.json
-```
-
-## Testing
-
-### Unit Tests
-
-To run unit tests locally, from the Azure-Repos connector directory run:
-
-```
-npm test
-```
+Repositories are deterministically assigned to buckets based on their `{projectName}:{repoName}` path, ensuring consistent partitioning across sync instances and runs.

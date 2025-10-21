@@ -1,0 +1,1090 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`claude process records from all streams 1`] = `
+Array [
+  "Processed 4 records",
+  "Processed records by stream: {\\\\\\"mytestsource__claude__claude_code_usage_report\\\\\\":2,\\\\\\"mytestsource__claude__users\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 46 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":36,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`claude process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "a2a5c6e4ed8f57265694a169d9f0468f4b1f79bf2a0b7293707b0332937acebc",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "342",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "AILinesRemoved",
+      },
+      "uid": "2cfa15e4f23ad9b954b3c0ece17b3e1f99c865a4e7bce53ab6ea03eadbc8b2b0",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "128",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CommitsCreated",
+      },
+      "uid": "5a0f0419c6b77e9d0716c8be7a72218e39198b3a8675f827a557b298ecb1c88d",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "8",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "PullRequestsCreated",
+      },
+      "uid": "a4e585567fc261dc6169a4bcdffd2f97c9c24e52a7614e26055474ed2a7121a1",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "016ab2cc1cd90c1062a32f7e44ac353cea5cbd25d60f137eaf9d7bddfa4be616",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "15",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2025-08-08T00:00:00.000Z",
+      "source": "Claude",
+      "usedAt": "2025-08-08T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Claude",
+          "uid": "Claude",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "ClaudeCode",
+        },
+        "user": Object {
+          "source": "Claude",
+          "uid": "user1@example.com",
+        },
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "Cost",
+        "detail": "USD",
+      },
+      "uid": "270e8646c0b3ff0dbfc52850fb7355da6e5cb67b313ec815f9195bc6199c008c",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "186",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "InputTokens",
+      },
+      "uid": "b2272afcdd476956841018acfcc223c4cfe2ceb0ac853480e12c9c80d5db0e1e",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "45230",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "OutputTokens",
+      },
+      "uid": "72bae1b973c17f20dcee11aa79b634348ca14d5a05f2a8fcb18eb8444a5e071e",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "12450",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheReadTokens",
+      },
+      "uid": "efa588349d7613fc6c870481a6d8adcac221e7667cd08ddeccf7fdd9553ae95a",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "8790",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheWriteTokens",
+      },
+      "uid": "7cd7822c374cc129018426b90ae7ed37ca6eadf4b744ccd53984cd2debcd1b8a",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "2340",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-3-5-haiku-20241022",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "Cost",
+        "detail": "USD",
+      },
+      "uid": "1514ace47314ea7cd0377c8ee9f2a362766d979548e7df96c0be3fad0ec86af1",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "42",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-3-5-haiku-20241022",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "InputTokens",
+      },
+      "uid": "1be122cd97bfb3009f8d23285d98f11eaec94eea75dca25fb74ec008d7a6c871",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "23100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-3-5-haiku-20241022",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "OutputTokens",
+      },
+      "uid": "ec168e9e5db9b31e07d3644f699c875a683f39b53dd7c489c506aeb53b448a07",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "5680",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-3-5-haiku-20241022",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheReadTokens",
+      },
+      "uid": "a0d440f46742c8d4f358b28fbc36c587c220804d10cb49d400f6e4af9b5b470d",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "3420",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "model": "claude-3-5-haiku-20241022",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheWriteTokens",
+      },
+      "uid": "2be266c3a729c9d5d0646cde2cfde1e5fd4c9163306288084d181773bb7cd67a",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "890",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "EditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "e964c48271936aaf8e68bad41a6b051d19f5bd9e2512fb0d2ed3852b75817d23",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "25",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "EditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "078eb7b206730dea28a73effd357806d5286ba8f757e833fb6af01ed6be32fda",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "3",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "MultiEditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "df2a9e35b831eeaf820cc4c38843b0be64bae2fe80d473b120888d9c979b1039",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "12",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "MultiEditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "2d43e2733a0ca6448be9383b7acc9eaddb3baecdd3eaea82fa0ed30b94706bb8",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "NotebookEditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "9a8b3d0c6fcd667b2681f54c2f5ab525143951a613e64dc06c71eea4e67fe1b2",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "5",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "NotebookEditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "7cdb88c6a5f8ff01d7c91597517b98969112447bee51d673ee87d7147c06c7b8",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-09T00:00:00.000Z",
+      "feature": "WriteTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-08T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "6f9386d0fe7b74902755886282cd1cb8fba53f125fcd7b4d6c41e9a19b51f9b6",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+      "value": "8",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "AILinesAdded",
+      },
+      "uid": "28dc8b3353cbdb40b9468317c9ae2f63a28f6eff18e7b5d35dc18a0dc67f54bf",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "210",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "AILinesRemoved",
+      },
+      "uid": "fd0bd434cd585977772cb438a8d1da823adbbe03f4d62d7e1b165090ee8bca37",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "95",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CommitsCreated",
+      },
+      "uid": "8783811c853476521f50cbf42c8eca953e1f1693b524b3de1a9de35fd6b779b6",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "5",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "PullRequestsCreated",
+      },
+      "uid": "0764735bdb7cc5ff98450af111c92d7aab4a30b08f975618606cb01cec72a741",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "bd19e9361f34805d384b01dba7417be0fb02292cffced6ce2ba4c7fafdfd7103",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "10",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_UserToolUsage": Object {
+      "recordedAt": "2025-08-09T00:00:00.000Z",
+      "source": "Claude",
+      "usedAt": "2025-08-09T00:00:00.000Z",
+      "userTool": Object {
+        "organization": Object {
+          "source": "Claude",
+          "uid": "Claude",
+        },
+        "tool": Object {
+          "category": "CodingAssistant",
+          "detail": "ClaudeCode",
+        },
+        "user": Object {
+          "source": "Claude",
+          "uid": "user2@example.com",
+        },
+      },
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "Cost",
+        "detail": "USD",
+      },
+      "uid": "a5a576c8491f87548f518a06506f05d42dadd8d74712a4c23e79ba0b6c6cce86",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "125",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "InputTokens",
+      },
+      "uid": "b16a5e962eeac5739f06f19091f0e7bbcef79128f4b84b0fcf51a1d2f8e3fff2",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "32100",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "OutputTokens",
+      },
+      "uid": "3569cd9d685b077846d78e884363b113fb8c6ba66e0578a465e1cd22b33b897e",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "8900",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheReadTokens",
+      },
+      "uid": "fc17360aa5e486751a61c806ab6c52be276b57422aae071145e671b8583034e2",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "6200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "model": "claude-sonnet-4-20250514",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "CacheWriteTokens",
+      },
+      "uid": "e603ddf2f65e936c4a0b001438d47576e9a2b60d00191267516179a1b7944708",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "1500",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "feature": "EditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "40daa8af6a3bfdef3057d405e4b5c60b4cfd4498f0aa1c8c466cc4488bc81963",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "18",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "feature": "EditTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "d6b045cd47eece69eb230d372cc3fe512b1030890710f965edecc99edccdd5a9",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "2",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "feature": "WriteTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsAccepted",
+      },
+      "uid": "075a14bc23026477be504470850c5a388bd063c25c4d6815a282734c4962ca4f",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "5",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "endedAt": "2025-08-10T00:00:00.000Z",
+      "feature": "WriteTool",
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-08-09T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "type": Object {
+        "category": "SuggestionsDiscarded",
+      },
+      "uid": "554fe9a1a95d6a305b229be9205375bb70cc58cf95c92b3fd640eea244d2cff6",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+      "value": "1",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "user1@example.com",
+      "name": "User One",
+      "source": "Claude",
+      "type": "User",
+      "uid": "user1@example.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "user1@example.com",
+      "source": "Claude",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": null,
+      "inactive": false,
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-07-01T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "user": Object {
+        "source": "Claude",
+        "uid": "user1@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_User": Object {
+      "email": "user2@example.com",
+      "name": "User Two",
+      "source": "Claude",
+      "type": "User",
+      "uid": "user2@example.com",
+    },
+  },
+  Object {
+    "vcs_UserEmail": Object {
+      "email": "user2@example.com",
+      "source": "Claude",
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "endedAt": null,
+      "inactive": false,
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "startedAt": "2025-07-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "user": Object {
+        "source": "Claude",
+        "uid": "user2@example.com",
+      },
+    },
+  },
+  Object {
+    "vcs_Organization": Object {
+      "source": "Claude",
+      "uid": "Claude",
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": true,
+      "organization": Object {
+        "source": "Claude",
+        "uid": "Claude",
+      },
+      "source": "Claude",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "ClaudeCode",
+      },
+      "user": Object {
+        "source": "Claude",
+        "uid": "oldkit",
+      },
+    },
+  },
+]
+`;

@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "snyk-docker-plugin": "^6.13.18",
-    "axios": "^1.8.4",
     "faros-airbyte-cdk": "*",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1"

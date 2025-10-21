@@ -34,6 +34,10 @@
     "changedFiles": {
       "type": "integer"
     },
+    "closedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
     "createdAt": {
       "type": "string",
       "format": "date-time"

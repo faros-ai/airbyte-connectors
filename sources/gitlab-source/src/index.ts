@@ -11,6 +11,7 @@ import {
 import {
   applyRoundRobinBucketing,
   calculateDateRange,
+  validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
@@ -23,8 +24,15 @@ import {
 } from './gitlab';
 import {RunMode, RunModeStreams} from './streams/common';
 import {FarosCommits} from './streams/faros_commits';
+import {FarosDeployments} from './streams/faros_deployments';
 import {FarosGroups} from './streams/faros_groups';
+import {FarosIssues} from './streams/faros_issues';
+import {FarosJobs} from './streams/faros_jobs';
+import {FarosMergeRequestReviews} from './streams/faros_merge_request_reviews';
+import {FarosMergeRequests} from './streams/faros_merge_requests';
+import {FarosPipelines} from './streams/faros_pipelines';
 import {FarosProjects} from './streams/faros_projects';
+import {FarosReleases} from './streams/faros_releases';
 import {FarosTags} from './streams/faros_tags';
 import {FarosUsers} from './streams/faros_users';
 import {GitLabConfig} from './types';
@@ -47,6 +55,7 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
+      validateBucketingConfig(config, this.logger.warn.bind(this.logger));
       const gitlab = await GitLab.instance(config, this.logger);
       await gitlab.checkConnection();
     } catch (err: any) {
@@ -69,8 +78,15 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     const farosClient = this.makeFarosClient(config);
     return [
       new FarosCommits(config, this.logger, farosClient),
+      new FarosDeployments(config, this.logger, farosClient),
       new FarosGroups(config, this.logger, farosClient),
+      new FarosIssues(config, this.logger, farosClient),
+      new FarosJobs(config, this.logger, farosClient),
+      new FarosMergeRequests(config, this.logger, farosClient),
+      new FarosMergeRequestReviews(config, this.logger, farosClient),
+      new FarosPipelines(config, this.logger, farosClient),
       new FarosProjects(config, this.logger, farosClient),
+      new FarosReleases(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),
       new FarosUsers(config, this.logger, farosClient),
     ];
@@ -98,6 +114,12 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       streamNames.includes(stream.stream.name)
     );
 
+    const tmsEnabled = streamNames.includes('faros_issues');
+    const cicdEnabled =
+      streamNames.includes('faros_deployments') ||
+      streamNames.includes('faros_pipelines') ||
+      streamNames.includes('faros_jobs');
+
     const {startDate, endDate} = calculateDateRange({
       start_date: config.start_date,
       end_date: config.end_date,
@@ -110,19 +132,6 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       state,
       this.logger.info.bind(this.logger)
     );
-
-    if (config.use_faros_graph_projects_selection) {
-      // No need to resolve groups, we'll use the Faros Graph to filter
-      return {
-        config: {
-          ...newConfig,
-          startDate,
-          endDate,
-        } as GitLabConfig,
-        catalog: {streams},
-        state: newState,
-      };
-    }
 
     const gitlab = await GitLab.instance(config, this.logger);
     const visibleGroups = await gitlab.getGroups();
@@ -190,6 +199,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
         excluded_groups: undefined,
         startDate,
         endDate,
+        tmsEnabled,
+        cicdEnabled,
       } as GitLabConfig,
       catalog: {streams},
       state: newState,

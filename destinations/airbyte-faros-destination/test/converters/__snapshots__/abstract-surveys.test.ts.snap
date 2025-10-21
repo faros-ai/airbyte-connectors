@@ -227,6 +227,152 @@ Array [
 ]
 `;
 
+exports[`abstract-surveys survey responses handles "What is your team?" column without parentheses 1`] = `
+Array [
+  Object {
+    "model": "survey_User",
+    "record": Object {
+      "email": "john@doe.xyz",
+      "name": "John Doe",
+      "source": "Airtable",
+      "uid": "john@doe.xyz",
+    },
+  },
+  Object {
+    "model": "survey_Team",
+    "record": Object {
+      "name": null,
+      "source": "Airtable",
+      "uid": "plain-team-id",
+    },
+  },
+  Object {
+    "model": "survey_TeamMembership",
+    "record": Object {
+      "member": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "plain-team-id",
+      },
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "5",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "plain-team-id",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "How much do you like ice cream?",
+      "source": "Airtable",
+      "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Airtable",
+      "startedAt": null,
+      "status": null,
+      "type": null,
+      "uid": "app0z7JKgJ19t13fw",
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "plain-team-id",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "plain-team-id",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "What is your team?",
+      "source": "Airtable",
+      "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 2,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+]
+`;
+
 exports[`abstract-surveys survey responses question metadata 1`] = `
 Array [
   Object {
@@ -659,6 +805,152 @@ Array [
         },
       },
       "where": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+]
+`;
+
+exports[`abstract-surveys survey responses uses "What is your team?" column as fallback for Team ID 1`] = `
+Array [
+  Object {
+    "model": "survey_User",
+    "record": Object {
+      "email": "john@doe.xyz",
+      "name": "John Doe",
+      "source": "Airtable",
+      "uid": "john@doe.xyz",
+    },
+  },
+  Object {
+    "model": "survey_Team",
+    "record": Object {
+      "name": null,
+      "source": "Airtable",
+      "uid": "eng-team-123",
+    },
+  },
+  Object {
+    "model": "survey_TeamMembership",
+    "record": Object {
+      "member": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "eng-team-123",
+      },
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "5",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "eng-team-123",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "How much do you like ice cream?",
+      "source": "Airtable",
+      "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 1,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "6763721343cee49a89b04e8bebc669c964a14398239aefb62cd2781ab862c874",
+      },
+      "survey": Object {
+        "source": "Airtable",
+        "uid": "app0z7JKgJ19t13fw",
+      },
+    },
+  },
+  Object {
+    "model": "survey_Survey",
+    "record": Object {
+      "description": null,
+      "endedAt": null,
+      "name": null,
+      "source": "Airtable",
+      "startedAt": null,
+      "status": null,
+      "type": null,
+      "uid": "app0z7JKgJ19t13fw",
+    },
+  },
+  Object {
+    "model": "survey_QuestionResponse",
+    "record": Object {
+      "respondent": Object {
+        "source": "Airtable",
+        "uid": "john@doe.xyz",
+      },
+      "response": "eng-team-123",
+      "source": "Airtable",
+      "submittedAt": "2023-10-09T14:09:37.000Z",
+      "surveyQuestion": Object {
+        "question": Object {
+          "source": "Airtable",
+          "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+        },
+        "survey": Object {
+          "source": "Airtable",
+          "uid": "app0z7JKgJ19t13fw",
+        },
+      },
+      "team": Object {
+        "source": "Airtable",
+        "uid": "eng-team-123",
+      },
+      "uid": "rec1",
+    },
+  },
+  Object {
+    "model": "survey_Question",
+    "record": Object {
+      "question": "What is your team?",
+      "source": "Airtable",
+      "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+    },
+  },
+  Object {
+    "model": "survey_SurveyQuestionAssociation",
+    "record": Object {
+      "order": 2,
+      "question": Object {
+        "source": "Airtable",
+        "uid": "d28bebdc722f4706ceec5de4b293f91834417fc04b09153b8aec1aad1c02c874",
+      },
+      "survey": Object {
         "source": "Airtable",
         "uid": "app0z7JKgJ19t13fw",
       },

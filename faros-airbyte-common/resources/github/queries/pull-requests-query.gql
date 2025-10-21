@@ -35,6 +35,7 @@ query pullRequests($owner: String!, $repo: String!, $cursor: String, $page_size:
         }
         body
         changedFiles
+        closedAt
         createdAt
         commits(last: 1) {
           totalCount

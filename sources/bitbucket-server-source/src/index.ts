@@ -1,11 +1,14 @@
 import {Command} from 'commander';
 import {
+  AirbyteConfiguredCatalog,
   AirbyteSourceBase,
   AirbyteSourceLogger,
   AirbyteSourceRunner,
   AirbyteSpec,
+  AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
+import {applyRoundRobinBucketing} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {BitbucketServer, BitbucketServerConfig} from './bitbucket-server';
@@ -60,5 +63,27 @@ export class BitbucketServerSource extends AirbyteSourceBase<BitbucketServerConf
       Tags,
       Users,
     ].map((Stream) => new Stream(config, this.logger));
+  }
+
+  async onBeforeRead(
+    config: BitbucketServerConfig,
+    catalog: AirbyteConfiguredCatalog,
+    state?: AirbyteState
+  ): Promise<{
+    config: BitbucketServerConfig;
+    catalog: AirbyteConfiguredCatalog;
+    state?: AirbyteState;
+  }> {
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
+
+    return {
+      config: newConfig as BitbucketServerConfig,
+      catalog,
+      state: newState,
+    };
   }
 }

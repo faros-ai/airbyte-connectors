@@ -8,7 +8,10 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {calculateDateRange} from 'faros-airbyte-common/common';
+import {
+  applyRoundRobinBucketing,
+  calculateDateRange,
+} from 'faros-airbyte-common/common';
 import VError from 'verror';
 
 import {Bitbucket, DEFAULT_CUTOFF_DAYS, DEFAULT_RUN_MODE} from './bitbucket';
@@ -95,15 +98,21 @@ export class BitbucketSource extends AirbyteSourceBase<BitbucketConfig> {
       cutoff_days: config.cutoff_days ?? DEFAULT_CUTOFF_DAYS,
       logger: this.logger.info.bind(this.logger),
     });
+
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      this.logger.info.bind(this.logger)
+    );
     return {
       config: {
-        ...config,
+        ...newConfig,
         requestedStreams,
         startDate,
         endDate,
       },
       catalog: {streams},
-      state,
+      state: newState,
     };
   }
 }

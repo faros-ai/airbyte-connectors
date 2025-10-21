@@ -18,7 +18,9 @@ export class Pipelines extends ProjectsStreamBase {
   ): AsyncGenerator<Pipeline> {
     const azurePipeline = await AzurePipelines.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
     yield* await azurePipeline.getPipelines(streamSlice);
   }

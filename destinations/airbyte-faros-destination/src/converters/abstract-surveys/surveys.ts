@@ -49,6 +49,8 @@ export interface SurveysConfig {
   exclude_columns?: ReadonlyArray<string>;
 }
 
+const RespondentTeamIdColumnFallback = 'What is your team?';
+
 export abstract class AbstractSurveys extends Converter {
   abstract getSurveyId(record: AirbyteRecord): string | undefined;
   abstract getTableName(record: AirbyteRecord): string | undefined;
@@ -542,7 +544,8 @@ export abstract class AbstractSurveys extends Converter {
           row,
           this.config.column_names_mapping.respondent_team_name_column_name
         )
-      );
+      ) ??
+      AbstractSurveys.getColumnValue(row, RespondentTeamIdColumnFallback);
 
     if (!uid) {
       return undefined;
@@ -576,13 +579,29 @@ export abstract class AbstractSurveys extends Converter {
 
   // Get column value either from string or an array of single string (lookup result)
   static getColumnValue(row: any, columnName: string): string | null {
-    const columnValue = row[columnName];
+    let columnValue = row[columnName];
     if (!columnValue) {
       return null;
     }
     if (Array.isArray(columnValue)) {
       return columnValue.length === 0 ? null : columnValue[0];
     }
+    // Handle OOTB Survey case where we are using the respondent team id column name fallback
+    // and value is in format "Team Name (team-uid)". It extracts the team-uid part.
+    if (
+      columnName === RespondentTeamIdColumnFallback &&
+      typeof columnValue === 'string'
+    ) {
+      columnValue = AbstractSurveys.extractTeamIdFromParentheses(columnValue);
+    }
     return columnValue;
+  }
+  /**
+   * Extracts the team id from a string in the format "Team Name (team-uid)".
+   * If the string does not contain parentheses, returns the original string.
+   */
+  private static extractTeamIdFromParentheses(value: string): string {
+    const match = value.match(/\(([^)]+)\)/);
+    return match ? match[1] : value;
   }
 }

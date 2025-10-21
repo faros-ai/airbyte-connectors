@@ -1,0 +1,51 @@
+{
+  "name": "team-history-source",
+  "version": "0.0.1",
+  "description": "Writes records to org_TeamMembershipHistory based on differences with org_TeamMembership",
+  "keywords": [
+    "airbyte",
+    "source",
+    "faros",
+    "team-history"
+  ],
+  "homepage": "https://www.faros.ai",
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/",
+    "resources/"
+  ],
+  "main": "./lib",
+  "scripts": {
+    "build": "tsc -p src",
+    "clean": "rm -rf lib node_modules out",
+    "fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts' && npm run lint -- --fix",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest --verbose --color",
+    "test-cov": "jest --coverage --verbose --color",
+    "watch": "tsc -b -w src test"
+  },
+  "dependencies": {
+    "faros-airbyte-cdk": "*",
+    "faros-airbyte-common": "*",
+    "graphql": "^16.10.0",
+    "verror": "^1.10.1"
+  },
+  "devDependencies": {
+    "faros-airbyte-testing-tools": "*"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testTimeout": 10000,
+    "transform": {
+      "\\.ts?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
+    }
+  }
+}

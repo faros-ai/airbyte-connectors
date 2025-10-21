@@ -32,7 +32,9 @@ export class Runs extends AzurePipelinesStreamBase {
   override async *streamSlices(): AsyncGenerator<PipelineSlice> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
     const pipelines = this.config.pipelines?.map((p) => p.toLowerCase());
     for (const project of await azurePipelines.getProjects(
@@ -67,7 +69,9 @@ export class Runs extends AzurePipelinesStreamBase {
   ): AsyncGenerator<Run> {
     const azurePipelines = await AzurePipelines.instance(
       this.config,
-      this.logger
+      this.logger,
+      this.config.bucket_id,
+      this.config.bucket_total
     );
 
     const {project, pipeline} = streamSlice;

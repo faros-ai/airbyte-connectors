@@ -1,0 +1,27 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "team_membership_history",
+        "json_schema": {},
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "source_defined_cursor": false,
+        "source_defined_primary_key": [
+          [
+            "teamUid"
+          ],
+          [
+            "memberUid"
+          ],
+          [
+            "startedAt"
+          ]
+        ]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "append"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+query vcsRepositorySingleQuery($repoName: String, $orgUid: String) {
+  vcs_Repository(where: {
+    name: {_eq: $repoName}, 
+    organization: {uid: {_eq: $orgUid}}
+  }, limit: 1) {
+    name
+    organization {
+      uid
+      source
+    }
+  }
+}

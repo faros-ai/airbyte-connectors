@@ -31,6 +31,7 @@ export class FarosPullRequests extends GitHubConverter {
     ReadonlyArray<DestinationRecord>
   >();
   private readonly prKeyMap = new Map<string, PullRequestKey>();
+  private fetchingPrFiles: boolean | undefined;
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_Branch',
@@ -44,10 +45,19 @@ export class FarosPullRequests extends GitHubConverter {
     'qa_CodeQuality',
   ];
 
+  private initialize(ctx: StreamContext): void {
+    if (this.fetchingPrFiles !== undefined) {
+      return;
+    }
+    this.fetchingPrFiles = ctx.getSourceConfig()?.fetch_pull_request_files ?? false;
+  }
+
   async convert(
     record: AirbyteRecord,
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
+    this.initialize(ctx);
+
     const pr = record.record.data as PullRequest;
 
     const prKey = GitHubCommon.pullRequestKey(
@@ -183,6 +193,7 @@ export class FarosPullRequests extends GitHubConverter {
           createdAt: Utils.toDate(pr.createdAt),
           updatedAt: Utils.toDate(pr.updatedAt),
           mergedAt: Utils.toDate(pr.mergedAt),
+          closedAt: Utils.toDate(pr.closedAt),
           readyForReviewAt,
           commitCount: pr.commits.totalCount,
           commentCount:
@@ -291,13 +302,25 @@ export class FarosPullRequests extends GitHubConverter {
   async onProcessingComplete(
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
-    return [
-      ...this.convertBranches(),
-      ...this.convertLabels(),
-      ...this.convertUsers(),
-      ...this.fileCollector.convertFiles(),
-      ...this.convertPRFileAssociations(),
-    ];
+    const res: DestinationRecord[] = [];
+
+    for (const record of this.convertBranches()) {
+      res.push(record);
+    }
+    for (const record of this.convertLabels()) {
+      res.push(record);
+    }
+    for (const record of this.convertUsers()) {
+      res.push(record);
+    }
+    for (const record of this.fileCollector.convertFiles()) {
+      res.push(record);
+    }
+    for (const record of this.convertPRFileAssociations()) {
+      res.push(record);
+    }
+
+    return res;
   }
 
   private collectBranch(
@@ -335,6 +358,11 @@ export class FarosPullRequests extends GitHubConverter {
   }
 
   private convertPRFileAssociations(): DestinationRecord[] {
+    // Only process PR file associations if we're fetching PR files from the source
+    if (!this.fetchingPrFiles) {
+      return [];
+    }
+
     return [
       ...Array.from(this.prFileAssoc.keys()).map((prKeyStr) => ({
         model: 'vcs_PullRequestFile__Deletion',

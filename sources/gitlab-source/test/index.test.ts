@@ -4,23 +4,21 @@ import {
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
 import {
+  readResourceAsJSON,
   readTestResourceAsJSON,
   sourceCheckTest,
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
-import fs from 'fs-extra';
+import {bucket} from 'faros-airbyte-common/common';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
 import * as sut from '../src/index';
-
-function readResourceFile(fileName: string): any {
-  return JSON.parse(fs.readFileSync(`resources/${fileName}`, 'utf8'));
-}
+import {UserCollector} from '../src/user-collector';
 
 // Test data factories
-const createTestGroup = (overrides = {}) => ({
+const createTestGroup = (overrides = {}): any => ({
   id: '1',
   parent_id: null,
   name: 'Test Group',
@@ -33,7 +31,7 @@ const createTestGroup = (overrides = {}) => ({
   ...overrides,
 });
 
-const createTestProject = (overrides = {}) => ({
+const createTestProject = (overrides = {}): any => ({
   id: '123',
   name: 'Test Project',
   path: 'test-project',
@@ -56,7 +54,7 @@ const createTestProject = (overrides = {}) => ({
   ...overrides,
 });
 
-const createTestUsers = () => [
+const createTestUsers = (): any[] => [
   {
     id: 1,
     username: 'user1',
@@ -87,17 +85,51 @@ async function* createAsyncGeneratorMock<T>(items: T[]): AsyncGenerator<T> {
 }
 
 // Common mock setup functions
-function setupBasicMocks() {
+function setupBasicMocks(): any {
   const testGroup = createTestGroup();
   const testProject = createTestProject();
+  const testUsers = createTestUsers();
+
+  const mockUserCollector = {
+    collectUser: jest.fn(),
+    getCommitAuthor: jest.fn(),
+    getCollectedUsers: jest
+      .fn()
+      .mockReturnValue(
+        new Map(
+          testUsers.map((user) => [
+            user.username,
+            UserCollector.toOutput({...user, group_ids: [testGroup.id]}),
+          ])
+        )
+      ),
+    clear: jest.fn(),
+  };
 
   const gitlab = {
     getGroups: jest.fn().mockResolvedValue([testGroup]),
     getGroup: jest.fn().mockResolvedValue(testGroup),
     getProjects: jest.fn().mockResolvedValue([testProject]),
-    getGroupMembers: jest.fn().mockResolvedValue(createTestUsers()),
+    fetchGroupMembers: jest.fn().mockImplementation(async (groupId: string) => {
+      for (const user of testUsers) {
+        mockUserCollector.collectUser(user, groupId);
+      }
+    }),
+    fetchProjectMembers: jest.fn().mockImplementation(),
     getCommits: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
     getTags: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getMergeRequestsWithNotes: jest
+      .fn()
+      .mockReturnValue(createAsyncGeneratorMock([])),
+    getMergeRequestEvents: jest
+      .fn()
+      .mockReturnValue(createAsyncGeneratorMock([])),
+    getIssues: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getReleases: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getDeployments: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    getPipelines: jest.fn().mockResolvedValue([]),
+    getJobs: jest.fn().mockReturnValue(createAsyncGeneratorMock([])),
+    userCollector: mockUserCollector,
   };
 
   const groupFilter = {
@@ -113,7 +145,7 @@ function setupBasicMocks() {
   jest.spyOn(GitLab, 'instance').mockResolvedValue(gitlab as any);
   jest.spyOn(GroupFilter, 'instance').mockReturnValue(groupFilter as any);
 
-  return {gitlab, groupFilter, testGroup, testProject};
+  return {gitlab, groupFilter, testGroup, testProject, mockUserCollector};
 }
 
 describe('index', () => {
@@ -134,7 +166,7 @@ describe('index', () => {
 
   test('spec', async () => {
     await expect(source.spec()).resolves.toStrictEqual(
-      new AirbyteSpec(readResourceFile('spec.json'))
+      new AirbyteSpec(readResourceAsJSON('spec.json'))
     );
   });
 
@@ -266,6 +298,130 @@ describe('index', () => {
     );
   });
 
+  test('streams - faros merge requests', async () => {
+    const mergeRequests = [
+      {
+        id: 'gid://gitlab/MergeRequest/1',
+        iid: 1,
+        createdAt: '2021-01-01T00:00:00Z',
+        updatedAt: '2021-01-02T00:00:00Z',
+        mergedAt: null,
+        closedAt: null,
+        author: {
+          name: 'Test User',
+          publicEmail: 'test@example.com',
+          username: 'testuser',
+          webUrl: 'https://gitlab.com/testuser',
+        },
+        assignees: {
+          nodes: [
+            {
+              name: 'Assignee User',
+              publicEmail: 'assignee@example.com',
+              username: 'assigneeuser',
+              webUrl: 'https://gitlab.com/assigneeuser',
+            },
+          ],
+        },
+        mergeCommitSha: null,
+        commitCount: 2,
+        userNotesCount: 1,
+        diffStatsSummary: {
+          additions: 10,
+          deletions: 5,
+          fileCount: 3,
+        },
+        state: 'opened',
+        title: 'Test Merge Request',
+        webUrl: 'https://gitlab.com/test-group/test-project/-/merge_requests/1',
+        notes: [
+          {
+            id: 'gid://gitlab/Note/1',
+            author: {
+              name: 'Note Author',
+              publicEmail: 'noteauthor@example.com',
+              username: 'noteauthor',
+              webUrl: 'https://gitlab.com/noteauthor',
+            },
+            body: 'Test note',
+            system: false,
+            createdAt: '2021-01-01T01:00:00Z',
+            updatedAt: '2021-01-01T01:00:00Z',
+          },
+        ],
+        labels: {
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
+          nodes: [
+            {
+              title: 'bug',
+            },
+          ],
+        },
+        project_path: 'test-group/test-project',
+      },
+    ];
+    const {gitlab} = setupBasicMocks();
+    gitlab.getMergeRequestsWithNotes.mockReturnValue(
+      createAsyncGeneratorMock(mergeRequests)
+    );
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_merge_requests/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getMergeRequestsWithNotes).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros merge request reviews', async () => {
+    const reviews = [
+      {
+        id: '123',
+        action_name: 'approved',
+        target_iid: 1,
+        target_type: 'merge_request',
+        author: {
+          name: 'Reviewer',
+          public_email: 'reviewer@example.com',
+          username: 'reviewer',
+          web_url: 'https://gitlab.com/reviewer',
+        },
+        created_at: '2021-01-01T02:00:00Z',
+        project_path: 'test-group/test-project',
+      },
+    ];
+    const {gitlab} = setupBasicMocks();
+    gitlab.getMergeRequestEvents.mockReturnValue(
+      createAsyncGeneratorMock(reviews)
+    );
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_merge_request_reviews/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getMergeRequestEvents).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
   test('streams - faros commits with state', async () => {
     const commits = readTestResourceAsJSON('faros_commits/commits.json');
     const {gitlab} = setupBasicMocks();
@@ -300,6 +456,132 @@ describe('index', () => {
     });
   });
 
+  test('streams - faros issues', async () => {
+    const issues = readTestResourceAsJSON('faros_issues/issues.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getIssues.mockReturnValue(createAsyncGeneratorMock(issues));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_issues/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getIssues).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros releases', async () => {
+    const releases = [
+      {
+        tag_name: 'v1.0.0',
+        name: 'Release 1.0.0',
+        description: 'First major release',
+        created_at: '2021-01-01T00:00:00Z',
+        released_at: '2021-01-01T12:00:00Z',
+        _links: {
+          self: 'https://gitlab.com/test-group/test-project/-/releases/v1.0.0',
+        },
+      },
+      {
+        tag_name: 'v0.9.0',
+        name: 'Release 0.9.0',
+        description: 'Beta release',
+        created_at: '2020-12-01T00:00:00Z',
+        released_at: '2020-12-01T12:00:00Z',
+        _links: {
+          self: 'https://gitlab.com/test-group/test-project/-/releases/v0.9.0',
+        },
+      },
+    ];
+    const {gitlab} = setupBasicMocks();
+    gitlab.getReleases.mockReturnValue(createAsyncGeneratorMock(releases));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_releases/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getReleases).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros deployments', async () => {
+    const deployments = readTestResourceAsJSON(
+      'faros_deployments/deployments.json'
+    );
+    const {gitlab} = setupBasicMocks();
+    gitlab.getDeployments.mockReturnValue(
+      createAsyncGeneratorMock(deployments)
+    );
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_deployments/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getDeployments).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros pipelines', async () => {
+    const pipelines = readTestResourceAsJSON('faros_pipelines/pipelines.json');
+    const {gitlab} = setupBasicMocks();
+    gitlab.getPipelines.mockResolvedValue(pipelines);
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_pipelines/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+
+    expect(gitlab.getPipelines).toHaveBeenCalledWith(
+      'test-group/test-project',
+      expect.any(Date),
+      expect.any(Date)
+    );
+  });
+
+  test('streams - faros jobs', async () => {
+    const jobs = readTestResourceAsJSON('faros_jobs/jobs.json');
+    const {gitlab} = setupBasicMocks();
+    // Mock pipelines to return at least one pipeline so jobs can be fetched
+    gitlab.getPipelines.mockResolvedValue([{id: 301}]);
+    gitlab.getJobs.mockReturnValue(createAsyncGeneratorMock(jobs));
+
+    await sourceReadTest({
+      source,
+      configOrPath: 'config.json',
+      catalogOrPath: 'faros_jobs/catalog.json',
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('round robin bucket execution', async () => {
     jest.spyOn(GitLab, 'instance').mockResolvedValue({
       checkConnection: jest.fn().mockResolvedValue(undefined),
@@ -322,6 +604,54 @@ describe('index', () => {
     );
     expect(newConfig.bucket_id).toBe(2);
     expect(newState).toMatchSnapshot();
+  });
+
+  test('entity-level bucketing filters projects correctly', async () => {
+    // Mock multiple projects across different groups
+    const mockProjects = [
+      {id: '1', path: 'project-1', group_id: '1'},
+      {id: '2', path: 'project-2', group_id: '1'},
+      {id: '3', path: 'project-3', group_id: '2'},
+      {id: '4', path: 'project-4', group_id: '2'},
+    ];
+
+    jest.spyOn(GitLab, 'instance').mockResolvedValue({
+      checkConnection: jest.fn().mockResolvedValue(undefined),
+      getGroups: jest.fn().mockResolvedValue([
+        {id: '1', path: 'group1'},
+        {id: '2', path: 'group2'},
+      ]),
+      getProjects: jest.fn().mockImplementation(async function* (groupId: string) {
+        for (const project of mockProjects) {
+          if (project.group_id === groupId) {
+            yield project;
+          }
+        }
+      }),
+    } as any);
+
+    const config = {
+      ...readTestResourceAsJSON('config.json'),
+      bucket_id: 1,
+      bucket_total: 3,
+    };
+
+    // Test that bucketing filters projects correctly
+    const groupFilter = GroupFilter.instance(config, logger);
+    
+    // Get projects for group1 - should only return projects that belong to bucket 1
+    const group1Projects = await groupFilter.getProjects('1');
+    
+    // Verify that only projects assigned to bucket 1 are returned
+    // Using the same logic as implemented in the source
+    const expectedGroup1Projects = mockProjects
+      .filter(p => p.group_id === '1')
+      .filter(p => {
+        const projectKey = `1/${p.path}`;
+        return bucket('farosai/airbyte-gitlab-source', projectKey, 3) === 1;
+      });
+
+    expect(group1Projects.length).toBe(expectedGroup1Projects.length);
   });
 
   describe('onBeforeRead - groups inclusion/exclusion logic', () => {
@@ -492,23 +822,6 @@ describe('index', () => {
       const {config: newConfig} = await source.onBeforeRead(config, catalog);
 
       expect(newConfig.groups).toEqual(['1']); // Only group 1 is included, 2 and 3 are not
-    });
-
-    test('should skip group filtering when use_faros_graph_projects_selection is true', async () => {
-      const config = {
-        ...readTestResourceAsJSON('config.json'),
-        use_faros_graph_projects_selection: true,
-        groups: ['1'],
-        excluded_groups: ['2'],
-      };
-
-      const {config: newConfig} = await source.onBeforeRead(config, catalog);
-
-      // Groups and excluded_groups should be preserved
-      expect(newConfig.groups).toEqual(['1']);
-      expect(newConfig.excluded_groups).toEqual(['2']);
-      expect(newConfig.startDate).toBeDefined();
-      expect(newConfig.endDate).toBeDefined();
     });
   });
 });

@@ -1183,23 +1183,25 @@ describe('index', () => {
     });
   });
 
-  test('streams - enterprise copilot user engagement', async () => {
+  test('streams - enterprise copilot user usage', async () => {
     await sourceReadTest({
       source,
       configOrPath: enterpriseConfig,
-      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
+      catalogOrPath: 'enterprise_copilot_user_usage/catalog.json',
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getEnterpriseCopilotUserEngagementMockedImplementation(
+          getEnterpriseCopilotUserUsageMockedImplementation(
             readTestResourceAsJSON(
-              'enterprise_copilot_user_engagement/response.json'
+              'enterprise_copilot_user_usage/response.json'
             )
           ),
           logger,
           enterpriseConfig
         );
-        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
-          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
+        getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation(
+          readTestResourceFile(
+            'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -1208,28 +1210,30 @@ describe('index', () => {
     });
   });
 
-  test('streams - enterprise copilot user engagement already up-to-date', async () => {
+  test('streams - enterprise copilot user usage already up-to-date', async () => {
     await sourceReadTest({
       source,
       configOrPath: enterpriseConfig,
-      catalogOrPath: 'enterprise_copilot_user_engagement/catalog.json',
+      catalogOrPath: 'enterprise_copilot_user_usage/catalog.json',
       stateOrPath: {
-        faros_enterprise_copilot_user_engagement: {
-          github: {cutoff: new Date('2025-01-01').getTime()},
+        faros_enterprise_copilot_user_usage: {
+          github: {cutoff: new Date('2025-09-01').getTime()},
         },
       },
       onBeforeReadResultConsumer: (res) => {
         setupGitHubInstance(
-          getEnterpriseCopilotUserEngagementMockedImplementation(
+          getEnterpriseCopilotUserUsageMockedImplementation(
             readTestResourceAsJSON(
-              'enterprise_copilot_user_engagement/response.json'
+              'enterprise_copilot_user_usage/response.json'
             )
           ),
           logger,
           enterpriseConfig
         );
-        getEnterpriseCopilotUserEngagementBlobMockedImplementation(
-          readTestResourceFile('enterprise_copilot_user_engagement/blob.txt')
+        getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation(
+          readTestResourceFile(
+            'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
+          )
         );
       },
       checkRecordsData: (records) => {
@@ -1446,11 +1450,11 @@ const getEnterpriseCopilotMetricsForTeamMockedImplementation = (res: any) => ({
   enterpriseCopilotMetricsForTeam: jest.fn().mockReturnValue({data: res}),
 });
 
-const getEnterpriseCopilotUserEngagementMockedImplementation = (res: any) => ({
-  enterpriseCopilotUserEngagement: jest.fn().mockReturnValue({data: res}),
+const getEnterpriseCopilotUserUsageMockedImplementation = (res: any) => ({
+  enterpriseCopilotUserUsage: jest.fn().mockReturnValue({data: res}),
 });
 
-const getEnterpriseCopilotUserEngagementBlobMockedImplementation = (
+const getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation = (
   res: any
 ) => {
   const mockAxiosInstance = {

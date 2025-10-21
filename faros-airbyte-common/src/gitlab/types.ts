@@ -1,75 +1,219 @@
-export type GitLabToken = {
-  type: 'token';
-  personal_access_token: string;
-};
+import {
+  Camelize,
+  CommitSchema,
+  DeploymentSchema,
+  EventSchema,
+  GroupSchema,
+  IssueSchema,
+  JobSchema,
+  MergeRequestSchema,
+  NoteSchema,
+  PipelineSchema,
+  ProjectSchema,
+  ReleaseSchema,
+  TagSchema,
+  UserSchema,
+} from '@gitbeaker/rest';
 
-export interface User {
-  id: number;
-  username: string;
-  name?: string;
-  email?: string;
-  state: string;
-  web_url: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface Group {
+export type FarosProjectOutput = {
+  readonly __brand: 'FarosProject';
   id: string;
-  parent_id: string | null;
-  name: string;
-  path: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  web_url: string;
-  description: string | null;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  namespace: {
-    id: string;
-    name: string;
-    path: string;
-    kind: string;
-    full_path: string;
-  };
-  default_branch: string;
-  archived: boolean;
   group_id: string;
   syncRepoData?: boolean;
-}
+} & Pick<
+  ProjectSchema,
+  | 'archived'
+  | 'created_at'
+  | 'default_branch'
+  | 'description'
+  | 'empty_repo'
+  | 'name'
+  | 'namespace'
+  | 'owner'
+  | 'path'
+  | 'path_with_namespace'
+  | 'updated_at'
+  | 'visibility'
+  | 'web_url'
+>;
 
-export interface Commit {
+export type FarosUserOutput = {
+  readonly __brand: 'FarosUser';
+  group_ids: string[];
+} & Pick<UserSchema, 'username'> &
+  Partial<Pick<UserSchema, 'email' | 'name' | 'state' | 'web_url'>>;
+
+export type FarosGroupOutput = {
+  readonly __brand: 'FarosGroup';
   id: string;
-  short_id: string;
-  created_at: string;
-  parent_ids: string[];
-  title: string;
-  message: string;
-  author_name: string;
-  author_email: string;
-  authored_date: string;
-  committer_name: string;
-  committer_email: string;
-  committed_date: string;
-  web_url: string;
+  parent_id: string | null;
+} & Pick<
+  GroupSchema,
+  | 'created_at'
+  | 'description'
+  | 'name'
+  | 'path'
+  | 'updated_at'
+  | 'visibility'
+  | 'web_url'
+>;
+
+export type FarosCommitOutput = {
+  readonly __brand: 'FarosCommit';
+  author_username: string | null;
+  branch: string;
   group_id: string;
   project_path: string;
-  branch: string;
-}
+} & Pick<CommitSchema, 'id' | 'message' | 'created_at' | 'web_url'>;
 
-export interface Tag {
-  name: string;
-  title: string;
-  commit_id: string;
-}
+export type FarosTagOutput = {
+  readonly __brand: 'FarosTag';
+  commit_id?: string;
+  group_id: string;
+  project_path: string;
+} & Pick<TagSchema, 'name' | 'message' | 'target' | 'title'>;
+
+export type FarosMergeRequestOutput = {
+  readonly __brand: 'FarosMergeRequest';
+  author_username: string;
+  group_id: string;
+  project_path: string;
+  labels: string[];
+  notes: ({author_username: string} & Pick<
+    NoteSchema,
+    'id' | 'body' | 'created_at' | 'updated_at'
+  >)[];
+  sourceBranch?: string;
+  targetBranch?: string;
+  sourceProjectId?: string;
+  targetProjectId?: string;
+  sourceProject?: {
+    id: string;
+    path: string;
+    group: {
+      id: string;
+    };
+  };
+} & Pick<
+  Camelize<MergeRequestSchema>,
+  | 'iid'
+  | 'title'
+  | 'description'
+  | 'state'
+  | 'webUrl'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'mergedAt'
+  | 'closedAt'
+  | 'commitCount'
+  | 'userNotesCount'
+  | 'diffStatsSummary'
+  | 'mergeCommitSha'
+>;
+
+export type FarosMergeRequestReviewOutput = {
+  readonly __brand: 'FarosMergeRequestReview';
+  group_id: string;
+  project_path: string;
+} & Pick<
+  EventSchema,
+  | 'action_name'
+  | 'author_username'
+  | 'created_at'
+  | 'id'
+  | 'target_iid'
+  | 'target_type'
+>;
+
+export type FarosIssueOutput = {
+  readonly __brand: 'FarosIssue';
+  group_id: string;
+  project_path: string;
+  author_username: string;
+  assignee_usernames: string[];
+} & Pick<
+  IssueSchema,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'state'
+  | 'created_at'
+  | 'updated_at'
+  | 'labels'
+>;
+
+export type FarosReleaseOutput = {
+  readonly __brand: 'FarosRelease';
+  author_username: string | null;
+  group_id: string;
+  project_path: string;
+} & Pick<
+  ReleaseSchema,
+  'tag_name' | 'name' | 'description' | 'created_at' | 'released_at' | '_links'
+>;
+
+export type FarosDeploymentOutput = {
+  readonly __brand: 'FarosDeployment';
+  group_id: string;
+  project_path: string;
+} & Pick<
+  DeploymentSchema,
+  | 'id'
+  | 'iid'
+  | 'ref'
+  | 'sha'
+  | 'user'
+  | 'created_at'
+  | 'updated_at'
+  | 'status'
+  | 'deployable'
+  | 'environment'
+>;
+
+export type FarosPipelineOutput = {
+  readonly __brand: 'FarosPipeline';
+  group_id: string;
+  project_path: string;
+  project_id: string;
+} & Pick<
+  PipelineSchema,
+  | 'id'
+  | 'iid'
+  | 'sha'
+  | 'ref'
+  | 'status'
+  | 'source'
+  | 'created_at'
+  | 'updated_at'
+  | 'started_at'
+  | 'finished_at'
+  | 'duration'
+  | 'web_url'
+  | 'user'
+  | 'tag'
+>;
+
+export type FarosJobOutput = {
+  readonly __brand: 'FarosJob';
+  group_id: string;
+  project_path: string;
+  pipeline_id: number;
+} & Pick<
+  JobSchema,
+  | 'id'
+  | 'name'
+  | 'stage'
+  | 'status'
+  | 'created_at'
+  | 'started_at'
+  | 'finished_at'
+  | 'duration'
+  | 'web_url'
+  | 'user'
+  | 'ref'
+  | 'commit'
+  | 'tag'
+  | 'allow_failure'
+  | 'artifacts'
+  | 'runner'
+>;

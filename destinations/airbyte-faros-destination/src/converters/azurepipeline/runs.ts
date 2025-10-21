@@ -3,7 +3,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Run} from 'faros-airbyte-common/azure-devops';
 import {Utils} from 'faros-js-client';
 
-import {getOrganizationFromUrl} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {BuildKey, BuildStateCategory} from '../common/cicd';
 import {CategoryDetail, Tag} from '../common/common';
 import {CommitKey, RepoKey} from '../common/vcs';
@@ -22,10 +22,11 @@ export class Runs extends AzurePipelineConverter {
     const run = record.record.data as Run;
     const res: DestinationRecord[] = [];
 
-    const organizationName = getOrganizationFromUrl(run.url);
+    const organizationName = getOrganization(ctx, run.url);
+
     if (!organizationName) {
       ctx.logger.error(
-        `No organization found for run ${run.id}. URL: ${run.url}`
+        `No organization found for run ${run.id}. URL: ${run.url} and no organization configured in the source config`
       );
       return [];
     }

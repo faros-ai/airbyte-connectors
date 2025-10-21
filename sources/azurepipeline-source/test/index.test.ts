@@ -80,7 +80,9 @@ describe('index', () => {
         instanceType,
         cutoffDays,
         top,
-        logger
+        logger,
+        1, // bucketId
+        1  // bucketTotal
       );
     });
 
@@ -142,7 +144,9 @@ describe('index', () => {
         instanceType,
         cutoffDays,
         top,
-        logger
+        logger,
+        1, // bucketId
+        1  // bucketTotal
       );
     });
 
@@ -197,7 +201,9 @@ describe('index', () => {
         instanceType,
         cutoffDays,
         top,
-        logger
+        logger,
+        1, // bucketId
+        1  // bucketTotal
       );
     });
 
@@ -226,7 +232,9 @@ describe('index', () => {
         instanceType,
         cutoffDays,
         top,
-        logger
+        logger,
+        1, // bucketId
+        1  // bucketTotal
       );
     });
 

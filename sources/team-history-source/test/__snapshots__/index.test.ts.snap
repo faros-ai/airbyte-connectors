@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index TeamMembershipHistory stream schema 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "endedAt": {
+      "format": "date-time",
+      "type": [
+        "string",
+        "null",
+      ],
+    },
+    "memberUid": {
+      "type": "string",
+    },
+    "startedAt": {
+      "format": "date-time",
+      "type": "string",
+    },
+    "teamUid": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "teamUid",
+    "memberUid",
+    "startedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`index check connection api error 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "API connection failed",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection graph does not exist 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Graph test-graph does not exist!",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection missing graph 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Faros graph name was not provided",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`index check connection valid 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
