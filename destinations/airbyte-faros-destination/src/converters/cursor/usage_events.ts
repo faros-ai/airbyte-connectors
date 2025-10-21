@@ -10,6 +10,7 @@ import {CursorConverter} from './common';
 interface DailyMetric {
   day: Date;
   minTimestamp: Date;
+  maxTimestamp: Date;
   userEmail: string;
   model: string;
   usageCount: number;
@@ -19,8 +20,6 @@ interface DailyMetric {
   cacheWriteTokens: number;
   totalCents: number;
 }
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 export class UsageEvents extends CursorConverter {
   private readonly dailyMetrics: Map<string, DailyMetric> = new Map();
@@ -56,9 +55,12 @@ export class UsageEvents extends CursorConverter {
     const existing = this.dailyMetrics.get(key);
     if (existing) {
       existing.usageCount++;
-      // Track minimum timestamp for UID generation
+      // Track minimum and maximum timestamps
       existing.minTimestamp = new Date(
         Math.min(existing.minTimestamp.getTime(), timestamp.getTime())
+      );
+      existing.maxTimestamp = new Date(
+        Math.max(existing.maxTimestamp.getTime(), timestamp.getTime())
       );
       if (usageEventItem.tokenUsage) {
         existing.inputTokens += usageEventItem.tokenUsage.inputTokens || 0;
@@ -73,6 +75,7 @@ export class UsageEvents extends CursorConverter {
       this.dailyMetrics.set(key, {
         day,
         minTimestamp: timestamp,
+        maxTimestamp: timestamp,
         userEmail: usageEventItem.userEmail,
         model: usageEventItem.model,
         usageCount: 1,
@@ -116,15 +119,15 @@ export class UsageEvents extends CursorConverter {
     };
 
     for (const metric of this.dailyMetrics.values()) {
-      const startedAt = metric.day;
-      const endedAt = Utils.toDate(metric.day.getTime() + DAY_MS);
+      // Use actual min/max timestamps from usage events for all metrics
+      const startedAt = metric.minTimestamp;
+      const endedAt = metric.maxTimestamp;
 
       // Emit Usages metric with aggregated count
       res.push(
         ...this.getAssistantMetric({
           startedAt,
           endedAt,
-          startedAtForUid: metric.minTimestamp,
           assistantMetricType: AssistantMetric.Usages,
           value: metric.usageCount,
           organization,
@@ -139,7 +142,6 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
-            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.InputTokens,
             value: metric.inputTokens,
             organization,
@@ -154,7 +156,6 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
-            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.OutputTokens,
             value: metric.outputTokens,
             organization,
@@ -169,7 +170,6 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
-            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.CacheReadTokens,
             value: metric.cacheReadTokens,
             organization,
@@ -184,7 +184,6 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
-            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.CacheWriteTokens,
             value: metric.cacheWriteTokens,
             organization,
@@ -199,7 +198,6 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
-            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.Cost,
             value: Math.round(metric.totalCents),
             organization,

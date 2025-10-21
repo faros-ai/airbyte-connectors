@@ -802,14 +802,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -828,14 +828,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -854,14 +854,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -880,14 +880,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -906,14 +906,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -932,14 +932,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T23:07:05.854Z",
       "model": "claude-4-opus",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T23:06:13.824Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
@@ -958,14 +958,14 @@ Array [
   },
   Object {
     "vcs_AssistantMetric": Object {
-      "endedAt": "2025-06-27T00:00:00.000Z",
+      "endedAt": "2025-06-26T22:52:19.901Z",
       "model": "claude-4-sonnet-thinking",
       "organization": Object {
         "source": "Cursor",
         "uid": "Cursor",
       },
       "source": "Cursor",
-      "startedAt": "2025-06-26T00:00:00.000Z",
+      "startedAt": "2025-06-26T22:52:19.901Z",
       "tool": Object {
         "category": "CodingAssistant",
         "detail": "Cursor",
