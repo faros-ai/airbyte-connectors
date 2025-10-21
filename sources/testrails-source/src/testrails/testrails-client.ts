@@ -140,10 +140,10 @@ export class TestRailsClient {
   ): AsyncGenerator<TestRailsRun> {
     let window_params = '';
     if (window?.after) {
-      window_params += `&created_after=${window.after.toUnixInteger()}`;
+      window_params += `&updated_after=${window.after.toUnixInteger()}`;
     }
     if (window?.before) {
-      window_params += `&created_before=${window.before.toUnixInteger()}`;
+      window_params += `&updated_before=${window.before.toUnixInteger()}`;
     }
 
     const path = '/get_runs/' + projectId + window_params;

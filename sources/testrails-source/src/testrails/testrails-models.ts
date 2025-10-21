@@ -99,6 +99,7 @@ export interface TestRailsRun {
   readonly retest_count: number;
   readonly untested_count: number;
   readonly created_on: number;
+  readonly updated_on: number;
   readonly completed_on: number;
   readonly included_all: boolean;
   readonly plan_id: number;
