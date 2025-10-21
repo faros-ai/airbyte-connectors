@@ -61,7 +61,7 @@ export class UsageEvents extends AirbyteStreamBase {
     return {
       cutoff: Math.max(
         currentStreamState?.cutoff ?? 0,
-        Number(latestRecord.timestamp)
+        Number(latestRecord.timestamp) + 1 // add 1 to not include the last event on next sync
       ),
     };
   }
