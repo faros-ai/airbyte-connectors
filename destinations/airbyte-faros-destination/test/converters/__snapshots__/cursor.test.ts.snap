@@ -952,7 +952,7 @@ Array [
         "source": "Cursor",
         "uid": "developer@company.com",
       },
-      "value": "60.34931999999999",
+      "value": "60",
       "valueType": "Int",
     },
   },

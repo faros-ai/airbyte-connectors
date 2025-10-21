@@ -189,7 +189,7 @@ export class UsageEvents extends CursorConverter {
             startedAt,
             endedAt,
             assistantMetricType: AssistantMetric.Cost,
-            value: metric.totalCents,
+            value: Math.round(metric.totalCents),
             organization,
             userEmail: metric.userEmail,
             model: metric.model,
