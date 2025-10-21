@@ -9,6 +9,7 @@ import {CursorConverter} from './common';
 
 interface DailyMetric {
   day: Date;
+  minTimestamp: Date;
   userEmail: string;
   model: string;
   usageCount: number;
@@ -55,6 +56,10 @@ export class UsageEvents extends CursorConverter {
     const existing = this.dailyMetrics.get(key);
     if (existing) {
       existing.usageCount++;
+      // Track minimum timestamp for UID generation
+      existing.minTimestamp = new Date(
+        Math.min(existing.minTimestamp.getTime(), timestamp.getTime())
+      );
       if (usageEventItem.tokenUsage) {
         existing.inputTokens += usageEventItem.tokenUsage.inputTokens || 0;
         existing.outputTokens += usageEventItem.tokenUsage.outputTokens || 0;
@@ -67,6 +72,7 @@ export class UsageEvents extends CursorConverter {
     } else {
       this.dailyMetrics.set(key, {
         day,
+        minTimestamp: timestamp,
         userEmail: usageEventItem.userEmail,
         model: usageEventItem.model,
         usageCount: 1,
@@ -118,6 +124,7 @@ export class UsageEvents extends CursorConverter {
         ...this.getAssistantMetric({
           startedAt,
           endedAt,
+          startedAtForUid: metric.minTimestamp,
           assistantMetricType: AssistantMetric.Usages,
           value: metric.usageCount,
           organization,
@@ -132,6 +139,7 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
+            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.InputTokens,
             value: metric.inputTokens,
             organization,
@@ -146,6 +154,7 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
+            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.OutputTokens,
             value: metric.outputTokens,
             organization,
@@ -160,6 +169,7 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
+            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.CacheReadTokens,
             value: metric.cacheReadTokens,
             organization,
@@ -174,6 +184,7 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
+            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.CacheWriteTokens,
             value: metric.cacheWriteTokens,
             organization,
@@ -188,6 +199,7 @@ export class UsageEvents extends CursorConverter {
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
+            startedAtForUid: metric.minTimestamp,
             assistantMetricType: AssistantMetric.Cost,
             value: Math.round(metric.totalCents),
             organization,

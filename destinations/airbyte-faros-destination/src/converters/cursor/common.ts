@@ -21,6 +21,7 @@ export interface AssistantMetricConfig {
   model?: string;
   feature?: string;
   repository?: RepoKey;
+  startedAtForUid?: Date;
 }
 
 export enum Feature {
@@ -57,6 +58,7 @@ export abstract class CursorConverter extends Converter {
       model,
       feature,
       repository,
+      startedAtForUid,
     } = config;
     return [
       {
@@ -69,7 +71,7 @@ export abstract class CursorConverter extends Converter {
                 ...[
                   VCSToolDetail.Cursor,
                   assistantMetricType,
-                  startedAt.toISOString(),
+                  (startedAtForUid || startedAt).toISOString(),
                   organization.uid,
                   userEmail,
                   customMetricName,
