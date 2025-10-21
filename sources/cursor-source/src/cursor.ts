@@ -10,6 +10,7 @@ import {
 } from 'faros-airbyte-common/cursor';
 import {makeAxiosInstanceWithRetry} from 'faros-js-client';
 import {random} from 'lodash';
+import {DateTime} from 'luxon';
 import VError from 'verror';
 
 import {
@@ -149,6 +150,11 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<UsageEventItem> {
+    // Round endDate to start of day (UTC) for complete daily windows
+    const roundedEndDate = DateTime.fromMillis(endDate, {zone: 'utc'})
+      .startOf('day')
+      .valueOf();
+
     let page = 1;
     let hasNextPage = true;
 
@@ -157,7 +163,7 @@ export class Cursor {
         '/teams/filtered-usage-events',
         {
           startDate,
-          endDate,
+          endDate: roundedEndDate,
           page,
           pageSize: this.config.page_size ?? DEFAULT_PAGE_SIZE,
         }
