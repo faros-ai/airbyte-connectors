@@ -62,7 +62,7 @@ export class DailyUsage extends CursorConverter {
       DailyUsageItemToAssistantMetricType
     )) {
       const value = dailyUsageItem[field];
-      if (isNil(value)) {
+      if (isNil(value) || (typeof value === 'number' && value <= 0)) {
         continue;
       }
       res.push(
@@ -83,7 +83,7 @@ export class DailyUsage extends CursorConverter {
 
     for (const field of customMetrics) {
       const value = dailyUsageItem[field];
-      if (isNil(value)) {
+      if (isNil(value) || (typeof value === 'number' && value <= 0)) {
         continue;
       }
       res.push(
@@ -101,7 +101,7 @@ export class DailyUsage extends CursorConverter {
 
     for (const [field, feature] of Object.entries(DailyUsageItemToFeature)) {
       const value = dailyUsageItem[field];
-      if (isNil(value)) {
+      if (isNil(value) || (typeof value === 'number' && value <= 0)) {
         continue;
       }
       res.push(
