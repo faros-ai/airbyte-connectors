@@ -12,6 +12,7 @@
     "retest_count": {"type": "number"},
     "untested_count": {"type": "number"},
     "created_on": {"type": "number"},
+    "updated_on": {"type": "number"},
     "completed_on": {"type": "number"},
     "included_all": {"type": "boolean"},
     "plan_id": {"type": "number"},

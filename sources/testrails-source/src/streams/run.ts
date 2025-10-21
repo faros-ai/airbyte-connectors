@@ -10,7 +10,7 @@ import {Run} from '../models';
 import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
 export interface RunState {
-  created_after: number;
+  updated_after: number;
 }
 
 export class Runs extends AirbyteStreamBase {
@@ -28,7 +28,7 @@ export class Runs extends AirbyteStreamBase {
     return ['project_id', 'suite_id', 'id'];
   }
   get cursorField(): string | string[] {
-    return 'created_on';
+    return 'updated_on';
   }
 
   async *readRecords(
@@ -40,15 +40,15 @@ export class Runs extends AirbyteStreamBase {
     const testRails = await TestRails.instance(this.config, this.logger);
 
     yield* testRails.getRuns(
-      syncMode === SyncMode.INCREMENTAL ? streamState.created_after : undefined
+      syncMode === SyncMode.INCREMENTAL ? streamState.updated_after : undefined
     );
   }
 
   getUpdatedState(currentStreamState: RunState, latestRecord: Run): RunState {
     return {
-      created_after: Math.max(
-        currentStreamState.created_after ?? 0,
-        latestRecord.created_on ?? 0
+      updated_after: Math.max(
+        currentStreamState.updated_after ?? 0,
+        latestRecord.updated_on ?? 0
       ),
     };
   }
