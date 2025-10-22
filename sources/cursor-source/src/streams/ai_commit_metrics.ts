@@ -47,10 +47,7 @@ export class AiCommitMetrics extends AirbyteStreamBase {
         ? this.getUpdateRange(cutoff)
         : this.getUpdateRange();
     const cursor = Cursor.instance(this.config, this.logger);
-    yield* cursor.getAiCommitMetrics(
-      startDate.toISOString(),
-      endDate.toISOString()
-    );
+    yield* cursor.getAiCommitMetrics(startDate.getTime(), endDate.getTime());
   }
 
   getUpdatedState(
