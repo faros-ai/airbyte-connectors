@@ -28,7 +28,7 @@
   "dependencies": {
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",
-    "googleapis": "^128.0.0",
+    "googleapis": "^164.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "ts-essentials": "^9.4.1",
