@@ -29,6 +29,9 @@ export const DEFAULT_PAGE_SIZE = 100;
 // https://cursor.com/docs/account/teams/admin-api#get-daily-usage-data
 export const MAX_DAILY_USAGE_WINDOW_DAYS = 30; // Cursor API limit
 
+// https://cursor.com/docs/account/teams/ai-code-tracking-api
+export const MAX_AI_COMMIT_METRICS_WINDOW_DAYS = 30; // Cursor API limit
+
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
@@ -185,51 +188,72 @@ export class Cursor {
   }
 
   async *getAiCommitMetrics(
-    startDate: string,
-    endDate: string
+    startDate: number,
+    endDate: number
   ): AsyncGenerator<AiCommitMetricItem> {
-    let page = 1;
-    let hasNextPage = true;
+    const windowSizeMs =
+      MAX_AI_COMMIT_METRICS_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    let currentStart = startDate;
 
-    while (hasNextPage) {
-      const params = new URLSearchParams({
-        startDate,
-        endDate,
-        page: page.toString(),
-        pageSize: (this.config.page_size ?? DEFAULT_PAGE_SIZE).toString(),
-      });
+    while (currentStart < endDate) {
+      // Calculate the end of the current window
+      const currentEnd = Math.min(currentStart + windowSizeMs, endDate);
 
-      try {
-        const res = await this.api.get<AiCommitMetricsResponse>(
-          `/analytics/ai-code/commits?${params.toString()}`
-        );
+      // Convert timestamps to ISO strings for API call
+      const windowStartDate = new Date(currentStart).toISOString();
+      const windowEndDate = new Date(currentEnd).toISOString();
 
-        for (const commit of res.data.items) {
-          yield commit;
-        }
+      this.logger.debug(
+        `Fetching AI commit metrics from ${windowStartDate} to ${windowEndDate}`
+      );
 
-        hasNextPage =
-          page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) <
-          res.data.totalCount;
-        page++;
-      } catch (error: any) {
-        // Check for 401 unauthorized error indicating no enterprise access
-        if (error.response?.status === 401) {
-          const errorMessage =
-            error.response?.data?.message ||
-            'You must be a member of an enterprise team to access this resource';
+      // Paginate within each window
+      let page = 1;
+      let hasNextPage = true;
 
-          this.logger.info(
-            `Cannot access AI commit metrics API: ${errorMessage}. ` +
-              'An enterprise Cursor account is required to access AI code analytics.'
+      while (hasNextPage) {
+        const params = new URLSearchParams({
+          startDate: windowStartDate,
+          endDate: windowEndDate,
+          page: page.toString(),
+          pageSize: (this.config.page_size ?? DEFAULT_PAGE_SIZE).toString(),
+        });
+
+        try {
+          const res = await this.api.get<AiCommitMetricsResponse>(
+            `/analytics/ai-code/commits?${params.toString()}`
           );
 
-          return;
-        }
+          for (const commit of res.data.items) {
+            yield commit;
+          }
 
-        // Re-throw other errors
-        throw error;
+          hasNextPage =
+            page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) <
+            res.data.totalCount;
+          page++;
+        } catch (error: any) {
+          // Check for 401 unauthorized error indicating no enterprise access
+          if (error.response?.status === 401) {
+            const errorMessage =
+              error.response?.data?.message ||
+              'You must be a member of an enterprise team to access this resource';
+
+            this.logger.info(
+              `Cannot access AI commit metrics API: ${errorMessage}. ` +
+                'An enterprise Cursor account is required to access AI code analytics.'
+            );
+
+            return;
+          }
+
+          // Re-throw other errors
+          throw error;
+        }
       }
+
+      // Move to the next window
+      currentStart = currentEnd;
     }
   }
 
