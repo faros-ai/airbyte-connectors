@@ -23,6 +23,7 @@ export type MembersResponse = {
 export type DailyUsageResponse = {
   data: {
     date: number;
+    day: string;
     isActive: boolean;
     totalLinesAdded: number;
     totalLinesDeleted: number;

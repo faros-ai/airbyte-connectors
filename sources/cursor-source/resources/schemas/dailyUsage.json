@@ -5,6 +5,10 @@
     "date": {
       "type": "integer"
     },
+    "day": {
+      "type": "string",
+      "format": "date"
+    },
     "isActive": {
       "type": "boolean"
     },

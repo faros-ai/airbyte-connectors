@@ -123,8 +123,13 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<DailyUsageItem> {
+    // Round startDate to start of day (UTC) for complete daily windows
+    const roundedStartDate = DateTime.fromMillis(startDate, {zone: 'utc'})
+      .startOf('day')
+      .valueOf();
+
     const windowSizeMs = MAX_DAILY_USAGE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-    let currentStart = startDate;
+    let currentStart = roundedStartDate;
 
     while (currentStart < endDate) {
       // Calculate the end of the current window

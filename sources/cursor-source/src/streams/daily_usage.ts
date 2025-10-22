@@ -28,11 +28,11 @@ export class DailyUsage extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return ['date', 'email'];
+    return ['day', 'email'];
   }
 
   get cursorField(): string | string[] {
-    return 'date';
+    return 'day';
   }
 
   async *readRecords(
@@ -54,8 +54,9 @@ export class DailyUsage extends AirbyteStreamBase {
     currentStreamState: StreamState,
     latestRecord: DailyUsageItem
   ): StreamState {
+    const latestDayTimestamp = new Date(latestRecord.day).getTime();
     return {
-      cutoff: Math.max(currentStreamState?.cutoff ?? 0, latestRecord.date),
+      cutoff: Math.max(currentStreamState?.cutoff ?? 0, latestDayTimestamp),
     };
   }
 
