@@ -18,6 +18,7 @@ export type InactiveMemberItem = {
 
 export type DailyUsageItem = {
   date: number;
+  day: string;
   isActive: boolean;
   totalLinesAdded: number;
   totalLinesDeleted: number;
