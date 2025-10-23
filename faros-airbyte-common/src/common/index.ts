@@ -12,6 +12,8 @@ export {
   nextBucketId,
   applyRoundRobinBucketing,
   RoundRobinConfig,
+  Bucketing,
+  BucketExecutionState,
 } from './bucketing';
 
 export {

@@ -1,5 +1,5 @@
 import {AirbyteConfig} from 'faros-airbyte-cdk';
-import {RoundRobinConfig} from 'faros-airbyte-common/common';
+import {Bucketing, RoundRobinConfig} from 'faros-airbyte-common/common';
 
 import {RunMode} from './streams/common';
 
@@ -35,4 +35,5 @@ export interface GitLabConfig extends AirbyteConfig, RoundRobinConfig {
   endDate?: Date;
   tmsEnabled?: boolean;
   cicdEnabled?: boolean;
+  bucketing?: Bucketing;
 }

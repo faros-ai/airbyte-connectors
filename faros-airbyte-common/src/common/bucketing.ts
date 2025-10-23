@@ -18,7 +18,7 @@ export interface RoundRobinConfig {
   [key: string]: any;
 }
 
-export function bucket(key: string, data: string, bucketTotal: number): number {
+export function bucket(key: string, data: string, bucketTotal: number = 1): number {
   const md5 = createHmac('md5', key);
   md5.update(data);
   const hex = md5.digest('hex').substring(0, 8);
@@ -90,4 +90,133 @@ export function applyRoundRobinBucketing(
       },
     },
   };
+}
+
+/**
+ * Unified bucketing manager that handles validation, round-robin, and filtering.
+ *
+ * This class encapsulates all bucketing concerns in one place:
+ * - Validates bucketing configuration
+ * - Applies round-robin bucket execution if enabled
+ * - Provides simple filtering methods
+ * - Manages state for persistence
+ *
+ * @example
+ * ```typescript
+ * // Create manager (validates and applies round-robin automatically)
+ * const bucketing = Bucketing.create(
+ *   'farosai/airbyte-gitlab-source',
+ *   config,
+ *   state,
+ *   logger
+ * );
+ *
+ * // Filter items
+ * const filtered = bucketing.filter(items, item => item.key);
+ *
+ * // Get state for persistence
+ * const newState = bucketing.getState();
+ * ```
+ */
+export class Bucketing {
+  private readonly partitionKey: string;
+  private readonly bucketId: number;
+  private readonly bucketTotal: number;
+  private readonly state: BucketExecutionState;
+
+  private constructor(
+    partitionKey: string,
+    bucketId: number,
+    bucketTotal: number,
+    state?: BucketExecutionState
+  ) {
+    this.partitionKey = partitionKey;
+    this.bucketId = bucketId;
+    this.bucketTotal = bucketTotal;
+    this.state = state ?? {};
+  }
+
+  /**
+   * Create and initialize bucketing manager.
+   * Automatically validates config and applies round-robin if enabled.
+   *
+   * @param partitionKey - Unique key for this connector (e.g., 'farosai/airbyte-gitlab-source')
+   * @param config - Configuration with bucketing parameters
+   * @param state - Previous state for round-robin execution
+   * @param logger - Optional logger function
+   * @returns Initialized Bucketing instance
+   */
+  static create(
+    partitionKey: string,
+    config: RoundRobinConfig,
+    state?: BucketExecutionState,
+    logger?: (message: string) => void
+  ): Bucketing {
+    // Validate configuration
+    validateBucketingConfig(config, logger);
+
+    // Apply round-robin bucketing if enabled
+    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+      config,
+      state,
+      logger
+    );
+
+    return new Bucketing(
+      partitionKey,
+      newConfig.bucket_id ?? 1,
+      newConfig.bucket_total ?? 1,
+      newState
+    );
+  }
+
+  private static isInBucket(
+    key: string,
+    data: string,
+    bucketId: number,
+    bucketTotal: number
+  ): boolean {
+    return bucket(key, data, bucketTotal) === bucketId;
+  }
+
+  /**
+   * Filter an array of items based on bucketing.
+   *
+   * @param items - Array of items to filter
+   * @param getKey - Function to extract the partition key from each item
+   * @returns Filtered array containing only items in this bucket
+   */
+  filter<T>(items: ReadonlyArray<T>, getKey: (item: T) => string): T[] {
+    return items.filter(item =>
+      Bucketing.isInBucket(this.partitionKey, getKey(item), this.bucketId, this.bucketTotal)
+    );
+  }
+
+  /**
+   * Get updated state for persistence.
+   * This state should be saved and passed to the next sync run.
+   *
+   * @returns State object with bucket execution information
+   */
+  getState(): BucketExecutionState {
+    return this.state;
+  }
+
+  /**
+   * Get current bucket ID being processed.
+   *
+   * @returns The bucket ID (1-indexed)
+   */
+  getBucketId(): number {
+    return this.bucketId;
+  }
+
+  /**
+   * Get total number of buckets.
+   *
+   * @returns The total bucket count
+   */
+  getBucketTotal(): number {
+    return this.bucketTotal;
+  }
 }
