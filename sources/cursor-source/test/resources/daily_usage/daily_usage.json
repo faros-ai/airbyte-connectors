@@ -2,6 +2,7 @@
   "data": [
     {
       "date": 1710720000000,
+      "day": "2024-03-18",
       "isActive": true,
       "totalLinesAdded": 1543,
       "totalLinesDeleted": 892,
@@ -28,6 +29,7 @@
     },
     {
       "date": 1710806400000,
+      "day": "2024-03-19",
       "isActive": true,
       "totalLinesAdded": 2104,
       "totalLinesDeleted": 1203,

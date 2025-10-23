@@ -36,7 +36,7 @@ export class DailyUsage extends CursorConverter {
 
   id(record: AirbyteRecord): string {
     const dailyUsageItem = record.record.data as DailyUsageItem;
-    return `${dailyUsageItem.date}__${dailyUsageItem.email}`;
+    return `${dailyUsageItem.day}__${dailyUsageItem.email}`;
   }
 
   async convert(
@@ -49,7 +49,7 @@ export class DailyUsage extends CursorConverter {
       return [];
     }
 
-    const day = Utils.toDate(dailyUsageItem.date);
+    const day = Utils.toDate(dailyUsageItem.day);
 
     const organization = {
       uid: this.streamName.source,
