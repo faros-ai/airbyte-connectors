@@ -18,7 +18,11 @@ export interface RoundRobinConfig {
   [key: string]: any;
 }
 
-export function bucket(key: string, data: string, bucketTotal: number = 1): number {
+export function bucket(
+  key: string,
+  data: string,
+  bucketTotal: number = 1
+): number {
   const md5 = createHmac('md5', key);
   md5.update(data);
   const hex = md5.digest('hex').substring(0, 8);
@@ -186,9 +190,17 @@ export class Bucketing {
    * @param getKey - Function to extract the partition key from each item
    * @returns Filtered array containing only items in this bucket
    */
-  filter<T>(items: ReadonlyArray<T>, getKey: (item: T) => string): T[] {
-    return items.filter(item =>
-      Bucketing.isInBucket(this.partitionKey, getKey(item), this.bucketId, this.bucketTotal)
+  filter<T>(
+    items: ReadonlyArray<T>,
+    getKey: (item: T) => string
+  ): ReadonlyArray<T> {
+    return items.filter((item) =>
+      Bucketing.isInBucket(
+        this.partitionKey,
+        getKey(item),
+        this.bucketId,
+        this.bucketTotal
+      )
     );
   }
 
