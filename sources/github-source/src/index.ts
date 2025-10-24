@@ -9,7 +9,7 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {
-  applyRoundRobinBucketing,
+  Bucketing,
   calculateDateRange,
 } from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
@@ -85,6 +85,12 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
 
   async checkConnection(config: GitHubConfig): Promise<[boolean, VError]> {
     try {
+      // Validate bucketing config during connection check
+      Bucketing.create({
+        partitionKey: 'farosai/airbyte-github-source',
+        config,
+        logger: this.logger.warn.bind(this.logger),
+      });
       await GitHub.instance(config, this.logger);
       if (
         ![RunMode.EnterpriseCopilotOnly, RunMode.Custom].includes(
@@ -189,23 +195,27 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+    // Create bucketing manager (validates and applies round-robin automatically)
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/airbyte-github-source',
       config,
       state,
-      this.logger.info.bind(this.logger)
-    );
+      logger: this.logger.info.bind(this.logger),
+    });
+
     return {
       config: {
-        ...newConfig,
+        ...config,
         startDate,
         endDate,
         tmsEnabled: streams.map((s) => s.stream.name).includes('faros_issues'),
         cicdEnabled: streams
           .map((s) => s.stream.name)
           .includes('faros_deployments'),
+        bucketing,
       } as GitHubConfig,
       catalog: {streams},
-      state: newState,
+      state: bucketing.getState(),
     };
   }
 }

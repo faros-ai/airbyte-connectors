@@ -2,10 +2,9 @@ import axios, {AxiosInstance} from 'axios';
 import {AxiosCacheInstance, setupCache} from 'axios-cache-interceptor';
 import {AirbyteConfig, AirbyteLogger} from 'faros-airbyte-cdk';
 import {
-  bucket,
+  Bucketing,
   normalizeString,
   RoundRobinConfig,
-  validateBucketingConfig,
 } from 'faros-airbyte-common/common';
 import {
   FarosProject,
@@ -88,6 +87,7 @@ export interface JiraConfig extends AirbyteConfig, RoundRobinConfig {
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;
   endDate?: Date;
+  bucketing?: Bucketing;
 }
 
 export const toFloat = (value: any): number | undefined =>
@@ -192,8 +192,7 @@ export class Jira {
     private readonly isCloud: boolean,
     private readonly concurrencyLimit: number,
     private readonly maxPageSize: number,
-    private readonly bucketId: number,
-    private readonly bucketTotal: number,
+    private readonly config: JiraConfig,
     private readonly logger: AirbyteLogger,
     private readonly useUsersPrefixSearch?: boolean,
     private readonly usersPrefixSearchMaxDepth?: number,
@@ -227,8 +226,6 @@ export class Jira {
     logger?.debug(`Assuming ${cfg.url} to be a Jira ${jiraType} instance`);
 
     const authentication = Jira.auth(cfg);
-
-    validateBucketingConfig(cfg, logger.info.bind(logger));
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized:
@@ -319,8 +316,7 @@ export class Jira {
       isCloud,
       cfg.concurrency_limit ?? DEFAULT_CONCURRENCY_LIMIT,
       cfg.page_size ?? DEFAULT_PAGE_SIZE,
-      cfg.bucket_id ?? DEFAULT_BUCKET_ID,
-      cfg.bucket_total ?? DEFAULT_BUCKET_TOTAL,
+      cfg,
       logger,
       cfg.use_users_prefix_search ?? DEFAULT_USE_USERS_PREFIX_SEARCH,
       cfg.users_prefix_search_max_depth ??
@@ -616,7 +612,7 @@ export class Jira {
   private async *getProjectsFromCloud(
     keys?: ReadonlyArray<string>
   ): AsyncIterableIterator<Version2Models.Project> {
-    const projects = this.iterate(
+    yield* this.iterate(
       (startAt) =>
         this.api.v2.projects.searchProjects({
           expand: 'description',
@@ -632,10 +628,6 @@ export class Jira {
         description: item.description,
       })
     );
-    for await (const project of projects) {
-      // Bucket projects based on bucketId
-      if (this.isProjectInBucket(project.key)) yield project;
-    }
   }
 
   // Jira Server doesn't support searchProjects API, use getAllProjects
@@ -649,11 +641,8 @@ export class Jira {
   ): AsyncIterableIterator<Version2Models.Project> {
     const skippedProjects: string[] = [];
     for await (const project of await this.api.getAllProjects()) {
-      // Skip projects that are not in the project_keys list or bucket
-      if (
-        (keys?.size && !keys.has(project.key)) ||
-        !this.isProjectInBucket(project.key)
-      ) {
+      // Skip projects that are not in the project_keys list
+      if (keys?.size && !keys.has(project.key)) {
         continue;
       }
 
@@ -699,7 +688,7 @@ export class Jira {
     const source = this.sourceQualifier
       ? `Jira_${this.sourceQualifier}`
       : 'Jira';
-    const projects = this.iterate(
+    yield* this.iterate(
       async (startAt) => {
         const data = await farosClient.gql(graph, PROJECT_QUERY, {
           source,
@@ -714,9 +703,6 @@ export class Jira {
         };
       }
     );
-    for await (const project of projects) {
-      if (this.isProjectInBucket(project.key)) yield project;
-    }
   }
 
   async getProject(id: string): Promise<Version2Models.Project> {
@@ -1123,7 +1109,7 @@ export class Jira {
     graph: string,
     projectKeys: Array<string>
   ): AsyncIterableIterator<FarosProject> {
-    const projects = this.iterate(
+    yield* this.iterate(
       async (startAt) => {
         const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
           source: 'Jira',
@@ -1140,11 +1126,6 @@ export class Jira {
         };
       }
     );
-    for await (const project of projects) {
-      if (this.isProjectInBucket(project.key)) {
-        yield project;
-      }
-    }
   }
 
   getBoard(id: string): Promise<AgileModels.Board> {
@@ -1445,12 +1426,6 @@ export class Jira {
     return filterJQL.jql;
   }
 
-  isProjectInBucket(projectKey: string): boolean {
-    return (
-      bucket('farosai/airbyte-jira-source', projectKey, this.bucketTotal) ===
-      this.bucketId
-    );
-  }
 
   async *getFields(): AsyncGenerator<IssueField> {
     for (const [id, name] of this.fieldNameById) {
