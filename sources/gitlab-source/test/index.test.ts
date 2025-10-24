@@ -636,9 +636,12 @@ describe('index', () => {
       ...readTestResourceAsJSON('config.json'),
       bucket_id: 1,
       bucket_total: 3,
-      bucketing: Bucketing.create('farosai/airbyte-gitlab-source', {
-        bucket_id: 1,
-        bucket_total: 3,
+      bucketing: Bucketing.create({
+        partitionKey: 'farosai/airbyte-gitlab-source',
+        config: {
+          bucket_id: 1,
+          bucket_total: 3,
+        },
       }),
     };
 

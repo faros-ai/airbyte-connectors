@@ -96,6 +96,13 @@ export function applyRoundRobinBucketing(
   };
 }
 
+export interface BucketingCreateOptions {
+  partitionKey: string;
+  config: RoundRobinConfig;
+  state?: BucketExecutionState;
+  logger?: (message: string) => void;
+}
+
 /**
  * Unified bucketing manager that handles validation, round-robin, and filtering.
  *
@@ -108,12 +115,12 @@ export function applyRoundRobinBucketing(
  * @example
  * ```typescript
  * // Create manager (validates and applies round-robin automatically)
- * const bucketing = Bucketing.create(
- *   'farosai/airbyte-gitlab-source',
+ * const bucketing = Bucketing.create({
+ *   partitionKey: 'farosai/airbyte-gitlab-source',
  *   config,
  *   state,
  *   logger
- * );
+ * });
  *
  * // Filter items
  * const filtered = bucketing.filter(items, item => item.key);
@@ -144,18 +151,16 @@ export class Bucketing {
    * Create and initialize bucketing manager.
    * Automatically validates config and applies round-robin if enabled.
    *
-   * @param partitionKey - Unique key for this connector (e.g., 'farosai/airbyte-gitlab-source')
-   * @param config - Configuration with bucketing parameters
-   * @param state - Previous state for round-robin execution
-   * @param logger - Optional logger function
+   * @param options - Creation options
+   * @param options.partitionKey - Unique key for this connector (e.g., 'farosai/airbyte-gitlab-source')
+   * @param options.config - Configuration with bucketing parameters
+   * @param options.state - Previous state for round-robin execution
+   * @param options.logger - Optional logger function
    * @returns Initialized Bucketing instance
    */
-  static create(
-    partitionKey: string,
-    config: RoundRobinConfig,
-    state?: BucketExecutionState,
-    logger?: (message: string) => void
-  ): Bucketing {
+  static create(options: BucketingCreateOptions): Bucketing {
+    const {partitionKey, config, state, logger} = options;
+
     // Validate configuration
     validateBucketingConfig(config, logger);
 

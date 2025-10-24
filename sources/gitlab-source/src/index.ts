@@ -52,12 +52,11 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
       // Validate bucketing config during connection check
-      Bucketing.create(
-        'farosai/airbyte-gitlab-source',
+      Bucketing.create({
+        partitionKey: 'farosai/airbyte-gitlab-source',
         config,
-        undefined,
-        this.logger.warn.bind(this.logger)
-      );
+        logger: this.logger.warn.bind(this.logger),
+      });
       const gitlab = await GitLab.instance(config, this.logger);
       await gitlab.checkConnection();
     } catch (err: any) {
@@ -130,12 +129,12 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     });
 
     // Create bucketing manager (validates and applies round-robin automatically)
-    const bucketing = Bucketing.create(
-      'farosai/airbyte-gitlab-source',
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/airbyte-gitlab-source',
       config,
       state,
-      this.logger.info.bind(this.logger)
-    );
+      logger: this.logger.info.bind(this.logger),
+    });
 
     const gitlab = await GitLab.instance(config, this.logger);
     const visibleGroups = await gitlab.getGroups();
