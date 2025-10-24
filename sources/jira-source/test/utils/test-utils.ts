@@ -1,4 +1,5 @@
 import {AirbyteLogger} from 'faros-airbyte-cdk';
+import {Bucketing} from 'faros-airbyte-common/common';
 import {Status} from 'faros-airbyte-common/jira';
 
 import {Jira, JiraConfig} from '../../src/jira';
@@ -23,6 +24,17 @@ export function setupJiraInstance(
     category: 'In Progress',
     detail: 'In Progress',
   });
+
+  // Create bucketing instance for the config
+  const configWithBucketing = {
+    ...sourceConfig,
+    bucketing: Bucketing.create({
+      partitionKey: 'farosai/airbyte-jira-source',
+      config: sourceConfig,
+      logger: logger.info.bind(logger),
+    }),
+  };
+
   Jira.instance = jest.fn().mockImplementation(() => {
     return new Jira(
       'https://jira.com',
@@ -44,8 +56,7 @@ export function setupJiraInstance(
       isCloud,
       5,
       100,
-      sourceConfig.bucket_id,
-      sourceConfig.bucket_total,
+      configWithBucketing,
       logger,
       undefined,
       undefined,
