@@ -8,11 +8,7 @@ import {
   AirbyteState,
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
-import {
-  applyRoundRobinBucketing,
-  calculateDateRange,
-  validateBucketingConfig,
-} from 'faros-airbyte-common/common';
+import {Bucketing, calculateDateRange} from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
 import VError from 'verror';
 
@@ -55,7 +51,12 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
   async checkConnection(config: GitLabConfig): Promise<[boolean, VError]> {
     try {
-      validateBucketingConfig(config, this.logger.warn.bind(this.logger));
+      // Validate bucketing config during connection check
+      Bucketing.create({
+        partitionKey: 'farosai/airbyte-gitlab-source',
+        config,
+        logger: this.logger.warn.bind(this.logger),
+      });
       const gitlab = await GitLab.instance(config, this.logger);
       await gitlab.checkConnection();
     } catch (err: any) {
@@ -127,11 +128,13 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+    // Create bucketing manager (validates and applies round-robin automatically)
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/airbyte-gitlab-source',
       config,
       state,
-      this.logger.info.bind(this.logger)
-    );
+      logger: this.logger.info.bind(this.logger),
+    });
 
     const gitlab = await GitLab.instance(config, this.logger);
     const visibleGroups = await gitlab.getGroups();
@@ -194,16 +197,17 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
 
     return {
       config: {
-        ...(newConfig as GitLabConfig),
+        ...config,
         groups: groupsToSync,
         excluded_groups: undefined,
         startDate,
         endDate,
         tmsEnabled,
         cicdEnabled,
+        bucketing,
       } as GitLabConfig,
       catalog: {streams},
-      state: newState,
+      state: bucketing.getState(),
     };
   }
 }

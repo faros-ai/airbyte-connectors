@@ -53,7 +53,7 @@ describe('UserCollector', () => {
 
       expect(userCollector.getUserCount()).toBe(0);
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        `User has no username. Skipping collection. ${JSON.stringify(invalidUser)}`,
+        `User has no username. Skipping collection. ${JSON.stringify(invalidUser)}`
       );
     });
 
@@ -109,7 +109,7 @@ describe('UserCollector', () => {
       const author = userCollector.getCommitAuthor('John Doe', 'commit123');
       expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        expect.stringContaining('maps to multiple usernames: user1, user2'),
+        expect.stringContaining('maps to multiple usernames: user1, user2')
       );
     });
   });
@@ -134,7 +134,7 @@ describe('UserCollector', () => {
 
       expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Failed to find a username for commit author "Unknown User" (commit: commit123)',
+        'Failed to find a username for commit author "Unknown User" (commit: commit123)'
       );
     });
 
@@ -160,7 +160,7 @@ describe('UserCollector', () => {
 
       expect(author).toBeNull();
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        'Commit commit123 author name "John Doe" maps to multiple usernames: user1, user2. Will skip author association.',
+        'Commit commit123 author name "John Doe" maps to multiple usernames: user1, user2. Will skip author association.'
       );
     });
 

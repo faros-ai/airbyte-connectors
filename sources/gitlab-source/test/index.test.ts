@@ -3,6 +3,7 @@ import {
   AirbyteSourceLogger,
   AirbyteSpec,
 } from 'faros-airbyte-cdk';
+import {bucket, Bucketing} from 'faros-airbyte-common/common';
 import {
   readResourceAsJSON,
   readTestResourceAsJSON,
@@ -10,7 +11,6 @@ import {
   sourceReadTest,
   sourceSchemaTest,
 } from 'faros-airbyte-testing-tools';
-import {bucket} from 'faros-airbyte-common/common';
 
 import {GitLab} from '../src/gitlab';
 import {GroupFilter} from '../src/group-filter';
@@ -602,7 +602,7 @@ describe('index', () => {
       catalog,
       {__bucket_execution_state: {last_executed_bucket_id: 1}}
     );
-    expect(newConfig.bucket_id).toBe(2);
+    expect(newConfig.bucketing.getBucketId()).toBe(2);
     expect(newState).toMatchSnapshot();
   });
 
@@ -621,7 +621,9 @@ describe('index', () => {
         {id: '1', path: 'group1'},
         {id: '2', path: 'group2'},
       ]),
-      getProjects: jest.fn().mockImplementation(async function* (groupId: string) {
+      getProjects: jest.fn().mockImplementation(async function* (
+        groupId: string
+      ) {
         for (const project of mockProjects) {
           if (project.group_id === groupId) {
             yield project;
@@ -634,19 +636,26 @@ describe('index', () => {
       ...readTestResourceAsJSON('config.json'),
       bucket_id: 1,
       bucket_total: 3,
+      bucketing: Bucketing.create({
+        partitionKey: 'farosai/airbyte-gitlab-source',
+        config: {
+          bucket_id: 1,
+          bucket_total: 3,
+        },
+      }),
     };
 
     // Test that bucketing filters projects correctly
     const groupFilter = GroupFilter.instance(config, logger);
-    
+
     // Get projects for group1 - should only return projects that belong to bucket 1
     const group1Projects = await groupFilter.getProjects('1');
-    
+
     // Verify that only projects assigned to bucket 1 are returned
     // Using the same logic as implemented in the source
     const expectedGroup1Projects = mockProjects
-      .filter(p => p.group_id === '1')
-      .filter(p => {
+      .filter((p) => p.group_id === '1')
+      .filter((p) => {
         const projectKey = `1/${p.path}`;
         return bucket('farosai/airbyte-gitlab-source', projectKey, 3) === 1;
       });

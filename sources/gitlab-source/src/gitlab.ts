@@ -16,7 +16,6 @@ import {
 } from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
   FarosCommitOutput,
   FarosDeploymentOutput,
@@ -95,7 +94,6 @@ export class GitLab {
     if (GitLab.gitlab) {
       return GitLab.gitlab;
     }
-    validateBucketingConfig(cfg, logger.info.bind(logger));
 
     const gitlab = new GitLab(cfg, logger);
     await gitlab.checkConnection();
