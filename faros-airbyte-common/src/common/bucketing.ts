@@ -199,16 +199,12 @@ export class Bucketing {
     items: ReadonlyArray<T>,
     getKey: (item: T) => string
   ): ReadonlyArray<T> {
-    const partitionKey = this.partitionKey;
-    const bucketId = this.bucketId;
-    const bucketTotal = this.bucketTotal;
-
     return items.filter((item) =>
       Bucketing.isInBucket(
-        partitionKey,
+        this.partitionKey,
         getKey(item),
-        bucketId,
-        bucketTotal
+        this.bucketId,
+        this.bucketTotal
       )
     );
   }
