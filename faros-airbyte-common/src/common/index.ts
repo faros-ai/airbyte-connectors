@@ -14,6 +14,7 @@ export {
   RoundRobinConfig,
   Bucketing,
   BucketExecutionState,
+  BucketingFilterOptions,
 } from './bucketing';
 
 export {
