@@ -134,17 +134,20 @@ export class Bucketing {
   private readonly bucketId: number;
   private readonly bucketTotal: number;
   private readonly state: BucketExecutionState;
+  private readonly logger?: (message: string) => void;
 
   private constructor(
     partitionKey: string,
     bucketId: number,
     bucketTotal: number,
-    state?: BucketExecutionState
+    state?: BucketExecutionState,
+    logger?: (message: string) => void
   ) {
     this.partitionKey = partitionKey;
     this.bucketId = bucketId;
     this.bucketTotal = bucketTotal;
     this.state = state ?? {};
+    this.logger = logger;
   }
 
   /**
@@ -175,7 +178,8 @@ export class Bucketing {
       partitionKey,
       newConfig.bucket_id ?? 1,
       newConfig.bucket_total ?? 1,
-      newState
+      newState,
+      logger
     );
   }
 
@@ -199,14 +203,41 @@ export class Bucketing {
     items: ReadonlyArray<T>,
     getKey: (item: T) => string
   ): ReadonlyArray<T> {
-    return items.filter((item) =>
-      Bucketing.isInBucket(
-        this.partitionKey,
-        getKey(item),
-        this.bucketId,
-        this.bucketTotal
-      )
-    );
+    const visibleKeys: string[] = [];
+    const selectedItems: T[] = [];
+    const selectedKeys: string[] = [];
+
+    for (const item of items) {
+      const key = getKey(item);
+      visibleKeys.push(key);
+      if (
+        Bucketing.isInBucket(
+          this.partitionKey,
+          key,
+          this.bucketId,
+          this.bucketTotal
+        )
+      ) {
+        selectedItems.push(item);
+        selectedKeys.push(key);
+      }
+    }
+
+    if (this.logger) {
+      const uniqueVisibleKeys = Array.from(new Set(visibleKeys));
+      const uniqueSelectedKeys = Array.from(new Set(selectedKeys));
+      const visibleList =
+        uniqueVisibleKeys.length > 0 ? uniqueVisibleKeys.join(', ') : '<none>';
+      const selectedList =
+        uniqueSelectedKeys.length > 0
+          ? uniqueSelectedKeys.join(', ')
+          : '<none>';
+      this.logger(
+        `[Bucketing] Partition ${this.partitionKey} bucket ${this.bucketId}/${this.bucketTotal} - visible entities (${uniqueVisibleKeys.length}): ${visibleList}; selected for current bucket (${uniqueSelectedKeys.length}): ${selectedList}`
+      );
+    }
+
+    return selectedItems;
   }
 
   /**

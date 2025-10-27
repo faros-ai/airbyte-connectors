@@ -239,6 +239,8 @@ export abstract class GitHub {
   async getRepositories(org: string): Promise<ReadonlyArray<Repository>> {
     const reposWithoutRecentPush: string[] = [];
     const repos: Repository[] = [];
+    const visibleRepoKeys: string[] = [];
+    const selectedRepoKeys: string[] = [];
     const iter = this.octokit(org).paginate.iterator(
       this.octokit(org).repos.listForOrg,
       {
@@ -249,9 +251,12 @@ export abstract class GitHub {
     );
     for await (const res of iter) {
       for (const repo of res.data) {
+        const repoKey = `${org}/${repo.name}`;
+        visibleRepoKeys.push(repoKey);
         if (!this.isRepoInBucket(org, repo.name)) {
           continue;
         }
+        selectedRepoKeys.push(repoKey);
         const recentPush =
           !this.skipReposWithoutRecentPush ||
           (repo.pushed_at &&
@@ -306,6 +311,11 @@ export abstract class GitHub {
         });
       }
     }
+    const uniqueVisibleRepoKeys = Array.from(new Set(visibleRepoKeys));
+    const uniqueSelectedRepoKeys = Array.from(new Set(selectedRepoKeys));
+    this.logger.info(
+      `[Bucketing] Org ${org} bucket ${this.bucketId}/${this.bucketTotal} - visible repositories (${uniqueVisibleRepoKeys.length}): ${uniqueVisibleRepoKeys.length ? uniqueVisibleRepoKeys.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedRepoKeys.length}): ${uniqueSelectedRepoKeys.length ? uniqueSelectedRepoKeys.join(', ') : '<none>'}`
+    );
     if (reposWithoutRecentPush.length > 0) {
       this.logger.info(
         `The following ${reposWithoutRecentPush.length} repositories for org ${org} haven't been pushed to since ${this.startDate.toISOString()} and will not be synced: ${reposWithoutRecentPush.join(', ')}`

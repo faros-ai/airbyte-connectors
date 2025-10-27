@@ -89,14 +89,24 @@ export class AzurePipelines extends AzureDevOps {
   async getPipelines(project: ProjectReference): Promise<Pipeline[]> {
     const pipelines = [];
     const result = await this.client.pipelines.listPipelines(project.id);
+    const visiblePipelineKeys: string[] = [];
+    const selectedPipelineKeys: string[] = [];
     for (const pipeline of result) {
+      const pipelineKey = `${project.name}/${pipeline.name}`;
+      visiblePipelineKeys.push(pipelineKey);
       if (this.isPipelineInBucket(project.name, pipeline.name)) {
         pipelines.push({
           project,
           ...pipeline,
         });
+        selectedPipelineKeys.push(pipelineKey);
       }
     }
+    const uniqueVisiblePipelineKeys = Array.from(new Set(visiblePipelineKeys));
+    const uniqueSelectedPipelineKeys = Array.from(new Set(selectedPipelineKeys));
+    this.logger.info(
+      `[Bucketing] Project ${project.name} bucket ${this.bucketId}/${this.bucketTotal} - visible pipelines (${uniqueVisiblePipelineKeys.length}): ${uniqueVisiblePipelineKeys.length ? uniqueVisiblePipelineKeys.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedPipelineKeys.length}): ${uniqueSelectedPipelineKeys.length ? uniqueSelectedPipelineKeys.join(', ') : '<none>'}`
+    );
     return pipelines;
   }
 
