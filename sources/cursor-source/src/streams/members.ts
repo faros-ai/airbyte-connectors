@@ -44,13 +44,13 @@ export class Members extends AirbyteStreamBase {
     streamSlice?: Dictionary<any>,
     streamState?: StreamState
   ): AsyncGenerator<MemberItem> {
-    const minUsageTimestampPerEmail =
-      streamState?.minUsageTimestampPerEmail ?? {};
     const cursor = Cursor.instance(this.config, this.logger);
+    cursor.mergeMinUsageTimestampPerEmail(
+      streamState?.minUsageTimestampPerEmail ?? {}
+    );
     for (const member of await cursor.getMembers()) {
-      const minUsageTimestamp = Math.min(
-        minUsageTimestampPerEmail[member.email] ?? Infinity,
-        cursor.getMinUsageTimestampForEmail(member.email) ?? Infinity
+      const minUsageTimestamp = cursor.getMinUsageTimestampForEmail(
+        member.email
       );
       yield {
         ...member,
