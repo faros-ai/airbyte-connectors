@@ -152,18 +152,21 @@ export class FarosCopilotSeats extends GitHubConverter {
           ctx.farosClient,
           ctx.graph,
           {
-            source: 'GitHub',
+            source: this.streamName.source,
             organizationUid: toLower(org),
             toolCategory: VCSToolCategory.GitHubCopilot,
-            toolDetail: null,
             inactive: false,
           }
         );
         const now = new Date();
+        let previousAssignees = 0;
+        let previousAssigneesNowInactive = 0;
         for await (const previousAssignee of previousAssigneesQuery) {
+          previousAssignees++;
           if (
             !this.currentAssigneesByOrg.get(org).has(previousAssignee.user.uid)
           ) {
+            previousAssigneesNowInactive++;
             const userTool = userToolKey(
               previousAssignee.user.uid,
               org,
@@ -191,6 +194,9 @@ export class FarosCopilotSeats extends GitHubConverter {
             }
           }
         }
+        ctx.logger.info(
+          `Inferred ${previousAssigneesNowInactive} out of ${previousAssignees} previously active Copilot seats are now inactive for organization ${org}`
+        );
       }
     }
     return res;

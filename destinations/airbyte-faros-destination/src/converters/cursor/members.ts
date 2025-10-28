@@ -100,8 +100,12 @@ export class Members extends CursorConverter {
           inactive: false,
         }
       );
+      let previousMembers = 0;
+      let previousMembersNowInactive = 0;
       for await (const previousMember of previousMembersQuery) {
+        previousMembers++;
         if (!this.currentMembers.has(previousMember.user.uid)) {
+          previousMembersNowInactive++;
           const userTool = userToolKey(
             previousMember.user.uid,
             this.streamName.source
@@ -115,6 +119,9 @@ export class Members extends CursorConverter {
           });
         }
       }
+      ctx.logger.info(
+        `Inferred ${previousMembersNowInactive} out of ${previousMembers} previously active Cursor members are now inactive`
+      );
     }
     return res;
   }
