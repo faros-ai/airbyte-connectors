@@ -35,7 +35,7 @@ export const MAX_AI_COMMIT_METRICS_WINDOW_DAYS = 30; // Cursor API limit
 export class Cursor {
   private static cursor: Cursor;
   private readonly api: AxiosInstance;
-  private readonly minUsageTimestampPerEmail: {[email: string]: number} = {};
+  private minUsageTimestampPerEmail: {[email: string]: number} = {};
 
   constructor(
     private readonly config: CursorConfig,
@@ -262,6 +262,17 @@ export class Cursor {
 
       // Move to the next window
       currentStart = currentEnd;
+    }
+  }
+
+  mergeMinUsageTimestampPerEmail(minUsageTimestampPerEmail: {
+    [email: string]: number;
+  }): void {
+    for (const email in minUsageTimestampPerEmail) {
+      this.minUsageTimestampPerEmail[email] = Math.min(
+        this.minUsageTimestampPerEmail[email] ?? Infinity,
+        minUsageTimestampPerEmail[email] ?? Infinity
+      );
     }
   }
 
