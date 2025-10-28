@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {VCS_USER_TOOL_QUERY} from 'faros-airbyte-common/common';
 import {MemberItem} from 'faros-airbyte-common/cursor';
 import {paginatedQueryV2, Utils} from 'faros-js-client';
 
@@ -90,7 +91,7 @@ export class Members extends CursorConverter {
     } else {
       const previousMembersQuery = ctx.farosClient.nodeIterable(
         ctx.graph,
-        USER_TOOL_QUERY,
+        VCS_USER_TOOL_QUERY,
         100,
         paginatedQueryV2,
         new Map<string, any>([
@@ -131,32 +132,3 @@ function userToolKey(userEmail: string, source: string): UserToolKey {
     },
   };
 }
-
-const USER_TOOL_QUERY = `
-  query vcs_UserTool(
-    $source: String!
-    $organizationUid: String!
-    $toolCategory: String!
-    $toolDetail: String!
-    $inactive: Boolean!
-  ) {
-    vcs_UserTool(
-      where: {
-        user: {source: {_eq: $source}}
-        organization: {uid: {_eq: $organizationUid}, source: {_eq: $source}}
-        toolCategory: {_eq: $toolCategory}
-        toolDetail: {_eq: $toolDetail}
-        inactive: {_eq: $inactive}
-      }
-    ) {
-      user {
-        uid
-      }
-      toolCategory
-      toolDetail
-      inactive
-      startedAt
-      endedAt
-    }
-  }
-`;

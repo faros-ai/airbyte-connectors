@@ -1,4 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {VCS_USER_TOOL_QUERY} from 'faros-airbyte-common/common';
 import {
   CopilotSeat,
   CopilotSeatsStreamRecord,
@@ -149,13 +150,14 @@ export class FarosCopilotSeats extends GitHubConverter {
       for (const org of this.currentAssigneesByOrg.keys()) {
         const previousAssigneesQuery = ctx.farosClient.nodeIterable(
           ctx.graph,
-          USER_TOOL_QUERY,
+          VCS_USER_TOOL_QUERY,
           100,
           paginatedQueryV2,
           new Map<string, any>([
             ['source', 'GitHub'],
             ['organizationUid', toLower(org)],
             ['toolCategory', VCSToolCategory.GitHubCopilot],
+            ['toolDetail', null],
             ['inactive', false],
           ])
         );
@@ -208,29 +210,3 @@ function userToolKey(
     tool: {category: VCSToolCategory.GitHubCopilot},
   };
 }
-
-const USER_TOOL_QUERY = `
-  query vcs_UserTool(
-    $source: String!
-    $organizationUid: String!
-    $toolCategory: String!
-    $inactive: Boolean!
-  ) {
-    vcs_UserTool(
-      where: {
-        user: {source: {_eq: $source}}
-        organization: {uid: {_eq: $organizationUid}, source: {_eq: $source}}
-        toolCategory: {_eq: $toolCategory}
-        inactive: {_eq: $inactive}
-      }
-    ) {
-      user {
-        uid
-      }
-      toolCategory
-      inactive
-      startedAt
-      endedAt
-    }
-  }
-`;

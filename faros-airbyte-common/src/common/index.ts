@@ -25,6 +25,8 @@ export {
   RepoInclusion,
 } from './vcs-filter';
 
+export {VCS_USER_TOOL_QUERY} from './user-tool';
+
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {
   deletions: number;
