@@ -88,49 +88,17 @@ describe('Bucketing.filter', () => {
     expect(filtered).toEqual(expectedSelected);
     expect(logger).toHaveBeenCalledTimes(2);
     expect(logger.mock.calls[0][0]).toBe(
-      'Bucketing (farosai/test bucket 1/3): visible repositories -> alpha, beta, gamma, delta'
+      'Bucketing (farosai/test bucket 1/3): visible repositories (4) -> alpha, beta, gamma, delta'
     );
     const selectedMessage = logger.mock.calls[1][0];
     expect(
       selectedMessage.startsWith(
-        'Bucketing (farosai/test bucket 1/3): selected repositories ->'
+        'Bucketing (farosai/test bucket 1/3): selected repositories ('
       )
     ).toBe(true);
     for (const item of expectedSelected) {
       expect(selectedMessage).toContain(item);
     }
-  });
-
-  test('uses custom identifier mapper when provided', () => {
-    const bucketing = Bucketing.create({
-      partitionKey: 'farosai/test',
-      config: {bucket_total: 2, bucket_id: 1},
-    });
-    const items = [
-      {id: 'group1/repo1', key: 'group1/repo1'},
-      {id: 'group1/repo2', key: 'group1/repo2'},
-      {id: 'group2/repo3', key: 'group2/repo3'},
-    ];
-    const logger = jest.fn();
-    bucketing.filter(items, (item) => item.key, {
-      logger,
-      entityName: 'projects',
-      toIdentifier: (item) => item.id,
-    });
-
-    expect(logger).toHaveBeenCalledTimes(2);
-    expect(logger.mock.calls[0][0]).toBe(
-      'Bucketing (farosai/test bucket 1/2): visible projects -> group1/repo1, group1/repo2, group2/repo3'
-    );
-    const expectedSelected = items
-      .filter((item) => bucket('farosai/test', item.key, 2) === 1)
-      .map((item) => item.id)
-      .join(', ');
-    expect(logger.mock.calls[1][0]).toBe(
-      `Bucketing (farosai/test bucket 1/2): selected projects -> ${
-        expectedSelected || '<none>'
-      }`
-    );
   });
 
   test('returns filtered items when no options provided', () => {

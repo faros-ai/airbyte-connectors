@@ -139,7 +139,6 @@ export class GroupFilter {
       {
         logger: this.logger.info.bind(this.logger),
         entityName: 'projects',
-        toIdentifier: ({repo}) => `${group}/${repo.path}`,
       }
     );
   }

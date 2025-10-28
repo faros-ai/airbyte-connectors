@@ -103,10 +103,9 @@ export interface BucketingCreateOptions {
   logger?: (message: string) => void;
 }
 
-export interface BucketingFilterOptions<T> {
+export interface BucketingFilterOptions {
   logger: (message: string) => void;
   entityName?: string;
-  toIdentifier?: (item: T) => string;
 }
 
 /**
@@ -204,25 +203,21 @@ export class Bucketing {
   filter<T>(
     items: ReadonlyArray<T>,
     getKey: (item: T) => string,
-    options?: BucketingFilterOptions<T>
+    options?: BucketingFilterOptions
   ): ReadonlyArray<T> {
     const filtered: T[] = [];
-    const shouldLog = Boolean(options?.logger);
-    const toIdentifier =
-      options?.toIdentifier ??
-      ((item: T): string => {
-        return getKey(item);
-      });
-    const visibleIdentifiers = shouldLog ? new Set<string>() : undefined;
-    const selectedIdentifiers = shouldLog ? new Set<string>() : undefined;
+    const logger = options?.logger;
+    const entityName = options?.entityName ?? 'entities';
+    const shouldLog = Boolean(logger);
+    const visibleKeys = new Set<string>();
+    const selectedKeys = new Set<string>();
 
     for (const item of items) {
-      const identifier = shouldLog ? toIdentifier(item) : undefined;
-      if (visibleIdentifiers && identifier !== undefined) {
-        visibleIdentifiers.add(identifier);
+      const key = getKey(item);
+      if (shouldLog) {
+        visibleKeys.add(key);
       }
 
-      const key = getKey(item);
       if (
         Bucketing.isInBucket(
           this.partitionKey,
@@ -232,25 +227,24 @@ export class Bucketing {
         )
       ) {
         filtered.push(item);
-        if (selectedIdentifiers && identifier !== undefined) {
-          selectedIdentifiers.add(identifier);
+        if (shouldLog) {
+          selectedKeys.add(key);
         }
       }
     }
 
-    if (options?.logger) {
-      const {logger, entityName = 'entities'} = options;
+    if (logger) {
       const prefix = `Bucketing (${this.partitionKey} bucket ${this.bucketId}/${this.bucketTotal})`;
       const visibleList =
-        visibleIdentifiers && visibleIdentifiers.size
-          ? Array.from(visibleIdentifiers).join(', ')
-          : '<none>';
+        visibleKeys.size ? Array.from(visibleKeys).join(', ') : '<none>';
       const selectedList =
-        selectedIdentifiers && selectedIdentifiers.size
-          ? Array.from(selectedIdentifiers).join(', ')
-          : '<none>';
-      logger(`${prefix}: visible ${entityName} -> ${visibleList}`);
-      logger(`${prefix}: selected ${entityName} -> ${selectedList}`);
+        selectedKeys.size ? Array.from(selectedKeys).join(', ') : '<none>';
+      logger(
+        `${prefix}: visible ${entityName} (${visibleKeys.size}) -> ${visibleList}`
+      );
+      logger(
+        `${prefix}: selected ${entityName} (${selectedKeys.size}) -> ${selectedList}`
+      );
     }
 
     return filtered;
