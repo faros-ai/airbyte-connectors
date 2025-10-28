@@ -29,7 +29,7 @@ export {
   getVcsUserToolQuery,
   queryVcsUserTools,
   VcsUserToolQueryParams,
-} from './user-tool';
+} from './vcs-user-tool';
 
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {

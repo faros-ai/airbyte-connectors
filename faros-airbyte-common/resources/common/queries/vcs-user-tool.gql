@@ -2,7 +2,7 @@ query VcsUserTool(
   $source: String!
   $organizationUid: String!
   $toolCategory: String!
-  $toolDetail: String
+  $toolDetail: String!
   $inactive: Boolean!
 ) {
   vcs_UserTool(

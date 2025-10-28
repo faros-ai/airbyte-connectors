@@ -24,9 +24,10 @@ export function getVcsUserToolQuery(includeToolDetail: boolean): string {
     return VCS_USER_TOOL_QUERY_BASE;
   }
   // Remove toolDetail from query parameters and where clause
-  return VCS_USER_TOOL_QUERY_BASE.replace(/\$toolDetail: String\n\s*/g, '')
-    .replace(/\s*toolDetail: \{_eq: \$toolDetail\}\n/g, '')
-    .replace(/,(\s*\n\s*\))/g, '$1'); // Clean up trailing commas
+  return VCS_USER_TOOL_QUERY_BASE.replace(
+    /\s*\$toolDetail: String!\n/g,
+    ''
+  ).replace(/\s*toolDetail: \{_eq: \$toolDetail\}\n/g, '');
 }
 
 export interface VcsUserToolQueryParams {
