@@ -4,8 +4,8 @@ exports[`cursor process records from all streams 1`] = `
 Array [
   "Processed 11 records",
   "Processed records by stream: {\\\\\\"mytestsource__cursor__ai_commit_metrics\\\\\\":4,\\\\\\"mytestsource__cursor__daily_usage\\\\\\":2,\\\\\\"mytestsource__cursor__members\\\\\\":2,\\\\\\"mytestsource__cursor__usage_events\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 42 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":32,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 43 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":32,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":3,\\\\\\"vcs_UserToolUsage\\\\\\":3}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -798,6 +798,24 @@ Array [
     "vcs_Organization": Object {
       "source": "Cursor",
       "uid": "Cursor",
+    },
+  },
+  Object {
+    "vcs_UserTool": Object {
+      "inactive": true,
+      "organization": Object {
+        "source": "Cursor",
+        "uid": "Cursor",
+      },
+      "source": "Cursor",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Cursor",
+      },
+      "user": Object {
+        "source": "Cursor",
+        "uid": "olduser@company.com",
+      },
     },
   },
   Object {
