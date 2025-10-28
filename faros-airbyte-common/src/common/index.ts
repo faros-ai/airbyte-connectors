@@ -25,7 +25,11 @@ export {
   RepoInclusion,
 } from './vcs-filter';
 
-export {VCS_USER_TOOL_QUERY} from './user-tool';
+export {
+  getVcsUserToolQuery,
+  queryVcsUserTools,
+  VcsUserToolQueryParams,
+} from './user-tool';
 
 // TODO: Try https://www.npmjs.com/package/diff
 export interface FileDiff {

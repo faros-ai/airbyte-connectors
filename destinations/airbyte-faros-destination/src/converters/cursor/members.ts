@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {VCS_USER_TOOL_QUERY} from 'faros-airbyte-common/common';
+import {queryVcsUserTools} from 'faros-airbyte-common/common';
 import {MemberItem} from 'faros-airbyte-common/cursor';
-import {paginatedQueryV2, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 
 import {UserTypeCategory, VCSToolCategory, VCSToolDetail} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -89,18 +89,16 @@ export class Members extends CursorConverter {
         `Skipping inactive Cursor members inference. Faros client not configured.`
       );
     } else {
-      const previousMembersQuery = ctx.farosClient.nodeIterable(
+      const previousMembersQuery = queryVcsUserTools(
+        ctx.farosClient,
         ctx.graph,
-        VCS_USER_TOOL_QUERY,
-        100,
-        paginatedQueryV2,
-        new Map<string, any>([
-          ['source', this.streamName.source],
-          ['organizationUid', this.streamName.source],
-          ['toolCategory', VCSToolCategory.CodingAssistant],
-          ['toolDetail', VCSToolDetail.Cursor],
-          ['inactive', false],
-        ])
+        {
+          source: this.streamName.source,
+          organizationUid: this.streamName.source,
+          toolCategory: VCSToolCategory.CodingAssistant,
+          toolDetail: VCSToolDetail.Cursor,
+          inactive: false,
+        }
       );
       for await (const previousMember of previousMembersQuery) {
         if (!this.currentMembers.has(previousMember.user.uid)) {

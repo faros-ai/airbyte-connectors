@@ -1,10 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {VCS_USER_TOOL_QUERY} from 'faros-airbyte-common/common';
+import {queryVcsUserTools} from 'faros-airbyte-common/common';
 import {
   CopilotSeat,
   CopilotSeatsStreamRecord,
 } from 'faros-airbyte-common/github';
-import {paginatedQueryV2, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
@@ -148,18 +148,16 @@ export class FarosCopilotSeats extends GitHubConverter {
       );
     } else {
       for (const org of this.currentAssigneesByOrg.keys()) {
-        const previousAssigneesQuery = ctx.farosClient.nodeIterable(
+        const previousAssigneesQuery = queryVcsUserTools(
+          ctx.farosClient,
           ctx.graph,
-          VCS_USER_TOOL_QUERY,
-          100,
-          paginatedQueryV2,
-          new Map<string, any>([
-            ['source', 'GitHub'],
-            ['organizationUid', toLower(org)],
-            ['toolCategory', VCSToolCategory.GitHubCopilot],
-            ['toolDetail', null],
-            ['inactive', false],
-          ])
+          {
+            source: 'GitHub',
+            organizationUid: toLower(org),
+            toolCategory: VCSToolCategory.GitHubCopilot,
+            toolDetail: null,
+            inactive: false,
+          }
         );
         const now = new Date();
         for await (const previousAssignee of previousAssigneesQuery) {
