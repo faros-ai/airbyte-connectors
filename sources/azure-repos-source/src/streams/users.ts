@@ -50,10 +50,10 @@ export class Users extends AzureReposStreamBase {
   }
 
   private getUserId(user: User): string | undefined {
-    if ('principalName' in user && !!user.principalName) {
+    if ('principalName' in user && user.principalName) {
       return user.principalName;
     }
-    if ('uniqueName' in user && !!user.uniqueName) {
+    if ('uniqueName' in user && user.uniqueName) {
       return user.uniqueName;
     }
     return undefined;
