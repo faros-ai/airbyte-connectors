@@ -1,9 +1,10 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
+import {queryVcsUserTools} from 'faros-airbyte-common/common';
 import {
   CopilotSeat,
   CopilotSeatsStreamRecord,
 } from 'faros-airbyte-common/github';
-import {paginatedQueryV2, Utils} from 'faros-js-client';
+import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
 import {Edition} from '../../common/types';
@@ -147,23 +148,25 @@ export class FarosCopilotSeats extends GitHubConverter {
       );
     } else {
       for (const org of this.currentAssigneesByOrg.keys()) {
-        const previousAssigneesQuery = ctx.farosClient.nodeIterable(
+        const previousAssigneesQuery = queryVcsUserTools(
+          ctx.farosClient,
           ctx.graph,
-          USER_TOOL_QUERY,
-          100,
-          paginatedQueryV2,
-          new Map<string, any>([
-            ['source', 'GitHub'],
-            ['organizationUid', toLower(org)],
-            ['toolCategory', VCSToolCategory.GitHubCopilot],
-            ['inactive', false],
-          ])
+          {
+            source: this.streamName.source,
+            organizationUid: toLower(org),
+            toolCategory: VCSToolCategory.GitHubCopilot,
+            inactive: false,
+          }
         );
         const now = new Date();
+        let previousAssignees = 0;
+        let previousAssigneesNowInactive = 0;
         for await (const previousAssignee of previousAssigneesQuery) {
+          previousAssignees++;
           if (
             !this.currentAssigneesByOrg.get(org).has(previousAssignee.user.uid)
           ) {
+            previousAssigneesNowInactive++;
             const userTool = userToolKey(
               previousAssignee.user.uid,
               org,
@@ -191,6 +194,9 @@ export class FarosCopilotSeats extends GitHubConverter {
             }
           }
         }
+        ctx.logger.info(
+          `Inferred ${previousAssigneesNowInactive} out of ${previousAssignees} previously active Copilot seats are now inactive for organization ${org}`
+        );
       }
     }
     return res;
@@ -208,29 +214,3 @@ function userToolKey(
     tool: {category: VCSToolCategory.GitHubCopilot},
   };
 }
-
-const USER_TOOL_QUERY = `
-  query vcs_UserTool(
-    $source: String!
-    $organizationUid: String!
-    $toolCategory: String!
-    $inactive: Boolean!
-  ) {
-    vcs_UserTool(
-      where: {
-        user: {source: {_eq: $source}}
-        organization: {uid: {_eq: $organizationUid}, source: {_eq: $source}}
-        toolCategory: {_eq: $toolCategory}
-        inactive: {_eq: $inactive}
-      }
-    ) {
-      user {
-        uid
-      }
-      toolCategory
-      inactive
-      startedAt
-      endedAt
-    }
-  }
-`;
