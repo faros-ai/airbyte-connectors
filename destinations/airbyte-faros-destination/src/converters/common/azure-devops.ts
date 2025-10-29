@@ -1,5 +1,3 @@
-import {User} from 'faros-airbyte-common/azure-devops';
-
 import {StreamContext} from '../converter';
 
 export function getOrganization(
@@ -69,17 +67,6 @@ export function getVcsOrgProjectFromUrl(url: string):
   } catch (error) {
     return undefined;
   }
-}
-
-// Support both principalName and uniqueName for AzureDevOps Server
-export function getUniqueName(userItem: User): string | undefined {
-  if ('principalName' in userItem && Boolean(userItem.principalName)) {
-    return userItem.principalName;
-  }
-  if ('uniqueName' in userItem && Boolean(userItem.uniqueName)) {
-    return userItem.uniqueName;
-  }
-  return undefined;
 }
 
 // Parse a URL, split on '/' and filter out empty segments

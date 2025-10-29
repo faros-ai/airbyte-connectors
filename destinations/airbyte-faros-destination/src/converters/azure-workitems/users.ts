@@ -1,7 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/azure-devops';
-
-import {getUniqueName} from '../common/azure-devops';
+import {getUserIdentifier, User} from 'faros-airbyte-common/azure-devops';
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
@@ -17,7 +15,7 @@ export class Users extends AzureWorkitemsConverter {
     const userItem = record.record.data as User;
     const res: DestinationRecord[] = [];
 
-    const uniqueName = getUniqueName(userItem);
+    const uniqueName = getUserIdentifier(userItem);
     if (!uniqueName) {
       ctx.logger.warn(
         `Cannot create tms_User record due to missing uniqueName/principalName. UserItem: ${JSON.stringify(userItem)}`

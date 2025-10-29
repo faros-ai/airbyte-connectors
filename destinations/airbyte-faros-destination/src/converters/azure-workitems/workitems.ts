@@ -1,5 +1,6 @@
 import {AirbyteLogger, AirbyteRecord} from 'faros-airbyte-cdk';
 import {
+  getUserIdentifier,
   WorkItemAssigneeRevision,
   WorkItemIterationRevision,
   WorkItemStateRevision,
@@ -8,7 +9,6 @@ import {
 import {Utils} from 'faros-js-client';
 
 import {FLUSH} from '../../common/types';
-import {getUniqueName} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
@@ -254,7 +254,7 @@ export class Workitems extends AzureWorkitemsConverter {
   ): ReadonlyArray<DestinationRecord> {
     return assigneeRevisions
       .map((revision) => {
-        const uid = getUniqueName(revision.assignee);
+        const uid = getUserIdentifier(revision.assignee);
         if (uid) {
           return {
             model: 'tms_TaskAssignment',

@@ -1,5 +1,5 @@
 import {StreamKey} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/azure-devops';
+import {getUserIdentifier, User} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureRepos} from '../azure-repos';
@@ -37,7 +37,7 @@ export class Users extends AzureReposStreamBase {
       this.config.fetch_pull_request_work_items
     );
     for await (const user of azureRepos.getUsers()) {
-      const id = this.getUserId(user);
+      const id = getUserIdentifier(user);
       if (!id) {
         this.logger.warn(`Could not determine a unique ID for user object. Skipping.`);
         continue;
@@ -47,15 +47,5 @@ export class Users extends AzureReposStreamBase {
         id,
       };
     }
-  }
-
-  private getUserId(user: User): string | undefined {
-    if ('principalName' in user && user.principalName) {
-      return user.principalName;
-    }
-    if ('uniqueName' in user && user.uniqueName) {
-      return user.uniqueName;
-    }
-    return undefined;
   }
 }
