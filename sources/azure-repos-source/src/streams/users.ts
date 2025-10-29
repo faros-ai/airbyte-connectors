@@ -39,7 +39,7 @@ export class Users extends AzureReposStreamBase {
     for await (const user of azureRepos.getUsers()) {
       const id = this.getUserId(user);
       if (!id) {
-        this.logger.warn(`Could not determine a unique ID for user object: ${JSON.stringify(user)}. Skipping.`);
+        this.logger.warn(`Could not determine a unique ID for user object. Skipping.`);
         continue;
       }
       yield {
