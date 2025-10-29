@@ -11,7 +11,7 @@ export class Users extends AzureReposStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'principalName';
+    return 'id';
   }
 
   // Although not actually an incremental stream, we run it in incremental mode
@@ -26,7 +26,7 @@ export class Users extends AzureReposStreamBase {
     return 'url';
   }
 
-  async *readRecords(): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<User & {id: string}> {
     const azureRepos = await AzureRepos.instance(
       this.config,
       this.logger,
@@ -36,6 +36,26 @@ export class Users extends AzureReposStreamBase {
       this.config.fetch_branch_commits,
       this.config.fetch_pull_request_work_items
     );
-    yield* azureRepos.getUsers();
+    for await (const user of azureRepos.getUsers()) {
+      const id = this.getUserId(user);
+      if (!id) {
+        this.logger.warn(`Could not determine a unique ID for user object: ${JSON.stringify(user)}. Skipping.`);
+        continue;
+      }
+      yield {
+        ...user,
+        id,
+      };
+    }
+  }
+
+  private getUserId(user: User): string | undefined {
+    if ('principalName' in user && !!user.principalName) {
+      return user.principalName;
+    }
+    if ('uniqueName' in user && !!user.uniqueName) {
+      return user.uniqueName;
+    }
+    return undefined;
   }
 }
