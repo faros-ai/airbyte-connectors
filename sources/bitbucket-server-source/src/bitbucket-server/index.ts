@@ -499,6 +499,8 @@ export class BitbucketServer {
     try {
       this.logger.debug(`Fetching repositories for project ${projectKey}`);
       const results: Repository[] = [];
+      const visibleRepoKeys: string[] = [];
+      const selectedRepoKeys: string[] = [];
       const repos = this.paginate<Dict, Repository>(
         (start) =>
           this.client[MEP].projects.getRepositories({
@@ -531,15 +533,22 @@ export class BitbucketServer {
         },
         (repo) => {
           const repoFullName = repo.computedProperties.fullName;
+          const passesRepoFilter =
+            !projectRepoFilter || projectRepoFilter.isIncluded(repoFullName);
+          if (passesRepoFilter) {
+            visibleRepoKeys.push(repoFullName);
+          }
+          const inBucket =
+            bucket(
+              'farosai/airbyte-bitbucket-server-source',
+              repoFullName,
+              this.bucketTotal
+            ) === this.bucketId;
+          if (passesRepoFilter && inBucket) {
+            selectedRepoKeys.push(repoFullName);
+          }
           return {
-            shouldEmit:
-              (!projectRepoFilter ||
-                projectRepoFilter.isIncluded(repoFullName)) &&
-              bucket(
-                'farosai/airbyte-bitbucket-server-source',
-                repoFullName,
-                this.bucketTotal
-              ) === this.bucketId,
+            shouldEmit: passesRepoFilter && inBucket,
             shouldBreakEarly: false,
           };
         }
@@ -547,6 +556,11 @@ export class BitbucketServer {
       for await (const repo of repos) {
         results.push(repo);
       }
+      const uniqueVisibleRepoKeys = Array.from(new Set(visibleRepoKeys));
+      const uniqueSelectedRepoKeys = Array.from(new Set(selectedRepoKeys));
+      this.logger.info(
+        `[Bucketing] Project ${projectKey} bucket ${this.bucketId}/${this.bucketTotal} - visible repositories (${uniqueVisibleRepoKeys.length}): ${uniqueVisibleRepoKeys.length ? uniqueVisibleRepoKeys.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedRepoKeys.length}): ${uniqueSelectedRepoKeys.length ? uniqueSelectedRepoKeys.join(', ') : '<none>'}`
+      );
       return results;
     } catch (err) {
       throw new VError(

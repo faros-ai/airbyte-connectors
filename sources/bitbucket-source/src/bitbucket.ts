@@ -561,6 +561,8 @@ export class Bitbucket {
   )
   async getRepositories(workspace: string): Promise<ReadonlyArray<Repository>> {
     const results: Repository[] = [];
+    const visibleRepoKeys: string[] = [];
+    const selectedRepoKeys: string[] = [];
     try {
       const func = (): Promise<BitbucketResponse<Repository>> =>
         this.limiter.schedule(() =>
@@ -571,11 +573,19 @@ export class Bitbucket {
         this.buildRepository(data, workspace)
       );
       for await (const repo of repos) {
+        const repoKey = `${workspace}/${repo.slug}`;
+        visibleRepoKeys.push(repoKey);
         if (!this.isRepoInBucket(workspace, repo.slug)) {
           continue;
         }
+        selectedRepoKeys.push(repoKey);
         results.push(repo);
       }
+      const uniqueVisibleRepoKeys = Array.from(new Set(visibleRepoKeys));
+      const uniqueSelectedRepoKeys = Array.from(new Set(selectedRepoKeys));
+      this.logger.info(
+        `[Bucketing] Workspace ${workspace} bucket ${this.bucketId}/${this.bucketTotal} - visible repositories (${uniqueVisibleRepoKeys.length}): ${uniqueVisibleRepoKeys.length ? uniqueVisibleRepoKeys.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedRepoKeys.length}): ${uniqueSelectedRepoKeys.length ? uniqueSelectedRepoKeys.join(', ') : '<none>'}`
+      );
       return results;
     } catch (err) {
       throw new VError(

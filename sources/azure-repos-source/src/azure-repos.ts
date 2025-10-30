@@ -162,9 +162,21 @@ export class AzureRepos extends AzureDevOps {
       : repositories;
 
     // Apply bucketing filter
-    return explicitlyFiltered.filter((repository) =>
+    const visibleRepoKeys = explicitlyFiltered.map(
+      (repository) => `${project.name}/${repository.name}`
+    );
+    const bucketedRepos = explicitlyFiltered.filter((repository) =>
       this.isRepoInBucket(project.name, repository.name)
     );
+    const selectedRepoKeys = bucketedRepos.map(
+      (repository) => `${project.name}/${repository.name}`
+    );
+    const uniqueVisibleRepoKeys = Array.from(new Set(visibleRepoKeys));
+    const uniqueSelectedRepoKeys = Array.from(new Set(selectedRepoKeys));
+    this.logger.info(
+      `[Bucketing] Project ${project.name} bucket ${this.bucketId}/${this.bucketTotal} - visible repositories (${uniqueVisibleRepoKeys.length}): ${uniqueVisibleRepoKeys.length ? uniqueVisibleRepoKeys.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedRepoKeys.length}): ${uniqueSelectedRepoKeys.length ? uniqueSelectedRepoKeys.join(', ') : '<none>'}`
+    );
+    return bucketedRepos;
   }
 
   /**

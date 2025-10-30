@@ -44,11 +44,21 @@ export abstract class StreamWithProjectSlices extends AirbyteStreamBase {
   }
 
   async *streamSlices(): AsyncGenerator<ProjectSlice> {
-    for (const projectSlug of this.cfg.project_slugs) {
+    const projectSlugs = this.cfg.project_slugs ?? [];
+    const selectedProjects: string[] = [];
+    for (const projectSlug of projectSlugs) {
       if (this.isProjectInBucket(projectSlug)) {
+        selectedProjects.push(projectSlug);
         yield {projectSlug};
       }
     }
+    const bucketId = this.cfg.bucket_id ?? 1;
+    const bucketTotal = this.cfg.bucket_total ?? 1;
+    const uniqueVisible = Array.from(new Set(projectSlugs));
+    const uniqueSelected = Array.from(new Set(selectedProjects));
+    this.logger.info(
+      `[Bucketing] CircleCI bucket ${bucketId}/${bucketTotal} - visible projects (${uniqueVisible.length}): ${uniqueVisible.length ? uniqueVisible.join(', ') : '<none>'}; selected for current bucket (${uniqueSelected.length}): ${uniqueSelected.length ? uniqueSelected.join(', ') : '<none>'}`
+    );
   }
 
   isProjectInBucket(project: string): boolean {

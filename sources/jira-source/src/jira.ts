@@ -586,35 +586,57 @@ export class Jira {
     keys?: Set<string>
   ): Promise<ReadonlyArray<Version2Models.Project>> {
     const projects: Version2Models.Project[] = [];
-    for await (const project of this.getProjectsIterator(keys)) {
+    const visibleProjects = new Set<string>();
+    const selectedProjects = new Set<string>();
+    const collector = (
+      project: Version2Models.Project,
+      inBucket: boolean
+    ): void => {
+      visibleProjects.add(project.key);
+      if (inBucket) {
+        selectedProjects.add(project.key);
+      }
+    };
+    for await (const project of this.getProjectsIterator(keys, collector)) {
       projects.push(project);
     }
+    this.logger?.info(
+      `[Bucketing] Jira bucket ${this.bucketId}/${this.bucketTotal} - visible projects (${visibleProjects.size}): ${visibleProjects.size ? Array.from(visibleProjects).join(', ') : '<none>'}; selected for current bucket (${selectedProjects.size}): ${selectedProjects.size ? Array.from(selectedProjects).join(', ') : '<none>'}`
+    );
     this.logger?.debug(
-      `Found ${projects.length} browseable projects from Jira instance: ${projects.map((p) => p.key).join(', ')}`
+      `Selected ${projects.length} browseable projects from Jira instance: ${projects.map((p) => p.key).join(', ')}`
     );
     return projects;
   }
 
   async *getProjectsIterator(
-    keys?: Set<string>
+    keys?: Set<string>,
+    collector?: (
+      project: Version2Models.Project,
+      inBucket: boolean
+    ) => void
   ): AsyncIterableIterator<Version2Models.Project> {
     if (this.isCloud) {
       if (!keys?.size) {
-        yield* this.getProjectsFromCloud();
+        yield* this.getProjectsFromCloud(undefined, collector);
         return;
       }
       // Fetch 50 project keys at a time, the max allowed by the API
       for (const batch of chunk(Array.from(keys), 50)) {
-        yield* this.getProjectsFromCloud(batch);
+        yield* this.getProjectsFromCloud(batch, collector);
       }
       return;
     }
 
-    yield* this.getProjectsFromServer(keys);
+    yield* this.getProjectsFromServer(keys, collector);
   }
 
   private async *getProjectsFromCloud(
-    keys?: ReadonlyArray<string>
+    keys?: ReadonlyArray<string>,
+    collector?: (
+      project: Version2Models.Project,
+      inBucket: boolean
+    ) => void
   ): AsyncIterableIterator<Version2Models.Project> {
     const projects = this.iterate(
       (startAt) =>
@@ -633,8 +655,9 @@ export class Jira {
       })
     );
     for await (const project of projects) {
-      // Bucket projects based on bucketId
-      if (this.isProjectInBucket(project.key)) yield project;
+      const inBucket = this.isProjectInBucket(project.key);
+      collector?.(project, inBucket);
+      if (inBucket) yield project;
     }
   }
 
@@ -645,15 +668,16 @@ export class Jira {
   // user should have `BROWSE_PROJECTS` permissions on the project, so check
   // that permission is granted for the user using mypermissions endpoint.
   private async *getProjectsFromServer(
-    keys: Set<string>
+    keys: Set<string> | undefined,
+    collector?: (
+      project: Version2Models.Project,
+      inBucket: boolean
+    ) => void
   ): AsyncIterableIterator<Version2Models.Project> {
     const skippedProjects: string[] = [];
     for await (const project of await this.api.getAllProjects()) {
-      // Skip projects that are not in the project_keys list or bucket
-      if (
-        (keys?.size && !keys.has(project.key)) ||
-        !this.isProjectInBucket(project.key)
-      ) {
+      // Skip projects that are not in the project_keys list
+      if (keys?.size && !keys.has(project.key)) {
         continue;
       }
 
@@ -666,12 +690,18 @@ export class Jira {
           skippedProjects.push(project.key);
           continue;
         }
-        yield {
+        const mappedProject = {
           id: project.id,
           key: project.key,
           name: project.name,
           description: project.description,
         };
+        const inBucket = this.isProjectInBucket(project.key);
+        collector?.(mappedProject, inBucket);
+        if (!inBucket) {
+          continue;
+        }
+        yield mappedProject;
       } catch (error: any) {
         if (error.response?.status === 404) {
           skippedProjects.push(project.key);
@@ -694,7 +724,11 @@ export class Jira {
 
   async *getProjectsFromGraph(
     farosClient: FarosClient,
-    graph: string
+    graph: string,
+    collector?: (
+      project: Version2Models.Project,
+      inBucket: boolean
+    ) => void
   ): AsyncIterableIterator<Version2Models.Project> {
     const source = this.sourceQualifier
       ? `Jira_${this.sourceQualifier}`
@@ -715,7 +749,9 @@ export class Jira {
       }
     );
     for await (const project of projects) {
-      if (this.isProjectInBucket(project.key)) yield project;
+      const inBucket = this.isProjectInBucket(project.key);
+      collector?.(project, inBucket);
+      if (inBucket) yield project;
     }
   }
 
@@ -1123,6 +1159,8 @@ export class Jira {
     graph: string,
     projectKeys: Array<string>
   ): AsyncIterableIterator<FarosProject> {
+    const visibleProjects: string[] = [];
+    const selectedProjects: string[] = [];
     const projects = this.iterate(
       async (startAt) => {
         const data = await farosClient.gql(graph, PROJECT_BOARDS_QUERY, {
@@ -1141,10 +1179,17 @@ export class Jira {
       }
     );
     for await (const project of projects) {
+      visibleProjects.push(project.key);
       if (this.isProjectInBucket(project.key)) {
+        selectedProjects.push(project.key);
         yield project;
       }
     }
+    const uniqueVisibleProjects = Array.from(new Set(visibleProjects));
+    const uniqueSelectedProjects = Array.from(new Set(selectedProjects));
+    this.logger?.info(
+      `[Bucketing] Jira bucket ${this.bucketId}/${this.bucketTotal} - visible projects for board sync (${uniqueVisibleProjects.length}): ${uniqueVisibleProjects.length ? uniqueVisibleProjects.join(', ') : '<none>'}; selected for current bucket (${uniqueSelectedProjects.length}): ${uniqueSelectedProjects.length ? uniqueSelectedProjects.join(', ') : '<none>'}`
+    );
   }
 
   getBoard(id: string): Promise<AgileModels.Board> {
