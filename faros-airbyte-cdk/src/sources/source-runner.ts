@@ -151,20 +151,6 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           try {
-            // Always perform connection check before reading data
-            this.logger.info('Performing connection check before reading data');
-            const checkStatus = await this.source.check(config);
-            if (
-              checkStatus.connectionStatus.status !== 'SUCCEEDED'
-            ) {
-              const errorMsg = `Connection check failed: ${
-                checkStatus.connectionStatus.message || 'Unknown error'
-              }`;
-              this.logger.error(errorMsg);
-              throw new Error(errorMsg);
-            }
-            this.logger.info('Connection check succeeded');
-
             this.logger.getState = () => maybeCompressState(config, state);
             const res = await this.source.onBeforeRead(
               config,
