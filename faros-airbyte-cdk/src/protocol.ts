@@ -55,7 +55,6 @@ export interface AirbyteConfig {
   compress_state?: boolean;
   debug?: boolean;
   faros_source_id?: string;
-  skip_check_connection?: boolean;
   skip_reset_models?: string[];
   [k: string]: any;
 }
