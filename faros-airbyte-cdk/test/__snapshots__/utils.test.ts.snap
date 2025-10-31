@@ -7,7 +7,7 @@ AirbyteSpec {
       "properties": Object {
         "check_connection": Object {
           "default": true,
-          "description": "Enable connection check during setup (CHECK command). When disabled, skips setup-time checks but performs a single pre-read validation before reading data.",
+          "description": "Enable connection check during setup (CHECK command). When disabled, skips setup-time checks.",
           "order": 1002,
           "title": "Check Connection",
           "type": "boolean",
