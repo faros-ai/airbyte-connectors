@@ -16,14 +16,7 @@ import {Workday} from '../src/workday';
 const test_base_url = 'https://testurl.com';
 
 function getWorkdayInstance(logger, axios_instance, limit): Workday {
-  return new Workday(
-    logger,
-    axios_instance,
-    limit,
-    test_base_url,
-    'acme',
-    true
-  );
+  return new Workday(logger, axios_instance, limit, test_base_url, 'acme');
 }
 
 describe('index', () => {
@@ -199,8 +192,7 @@ describe('index', () => {
         } as any,
         0,
         test_base_url,
-        'my_tenant',
-        true
+        'my_tenant'
       );
     });
 
@@ -228,8 +220,7 @@ describe('index', () => {
         } as any,
         0,
         test_base_url,
-        'my_tenant',
-        true
+        'my_tenant'
       );
     });
 

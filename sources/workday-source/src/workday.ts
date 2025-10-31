@@ -33,8 +33,7 @@ export class Workday {
     private readonly api: AxiosInstance,
     private readonly limit: number,
     private readonly baseUrl: string,
-    private readonly tenant: string,
-    private readonly skipConnectionCheck: boolean
+    private readonly tenant: string
   ) {}
 
   static async instance(
@@ -82,8 +81,7 @@ export class Workday {
       api,
       cfg.limit ?? DEFAULT_PAGE_LIMIT,
       cfg.baseUrl,
-      cfg.tenant,
-      cfg.skipConnectionCheck ? cfg.skipConnectionCheck : true
+      cfg.tenant
     );
   }
 
