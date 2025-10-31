@@ -143,10 +143,11 @@ export class TestRailsClient {
    * @param projectId The project to retrieve runs for
    * @param window The time window to retrieve runs within
    */
-  async *listRuns(
+  @Memoize()
+  async listRuns(
     projectId: string,
     window?: TimeWindow
-  ): AsyncGenerator<TestRailsRun> {
+  ): Promise<TestRailsRun[]> {
     let window_params = '';
     if (window?.after) {
       window_params += `&created_after=${window.after.toUnixInteger()}`;
@@ -157,7 +158,11 @@ export class TestRailsClient {
 
     const path = '/get_runs/' + projectId + window_params;
 
-    yield* this.paginate(path, (res: PagedRuns) => res.runs);
+    const runs = [];
+    for await (const run of this.paginate(path, (res: PagedRuns) => res.runs)) {
+      runs.push(run);
+    }
+    return runs;
   }
 
   /**

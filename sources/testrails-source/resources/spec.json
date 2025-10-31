@@ -35,6 +35,12 @@
         "description": "The number of days of data to sync from TestRails.",
         "default": 90
       },
+      "max_run_duration_days": {
+        "type": "number",
+        "title": "Max Run Duration Days",
+        "description": "Maximum number of days a test run can stay open after creation. Used for incremental syncs to capture updates to existing runs. Runs are re-synced for this many days to catch status changes.",
+        "default": 14
+      },
       "page_size": {
         "type": "number",
         "title": "Page Size",

@@ -37,7 +37,7 @@
       "stream": {
         "name": "results",
         "json_schema": {},
-        "supported_sync_modes": ["full_refresh"],
+        "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
         "source_defined_primary_key": [["run_id"], ["test_id"], ["id"]]
       },

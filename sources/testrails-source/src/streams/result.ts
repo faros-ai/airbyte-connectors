@@ -9,16 +9,21 @@ import {Dictionary} from 'ts-essentials';
 import {Result} from '../models';
 import {TestRails, TestRailsConfig} from '../testrails/testrails';
 
-export interface ResultState {
-  created_after: number;
-}
-
 export class Results extends AirbyteStreamBase {
   constructor(
     private readonly config: TestRailsConfig,
     protected readonly logger: AirbyteLogger
   ) {
     super(logger);
+  }
+
+  /**
+   * Results stream depends on Runs stream to ensure runs are fetched first.
+   * Since listRuns is memoized by projectId, Results will reuse the cached
+   * runs data fetched by the Runs stream, avoiding duplicate API calls.
+   */
+  get dependencies(): ReadonlyArray<string> {
+    return ['runs'];
   }
 
   getJsonSchema(): Dictionary<any, string> {
@@ -34,25 +39,11 @@ export class Results extends AirbyteStreamBase {
   async *readRecords(
     syncMode: SyncMode,
     cursorField?: string[],
-    streamSlice?: Dictionary<any, string>,
-    streamState?: ResultState
+    streamSlice?: Dictionary<any, string>
   ): AsyncGenerator<Result> {
     const testRails = await TestRails.instance(this.config, this.logger);
 
-    yield* testRails.getResults(
-      syncMode === SyncMode.INCREMENTAL ? streamState.created_after : undefined
-    );
-  }
-
-  getUpdatedState(
-    currentStreamState: ResultState,
-    latestRecord: Result
-  ): Dictionary<any> {
-    return {
-      created_after: Math.max(
-        currentStreamState.created_after ?? 0,
-        latestRecord.created_on ?? 0
-      ),
-    };
+    // Reuses memoized runs from Runs stream (called with just projectId)
+    yield* testRails.getResults();
   }
 }
