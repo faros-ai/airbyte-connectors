@@ -6,6 +6,7 @@ import {Case, Result, Run, Suite, TimeWindow} from '../models';
 import {TestRailsClient} from './testrails-client';
 
 const DEFAULT_CUTOFF_DAYS = 90;
+export const DEFAULT_MAX_RUN_DURATION_DAYS = 14;
 
 export interface TestRailsConfig {
   readonly username: string;
@@ -13,6 +14,7 @@ export interface TestRailsConfig {
   readonly instance_url: string;
   readonly project_names?: string[];
   readonly cutoff_days?: number;
+  readonly max_run_duration_days?: number;
   readonly page_size?: number;
   readonly max_retries?: number;
   readonly timeout?: number;
@@ -169,7 +171,8 @@ export class TestRails {
     const window = this.getWindow(since);
 
     for (const projectId of Object.keys(this.projects)) {
-      for await (const run of this.client.listRuns(projectId, window)) {
+      const runs = await this.client.listRuns(projectId, window);
+      for (const run of runs) {
         const milestone = await this.client.getMilestone(run.milestone_id);
 
         yield {
@@ -181,8 +184,7 @@ export class TestRails {
     }
   }
 
-  async *getResults(since?: number): AsyncGenerator<Result> {
-    const window = this.getWindow(since);
+  async *getResults(): AsyncGenerator<Result> {
     const idToStatusMap: Map<number, string> = new Map();
     const statuses = await this.client.getStatuses();
     for (const status of statuses) {
@@ -190,7 +192,9 @@ export class TestRails {
     }
 
     for (const projectId of Object.keys(this.projects)) {
-      for await (const run of this.client.listRuns(projectId, window)) {
+      // Reuse memoized runs from Runs stream (no window parameter)
+      const runs = await this.client.listRuns(projectId);
+      for (const run of runs) {
         const testToCaseMap: Map<number, number> = new Map();
         for await (const test of this.client.listTests(run.id)) {
           testToCaseMap.set(test.id, test.case_id);
