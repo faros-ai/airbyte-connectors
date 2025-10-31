@@ -1,5 +1,5 @@
 import {AirbyteLogger, AirbyteStreamBase, StreamKey} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/azure-devops';
+import {getUserIdentifier, User} from 'faros-airbyte-common/azure-devops';
 import {Dictionary} from 'ts-essentials';
 
 import {AzureWorkitems} from '../azure-workitems';
@@ -18,16 +18,26 @@ export class Users extends AirbyteStreamBase {
   }
 
   get primaryKey(): StreamKey {
-    return 'principalName';
+    return 'id';
   }
 
-  async *readRecords(): AsyncGenerator<User> {
+  async *readRecords(): AsyncGenerator<User & {id: string}> {
     const azureWorkitem = await AzureWorkitems.instance(
       this.config,
       this.logger,
       this.config.additional_fields,
       this.config.fetch_work_item_comments
     );
-    yield* azureWorkitem.getUsers(this.config.projects);
+    for await (const user of azureWorkitem.getUsers(this.config.projects)) {
+      const id = getUserIdentifier(user);
+      if (!id) {
+        this.logger.warn(`Could not determine a unique ID for user object. Skipping.`);
+        continue;
+      }
+      yield {
+        ...user,
+        id,
+      };
+    }
   }
 }

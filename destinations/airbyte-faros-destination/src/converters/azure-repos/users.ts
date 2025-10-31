@@ -1,7 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {User} from 'faros-airbyte-common/azure-devops';
+import {getUserIdentifier, User} from 'faros-airbyte-common/azure-devops';
 
-import {getOrganization, getUniqueName} from '../common/azure-devops';
+import {getOrganization} from '../common/azure-devops';
 import {CategoryDetail} from '../common/common';
 import {UserTypeCategory} from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
@@ -14,7 +14,7 @@ export class Users extends AzureReposConverter {
   ];
 
   private checkUserItemValidity(userItem: User): boolean {
-    return Boolean(getUniqueName(userItem));
+    return Boolean(getUserIdentifier(userItem));
   }
 
   async convert(
@@ -36,7 +36,7 @@ export class Users extends AzureReposConverter {
       detail: 'subjectKind' in userItem ? userItem.subjectKind : null,
     };
 
-    const uniqueName = getUniqueName(userItem);
+    const uniqueName = getUserIdentifier(userItem);
     const uid = uniqueName.toLowerCase();
     res.push({
       model: 'vcs_Membership',
