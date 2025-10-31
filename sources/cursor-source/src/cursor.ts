@@ -290,7 +290,7 @@ export class Cursor {
       return await apiRequest();
     } catch (error: any) {
       this.logger.debug(
-        `API Error: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
+        `API request failed: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
         error.response?.data
       );
       throw error;
