@@ -4,19 +4,13 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Jenkins Spec",
     "type": "object",
-    "required": [
-      "server_url",
-      "user",
-      "token"
-    ],
+    "required": ["server_url", "user", "token"],
     "additionalProperties": true,
     "properties": {
       "server_url": {
         "type": "string",
         "title": "Jenkins Server URL",
-        "examples": [
-          "https://my-jenkins-server.example.com"
-        ]
+        "examples": ["https://my-jenkins-server.example.com"]
       },
       "user": {
         "type": "string",
@@ -26,19 +20,6 @@
         "type": "string",
         "title": "Jenkins Token",
         "airbyte_secret": true
-      },
-      "debug": {
-        "order": 1000,
-        "type": "boolean",
-        "title": "Debug",
-        "description": "Enable debug mode",
-        "default": false
-      },
-      "faros_source_id": {
-        "order": 1001,
-        "type": "string",
-        "title": "The source ID",
-        "description": "The ID of the source (aka account)"
       }
     }
   }
