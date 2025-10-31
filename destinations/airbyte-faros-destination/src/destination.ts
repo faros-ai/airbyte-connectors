@@ -1010,9 +1010,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       const isResetSync =
         process.env.WORKER_JOB_ID &&
-        stats.messagesRead === 1 &&
+        ((stats.messagesRead === 1 && stateReset) ||
+          stats.messagesRead === 0) &&
         stats.recordsProcessed === 0 &&
-        stateReset &&
         !sourceConfigReceived &&
         Object.values(streams)
           .map((s) => s.destination_sync_mode)
@@ -1061,11 +1061,14 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               'DELETE',
               `/accounts/${config.faros_source_id}/state`
             );
+            this.logger.info('Account state reset successfully');
           } catch (e: any) {
-            const message = e.message ?? JSON.stringify(e);
-            this.logger.warn(
-              `Failed to reset account state for ${config.faros_source_id}: ${message}`
-            );
+            if (VError.info(e)?.res?.status !== 404) {
+              const message = e.message ?? JSON.stringify(e);
+              this.logger.warn(
+                `Failed to reset account state for ${config.faros_source_id}: ${message}`
+              );
+            }
           }
         }
       }
