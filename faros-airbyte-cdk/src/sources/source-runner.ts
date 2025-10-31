@@ -7,7 +7,12 @@ import path from 'path';
 
 import {wrapApiError} from '../errors';
 import {buildArgs, buildJson, helpTable, traverseObject} from '../help';
-import {AirbyteConfig, AirbyteState} from '../protocol';
+import {
+  AirbyteConfig,
+  AirbyteConnectionStatus,
+  AirbyteConnectionStatusMessage,
+  AirbyteState,
+} from '../protocol';
 import {ConnectorVersion, Runner} from '../runner';
 import {
   addSourceCommonProperties,
@@ -60,6 +65,21 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
       .requiredOption('--config <path to json>', 'config json')
       .action(async (opts: {config: string}) => {
         const config = require(path.resolve(opts.config));
+
+        // Skip check if check_connection is explicitly set to false
+        if (config.check_connection === false) {
+          this.logger.info(
+            'Skipping setup-time connection check (check_connection=false). ' +
+              'Connection will be validated before reading data.'
+          );
+          const status = new AirbyteConnectionStatusMessage({
+            status: AirbyteConnectionStatus.SUCCEEDED,
+            message: 'Setup-time check skipped (check_connection=false)',
+          });
+          this.logger.write(status);
+          return;
+        }
+
         const status = await this.source.check(config);
 
         // Expected output
@@ -107,6 +127,24 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             state = require(path.resolve(opts.state));
             this.logger.info(`State: ${JSON.stringify(state)}`);
           }
+
+          // Always perform pre-read connection validation
+          this.logger.info('Performing pre-read connection validation');
+          const checkStatus = await this.source.check(config);
+          if (
+            checkStatus.connectionStatus.status ===
+            AirbyteConnectionStatus.FAILED
+          ) {
+            this.logger.error(
+              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+            );
+            this.logger.write(checkStatus);
+            this.logger.flush();
+            throw new Error(
+              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+            );
+          }
+          this.logger.info('Pre-read connection validation succeeded');
 
           try {
             this.logger.getState = () => maybeCompressState(config, state);

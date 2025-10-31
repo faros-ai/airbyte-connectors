@@ -169,6 +169,15 @@ const SOURCE_COMMON_PROPERTIES = {
     title: 'The source ID',
     description: 'The ID of the source (aka account)',
   },
+  check_connection: {
+    order: 1002,
+    type: 'boolean',
+    title: 'Check Connection',
+    description:
+      'Enable connection check during setup (CHECK command). ' +
+      'When disabled, skips setup-time checks but performs a single pre-read validation before reading data.',
+    default: true,
+  },
 };
 
 export function addSourceCommonProperties(spec: AirbyteSpec): AirbyteSpec {

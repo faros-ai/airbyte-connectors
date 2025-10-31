@@ -5,6 +5,13 @@ AirbyteSpec {
   "spec": Object {
     "connectionSpecification": Object {
       "properties": Object {
+        "check_connection": Object {
+          "default": true,
+          "description": "Enable connection check during setup (CHECK command). When disabled, skips setup-time checks but performs a single pre-read validation before reading data.",
+          "order": 1002,
+          "title": "Check Connection",
+          "type": "boolean",
+        },
         "debug": Object {
           "default": false,
           "description": "Enable debug mode",
