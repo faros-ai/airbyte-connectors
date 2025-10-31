@@ -31,6 +31,7 @@ export const MAX_DAILY_USAGE_WINDOW_DAYS = 30; // Cursor API limit
 
 // https://cursor.com/docs/account/teams/ai-code-tracking-api
 export const MAX_AI_COMMIT_METRICS_WINDOW_DAYS = 30; // Cursor API limit
+export const MAX_AI_COMMIT_METRICS_PAGE_SIZE = 500; // Cursor API limit
 
 export class Cursor {
   private static cursor: Cursor;
@@ -86,6 +87,18 @@ export class Cursor {
     return Cursor.cursor;
   }
 
+  private async wrapApiRequest<T>(apiRequest: () => Promise<T>): Promise<T> {
+    try {
+      return await apiRequest();
+    } catch (error: any) {
+      this.logger.debug(
+        `API Error: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
+        error.response?.data
+      );
+      throw error;
+    }
+  }
+
   async checkConnection(): Promise<void> {
     try {
       await this.getMembers();
@@ -98,7 +111,9 @@ export class Cursor {
   }
 
   async getMembers(): Promise<MemberItem[]> {
-    const res = await this.api.get<MembersResponse>('/teams/members');
+    const res = await this.wrapApiRequest(() =>
+      this.api.get<MembersResponse>('/teams/members')
+    );
     const activeMembers: ActiveMemberItem[] = res.data.teamMembers.map(
       (member) => ({
         ...member,
@@ -142,12 +157,11 @@ export class Cursor {
         `Fetching daily usage from ${new Date(currentStart).toISOString()} to ${new Date(currentEnd).toISOString()}`
       );
 
-      const res = await this.api.post<DailyUsageResponse>(
-        '/teams/daily-usage-data',
-        {
+      const res = await this.wrapApiRequest(() =>
+        this.api.post<DailyUsageResponse>('/teams/daily-usage-data', {
           startDate: currentStart,
           endDate: currentEnd,
-        }
+        })
       );
 
       yield* res.data.data;
@@ -170,14 +184,13 @@ export class Cursor {
     let hasNextPage = true;
 
     while (hasNextPage) {
-      const res = await this.api.post<UsageEventsResponse>(
-        '/teams/filtered-usage-events',
-        {
+      const res = await this.wrapApiRequest(() =>
+        this.api.post<UsageEventsResponse>('/teams/filtered-usage-events', {
           startDate,
           endDate: roundedEndDate,
           page,
           pageSize: this.config.page_size ?? DEFAULT_PAGE_SIZE,
-        }
+        })
       );
 
       for (const usageEvent of res.data.usageEvents) {
@@ -199,6 +212,10 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<AiCommitMetricItem> {
+    const pageSize = Math.min(
+      this.config.page_size ?? DEFAULT_PAGE_SIZE,
+      MAX_AI_COMMIT_METRICS_PAGE_SIZE
+    );
     const windowSizeMs =
       MAX_AI_COMMIT_METRICS_WINDOW_DAYS * 24 * 60 * 60 * 1000;
     let currentStart = startDate;
@@ -224,21 +241,21 @@ export class Cursor {
           startDate: windowStartDate,
           endDate: windowEndDate,
           page: page.toString(),
-          pageSize: (this.config.page_size ?? DEFAULT_PAGE_SIZE).toString(),
+          pageSize: pageSize.toString(),
         });
 
         try {
-          const res = await this.api.get<AiCommitMetricsResponse>(
-            `/analytics/ai-code/commits?${params.toString()}`
+          const res = await this.wrapApiRequest(() =>
+            this.api.get<AiCommitMetricsResponse>(
+              `/analytics/ai-code/commits?${params.toString()}`
+            )
           );
 
           for (const commit of res.data.items) {
             yield commit;
           }
 
-          hasNextPage =
-            page * (this.config.page_size ?? DEFAULT_PAGE_SIZE) <
-            res.data.totalCount;
+          hasNextPage = page * pageSize < res.data.totalCount;
           page++;
         } catch (error: any) {
           // Check for 401 unauthorized error indicating no enterprise access
