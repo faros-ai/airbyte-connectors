@@ -24,7 +24,7 @@ import {
 export const DEFAULT_CURSOR_API_URL = 'https://api.cursor.com';
 export const DEFAULT_CUTOFF_DAYS = 365;
 export const DEFAULT_TIMEOUT = 60000;
-export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_PAGE_SIZE = 1000;
 
 // https://cursor.com/docs/account/teams/admin-api#get-daily-usage-data
 export const MAX_DAILY_USAGE_WINDOW_DAYS = 30; // Cursor API limit
@@ -40,6 +40,7 @@ export class Cursor {
 
   constructor(
     private readonly config: CursorConfig,
+    private readonly pageSize: number,
     private readonly logger: AirbyteLogger
   ) {
     const apiUrl = this.config.cursor_api_url ?? DEFAULT_CURSOR_API_URL;
@@ -82,7 +83,11 @@ export class Cursor {
 
   static instance(config: CursorConfig, logger: AirbyteLogger): Cursor {
     if (!Cursor.cursor) {
-      Cursor.cursor = new Cursor(config, logger);
+      Cursor.cursor = new Cursor(
+        config,
+        config.page_size ?? DEFAULT_PAGE_SIZE,
+        logger
+      );
     }
     return Cursor.cursor;
   }
@@ -177,7 +182,7 @@ export class Cursor {
           startDate,
           endDate: roundedEndDate,
           page,
-          pageSize: this.config.page_size ?? DEFAULT_PAGE_SIZE,
+          pageSize: this.pageSize,
         })
       );
 
@@ -200,10 +205,7 @@ export class Cursor {
     startDate: number,
     endDate: number
   ): AsyncGenerator<AiCommitMetricItem> {
-    const pageSize = Math.min(
-      this.config.page_size ?? DEFAULT_PAGE_SIZE,
-      MAX_AI_COMMIT_METRICS_PAGE_SIZE
-    );
+    const pageSize = Math.min(this.pageSize, MAX_AI_COMMIT_METRICS_PAGE_SIZE);
     const windowSizeMs =
       MAX_AI_COMMIT_METRICS_WINDOW_DAYS * 24 * 60 * 60 * 1000;
     let currentStart = startDate;
