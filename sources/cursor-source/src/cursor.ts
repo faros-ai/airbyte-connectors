@@ -87,18 +87,6 @@ export class Cursor {
     return Cursor.cursor;
   }
 
-  private async wrapApiRequest<T>(apiRequest: () => Promise<T>): Promise<T> {
-    try {
-      return await apiRequest();
-    } catch (error: any) {
-      this.logger.debug(
-        `API Error: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
-        error.response?.data
-      );
-      throw error;
-    }
-  }
-
   async checkConnection(): Promise<void> {
     try {
       await this.getMembers();
@@ -295,5 +283,17 @@ export class Cursor {
 
   getMinUsageTimestampForEmail(email: string): number | undefined {
     return this.minUsageTimestampPerEmail[email];
+  }
+
+  private async wrapApiRequest<T>(apiRequest: () => Promise<T>): Promise<T> {
+    try {
+      return await apiRequest();
+    } catch (error: any) {
+      this.logger.debug(
+        `API Error: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
+        error.response?.data
+      );
+      throw error;
+    }
   }
 }
