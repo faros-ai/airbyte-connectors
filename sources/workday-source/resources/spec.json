@@ -119,11 +119,6 @@
                 "title": "Request Timeout",
                 "default": 60000,
                 "description": "The time allowed for a request to timeout (in milliseconds)."
-            },
-            "skipConnectionCheck": {
-                "type": "boolean",
-                "title": "Skip Connection Check",
-                "default": true
             }
         }
     }
