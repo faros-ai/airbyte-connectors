@@ -42,7 +42,7 @@
         "type": "integer",
         "title": "Page Size",
         "description": "Number of records to fetch per API request",
-        "default": 100
+        "default": 1000
       },
       "backfill": {
         "order": 5,
