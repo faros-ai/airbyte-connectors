@@ -103,6 +103,11 @@ export interface BucketingCreateOptions {
   logger?: (message: string) => void;
 }
 
+export interface BucketingFilterOptions {
+  logger: (message: string) => void;
+  entityName?: string;
+}
+
 /**
  * Unified bucketing manager that handles validation, round-robin, and filtering.
  *
@@ -197,16 +202,52 @@ export class Bucketing {
    */
   filter<T>(
     items: ReadonlyArray<T>,
-    getKey: (item: T) => string
+    getKey: (item: T) => string,
+    options?: BucketingFilterOptions
   ): ReadonlyArray<T> {
-    return items.filter((item) =>
-      Bucketing.isInBucket(
-        this.partitionKey,
-        getKey(item),
-        this.bucketId,
-        this.bucketTotal
-      )
-    );
+    const filtered: T[] = [];
+    const logger = options?.logger;
+    const entityName = options?.entityName ?? 'entities';
+    const shouldLog = Boolean(logger);
+    const visibleKeys = new Set<string>();
+    const selectedKeys = new Set<string>();
+
+    for (const item of items) {
+      const key = getKey(item);
+      if (shouldLog) {
+        visibleKeys.add(key);
+      }
+
+      if (
+        Bucketing.isInBucket(
+          this.partitionKey,
+          key,
+          this.bucketId,
+          this.bucketTotal
+        )
+      ) {
+        filtered.push(item);
+        if (shouldLog) {
+          selectedKeys.add(key);
+        }
+      }
+    }
+
+    if (logger) {
+      const prefix = `Bucketing (${this.partitionKey} bucket ${this.bucketId}/${this.bucketTotal})`;
+      const visibleList =
+        visibleKeys.size ? Array.from(visibleKeys).join(', ') : '<none>';
+      const selectedList =
+        selectedKeys.size ? Array.from(selectedKeys).join(', ') : '<none>';
+      logger(
+        `${prefix}: visible ${entityName} (${visibleKeys.size}) -> ${visibleList}`
+      );
+      logger(
+        `${prefix}: selected ${entityName} (${selectedKeys.size}) -> ${selectedList}`
+      );
+    }
+
+    return filtered;
   }
 
   /**

@@ -135,7 +135,11 @@ export class GroupFilter {
 
     return this.config.bucketing.filter(
       allProjects,
-      ({repo}) => `${group}/${repo.path}`
+      ({repo}) => `${group}/${repo.path}`,
+      {
+        logger: this.logger.info.bind(this.logger),
+        entityName: 'projects',
+      }
     );
   }
 

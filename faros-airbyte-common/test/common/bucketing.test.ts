@@ -1,4 +1,5 @@
 import {
+  Bucketing,
   applyRoundRobinBucketing,
   bucket,
   nextBucketId,
@@ -64,6 +65,54 @@ describe('validateBucketingConfig', () => {
       logger
     );
     expect(logger).not.toHaveBeenCalled();
+  });
+});
+
+describe('Bucketing.filter', () => {
+  test('logs visible and selected identifiers when options provided', () => {
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/test',
+      config: {bucket_total: 3, bucket_id: 1},
+    });
+    const items = ['alpha', 'beta', 'gamma', 'delta'];
+    const logger = jest.fn();
+    const filtered = bucketing.filter(items, (item) => item, {
+      logger,
+      entityName: 'repositories',
+    });
+
+    const expectedSelected = items.filter(
+      (item) => bucket('farosai/test', item, 3) === 1
+    );
+
+    expect(filtered).toEqual(expectedSelected);
+    expect(logger).toHaveBeenCalledTimes(2);
+    expect(logger.mock.calls[0][0]).toBe(
+      'Bucketing (farosai/test bucket 1/3): visible repositories (4) -> alpha, beta, gamma, delta'
+    );
+    const selectedMessage = logger.mock.calls[1][0];
+    expect(
+      selectedMessage.startsWith(
+        'Bucketing (farosai/test bucket 1/3): selected repositories ('
+      )
+    ).toBe(true);
+    for (const item of expectedSelected) {
+      expect(selectedMessage).toContain(item);
+    }
+  });
+
+  test('returns filtered items when no options provided', () => {
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/test',
+      config: {bucket_total: 2, bucket_id: 2},
+    });
+    const items = ['alpha', 'beta', 'gamma'];
+    const filtered = bucketing.filter(items, (item) => item);
+    const expectedSelected = items.filter(
+      (item) => bucket('farosai/test', item, 2) === 2
+    );
+
+    expect(filtered).toEqual(expectedSelected);
   });
 });
 
