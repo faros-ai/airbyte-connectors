@@ -187,7 +187,7 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
   });
 
   describe('READ command with pre-read check', () => {
-    it('should NOT perform pre-read check when check_connection is true (default)', async () => {
+    it('should always perform pre-read check when check_connection is true', async () => {
       const config = {test_prop: 'value', check_connection: true};
       configPath = path.join(tempDir, 'config.json');
       fs.writeFileSync(configPath, JSON.stringify(config));
@@ -206,13 +206,16 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
         from: 'user',
       });
 
-      // Should NOT contain pre-read validation log messages
+      // Should always contain pre-read validation log messages
       expect(
-        logMessages.some((msg) => msg.includes('pre-read connection validation'))
-      ).toBe(false);
+        logMessages.some((msg) => msg.includes('Performing pre-read connection validation'))
+      ).toBe(true);
+      expect(
+        logMessages.some((msg) => msg.includes('Pre-read connection validation succeeded'))
+      ).toBe(true);
     });
 
-    it('should NOT perform pre-read check when check_connection is undefined (default)', async () => {
+    it('should always perform pre-read check when check_connection is undefined', async () => {
       const config = {test_prop: 'value'}; // check_connection not set
       configPath = path.join(tempDir, 'config.json');
       fs.writeFileSync(configPath, JSON.stringify(config));
@@ -231,13 +234,16 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
         from: 'user',
       });
 
-      // Should NOT contain pre-read validation log messages
+      // Should always contain pre-read validation log messages
       expect(
-        logMessages.some((msg) => msg.includes('pre-read connection validation'))
-      ).toBe(false);
+        logMessages.some((msg) => msg.includes('Performing pre-read connection validation'))
+      ).toBe(true);
+      expect(
+        logMessages.some((msg) => msg.includes('Pre-read connection validation succeeded'))
+      ).toBe(true);
     });
 
-    it('should perform pre-read check when check_connection is false and succeed', async () => {
+    it('should always perform pre-read check and succeed', async () => {
       const config = {test_prop: 'value', check_connection: false};
       configPath = path.join(tempDir, 'config.json');
       fs.writeFileSync(configPath, JSON.stringify(config));
@@ -256,7 +262,7 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
         from: 'user',
       });
 
-      // Should contain pre-read validation log messages
+      // Should always contain pre-read validation log messages
       expect(
         logMessages.some((msg) =>
           msg.includes('Performing pre-read connection validation')
@@ -275,7 +281,7 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
       expect(records.length).toBeGreaterThan(0);
     });
 
-    it('should perform pre-read check when check_connection is false and fail fast', async () => {
+    it('should always perform pre-read check and fail fast on error', async () => {
       const config = {test_prop: 'value', check_connection: false};
       configPath = path.join(tempDir, 'config.json');
       fs.writeFileSync(configPath, JSON.stringify(config));

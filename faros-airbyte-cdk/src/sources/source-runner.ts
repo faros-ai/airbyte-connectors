@@ -128,27 +128,23 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             this.logger.info(`State: ${JSON.stringify(state)}`);
           }
 
-          // Perform pre-read connection check if check_connection is disabled
-          if (config.check_connection === false) {
-            this.logger.info(
-              'Performing pre-read connection validation (check_connection=false)'
+          // Always perform pre-read connection validation
+          this.logger.info('Performing pre-read connection validation');
+          const checkStatus = await this.source.check(config);
+          if (
+            checkStatus.connectionStatus.status ===
+            AirbyteConnectionStatus.FAILED
+          ) {
+            this.logger.error(
+              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
             );
-            const checkStatus = await this.source.check(config);
-            if (
-              checkStatus.connectionStatus.status ===
-              AirbyteConnectionStatus.FAILED
-            ) {
-              this.logger.error(
-                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-              );
-              this.logger.write(checkStatus);
-              this.logger.flush();
-              throw new Error(
-                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-              );
-            }
-            this.logger.info('Pre-read connection validation succeeded');
+            this.logger.write(checkStatus);
+            this.logger.flush();
+            throw new Error(
+              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+            );
           }
+          this.logger.info('Pre-read connection validation succeeded');
 
           try {
             this.logger.getState = () => maybeCompressState(config, state);
