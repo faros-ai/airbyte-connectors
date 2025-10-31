@@ -175,7 +175,7 @@ const SOURCE_COMMON_PROPERTIES = {
     title: 'Check Connection',
     description:
       'Enable connection check during setup (CHECK command). ' +
-      'When disabled, skips setup-time checks but performs a single pre-read validation before reading data.',
+      'When disabled, skips setup-time checks.',
     default: true,
   },
 };

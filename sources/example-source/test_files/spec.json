@@ -39,6 +39,13 @@
         "type": "string",
         "title": "The source ID",
         "description": "The ID of the source (aka account)"
+      },
+      "check_connection": {
+        "order": 1002,
+        "type": "boolean",
+        "title": "Check Connection",
+        "description": "Enable connection check during setup (CHECK command). When disabled, skips setup-time checks.",
+        "default": true
       }
     }
   }
