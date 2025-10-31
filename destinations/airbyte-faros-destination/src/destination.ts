@@ -1063,7 +1063,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             );
             this.logger.info('Account state reset successfully');
           } catch (e: any) {
-            if (!(VError.info(e)?.res?.status === 404)) {
+            if (VError.info(e)?.res?.status !== 404) {
               const message = e.message ?? JSON.stringify(e);
               this.logger.warn(
                 `Failed to reset account state for ${config.faros_source_id}: ${message}`
