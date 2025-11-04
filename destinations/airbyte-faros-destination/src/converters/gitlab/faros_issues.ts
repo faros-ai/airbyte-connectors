@@ -66,6 +66,7 @@ export class FarosIssues extends GitlabConverter {
 
     // Create the task record
     const category = issue.state === 'opened' ? 'Todo' : 'Done';
+    const type = this.mapIssueType(issue.issue_type as string | undefined);
     res.push({
       model: 'tms_Task',
       record: {
@@ -76,6 +77,8 @@ export class FarosIssues extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
+        type,
+        url: issue.web_url,
         creator: issue.author_username
           ? {uid: issue.author_username, source: this.streamName.source}
           : null,
@@ -110,5 +113,21 @@ export class FarosIssues extends GitlabConverter {
     });
 
     return res;
+  }
+
+  private mapIssueType(issueType?: string): {
+    category: string;
+    detail: string;
+  } {
+    switch (toLower(issueType)) {
+      case 'issue':
+        return {category: 'Story', detail: issueType};
+      case 'task':
+        return {category: 'Task', detail: issueType};
+      case 'incident':
+      case 'test_case':
+      default:
+        return {category: 'Custom', detail: issueType};
+    }
   }
 }

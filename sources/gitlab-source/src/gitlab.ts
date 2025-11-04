@@ -693,6 +693,8 @@ export class GitLab {
           'created_at',
           'updated_at',
           'labels',
+          'issue_type',
+          'web_url',
         ]),
         author_username: typedIssue.author.username,
         assignee_usernames:
