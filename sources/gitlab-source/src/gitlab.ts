@@ -2,6 +2,7 @@ import {
   Camelize,
   CommitSchema,
   DeploymentSchema,
+  EpicSchema,
   EventSchema,
   Gitlab as GitlabClient,
   GroupSchema,
@@ -19,6 +20,7 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   FarosCommitOutput,
   FarosDeploymentOutput,
+  FarosEpicOutput,
   FarosGroupOutput,
   FarosIssueOutput,
   FarosJobOutput,
@@ -700,6 +702,65 @@ export class GitLab {
         assignee_usernames:
           typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
       };
+    }
+  }
+
+  async *getEpics(
+    groupId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosEpicOutput, 'group_id'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+      includeDescendantGroups: false, // Only direct group epics
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    try {
+      for await (const epic of this.offsetPagination((paginationOptions) =>
+        this.client.Epics.all(groupId, {...options, ...paginationOptions})
+      )) {
+        const typedEpic = epic as EpicSchema;
+
+        // Collect epic author
+        if (typedEpic.author) {
+          this.userCollector.collectUser(typedEpic.author);
+        }
+
+        yield {
+          __brand: 'FarosEpic',
+          ...pick(typedEpic, [
+            'id',
+            'iid',
+            'title',
+            'description',
+            'state',
+            'created_at',
+            'updated_at',
+            'web_url',
+          ]),
+          author_username: typedEpic.author?.username ?? null,
+        };
+      }
+    } catch (error: any) {
+      // Epics are a Premium/Ultimate feature
+      // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        this.logger.info(
+          `Epics are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
+        );
+        return;
+      }
+      throw error;
     }
   }
 
