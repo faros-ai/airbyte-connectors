@@ -37,7 +37,7 @@ COPY --from=builder /home/node/airbyte/destinations ./destinations
 COPY ./docker ./docker
 
 ENV OTEL_SERVICE_NAME=airbyte
-ENV OTEL_NODE_ENABLED_INSTRUMENTATIONS=http,koa
+ENV OTEL_NODE_ENABLED_INSTRUMENTATIONS=http,graphql,pino,dns
 
 ARG version
 RUN test -n "$version" || (echo "'version' argument is not set, e.g --build-arg version=x.y.z" && false)
