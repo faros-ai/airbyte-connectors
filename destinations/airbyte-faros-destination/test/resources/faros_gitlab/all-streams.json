@@ -241,7 +241,15 @@
           "test-assignee"
         ],
         "group_id": "12372707",
-        "project_path": "testy"
+        "project_path": "testy",
+        "issue_type": "issue",
+        "web_url": "https://gitlab.com/test-group/testy/-/issues/1",
+        "epic": {
+          "id": 123456
+        },
+        "iteration": {
+          "id": 987654
+        }
       }
     },
     "type": "RECORD"

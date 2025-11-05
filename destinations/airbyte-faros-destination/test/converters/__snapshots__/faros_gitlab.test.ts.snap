@@ -472,19 +472,27 @@ Array [
         "uid": "ypc-faros",
       },
       "description": "There's something clearly broken",
+      "epic": Object {
+        "source": "GitLab",
+        "uid": "123456",
+      },
       "name": "Test issue",
       "source": "GitLab",
+      "sprint": Object {
+        "source": "GitLab",
+        "uid": "987654",
+      },
       "status": Object {
         "category": "Todo",
         "detail": "opened",
       },
       "type": Object {
-        "category": "Custom",
-        "detail": null,
+        "category": "Story",
+        "detail": "issue",
       },
       "uid": "168781674",
       "updatedAt": "2025-06-12T00:42:48.083Z",
-      "url": null,
+      "url": "https://gitlab.com/test-group/testy/-/issues/1",
     },
   },
   Object {

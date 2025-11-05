@@ -55,6 +55,12 @@ export const DEFAULT_FETCH_PUBLIC_GROUPS = false;
 export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_FAROS_GRAPH = 'default';
 
+// Extended issue schema with optional epic and iteration fields (Premium/Ultimate features)
+type ExtendedIssueSchema = IssueSchema & {
+  epic?: {id: number};
+  iteration?: {id: number};
+};
+
 export class GitLab {
   private static gitlab: GitLab;
   private readonly client: InstanceType<typeof GitlabClient>;
@@ -679,7 +685,7 @@ export class GitLab {
     for await (const issue of this.offsetPagination((paginationOptions) =>
       this.client.Issues.all({...options, ...paginationOptions, projectId})
     )) {
-      const typedIssue = issue as IssueSchema;
+      const typedIssue = issue as ExtendedIssueSchema;
       this.userCollector.collectUser(typedIssue.author);
 
       for (const assignee of typedIssue.assignees) {
@@ -702,6 +708,10 @@ export class GitLab {
         author_username: typedIssue.author.username,
         assignee_usernames:
           typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
+        ...(typedIssue.epic?.id && {epic: {id: typedIssue.epic.id}}),
+        ...(typedIssue.iteration?.id && {
+          iteration: {id: typedIssue.iteration.id},
+        }),
       };
     }
   }

@@ -85,6 +85,15 @@ export class FarosIssues extends GitlabConverter {
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
         source: this.streamName.source,
+        ...(issue.epic?.id && {
+          epic: {uid: `${issue.epic.id}`, source: this.streamName.source},
+        }),
+        ...(issue.iteration?.id && {
+          sprint: {
+            uid: `${issue.iteration.id}`,
+            source: this.streamName.source,
+          },
+        }),
       },
     });
 

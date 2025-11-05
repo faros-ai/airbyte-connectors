@@ -132,6 +132,8 @@ export type FarosIssueOutput = {
   project_path: string;
   author_username: string;
   assignee_usernames: string[];
+  epic?: {id: number};
+  iteration?: {id: number};
 } & Pick<
   IssueSchema,
   | 'id'
