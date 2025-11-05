@@ -486,6 +486,30 @@ Array [
         "category": "Todo",
         "detail": "opened",
       },
+      "statusChangedAt": "2025-06-12T00:43:30.000Z",
+      "statusChangelog": Array [
+        Object {
+          "changedAt": "2025-06-12T00:42:24.388Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "opened",
+          },
+        },
+        Object {
+          "changedAt": "2025-06-12T00:43:00.000Z",
+          "status": Object {
+            "category": "Done",
+            "detail": "closed",
+          },
+        },
+        Object {
+          "changedAt": "2025-06-12T00:43:30.000Z",
+          "status": Object {
+            "category": "Todo",
+            "detail": "reopened",
+          },
+        },
+      ],
       "type": Object {
         "category": "Story",
         "detail": "issue",

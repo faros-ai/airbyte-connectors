@@ -31,6 +31,7 @@ import {
   FarosProjectOutput,
   FarosReleaseOutput,
   FarosTagOutput,
+  IssueStateEvent,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
 import {pick, toLower} from 'lodash';
@@ -692,6 +693,12 @@ export class GitLab {
         this.userCollector.collectUser(assignee);
       }
 
+      // Fetch state events for status changelog
+      const state_events = await this.getIssueStateEvents(
+        projectId,
+        typedIssue.iid
+      );
+
       yield {
         __brand: 'FarosIssue',
         ...pick(typedIssue, [
@@ -701,6 +708,7 @@ export class GitLab {
           'state',
           'created_at',
           'updated_at',
+          'closed_at',
           'labels',
           'issue_type',
           'web_url',
@@ -712,8 +720,22 @@ export class GitLab {
         ...(typedIssue.iteration?.id && {
           iteration: {id: typedIssue.iteration.id},
         }),
+        state_events,
       };
     }
+  }
+
+  async getIssueStateEvents(
+    projectId: string,
+    issueIid: number
+  ): Promise<IssueStateEvent[]> {
+    const events: IssueStateEvent[] = [];
+    for await (const event of this.offsetPagination((paginationOptions) =>
+      this.client.IssueStateEvents.all(projectId, issueIid, paginationOptions)
+    )) {
+      events.push(event as IssueStateEvent);
+    }
+    return events;
   }
 
   async *getEpics(

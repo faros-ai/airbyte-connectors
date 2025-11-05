@@ -1,5 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosIssueOutput} from 'faros-airbyte-common/gitlab';
+import {FarosIssueOutput, IssueStateEvent} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -33,6 +33,23 @@ export class FarosIssues extends GitlabConverter {
 
     const uid = String(issue.id);
     const taskKey = {uid, source: this.streamName.source};
+
+    const createdAt = Utils.toDate(issue.created_at);
+    const closedAt = Utils.toDate(issue.closed_at);
+
+    // Build status changelog from state events
+    const statusChangelog = this.buildStatusChangelog(
+      issue,
+      issue.state_events || [],
+      createdAt,
+      closedAt
+    );
+
+    // Get the latest status change timestamp
+    const statusChangedAt =
+      statusChangelog.length > 0
+        ? statusChangelog[statusChangelog.length - 1].changedAt
+        : createdAt;
 
     // Handle assignees
     issue.assignee_usernames?.forEach((username: string) => {
@@ -77,12 +94,14 @@ export class FarosIssues extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
+        statusChangelog,
+        statusChangedAt,
         type,
         url: issue.web_url,
         creator: issue.author_username
           ? {uid: issue.author_username, source: this.streamName.source}
           : null,
-        createdAt: Utils.toDate(issue.created_at),
+        createdAt,
         updatedAt: Utils.toDate(issue.updated_at),
         source: this.streamName.source,
         ...(issue.epic?.id && {
@@ -138,5 +157,61 @@ export class FarosIssues extends GitlabConverter {
       default:
         return {category: 'Custom', detail: issueType};
     }
+  }
+
+  private buildStatusChangelog(
+    issue: FarosIssueOutput,
+    stateEvents: IssueStateEvent[],
+    createdAt: Date,
+    closedAt: Date
+  ): Array<{
+    changedAt: Date;
+    status: {category: string; detail: string};
+  }> {
+    const changelog: Array<{
+      changedAt: Date;
+      status: {category: string; detail: string};
+    }> = [];
+
+    // Always start with the creation event
+    changelog.push({
+      changedAt: createdAt,
+      status: {category: 'Todo', detail: 'opened'},
+    });
+
+    // Process state events to capture reopened/closed transitions
+    for (const event of stateEvents) {
+      const eventDate = Utils.toDate(event.created_at);
+      if (!eventDate) continue;
+
+      if (event.state === 'closed') {
+        changelog.push({
+          changedAt: eventDate,
+          status: {category: 'Done', detail: 'closed'},
+        });
+      } else if (event.state === 'reopened') {
+        changelog.push({
+          changedAt: eventDate,
+          status: {category: 'Todo', detail: 'reopened'},
+        });
+      }
+    }
+
+    // If no state events captured the final closed state, add it
+    if (
+      issue.state === 'closed' &&
+      closedAt &&
+      changelog.at(-1).status.detail !== 'closed'
+    ) {
+      changelog.push({
+        changedAt: closedAt,
+        status: {category: 'Done', detail: 'closed'},
+      });
+    }
+
+    // Sort by date to ensure chronological order
+    return changelog.sort(
+      (a, b) => a.changedAt.getTime() - b.changedAt.getTime()
+    );
   }
 }

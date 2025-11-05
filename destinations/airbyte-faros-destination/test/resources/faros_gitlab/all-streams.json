@@ -233,6 +233,7 @@
         "state": "opened",
         "created_at": "2025-06-12T00:42:24.388Z",
         "updated_at": "2025-06-12T00:42:48.083Z",
+        "closed_at": null,
         "labels": [
           "l1"
         ],
@@ -249,7 +250,31 @@
         },
         "iteration": {
           "id": 987654
-        }
+        },
+        "state_events": [
+          {
+            "id": 1001,
+            "state": "closed",
+            "created_at": "2025-06-12T00:43:00.000Z",
+            "resource_id": 168781674,
+            "resource_type": "Issue",
+            "user": {
+              "id": 12345,
+              "username": "ypc-faros"
+            }
+          },
+          {
+            "id": 1002,
+            "state": "reopened",
+            "created_at": "2025-06-12T00:43:30.000Z",
+            "resource_id": 168781674,
+            "resource_type": "Issue",
+            "user": {
+              "id": 12345,
+              "username": "ypc-faros"
+            }
+          }
+        ]
       }
     },
     "type": "RECORD"

@@ -126,6 +126,15 @@ export type FarosMergeRequestReviewOutput = {
   | 'target_type'
 >;
 
+export type IssueStateEvent = {
+  id: number;
+  state: string;
+  created_at: string;
+  resource_id: number;
+  resource_type: string;
+  user: {id: number; username: string};
+};
+
 export type FarosIssueOutput = {
   readonly __brand: 'FarosIssue';
   group_id: string;
@@ -134,6 +143,7 @@ export type FarosIssueOutput = {
   assignee_usernames: string[];
   epic?: {id: number};
   iteration?: {id: number};
+  state_events: IssueStateEvent[];
 } & Pick<
   IssueSchema,
   | 'id'
@@ -142,6 +152,7 @@ export type FarosIssueOutput = {
   | 'state'
   | 'created_at'
   | 'updated_at'
+  | 'closed_at'
   | 'labels'
   | 'issue_type'
   | 'web_url'
