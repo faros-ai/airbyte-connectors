@@ -31,6 +31,7 @@ import {
   FarosProjectOutput,
   FarosReleaseOutput,
   FarosTagOutput,
+  IssueIterationEvent,
   IssueStateEvent,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
@@ -699,6 +700,12 @@ export class GitLab {
         typedIssue.iid
       );
 
+      // Fetch iteration events for sprint history
+      const iteration_events = await this.getIssueIterationEvents(
+        projectId,
+        typedIssue.iid
+      );
+
       yield {
         __brand: 'FarosIssue',
         ...pick(typedIssue, [
@@ -721,6 +728,7 @@ export class GitLab {
           iteration: {id: typedIssue.iteration.id},
         }),
         state_events,
+        iteration_events,
       };
     }
   }
@@ -734,6 +742,23 @@ export class GitLab {
       this.client.IssueStateEvents.all(projectId, issueIid, paginationOptions)
     )) {
       events.push(event as IssueStateEvent);
+    }
+    return events;
+  }
+
+  async getIssueIterationEvents(
+    projectId: string,
+    issueIid: number
+  ): Promise<IssueIterationEvent[]> {
+    const events: IssueIterationEvent[] = [];
+    for await (const event of this.offsetPagination((paginationOptions) =>
+      this.client.IssueIterationEvents.all(
+        projectId,
+        issueIid,
+        paginationOptions
+      )
+    )) {
+      events.push(event as IssueIterationEvent);
     }
     return events;
   }

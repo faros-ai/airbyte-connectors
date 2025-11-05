@@ -135,6 +135,14 @@ export type IssueStateEvent = {
   user: {id: number; username: string};
 };
 
+export type IssueIterationEvent = {
+  id: number;
+  action: string;
+  created_at: string;
+  iteration: {id: number};
+  user: {id: number; username: string};
+};
+
 export type FarosIssueOutput = {
   readonly __brand: 'FarosIssue';
   group_id: string;
@@ -144,6 +152,7 @@ export type FarosIssueOutput = {
   epic?: {id: number};
   iteration?: {id: number};
   state_events: IssueStateEvent[];
+  iteration_events: IssueIterationEvent[];
 } & Pick<
   IssueSchema,
   | 'id'

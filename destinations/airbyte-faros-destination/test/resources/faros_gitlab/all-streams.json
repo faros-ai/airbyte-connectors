@@ -274,6 +274,44 @@
               "username": "ypc-faros"
             }
           }
+        ],
+        "iteration_events": [
+          {
+            "id": 2001,
+            "action": "add",
+            "created_at": "2025-06-12T00:42:30.000Z",
+            "iteration": {
+              "id": 987654
+            },
+            "user": {
+              "id": 12345,
+              "username": "ypc-faros"
+            }
+          },
+          {
+            "id": 2002,
+            "action": "remove",
+            "created_at": "2025-06-12T00:43:10.000Z",
+            "iteration": {
+              "id": 987654
+            },
+            "user": {
+              "id": 12345,
+              "username": "ypc-faros"
+            }
+          },
+          {
+            "id": 2003,
+            "action": "add",
+            "created_at": "2025-06-12T00:43:40.000Z",
+            "iteration": {
+              "id": 987654
+            },
+            "user": {
+              "id": 12345,
+              "username": "ypc-faros"
+            }
+          }
         ]
       }
     },

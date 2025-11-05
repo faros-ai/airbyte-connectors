@@ -1,5 +1,9 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
-import {FarosIssueOutput, IssueStateEvent} from 'faros-airbyte-common/gitlab';
+import {
+  FarosIssueOutput,
+  IssueIterationEvent,
+  IssueStateEvent,
+} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
 import {toLower} from 'lodash';
 
@@ -9,6 +13,7 @@ import {GitlabCommon, GitlabConverter} from './common';
 export class FarosIssues extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'tms_Label',
+    'tms_SprintHistory',
     'tms_Task',
     'tms_TaskAssignment',
     'tms_TaskBoardRelationship',
@@ -140,6 +145,13 @@ export class FarosIssues extends GitlabConverter {
       },
     });
 
+    // Process sprint history from iteration events
+    const sprintHistory = this.processSprintHistory(
+      uid,
+      issue.iteration_events || []
+    );
+    res.push(...sprintHistory);
+
     return res;
   }
 
@@ -213,5 +225,69 @@ export class FarosIssues extends GitlabConverter {
     return changelog.sort(
       (a, b) => a.changedAt.getTime() - b.changedAt.getTime()
     );
+  }
+
+  private processSprintHistory(
+    taskUid: string,
+    iterationEvents: IssueIterationEvent[]
+  ): DestinationRecord[] {
+    const res: DestinationRecord[] = [];
+
+    // Group events by iteration ID
+    const eventsByIteration = new Map<string, IssueIterationEvent[]>();
+
+    for (const event of iterationEvents) {
+      if (!event.iteration) continue;
+
+      const sprintUid = `${event.iteration.id}`;
+      if (!eventsByIteration.has(sprintUid)) {
+        eventsByIteration.set(sprintUid, []);
+      }
+      eventsByIteration.get(sprintUid).push(event);
+    }
+
+    // Process each iteration's events
+    for (const [sprintUid, events] of eventsByIteration) {
+      // Sort events by timestamp to get chronological order
+      const sortedEvents = events
+        .filter((event) => Utils.toDate(event.created_at))
+        .sort(
+          (a, b) =>
+            Utils.toDate(a.created_at).getTime() -
+            Utils.toDate(b.created_at).getTime()
+        );
+
+      if (sortedEvents.length === 0) continue;
+
+      let addedAt: Date | null = null;
+      let removedAt: Date | null = null;
+
+      // Process events chronologically to find final state
+      for (const event of sortedEvents) {
+        const eventDate = Utils.toDate(event.created_at);
+
+        if (event.action === 'add') {
+          addedAt = eventDate;
+          removedAt = null; // Reset removal if re-added
+        } else if (event.action === 'remove') {
+          removedAt = eventDate;
+        }
+      }
+
+      // Only write record if there was at least one add event
+      if (addedAt) {
+        res.push({
+          model: 'tms_SprintHistory',
+          record: {
+            task: {uid: taskUid, source: this.streamName.source},
+            sprint: {uid: sprintUid, source: this.streamName.source},
+            addedAt,
+            ...(removedAt && {removedAt}),
+          },
+        });
+      }
+    }
+
+    return res;
   }
 }
