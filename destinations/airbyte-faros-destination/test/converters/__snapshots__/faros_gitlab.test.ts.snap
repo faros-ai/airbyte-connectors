@@ -1015,7 +1015,7 @@ Array [
   },
   Object {
     "tms_Sprint": Object {
-      "closedAt": "2025-01-29T02:59:59.999Z",
+      "closedAt": "2025-01-29T23:59:59.999Z",
       "description": "First quarter 2025 sprint",
       "endedAt": "2025-01-29T00:00:00.000Z",
       "name": "Sprint 2025-Q1",

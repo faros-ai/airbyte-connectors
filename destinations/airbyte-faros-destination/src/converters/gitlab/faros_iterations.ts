@@ -1,6 +1,7 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosIterationOutput} from 'faros-airbyte-common/gitlab';
 import {Utils} from 'faros-js-client';
+import {DateTime} from 'luxon';
 
 import {DestinationModel, DestinationRecord} from '../converter';
 import {GitlabConverter} from './common';
@@ -27,17 +28,9 @@ export class FarosIterations extends GitlabConverter {
     const status = this.mapIterationState(iteration.state);
 
     // Calculate closedAt as end-of-day of due_date
-    const dueDate = Utils.toDate(iteration.due_date);
-    const closedAt = dueDate
-      ? new Date(
-          dueDate.getFullYear(),
-          dueDate.getMonth(),
-          dueDate.getDate(),
-          23,
-          59,
-          59,
-          999
-        )
+    const endedAt = Utils.toDate(iteration.due_date);
+    const closedAt = endedAt
+      ? DateTime.fromJSDate(endedAt).setZone('UTC').endOf('day').toJSDate()
       : null;
 
     res.push({
@@ -53,7 +46,7 @@ export class FarosIterations extends GitlabConverter {
         },
         startedAt: Utils.toDate(iteration.start_date),
         openedAt: Utils.toDate(iteration.start_date),
-        endedAt: Utils.toDate(iteration.due_date),
+        endedAt,
         closedAt,
         source: this.streamName.source,
       },
