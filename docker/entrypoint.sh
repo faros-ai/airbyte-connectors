@@ -37,7 +37,9 @@ memory_limit=$(get_container_memory_limit)
 if [ -n "$memory_limit" ]; then
   memory_limit_mb=$(($memory_limit / 1024 / 1024))
   max_old_space_size=$(($memory_limit_mb * 75 / 100))
-  export NODE_OPTIONS="--max-old-space-size=$max_old_space_size"
+  export NODE_OPTIONS="--max-old-space-size=$max_old_space_size --require @opentelemetry/auto-instrumentations-node/register"
+else
+  export NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
 fi
 
 exec "/home/node/airbyte/main" "$@"
