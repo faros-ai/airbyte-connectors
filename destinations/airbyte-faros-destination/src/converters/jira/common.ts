@@ -24,6 +24,9 @@ export class JiraCommon {
   static DEFAULT_TRUNCATE_LIMIT = 10_000;
 
   static normalize(str: string): string {
+    if (!str) {
+      return str;
+    }
     return str.replace(/\s/g, '').toLowerCase();
   }
 }
