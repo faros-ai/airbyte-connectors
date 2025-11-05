@@ -44,6 +44,12 @@
     },
     {
       "stream": {
+        "name": "mytestsource__gitlab__faros_iterations"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "mytestsource__gitlab__faros_merge_request_reviews"
       },
       "destination_sync_mode": "overwrite"

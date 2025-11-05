@@ -634,5 +634,24 @@
       }
     },
     "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_iterations",
+      "emitted_at": 1750696212087,
+      "data": {
+        "__brand": "FarosIteration",
+        "id": 987654,
+        "iid": 5,
+        "title": "Sprint 2025-Q1",
+        "description": "First quarter 2025 sprint",
+        "state": 2,
+        "start_date": "2025-01-15",
+        "due_date": "2025-01-29",
+        "updated_at": "2025-01-20T10:30:45.123Z",
+        "group_id": "12372707"
+      }
+    },
+    "type": "RECORD"
   }
 ]

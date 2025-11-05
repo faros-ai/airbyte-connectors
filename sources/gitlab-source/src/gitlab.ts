@@ -23,6 +23,7 @@ import {
   FarosEpicOutput,
   FarosGroupOutput,
   FarosIssueOutput,
+  FarosIterationOutput,
   FarosJobOutput,
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
@@ -757,6 +758,64 @@ export class GitLab {
       if (error.response?.status === 403 || error.response?.status === 404) {
         this.logger.info(
           `Epics are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
+        );
+        return;
+      }
+      throw error;
+    }
+  }
+
+  async *getIterations(
+    groupId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosIterationOutput, 'group_id'>> {
+    const options: any = {
+      per_page: this.pageSize,
+      order_by: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updated_after = since.toISOString();
+    }
+
+    if (until) {
+      options.updated_before = until.toISOString();
+    }
+
+    try {
+      // Use custom REST API call since @gitbeaker doesn't support iterations
+      for await (const iteration of this.offsetPagination(
+        async (paginationOptions) => {
+          const response = await this.client.Groups.requester.get(
+            `/groups/${groupId}/iterations`,
+            {...options, ...paginationOptions}
+          );
+          // The response is already an array from the REST API
+          return Array.isArray(response) ? response : [];
+        }
+      )) {
+        const typedIteration = iteration as any;
+
+        yield {
+          __brand: 'FarosIteration',
+          id: typedIteration.id,
+          iid: typedIteration.iid,
+          title: typedIteration.title,
+          description: typedIteration.description ?? null,
+          state: typedIteration.state,
+          start_date: typedIteration.start_date,
+          due_date: typedIteration.due_date,
+          updated_at: typedIteration.updated_at,
+        };
+      }
+    } catch (error: any) {
+      // Iterations are a Premium/Ultimate feature
+      // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        this.logger.info(
+          `Iterations are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
         );
         return;
       }

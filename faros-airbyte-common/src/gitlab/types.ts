@@ -161,6 +161,19 @@ export type FarosEpicOutput = {
   | 'web_url'
 >;
 
+export type FarosIterationOutput = {
+  readonly __brand: 'FarosIteration';
+  group_id: string;
+  id: number;
+  iid: number;
+  title: string;
+  description: string | null;
+  state: number; // 1=upcoming, 2=current, 3=closed
+  start_date: string;
+  due_date: string;
+  updated_at: string;
+};
+
 export type FarosReleaseOutput = {
   readonly __brand: 'FarosRelease';
   author_username: string | null;

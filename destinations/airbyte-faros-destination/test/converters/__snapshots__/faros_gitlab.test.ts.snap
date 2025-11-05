@@ -2,10 +2,10 @@
 
 exports[`faros_gitlab process records from all streams 1`] = `
 Array [
-  "Processed 16 records",
-  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_deployments\\\\\\":3,\\\\\\"mytestsource__gitlab__faros_epics\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_jobs\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_pipelines\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 51 records",
-  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":3,\\\\\\"cicd_BuildCommitAssociation\\\\\\":3,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"tms_User\\\\\\":1,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 17 records",
+  "Processed records by stream: {\\\\\\"mytestsource__gitlab__faros_commits\\\\\\":2,\\\\\\"mytestsource__gitlab__faros_deployments\\\\\\":3,\\\\\\"mytestsource__gitlab__faros_epics\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_groups\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_issues\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_iterations\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_jobs\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_request_reviews\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_merge_requests\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_pipelines\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_projects\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_releases\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_tags\\\\\\":1,\\\\\\"mytestsource__gitlab__faros_users\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 52 records",
+  "Would write records by model: {\\\\\\"cicd_Artifact\\\\\\":2,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":3,\\\\\\"cicd_BuildCommitAssociation\\\\\\":3,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":3,\\\\\\"cicd_Organization\\\\\\":1,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":1,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":1,\\\\\\"cicd_Repository\\\\\\":1,\\\\\\"compute_Application\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"tms_Epic\\\\\\":1,\\\\\\"tms_Label\\\\\\":1,\\\\\\"tms_Project\\\\\\":1,\\\\\\"tms_Sprint\\\\\\":1,\\\\\\"tms_Task\\\\\\":1,\\\\\\"tms_TaskAssignment\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":1,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":1,\\\\\\"tms_TaskBoardRelationship\\\\\\":1,\\\\\\"tms_TaskProjectRelationship\\\\\\":1,\\\\\\"tms_TaskTag\\\\\\":1,\\\\\\"tms_User\\\\\\":1,\\\\\\"vcs_Branch\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_Label\\\\\\":1,\\\\\\"vcs_Membership\\\\\\":1,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_PullRequest\\\\\\":1,\\\\\\"vcs_PullRequestComment\\\\\\":2,\\\\\\"vcs_PullRequestLabel\\\\\\":1,\\\\\\"vcs_PullRequestReview\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":1,\\\\\\"vcs_Tag\\\\\\":1,\\\\\\"vcs_User\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -965,6 +965,26 @@ Array [
       "uid": "123456",
       "updatedAt": "2025-02-10T14:22:30.456Z",
       "url": "https://gitlab.com/test-group/-/epics/1",
+    },
+  },
+  Object {
+    "tms_Sprint": Object {
+      "closedAt": "2025-01-29T02:59:59.999Z",
+      "description": "First quarter 2025 sprint",
+      "endedAt": "2025-01-29T00:00:00.000Z",
+      "name": "Sprint 2025-Q1",
+      "openedAt": "2025-01-15T00:00:00.000Z",
+      "project": Object {
+        "source": "GitLab",
+        "uid": "12372707",
+      },
+      "source": "GitLab",
+      "startedAt": "2025-01-15T00:00:00.000Z",
+      "status": Object {
+        "category": "Active",
+        "detail": "current",
+      },
+      "uid": "987654",
     },
   },
   Object {
