@@ -119,7 +119,10 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       streamNames.includes(stream.stream.name)
     );
 
-    const tmsEnabled = streamNames.includes('faros_issues');
+    const tmsEnabled =
+      streamNames.includes('faros_issues') ||
+      streamNames.includes('faros_epics') ||
+      streamNames.includes('faros_iterations');
     const cicdEnabled =
       streamNames.includes('faros_deployments') ||
       streamNames.includes('faros_pipelines') ||
