@@ -2,7 +2,7 @@
 
 import {Command} from 'commander';
 import fs from 'fs';
-import {cloneDeep, isEqual} from 'lodash';
+import {cloneDeep} from 'lodash';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
@@ -137,37 +137,6 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               catalog,
               Data.decompress(state)
             );
-
-            // Log the config/catalog/state after onBeforeRead
-            const modifiedRedactedConfig = redactConfig(res.config, spec);
-            if (isEqual(modifiedRedactedConfig, redactedConfig)) {
-              this.logger.info('Config after onBeforeRead: unchanged');
-            } else {
-              this.logger.info(
-                `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
-              );
-            }
-
-            if (isEqual(res.catalog, catalog)) {
-              this.logger.info('Catalog after onBeforeRead: unchanged');
-            } else {
-              this.logger.info(
-                `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
-              );
-            }
-
-            if (state) {
-              const decompressedState = Data.decompress(state);
-              if (isEqual(res.state, decompressedState)) {
-                this.logger.info('State after onBeforeRead: unchanged');
-              } else {
-                // Use maybeCompressState for logging to avoid huge log messages
-                const maybeCompressedState = maybeCompressState(res.config, res.state);
-                this.logger.info(
-                  `State after onBeforeRead: ${JSON.stringify(maybeCompressedState)}`
-                );
-              }
-            }
 
             // Always perform pre-read connection validation with the FINAL config
             // This ensures singletons are initialized with the final config
