@@ -128,34 +128,38 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             this.logger.info(`State: ${JSON.stringify(state)}`);
           }
 
-          // Always perform pre-read connection validation
-          this.logger.info('Performing pre-read connection validation');
-          const checkStatus = await this.source.check(config);
-          if (
-            checkStatus.connectionStatus.status ===
-            AirbyteConnectionStatus.FAILED
-          ) {
-            this.logger.error(
-              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-            );
-            this.logger.write(checkStatus);
-            this.logger.flush();
-            throw new Error(
-              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-            );
-          }
-          this.logger.info('Pre-read connection validation succeeded');
-
           try {
-            this.logger.getState = () => maybeCompressState(config, state);
+            // Call onBeforeRead FIRST to get the final config that will be used
+            // This ensures that any singletons initialized during the pre-read check
+            // are created with the config returned by onBeforeRead (e.g., requestedStreams)
             const res = await this.source.onBeforeRead(
               config,
               catalog,
               Data.decompress(state)
             );
+
+            // Always perform pre-read connection validation with the FINAL config
+            // This ensures singletons are initialized with the final config
+            this.logger.info('Performing pre-read connection validation');
+            const checkStatus = await this.source.check(res.config);
+            if (
+              checkStatus.connectionStatus.status ===
+              AirbyteConnectionStatus.FAILED
+            ) {
+              this.logger.error(
+                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+              );
+              this.logger.write(checkStatus);
+              this.logger.flush();
+              throw new Error(
+                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+              );
+            }
+            this.logger.info('Pre-read connection validation succeeded');
+
             const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
             this.logger.getState = () =>
-              maybeCompressState(config, clonedState);
+              maybeCompressState(res.config, clonedState);
             const iter = this.source.read(
               res.config,
               redactConfig(res.config, spec),
@@ -165,7 +169,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             for await (const message of iter) {
               this.logger.write(message);
             }
-            await this.source.onAfterRead(config);
+            await this.source.onAfterRead(res.config);
           } catch (e: any) {
             const w = wrapApiError(e);
             const s = JSON.stringify(w);

@@ -187,6 +187,49 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
   });
 
   describe('READ command with pre-read check', () => {
+    it('should call onBeforeRead before pre-read check', async () => {
+      const config = {test_prop: 'value'};
+      configPath = path.join(tempDir, 'config.json');
+      fs.writeFileSync(configPath, JSON.stringify(config));
+
+      const logger = new AirbyteSourceLogger();
+      let onBeforeReadCalled = false;
+      let checkConnectionCalled = false;
+      let onBeforeReadCalledFirst = false;
+
+      // Override source methods to track call order
+      const source = new TestSource(logger, true);
+      const originalOnBeforeRead = source.onBeforeRead.bind(source);
+      const originalCheckConnection = source.checkConnection.bind(source);
+
+      source.onBeforeRead = async (config, catalog, state) => {
+        onBeforeReadCalled = true;
+        if (!checkConnectionCalled) {
+          onBeforeReadCalledFirst = true;
+        }
+        return originalOnBeforeRead(config, catalog, state);
+      };
+
+      source.checkConnection = async (config) => {
+        checkConnectionCalled = true;
+        return originalCheckConnection(config);
+      };
+
+      const runner = new AirbyteSourceRunner(logger, source);
+      const messages: any[] = [];
+      logger.write = (msg: any) => messages.push(msg);
+
+      const readCmd = runner.readCommand();
+      await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
+        from: 'user',
+      });
+
+      // Verify onBeforeRead was called before checkConnection
+      expect(onBeforeReadCalled).toBe(true);
+      expect(checkConnectionCalled).toBe(true);
+      expect(onBeforeReadCalledFirst).toBe(true);
+    });
+
     it('should always perform pre-read check when check_connection is true', async () => {
       const config = {test_prop: 'value', check_connection: true};
       configPath = path.join(tempDir, 'config.json');
