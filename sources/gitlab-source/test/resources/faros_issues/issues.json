@@ -8,18 +8,16 @@
     "updated_at": "2021-03-02T15:38:01.088Z",
     "closed_at": null,
     "labels": ["Enhancement", "Project Setup"],
-    "assignees": [
-      {
-        "username": "hkmshb"
-      }
-    ],
-    "author": {
-      "username": "hkmshb"
-    },
-    "group_id": "13083",
-    "project_path": "faros-test",
     "issue_type": "issue",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/1",
+    "author_username": "hkmshb",
+    "assignee_usernames": ["hkmshb"],
+    "epic": {
+      "id": 1001
+    },
+    "iteration": {
+      "id": 5001
+    },
     "state_events": [
       {
         "id": 1,
@@ -55,14 +53,10 @@
     "updated_at": "2021-03-02T15:37:42.090Z",
     "closed_at": null,
     "labels": ["Enhancement"],
-    "assignees": [],
-    "author": {
-      "username": "hkmshb"
-    },
-    "group_id": "13083",
-    "project_path": "faros-test",
     "issue_type": "task",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/2",
+    "author_username": "hkmshb",
+    "assignee_usernames": [],
     "state_events": [],
     "iteration_events": []
   }
