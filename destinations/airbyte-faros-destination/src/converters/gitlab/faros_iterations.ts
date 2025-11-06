@@ -39,11 +39,7 @@ export class FarosIterations extends GitlabConverter {
         uid,
         name: iteration.title,
         description: iteration.description,
-        status,
-        project: {
-          uid: iteration.group_id,
-          source: this.streamName.source,
-        },
+        state: status,
         startedAt: Utils.toDate(iteration.start_date),
         openedAt: Utils.toDate(iteration.start_date),
         endedAt,
@@ -55,19 +51,16 @@ export class FarosIterations extends GitlabConverter {
     return res;
   }
 
-  private mapIterationState(state: number): {
-    category: string;
-    detail: string;
-  } {
+  private mapIterationState(state: number): string | null {
     switch (state) {
       case 1:
-        return {category: 'Future', detail: 'upcoming'};
+        return 'Future';
       case 2:
-        return {category: 'Active', detail: 'current'};
+        return 'Active';
       case 3:
-        return {category: 'Closed', detail: 'closed'};
+        return 'Closed';
       default:
-        return {category: 'Custom', detail: `state_${state}`};
+        return 'Closed';
     }
   }
 }

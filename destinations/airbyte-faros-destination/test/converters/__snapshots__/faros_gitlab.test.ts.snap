@@ -993,10 +993,6 @@ Array [
   Object {
     "tms_Epic": Object {
       "createdAt": "2025-01-15T10:30:45.123Z",
-      "creator": Object {
-        "source": "GitLab",
-        "uid": "ypc-faros",
-      },
       "description": "Epic for modernizing the platform infrastructure",
       "name": "Platform Modernization",
       "project": Object {
@@ -1020,16 +1016,9 @@ Array [
       "endedAt": "2025-01-29T00:00:00.000Z",
       "name": "Sprint 2025-Q1",
       "openedAt": "2025-01-15T00:00:00.000Z",
-      "project": Object {
-        "source": "GitLab",
-        "uid": "12372707",
-      },
       "source": "GitLab",
       "startedAt": "2025-01-15T00:00:00.000Z",
-      "status": Object {
-        "category": "Active",
-        "detail": "current",
-      },
+      "state": "Active",
       "uid": "987654",
     },
   },

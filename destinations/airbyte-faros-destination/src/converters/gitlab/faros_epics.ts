@@ -36,9 +36,6 @@ export class FarosEpics extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: epic.state},
-        creator: epic.author_username
-          ? {uid: epic.author_username, source: this.streamName.source}
-          : null,
         project: {
           uid: epic.group_id,
           source: this.streamName.source,
