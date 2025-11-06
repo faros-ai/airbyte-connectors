@@ -112,7 +112,6 @@ export class GitLab {
     }
 
     const gitlab = new GitLab(cfg, logger);
-    await gitlab.checkConnection();
     GitLab.gitlab = gitlab;
     return gitlab;
   }
