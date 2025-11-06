@@ -2,7 +2,7 @@
 
 import {Command} from 'commander';
 import fs from 'fs';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, isEqual} from 'lodash';
 import path from 'path';
 
 import {wrapApiError} from '../errors';
@@ -139,7 +139,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           // Log the config/catalog/state after onBeforeRead
           const modifiedRedactedConfig = redactConfig(res.config, spec);
-          if (JSON.stringify(modifiedRedactedConfig) === JSON.stringify(redactedConfig)) {
+          if (isEqual(modifiedRedactedConfig, redactedConfig)) {
             this.logger.info('Config after onBeforeRead: unchanged');
           } else {
             this.logger.info(
@@ -147,7 +147,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             );
           }
 
-          if (JSON.stringify(res.catalog) === JSON.stringify(catalog)) {
+          if (isEqual(res.catalog, catalog)) {
             this.logger.info('Catalog after onBeforeRead: unchanged');
           } else {
             this.logger.info(
@@ -157,7 +157,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           if (state) {
             const decompressedState = Data.decompress(state);
-            if (JSON.stringify(res.state) === JSON.stringify(decompressedState)) {
+            if (isEqual(res.state, decompressedState)) {
               this.logger.info('State after onBeforeRead: unchanged');
             } else {
               // Use maybeCompressState for logging to avoid huge log messages
