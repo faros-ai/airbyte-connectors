@@ -131,25 +131,41 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           // Call onBeforeRead FIRST to get the final config that will be used
           // This ensures that any singletons created during the pre-read check
           // are initialized with the correct config state (e.g., requestedStreams)
-          this.logger.info('Preparing configuration for read operation');
           const res = await this.source.onBeforeRead(
             config,
             catalog,
             Data.decompress(state)
           );
 
-          // Log the modified config/catalog/state after onBeforeRead
+          // Log the config/catalog/state after onBeforeRead
           const modifiedRedactedConfig = redactConfig(res.config, spec);
-          this.logger.info(
-            `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
-          );
-          this.logger.info(
-            `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
-          );
-          if (res.state) {
+          if (JSON.stringify(modifiedRedactedConfig) !== JSON.stringify(redactedConfig)) {
             this.logger.info(
-              `State after onBeforeRead: ${JSON.stringify(res.state)}`
+              `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
             );
+          } else {
+            this.logger.info('Config after onBeforeRead: unchanged');
+          }
+
+          if (JSON.stringify(res.catalog) !== JSON.stringify(catalog)) {
+            this.logger.info(
+              `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
+            );
+          } else {
+            this.logger.info('Catalog after onBeforeRead: unchanged');
+          }
+
+          if (state) {
+            const decompressedState = Data.decompress(state);
+            if (JSON.stringify(res.state) !== JSON.stringify(decompressedState)) {
+              // Use maybeCompressState for logging to avoid huge log messages
+              const maybeCompressedState = maybeCompressState(res.config, res.state);
+              this.logger.info(
+                `State after onBeforeRead: ${JSON.stringify(maybeCompressedState)}`
+              );
+            } else {
+              this.logger.info('State after onBeforeRead: unchanged');
+            }
           }
 
           // Always perform pre-read connection validation with the FINAL config

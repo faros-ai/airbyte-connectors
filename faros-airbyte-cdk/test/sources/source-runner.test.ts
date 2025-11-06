@@ -193,32 +193,41 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
       fs.writeFileSync(configPath, JSON.stringify(config));
 
       const logger = new AirbyteSourceLogger();
-      const source = new TestSource(logger, true);
-      const runner = new AirbyteSourceRunner(logger, source);
+      let onBeforeReadCalled = false;
+      let checkConnectionCalled = false;
+      let onBeforeReadCalledFirst = false;
 
-      const logMessages: string[] = [];
-      logger.write = (msg: any) => {};
-      logger.info = (msg: string) => logMessages.push(msg);
+      // Override source methods to track call order
+      const source = new TestSource(logger, true);
+      const originalOnBeforeRead = source.onBeforeRead.bind(source);
+      const originalCheckConnection = source.checkConnection.bind(source);
+
+      source.onBeforeRead = async (config, catalog, state) => {
+        onBeforeReadCalled = true;
+        if (!checkConnectionCalled) {
+          onBeforeReadCalledFirst = true;
+        }
+        return originalOnBeforeRead(config, catalog, state);
+      };
+
+      source.checkConnection = async (config) => {
+        checkConnectionCalled = true;
+        return originalCheckConnection(config);
+      };
+
+      const runner = new AirbyteSourceRunner(logger, source);
+      const messages: any[] = [];
+      logger.write = (msg: any) => messages.push(msg);
 
       const readCmd = runner.readCommand();
       await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
         from: 'user',
       });
 
-      // Find the indices of key log messages
-      const prepareIdx = logMessages.findIndex((msg) =>
-        msg.includes('Preparing configuration for read operation')
-      );
-      const validateIdx = logMessages.findIndex((msg) =>
-        msg.includes('Performing pre-read connection validation')
-      );
-
-      // Verify both messages exist
-      expect(prepareIdx).toBeGreaterThanOrEqual(0);
-      expect(validateIdx).toBeGreaterThanOrEqual(0);
-
-      // Verify "Preparing configuration" comes before "Performing pre-read validation"
-      expect(prepareIdx).toBeLessThan(validateIdx);
+      // Verify onBeforeRead was called before checkConnection
+      expect(onBeforeReadCalled).toBe(true);
+      expect(checkConnectionCalled).toBe(true);
+      expect(onBeforeReadCalledFirst).toBe(true);
     });
 
     it('should always perform pre-read check when check_connection is true', async () => {
