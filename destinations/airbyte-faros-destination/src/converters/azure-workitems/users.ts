@@ -1,6 +1,5 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {getUserIdentifier, User} from 'faros-airbyte-common/azure-devops';
-
 import {Common} from '../common/common';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureWorkitemsConverter} from './common';
