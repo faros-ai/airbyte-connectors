@@ -42,7 +42,6 @@ export class FarosEpics extends GitlabConverter {
         },
         createdAt: Utils.toDate(epic.created_at),
         updatedAt: Utils.toDate(epic.updated_at),
-        url: epic.web_url,
         source: this.streamName.source,
       },
     });

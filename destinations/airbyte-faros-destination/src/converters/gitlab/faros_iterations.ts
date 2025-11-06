@@ -4,7 +4,7 @@ import {Utils} from 'faros-js-client';
 import {DateTime} from 'luxon';
 
 import {DestinationModel, DestinationRecord} from '../converter';
-import {GitlabConverter} from './common';
+import {GitlabCommon, GitlabConverter} from './common';
 
 export class FarosIterations extends GitlabConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = ['tms_Sprint'];
@@ -37,8 +37,11 @@ export class FarosIterations extends GitlabConverter {
       model: 'tms_Sprint',
       record: {
         uid,
-        name: iteration.title,
-        description: iteration.description,
+        name: iteration.title || `Iteration ${iteration.iid}`,
+        description: Utils.cleanAndTruncate(
+          iteration.description,
+          GitlabCommon.MAX_DESCRIPTION_LENGTH
+        ),
         state: status,
         startedAt: Utils.toDate(iteration.start_date),
         openedAt: Utils.toDate(iteration.start_date),
