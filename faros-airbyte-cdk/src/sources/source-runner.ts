@@ -169,7 +169,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           // Always perform pre-read connection validation with the FINAL config
-          // This ensures singletons are initialized with the correct state
+          // This ensures singletons are initialized with the final config
           this.logger.info('Performing pre-read connection validation');
           const checkStatus = await this.source.check(res.config);
           if (
