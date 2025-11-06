@@ -37,12 +37,93 @@
       "type": "string",
       "format": "date-time"
     },
+    "closed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
     "labels": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "issue_type": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "epic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": ["id"]
+    },
+    "iteration": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": ["id"]
+    },
+    "state_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "author_username": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["closed", "reopened"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "author_username", "state", "created_at"]
+      }
+    },
+    "iteration_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "author_username": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "iteration": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": {
+                "type": "integer"
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "author_username", "action", "created_at"]
+      }
     }
   },
-  "required": ["group_id", "project_path", "author_username", "assignee_usernames", "id", "title", "description", "state", "created_at", "updated_at", "labels"]
+  "required": ["group_id", "project_path", "author_username", "assignee_usernames", "id", "title", "state", "created_at", "updated_at", "closed_at", "labels", "issue_type", "web_url", "state_events", "iteration_events"]
 }

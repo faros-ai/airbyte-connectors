@@ -34,5 +34,5 @@
       "format": "date-time"
     }
   },
-  "required": ["group_id", "id", "title", "state", "start_date", "due_date", "updated_at"]
+  "required": ["group_id", "id", "iid", "title", "state", "start_date", "due_date", "updated_at"]
 }

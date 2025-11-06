@@ -35,5 +35,5 @@
       "type": "string"
     }
   },
-  "required": ["group_id", "id", "title", "state", "created_at", "updated_at"]
+  "required": ["group_id", "id", "iid", "title", "state", "created_at", "updated_at", "web_url"]
 }
