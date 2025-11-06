@@ -128,66 +128,66 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             this.logger.info(`State: ${JSON.stringify(state)}`);
           }
 
-          // Call onBeforeRead FIRST to get the final config that will be used
-          // This ensures that any singletons initialized during the pre-read check
-          // are created with the config returned by onBeforeRead (e.g., requestedStreams)
-          const res = await this.source.onBeforeRead(
-            config,
-            catalog,
-            Data.decompress(state)
-          );
-
-          // Log the config/catalog/state after onBeforeRead
-          const modifiedRedactedConfig = redactConfig(res.config, spec);
-          if (isEqual(modifiedRedactedConfig, redactedConfig)) {
-            this.logger.info('Config after onBeforeRead: unchanged');
-          } else {
-            this.logger.info(
-              `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
+          try {
+            // Call onBeforeRead FIRST to get the final config that will be used
+            // This ensures that any singletons initialized during the pre-read check
+            // are created with the config returned by onBeforeRead (e.g., requestedStreams)
+            const res = await this.source.onBeforeRead(
+              config,
+              catalog,
+              Data.decompress(state)
             );
-          }
 
-          if (isEqual(res.catalog, catalog)) {
-            this.logger.info('Catalog after onBeforeRead: unchanged');
-          } else {
-            this.logger.info(
-              `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
-            );
-          }
-
-          if (state) {
-            const decompressedState = Data.decompress(state);
-            if (isEqual(res.state, decompressedState)) {
-              this.logger.info('State after onBeforeRead: unchanged');
+            // Log the config/catalog/state after onBeforeRead
+            const modifiedRedactedConfig = redactConfig(res.config, spec);
+            if (isEqual(modifiedRedactedConfig, redactedConfig)) {
+              this.logger.info('Config after onBeforeRead: unchanged');
             } else {
-              // Use maybeCompressState for logging to avoid huge log messages
-              const maybeCompressedState = maybeCompressState(res.config, res.state);
               this.logger.info(
-                `State after onBeforeRead: ${JSON.stringify(maybeCompressedState)}`
+                `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
               );
             }
-          }
 
-          // Always perform pre-read connection validation with the FINAL config
-          // This ensures singletons are initialized with the final config
-          this.logger.info('Performing pre-read connection validation');
-          const checkStatus = await this.source.check(res.config);
-          if (
-            checkStatus.connectionStatus.status ===
-            AirbyteConnectionStatus.FAILED
-          ) {
-            this.logger.error(
-              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-            );
-            this.logger.write(checkStatus);
-            this.logger.flush();
-            throw new Error(
-              `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
-            );
-          }
-          this.logger.info('Pre-read connection validation succeeded');
+            if (isEqual(res.catalog, catalog)) {
+              this.logger.info('Catalog after onBeforeRead: unchanged');
+            } else {
+              this.logger.info(
+                `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
+              );
+            }
 
-          try {
+            if (state) {
+              const decompressedState = Data.decompress(state);
+              if (isEqual(res.state, decompressedState)) {
+                this.logger.info('State after onBeforeRead: unchanged');
+              } else {
+                // Use maybeCompressState for logging to avoid huge log messages
+                const maybeCompressedState = maybeCompressState(res.config, res.state);
+                this.logger.info(
+                  `State after onBeforeRead: ${JSON.stringify(maybeCompressedState)}`
+                );
+              }
+            }
+
+            // Always perform pre-read connection validation with the FINAL config
+            // This ensures singletons are initialized with the final config
+            this.logger.info('Performing pre-read connection validation');
+            const checkStatus = await this.source.check(res.config);
+            if (
+              checkStatus.connectionStatus.status ===
+              AirbyteConnectionStatus.FAILED
+            ) {
+              this.logger.error(
+                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+              );
+              this.logger.write(checkStatus);
+              this.logger.flush();
+              throw new Error(
+                `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
+              );
+            }
+            this.logger.info('Pre-read connection validation succeeded');
+
             const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
             this.logger.getState = () =>
               maybeCompressState(res.config, clonedState);
