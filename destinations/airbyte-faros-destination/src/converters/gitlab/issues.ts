@@ -86,6 +86,7 @@ export class Issues extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
+        points: issue.weight ?? undefined,
         creator: username ? {uid: username, source} : null,
         createdAt: Utils.toDate(issue.created_at),
         updatedAt: Utils.toDate(issue.updated_at),
