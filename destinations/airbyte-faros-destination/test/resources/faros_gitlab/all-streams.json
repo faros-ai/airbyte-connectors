@@ -254,63 +254,44 @@
         "state_events": [
           {
             "id": 1001,
+            "author_username": "ypc-faros",
             "state": "closed",
-            "created_at": "2025-06-12T00:43:00.000Z",
-            "resource_id": 168781674,
-            "resource_type": "Issue",
-            "user": {
-              "id": 12345,
-              "username": "ypc-faros"
-            }
+            "created_at": "2025-06-12T00:43:00.000Z"
           },
           {
             "id": 1002,
+            "author_username": "ypc-faros",
             "state": "reopened",
-            "created_at": "2025-06-12T00:43:30.000Z",
-            "resource_id": 168781674,
-            "resource_type": "Issue",
-            "user": {
-              "id": 12345,
-              "username": "ypc-faros"
-            }
+            "created_at": "2025-06-12T00:43:30.000Z"
           }
         ],
         "iteration_events": [
           {
             "id": 2001,
+            "author_username": "ypc-faros",
             "action": "add",
-            "created_at": "2025-06-12T00:42:30.000Z",
             "iteration": {
               "id": 987654
             },
-            "user": {
-              "id": 12345,
-              "username": "ypc-faros"
-            }
+            "created_at": "2025-06-12T00:42:30.000Z"
           },
           {
             "id": 2002,
+            "author_username": "ypc-faros",
             "action": "remove",
-            "created_at": "2025-06-12T00:43:10.000Z",
             "iteration": {
               "id": 987654
             },
-            "user": {
-              "id": 12345,
-              "username": "ypc-faros"
-            }
+            "created_at": "2025-06-12T00:43:10.000Z"
           },
           {
             "id": 2003,
+            "author_username": "ypc-faros",
             "action": "add",
-            "created_at": "2025-06-12T00:43:40.000Z",
             "iteration": {
               "id": 987654
             },
-            "user": {
-              "id": 12345,
-              "username": "ypc-faros"
-            }
+            "created_at": "2025-06-12T00:43:40.000Z"
           }
         ]
       }
