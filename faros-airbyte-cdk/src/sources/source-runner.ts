@@ -139,32 +139,32 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           // Log the config/catalog/state after onBeforeRead
           const modifiedRedactedConfig = redactConfig(res.config, spec);
-          if (JSON.stringify(modifiedRedactedConfig) !== JSON.stringify(redactedConfig)) {
+          if (JSON.stringify(modifiedRedactedConfig) === JSON.stringify(redactedConfig)) {
+            this.logger.info('Config after onBeforeRead: unchanged');
+          } else {
             this.logger.info(
               `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
             );
-          } else {
-            this.logger.info('Config after onBeforeRead: unchanged');
           }
 
-          if (JSON.stringify(res.catalog) !== JSON.stringify(catalog)) {
+          if (JSON.stringify(res.catalog) === JSON.stringify(catalog)) {
+            this.logger.info('Catalog after onBeforeRead: unchanged');
+          } else {
             this.logger.info(
               `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
             );
-          } else {
-            this.logger.info('Catalog after onBeforeRead: unchanged');
           }
 
           if (state) {
             const decompressedState = Data.decompress(state);
-            if (JSON.stringify(res.state) !== JSON.stringify(decompressedState)) {
+            if (JSON.stringify(res.state) === JSON.stringify(decompressedState)) {
+              this.logger.info('State after onBeforeRead: unchanged');
+            } else {
               // Use maybeCompressState for logging to avoid huge log messages
               const maybeCompressedState = maybeCompressState(res.config, res.state);
               this.logger.info(
                 `State after onBeforeRead: ${JSON.stringify(maybeCompressedState)}`
               );
-            } else {
-              this.logger.info('State after onBeforeRead: unchanged');
             }
           }
 
