@@ -1,0 +1,22 @@
+[
+  {
+    "id": 5001,
+    "iid": 1,
+    "title": "Sprint 1",
+    "description": "First sprint of Q1 2021",
+    "state": 3,
+    "start_date": "2021-01-01",
+    "due_date": "2021-01-14",
+    "updated_at": "2021-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 5002,
+    "iid": 2,
+    "title": "Sprint 2",
+    "description": "Second sprint of Q1 2021",
+    "state": 2,
+    "start_date": "2021-01-15",
+    "due_date": "2021-01-28",
+    "updated_at": "2021-01-16T10:00:00.000Z"
+  }
+]
