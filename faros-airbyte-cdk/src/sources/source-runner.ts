@@ -129,8 +129,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           }
 
           // Call onBeforeRead FIRST to get the final config that will be used
-          // This ensures that any singletons created during the pre-read check
-          // are initialized with the correct config state (e.g., requestedStreams)
+          // This ensures that any singletons initialized during the pre-read check
+          // are created with the config returned by onBeforeRead (e.g., requestedStreams)
           const res = await this.source.onBeforeRead(
             config,
             catalog,
