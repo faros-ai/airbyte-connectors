@@ -33,7 +33,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "GitLab authentication failed. Please check your API token and permissions: Unauthorized",
+    "message": "GitLab authentication failed. Please check your API token and permissions: 401 Unauthorized",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",

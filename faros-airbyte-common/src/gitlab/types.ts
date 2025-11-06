@@ -6,12 +6,15 @@ import {
   EventSchema,
   GroupSchema,
   IssueSchema,
+  IterationEventSchema,
+  IterationSchema,
   JobSchema,
   MergeRequestSchema,
   NoteSchema,
   PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
+  StateEventSchema,
   TagSchema,
   UserSchema,
 } from '@gitbeaker/rest';
@@ -127,21 +130,13 @@ export type FarosMergeRequestReviewOutput = {
 >;
 
 export type IssueStateEvent = {
-  id: number;
-  state: string;
-  created_at: string;
-  resource_id: number;
-  resource_type: string;
-  user: {id: number; username: string};
-};
+  author_username: string;
+  state: 'closed' | 'reopened';
+} & Pick<StateEventSchema, 'id' | 'created_at'>;
 
 export type IssueIterationEvent = {
-  id: number;
-  action: string;
-  created_at: string;
-  iteration: {id: number};
-  user: {id: number; username: string};
-};
+  author_username: string;
+} & Pick<IterationEventSchema, 'id' | 'action' | 'iteration' | 'created_at'>;
 
 export type FarosIssueOutput = {
   readonly __brand: 'FarosIssue';
@@ -186,15 +181,17 @@ export type FarosEpicOutput = {
 export type FarosIterationOutput = {
   readonly __brand: 'FarosIteration';
   group_id: string;
-  id: number;
-  iid: number;
-  title: string;
-  description: string | null;
-  state: number; // 1=upcoming, 2=current, 3=closed
-  start_date: string;
-  due_date: string;
-  updated_at: string;
-};
+} & Pick<
+  IterationSchema,
+  | 'id'
+  | 'iid'
+  | 'title'
+  | 'description'
+  | 'state' // 1=upcoming, 2=current, 3=closed
+  | 'start_date'
+  | 'due_date'
+  | 'updated_at'
+>;
 
 export type FarosReleaseOutput = {
   readonly __brand: 'FarosRelease';

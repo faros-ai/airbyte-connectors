@@ -7,12 +7,15 @@ import {
   Gitlab as GitlabClient,
   GroupSchema,
   IssueSchema,
+  IterationEventSchema,
+  IterationSchema,
   JobSchema,
   LabelSchema,
   NoteSchema,
   PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
+  StateEventSchema,
   TagSchema,
 } from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
@@ -80,8 +83,10 @@ export class GitLab {
     this.client = new GitlabClient({
       token: this.getToken(),
       host: this.getBaseUrl(),
-      rejectUnauthorized:
-        config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+      ...((config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED) ===
+        false && {
+        rejectUnauthorized: false, // might not be functional according to @gitbeaker types
+      }),
     });
 
     this.gqlClient = new GraphQLClient(`${this.getBaseUrl()}/api/graphql`, {
@@ -695,13 +700,13 @@ export class GitLab {
       }
 
       // Fetch state events for status changelog
-      const state_events = await this.getIssueStateEvents(
+      const stateEvents = await this.getIssueStateEvents(
         projectId,
         typedIssue.iid
       );
 
       // Fetch iteration events for sprint history
-      const iteration_events = await this.getIssueIterationEvents(
+      const iterationEvents = await this.getIssueIterationEvents(
         projectId,
         typedIssue.iid
       );
@@ -727,8 +732,8 @@ export class GitLab {
         ...(typedIssue.iteration?.id && {
           iteration: {id: typedIssue.iteration.id},
         }),
-        state_events,
-        iteration_events,
+        state_events: stateEvents,
+        iteration_events: iterationEvents,
       };
     }
   }
@@ -741,7 +746,12 @@ export class GitLab {
     for await (const event of this.offsetPagination((paginationOptions) =>
       this.client.IssueStateEvents.all(projectId, issueIid, paginationOptions)
     )) {
-      events.push(event as IssueStateEvent);
+      const typedEvent = event as StateEventSchema;
+      events.push({
+        ...pick(typedEvent, ['id', 'created_at']),
+        author_username: typedEvent.user.username,
+        state: typedEvent.state as 'closed' | 'reopened',
+      });
     }
     return events;
   }
@@ -758,7 +768,11 @@ export class GitLab {
         paginationOptions
       )
     )) {
-      events.push(event as IssueIterationEvent);
+      const typedEvent = event as IterationEventSchema;
+      events.push({
+        ...pick(typedEvent, ['id', 'action', 'iteration', 'created_at']),
+        author_username: typedEvent.user.username,
+      });
     }
     return events;
   }
@@ -842,29 +856,26 @@ export class GitLab {
     }
 
     try {
-      // Use custom REST API call since @gitbeaker doesn't support iterations
-      for await (const iteration of this.offsetPagination(
-        async (paginationOptions) => {
-          const response = await this.client.Groups.requester.get(
-            `/groups/${groupId}/iterations`,
-            {...options, ...paginationOptions}
-          );
-          // The response is already an array from the REST API
-          return Array.isArray(response) ? response : [];
-        }
+      for await (const iteration of this.offsetPagination((paginationOptions) =>
+        this.client.GroupIterations.all(groupId, {
+          ...options,
+          ...paginationOptions,
+        })
       )) {
-        const typedIteration = iteration as any;
+        const typedIteration = iteration as IterationSchema;
 
         yield {
           __brand: 'FarosIteration',
-          id: typedIteration.id,
-          iid: typedIteration.iid,
-          title: typedIteration.title,
-          description: typedIteration.description ?? null,
-          state: typedIteration.state,
-          start_date: typedIteration.start_date,
-          due_date: typedIteration.due_date,
-          updated_at: typedIteration.updated_at,
+          ...pick(typedIteration, [
+            'id',
+            'iid',
+            'title',
+            'description',
+            'state',
+            'start_date',
+            'due_date',
+            'updated_at',
+          ]),
         };
       }
     } catch (error: any) {
@@ -912,8 +923,8 @@ export class GitLab {
       }
 
       // Collect author information if available
-      if (typedRelease.user) {
-        this.userCollector.collectUser(typedRelease.user);
+      if (typedRelease.author) {
+        this.userCollector.collectUser(typedRelease.author);
       }
 
       yield {
@@ -926,7 +937,7 @@ export class GitLab {
           'released_at',
           '_links',
         ]),
-        author_username: typedRelease.user?.username ?? null,
+        author_username: typedRelease.author?.username ?? null,
       };
     }
   }
