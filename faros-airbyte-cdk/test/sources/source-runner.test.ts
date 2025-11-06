@@ -187,6 +187,40 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
   });
 
   describe('READ command with pre-read check', () => {
+    it('should call onBeforeRead before pre-read check', async () => {
+      const config = {test_prop: 'value'};
+      configPath = path.join(tempDir, 'config.json');
+      fs.writeFileSync(configPath, JSON.stringify(config));
+
+      const logger = new AirbyteSourceLogger();
+      const source = new TestSource(logger, true);
+      const runner = new AirbyteSourceRunner(logger, source);
+
+      const logMessages: string[] = [];
+      logger.write = (msg: any) => {};
+      logger.info = (msg: string) => logMessages.push(msg);
+
+      const readCmd = runner.readCommand();
+      await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
+        from: 'user',
+      });
+
+      // Find the indices of key log messages
+      const prepareIdx = logMessages.findIndex((msg) =>
+        msg.includes('Preparing configuration for read operation')
+      );
+      const validateIdx = logMessages.findIndex((msg) =>
+        msg.includes('Performing pre-read connection validation')
+      );
+
+      // Verify both messages exist
+      expect(prepareIdx).toBeGreaterThanOrEqual(0);
+      expect(validateIdx).toBeGreaterThanOrEqual(0);
+
+      // Verify "Preparing configuration" comes before "Performing pre-read validation"
+      expect(prepareIdx).toBeLessThan(validateIdx);
+    });
+
     it('should always perform pre-read check when check_connection is true', async () => {
       const config = {test_prop: 'value', check_connection: true};
       configPath = path.join(tempDir, 'config.json');

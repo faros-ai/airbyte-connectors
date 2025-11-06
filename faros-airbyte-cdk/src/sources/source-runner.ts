@@ -128,9 +128,34 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             this.logger.info(`State: ${JSON.stringify(state)}`);
           }
 
-          // Always perform pre-read connection validation
+          // Call onBeforeRead FIRST to get the final config that will be used
+          // This ensures that any singletons created during the pre-read check
+          // are initialized with the correct config state (e.g., requestedStreams)
+          this.logger.info('Preparing configuration for read operation');
+          const res = await this.source.onBeforeRead(
+            config,
+            catalog,
+            Data.decompress(state)
+          );
+
+          // Log the modified config/catalog/state after onBeforeRead
+          const modifiedRedactedConfig = redactConfig(res.config, spec);
+          this.logger.info(
+            `Config after onBeforeRead: ${JSON.stringify(modifiedRedactedConfig)}`
+          );
+          this.logger.info(
+            `Catalog after onBeforeRead: ${JSON.stringify(res.catalog)}`
+          );
+          if (res.state) {
+            this.logger.info(
+              `State after onBeforeRead: ${JSON.stringify(res.state)}`
+            );
+          }
+
+          // Always perform pre-read connection validation with the FINAL config
+          // This ensures singletons are initialized with the correct state
           this.logger.info('Performing pre-read connection validation');
-          const checkStatus = await this.source.check(config);
+          const checkStatus = await this.source.check(res.config);
           if (
             checkStatus.connectionStatus.status ===
             AirbyteConnectionStatus.FAILED
@@ -147,15 +172,9 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
           this.logger.info('Pre-read connection validation succeeded');
 
           try {
-            this.logger.getState = () => maybeCompressState(config, state);
-            const res = await this.source.onBeforeRead(
-              config,
-              catalog,
-              Data.decompress(state)
-            );
             const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
             this.logger.getState = () =>
-              maybeCompressState(config, clonedState);
+              maybeCompressState(res.config, clonedState);
             const iter = this.source.read(
               res.config,
               redactConfig(res.config, spec),
@@ -165,7 +184,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             for await (const message of iter) {
               this.logger.write(message);
             }
-            await this.source.onAfterRead(config);
+            await this.source.onAfterRead(res.config);
           } catch (e: any) {
             const w = wrapApiError(e);
             const s = JSON.stringify(w);
