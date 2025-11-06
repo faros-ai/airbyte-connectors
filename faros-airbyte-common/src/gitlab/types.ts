@@ -140,6 +140,7 @@ export type FarosIssueOutput = {
   | 'created_at'
   | 'updated_at'
   | 'labels'
+  | 'weight'
 >;
 
 export type FarosReleaseOutput = {
