@@ -825,7 +825,10 @@ export class GitLab {
     } catch (error: any) {
       // Epics are a Premium/Ultimate feature
       // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
-      if (error.response?.status === 403 || error.response?.status === 404) {
+      if (
+        error.cause?.description?.includes('403') ||
+        error.cause?.description?.includes('404')
+      ) {
         this.logger.info(
           `Epics are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
         );
@@ -880,7 +883,10 @@ export class GitLab {
     } catch (error: any) {
       // Iterations are a Premium/Ultimate feature
       // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
-      if (error.response?.status === 403 || error.response?.status === 404) {
+      if (
+        error.cause?.description?.includes('403') ||
+        error.cause?.description?.includes('404')
+      ) {
         this.logger.info(
           `Iterations are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
         );
