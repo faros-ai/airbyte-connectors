@@ -90,6 +90,8 @@ export enum AssistantMetric {
   LastActivity = 'LastActivity',
   Engagement = 'Engagement',
   Usages = 'Usages',
+  LinesSuggestedToAdd = 'LinesSuggestedToAdd',
+  LinesSuggestedToRemove = 'LinesSuggestedToRemove',
   AILinesAdded = 'AILinesAdded',
   AILinesRemoved = 'AILinesRemoved',
   NonAILinesAdded = 'NonAILinesAdded',
