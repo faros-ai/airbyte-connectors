@@ -13,6 +13,7 @@ import VError from 'verror';
 
 import {Cursor, DEFAULT_CUTOFF_DAYS} from './cursor';
 import {AiCommitMetrics} from './streams/ai_commit_metrics';
+import {DEFAULT_RUN_MODE, RunMode, RunModeStreams} from './streams/common';
 import {DailyUsage} from './streams/daily_usage';
 import {Members} from './streams/members';
 import {UsageEvents} from './streams/usage_events';
@@ -68,13 +69,27 @@ export class CursorSource extends AirbyteSourceBase<CursorConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
+    // Filter streams based on run_mode and custom_streams
+    const streamNames = [
+      ...RunModeStreams[config.run_mode ?? DEFAULT_RUN_MODE],
+    ].filter(
+      (streamName) =>
+        config.run_mode !== RunMode.Custom ||
+        !config.custom_streams?.length ||
+        config.custom_streams.includes(streamName)
+    );
+
+    const streams = catalog.streams.filter((stream) =>
+      streamNames.includes(stream.stream.name)
+    );
+
     return {
       config: {
         ...config,
         startDate,
         endDate,
       } as CursorConfig,
-      catalog,
+      catalog: {streams},
       state,
     };
   }

@@ -62,6 +62,30 @@
         "type": "string",
         "title": "End Date",
         "description": "The date at which to stop syncing data."
+      },
+      "run_mode": {
+        "order": 8,
+        "title": "Run Mode",
+        "description": "Run mode for selecting the usage of the connector",
+        "type": "string",
+        "default": "Full",
+        "enum": [
+          "Full",
+          "Custom"
+        ]
+      },
+      "custom_streams": {
+        "order": 9,
+        "title": "Custom Streams",
+        "description": "List of streams to run when selected Run Mode is Custom (if empty, all available streams will run)",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "examples": [
+          "members",
+          "daily_usage"
+        ]
       }
     }
   }
