@@ -33,7 +33,7 @@ AirbyteConnectionStatusMessage {
 exports[`index check connection - token missing 1`] = `
 AirbyteConnectionStatusMessage {
   "connectionStatus": {
-    "message": "GitLab authentication failed. Please check your API token and permissions: Unauthorized",
+    "message": "GitLab authentication failed. Please check your API token and permissions: 401 Unauthorized",
     "status": "FAILED",
   },
   "type": "CONNECTION_STATUS",
@@ -350,6 +350,35 @@ Implements requested functionality",
 ]
 `;
 
+exports[`index streams - faros epics 1`] = `
+[
+  {
+    "author_username": "hkmshb",
+    "created_at": "2021-01-01T10:00:00.000Z",
+    "description": "Epic for tracking Q1 2021 initiatives",
+    "group_id": "test-group",
+    "id": 1001,
+    "iid": 1,
+    "state": "opened",
+    "title": "Q1 2021 Roadmap",
+    "updated_at": "2021-02-15T14:30:00.000Z",
+    "web_url": "https://gitlab.com/groups/test-group/-/epics/1",
+  },
+  {
+    "author_username": "hkmshb",
+    "created_at": "2021-01-15T10:00:00.000Z",
+    "description": "Track all platform enhancement work",
+    "group_id": "test-group",
+    "id": 1002,
+    "iid": 2,
+    "state": "closed",
+    "title": "Platform Improvements",
+    "updated_at": "2021-03-01T16:45:00.000Z",
+    "web_url": "https://gitlab.com/groups/test-group/-/epics/2",
+  },
+]
+`;
+
 exports[`index streams - faros groups 1`] = `
 [
   {
@@ -369,45 +398,105 @@ exports[`index streams - faros groups 1`] = `
 exports[`index streams - faros issues 1`] = `
 [
   {
-    "assignees": [
-      {
-        "username": "hkmshb",
-      },
+    "assignee_usernames": [
+      "hkmshb",
     ],
-    "author": {
-      "username": "hkmshb",
-    },
+    "author_username": "hkmshb",
+    "closed_at": null,
     "created_at": "2021-02-27T15:50:47.923Z",
     "description": "The repository needs to be set up.",
+    "epic": {
+      "id": 1001,
+    },
     "group_id": "1",
     "id": 79927767,
+    "issue_type": "issue",
+    "iteration": {
+      "id": 5001,
+    },
+    "iteration_events": [
+      {
+        "action": "add",
+        "author_username": "hkmshb",
+        "created_at": "2021-02-28T10:00:00.000Z",
+        "id": 101,
+        "iteration": {
+          "id": 5001,
+        },
+      },
+    ],
     "labels": [
       "Enhancement",
       "Project Setup",
     ],
     "project_path": "test-project",
     "state": "opened",
+    "state_events": [
+      {
+        "author_username": "hkmshb",
+        "created_at": "2021-03-01T10:00:00.000Z",
+        "id": 1,
+        "state": "closed",
+      },
+      {
+        "author_username": "hkmshb",
+        "created_at": "2021-03-02T10:00:00.000Z",
+        "id": 2,
+        "state": "reopened",
+      },
+    ],
     "title": "Setup Required!",
     "updated_at": "2021-03-02T15:38:01.088Z",
+    "web_url": "https://gitlab.com/test-group/faros-test/-/issues/1",
     "weight": 5,
   },
   {
-    "assignees": [],
-    "author": {
-      "username": "hkmshb",
-    },
+    "assignee_usernames": [],
+    "author_username": "hkmshb",
+    "closed_at": null,
     "created_at": "2021-03-02T15:35:31.706Z",
     "description": "The README.md file is to spare. Add more contents.",
     "group_id": "1",
     "id": 80103938,
+    "issue_type": "task",
+    "iteration_events": [],
     "labels": [
       "Enhancement",
     ],
     "project_path": "test-project",
     "state": "opened",
+    "state_events": [],
     "title": "Update README file",
     "updated_at": "2021-03-02T15:37:42.090Z",
+    "web_url": "https://gitlab.com/test-group/faros-test/-/issues/2",
     "weight": null,
+  },
+]
+`;
+
+exports[`index streams - faros iterations 1`] = `
+[
+  {
+    "description": "First sprint of Q1 2021",
+    "due_date": "2021-01-14",
+    "group_id": "test-group",
+    "id": 5001,
+    "iid": 1,
+    "start_date": "2021-01-01",
+    "state": 3,
+    "title": "Sprint 1",
+    "updated_at": "2021-01-15T10:00:00.000Z",
+  },
+  {
+    "description": "Second sprint of Q1 2021",
+    "due_date": "2021-01-28",
+    "group_id": "test-group",
+    "id": 5002,
+    "iid": 2,
+    "start_date": "2021-01-15",
+    "state": 2,
+    "title": "Sprint 2",
+    "updated_at": "2021-01-16T10:00:00.000Z",
   },
 ]
 `;

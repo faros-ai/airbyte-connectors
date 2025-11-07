@@ -6,18 +6,44 @@
     "state": "opened",
     "created_at": "2021-02-27T15:50:47.923Z",
     "updated_at": "2021-03-02T15:38:01.088Z",
+    "closed_at": null,
     "labels": ["Enhancement", "Project Setup"],
+    "issue_type": "issue",
+    "web_url": "https://gitlab.com/test-group/faros-test/-/issues/1",
     "weight": 5,
-    "assignees": [
+    "author_username": "hkmshb",
+    "assignee_usernames": ["hkmshb"],
+    "epic": {
+      "id": 1001
+    },
+    "iteration": {
+      "id": 5001
+    },
+    "state_events": [
       {
-        "username": "hkmshb"
+        "id": 1,
+        "author_username": "hkmshb",
+        "state": "closed",
+        "created_at": "2021-03-01T10:00:00.000Z"
+      },
+      {
+        "id": 2,
+        "author_username": "hkmshb",
+        "state": "reopened",
+        "created_at": "2021-03-02T10:00:00.000Z"
       }
     ],
-    "author": {
-      "username": "hkmshb"
-    },
-    "group_id": "13083",
-    "project_path": "faros-test"
+    "iteration_events": [
+      {
+        "id": 101,
+        "author_username": "hkmshb",
+        "action": "add",
+        "iteration": {
+          "id": 5001
+        },
+        "created_at": "2021-02-28T10:00:00.000Z"
+      }
+    ]
   },
   {
     "id": 80103938,
@@ -26,13 +52,14 @@
     "state": "opened",
     "created_at": "2021-03-02T15:35:31.706Z",
     "updated_at": "2021-03-02T15:37:42.090Z",
+    "closed_at": null,
     "labels": ["Enhancement"],
+    "issue_type": "task",
+    "web_url": "https://gitlab.com/test-group/faros-test/-/issues/2",
     "weight": null,
-    "assignees": [],
-    "author": {
-      "username": "hkmshb"
-    },
-    "group_id": "13083",
-    "project_path": "faros-test"
+    "author_username": "hkmshb",
+    "assignee_usernames": [],
+    "state_events": [],
+    "iteration_events": []
   }
 ]

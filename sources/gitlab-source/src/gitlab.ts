@@ -2,16 +2,20 @@ import {
   Camelize,
   CommitSchema,
   DeploymentSchema,
+  EpicSchema,
   EventSchema,
   Gitlab as GitlabClient,
   GroupSchema,
   IssueSchema,
+  IterationEventSchema,
+  IterationSchema,
   JobSchema,
   LabelSchema,
   NoteSchema,
   PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
+  StateEventSchema,
   TagSchema,
 } from '@gitbeaker/rest';
 import {addDays, format, subDays} from 'date-fns';
@@ -19,8 +23,10 @@ import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {
   FarosCommitOutput,
   FarosDeploymentOutput,
+  FarosEpicOutput,
   FarosGroupOutput,
   FarosIssueOutput,
+  FarosIterationOutput,
   FarosJobOutput,
   FarosMergeRequestOutput,
   FarosMergeRequestReviewOutput,
@@ -28,6 +34,8 @@ import {
   FarosProjectOutput,
   FarosReleaseOutput,
   FarosTagOutput,
+  IssueIterationEvent,
+  IssueStateEvent,
 } from 'faros-airbyte-common/gitlab';
 import {GraphQLClient} from 'graphql-request';
 import {pick, toLower} from 'lodash';
@@ -52,6 +60,12 @@ export const DEFAULT_FETCH_PUBLIC_GROUPS = false;
 export const DEFAULT_FAROS_API_URL = 'https://prod.api.faros.ai';
 export const DEFAULT_FAROS_GRAPH = 'default';
 
+// Extended issue schema with optional epic and iteration fields (Premium/Ultimate features)
+type ExtendedIssueSchema = IssueSchema & {
+  epic?: {id: number};
+  iteration?: {id: number};
+};
+
 export class GitLab {
   private static gitlab: GitLab;
   private readonly client: InstanceType<typeof GitlabClient>;
@@ -69,8 +83,10 @@ export class GitLab {
     this.client = new GitlabClient({
       token: this.getToken(),
       host: this.getBaseUrl(),
-      rejectUnauthorized:
-        config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED,
+      ...((config.reject_unauthorized ?? DEFAULT_REJECT_UNAUTHORIZED) ===
+        false && {
+        rejectUnauthorized: false, // might not be functional according to @gitbeaker types
+      }),
     });
 
     this.gqlClient = new GraphQLClient(`${this.getBaseUrl()}/api/graphql`, {
@@ -96,7 +112,6 @@ export class GitLab {
     }
 
     const gitlab = new GitLab(cfg, logger);
-    await gitlab.checkConnection();
     GitLab.gitlab = gitlab;
     return gitlab;
   }
@@ -676,12 +691,24 @@ export class GitLab {
     for await (const issue of this.offsetPagination((paginationOptions) =>
       this.client.Issues.all({...options, ...paginationOptions, projectId})
     )) {
-      const typedIssue = issue as IssueSchema;
+      const typedIssue = issue as ExtendedIssueSchema;
       this.userCollector.collectUser(typedIssue.author);
 
       for (const assignee of typedIssue.assignees) {
         this.userCollector.collectUser(assignee);
       }
+
+      // Fetch state events for status changelog
+      const stateEvents = await this.getIssueStateEvents(
+        projectId,
+        typedIssue.iid
+      );
+
+      // Fetch iteration events for sprint history
+      const iterationEvents = await this.getIssueIterationEvents(
+        projectId,
+        typedIssue.iid
+      );
 
       yield {
         __brand: 'FarosIssue',
@@ -692,13 +719,181 @@ export class GitLab {
           'state',
           'created_at',
           'updated_at',
+          'closed_at',
           'labels',
+          'issue_type',
+          'web_url',
           'weight',
         ]),
         author_username: typedIssue.author.username,
         assignee_usernames:
           typedIssue.assignees?.map((assignee: any) => assignee.username) ?? [],
+        ...(typedIssue.epic?.id && {epic: {id: typedIssue.epic.id}}),
+        ...(typedIssue.iteration?.id && {
+          iteration: {id: typedIssue.iteration.id},
+        }),
+        state_events: stateEvents,
+        iteration_events: iterationEvents,
       };
+    }
+  }
+
+  async getIssueStateEvents(
+    projectId: string,
+    issueIid: number
+  ): Promise<IssueStateEvent[]> {
+    const events: IssueStateEvent[] = [];
+    for await (const event of this.offsetPagination((paginationOptions) =>
+      this.client.IssueStateEvents.all(projectId, issueIid, paginationOptions)
+    )) {
+      const typedEvent = event as StateEventSchema;
+      events.push({
+        ...pick(typedEvent, ['id', 'created_at']),
+        author_username: typedEvent.user.username,
+        state: typedEvent.state as 'closed' | 'reopened',
+      });
+    }
+    return events;
+  }
+
+  async getIssueIterationEvents(
+    projectId: string,
+    issueIid: number
+  ): Promise<IssueIterationEvent[]> {
+    const events: IssueIterationEvent[] = [];
+    for await (const event of this.offsetPagination((paginationOptions) =>
+      this.client.IssueIterationEvents.all(
+        projectId,
+        issueIid,
+        paginationOptions
+      )
+    )) {
+      const typedEvent = event as IterationEventSchema;
+      events.push({
+        ...pick(typedEvent, ['id', 'action', 'iteration', 'created_at']),
+        author_username: typedEvent.user.username,
+      });
+    }
+    return events;
+  }
+
+  async *getEpics(
+    groupId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosEpicOutput, 'group_id'>> {
+    const options: any = {
+      perPage: this.pageSize,
+      orderBy: 'updated_at',
+      sort: 'desc',
+      includeDescendantGroups: false, // Only direct group epics
+    };
+
+    if (since) {
+      options.updatedAfter = since.toISOString();
+    }
+
+    if (until) {
+      options.updatedBefore = until.toISOString();
+    }
+
+    try {
+      for await (const epic of this.offsetPagination((paginationOptions) =>
+        this.client.Epics.all(groupId, {...options, ...paginationOptions})
+      )) {
+        const typedEpic = epic as EpicSchema;
+
+        // Collect epic author
+        if (typedEpic.author) {
+          this.userCollector.collectUser(typedEpic.author);
+        }
+
+        yield {
+          __brand: 'FarosEpic',
+          ...pick(typedEpic, [
+            'id',
+            'iid',
+            'title',
+            'description',
+            'state',
+            'created_at',
+            'updated_at',
+            'web_url',
+          ]),
+          author_username: typedEpic.author?.username ?? null,
+        };
+      }
+    } catch (error: any) {
+      // Epics are a Premium/Ultimate feature
+      // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
+      if (
+        error.cause?.description?.includes('403') ||
+        error.cause?.description?.includes('404')
+      ) {
+        this.logger.info(
+          `Epics are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
+        );
+        return;
+      }
+      throw error;
+    }
+  }
+
+  async *getIterations(
+    groupId: string,
+    since?: Date,
+    until?: Date
+  ): AsyncGenerator<Omit<FarosIterationOutput, 'group_id'>> {
+    const options: any = {
+      per_page: this.pageSize,
+      order_by: 'updated_at',
+      sort: 'desc',
+    };
+
+    if (since) {
+      options.updated_after = since.toISOString();
+    }
+
+    if (until) {
+      options.updated_before = until.toISOString();
+    }
+
+    try {
+      for await (const iteration of this.offsetPagination((paginationOptions) =>
+        this.client.GroupIterations.all(groupId, {
+          ...options,
+          ...paginationOptions,
+        })
+      )) {
+        const typedIteration = iteration as IterationSchema;
+
+        yield {
+          __brand: 'FarosIteration',
+          ...pick(typedIteration, [
+            'id',
+            'iid',
+            'title',
+            'description',
+            'state',
+            'start_date',
+            'due_date',
+            'updated_at',
+          ]),
+        };
+      }
+    } catch (error: any) {
+      // Iterations are a Premium/Ultimate feature
+      // Gracefully handle 403 (Forbidden) or 404 (Not Found) errors
+      if (
+        error.cause?.description?.includes('403') ||
+        error.cause?.description?.includes('404')
+      ) {
+        this.logger.info(
+          `Iterations are not available for group ${groupId}. This is expected for GitLab Free tier. Skipping.`
+        );
+        return;
+      }
+      throw error;
     }
   }
 
@@ -734,8 +929,8 @@ export class GitLab {
       }
 
       // Collect author information if available
-      if (typedRelease.user) {
-        this.userCollector.collectUser(typedRelease.user);
+      if (typedRelease.author) {
+        this.userCollector.collectUser(typedRelease.author);
       }
 
       yield {
@@ -748,7 +943,7 @@ export class GitLab {
           'released_at',
           '_links',
         ]),
-        author_username: typedRelease.user?.username ?? null,
+        author_username: typedRelease.author?.username ?? null,
       };
     }
   }

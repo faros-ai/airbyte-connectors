@@ -26,7 +26,7 @@
     "watch": "tsc -b -w src test"
   },
   "dependencies": {
-    "@gitbeaker/rest": "^42.5.0",
+    "@gitbeaker/rest": "^43.8.0",
     "date-fns": "^4.1.0",
     "faros-airbyte-cdk": "*",
     "faros-airbyte-common": "*",

@@ -2,7 +2,7 @@ import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {FarosUserOutput} from 'faros-airbyte-common/gitlab';
 import {isEmpty, isNil, omitBy, toLower} from 'lodash';
 
-import {DestinationModel, DestinationRecord} from '../converter';
+import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitlabConverter} from './common';
 
 export class FarosUsers extends GitlabConverter {
@@ -10,6 +10,7 @@ export class FarosUsers extends GitlabConverter {
     'vcs_Membership',
     'vcs_User',
     'vcs_UserEmail',
+    'tms_User',
   ];
 
   id(record: AirbyteRecord): string {
@@ -17,7 +18,8 @@ export class FarosUsers extends GitlabConverter {
     return `${user?.username}`;
   }
   async convert(
-    record: AirbyteRecord
+    record: AirbyteRecord,
+    ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const user = record.record.data as FarosUserOutput;
 
@@ -67,6 +69,22 @@ export class FarosUsers extends GitlabConverter {
         (value) => isNil(value) || isEmpty(value)
       ),
     });
+
+    // Also write tms_User if TMS is enabled
+    if (this.tmsEnabled(ctx)) {
+      res.push({
+        model: 'tms_User',
+        record: omitBy(
+          {
+            uid: user.username,
+            source: this.streamName.source,
+            name: user.name,
+            emailAddress: user.email,
+          },
+          (value) => isNil(value) || isEmpty(value)
+        ),
+      });
+    }
 
     return res;
   }

@@ -233,6 +233,7 @@
         "state": "opened",
         "created_at": "2025-06-12T00:42:24.388Z",
         "updated_at": "2025-06-12T00:42:48.083Z",
+        "closed_at": null,
         "labels": [
           "l1"
         ],
@@ -242,7 +243,58 @@
         ],
         "weight": 5,
         "group_id": "12372707",
-        "project_path": "testy"
+        "project_path": "testy",
+        "issue_type": "issue",
+        "web_url": "https://gitlab.com/test-group/testy/-/issues/1",
+        "epic": {
+          "id": 123456
+        },
+        "iteration": {
+          "id": 987654
+        },
+        "state_events": [
+          {
+            "id": 1001,
+            "author_username": "ypc-faros",
+            "state": "closed",
+            "created_at": "2025-06-12T00:43:00.000Z"
+          },
+          {
+            "id": 1002,
+            "author_username": "ypc-faros",
+            "state": "reopened",
+            "created_at": "2025-06-12T00:43:30.000Z"
+          }
+        ],
+        "iteration_events": [
+          {
+            "id": 2001,
+            "author_username": "ypc-faros",
+            "action": "add",
+            "iteration": {
+              "id": 987654
+            },
+            "created_at": "2025-06-12T00:42:30.000Z"
+          },
+          {
+            "id": 2002,
+            "author_username": "ypc-faros",
+            "action": "remove",
+            "iteration": {
+              "id": 987654
+            },
+            "created_at": "2025-06-12T00:43:10.000Z"
+          },
+          {
+            "id": 2003,
+            "author_username": "ypc-faros",
+            "action": "add",
+            "iteration": {
+              "id": 987654
+            },
+            "created_at": "2025-06-12T00:43:40.000Z"
+          }
+        ]
       }
     },
     "type": "RECORD"
@@ -612,6 +664,45 @@
         },
         "group_id": "1001",
         "project_path": "test-project"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_epics",
+      "emitted_at": 1750696212087,
+      "data": {
+        "__brand": "FarosEpic",
+        "id": 123456,
+        "iid": 1,
+        "title": "Platform Modernization",
+        "description": "Epic for modernizing the platform infrastructure",
+        "state": "opened",
+        "created_at": "2025-01-15T10:30:45.123Z",
+        "updated_at": "2025-02-10T14:22:30.456Z",
+        "web_url": "https://gitlab.com/test-group/-/epics/1",
+        "author_username": "ypc-faros",
+        "group_id": "12372707"
+      }
+    },
+    "type": "RECORD"
+  },
+  {
+    "record": {
+      "stream": "mytestsource__gitlab__faros_iterations",
+      "emitted_at": 1750696212087,
+      "data": {
+        "__brand": "FarosIteration",
+        "id": 987654,
+        "iid": 5,
+        "title": "Sprint 2025-Q1",
+        "description": "First quarter 2025 sprint",
+        "state": 2,
+        "start_date": "2025-01-15",
+        "due_date": "2025-01-29",
+        "updated_at": "2025-01-20T10:30:45.123Z",
+        "group_id": "12372707"
       }
     },
     "type": "RECORD"

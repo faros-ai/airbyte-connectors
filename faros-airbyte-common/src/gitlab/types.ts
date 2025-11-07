@@ -2,15 +2,19 @@ import {
   Camelize,
   CommitSchema,
   DeploymentSchema,
+  EpicSchema,
   EventSchema,
   GroupSchema,
   IssueSchema,
+  IterationEventSchema,
+  IterationSchema,
   JobSchema,
   MergeRequestSchema,
   NoteSchema,
   PipelineSchema,
   ProjectSchema,
   ReleaseSchema,
+  StateEventSchema,
   TagSchema,
   UserSchema,
 } from '@gitbeaker/rest';
@@ -125,12 +129,25 @@ export type FarosMergeRequestReviewOutput = {
   | 'target_type'
 >;
 
+export type IssueStateEvent = {
+  author_username: string;
+  state: 'closed' | 'reopened';
+} & Pick<StateEventSchema, 'id' | 'created_at'>;
+
+export type IssueIterationEvent = {
+  author_username: string;
+} & Pick<IterationEventSchema, 'id' | 'action' | 'iteration' | 'created_at'>;
+
 export type FarosIssueOutput = {
   readonly __brand: 'FarosIssue';
   group_id: string;
   project_path: string;
   author_username: string;
   assignee_usernames: string[];
+  epic?: {id: number};
+  iteration?: {id: number};
+  state_events: IssueStateEvent[];
+  iteration_events: IssueIterationEvent[];
 } & Pick<
   IssueSchema,
   | 'id'
@@ -139,8 +156,42 @@ export type FarosIssueOutput = {
   | 'state'
   | 'created_at'
   | 'updated_at'
+  | 'closed_at'
   | 'labels'
+  | 'issue_type'
+  | 'web_url'
   | 'weight'
+>;
+
+export type FarosEpicOutput = {
+  readonly __brand: 'FarosEpic';
+  group_id: string;
+  author_username: string | null;
+} & Pick<
+  EpicSchema,
+  | 'id'
+  | 'iid'
+  | 'title'
+  | 'description'
+  | 'state'
+  | 'created_at'
+  | 'updated_at'
+  | 'web_url'
+>;
+
+export type FarosIterationOutput = {
+  readonly __brand: 'FarosIteration';
+  group_id: string;
+} & Pick<
+  IterationSchema,
+  | 'id'
+  | 'iid'
+  | 'title'
+  | 'description'
+  | 'state' // 1=upcoming, 2=current, 3=closed
+  | 'start_date'
+  | 'due_date'
+  | 'updated_at'
 >;
 
 export type FarosReleaseOutput = {
