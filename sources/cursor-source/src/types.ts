@@ -3,13 +3,13 @@ import {RunMode} from './streams/common';
 export interface CursorConfig {
   readonly cursor_api_key: string;
   readonly cursor_api_url?: string;
+  readonly run_mode?: RunMode;
+  readonly custom_streams?: ReadonlyArray<string>;
   readonly cutoff_days?: number;
   readonly timeout?: number;
   readonly page_size?: number;
   readonly start_date?: string;
   readonly end_date?: string;
-  readonly run_mode?: RunMode;
-  readonly custom_streams?: ReadonlyArray<string>;
   startDate?: Date;
   endDate?: Date;
 }
