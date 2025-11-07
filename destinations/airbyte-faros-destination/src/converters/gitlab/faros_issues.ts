@@ -76,6 +76,7 @@ export class FarosIssues extends GitlabConverter {
           GitlabCommon.MAX_DESCRIPTION_LENGTH
         ),
         status: {category, detail: issue.state},
+        points: issue.weight ?? null,
         creator: issue.author_username
           ? {uid: issue.author_username, source: this.streamName.source}
           : null,

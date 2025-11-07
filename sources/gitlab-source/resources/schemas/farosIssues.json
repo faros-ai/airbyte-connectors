@@ -42,6 +42,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "weight": {
+      "type": ["integer", "null"]
     }
   },
   "required": ["group_id", "project_path", "author_username", "assignee_usernames", "id", "title", "description", "state", "created_at", "updated_at", "labels"]

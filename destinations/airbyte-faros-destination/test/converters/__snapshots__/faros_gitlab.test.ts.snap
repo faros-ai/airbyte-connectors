@@ -466,6 +466,7 @@ Array [
       },
       "description": "There's something clearly broken",
       "name": "Test issue",
+      "points": 5,
       "source": "GitLab",
       "status": Object {
         "category": "Todo",

@@ -389,6 +389,7 @@ exports[`index streams - faros issues 1`] = `
     "state": "opened",
     "title": "Setup Required!",
     "updated_at": "2021-03-02T15:38:01.088Z",
+    "weight": 5,
   },
   {
     "assignees": [],
@@ -406,6 +407,7 @@ exports[`index streams - faros issues 1`] = `
     "state": "opened",
     "title": "Update README file",
     "updated_at": "2021-03-02T15:37:42.090Z",
+    "weight": null,
   },
 ]
 `;

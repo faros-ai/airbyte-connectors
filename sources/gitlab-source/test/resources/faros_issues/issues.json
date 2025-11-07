@@ -7,6 +7,7 @@
     "created_at": "2021-02-27T15:50:47.923Z",
     "updated_at": "2021-03-02T15:38:01.088Z",
     "labels": ["Enhancement", "Project Setup"],
+    "weight": 5,
     "assignees": [
       {
         "username": "hkmshb"
@@ -26,6 +27,7 @@
     "created_at": "2021-03-02T15:35:31.706Z",
     "updated_at": "2021-03-02T15:37:42.090Z",
     "labels": ["Enhancement"],
+    "weight": null,
     "assignees": [],
     "author": {
       "username": "hkmshb"
