@@ -127,7 +127,14 @@ export class OrgRepoFilter {
   async getRepositories(
     org: string
   ): Promise<ReadonlyArray<RepoInclusion<Repository>>> {
-    return this.vcsFilter.getRepos(org);
+    const allRepos = await this.vcsFilter.getRepos(org);
+
+    // Apply bucketing filter if configured
+    if (!this.config.bucketing) {
+      return allRepos;
+    }
+
+    return this.config.bucketing.filter(allRepos, ({repo}) => `${org}/${repo.name}`);
   }
 
   async getRepoInclusion(

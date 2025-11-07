@@ -1,6 +1,6 @@
 import {GraphqlResponseError} from '@octokit/graphql';
 import {AirbyteConfig} from 'faros-airbyte-cdk';
-import {RoundRobinConfig} from 'faros-airbyte-common/common';
+import {Bucketing, RoundRobinConfig} from 'faros-airbyte-common/common';
 
 import {RunMode} from './streams/common';
 
@@ -44,6 +44,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   excludedReposByOrg?: Map<string, Set<string>>;
   tmsEnabled?: boolean;
   cicdEnabled?: boolean;
+  bucketing?: Bucketing;
 }
 
 type GitHubToken = {
