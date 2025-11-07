@@ -448,6 +448,7 @@ exports[`index streams - faros issues 1`] = `
     "title": "Setup Required!",
     "updated_at": "2021-03-02T15:38:01.088Z",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/1",
+    "weight": 5,
   },
   {
     "assignee_usernames": [],
@@ -468,6 +469,7 @@ exports[`index streams - faros issues 1`] = `
     "title": "Update README file",
     "updated_at": "2021-03-02T15:37:42.090Z",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/2",
+    "weight": null,
   },
 ]
 `;

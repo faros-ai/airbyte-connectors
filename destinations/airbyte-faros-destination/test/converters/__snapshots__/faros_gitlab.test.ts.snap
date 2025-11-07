@@ -477,6 +477,7 @@ Array [
         "uid": "123456",
       },
       "name": "Test issue",
+      "points": 5,
       "source": "GitLab",
       "sprint": Object {
         "source": "GitLab",

@@ -241,6 +241,7 @@
         "assignee_usernames": [
           "test-assignee"
         ],
+        "weight": 5,
         "group_id": "12372707",
         "project_path": "testy",
         "issue_type": "issue",

@@ -723,6 +723,7 @@ export class GitLab {
           'labels',
           'issue_type',
           'web_url',
+          'weight',
         ]),
         author_username: typedIssue.author.username,
         assignee_usernames:

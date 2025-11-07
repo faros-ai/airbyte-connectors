@@ -160,6 +160,7 @@ export type FarosIssueOutput = {
   | 'labels'
   | 'issue_type'
   | 'web_url'
+  | 'weight'
 >;
 
 export type FarosEpicOutput = {

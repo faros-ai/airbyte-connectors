@@ -53,6 +53,9 @@
     "web_url": {
       "type": "string"
     },
+    "weight": {
+      "type": ["integer", "null"]
+    },
     "epic": {
       "type": "object",
       "properties": {

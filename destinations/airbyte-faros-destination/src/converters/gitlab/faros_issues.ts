@@ -103,6 +103,7 @@ export class FarosIssues extends GitlabConverter {
         statusChangedAt,
         type,
         url: issue.web_url,
+        points: issue.weight ?? null,
         creator: issue.author_username
           ? {uid: issue.author_username, source: this.streamName.source}
           : null,

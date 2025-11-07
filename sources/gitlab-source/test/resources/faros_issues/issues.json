@@ -10,6 +10,7 @@
     "labels": ["Enhancement", "Project Setup"],
     "issue_type": "issue",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/1",
+    "weight": 5,
     "author_username": "hkmshb",
     "assignee_usernames": ["hkmshb"],
     "epic": {
@@ -55,6 +56,7 @@
     "labels": ["Enhancement"],
     "issue_type": "task",
     "web_url": "https://gitlab.com/test-group/faros-test/-/issues/2",
+    "weight": null,
     "author_username": "hkmshb",
     "assignee_usernames": [],
     "state_events": [],

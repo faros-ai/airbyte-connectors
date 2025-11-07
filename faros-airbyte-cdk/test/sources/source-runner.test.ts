@@ -1,6 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 
 import {
@@ -19,7 +20,6 @@ import {
   AirbyteStreamBase,
   StreamKey,
 } from '../../src/sources/streams/stream-base';
-import {Dictionary} from 'ts-essentials';
 
 class TestStream extends AirbyteStreamBase {
   getJsonSchema(): Dictionary<any, string> {
@@ -187,6 +187,52 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
   });
 
   describe('READ command with pre-read check', () => {
+    it('should call onBeforeRead before pre-read check', async () => {
+      const config = {test_prop: 'value'};
+      configPath = path.join(tempDir, 'config.json');
+      fs.writeFileSync(configPath, JSON.stringify(config));
+
+      const logger = new AirbyteSourceLogger();
+      let onBeforeReadCalled = false;
+      let checkConnectionCalled = false;
+      let onBeforeReadCalledFirst = false;
+
+      // Override source methods to track call order
+      const source = new TestSource(logger, true);
+      const originalOnBeforeRead = source.onBeforeRead.bind(source);
+      const originalCheckConnection = source.checkConnection.bind(source);
+
+      source.onBeforeRead = async (config, catalog, state) => {
+        onBeforeReadCalled = true;
+        if (!checkConnectionCalled) {
+          onBeforeReadCalledFirst = true;
+        }
+        return originalOnBeforeRead(config, catalog, state);
+      };
+
+      source.checkConnection = async (config) => {
+        checkConnectionCalled = true;
+        return originalCheckConnection(config);
+      };
+
+      const runner = new AirbyteSourceRunner(logger, source);
+      const messages: any[] = [];
+      logger.write = (msg: any) => messages.push(msg);
+
+      const readCmd = runner.readCommand();
+      await readCmd.parseAsync(
+        ['--config', configPath, '--catalog', catalogPath],
+        {
+          from: 'user',
+        }
+      );
+
+      // Verify onBeforeRead was called before checkConnection
+      expect(onBeforeReadCalled).toBe(true);
+      expect(checkConnectionCalled).toBe(true);
+      expect(onBeforeReadCalledFirst).toBe(true);
+    });
+
     it('should always perform pre-read check when check_connection is true', async () => {
       const config = {test_prop: 'value', check_connection: true};
       configPath = path.join(tempDir, 'config.json');
@@ -202,16 +248,23 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
       logger.info = (msg: string) => logMessages.push(msg);
 
       const readCmd = runner.readCommand();
-      await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
-        from: 'user',
-      });
+      await readCmd.parseAsync(
+        ['--config', configPath, '--catalog', catalogPath],
+        {
+          from: 'user',
+        }
+      );
 
       // Should always contain pre-read validation log messages
       expect(
-        logMessages.some((msg) => msg.includes('Performing pre-read connection validation'))
+        logMessages.some((msg) =>
+          msg.includes('Performing pre-read connection validation')
+        )
       ).toBe(true);
       expect(
-        logMessages.some((msg) => msg.includes('Pre-read connection validation succeeded'))
+        logMessages.some((msg) =>
+          msg.includes('Pre-read connection validation succeeded')
+        )
       ).toBe(true);
     });
 
@@ -230,16 +283,23 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
       logger.info = (msg: string) => logMessages.push(msg);
 
       const readCmd = runner.readCommand();
-      await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
-        from: 'user',
-      });
+      await readCmd.parseAsync(
+        ['--config', configPath, '--catalog', catalogPath],
+        {
+          from: 'user',
+        }
+      );
 
       // Should always contain pre-read validation log messages
       expect(
-        logMessages.some((msg) => msg.includes('Performing pre-read connection validation'))
+        logMessages.some((msg) =>
+          msg.includes('Performing pre-read connection validation')
+        )
       ).toBe(true);
       expect(
-        logMessages.some((msg) => msg.includes('Pre-read connection validation succeeded'))
+        logMessages.some((msg) =>
+          msg.includes('Pre-read connection validation succeeded')
+        )
       ).toBe(true);
     });
 
@@ -258,9 +318,12 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
       logger.info = (msg: string) => logMessages.push(msg);
 
       const readCmd = runner.readCommand();
-      await readCmd.parseAsync(['--config', configPath, '--catalog', catalogPath], {
-        from: 'user',
-      });
+      await readCmd.parseAsync(
+        ['--config', configPath, '--catalog', catalogPath],
+        {
+          from: 'user',
+        }
+      );
 
       // Should always contain pre-read validation log messages
       expect(
@@ -316,7 +379,9 @@ describe('AirbyteSourceRunner - check_connection flag', () => {
 
       // Should contain error messages
       expect(
-        errorMessages.some((msg) => msg.includes('Pre-read connection check failed'))
+        errorMessages.some((msg) =>
+          msg.includes('Pre-read connection check failed')
+        )
       ).toBe(true);
 
       // Should have written connection status message
