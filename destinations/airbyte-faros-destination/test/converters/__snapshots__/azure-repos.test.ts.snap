@@ -511,8 +511,8 @@ Array [
       "createdAt": "2023-01-07T01:20:10.168Z",
       "diffStats": Object {
         "filesChanged": 1,
-        "linesAdded": 0,
-        "linesDeleted": 0,
+        "linesAdded": null,
+        "linesDeleted": null,
       },
       "htmlUrl": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000000/_apis/git/repositories/00000000-0000-0000-0000-000000000000/pullRequests/2",
       "mergeCommit": Object {
@@ -691,8 +691,8 @@ Array [
       "createdAt": "2023-01-05T18:04:45.699Z",
       "diffStats": Object {
         "filesChanged": 1,
-        "linesAdded": 0,
-        "linesDeleted": 0,
+        "linesAdded": null,
+        "linesDeleted": null,
       },
       "htmlUrl": "https://dev.azure.com/test/00000000-0000-0000-0000-000000000000/_apis/git/repositories/00000000-0000-0000-0000-000000000000/pullRequests/1",
       "mergeCommit": Object {
