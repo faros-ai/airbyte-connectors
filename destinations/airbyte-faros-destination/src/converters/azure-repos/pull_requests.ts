@@ -343,8 +343,11 @@ export class PullRequests extends AzureReposConverter {
     }
     return {
       filesChanged: this.commitChangeCounts[mergeCommitId],
-      linesAdded: 0, // TODO: get this from file diff api
-      linesDeleted: 0,
+      // Line counts are not available from Azure DevOps REST API.
+      // The API only provides file-level changes, not line-level diffs.
+      // Would need to fetch file contents and diff manually.
+      linesAdded: null,
+      linesDeleted: null,
     };
   }
 
