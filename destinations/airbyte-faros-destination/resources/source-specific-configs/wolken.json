@@ -5,6 +5,9 @@
     {
       "type": "object",
       "title": "Configuration",
+      "required": [
+        "service_id_flex_field_name"
+      ],
       "properties": {
         "source_type": {
           "type": "string",
