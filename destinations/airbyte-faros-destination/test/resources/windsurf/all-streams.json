@@ -132,8 +132,10 @@
         "email": "user1@example.com",
         "date": "2024-01-15",
         "sum_chat_loc_used": 150,
+        "sum_num_chats_received": 25,
         "model_id": "gpt-4",
-        "ide": "vscode"
+        "ide": "vscode",
+        "latest_intent_type": "CHAT_INTENT_FUNCTION_REFACTOR"
       }
     },
     "type": "RECORD"
@@ -146,8 +148,10 @@
         "email": "user2@example.com",
         "date": "2024-01-15",
         "sum_chat_loc_used": 200,
+        "sum_num_chats_received": 40,
         "model_id": "claude-3",
-        "ide": "windsurf"
+        "ide": "windsurf",
+        "latest_intent_type": "CHAT_INTENT_CODE_BLOCK_EXPLAIN"
       }
     },
     "type": "RECORD"
