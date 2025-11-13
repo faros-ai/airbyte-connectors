@@ -539,7 +539,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "code_generation",
+      "feature": "CHAT_INTENT_FUNCTION_REFACTOR",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -554,7 +554,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "24e01868871a7e6119a857944bac4d3c17504ce3e20107d0cdd7fa2e3f0e87b7",
+      "uid": "6059be55ef1bf485d5e7c448679a63727290a55479bb46550aa7c44c27ece1fa",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -567,7 +567,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "code_generation",
+      "feature": "CHAT_INTENT_FUNCTION_REFACTOR",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -582,7 +582,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "a0f47391cf83547e65a34cdf2ce711cca8cbefac3a953054bd567d7099c3b4c7",
+      "uid": "da3a3eb17418e2805d86bad98a6c26aed0b696be0210370f9d6268e3e8133497",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
@@ -616,7 +616,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "chat_refactoring",
+      "feature": "CHAT_INTENT_CODE_BLOCK_EXPLAIN",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -631,7 +631,7 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "c532ab37b89d0f42f91173e40bb716629e08d72a900a2bbfe3f5a5a2284030dd",
+      "uid": "aa2de89ccbc4e3650574323e2f332c53873329041626766446bc30f8be072645",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
@@ -644,7 +644,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "chat_refactoring",
+      "feature": "CHAT_INTENT_CODE_BLOCK_EXPLAIN",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -659,7 +659,7 @@ Array [
       "type": Object {
         "category": "Usages",
       },
-      "uid": "a801a1249ed15625b8ad1244f8605035e78127d2b59ca28cca80cae3525c57fa",
+      "uid": "be49ffd9b0c9fc602502d0b15b11b68e6e200d5eeac301d8fee4781173d3fbd5",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",

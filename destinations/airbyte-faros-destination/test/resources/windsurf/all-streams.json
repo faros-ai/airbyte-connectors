@@ -135,7 +135,7 @@
         "sum_num_chats_received": 25,
         "model_id": "gpt-4",
         "ide": "vscode",
-        "latest_intent_type": "code_generation"
+        "latest_intent_type": "CHAT_INTENT_FUNCTION_REFACTOR"
       }
     },
     "type": "RECORD"
@@ -151,7 +151,7 @@
         "sum_num_chats_received": 40,
         "model_id": "claude-3",
         "ide": "windsurf",
-        "latest_intent_type": "chat_refactoring"
+        "latest_intent_type": "CHAT_INTENT_CODE_BLOCK_EXPLAIN"
       }
     },
     "type": "RECORD"
