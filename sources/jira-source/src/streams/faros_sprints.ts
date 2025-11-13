@@ -42,6 +42,7 @@ export class FarosSprints extends StreamWithBoardSlices {
         yield* this.processBoardSprints(
           jira,
           toString(board.id),
+          board.type,
           updateRange,
           projectKey
         );
@@ -49,17 +50,18 @@ export class FarosSprints extends StreamWithBoardSlices {
     } else {
       const board = await jira.getBoard(boardId);
       if (!this.boardHasSprints(boardId, board.type)) return;
-      yield* this.processBoardSprints(jira, boardId, updateRange);
+      yield* this.processBoardSprints(jira, boardId, board.type, updateRange);
     }
   }
 
   private async *processBoardSprints(
     jira: Jira,
     boardId: string,
+    boardType: string,
     updateRange: [Date | undefined, Date | undefined],
     projectKey?: string
   ): AsyncGenerator<Sprint> {
-    for (const sprint of await jira.getSprints(boardId, updateRange)) {
+    for (const sprint of await jira.getSprints(boardId, updateRange, boardType)) {
       yield {
         id: sprint.id,
         originBoardId: sprint.originBoardId,
