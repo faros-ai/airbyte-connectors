@@ -338,6 +338,13 @@ export class Windsurf {
               field: 'chat_loc_used',
               aggregation_function: QueryAggregationFunction.SUM,
             },
+            {
+              field: 'latest_intent_type',
+            },
+            {
+              field: 'num_chats_received',
+              aggregation_function: QueryAggregationFunction.SUM,
+            },
           ],
           filters: [
             {
@@ -385,6 +392,10 @@ export class Windsurf {
           : undefined,
         model_id: item.model_id,
         ide: item.ide,
+        latest_intent_type: item.latest_intent_type,
+        sum_num_chats_received: item.sum_num_chats_received
+          ? parseInt(item.sum_num_chats_received, 10)
+          : undefined,
       };
     }
   }

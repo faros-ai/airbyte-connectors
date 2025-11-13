@@ -142,6 +142,7 @@ export interface CascadeRunsData {
 }
 
 export interface CascadeToolUsageData {
+  day: string;
   tool: string;
   count: string;
 }

@@ -32,10 +32,27 @@ export class ChatAnalytics extends WindsurfConverter {
           organization: this.streamName.source,
           userEmail: item.email,
           model: item.model_id,
-          feature: WindsurfFeature.Chat,
+          feature: item.latest_intent_type ?? WindsurfFeature.Chat,
           editor: item.ide,
         })
       );
+
+      // Add Usages metric for number of chats received
+      if (item.sum_num_chats_received > 0) {
+        res.push(
+          ...this.getAssistantMetric({
+            startedAt,
+            endedAt,
+            assistantMetricType: AssistantMetric.Usages,
+            value: item.sum_num_chats_received,
+            organization: this.streamName.source,
+            userEmail: item.email,
+            model: item.model_id,
+            feature: item.latest_intent_type ?? WindsurfFeature.Chat,
+            editor: item.ide,
+          })
+        );
+      }
 
       // Add UserToolUsage record for active usage
       res.push({

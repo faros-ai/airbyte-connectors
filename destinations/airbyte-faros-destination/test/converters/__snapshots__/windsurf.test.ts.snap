@@ -4,8 +4,8 @@ exports[`windsurf process records from all streams 1`] = `
 Array [
   "Processed 11 records",
   "Processed records by stream: {\\\\\\"mytestsource__windsurf__autocomplete_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_lines_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__cascade_runs_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__chat_analytics\\\\\\":2,\\\\\\"mytestsource__windsurf__pcw_analytics\\\\\\":1,\\\\\\"mytestsource__windsurf__user_page_analytics\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 30 records",
-  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":15,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 32 records",
+  "Would write records by model: {\\\\\\"vcs_AssistantMetric\\\\\\":17,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_User\\\\\\":2,\\\\\\"vcs_UserEmail\\\\\\":2,\\\\\\"vcs_UserTool\\\\\\":2,\\\\\\"vcs_UserToolUsage\\\\\\":8}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -539,7 +539,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "vscode",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Chat",
+      "feature": "code_generation",
       "model": "gpt-4",
       "organization": Object {
         "source": "Windsurf",
@@ -554,12 +554,40 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "20d8dfd62eb2cd8f96066abaa7c5b3f60cabb1c415b95fa8a76c97b9991146ec",
+      "uid": "24e01868871a7e6119a857944bac4d3c17504ce3e20107d0cdd7fa2e3f0e87b7",
       "user": Object {
         "source": "Windsurf",
         "uid": "user1@example.com",
       },
       "value": "150",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "vscode",
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "code_generation",
+      "model": "gpt-4",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "a0f47391cf83547e65a34cdf2ce711cca8cbefac3a953054bd567d7099c3b4c7",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user1@example.com",
+      },
+      "value": "25",
       "valueType": "Int",
     },
   },
@@ -588,7 +616,7 @@ Array [
     "vcs_AssistantMetric": Object {
       "editor": "windsurf",
       "endedAt": "2024-01-16T00:00:00.000Z",
-      "feature": "Chat",
+      "feature": "chat_refactoring",
       "model": "claude-3",
       "organization": Object {
         "source": "Windsurf",
@@ -603,12 +631,40 @@ Array [
       "type": Object {
         "category": "LinesAccepted",
       },
-      "uid": "9de7c49b3fa85d9248571b9c87e20c517f843dc62838d1fe58e10a7f438653c2",
+      "uid": "c532ab37b89d0f42f91173e40bb716629e08d72a900a2bbfe3f5a5a2284030dd",
       "user": Object {
         "source": "Windsurf",
         "uid": "user2@example.com",
       },
       "value": "200",
+      "valueType": "Int",
+    },
+  },
+  Object {
+    "vcs_AssistantMetric": Object {
+      "editor": "windsurf",
+      "endedAt": "2024-01-16T00:00:00.000Z",
+      "feature": "chat_refactoring",
+      "model": "claude-3",
+      "organization": Object {
+        "source": "Windsurf",
+        "uid": "Windsurf",
+      },
+      "source": "Windsurf",
+      "startedAt": "2024-01-15T00:00:00.000Z",
+      "tool": Object {
+        "category": "CodingAssistant",
+        "detail": "Windsurf",
+      },
+      "type": Object {
+        "category": "Usages",
+      },
+      "uid": "a801a1249ed15625b8ad1244f8605035e78127d2b59ca28cca80cae3525c57fa",
+      "user": Object {
+        "source": "Windsurf",
+        "uid": "user2@example.com",
+      },
+      "value": "40",
       "valueType": "Int",
     },
   },
