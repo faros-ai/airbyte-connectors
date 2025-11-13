@@ -332,14 +332,12 @@ export class Windsurf {
             {field: 'date', name: 'date'},
             {field: 'model_id', name: 'model_id'},
             {field: 'ide', name: 'ide'},
+            {field: 'latest_intent_type', name: 'latest_intent_type'},
           ],
           selections: [
             {
               field: 'chat_loc_used',
               aggregation_function: QueryAggregationFunction.SUM,
-            },
-            {
-              field: 'latest_intent_type',
             },
             {
               field: 'num_chats_received',
