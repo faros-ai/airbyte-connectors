@@ -1155,17 +1155,28 @@ export class Jira {
   @Memoize()
   async getSprints(
     boardId: string,
-    range?: [Date, Date]
+    range?: [Date, Date],
+    boardType?: string
   ): Promise<ReadonlyArray<AgileModels.Sprint>> {
-    const sprintsIter = this.useSprintsReverseSearch
-      ? this.getReverseSprintsIterator(boardId, range)
-      : this.getSprintsIterator(boardId, range);
-    const sprints: AgileModels.Sprint[] = [];
-    for await (const sprint of sprintsIter) {
-      sprints.push(sprint);
+    try {
+      const sprintsIter = this.useSprintsReverseSearch
+        ? this.getReverseSprintsIterator(boardId, range)
+        : this.getSprintsIterator(boardId, range);
+      const sprints: AgileModels.Sprint[] = [];
+      for await (const sprint of sprintsIter) {
+        sprints.push(sprint);
+      }
+      this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
+      return sprints;
+    } catch (err: any) {
+      if (err.response?.status === 400 || err.status === 400) {
+        this.logger?.info(
+          `Board ${boardId}${boardType ? ` with type '${boardType}'` : ''} does not support sprints`
+        );
+        return [];
+      }
+      throw err;
     }
-    this.logger?.debug(`Fetched ${sprints.length} sprints in board ${boardId}`);
-    return sprints;
   }
 
   private getSprintsIterator(
