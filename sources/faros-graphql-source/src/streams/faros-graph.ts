@@ -24,9 +24,6 @@ import {Nodes} from '../nodes';
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
 const DEFAULT_PAGE_SIZE = 100;
-// January 1, 2200
-const INFINITY = 7258118400000;
-const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();
 
 type GraphQLState = {
   [queryHashOrModelName: string]: {refreshedAtMillis: number};
@@ -48,6 +45,7 @@ export class FarosGraph extends AirbyteStreamBase {
   private nodes: Nodes;
   private readonly bucketId: number;
   private readonly bucketTotal: number;
+  private readonly syncStartTime: Date;
 
   constructor(
     readonly config: GraphQLConfig,
@@ -57,6 +55,7 @@ export class FarosGraph extends AirbyteStreamBase {
     super(logger);
     this.bucketId = config.bucket_id ?? DEFAULT_BUCKET_ID;
     this.bucketTotal = config.bucket_total ?? DEFAULT_BUCKET_TOTAL;
+    this.syncStartTime = new Date();
   }
 
   private queryPaths(query: string, schema: gql.GraphQLSchema): QueryPaths {
@@ -195,7 +194,7 @@ export class FarosGraph extends AirbyteStreamBase {
     // of syncMode if the query is incremental
     if (syncMode === SyncMode.INCREMENTAL || incremental) {
       args.set('from', new Date(refreshedAtMillis).toISOString());
-      args.set('to', INFINITY_ISO_STRING);
+      args.set('to', this.syncStartTime.toISOString());
     }
 
     const nodes: AsyncIterable<any> = this.faros.nodeIterable(
