@@ -131,9 +131,11 @@ export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
-// Copilot user usage daily reports are only available from this date onwards
 // https://docs.github.com/en/enterprise-cloud@latest/rest/copilot/copilot-metrics?apiVersion=2022-11-28#get-copilot-users-usage-metrics-for-a-specific-day
+// Daily reports are only available from this date onwards
 const COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE = '2025-10-10';
+// Daily reports are only retained for 1 year from the current date
+const COPILOT_USER_USAGE_DAILY_REPORTS_RETENTION_DAYS = 365;
 
 export abstract class GitHub {
   private static github: GitHub;
@@ -2058,8 +2060,9 @@ export abstract class GitHub {
     const reportStartDate = Utils.toDate(data.report_start_day).getTime();
     if (reportStartDate > cutoffDate) {
       // Backfill historical data using daily API
-      // Daily reports are only kept for 1 year
-      const oneYearAgo = DateTime.utc().startOf('day').minus({days: 365});
+      const oneYearAgo = DateTime.utc()
+        .startOf('day')
+        .minus({days: COPILOT_USER_USAGE_DAILY_REPORTS_RETENTION_DAYS});
       const dailyApiStartDate = Utils.toDate(
         COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE
       ).getTime();
