@@ -1100,7 +1100,7 @@ export abstract class GitHub {
       });
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
+        this.logger.info(`No GitHub Copilot usage found for org ${org}.`);
         return;
       }
       const latestDay = Math.max(
@@ -1155,7 +1155,7 @@ export abstract class GitHub {
       });
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(
+        this.logger.info(
           `No GitHub Copilot usage found for org ${org} - team ${teamSlug}.`
         );
         continue;
@@ -1812,10 +1812,26 @@ export abstract class GitHub {
   }
 
   async getEnterprise(enterprise: string): Promise<Enterprise> {
-    const res = await this.baseOctokit.graphql<EnterpriseQuery>(
-      ENTERPRISE_QUERY,
-      {slug: enterprise}
-    );
+    let res: EnterpriseQuery;
+    try {
+      res = await this.baseOctokit.graphql<EnterpriseQuery>(ENTERPRISE_QUERY, {
+        slug: enterprise,
+      });
+    } catch (error: any) {
+      if (
+        error.response?.errors?.some(
+          (e: any) => e.type === 'INSUFFICIENT_SCOPES'
+        )
+      ) {
+        this.logger.warn(
+          `Insufficient scopes to fetch metadata for enterprise ${enterprise}. Make sure read:enterprise scope is enabled.`
+        );
+        return {
+          slug: enterprise,
+        };
+      }
+      throw error;
+    }
     return res.enterprise;
   }
 
@@ -1934,7 +1950,7 @@ export abstract class GitHub {
       );
     const data = transformCopilotMetricsResponse(res.data);
     if (isNil(data) || isEmpty(data)) {
-      this.logger.warn(
+      this.logger.info(
         `No GitHub Copilot usage found for enterprise ${enterprise}.`
       );
       return;
@@ -1990,7 +2006,7 @@ export abstract class GitHub {
         );
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(
+        this.logger.info(
           `No GitHub Copilot usage found for enterprise ${enterprise} - team ${teamSlug}.`
         );
         continue;
@@ -2018,7 +2034,7 @@ export abstract class GitHub {
       );
     const data = res.data;
     if (isEmpty(data?.download_links)) {
-      this.logger.warn(
+      this.logger.info(
         `No GitHub Copilot user usage metrics found for enterprise ${enterprise}.`
       );
       return;
@@ -2060,16 +2076,31 @@ export abstract class GitHub {
       let currentDate = startDate;
       while (currentDate < endDate) {
         const day = currentDate.toISODate();
-        const dailyRes: OctokitResponse<CopilotUserUsageDailyResponse> =
-          await this.baseOctokit.request(
+        let dailyRes: OctokitResponse<CopilotUserUsageDailyResponse>;
+        try {
+          dailyRes = await this.baseOctokit.request(
             this.baseOctokit.enterpriseCopilotUserUsageByDay,
             {
               enterprise,
               day,
             }
           );
+        } catch (err: any) {
+          if (err.status >= 400 && err.status < 500) {
+            // probably no data for this day
+            if (err.message) {
+              this.logger.debug(err.message);
+            }
+          } else {
+            throw err;
+          }
+        }
 
-        if (!isEmpty(dailyRes.data?.download_links)) {
+        if (isEmpty(dailyRes?.data?.download_links)) {
+          this.logger.info(
+            `No GitHub Copilot user usage metrics found for enterprise ${enterprise} on ${day}.`
+          );
+        } else {
           // Process daily report without filtering (dates are already constrained)
           yield* this.processDownloadLinks(
             enterprise,
