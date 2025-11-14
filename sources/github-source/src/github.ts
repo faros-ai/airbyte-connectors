@@ -2067,14 +2067,16 @@ export abstract class GitHub {
       ).startOf('day');
       const endDate = DateTime.fromMillis(reportStartDate, {
         zone: 'utc',
-      }).startOf('day');
+      })
+        .startOf('day')
+        .minus({days: 1});
 
       this.logger.info(
-        `Backfilling GitHub Copilot user usage metrics for enterprise ${enterprise} from ${startDate.toISODate()} to ${endDate.toISODate()} (exclusive)`
+        `Backfilling GitHub Copilot user usage metrics for enterprise ${enterprise} from ${startDate.toISODate()} (reports only available since this date) to ${endDate.toISODate()}`
       );
 
       let currentDate = startDate;
-      while (currentDate < endDate) {
+      while (currentDate <= endDate) {
         const day = currentDate.toISODate();
         let dailyRes: OctokitResponse<CopilotUserUsageDailyResponse>;
         try {
@@ -2112,6 +2114,14 @@ export abstract class GitHub {
         currentDate = currentDate.plus({days: 1});
       }
     }
+
+    const newStartDate = DateTime.fromMillis(
+      Math.max(cutoffDate, reportStartDate.valueOf()),
+      {zone: 'utc'}
+    ).startOf('day');
+    this.logger.info(
+      `Processing GitHub Copilot user usage metrics for enterprise ${enterprise} from ${newStartDate.toISODate()} to ${data.report_end_day}`
+    );
 
     // Process the original 28-day report with filtering
     yield* this.processDownloadLinks(
