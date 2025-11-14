@@ -187,6 +187,42 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
       );
     }
 
+    // LinesSuggestedToAdd
+    if (data.loc_suggested_to_add_sum) {
+      res.push(
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.LinesSuggestedToAdd,
+          value: data.loc_suggested_to_add_sum,
+          organization,
+          userUid,
+          editor,
+          feature,
+          language,
+          model,
+        })
+      );
+    }
+
+    // LinesSuggestedToRemove
+    if (data.loc_suggested_to_delete_sum) {
+      res.push(
+        this.getAssistantMetric({
+          startedAt: day,
+          endedAt,
+          assistantMetricType: AssistantMetric.LinesSuggestedToRemove,
+          value: data.loc_suggested_to_delete_sum,
+          organization,
+          userUid,
+          editor,
+          feature,
+          language,
+          model,
+        })
+      );
+    }
+
     // SuggestionsAccepted
     if (data.code_acceptance_activity_count) {
       res.push(

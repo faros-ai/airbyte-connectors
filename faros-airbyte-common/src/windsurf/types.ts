@@ -45,6 +45,8 @@ export interface ChatAnalyticsItem {
   sum_chat_loc_used?: number;
   model_id?: string;
   ide?: string;
+  latest_intent_type?: string;
+  sum_num_chats_received?: number;
 }
 
 export interface PCWAnalyticsItem {

@@ -22,6 +22,14 @@
     "ide": {
       "type": ["string", "null"],
       "description": "IDE being used"
+    },
+    "latest_intent_type": {
+      "type": ["string", "null"],
+      "description": "Latest intent type of the chat session"
+    },
+    "sum_num_chats_received": {
+      "type": ["number", "null"],
+      "description": "Sum of number of chats received"
     }
   },
   "required": [

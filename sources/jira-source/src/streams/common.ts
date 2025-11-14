@@ -180,6 +180,14 @@ export abstract class StreamWithBoardSlices extends StreamBase {
       }
     }
   }
+
+  protected boardHasSprints(id: string, type: string): boolean {
+    if (type === 'kanban') {
+      this.logger.info(`Skipping fetching sprints for board ${id} with type '${type}'`);
+      return false;
+    }
+    return true;
+  }
 }
 
 export abstract class ProjectStreamSliceWithStaticCutoff extends StreamWithProjectSlices {

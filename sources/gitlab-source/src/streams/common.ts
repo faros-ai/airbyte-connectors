@@ -43,8 +43,10 @@ export const FullStreamNames = [
 export const CustomStreamNames = [
   'faros_commits',
   'faros_deployments',
+  'faros_epics',
   'faros_groups',
   'faros_issues',
+  'faros_iterations',
   'faros_jobs',
   'faros_merge_requests',
   'faros_merge_request_reviews',

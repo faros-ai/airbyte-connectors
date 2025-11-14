@@ -193,13 +193,14 @@ export class UsageEvents extends CursorConverter {
         );
       }
 
-      if (metric.totalCents > 0) {
+      const roundTotalCents = Math.round(metric.totalCents);
+      if (roundTotalCents > 0) {
         res.push(
           ...this.getAssistantMetric({
             startedAt,
             endedAt,
             assistantMetricType: AssistantMetric.Cost,
-            value: Math.round(metric.totalCents),
+            value: roundTotalCents,
             organization,
             userEmail: metric.userEmail,
             model: metric.model,
