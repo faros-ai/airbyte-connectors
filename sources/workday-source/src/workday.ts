@@ -4,12 +4,6 @@ import Papa from 'papaparse';
 import {VError} from 'verror';
 
 import {WorkdayConfig} from '.';
-import {
-  Person,
-  SupervisoryOrganization,
-  SupervisoryOrganizationOrgChart,
-  Worker,
-} from './types';
 
 const DEFAULT_PAGE_LIMIT = 20;
 
@@ -118,39 +112,6 @@ export class Workday {
     // and we cannot assume that any particular endpoint will be accessible.
   }
 
-  workers(limit = this.limit, maxPages = Infinity): AsyncGenerator<Worker> {
-    const baseURL = this.apiBaseUrl('v4');
-    return this.paginate(limit, maxPages, (limit, offset) =>
-      this.api.get('/workers', {
-        baseURL,
-        params: {limit, offset},
-      })
-    );
-  }
-
-  people(limit = this.limit, maxPages = Infinity): AsyncGenerator<Person> {
-    const baseURL = this.apiBaseUrl('v2');
-    return this.paginate(limit, maxPages, (limit, offset) =>
-      this.api.get('/people', {
-        baseURL,
-        params: {limit, offset},
-      })
-    );
-  }
-
-  orgs(
-    limit = this.limit,
-    maxPages = Infinity
-  ): AsyncGenerator<SupervisoryOrganization> {
-    const baseURL = this.apiBaseUrl('v4');
-    return this.paginate(limit, maxPages, (limit, offset) =>
-      this.api.get('/supervisoryOrganizations', {
-        baseURL,
-        params: {limit, offset},
-      })
-    );
-  }
-
   async *customReports(
     customReportName: string,
     reportFormat: string | null
@@ -185,28 +146,6 @@ export class Workday {
       throw new VError(
         `Invalid report format '${reportFormat}' for custom report '${customReportName}'`
       );
-    }
-  }
-
-  async *orgCharts(
-    limit = this.limit,
-    maxPages = Infinity
-  ): AsyncGenerator<SupervisoryOrganizationOrgChart> {
-    const baseURL = this.apiBaseUrl('v4');
-
-    for await (const org of this.orgs(limit, maxPages)) {
-      const orgCharts = this.paginate<SupervisoryOrganizationOrgChart>(
-        limit,
-        maxPages,
-        (limit, offset) =>
-          this.api.get(`/supervisoryOrganizations/${org.id}/orgChart`, {
-            baseURL,
-            params: {limit, offset},
-          })
-      );
-      for await (const orgChart of orgCharts) {
-        yield orgChart;
-      }
     }
   }
 
