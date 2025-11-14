@@ -131,6 +131,10 @@ export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
 
+// Copilot user usage daily reports are only available from this date onwards
+// https://docs.github.com/en/enterprise-cloud@latest/rest/copilot/copilot-metrics?apiVersion=2022-11-28#get-copilot-users-usage-metrics-for-a-specific-day
+const COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE = '2025-10-10';
+
 export abstract class GitHub {
   private static github: GitHub;
   protected readonly fetchPullRequestFiles: boolean;
@@ -2038,12 +2042,16 @@ export abstract class GitHub {
     const reportStartDate = Utils.toDate(data.report_start_day).getTime();
     if (reportStartDate > cutoffDate) {
       // Backfill historical data using daily API
-      // Daily reports are only available from 2025-10-10 onwards
-      const dailyApiStartDate = Utils.toDate('2025-10-10').getTime();
+      const dailyApiStartDate = Utils.toDate(
+        COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE
+      ).getTime();
       const startDate = DateTime.fromMillis(
-        Math.max(cutoffDate, dailyApiStartDate)
+        Math.max(cutoffDate, dailyApiStartDate),
+        {zone: 'utc'}
       ).startOf('day');
-      const endDate = DateTime.fromMillis(reportStartDate).startOf('day');
+      const endDate = DateTime.fromMillis(reportStartDate, {
+        zone: 'utc',
+      }).startOf('day');
 
       this.logger.info(
         `Backfilling GitHub Copilot user usage metrics for enterprise ${enterprise} from ${startDate.toISODate()} to ${endDate.toISODate()} (exclusive)`
