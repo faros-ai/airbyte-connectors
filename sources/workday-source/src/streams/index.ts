@@ -1,3 +1,1 @@
-import {Customreports} from './customreports';
-
-export {Customreports};
+export {Customreports} from './customreports';
