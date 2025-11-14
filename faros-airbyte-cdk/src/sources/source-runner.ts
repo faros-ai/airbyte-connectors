@@ -156,7 +156,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               // pre-connection check failed during a sync operation
               this.logger.write(
                 new AirbyteSourceStatusMessage(
-                  {data: state},
+                  {data: state ?? {}},
                   {
                     status: 'ERRORED',
                     message: {
