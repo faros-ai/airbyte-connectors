@@ -45,6 +45,7 @@ interface ProcessMetricsConfig {
 export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'vcs_AssistantMetric',
+    'vcs_UserToolUsage',
   ];
 
   async convert(
@@ -132,6 +133,10 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         feature: item.feature,
         model: item.model,
       });
+    }
+
+    if (this.usageDetected(data)) {
+      res.push(this.getUsageRecord(day, organization, userUid));
     }
 
     return res;
@@ -387,6 +392,49 @@ export class FarosEnterpriseCopilotUserUsage extends GitHubConverter {
         ...(feature && {feature}),
         ...(language && {language}),
         ...(model && {model}),
+      },
+    };
+  }
+
+  private usageDetected({
+    user_initiated_interaction_count,
+    code_generation_activity_count,
+    code_acceptance_activity_count,
+    loc_suggested_to_add_sum,
+    loc_suggested_to_delete_sum,
+    loc_added_sum,
+    loc_deleted_sum,
+    used_agent,
+    used_chat,
+  }: EnterpriseCopilotUserUsage): boolean {
+    return (
+      !!user_initiated_interaction_count ||
+      !!code_generation_activity_count ||
+      !!code_acceptance_activity_count ||
+      !!loc_suggested_to_add_sum ||
+      !!loc_suggested_to_delete_sum ||
+      !!loc_added_sum ||
+      !!loc_deleted_sum ||
+      !!used_agent ||
+      !!used_chat
+    );
+  }
+
+  private getUsageRecord(
+    day: Date,
+    organization: OrgKey,
+    userUid: string
+  ): DestinationRecord {
+    return {
+      model: 'vcs_UserToolUsage',
+      record: {
+        userTool: {
+          user: {uid: userUid, source: this.streamName.source},
+          organization: {uid: organization.uid, source: this.streamName.source},
+          tool: {category: VCSToolCategory.GitHubCopilot},
+        },
+        usedAt: day.toISOString(),
+        recordedAt: day.toISOString(),
       },
     };
   }
