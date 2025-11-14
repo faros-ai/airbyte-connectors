@@ -412,7 +412,11 @@ export type Artifact = {
   | 'updated_at'
 >;
 
-export type Enterprise = EnterpriseQuery['enterprise'];
+export type Enterprise = Pick<EnterpriseQuery['enterprise'], 'slug'> & {
+  name?: string;
+  url?: string;
+  createdAt?: string;
+};
 
 // https://docs.github.com/en/enterprise-cloud@latest/early-access/admin/articles/rest-api-endpoints-for-enterprise-teams#response-schemas
 export type EnterpriseTeamsResponse = {

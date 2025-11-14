@@ -1242,6 +1242,62 @@ describe('index', () => {
     });
   });
 
+  test('streams - enterprise copilot user usage with historical backfill', async () => {
+    await sourceReadTest({
+      source,
+      configOrPath: enterpriseConfig,
+      catalogOrPath: 'enterprise_copilot_user_usage/catalog.json',
+      stateOrPath: {
+        faros_enterprise_copilot_user_usage: {
+          github: {cutoff: new Date('2025-07-04').getTime()},
+        },
+      },
+      onBeforeReadResultConsumer: (res) => {
+        const mainResponse = readTestResourceAsJSON(
+          'enterprise_copilot_user_usage/response.json'
+        );
+        const dailyResponse = readTestResourceAsJSON(
+          'enterprise_copilot_user_usage/daily_response.json'
+        );
+
+        // Mock both endpoints
+        setupGitHubInstance(
+          {
+            enterpriseCopilotUserUsage: jest
+              .fn()
+              .mockReturnValue({data: mainResponse}),
+            enterpriseCopilotUserUsageByDay: jest
+              .fn()
+              .mockReturnValue({data: dailyResponse}),
+          },
+          logger,
+          enterpriseConfig
+        );
+
+        // Mock axios calls for download links - called in order: daily, then main
+        const dailyReport = readTestResourceFile(
+          'enterprise_copilot_user_usage/daily_copilot-usage-report.jsonl'
+        );
+        const mainReport = readTestResourceFile(
+          'enterprise_copilot_user_usage/copilot-usage-report.jsonl'
+        );
+
+        const mockAxiosInstance = {
+          get: jest
+            .fn()
+            .mockResolvedValueOnce({data: dailyReport})
+            .mockResolvedValueOnce({data: mainReport}),
+        };
+        jest
+          .spyOn(require('faros-js-client'), 'makeAxiosInstanceWithRetry')
+          .mockReturnValue(mockAxiosInstance);
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
+  });
+
   test('onBeforeRead with run_mode Custom streams without filtering', async () => {
     await customStreamsTest(
       source,

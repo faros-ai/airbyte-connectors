@@ -91,6 +91,7 @@ import {
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
+import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -98,6 +99,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
+  CopilotUserUsageDailyResponse,
   CopilotUserUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
@@ -128,6 +130,12 @@ export const DEFAULT_FETCH_PUBLIC_ORGANIZATIONS = false;
 
 // https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#usage-limits
 const MAX_WORKFLOW_RUN_DURATION_MS = 35 * 24 * 60 * 60 * 1000; // 35 days
+
+// https://docs.github.com/en/enterprise-cloud@latest/rest/copilot/copilot-metrics?apiVersion=2022-11-28#get-copilot-users-usage-metrics-for-a-specific-day
+// Daily reports are only available from this date onwards
+const COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE = '2025-10-10';
+// Daily reports are only retained for 1 year from the current date
+const COPILOT_USER_USAGE_DAILY_REPORTS_RETENTION_DAYS = 365;
 
 export abstract class GitHub {
   private static github: GitHub;
@@ -1094,7 +1102,7 @@ export abstract class GitHub {
       });
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(`No GitHub Copilot usage found for org ${org}.`);
+        this.logger.info(`No GitHub Copilot usage found for org ${org}.`);
         return;
       }
       const latestDay = Math.max(
@@ -1149,7 +1157,7 @@ export abstract class GitHub {
       });
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(
+        this.logger.info(
           `No GitHub Copilot usage found for org ${org} - team ${teamSlug}.`
         );
         continue;
@@ -1806,10 +1814,26 @@ export abstract class GitHub {
   }
 
   async getEnterprise(enterprise: string): Promise<Enterprise> {
-    const res = await this.baseOctokit.graphql<EnterpriseQuery>(
-      ENTERPRISE_QUERY,
-      {slug: enterprise}
-    );
+    let res: EnterpriseQuery;
+    try {
+      res = await this.baseOctokit.graphql<EnterpriseQuery>(ENTERPRISE_QUERY, {
+        slug: enterprise,
+      });
+    } catch (error: any) {
+      if (
+        error.response?.errors?.some(
+          (e: any) => e.type === 'INSUFFICIENT_SCOPES'
+        )
+      ) {
+        this.logger.warn(
+          `Insufficient scopes to fetch metadata for enterprise ${enterprise}. Make sure read:enterprise scope is enabled.`
+        );
+        return {
+          slug: enterprise,
+        };
+      }
+      throw error;
+    }
     return res.enterprise;
   }
 
@@ -1928,7 +1952,7 @@ export abstract class GitHub {
       );
     const data = transformCopilotMetricsResponse(res.data);
     if (isNil(data) || isEmpty(data)) {
-      this.logger.warn(
+      this.logger.info(
         `No GitHub Copilot usage found for enterprise ${enterprise}.`
       );
       return;
@@ -1984,7 +2008,7 @@ export abstract class GitHub {
         );
       const data = transformCopilotMetricsResponse(res.data);
       if (isNil(data) || isEmpty(data)) {
-        this.logger.warn(
+        this.logger.info(
           `No GitHub Copilot usage found for enterprise ${enterprise} - team ${teamSlug}.`
         );
         continue;
@@ -2011,8 +2035,8 @@ export abstract class GitHub {
         }
       );
     const data = res.data;
-    if (isNil(data) || isEmpty(data?.download_links)) {
-      this.logger.warn(
+    if (isEmpty(data?.download_links)) {
+      this.logger.info(
         `No GitHub Copilot user usage metrics found for enterprise ${enterprise}.`
       );
       return;
@@ -2032,12 +2056,99 @@ export abstract class GitHub {
       timeout: this.timeoutMs,
     });
 
-    for (const downloadLink of data.download_links) {
-      const jsonlReport = await axios.get<string>(downloadLink);
+    // Check if there's a gap between cutoffDate and report_start_day
+    const reportStartDate = Utils.toDate(data.report_start_day).getTime();
+    if (reportStartDate > cutoffDate) {
+      // Backfill historical data using daily API
+      const oneYearAgo = DateTime.utc()
+        .startOf('day')
+        .minus({days: COPILOT_USER_USAGE_DAILY_REPORTS_RETENTION_DAYS});
+      const dailyApiStartDate = Utils.toDate(
+        COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE
+      ).getTime();
+      const startDate = DateTime.fromMillis(
+        Math.max(cutoffDate, dailyApiStartDate, oneYearAgo.toMillis()),
+        {zone: 'utc'}
+      ).startOf('day');
+      const endDate = DateTime.fromMillis(reportStartDate, {
+        zone: 'utc',
+      })
+        .startOf('day')
+        .minus({days: 1});
+
+      this.logger.info(
+        `Backfilling GitHub Copilot user usage metrics for enterprise ${enterprise} from ${startDate.toISODate()} (reports only available since this date) to ${endDate.toISODate()}`
+      );
+
+      let currentDate = startDate;
+      while (currentDate <= endDate) {
+        const day = currentDate.toISODate();
+        let dailyRes: OctokitResponse<CopilotUserUsageDailyResponse>;
+        try {
+          dailyRes = await this.baseOctokit.request(
+            this.baseOctokit.enterpriseCopilotUserUsageByDay,
+            {
+              enterprise,
+              day,
+            }
+          );
+        } catch (err: any) {
+          if (err.status >= 400 && err.status < 500) {
+            // probably no data for this day
+            if (err.message) {
+              this.logger.debug(err.message);
+            }
+          } else {
+            throw err;
+          }
+        }
+
+        if (isEmpty(dailyRes?.data?.download_links)) {
+          this.logger.info(
+            `No GitHub Copilot user usage metrics found for enterprise ${enterprise} on ${day}.`
+          );
+        } else {
+          // Process daily report without filtering (dates are already constrained)
+          yield* this.processDownloadLinks(
+            enterprise,
+            dailyRes.data.download_links,
+            axios
+          );
+        }
+
+        currentDate = currentDate.plus({days: 1});
+      }
+    }
+
+    const newStartDate = DateTime.fromMillis(
+      Math.max(cutoffDate, reportStartDate.valueOf()),
+      {zone: 'utc'}
+    ).startOf('day');
+    this.logger.info(
+      `Processing GitHub Copilot user usage metrics for enterprise ${enterprise} from ${newStartDate.toISODate()} to ${data.report_end_day}`
+    );
+
+    // Process the original 28-day report with filtering
+    yield* this.processDownloadLinks(
+      enterprise,
+      data.download_links,
+      axios,
+      cutoffDate
+    );
+  }
+
+  private async *processDownloadLinks(
+    enterprise: string,
+    downloadLinks: string[],
+    axios: ReturnType<typeof makeAxiosInstanceWithRetry>,
+    cutoffDate: number = 0
+  ): AsyncGenerator<EnterpriseCopilotUserUsage> {
+    for (const downloadLink of downloadLinks) {
+      const jsonlReport = await axios.get(downloadLink);
       const parsedLines = jsonlReport.data
         .split('\n')
-        .filter((line) => line.trim() !== '')
-        .map((line) => JSON.parse(line));
+        .filter((line: string) => line.trim() !== '')
+        .map((line: string) => JSON.parse(line));
       for (const parsedLine of parsedLines) {
         // Filter out records that we've already processed based on the day field
         const recordDate = Utils.toDate(parsedLine.day).getTime();

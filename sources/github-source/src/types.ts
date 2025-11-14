@@ -133,3 +133,8 @@ export type CopilotUserUsageResponse = {
   report_start_day: string;
   report_end_day: string;
 };
+
+export type CopilotUserUsageDailyResponse = {
+  download_links: string[];
+  report_day: string;
+};
