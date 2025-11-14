@@ -9,7 +9,7 @@ import {
 } from 'faros-airbyte-cdk';
 import VError from 'verror';
 
-import {Customreports, OrgCharts, Orgs, People, Workers} from './streams';
+import {Customreports} from './streams';
 import {Workday} from './workday';
 
 export interface TokenCredentials {
@@ -60,10 +60,6 @@ export class WorkdaySource extends AirbyteSourceBase<WorkdayConfig> {
   }
   streams(config: WorkdayConfig): AirbyteStreamBase[] {
     return [
-      new OrgCharts(config, this.logger),
-      new Orgs(config, this.logger),
-      new People(config, this.logger),
-      new Workers(config, this.logger),
       new Customreports(config, this.logger),
     ];
   }

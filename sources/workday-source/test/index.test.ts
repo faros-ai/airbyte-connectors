@@ -70,9 +70,7 @@ describe('index', () => {
       return getWorkdayInstance(
         logger,
         {
-          get: jest.fn().mockResolvedValue({
-            data: readTestFileAsJSON('workers.json'),
-          }),
+          get: jest.fn().mockResolvedValue({data: {}}),
         } as any,
         20
       );
@@ -89,9 +87,7 @@ describe('index', () => {
       return getWorkdayInstance(
         logger,
         {
-          get: jest.fn().mockResolvedValue({
-            data: readTestFileAsJSON('workers.json'),
-          }),
+          get: jest.fn().mockResolvedValue({data: {}}),
         } as any,
         20
       );
@@ -103,83 +99,6 @@ describe('index', () => {
     ]);
   });
 
-  test('streams - orgs', async () => {
-    const fnListOrgs = jest.fn();
-    const expected = readTestFileAsJSON('orgs.json');
-    const limit = 2;
-
-    Workday.instance = jest.fn().mockImplementation(() => {
-      return getWorkdayInstance(
-        logger,
-        {
-          get: fnListOrgs.mockResolvedValue({data: expected}),
-        } as any,
-        limit
-      );
-    });
-
-    const source = new sut.WorkdaySource(logger);
-    const orgs = source.streams(config_tkn)[1];
-    const iter = orgs.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of iter) {
-      items.push(item);
-    }
-    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
-    expect(items).toStrictEqual([...expected.data, ...expected.data]);
-  });
-
-  test('streams - people', async () => {
-    const fnListOrgs = jest.fn();
-    const expected = readTestFileAsJSON('people.json');
-    const limit = 2;
-
-    Workday.instance = jest.fn().mockImplementation(() => {
-      return getWorkdayInstance(
-        logger,
-        {
-          get: fnListOrgs.mockResolvedValue({data: expected}),
-        } as any,
-        limit
-      );
-    });
-
-    const source = new sut.WorkdaySource(logger);
-    const people = source.streams(config_tkn)[2];
-    const iter = people.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of iter) {
-      items.push(item);
-    }
-    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
-    expect(items).toStrictEqual([...expected.data, ...expected.data]);
-  });
-
-  test('streams - workers', async () => {
-    const fnListOrgs = jest.fn();
-    const expected = readTestFileAsJSON('workers.json');
-    const limit = 2;
-
-    Workday.instance = jest.fn().mockImplementation(() => {
-      return getWorkdayInstance(
-        logger,
-        {
-          get: fnListOrgs.mockResolvedValue({data: expected}),
-        } as any,
-        limit
-      );
-    });
-
-    const source = new sut.WorkdaySource(logger);
-    const workers = source.streams(config_tkn)[3];
-    const iter = workers.readRecords(SyncMode.FULL_REFRESH);
-    const items = [];
-    for await (const item of iter) {
-      items.push(item);
-    }
-    expect(fnListOrgs).toHaveBeenCalledTimes(limit);
-    expect(items).toStrictEqual([...expected.data, ...expected.data]);
-  });
   test('streams - customReports (json)', async () => {
     const fnCustomreports = jest.fn();
     const expected = readTestFileAsJSON('customreports.json');
@@ -197,7 +116,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const workers = source.streams(config_unpw)[4];
+    const workers = source.streams(config_unpw)[0];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
@@ -225,7 +144,7 @@ describe('index', () => {
     });
 
     const source = new sut.WorkdaySource(logger);
-    const workers = source.streams(config_unpw_csv)[4];
+    const workers = source.streams(config_unpw_csv)[0];
     const iter = workers.readRecords(SyncMode.FULL_REFRESH);
     const items = [];
     for await (const item of iter) {
