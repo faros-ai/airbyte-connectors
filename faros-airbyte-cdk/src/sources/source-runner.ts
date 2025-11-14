@@ -11,6 +11,7 @@ import {
   AirbyteConfig,
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
+  AirbyteSourceStatusMessage,
   AirbyteState,
 } from '../protocol';
 import {ConnectorVersion, Runner} from '../runner';
@@ -150,6 +151,24 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
                 `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
               );
               this.logger.write(checkStatus);
+
+              // Send a status message to the destination in case this
+              // pre-connection check failed during a sync operation
+              this.logger.write(
+                new AirbyteSourceStatusMessage(
+                  {data: state},
+                  {
+                    status: 'ERRORED',
+                    message: {
+                      summary: checkStatus.connectionStatus.message,
+                      code: 0, // placeholder
+                      action: 'Check your source credentials', // placeholder
+                      type: 'ERROR',
+                    },
+                  }
+                )
+              );
+
               this.logger.flush();
               throw new Error(
                 `Pre-read connection check failed: ${checkStatus.connectionStatus.message}`
