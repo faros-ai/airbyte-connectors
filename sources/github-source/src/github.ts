@@ -2017,7 +2017,7 @@ export abstract class GitHub {
         }
       );
     const data = res.data;
-    if (isNil(data) || isEmpty(data?.download_links)) {
+    if (isEmpty(data?.download_links)) {
       this.logger.warn(
         `No GitHub Copilot user usage metrics found for enterprise ${enterprise}.`
       );
@@ -2060,33 +2060,22 @@ export abstract class GitHub {
       let currentDate = startDate;
       while (currentDate < endDate) {
         const day = currentDate.toISODate();
-        try {
-          const dailyRes: OctokitResponse<CopilotUserUsageDailyResponse> =
-            await this.baseOctokit.request(
-              this.baseOctokit.enterpriseCopilotUserUsageByDay,
-              {
-                enterprise,
-                day,
-              }
-            );
-
-          if (
-            !isNil(dailyRes.data) &&
-            !isEmpty(dailyRes.data?.download_links)
-          ) {
-            // Process daily report without filtering (dates are already constrained)
-            yield* this.processDownloadLinks(
+        const dailyRes: OctokitResponse<CopilotUserUsageDailyResponse> =
+          await this.baseOctokit.request(
+            this.baseOctokit.enterpriseCopilotUserUsageByDay,
+            {
               enterprise,
-              dailyRes.data.download_links,
-              axios,
-              0 // No filtering for backfill data
-            );
-          }
-        } catch (error: any) {
-          this.logger.warn(
-            `Failed to fetch daily Copilot usage report for ${day}: ${error.message}`
+              day,
+            }
           );
-          // Continue with next day even if one fails
+
+        if (!isEmpty(dailyRes.data?.download_links)) {
+          // Process daily report without filtering (dates are already constrained)
+          yield* this.processDownloadLinks(
+            enterprise,
+            dailyRes.data.download_links,
+            axios
+          );
         }
 
         currentDate = currentDate.plus({days: 1});
@@ -2106,19 +2095,18 @@ export abstract class GitHub {
     enterprise: string,
     downloadLinks: string[],
     axios: ReturnType<typeof makeAxiosInstanceWithRetry>,
-    cutoffDate: number
+    cutoffDate: number = 0
   ): AsyncGenerator<EnterpriseCopilotUserUsage> {
     for (const downloadLink of downloadLinks) {
       const jsonlReport = await axios.get(downloadLink);
       const parsedLines = jsonlReport.data
         .split('\n')
-        .filter((line) => line.trim() !== '')
-        .map((line) => JSON.parse(line));
+        .filter((line: string) => line.trim() !== '')
+        .map((line: string) => JSON.parse(line));
       for (const parsedLine of parsedLines) {
         // Filter out records that we've already processed based on the day field
-        // If cutoffDate is 0, don't filter (for backfill data)
         const recordDate = Utils.toDate(parsedLine.day).getTime();
-        if (cutoffDate === 0 || recordDate > cutoffDate) {
+        if (recordDate > cutoffDate) {
           yield {
             enterprise,
             ...parsedLine,
