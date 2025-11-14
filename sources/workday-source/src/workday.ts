@@ -114,13 +114,8 @@ export class Workday {
   }
 
   async checkConnection(): Promise<void> {
-    const res = [];
-    for await (const org of this.workers(1, 1)) {
-      res.push(org);
-    }
-    if (res.length <= 0) {
-      throw new VError('No workers were found');
-    }
+    // There is no general-purpose Workday endpoint for validating credentials
+    // and we cannot assume that any particular endpoint will be accessible.
   }
 
   workers(limit = this.limit, maxPages = Infinity): AsyncGenerator<Worker> {
