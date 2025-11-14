@@ -91,6 +91,7 @@ import {
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
 import {isEmpty, isNil, pick, toLower, toString} from 'lodash';
+import {DateTime} from 'luxon';
 import {Memoize} from 'typescript-memoize';
 import VError from 'verror';
 
@@ -98,6 +99,7 @@ import {ExtendedOctokit, makeOctokitClient} from './octokit';
 import {RunMode, StreamBase} from './streams/common';
 import {
   CopilotMetricsResponse,
+  CopilotUserUsageDailyResponse,
   CopilotUserUsageResponse,
   GitHubConfig,
   GraphQLErrorResponse,
@@ -2032,16 +2034,83 @@ export abstract class GitHub {
       timeout: this.timeoutMs,
     });
 
-    for (const downloadLink of data.download_links) {
-      const jsonlReport = await axios.get<string>(downloadLink);
+    // Check if there's a gap between cutoffDate and report_start_day
+    const reportStartDate = Utils.toDate(data.report_start_day).getTime();
+    if (reportStartDate > cutoffDate) {
+      // Backfill historical data using daily API
+      // Daily reports are only available from 2025-10-10 onwards
+      const dailyApiStartDate = Utils.toDate('2025-10-10').getTime();
+      const startDate = DateTime.fromMillis(
+        Math.max(cutoffDate, dailyApiStartDate)
+      ).startOf('day');
+      const endDate = DateTime.fromMillis(reportStartDate).startOf('day');
+
+      this.logger.info(
+        `Backfilling GitHub Copilot user usage metrics for enterprise ${enterprise} from ${startDate.toISODate()} to ${endDate.toISODate()} (exclusive)`
+      );
+
+      let currentDate = startDate;
+      while (currentDate < endDate) {
+        const day = currentDate.toISODate();
+        try {
+          const dailyRes: OctokitResponse<CopilotUserUsageDailyResponse> =
+            await this.baseOctokit.request(
+              this.baseOctokit.enterpriseCopilotUserUsageByDay,
+              {
+                enterprise,
+                day,
+              }
+            );
+
+          if (
+            !isNil(dailyRes.data) &&
+            !isEmpty(dailyRes.data?.download_links)
+          ) {
+            // Process daily report without filtering (dates are already constrained)
+            yield* this.processDownloadLinks(
+              enterprise,
+              dailyRes.data.download_links,
+              axios,
+              0 // No filtering for backfill data
+            );
+          }
+        } catch (error: any) {
+          this.logger.warn(
+            `Failed to fetch daily Copilot usage report for ${day}: ${error.message}`
+          );
+          // Continue with next day even if one fails
+        }
+
+        currentDate = currentDate.plus({days: 1});
+      }
+    }
+
+    // Process the original 28-day report with filtering
+    yield* this.processDownloadLinks(
+      enterprise,
+      data.download_links,
+      axios,
+      cutoffDate
+    );
+  }
+
+  private async *processDownloadLinks(
+    enterprise: string,
+    downloadLinks: string[],
+    axios: ReturnType<typeof makeAxiosInstanceWithRetry>,
+    cutoffDate: number
+  ): AsyncGenerator<EnterpriseCopilotUserUsage> {
+    for (const downloadLink of downloadLinks) {
+      const jsonlReport = await axios.get(downloadLink);
       const parsedLines = jsonlReport.data
         .split('\n')
         .filter((line) => line.trim() !== '')
         .map((line) => JSON.parse(line));
       for (const parsedLine of parsedLines) {
         // Filter out records that we've already processed based on the day field
+        // If cutoffDate is 0, don't filter (for backfill data)
         const recordDate = Utils.toDate(parsedLine.day).getTime();
-        if (recordDate > cutoffDate) {
+        if (cutoffDate === 0 || recordDate > cutoffDate) {
           yield {
             enterprise,
             ...parsedLine,
