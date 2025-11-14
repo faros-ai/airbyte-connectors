@@ -1253,11 +1253,11 @@ describe('index', () => {
         },
       },
       onBeforeReadResultConsumer: (res) => {
-        const dailyResponse = readTestResourceAsJSON(
-          'enterprise_copilot_user_usage/daily_response.json'
-        );
         const mainResponse = readTestResourceAsJSON(
           'enterprise_copilot_user_usage/response.json'
+        );
+        const dailyResponse = readTestResourceAsJSON(
+          'enterprise_copilot_user_usage/daily_response.json'
         );
 
         // Mock both endpoints
@@ -1274,7 +1274,7 @@ describe('index', () => {
           enterpriseConfig
         );
 
-        // Mock axios calls for both daily and main reports
+        // Mock axios calls for download links - called in order: daily, then main
         const dailyReport = readTestResourceFile(
           'enterprise_copilot_user_usage/daily_copilot-usage-report.jsonl'
         );
