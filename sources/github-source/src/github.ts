@@ -2058,11 +2058,13 @@ export abstract class GitHub {
     const reportStartDate = Utils.toDate(data.report_start_day).getTime();
     if (reportStartDate > cutoffDate) {
       // Backfill historical data using daily API
+      // Daily reports are only kept for 1 year
+      const oneYearAgo = DateTime.utc().startOf('day').minus({days: 365});
       const dailyApiStartDate = Utils.toDate(
         COPILOT_USER_USAGE_DAILY_REPORTS_START_DATE
       ).getTime();
       const startDate = DateTime.fromMillis(
-        Math.max(cutoffDate, dailyApiStartDate),
+        Math.max(cutoffDate, dailyApiStartDate, oneYearAgo.toMillis()),
         {zone: 'utc'}
       ).startOf('day');
       const endDate = DateTime.fromMillis(reportStartDate, {
