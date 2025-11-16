@@ -23,7 +23,7 @@ import {Nodes} from '../nodes';
 
 export const DEFAULT_BUCKET_ID = 1;
 export const DEFAULT_BUCKET_TOTAL = 1;
-const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = 1000;
 // January 1, 2200
 const INFINITY = 7258118400000;
 const INFINITY_ISO_STRING = new Date(INFINITY).toISOString();

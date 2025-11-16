@@ -55,7 +55,7 @@
         "type": "integer",
         "title": "Page Size",
         "description": "Page size to use when paginating through query results.",
-        "default": 100
+        "default": 1000
       },
       "result_model": {
         "order": 7,
