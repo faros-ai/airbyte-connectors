@@ -1182,7 +1182,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       const processingError: SyncMessage = {
         summary: e.message ?? JSON.stringify(e),
         code: 0,
-        action: 'Contact Faros support',
+        action: 'Contact Faros Support',
         type: 'ERROR',
       };
       this.syncErrors.dst.push(processingError);
