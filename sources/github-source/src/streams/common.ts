@@ -30,6 +30,7 @@ export type StreamState = {
 
 export enum RunMode {
   EnterpriseCopilotOnly = 'EnterpriseCopilotOnly',
+  EnterpriseCopilotUserUsageOnly = 'EnterpriseCopilotUserUsageOnly',
   CopilotEvaluationApp = 'CopilotEvaluationApp',
   CopilotEvaluation = 'CopilotEvaluation',
   Minimum = 'Minimum',
@@ -43,6 +44,12 @@ export const EnterpriseCopilotOnlyStreamNames = [
   'faros_enterprise_copilot_usage',
   'faros_enterprise_teams',
   'faros_enterprise_team_memberships',
+];
+
+export const EnterpriseCopilotUserUsageOnlyStreamNames = [
+  'faros_enterprises',
+  'faros_enterprise_copilot_seats',
+  'faros_enterprise_copilot_user_usage',
 ];
 
 export const CopilotEvaluationAppStreamNames = [
@@ -120,6 +127,8 @@ export const RunModeStreams: {
   [key in RunMode]: string[];
 } = {
   [RunMode.EnterpriseCopilotOnly]: EnterpriseCopilotOnlyStreamNames,
+  [RunMode.EnterpriseCopilotUserUsageOnly]:
+    EnterpriseCopilotUserUsageOnlyStreamNames,
   [RunMode.CopilotEvaluationApp]: CopilotEvaluationAppStreamNames,
   [RunMode.CopilotEvaluation]: CopilotEvaluationStreamNames,
   [RunMode.Minimum]: MinimumStreamNames,
