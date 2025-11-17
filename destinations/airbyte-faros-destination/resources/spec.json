@@ -182,6 +182,13 @@
         "title": "GraphQL page size for reset queries",
         "description": "Maximum number of record ids to query/delete in single GraphQL statement.",
         "default": 500
+      },
+      "debug": {
+        "order": 18,
+        "type": "boolean",
+        "title": "Debug",
+        "description": "Enable debug mode",
+        "default": false
       }
     }
   }

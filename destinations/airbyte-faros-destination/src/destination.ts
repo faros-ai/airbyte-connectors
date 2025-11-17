@@ -7,6 +7,7 @@ import {
   AirbyteConnectionStatus,
   AirbyteConnectionStatusMessage,
   AirbyteDestination,
+  AirbyteLogLevel,
   AirbyteMessageType,
   AirbyteRecord,
   AirbyteSourceConfigMessage,
@@ -136,6 +137,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   async check(
     config: DestinationConfig
   ): Promise<AirbyteConnectionStatusMessage> {
+    this.adjustLoggerLevel(config);
     try {
       await this.init(config);
       if (this.onConfigCheck) {
@@ -506,6 +508,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stdin: NodeJS.ReadStream,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
+    this.adjustLoggerLevel(config);
     const startedAt = new Date();
     const origin = this.getOrigin(config, catalog);
     const accountId = config.faros_source_id || origin;
@@ -1388,6 +1391,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       );
       this.addToPath(depsByStream, dep, []);
     });
+  }
+
+  private adjustLoggerLevel(config: DestinationConfig): void {
+    if (config.debug) {
+      this.logger.level = AirbyteLogLevel.DEBUG;
+    }
   }
 }
 
