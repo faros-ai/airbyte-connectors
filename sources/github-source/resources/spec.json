@@ -162,6 +162,7 @@
         "default": "Full",
         "enum": [
           "EnterpriseCopilotOnly",
+          "EnterpriseCopilotUserUsageOnly",
           "CopilotEvaluationApp",
           "CopilotEvaluation",
           "Minimum",
