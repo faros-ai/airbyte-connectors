@@ -2144,7 +2144,9 @@ export abstract class GitHub {
     cutoffDate: number = 0
   ): AsyncGenerator<EnterpriseCopilotUserUsage> {
     for (const downloadLink of downloadLinks) {
-      const jsonlReport = await axios.get(downloadLink);
+      const jsonlReport = await axios.get(downloadLink, {
+        responseType: 'text',
+      });
       const parsedLines = jsonlReport.data
         .split('\n')
         .filter((line: string) => line.trim() !== '')
