@@ -48,15 +48,15 @@ export class FarosUsers extends StreamBase {
           `Failed to fetch members for group ${group}, skipping: ${err.message}`
         );
       }
-      for (const project of await this.groupFilter.getProjects(group)) {
+      for await (const project of this.getProjectsToSync(group)) {
         this.logger.info(
-          `Fetching users for project ${project.repo.path_with_namespace}`
+          `Fetching users for project ${project.path_with_namespace}`
         );
         try {
-          await gitlab.fetchProjectMembers(project.repo.path_with_namespace);
+          await gitlab.fetchProjectMembers(project.path_with_namespace);
         } catch (err: any) {
           this.logger.warn(
-            `Failed to fetch members for project ${project.repo.path_with_namespace}, skipping: ${err.message}`
+            `Failed to fetch members for project ${project.path_with_namespace}, skipping: ${err.message}`
           );
         }
       }

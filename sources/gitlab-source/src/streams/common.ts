@@ -101,6 +101,24 @@ export abstract class StreamBase extends AirbyteStreamBase {
   static groupProjectKey(group: string, projectPath: string): string {
     return toLower(`${group}/${projectPath}`);
   }
+
+  protected async *getProjectsToSync(
+    group: string
+  ): AsyncGenerator<FarosProjectOutput> {
+    for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
+      group
+    )) {
+      if (repo.empty_repo) {
+        this.logger.warn(
+          `Skipping project ${repo.path_with_namespace} for group ${group} since it has an empty source repository`
+        );
+        continue;
+      }
+      if (syncRepoData) {
+        yield repo;
+      }
+    }
+  }
 }
 
 export abstract class StreamWithGroupSlices extends StreamBase {
@@ -114,25 +132,15 @@ export abstract class StreamWithGroupSlices extends StreamBase {
 export abstract class StreamWithProjectSlices extends StreamBase {
   async *streamSlices(): AsyncGenerator<ProjectStreamSlice> {
     for (const group_id of await this.groupFilter.getGroups()) {
-      for (const {repo, syncRepoData} of await this.groupFilter.getProjects(
-        group_id
-      )) {
-        if (repo.empty_repo) {
-          this.logger.warn(
-            `Skipping project ${repo.path_with_namespace} for group ${group_id} since it has an empty source repository`
-          );
-          continue;
-        }
-        if (syncRepoData) {
-          yield {
-            ...pick(repo, [
-              'default_branch',
-              'group_id',
-              'path',
-              'path_with_namespace',
-            ]),
-          };
-        }
+      for await (const repo of this.getProjectsToSync(group_id)) {
+        yield {
+          ...pick(repo, [
+            'default_branch',
+            'group_id',
+            'path',
+            'path_with_namespace',
+          ]),
+        };
       }
     }
   }
