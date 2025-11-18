@@ -91,6 +91,11 @@ interface SourceVersion {
 
 /** Faros destination implementation. */
 export class FarosDestination extends AirbyteDestination<DestinationConfig> {
+  private syncErrors: SyncErrors = {
+    src: {fatal: [], nonFatal: [], warnings: []},
+    dst: [],
+  };
+
   constructor(
     private readonly logger: FarosDestinationLogger,
     private specOverride: AirbyteSpec = undefined,
@@ -508,6 +513,12 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     stdin: NodeJS.ReadStream,
     dryRun: boolean
   ): AsyncGenerator<AirbyteStateMessage> {
+    // Reset sync errors for each write operation
+    this.syncErrors = {
+      src: {fatal: [], nonFatal: [], warnings: []},
+      dst: [],
+    };
+
     this.adjustLoggerLevel(config);
     const startedAt = new Date();
     const origin = this.getOrigin(config, catalog);
@@ -567,10 +578,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
     let latestStateMessage: AirbyteStateMessage = undefined;
     const stats = new WriteStats();
-    const syncErrors: SyncErrors = {
-      src: {fatal: [], nonFatal: [], warnings: []},
-      dst: [],
-    };
     const sourceVersion: SourceVersion = {};
 
     // Avoid creating a new revision and writer when dry run or community edition is enabled
@@ -604,7 +611,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
           streams,
           converterDependencies,
           stats,
-          syncErrors,
           recWriter
         )) {
           latestStateMessage = stateMessage;
@@ -654,7 +660,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             streams,
             converterDependencies,
             stats,
-            syncErrors,
             writer,
             logFiles,
             async (isResetSync: boolean) =>
@@ -694,7 +699,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
             action: 'Contact Faros Support', // placeholder
             type: 'ERROR',
           };
-          syncErrors.dst.push(destinationError);
+          this.syncErrors.dst.push(destinationError);
           throw error;
         } finally {
           if (sync?.syncId) {
@@ -704,15 +709,15 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               {
                 endedAt: new Date(),
                 status:
-                  syncErrors.src.fatal.length || syncErrors.dst.length
+                  this.syncErrors.src.fatal.length || this.syncErrors.dst.length
                     ? 'error'
                     : 'success',
                 metrics: stats.asObject(),
-                errors: syncErrors.src.fatal.concat(
-                  syncErrors.src.nonFatal,
-                  syncErrors.dst
+                errors: this.syncErrors.src.fatal.concat(
+                  this.syncErrors.src.nonFatal,
+                  this.syncErrors.dst
                 ),
-                warnings: syncErrors.src.warnings,
+                warnings: this.syncErrors.src.warnings,
                 sourceVersion: sourceVersion.version,
                 destinationVersion: ConnectorVersion,
               }
@@ -740,8 +745,8 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       }
 
       if (config.fail_on_source_error) {
-        const sourceErrors = syncErrors.src.fatal.concat(
-          syncErrors.src.nonFatal
+        const sourceErrors = this.syncErrors.src.fatal.concat(
+          this.syncErrors.src.nonFatal
         );
         if (sourceErrors.length) {
           throw new VError(
@@ -755,11 +760,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       stats.log(this.logger, dryRunEnabled ? 'Would write' : 'Wrote');
 
       // Log warnings
-      if (syncErrors.src.warnings.length) {
+      if (this.syncErrors.src.warnings.length) {
         this.logger.warn(
-          `Encountered ${syncErrors.src.warnings.length} source warning(s)`
+          `Encountered ${this.syncErrors.src.warnings.length} source warning(s)`
         );
-        for (const warning of syncErrors.src.warnings) {
+        for (const warning of this.syncErrors.src.warnings) {
           this.logger.warn(`Warning: ${warning.summary}`);
         }
       }
@@ -783,7 +788,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     streams: Dictionary<AirbyteConfiguredStream>,
     converterDependencies: Set<string>,
     stats: WriteStats,
-    syncErrors: SyncErrors,
     writer?: Writable | GraphQLWriter,
     logFiles?: LogFiles,
     resetData?: (isResetSync: boolean) => Promise<void>,
@@ -827,11 +831,11 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
               const syncMessage = getSyncMessage(msg.sourceStatus);
               if (syncMessage) {
                 if (status === 'ERRORED') {
-                  syncErrors.src.fatal.push(syncMessage);
+                  this.syncErrors.src.fatal.push(syncMessage);
                 } else if (syncMessage.type === 'ERROR') {
-                  syncErrors.src.nonFatal.push(syncMessage);
+                  this.syncErrors.src.nonFatal.push(syncMessage);
                 } else {
-                  syncErrors.src.warnings.push(syncMessage);
+                  this.syncErrors.src.warnings.push(syncMessage);
                 }
               }
               const streamName = msg.streamStatus?.name;
@@ -845,7 +849,7 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
                       `No records emitted for ${streamName} stream.` +
                         ' Will not reset non-incremental models.'
                     );
-                    syncErrors.src.warnings.push(
+                    this.syncErrors.src.warnings.push(
                       SYNC_MESSAGE_TABLE.NO_RECORDS_FOR_STREAM(
                         streamName,
                         sourceModeOrType || 'source'
@@ -1024,10 +1028,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       if (
         sourceConfigReceived &&
         !sourceSucceeded &&
-        !syncErrors.src.fatal.length &&
-        !syncErrors.src.nonFatal.length
+        !this.syncErrors.src.fatal.length &&
+        !this.syncErrors.src.nonFatal.length
       ) {
-        syncErrors.src.fatal.push({
+        this.syncErrors.src.fatal.push({
           summary:
             'No success status received from Faros Source. It may have crashed before it could report an error.',
           code: 0, // placeholder
@@ -1038,7 +1042,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
 
       if (
         this.shouldResetData({
-          syncErrors,
           streamStatusReceived,
           skipSourceSuccessCheck: config.skip_source_success_check,
           isResetSync,
@@ -1084,7 +1087,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
   }
 
   private shouldResetData(syncInfo: {
-    syncErrors: SyncErrors;
     streamStatusReceived: boolean;
     skipSourceSuccessCheck: boolean;
     isResetSync: boolean;
@@ -1094,7 +1096,6 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
     sourceModeOrType: string;
   }): boolean {
     const {
-      syncErrors,
       streamStatusReceived,
       skipSourceSuccessCheck,
       isResetSync,
@@ -1114,10 +1115,10 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
       return false;
     }
     if (streamStatusReceived) {
-      if (syncErrors.dst.length) {
+      if (this.syncErrors.dst.length) {
         this.logger.warn(
           'Skipping reset of non-incremental models for successful streams due to destination errors:' +
-            ` ${syncErrors.dst.map((e) => e.summary).join('; ')}`
+            ` ${this.syncErrors.dst.map((e) => e.summary).join('; ')}`
         );
         return false;
       } else {
@@ -1127,9 +1128,9 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         return true;
       }
     }
-    const allSyncErrors = syncErrors.src.fatal.concat(
-      syncErrors.src.nonFatal,
-      syncErrors.dst
+    const allSyncErrors = this.syncErrors.src.fatal.concat(
+      this.syncErrors.src.nonFatal,
+      this.syncErrors.dst
     );
     if (allSyncErrors.length) {
       const errorSummary = allSyncErrors.map((e) => e.summary).join('; ');
@@ -1176,6 +1177,16 @@ export class FarosDestination extends AirbyteDestination<DestinationConfig> {
         `Error processing input: ${e.message ?? JSON.stringify(e)}`,
         e.stack
       );
+
+      // Add processing error to sync errors for proper tracking
+      const processingError: SyncMessage = {
+        summary: e.message ?? JSON.stringify(e),
+        code: 0,
+        action: 'Contact Faros Support',
+        type: 'ERROR',
+      };
+      this.syncErrors.dst.push(processingError);
+
       switch (this.invalidRecordStrategy) {
         case InvalidRecordStrategy.SKIP:
           stats.recordsSkipped++;
