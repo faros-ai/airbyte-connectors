@@ -222,6 +222,7 @@ export class ServiceNow {
       query = this.config.sync_all_users
         ? 'active!=null'
         : 'last_login_time!=NULL^last_login_time!=""';
+      this.logger.info(`Syncing ${this.config.sync_all_users ? 'all active users' : 'users who have logged in'}`);
     }
 
     do {
