@@ -56,8 +56,6 @@ export class Executions extends AirbyteStreamBase {
     currentStreamState: ExecutionState,
     latestRecord: ExecutionNode
   ): ExecutionState {
-    console.log({});
-
     const deploymentStatus = this.toDeploymentStatus(latestRecord.status);
     const isRunning = ['Running', 'Queued'].includes(deploymentStatus.category);
     const lastEndedAt = currentStreamState?.lastEndedAt ?? 0;
