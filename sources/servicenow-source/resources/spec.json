@@ -52,6 +52,13 @@
         "title": "Timeout",
         "description": "client timeout in milliseconds, used when retrieving data from ServiceNow",
         "default": 30000
+      },
+      "sync_all_users": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Sync All Users",
+        "description": "When enabled, syncs all active users. When disabled (default), syncs only users who have logged in at least once",
+        "default": false
       }
     }
   }
