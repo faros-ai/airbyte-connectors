@@ -24,6 +24,7 @@ export interface ServiceNowConfig {
   readonly cutoff_days?: number;
   readonly page_size?: number;
   readonly timeout?: number;
+  readonly sync_all_users?: boolean;
 }
 
 export interface ServiceNowClient {
@@ -211,10 +212,19 @@ export class ServiceNow {
     let hasNext;
     let offset = 0;
     let query;
+
     if (sys_updated_on) {
+      // Incremental sync: filter by sys_updated_on only
       this.logger.info(`Syncing users updated since: ${sys_updated_on}`);
       query = `sys_updated_on>=${sys_updated_on}`;
+    } else {
+      // Full sync: apply user filter to avoid ServiceNow safety limits
+      query = this.config.sync_all_users
+        ? 'active!=null'
+        : 'last_login_time!=NULL^last_login_time!=""';
+      this.logger.info(`Syncing ${this.config.sync_all_users ? 'all active users' : 'users who have logged in'}`);
     }
+
     do {
       hasNext = false;
       let users: User[];
