@@ -251,8 +251,7 @@
       "fetch_public_groups": {
         "type": "boolean",
         "title": "Fetch Public Groups",
-        "description": "Fetch public groups",
-        "default": false,
+        "description": "When enabled, fetches all accessible groups. For GitLab Cloud, this includes all public groups; specify groups in the configuration to limit scope. When disabled or unset, the parameter is omitted, allowing GitLab to use its instance defaults (typically member groups for regular users, all groups for administrators). The owned and min_access_level attributes take precedence.",
         "order": 25
       }
     }

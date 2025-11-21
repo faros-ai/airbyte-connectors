@@ -149,7 +149,7 @@ export class GitLab {
       (options) =>
         this.client.Groups.all({
           ...options,
-          allAvailable: this.fetchPublicGroups,
+          ...(this.fetchPublicGroups && {allAvailable: true}),
         }),
       {orderBy: 'id', sort: 'asc'}
     )) {
