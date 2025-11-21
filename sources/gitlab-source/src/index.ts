@@ -146,7 +146,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
     const gitlab = await GitLab.instance(config, this.logger);
     const visibleGroups = await gitlab.getGroups();
     this.logger.debug(
-      `Fetched ${visibleGroups.length} groups before applying filters: ${visibleGroups.map((g) => `${g.id} (${g.name})`).join(', ')}`
+      `Fetched ${visibleGroups.length} groups before applying filters: ` +
+        `${visibleGroups.map((g) => g.id + ' - ' + g.name).join(', ')}`
     );
 
     // Build parent-child relationships map
@@ -190,7 +191,9 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       // excluded ones)
       const shouldSync = groups.size === 0;
       this.logger.debug(
-        `Group ${groupId} is ${shouldSync ? 'included' : 'excluded'}: no ancestor found in either groups or excluded_groups, and the groups list is ${shouldSync ? 'empty' : 'not empty'}.`
+        `Group ${groupId} is ${shouldSync ? 'included' : 'excluded'}: no ` +
+          `ancestor found in either groups or excluded_groups, and the ` +
+          `groups list is ${shouldSync ? 'empty' : 'not empty'}.`
       );
       return shouldSync;
     };
@@ -203,7 +206,8 @@ export class GitLabSource extends AirbyteSourceBase<GitLabConfig> {
       );
     }
     this.logger.debug(
-      `Final groups after applying filters: ${groupsToSync.length} groups (${filteredGroups.map((g) => `${g.id} (${g.name})`).join(', ')})`
+      `Got ${groupsToSync.length} groups after applying filters: ` +
+        `${filteredGroups.map((g) => g.id + ' - ' + g.name).join(', ')}`
     );
 
     return {
