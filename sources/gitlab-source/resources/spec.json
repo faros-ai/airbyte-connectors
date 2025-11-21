@@ -251,8 +251,7 @@
       "fetch_public_groups": {
         "type": "boolean",
         "title": "Fetch Public Groups",
-        "description": "Fetch public groups",
-        "default": false,
+        "description": "When true, fetches all available groups. When false, returns only groups where the user is a member. When unset defaults to false for users, true for administrators. The owned and min_access_level attributes take precedence.",
         "order": 25
       }
     }
