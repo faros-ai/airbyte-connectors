@@ -46,7 +46,19 @@ export class AzureTfvc extends AzureDevOps {
         1 // top - only need 1 to verify access
       );
     } catch (err: any) {
-      throw new VError(err, 'Please verify your access token and TFVC permissions');
+      let errorMsg = 'Please verify your access token and TFVC permissions';
+      if (err?.error_code || err?.error_info) {
+        const parts: string[] = [];
+        if (err.error_code) parts.push('code=' + err.error_code);
+        if (err.error_info) parts.push('info=' + err.error_info);
+        errorMsg += ': ' + parts.join(' ');
+      } else {
+        const wrapped = wrapApiError(err);
+        if (wrapped?.message && wrapped.message !== 'Unknown error') {
+          errorMsg += ': ' + wrapped.message;
+        }
+      }
+      throw new VError(err, errorMsg);
     }
   }
 
