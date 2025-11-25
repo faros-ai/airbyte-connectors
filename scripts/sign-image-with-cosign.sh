@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+#
+# Sign Docker images with Cosign using GitHub OIDC
+#
+# Usage: sign-image-with-cosign.sh <image:tag>
+#   image:tag - Docker image reference with tag (e.g., farosai/airbyte-xyz:1.0.0)
+#
+# Required environment variables:
+#   GITHUB_REPOSITORY - GitHub repository name (format: owner/repo)
+#
+# Prerequisites:
+#   - cosign must be installed
+#   - skopeo must be installed
+#   - Image must exist in docker.io registry
+#
 set -euo pipefail
 
 if [ -z "${1:-}" ]; then
