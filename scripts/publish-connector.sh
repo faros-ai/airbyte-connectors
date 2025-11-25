@@ -38,6 +38,5 @@ if [ "$?" == 1 ]; then
     --label "io.airbyte.name=$image"
   docker push $latest_tag
   docker push $version_tag
+  "${SCRIPT_DIR}/sign-image-with-cosign.sh" "$version_tag"
 fi
-
-"${SCRIPT_DIR}/sign-image-with-cosign.sh" "$version_tag"

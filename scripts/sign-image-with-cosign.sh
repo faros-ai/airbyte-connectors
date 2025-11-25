@@ -34,7 +34,7 @@ if [ -z "${DIGEST}" ]; then
   exit 1
 fi
 
-IMAGE_REF="${IMAGE_WITH_TAG}@sha256:${DIGEST}"
+IMAGE_REF="${IMAGE}@sha256:${DIGEST}"
 echo "Signing image: ${IMAGE_REF}"
 cosign sign --yes "${IMAGE_REF}"
 
@@ -45,7 +45,7 @@ SLEEP_SECONDS=5
 while true; do
   sleep "${SLEEP_SECONDS}"
   if [ "${ATTEMPT}" -gt "${MAX_ATTEMPTS}" ]; then
-    echo "Error: Verification failed after ${ATTEMPT} attempts for ${IMAGE_REF}" >&2
+    echo "Error: Verification failed after ${MAX_ATTEMPTS} attempts for ${IMAGE_REF}" >&2
     exit 1
   fi
 
