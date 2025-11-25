@@ -12,11 +12,6 @@ if [[ "${IMAGE_WITH_TAG}" != *:* ]]; then
   exit 1
 fi
 
-if [ -z "${GITHUB_REPOSITORY:-}" ]; then
-  echo "Error: GITHUB_REPOSITORY env var is required" >&2
-  exit 1
-fi
-
 IMAGE="docker.io/${IMAGE_WITH_TAG}"
 echo "Inspecting remote image: ${IMAGE}"
 DIGEST=$(skopeo inspect --raw "docker://${IMAGE}" | sha256sum | awk '{print $1}')
@@ -41,7 +36,7 @@ while true; do
   fi
 
   if cosign verify "${IMAGE_REF}" \
-    --certificate-identity-regexp="https://github.com/${GITHUB_REPOSITORY}/.*" \
+    --certificate-identity-regexp="https://github.com/faros-ai/airbyte-connectors/.*" \
     --certificate-oidc-issuer="https://token.actions.githubusercontent.com"; then
     echo "Verification succeeded for ${IMAGE_REF}"
     break
