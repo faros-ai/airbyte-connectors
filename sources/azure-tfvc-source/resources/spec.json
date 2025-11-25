@@ -1,0 +1,97 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Azure TFVC Spec",
+    "type": "object",
+    "required": [
+      "instance",
+      "access_token",
+      "organization"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "instance": {
+        "title": "Instance Type",
+        "description": "Choose how your Azure instance is setup",
+        "type": "object",
+        "order": 0,
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "cloud",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "cloud",
+                "order": 0
+              }
+            },
+            "required": ["type"]
+          },
+          {
+            "type": "object",
+            "title": "server",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "server",
+                "order": 0
+              },
+              "api_url": {
+                "order": 1,
+                "type": "string",
+                "title": "API URL"
+              }
+            },
+            "required": ["type", "api_url"]
+          }
+        ]
+      },
+      "access_token": {
+        "order": 1,
+        "type": "string",
+        "title": "Azure Access Token",
+        "description": "Your Azure DevOps Personal Access Token",
+        "airbyte_secret": true
+      },
+      "organization": {
+        "order": 2,
+        "type": "string",
+        "title": "Azure Organization",
+        "description": "Azure DevOps Organization name"
+      },
+      "projects": {
+        "order": 3,
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": "Azure Projects",
+        "description": "Azure project IDs or project names. If empty all available projects will be processed."
+      },
+      "cutoff_days": {
+        "order": 4,
+        "type": "integer",
+        "title": "Cutoff Days",
+        "description": "Only fetch changesets from the last N days",
+        "default": 90
+      },
+      "include_changes": {
+        "order": 5,
+        "type": "boolean",
+        "title": "Include Changes",
+        "description": "Include file changes in changeset records",
+        "default": true
+      },
+      "page_size": {
+        "order": 6,
+        "type": "integer",
+        "title": "Page Size",
+        "description": "Number of items per API request",
+        "default": 100
+      }
+    }
+  }
+}
