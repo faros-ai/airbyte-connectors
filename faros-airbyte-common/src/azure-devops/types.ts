@@ -16,6 +16,7 @@ import {
 } from 'azure-devops-node-api/interfaces/PipelinesInterfaces';
 import {ProjectReference} from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 import {CodeCoverageStatistics} from 'azure-devops-node-api/interfaces/TestInterfaces';
+import {TfvcChangeset} from 'azure-devops-node-api/interfaces/TfvcInterfaces';
 import {
   Comment,
   WorkItem,
@@ -23,6 +24,7 @@ import {
 import {IPipelinesApi} from 'azure-devops-node-api/PipelinesApi';
 import {IReleaseApi} from 'azure-devops-node-api/ReleaseApi';
 import {ITestApi} from 'azure-devops-node-api/TestApi';
+import {ITfvcApi} from 'azure-devops-node-api/TfvcApi';
 import {IWorkItemTrackingApi} from 'azure-devops-node-api/WorkItemTrackingApi';
 
 import {RoundRobinConfig} from '../common/bucketing';
@@ -52,6 +54,7 @@ export interface AzureDevOpsClient {
   readonly build: IBuildApi;
   readonly core: ICoreApi;
   readonly git: IGitApi;
+  readonly tfvc: ITfvcApi;
   readonly wit: IWorkItemTrackingApi;
   readonly pipelines: IPipelinesApi;
   readonly release: IReleaseApi;
@@ -158,4 +161,9 @@ export interface WorkItemWithRevisions extends WorkItem {
 export interface AdditionalField {
   name: string;
   value: string;
+}
+
+// Enriched TFVC Changeset with project context
+export interface Changeset extends TfvcChangeset {
+  project?: ProjectReference;
 }

@@ -107,6 +107,7 @@ export abstract class AzureDevOps {
       core: await webApi.getCoreApi(),
       wit: await webApi.getWorkItemTrackingApi(),
       git: await webApi.getGitApi(),
+      tfvc: await webApi.getTfvcApi(),
       pipelines: await webApi.getPipelinesApi(),
       release: await webApi.getReleaseApi(),
       test: await webApi.getTestApi(),
