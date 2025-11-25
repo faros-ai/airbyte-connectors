@@ -78,15 +78,32 @@
         "description": "Only fetch changesets from the last N days",
         "default": 90
       },
-      "include_changes": {
+      "branch_pattern": {
         "order": 5,
+        "type": "string",
+        "title": "Branch Path Pattern",
+        "description": "Regex pattern to match TFVC branch paths (e.g. '$/Project/Main'). If not specified, all branches are fetched.",
+        "examples": [
+          "^\\$/.*/(Main|Release)$",
+          "^\\$/.+$"
+        ]
+      },
+      "include_changes": {
+        "order": 6,
         "type": "boolean",
         "title": "Include Changes",
         "description": "Include file changes in changeset records",
         "default": true
       },
+      "include_work_items": {
+        "order": 7,
+        "type": "boolean",
+        "title": "Include Work Items",
+        "description": "Include associated work items in changeset records",
+        "default": true
+      },
       "page_size": {
-        "order": 6,
+        "order": 8,
         "type": "integer",
         "title": "Page Size",
         "description": "Number of items per API request",

@@ -1,4 +1,5 @@
 import {
+  AssociatedWorkItem,
   TfvcBranch,
   TfvcChange,
   TfvcChangesetRef,
@@ -19,6 +20,8 @@ export const DEFAULT_CUTOFF_DAYS = 90;
 
 export class AzureTfvc extends AzureDevOps {
   private readonly includeChanges: boolean;
+  private readonly includeWorkItems: boolean;
+  private readonly branchPattern?: RegExp;
 
   constructor(
     protected readonly client: AzureDevOpsClient,
@@ -26,10 +29,16 @@ export class AzureTfvc extends AzureDevOps {
     protected readonly cutoffDays: number = DEFAULT_CUTOFF_DAYS,
     protected readonly top: number = DEFAULT_PAGE_SIZE,
     protected readonly logger: AirbyteLogger,
-    includeChanges: boolean = true
+    includeChanges?: boolean,
+    includeWorkItems?: boolean,
+    branchPattern?: string
   ) {
     super(client, instanceType, cutoffDays, top, logger);
-    this.includeChanges = includeChanges;
+    this.includeChanges = includeChanges ?? true;
+    this.includeWorkItems = includeWorkItems ?? true;
+    if (branchPattern) {
+      this.branchPattern = new RegExp(branchPattern);
+    }
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -64,9 +73,14 @@ export class AzureTfvc extends AzureDevOps {
 
   async *getChangesets(
     project: string,
-    since?: string
+    since?: string,
+    branchPath?: string
   ): AsyncGenerator<Changeset> {
     const searchCriteria: TfvcChangesetSearchCriteria = {};
+
+    if (branchPath) {
+      searchCriteria.itemPath = branchPath;
+    }
 
     if (since) {
       searchCriteria.fromDate = since;
@@ -89,26 +103,62 @@ export class AzureTfvc extends AzureDevOps {
       );
 
     for await (const changesetRef of this.getPaginated(getChangesetsFn)) {
-      let changes: TfvcChange[] = [];
-
-      if (this.includeChanges) {
-        changes = await this.getChangesetChanges(changesetRef.changesetId);
-      }
+      const {changes, workItems} = await this.getChangeset(
+        changesetRef.changesetId,
+        project
+      );
 
       yield {
         ...changesetRef,
         changes,
+        workItems,
         project: {id: project, name: project},
       };
     }
   }
 
-  private async getChangesetChanges(changesetId: number): Promise<TfvcChange[]> {
+  private async getChangeset(
+    changesetId: number,
+    project: string
+  ): Promise<{changes?: TfvcChange[]; workItems?: AssociatedWorkItem[]}> {
+    if (!this.includeChanges && !this.includeWorkItems) {
+      return {};
+    }
+
+    const maxChangeCount = this.includeChanges ? this.top : 0;
+    const changeset = await this.client.tfvc.getChangeset(
+      changesetId,
+      project,
+      maxChangeCount,
+      false, // includeDetails (policy details, check-in notes)
+      this.includeWorkItems
+    );
+
+    let changes = changeset.changes;
+    if (changeset.hasMoreChanges && changes?.length) {
+      const remainingChanges = await this.getChangesetChanges(
+        changesetId,
+        changes.length
+      );
+      changes = [...changes, ...remainingChanges];
+    }
+
+    return {changes, workItems: changeset.workItems};
+  }
+
+  private async getChangesetChanges(
+    changesetId: number,
+    startSkip: number = 0
+  ): Promise<TfvcChange[]> {
     const getChangesFn = (
       top: number,
       skip: number | string
     ): Promise<TfvcChange[]> =>
-      this.client.tfvc.getChangesetChanges(changesetId, skip as number, top);
+      this.client.tfvc.getChangesetChanges(
+        changesetId,
+        (skip as number) + startSkip,
+        top
+      );
 
     const changes: TfvcChange[] = [];
     for await (const change of this.getPaginated(getChangesFn)) {
@@ -120,18 +170,27 @@ export class AzureTfvc extends AzureDevOps {
   @Memoize((project: string) => project)
   async getBranches(project?: string): Promise<TfvcBranch[]> {
     try {
-      const branches = await this.client.tfvc.getBranches(
+      const allBranches = await this.client.tfvc.getBranches(
         project,
         true, // includeParent
         true, // includeChildren
         false, // includeDeleted
         false // includeLinks
       );
-      return branches || [];
+
+      const branches: TfvcBranch[] = [];
+      for (const branch of allBranches ?? []) {
+        if (this.branchPattern && !this.branchPattern.test(branch.path)) {
+          this.logger.info(
+            `Skipping branch ${branch.path} - does not match pattern ${this.branchPattern}`
+          );
+          continue;
+        }
+        branches.push(branch);
+      }
+      return branches;
     } catch (err: any) {
-      this.logger.error(
-        `Failed to fetch TFVC branches: ${wrapApiError(err).message}`
-      );
+      this.logger.error(`Failed to fetch TFVC branches: ${wrapApiError(err)}`);
       return [];
     }
   }

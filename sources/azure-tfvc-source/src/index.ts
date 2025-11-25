@@ -32,7 +32,9 @@ export class AzureTfvcSource extends AirbyteSourceBase<AzureTfvcConfig> {
       const tfvc = await AzureTfvc.instance(
         config,
         this.logger,
-        config.include_changes ?? true
+        config.include_changes,
+        config.include_work_items,
+        config.branch_pattern
       );
       await tfvc.checkConnection(config.projects);
     } catch (err: any) {

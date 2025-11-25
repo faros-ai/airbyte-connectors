@@ -8,6 +8,9 @@
     "organization": {
       "type": "string"
     },
+    "branch": {
+      "type": "string"
+    },
     "project": {
       "type": "object",
       "properties": {
@@ -101,6 +104,35 @@
           },
           "pendingVersion": {
             "type": "number"
+          }
+        }
+      }
+    },
+    "workItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "assignedTo": {
+            "type": "string"
+          },
+          "workItemType": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string"
           }
         }
       }

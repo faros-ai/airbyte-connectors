@@ -26,7 +26,9 @@ export class Branches extends StreamWithProjectSlices {
     const tfvc = await AzureTfvc.instance(
       this.config,
       this.logger,
-      this.config.include_changes ?? true
+      this.config.include_changes,
+      this.config.include_work_items,
+      this.config.branch_pattern
     );
 
     const project = streamSlice.project;
