@@ -9,6 +9,8 @@ fi
 connector_path=$1
 connector_version=$2
 
+SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 
 org="farosai"
@@ -37,3 +39,5 @@ if [ "$?" == 1 ]; then
   docker push $latest_tag
   docker push $version_tag
 fi
+
+"${SCRIPT_DIR}/sign-image-with-cosign.sh" "$version_tag"
