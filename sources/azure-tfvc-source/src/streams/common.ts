@@ -11,6 +11,7 @@ import {AzureTfvcConfig} from '../models';
 
 export interface ProjectStreamSlice {
   project: TeamProject;
+  organization: string;
 }
 
 export interface ProjectStreamState {
@@ -37,7 +38,7 @@ export abstract class StreamWithProjectSlices extends AzureTfvcStreamBase {
     );
 
     for (const project of await tfvc.getProjects(this.config.projects)) {
-      yield {project};
+      yield {project, organization: this.config.organization};
     }
   }
 
