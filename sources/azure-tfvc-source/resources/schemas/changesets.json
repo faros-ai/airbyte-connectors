@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "changesetId": {
+      "type": "number"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "checkedInBy": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "uniqueName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "comment": {
+      "type": "string"
+    },
+    "createdDate": {
+      "type": "string"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "changeType": {
+            "type": "string"
+          },
+          "item": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "contentMetadata": {
+                "type": "object"
+              },
+              "version": {
+                "type": "number"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          "mergeSources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pendingVersion": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "workItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "assignedTo": {
+            "type": "string"
+          },
+          "workItemType": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

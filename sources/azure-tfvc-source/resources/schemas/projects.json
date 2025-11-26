@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "number"
+    },
+    "visibility": {
+      "type": "string"
+    },
+    "lastUpdateTime": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}
