@@ -66,6 +66,17 @@ export type BranchKey = {
   repository: RepoKey;
 };
 
+export function repoKey(org: string, repo: string, source: string): RepoKey {
+  return {
+    uid: repo.toLowerCase(),
+    name: repo.toLowerCase(),
+    organization: {
+      uid: org.toLowerCase(),
+      source,
+    },
+  };
+}
+
 export enum VCSToolCategory {
   CodingAssistant = 'CodingAssistant',
   GitHubCopilot = 'GitHubCopilot', // deprecated, use CodingAssistant instead for new converters

@@ -1,6 +1,7 @@
 import {AxiosInstance} from 'axios';
 import {IBuildApi} from 'azure-devops-node-api/BuildApi';
 import {ICoreApi} from 'azure-devops-node-api/CoreApi';
+import {TeamProject} from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import {IGitApi} from 'azure-devops-node-api/GitApi';
 import {
   BuildArtifact,
@@ -166,4 +167,11 @@ export interface AdditionalField {
 // Enriched TFVC Changeset with project context
 export interface Changeset extends TfvcChangeset {
   project?: ProjectReference;
+  organization?: string;
+  branch?: string;
+}
+
+// TFVC Project with organization context
+export interface TfvcProject extends TeamProject {
+  organization: string;
 }
