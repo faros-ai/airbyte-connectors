@@ -9,7 +9,7 @@ import {
   AirbyteStreamBase,
 } from 'faros-airbyte-cdk';
 import {
-  applyRoundRobinBucketing,
+  Bucketing,
   calculateDateRange,
 } from 'faros-airbyte-common/common';
 import {FarosClient} from 'faros-js-client';
@@ -64,6 +64,13 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
   }
   async checkConnection(config: JiraConfig): Promise<[boolean, VError]> {
     try {
+      // Validate bucketing config during connection check
+      Bucketing.create({
+        partitionKey: 'farosai/airbyte-jira-source',
+        config,
+        logger: this.logger.warn.bind(this.logger),
+      });
+
       // Validate custom_headers JSON format if provided
       if (config.custom_headers) {
         try {
@@ -191,21 +198,24 @@ export class JiraSource extends AirbyteSourceBase<JiraConfig> {
       logger: this.logger.info.bind(this.logger),
     });
 
-    const {config: newConfig, state: newState} = applyRoundRobinBucketing(
+    // Create bucketing manager (validates and applies round-robin automatically)
+    const bucketing = Bucketing.create({
+      partitionKey: 'farosai/airbyte-jira-source',
       config,
       state,
-      this.logger.info.bind(this.logger)
-    );
+      logger: this.logger.info.bind(this.logger),
+    });
 
     return {
       config: {
-        ...newConfig,
+        ...config,
         requestedStreams,
         startDate,
         endDate,
+        bucketing,
       } as JiraConfig,
       catalog: {streams},
-      state: newState,
+      state: bucketing.getState(),
     };
   }
 

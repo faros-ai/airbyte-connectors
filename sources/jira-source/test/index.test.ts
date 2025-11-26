@@ -12,6 +12,7 @@ import {FarosClient} from 'faros-js-client';
 import * as sut from '../src/index';
 import {Jira, JiraConfig} from '../src/jira';
 import {ProjectBoardFilter} from '../src/project-board-filter';
+import {ProjectFilter} from '../src/project-filter';
 import {CustomStreamNames, RunMode} from '../src/streams/common';
 import {FarosIssuePullRequests} from '../src/streams/faros_issue_pull_requests';
 import {paginate, setupJiraInstance} from './utils/test-utils';
@@ -30,6 +31,7 @@ afterEach(async () => {
   // Reset singleton instances
   (Jira as any).jira = undefined;
   (ProjectBoardFilter as any)._instance = undefined;
+  (ProjectFilter as any)._instance = undefined;
 });
 
 describe('index', () => {
@@ -1117,7 +1119,19 @@ describe('index', () => {
       50
     );
     setupJiraInstance({v2: {projects: {searchProjects}}}, true, config, logger);
-    const stream = new FarosIssuePullRequests(config, logger);
+
+    // Create bucketing instance for the config
+    const {Bucketing} = require('faros-airbyte-common/common');
+    const configWithBucketing = {
+      ...config,
+      bucketing: Bucketing.create({
+        partitionKey: 'farosai/airbyte-jira-source',
+        config,
+        logger: logger.info.bind(logger),
+      }),
+    };
+
+    const stream = new FarosIssuePullRequests(configWithBucketing, logger);
     const slices = stream.streamSlices();
     // collect slices in an array and match with snapshot
     const sliceArray = [];

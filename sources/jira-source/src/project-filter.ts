@@ -74,7 +74,15 @@ export class ProjectFilter extends ProjectBoardFilter {
           `${Array.from(this.projects.keys()).join(', ')}`
       );
     }
-    return Array.from(this.projects.values());
+
+    const allProjects = Array.from(this.projects.values());
+
+    // Apply bucketing filter if configured
+    if (!this.config.bucketing) {
+      return allProjects;
+    }
+
+    return this.config.bucketing.filter(allProjects, ({uid}) => uid);
   }
 
   @Memoize()

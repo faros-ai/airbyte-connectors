@@ -151,7 +151,15 @@ export class ProjectBoardFilter {
           `${Array.from(this.projects.keys()).join(', ')}`
       );
     }
-    return Array.from(this.projects.values());
+
+    const allProjects = Array.from(this.projects.values());
+
+    // Apply bucketing filter if configured
+    if (!this.config.bucketing) {
+      return allProjects;
+    }
+
+    return this.config.bucketing.filter(allProjects, ({uid}) => uid);
   }
 
   protected async getProjectsFromConfig(): Promise<void> {
@@ -167,7 +175,7 @@ export class ProjectBoardFilter {
         continue;
       }
       const {included, issueSync} = await this.getProjectInclusion(project);
-      if (jira.isProjectInBucket(project) && included) {
+      if (included) {
         const projectKey = toUpper(project);
         this.projects.set(projectKey, {uid: projectKey, issueSync});
       }

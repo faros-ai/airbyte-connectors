@@ -195,7 +195,6 @@ export abstract class GitHub {
     if (GitHub.github) {
       return GitHub.github;
     }
-    validateBucketingConfig(cfg, logger.info.bind(logger));
     const baseOctokit = octokit ?? makeOctokitClient(cfg, undefined, logger);
 
     const github =
