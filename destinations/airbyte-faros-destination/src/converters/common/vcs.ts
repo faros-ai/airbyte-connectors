@@ -66,7 +66,14 @@ export type BranchKey = {
   repository: RepoKey;
 };
 
-export function repoKey(org: string, repo: string, source: string): RepoKey {
+export function repoKey(
+  org: string,
+  repo: string,
+  source: string
+): RepoKey | null {
+  if (!org || !repo) {
+    return null;
+  }
   return {
     uid: repo.toLowerCase(),
     name: repo.toLowerCase(),

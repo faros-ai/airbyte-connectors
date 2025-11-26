@@ -36,18 +36,22 @@ export class Changesets extends AzureTfvcConverter {
     const changeset = record.record.data as Changeset;
     const res: DestinationRecord[] = [];
 
-    if (!changeset.changesetId || !changeset.project?.name) {
-      ctx.logger.warn(
-        `Changeset ID or project name not found: ${JSON.stringify(changeset)}`
-      );
+    if (!changeset.changesetId) {
+      ctx.logger.warn(`Changeset ID not found: ${JSON.stringify(changeset)}`);
       return res;
     }
 
     const repository = repoKey(
       changeset.organization,
-      changeset.project.name,
+      changeset.project?.name,
       this.source
     );
+    if (!repository) {
+      ctx.logger.warn(
+        `Organization or project name not found: ${JSON.stringify(changeset)}`
+      );
+      return res;
+    }
 
     const sha = String(changeset.changesetId);
     const commit: CommitKey = {sha, repository};

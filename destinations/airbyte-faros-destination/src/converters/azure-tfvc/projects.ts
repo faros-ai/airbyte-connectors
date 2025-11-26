@@ -20,14 +20,14 @@ export class Projects extends AzureTfvcConverter {
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const project = record.record.data as TfvcProject;
     const res: DestinationRecord[] = [];
-    if (!project.name) {
+
+    const repository = repoKey(project.organization, project.name, this.source);
+    if (!repository) {
       ctx.logger.warn(
-        `Project name not found for project record: ${JSON.stringify(project)}`
+        `Organization or project name not found: ${JSON.stringify(project)}`
       );
       return res;
     }
-
-    const repository = repoKey(project.organization, project.name, this.source);
 
     if (!this.seenOrganizations.has(repository.organization.uid)) {
       this.seenOrganizations.add(repository.organization.uid);
