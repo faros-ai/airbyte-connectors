@@ -10,7 +10,7 @@ import VError from 'verror';
 
 import {AzureTfvc} from './azure-tfvc';
 import {AzureTfvcConfig} from './models';
-import {Branches, Changesets, Projects} from './streams';
+import {Changesets, Projects} from './streams';
 
 export function mainCommand(): Command {
   const logger = new AirbyteSourceLogger();
@@ -47,7 +47,6 @@ export class AzureTfvcSource extends AirbyteSourceBase<AzureTfvcConfig> {
     return [
       new Projects(config, this.logger),
       new Changesets(config, this.logger),
-      new Branches(config, this.logger),
     ];
   }
 }
