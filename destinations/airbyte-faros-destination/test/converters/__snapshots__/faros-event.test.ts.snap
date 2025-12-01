@@ -21,12 +21,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -39,7 +41,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -75,7 +76,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -130,12 +130,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -148,7 +150,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -184,7 +185,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -336,12 +336,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -354,7 +356,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -390,7 +391,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -509,12 +509,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": null,
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": null,
     },
   },
   Object {
@@ -527,7 +529,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -563,7 +564,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -1064,12 +1064,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -1082,7 +1084,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -1118,7 +1119,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -1241,12 +1241,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -1259,7 +1261,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -1295,7 +1296,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -1331,12 +1331,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -1349,7 +1351,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -1385,7 +1386,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -1421,12 +1421,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -1439,7 +1441,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -1475,7 +1476,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -1860,12 +1860,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -1878,7 +1880,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2020,7 +2021,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2115,12 +2115,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2133,7 +2135,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2275,7 +2276,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2330,12 +2330,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2348,7 +2350,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2384,7 +2385,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2439,12 +2439,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2457,7 +2459,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2493,7 +2494,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2579,12 +2579,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2597,7 +2599,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2633,7 +2634,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2688,12 +2688,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2706,7 +2708,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2742,7 +2743,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2797,12 +2797,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -2815,7 +2817,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -2878,7 +2879,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -2930,7 +2930,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3084,12 +3083,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -3102,7 +3103,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -3165,7 +3165,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3198,12 +3197,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -3216,7 +3217,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -3304,7 +3304,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3356,7 +3355,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3414,12 +3412,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": null,
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": null,
     },
   },
   Object {
@@ -3432,7 +3432,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -3495,7 +3494,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3547,7 +3545,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3753,12 +3750,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -3771,7 +3770,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -3834,7 +3832,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3886,7 +3883,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -3944,12 +3940,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -3962,7 +3960,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -4025,7 +4022,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -4077,7 +4073,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -4135,12 +4130,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -4153,7 +4150,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -4216,7 +4212,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -4268,7 +4263,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -4492,12 +4486,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -4510,7 +4506,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -4573,7 +4568,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -4625,7 +4619,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -5015,12 +5008,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -5033,7 +5028,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -5096,7 +5090,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -5148,7 +5141,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -5424,12 +5416,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -5442,7 +5436,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -5505,7 +5498,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
@@ -5899,12 +5891,14 @@ Array [
   },
   Object {
     "cicd_Pipeline": Object {
+      "name": "run_pipeline_name",
       "organization": Object {
         "source": "run_source",
         "uid": "run_organization",
       },
       "source": "faros-event",
       "uid": "run_pipeline",
+      "url": "run_pipeline_url",
     },
   },
   Object {
@@ -5917,7 +5911,6 @@ Array [
           "source": "run_source",
           "uid": "run_organization",
         },
-        "source": "faros-event",
         "uid": "run_pipeline",
       },
       "source": "faros-event",
@@ -5980,7 +5973,6 @@ Array [
             "source": "run_source",
             "uid": "run_organization",
           },
-          "source": "faros-event",
           "uid": "run_pipeline",
         },
         "source": "faros-event",
