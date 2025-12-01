@@ -1,0 +1,458 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`azure-tfvc-source check connection - TFVC access error 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please verify your access token and TFVC permissions: TFVC access denied: TFVC access denied",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`azure-tfvc-source check connection - no projects 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "message": "Please verify your access token and TFVC permissions: Failed to fetch projects: Failed to fetch projects",
+    "status": "FAILED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`azure-tfvc-source check connection - success 1`] = `
+AirbyteConnectionStatusMessage {
+  "connectionStatus": {
+    "status": "SUCCEEDED",
+  },
+  "type": "CONNECTION_STATUS",
+}
+`;
+
+exports[`azure-tfvc-source streams - changesets with branches, use full_refresh sync mode 1`] = `
+[
+  {
+    "author": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "branch": "$/TestProject/Main",
+    "changes": [
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/app.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fapp.cs&version=18",
+          "version": 18,
+        },
+      },
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/config.json",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fconfig.json&version=18",
+          "version": 18,
+        },
+      },
+    ],
+    "changesetId": 18,
+    "checkedInBy": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "comment": "Initial commit with sample files",
+    "commentTruncated": false,
+    "createdDate": "2024-01-15T12:41:16.963Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+    "workItems": [
+      {
+        "assignedTo": "testuser@example.com",
+        "id": 123,
+        "state": "Done",
+        "title": "Setup initial project structure",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/123",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/123",
+        "workItemType": "Task",
+      },
+    ],
+  },
+  {
+    "author": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "branch": "$/TestProject/Main",
+    "changes": [
+      {
+        "changeType": "edit",
+        "item": {
+          "path": "$/TestProject/Main/src/auth.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fauth.cs&version=19",
+          "version": 19,
+        },
+      },
+    ],
+    "changesetId": 19,
+    "checkedInBy": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "comment": "Bug fix for authentication module",
+    "commentTruncated": false,
+    "createdDate": "2024-01-16T09:30:00.000Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+    "workItems": [
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 456,
+        "state": "Closed",
+        "title": "Fix login bug",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/456",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/456",
+        "workItemType": "Bug",
+      },
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 789,
+        "state": "Done",
+        "title": "Improve session handling",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/789",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/789",
+        "workItemType": "Task",
+      },
+    ],
+  },
+  {
+    "author": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "branch": "$/TestProject/Dev",
+    "changes": [
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/app.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fapp.cs&version=18",
+          "version": 18,
+        },
+      },
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/config.json",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fconfig.json&version=18",
+          "version": 18,
+        },
+      },
+    ],
+    "changesetId": 18,
+    "checkedInBy": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "comment": "Initial commit with sample files",
+    "commentTruncated": false,
+    "createdDate": "2024-01-15T12:41:16.963Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+    "workItems": [
+      {
+        "assignedTo": "testuser@example.com",
+        "id": 123,
+        "state": "Done",
+        "title": "Setup initial project structure",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/123",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/123",
+        "workItemType": "Task",
+      },
+    ],
+  },
+  {
+    "author": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "branch": "$/TestProject/Dev",
+    "changes": [
+      {
+        "changeType": "edit",
+        "item": {
+          "path": "$/TestProject/Main/src/auth.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fauth.cs&version=19",
+          "version": 19,
+        },
+      },
+    ],
+    "changesetId": 19,
+    "checkedInBy": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "comment": "Bug fix for authentication module",
+    "commentTruncated": false,
+    "createdDate": "2024-01-16T09:30:00.000Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+    "workItems": [
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 456,
+        "state": "Closed",
+        "title": "Fix login bug",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/456",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/456",
+        "workItemType": "Bug",
+      },
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 789,
+        "state": "Done",
+        "title": "Improve session handling",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/789",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/789",
+        "workItemType": "Task",
+      },
+    ],
+  },
+]
+`;
+
+exports[`azure-tfvc-source streams - changesets without changes 1`] = `
+[
+  {
+    "author": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "branch": undefined,
+    "changes": undefined,
+    "changesetId": 18,
+    "checkedInBy": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "comment": "Initial commit with sample files",
+    "commentTruncated": false,
+    "createdDate": "2024-01-15T12:41:16.963Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+    "workItems": undefined,
+  },
+  {
+    "author": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "branch": undefined,
+    "changes": undefined,
+    "changesetId": 19,
+    "checkedInBy": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "comment": "Bug fix for authentication module",
+    "commentTruncated": false,
+    "createdDate": "2024-01-16T09:30:00.000Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+    "workItems": undefined,
+  },
+]
+`;
+
+exports[`azure-tfvc-source streams - changesets, use full_refresh sync mode 1`] = `
+[
+  {
+    "author": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "branch": undefined,
+    "changes": [
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/app.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fapp.cs&version=18",
+          "version": 18,
+        },
+      },
+      {
+        "changeType": "add",
+        "item": {
+          "path": "$/TestProject/Main/src/config.json",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fconfig.json&version=18",
+          "version": 18,
+        },
+      },
+    ],
+    "changesetId": 18,
+    "checkedInBy": {
+      "displayName": "Test User",
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "uniqueName": "testuser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test",
+    },
+    "comment": "Initial commit with sample files",
+    "commentTruncated": false,
+    "createdDate": "2024-01-15T12:41:16.963Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+    "workItems": [
+      {
+        "assignedTo": "testuser@example.com",
+        "id": 123,
+        "state": "Done",
+        "title": "Setup initial project structure",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/123",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/123",
+        "workItemType": "Task",
+      },
+    ],
+  },
+  {
+    "author": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "branch": undefined,
+    "changes": [
+      {
+        "changeType": "edit",
+        "item": {
+          "path": "$/TestProject/Main/src/auth.cs",
+          "url": "https://dev.azure.com/test-org/_apis/tfvc/items?path=%24%2FTestProject%2FMain%2Fsrc%2Fauth.cs&version=19",
+          "version": 19,
+        },
+      },
+    ],
+    "changesetId": 19,
+    "checkedInBy": {
+      "displayName": "Another User",
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "uniqueName": "anotheruser@example.com",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another",
+    },
+    "comment": "Bug fix for authentication module",
+    "commentTruncated": false,
+    "createdDate": "2024-01-16T09:30:00.000Z",
+    "organization": "test-org",
+    "project": {
+      "id": "TestProject",
+      "name": "TestProject",
+    },
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+    "workItems": [
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 456,
+        "state": "Closed",
+        "title": "Fix login bug",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/456",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/456",
+        "workItemType": "Bug",
+      },
+      {
+        "assignedTo": "anotheruser@example.com",
+        "id": 789,
+        "state": "Done",
+        "title": "Improve session handling",
+        "url": "https://dev.azure.com/test-org/_apis/wit/workItems/789",
+        "webUrl": "https://dev.azure.com/test-org/TestProject/_workitems/edit/789",
+        "workItemType": "Task",
+      },
+    ],
+  },
+]
+`;
+
+exports[`azure-tfvc-source streams - projects, use full_refresh sync mode 1`] = `
+[
+  {
+    "description": "Test TFVC project",
+    "id": "00000000-0000-0000-0000-000000000001",
+    "lastUpdateTime": "2024-01-15T10:30:00Z",
+    "name": "TestProject",
+    "organization": "test-org",
+    "revision": 123,
+    "state": "wellFormed",
+    "url": "https://dev.azure.com/test-org/_apis/projects/00000000-0000-0000-0000-000000000001",
+    "visibility": "private",
+  },
+]
+`;

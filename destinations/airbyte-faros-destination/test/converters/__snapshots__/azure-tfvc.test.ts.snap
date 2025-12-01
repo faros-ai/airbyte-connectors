@@ -1,0 +1,252 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`azure-tfvc process records from all streams 1`] = `
+Array [
+  "Processed 5 records",
+  "Processed records by stream: {\\\\\\"mytestsource__azure-tfvc__changesets\\\\\\":3,\\\\\\"mytestsource__azure-tfvc__projects\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 12 records",
+  "Would write records by model: {\\\\\\"vcs_Branch\\\\\\":1,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":3,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Organization\\\\\\":1,\\\\\\"vcs_Repository\\\\\\":2}\\"},\\"type\\":\\"LOG\\"}",
+  "Skipped 0 records",
+  "Errored 0 records",
+]
+`;
+
+exports[`azure-tfvc process records from all streams 2`] = `
+Array [
+  Object {
+    "vcs_Organization": Object {
+      "name": "test-org",
+      "source": "Azure-TFVC",
+      "type": Object {
+        "category": "Organization",
+      },
+      "uid": "test-org",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "Test TFVC project",
+      "fullName": "TestProject",
+      "htmlUrl": "https://dev.azure.com/test-org/_apis/projects/00000000-0000-0000-0000-000000000001",
+      "name": "testproject",
+      "organization": Object {
+        "source": "Azure-TFVC",
+        "uid": "test-org",
+      },
+      "private": false,
+      "source": "Azure-TFVC",
+      "uid": "testproject",
+      "updatedAt": "2024-01-15T10:30:00Z",
+    },
+  },
+  Object {
+    "vcs_Repository": Object {
+      "description": "Another TFVC project",
+      "fullName": "AnotherProject",
+      "htmlUrl": "https://dev.azure.com/test-org/_apis/projects/00000000-0000-0000-0000-000000000002",
+      "name": "anotherproject",
+      "organization": Object {
+        "source": "Azure-TFVC",
+        "uid": "test-org",
+      },
+      "private": false,
+      "source": "Azure-TFVC",
+      "uid": "anotherproject",
+      "updatedAt": "2024-01-10T08:15:00Z",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-TFVC",
+        "uid": "testuser@example.com",
+      },
+      "createdAt": "2024-01-15T12:41:16.963Z",
+      "diffStats": Object {
+        "filesChanged": 2,
+        "linesAdded": null,
+        "linesDeleted": null,
+      },
+      "htmlUrl": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+      "message": "Initial commit with sample files",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "sha": "18",
+      "source": "Azure-TFVC",
+      "uid": "18",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "$/TestProject/Main",
+        "repository": Object {
+          "name": "testproject",
+          "organization": Object {
+            "source": "Azure-TFVC",
+            "uid": "test-org",
+          },
+          "uid": "testproject",
+        },
+        "uid": "$/TestProject/Main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "testproject",
+          "organization": Object {
+            "source": "Azure-TFVC",
+            "uid": "test-org",
+          },
+          "uid": "testproject",
+        },
+        "sha": "18",
+      },
+      "source": "Azure-TFVC",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-TFVC",
+        "uid": "anotheruser@example.com",
+      },
+      "createdAt": "2024-01-16T09:30:00.000Z",
+      "diffStats": Object {
+        "filesChanged": 1,
+        "linesAdded": null,
+        "linesDeleted": null,
+      },
+      "htmlUrl": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+      "message": "Bug fix for authentication module",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "sha": "19",
+      "source": "Azure-TFVC",
+      "uid": "19",
+    },
+  },
+  Object {
+    "vcs_BranchCommitAssociation": Object {
+      "branch": Object {
+        "name": "$/TestProject/Main",
+        "repository": Object {
+          "name": "testproject",
+          "organization": Object {
+            "source": "Azure-TFVC",
+            "uid": "test-org",
+          },
+          "uid": "testproject",
+        },
+        "uid": "$/TestProject/Main",
+      },
+      "commit": Object {
+        "repository": Object {
+          "name": "testproject",
+          "organization": Object {
+            "source": "Azure-TFVC",
+            "uid": "test-org",
+          },
+          "uid": "testproject",
+        },
+        "sha": "19",
+      },
+      "source": "Azure-TFVC",
+    },
+  },
+  Object {
+    "vcs_Commit": Object {
+      "author": Object {
+        "source": "Azure-TFVC",
+        "uid": "testuser@example.com",
+      },
+      "createdAt": "2024-01-17T14:00:00.000Z",
+      "diffStats": null,
+      "htmlUrl": "https://dev.azure.com/test-org/_apis/tfvc/changesets/20",
+      "message": "Added new feature",
+      "repository": Object {
+        "name": "anotherproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "anotherproject",
+      },
+      "sha": "20",
+      "source": "Azure-TFVC",
+      "uid": "20",
+    },
+  },
+  Object {
+    "vcs_Branch": Object {
+      "name": "$/TestProject/Main",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "source": "Azure-TFVC",
+      "uid": "$/TestProject/Main",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "$/TestProject/Main/src/app.cs",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "source": "Azure-TFVC",
+      "uid": "$/TestProject/Main/src/app.cs",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "$/TestProject/Main/src/config.json",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "source": "Azure-TFVC",
+      "uid": "$/TestProject/Main/src/config.json",
+    },
+  },
+  Object {
+    "vcs_File": Object {
+      "path": "$/TestProject/Main/src/auth.cs",
+      "repository": Object {
+        "name": "testproject",
+        "organization": Object {
+          "source": "Azure-TFVC",
+          "uid": "test-org",
+        },
+        "uid": "testproject",
+      },
+      "source": "Azure-TFVC",
+      "uid": "$/TestProject/Main/src/auth.cs",
+    },
+  },
+]
+`;

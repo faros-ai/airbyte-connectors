@@ -1,0 +1,16 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "mytestsource__azure-tfvc__projects"
+      },
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__azure-tfvc__changesets"
+      },
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+[
+  {
+    "path": "$/TestProject/Main",
+    "description": "Main development branch",
+    "owner": {
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "displayName": "Test User",
+      "uniqueName": "testuser@example.com"
+    },
+    "createdDate": "2023-06-01T10:00:00Z",
+    "isDeleted": false,
+    "parent": null,
+    "children": [
+      {
+        "path": "$/TestProject/Dev"
+      }
+    ],
+    "relatedBranches": [],
+    "mappings": [],
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/branches/%24%2FTestProject%2FMain"
+  },
+  {
+    "path": "$/TestProject/Dev",
+    "description": "Development branch",
+    "owner": {
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "displayName": "Another User",
+      "uniqueName": "anotheruser@example.com"
+    },
+    "createdDate": "2023-07-15T14:30:00Z",
+    "isDeleted": false,
+    "parent": {
+      "path": "$/TestProject/Main"
+    },
+    "children": [],
+    "relatedBranches": [],
+    "mappings": [],
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/branches/%24%2FTestProject%2FDev"
+  }
+]
