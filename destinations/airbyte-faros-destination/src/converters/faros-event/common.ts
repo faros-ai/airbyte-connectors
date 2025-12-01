@@ -163,6 +163,8 @@ export function createBuildRecords(
   const cicd_Pipeline = {
     uid: buildIds.pipeline,
     organization: cicd_Organization,
+    name: run.pipelineName,
+    url: run.pipelineUrl,
   };
 
   const buildKey = {

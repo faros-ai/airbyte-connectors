@@ -251,6 +251,8 @@ export interface Run {
   readonly id?: string;
   readonly number?: number;
   readonly pipeline?: string;
+  readonly pipelineName?: string;
+  readonly pipelineUrl?: string;
   readonly organization?: string;
   readonly source?: string;
   readonly status?: string;
@@ -269,6 +271,8 @@ const runSchemaDefinition = {
   id: stringValidationSchema,
   number: integerValidationSchema,
   pipeline: stringValidationSchema,
+  pipelineName: stringValidationSchema,
+  pipelineUrl: stringValidationSchema,
   organization: stringValidationSchema,
   source: stringValidationSchema,
   status: stringValidationSchema,
