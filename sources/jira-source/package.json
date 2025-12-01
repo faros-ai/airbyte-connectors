@@ -31,7 +31,7 @@
     "moment": "^2.29.1",
     "typescript-memoize": "^1.1.0",
     "verror": "^1.10.1",
-    "p-limit": "3.1.0"
+    "p-limit": "7.1.1"
   },
   "jest": {
     "coverageDirectory": "out/coverage",
