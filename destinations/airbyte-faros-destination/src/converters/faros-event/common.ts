@@ -160,18 +160,20 @@ export function createBuildRecords(
     source: buildIds.source,
   };
 
-  const cicd_Pipeline = {
+  const pipelineKey = {
     uid: buildIds.pipeline,
     organization: cicd_Organization,
+  };
+  const cicd_Pipeline = {
+    ...pipelineKey,
     name: run.pipelineName,
     url: run.pipelineUrl,
   };
 
   const buildKey = {
     uid: buildIds.id,
-    pipeline: cicd_Pipeline,
+    pipeline: pipelineKey,
   };
-
   const cicd_Build = {
     ...buildKey,
     createdAt: toDate(run.createTime),
