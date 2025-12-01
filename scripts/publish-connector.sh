@@ -6,8 +6,12 @@ fi
 if [ -z "$2" ]; then
   error "Connector version not specified"
 fi
+if [ -z "$3" ]; then
+  error "Path to sign-image script not specified"
+fi
 connector_path=$1
 connector_version=$2
+image_signing_script=$3
 
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 
@@ -36,4 +40,5 @@ if [ "$?" == 1 ]; then
     --label "io.airbyte.name=$image"
   docker push $latest_tag
   docker push $version_tag
+  "${image_signing_script}" "$version_tag"
 fi

@@ -89,6 +89,9 @@ jobs:
     name: Publish connectors
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -106,11 +109,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Install Skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+
       - name: Publish connector images
         env:
           DOCKER_BUILDKIT: 1
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
           do
-            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }}
+            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }} $GITHUB_WORKSPACE/scripts/sign-image-with-cosign.sh
           done
