@@ -6,10 +6,12 @@ fi
 if [ -z "$2" ]; then
   error "Connector version not specified"
 fi
+if [ -z "$3" ]; then
+  error "Directory for sign-image script not specified"
+fi
 connector_path=$1
 connector_version=$2
-
-SCRIPT_DIR="${SCRIPT_DIR:-$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+SCRIPT_DIR=$3
 
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 

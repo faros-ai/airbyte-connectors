@@ -122,5 +122,5 @@ jobs:
         run: |
           for connector_path in $(ls -d sources/*/ destinations/*/)
           do
-            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }}
+            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }} $GITHUB_WORKSPACE/scripts
           done
