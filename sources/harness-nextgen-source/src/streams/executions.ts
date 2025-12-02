@@ -72,45 +72,18 @@ export class Executions extends StreamWithProjectSlices {
     };
   }
 
-  private toDeploymentStatus(status: string): {
-    category: string;
-    detail: string;
-  } {
-    const statusLower = status?.toLowerCase() ?? '';
-
-    switch (statusLower) {
-      case 'aborted':
-      case 'rejected':
-      case 'abortedbyfreeze':
-        return {category: 'Canceled', detail: status};
-      case 'error':
-      case 'expired':
-      case 'failed':
-      case 'errored':
-      case 'approvalrejected':
-        return {category: 'Failed', detail: status};
-      case 'paused':
-      case 'queued':
-      case 'waiting':
-      case 'resourcewaiting':
-      case 'asyncwaiting':
-      case 'taskwaiting':
-      case 'timedwaiting':
-      case 'interventionwaiting':
-      case 'approvalwaiting':
-      case 'inputwaiting':
-        return {category: 'Queued', detail: status};
-      case 'running':
-      case 'notstarted':
-        return {category: 'Running', detail: status};
-      case 'success':
-      case 'succeeded':
-      case 'ignorefailed':
-        return {category: 'Success', detail: status};
-      case 'skipped':
-      case 'suspended':
-      default:
-        return {category: 'Custom', detail: status};
-    }
+  private toDeploymentStatus(status: string): {category: string; detail: string} {
+    const s = status?.toLowerCase() ?? '';
+    const canceled = ['aborted', 'rejected', 'abortedbyfreeze'];
+    const failed = ['error', 'expired', 'failed', 'errored', 'approvalrejected'];
+    const queued = ['paused', 'queued', 'waiting', 'resourcewaiting', 'asyncwaiting', 'taskwaiting', 'timedwaiting', 'interventionwaiting', 'approvalwaiting', 'inputwaiting'];
+    const running = ['running', 'notstarted'];
+    const success = ['success', 'succeeded', 'ignorefailed'];
+    if (canceled.includes(s)) return {category: 'Canceled', detail: status};
+    if (failed.includes(s)) return {category: 'Failed', detail: status};
+    if (queued.includes(s)) return {category: 'Queued', detail: status};
+    if (running.includes(s)) return {category: 'Running', detail: status};
+    if (success.includes(s)) return {category: 'Success', detail: status};
+    return {category: 'Custom', detail: status};
   }
 }

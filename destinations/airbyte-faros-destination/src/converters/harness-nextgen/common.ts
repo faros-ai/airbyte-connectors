@@ -126,41 +126,18 @@ export interface CategoryDetail {
   detail: string;
 }
 
-export function toHarnessStatus(status: string): CategoryDetail {
-  const statusLower = status?.toLowerCase() ?? '';
+const CANCELED_STATUSES = ['aborted', 'rejected', 'abortedbyfreeze'];
+const FAILED_STATUSES = ['error', 'expired', 'failed', 'errored', 'approvalrejected'];
+const QUEUED_STATUSES = ['paused', 'queued', 'waiting', 'resourcewaiting', 'asyncwaiting', 'taskwaiting', 'timedwaiting', 'interventionwaiting', 'approvalwaiting', 'inputwaiting'];
+const RUNNING_STATUSES = ['running', 'notstarted'];
+const SUCCESS_STATUSES = ['success', 'succeeded', 'ignorefailed'];
 
-  switch (statusLower) {
-    case 'aborted':
-    case 'rejected':
-    case 'abortedbyfreeze':
-      return {category: 'Canceled', detail: status};
-    case 'error':
-    case 'expired':
-    case 'failed':
-    case 'errored':
-    case 'approvalrejected':
-      return {category: 'Failed', detail: status};
-    case 'paused':
-    case 'queued':
-    case 'waiting':
-    case 'resourcewaiting':
-    case 'asyncwaiting':
-    case 'taskwaiting':
-    case 'timedwaiting':
-    case 'interventionwaiting':
-    case 'approvalwaiting':
-    case 'inputwaiting':
-      return {category: 'Queued', detail: status};
-    case 'running':
-    case 'notstarted':
-      return {category: 'Running', detail: status};
-    case 'success':
-    case 'succeeded':
-    case 'ignorefailed':
-      return {category: 'Success', detail: status};
-    case 'skipped':
-    case 'suspended':
-    default:
-      return {category: 'Custom', detail: status};
-  }
+export function toHarnessStatus(status: string): CategoryDetail {
+  const s = status?.toLowerCase() ?? '';
+  if (CANCELED_STATUSES.includes(s)) return {category: 'Canceled', detail: status};
+  if (FAILED_STATUSES.includes(s)) return {category: 'Failed', detail: status};
+  if (QUEUED_STATUSES.includes(s)) return {category: 'Queued', detail: status};
+  if (RUNNING_STATUSES.includes(s)) return {category: 'Running', detail: status};
+  if (SUCCESS_STATUSES.includes(s)) return {category: 'Success', detail: status};
+  return {category: 'Custom', detail: status};
 }
