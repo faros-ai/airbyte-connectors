@@ -16,6 +16,7 @@ export interface Account {
   accountId: string;
   params: Dictionary<any>;
   type: string;
+  mode?: string;
   local: boolean;
 }
 
@@ -54,6 +55,41 @@ class FarosSyncClient extends FarosClient {
     private readonly _axiosConfig?: AxiosRequestConfig
   ) {
     super(cfg, airbyteLogger?.asPino('info'), _axiosConfig);
+  }
+
+  private async updateAccountParams(
+    accountId: string,
+    graphName: string,
+    redactedConfig: AirbyteConfig
+  ): Promise<Account | undefined> {
+    // Get existing account to merge params
+    const existing = await this.getAccount(accountId);
+    if (!existing) {
+      this.airbyteLogger?.warn(
+        `Account ${accountId} not found for params update`
+      );
+      return undefined;
+    }
+
+    const mergedParams = {
+      ...existing.params,
+      ...redactedConfig,
+      graphName,
+    };
+
+    // PUT does full replacement, preserve all existing properties
+    return accountResult(
+      await this.attemptRequest<AccountResponse>(
+        this.request('PUT', `/accounts/${accountId}`, {
+          accountId: existing.accountId,
+          params: mergedParams,
+          type: existing.type,
+          mode: existing.mode,
+          local: existing.local,
+        }),
+        `Failed to update account ${accountId}`
+      )
+    );
   }
 
   async createAccountSync(
@@ -112,17 +148,33 @@ class FarosSyncClient extends FarosClient {
     accountId: string,
     graphName: string,
     redactedConfig: AirbyteConfig,
-    type?: string,
+    type: string,
     mode?: string
   ): Promise<Account | undefined> {
     this.airbyteLogger?.debug(`Updating local account ${accountId}`);
+    // Get existing account to merge params
+    const existing = await this.getAccount(accountId);
+    if (!existing) {
+      this.airbyteLogger?.warn(`Account ${accountId} not found for update`);
+      return undefined;
+    }
+
+    // Merge: existing params + new config + graphName
+    const mergedParams = {
+      ...existing.params,
+      ...redactedConfig,
+      graphName,
+    };
+
+    // PUT does full replacement, always use provided type and mode
     return accountResult(
       await this.attemptRequest<AccountResponse>(
         this.request('PUT', `/accounts/${accountId}`, {
-          params: {...redactedConfig, graphName},
-          type: type ?? DEFAULT_ACCOUNT_TYPE,
-          mode,
-          local: true,
+          accountId: existing.accountId,
+          params: mergedParams,
+          type: type,
+          mode: mode,
+          local: existing.local,
         }),
         `Failed to update account ${accountId}`
       )
@@ -142,6 +194,12 @@ class FarosSyncClient extends FarosClient {
   ): Promise<Account | undefined> {
     const account = await this.getAccount(accountId);
     if (account) {
+      if (account.local) {
+        this.airbyteLogger?.debug(
+          `Account ${accountId} exists and is local, merging config`
+        );
+        return this.updateAccountParams(accountId, graphName, redactedConfig);
+      }
       return account;
     }
     return this.createLocalAccount(accountId, graphName, redactedConfig);

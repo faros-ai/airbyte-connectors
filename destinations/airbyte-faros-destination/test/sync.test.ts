@@ -40,23 +40,119 @@ describe('FarosSyncClient', () => {
   });
 
   describe('updateLocalAccount', () => {
-    it('should update an account', async () => {
+    it('should merge config and use provided type (mode undefined)', async () => {
+      const existingParams = {existingKey: 'value1', sharedKey: 'oldValue'};
+      const newConfig = {newKey: 'value2', sharedKey: 'newValue'};
+      const mergedParams = {
+        existingKey: 'value1',
+        sharedKey: 'newValue',
+        newKey: 'value2',
+        graphName: graph,
+      };
+
+      // Mock GET to return existing account
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .once()
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: existingParams,
+              type: 'existing-type',
+              mode: 'existing-mode',
+              local: true,
+            },
+          })
+        );
+
+      // Mock PUT - mode undefined when not provided
       await mockttp
         .forPut(`/accounts/${accountId}`)
         .once()
-        .thenReply(200, JSON.stringify({account: {accountId}}));
+        .withJsonBody({
+          accountId,
+          params: mergedParams,
+          type: 'custom',
+          local: true,
+        })
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: mergedParams,
+              type: 'custom',
+              local: true,
+            },
+          })
+        );
 
       const account = await farosSyncClient.updateLocalAccount(
         accountId,
         graph,
-        {}
+        newConfig,
+        'custom'
       );
-      expect(account.accountId).toBe(accountId);
+      expect(account.params).toEqual(mergedParams);
+      expect(account.type).toBe('custom');
+      expect(account.mode).toBeUndefined();
+    });
+
+    it('should use provided type and mode when both specified', async () => {
+      const existingParams = {key: 'value'};
+
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .once()
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: existingParams,
+              type: 'old-type',
+              mode: 'old-mode',
+              local: true,
+            },
+          })
+        );
+
+      await mockttp
+        .forPut(`/accounts/${accountId}`)
+        .once()
+        .withJsonBodyIncluding({
+          type: 'new-type',
+          mode: 'new-mode',
+        })
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: {...existingParams, graphName: graph},
+              type: 'new-type',
+              mode: 'new-mode',
+              local: true,
+            },
+          })
+        );
+
+      const account = await farosSyncClient.updateLocalAccount(
+        accountId,
+        graph,
+        {},
+        'new-type',
+        'new-mode'
+      );
+      expect(account.type).toBe('new-type');
+      expect(account.mode).toBe('new-mode');
     });
 
     it('should not fail if account is not found', async () => {
       await mockttp
-        .forPut(`/accounts/${missingAccountId}`)
+        .forGet(`/accounts/${missingAccountId}`)
         .once()
         .thenReply(
           404,
@@ -66,7 +162,8 @@ describe('FarosSyncClient', () => {
       const account = await farosSyncClient.updateLocalAccount(
         missingAccountId,
         graph,
-        {}
+        {},
+        'custom'
       );
       expect(account).toBeUndefined();
     });
@@ -94,6 +191,140 @@ describe('FarosSyncClient', () => {
 
       const account = await farosSyncClient.getAccount(missingAccountId);
       expect(account).toBeUndefined();
+    });
+  });
+
+  describe('getOrCreateAccount', () => {
+    it('should create account if it does not exist', async () => {
+      const config = {key1: 'value1'};
+      const expectedParams = {...config, graphName: graph};
+
+      // Mock GET - account not found
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .once()
+        .thenReply(
+          404,
+          JSON.stringify({error: `Account ${accountId} does not exist`})
+        );
+
+      // Mock POST - create account
+      await mockttp
+        .forPost('/accounts')
+        .once()
+        .withJsonBodyIncluding({
+          accountId,
+          params: expectedParams,
+          local: true,
+        })
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: expectedParams,
+              type: 'custom',
+              local: true,
+            },
+          })
+        );
+
+      const account = await farosSyncClient.getOrCreateAccount(
+        accountId,
+        graph,
+        config
+      );
+      expect(account.accountId).toBe(accountId);
+      expect(account.params).toEqual(expectedParams);
+    });
+
+    it('should merge config and preserve type/mode for existing local account', async () => {
+      const existingParams = {existingKey: 'value1', sharedKey: 'oldValue'};
+      const newConfig = {newKey: 'value2', sharedKey: 'newValue'};
+      const mergedParams = {
+        existingKey: 'value1',
+        sharedKey: 'newValue',
+        newKey: 'value2',
+        graphName: graph,
+      };
+
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .twice()
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: existingParams,
+              type: 'custom',
+              mode: 'test-mode',
+              local: true,
+            },
+          })
+        );
+
+      await mockttp
+        .forPut(`/accounts/${accountId}`)
+        .once()
+        .withJsonBodyIncluding({
+          params: mergedParams,
+          type: 'custom',
+          mode: 'test-mode',
+        })
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: mergedParams,
+              type: 'custom',
+              mode: 'test-mode',
+              local: true,
+            },
+          })
+        );
+
+      const account = await farosSyncClient.getOrCreateAccount(
+        accountId,
+        graph,
+        newConfig
+      );
+      expect(account.params).toEqual(mergedParams);
+      expect(account.type).toBe('custom');
+      expect(account.mode).toBe('test-mode');
+    });
+
+    it('should not update non-local account', async () => {
+      const existingParams = {key: 'value'};
+      const newConfig = {newKey: 'newValue'};
+
+      // Mock GET - account exists but is NOT local
+      await mockttp
+        .forGet(`/accounts/${accountId}`)
+        .once()
+        .thenReply(
+          200,
+          JSON.stringify({
+            account: {
+              accountId,
+              params: existingParams,
+              type: 'custom',
+              local: false, // NOT local
+            },
+          })
+        );
+
+      // No PUT should be called for non-local accounts
+
+      const account = await farosSyncClient.getOrCreateAccount(
+        accountId,
+        graph,
+        newConfig
+      );
+      expect(account.accountId).toBe(accountId);
+      expect(account.params).toEqual(existingParams); // Unchanged
+      expect(account.local).toBe(false);
     });
   });
 
