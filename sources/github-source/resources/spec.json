@@ -363,8 +363,18 @@
           "type": "string"
         }
       },
-      "proxy_url": {
+      "copilot_metrics_teams_regex": {
         "order": 36,
+        "type": "string",
+        "title": "Copilot Metrics Teams Regex",
+        "description": "Regex pattern to filter teams for Copilot metrics. Only teams with slugs matching this pattern will be fetched. Ignored if 'Copilot Metrics Teams' is specified.",
+        "examples": [
+          "^engineering-.*$",
+          "^(frontend|backend)-team$"
+        ]
+      },
+      "proxy_url": {
+        "order": 37,
         "type": "string",
         "title": "Proxy URL",
         "description": "Proxy URL to use for the GitHub API"
