@@ -36,6 +36,7 @@ export interface GitHubConfig extends AirbyteConfig, RoundRobinConfig {
   readonly fetch_public_organizations?: boolean;
   readonly skip_repos_without_recent_push?: boolean;
   readonly copilot_metrics_teams?: ReadonlyArray<string>;
+  readonly copilot_metrics_teams_regex?: string;
   readonly proxy_url?: string;
   // startDate and endDate are calculated from start_date, end_date, and cutoff_days
   startDate?: Date;

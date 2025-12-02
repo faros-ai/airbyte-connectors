@@ -153,6 +153,7 @@ export abstract class GitHub {
   protected readonly useEnterpriseAPIs: boolean;
   protected readonly fetchPublicOrganizations: boolean;
   protected readonly copilotMetricsTeams: ReadonlyArray<string>;
+  protected readonly copilotMetricsTeamsRegex?: RegExp;
   protected readonly skipReposWithoutRecentPush: boolean;
   protected readonly startDate?: Date;
 
@@ -181,6 +182,11 @@ export abstract class GitHub {
     this.fetchPublicOrganizations =
       config.fetch_public_organizations ?? DEFAULT_FETCH_PUBLIC_ORGANIZATIONS;
     this.copilotMetricsTeams = config.copilot_metrics_teams ?? [];
+    if (config.copilot_metrics_teams_regex) {
+      this.copilotMetricsTeamsRegex = new RegExp(
+        config.copilot_metrics_teams_regex
+      );
+    }
     this.skipReposWithoutRecentPush =
       config.skip_repos_without_recent_push ??
       DEFAULT_SKIP_REPOS_WITHOUT_RECENT_PUSH;
@@ -1138,6 +1144,17 @@ export abstract class GitHub {
       } else {
         const teamsResponse = await this.getTeams(org);
         teamSlugs = teamsResponse.map((team) => team.slug);
+
+        // Apply regex filter if specified
+        if (this.copilotMetricsTeamsRegex) {
+          const beforeCount = teamSlugs.length;
+          teamSlugs = teamSlugs.filter((slug) =>
+            this.copilotMetricsTeamsRegex.test(slug)
+          );
+          this.logger.debug(
+            `Filtered teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${teamSlugs.length}`
+          );
+        }
       }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
@@ -1987,6 +2004,17 @@ export abstract class GitHub {
       } else {
         const teamsResponse = await this.getEnterpriseTeams(enterprise);
         teamSlugs = teamsResponse.map((team) => team.slug);
+
+        // Apply regex filter if specified
+        if (this.copilotMetricsTeamsRegex) {
+          const beforeCount = teamSlugs.length;
+          teamSlugs = teamSlugs.filter((slug) =>
+            this.copilotMetricsTeamsRegex.test(slug)
+          );
+          this.logger.debug(
+            `Filtered teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${teamSlugs.length}`
+          );
+        }
       }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
