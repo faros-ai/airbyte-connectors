@@ -1,0 +1,22 @@
+[
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "TestProject",
+    "url": "https://dev.azure.com/test-org/_apis/projects/00000000-0000-0000-0000-000000000001",
+    "state": "wellFormed",
+    "revision": 123,
+    "visibility": "private",
+    "lastUpdateTime": "2024-01-15T10:30:00Z",
+    "description": "Test TFVC project"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "name": "AnotherProject",
+    "url": "https://dev.azure.com/test-org/_apis/projects/00000000-0000-0000-0000-000000000002",
+    "state": "wellFormed",
+    "revision": 456,
+    "visibility": "public",
+    "lastUpdateTime": "2024-01-10T08:15:00Z",
+    "description": "Another TFVC project"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "changesetId": 18,
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/18",
+    "author": {
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "displayName": "Test User",
+      "uniqueName": "testuser@example.com",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test"
+    },
+    "checkedInBy": {
+      "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+      "displayName": "Test User",
+      "uniqueName": "testuser@example.com",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/test",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/test"
+    },
+    "createdDate": "2024-01-15T12:41:16.963Z",
+    "comment": "Initial commit with sample files",
+    "commentTruncated": false
+  },
+  {
+    "changesetId": 19,
+    "url": "https://dev.azure.com/test-org/_apis/tfvc/changesets/19",
+    "author": {
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "displayName": "Another User",
+      "uniqueName": "anotheruser@example.com",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another"
+    },
+    "checkedInBy": {
+      "id": "a1234567-1234-1234-1234-123456789012",
+      "displayName": "Another User",
+      "uniqueName": "anotheruser@example.com",
+      "imageUrl": "https://dev.azure.com/test-org/_apis/GraphProfile/MemberAvatars/another",
+      "url": "https://vssps.dev.azure.com/test-org/_apis/Graph/Users/another"
+    },
+    "createdDate": "2024-01-16T09:30:00.000Z",
+    "comment": "Bug fix for authentication module",
+    "commentTruncated": false
+  }
+]
