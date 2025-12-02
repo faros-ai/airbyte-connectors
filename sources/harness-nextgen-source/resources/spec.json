@@ -1,0 +1,64 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Harness NextGen Spec",
+    "type": "object",
+    "required": ["api_key", "account_id", "cutoff_days"],
+    "additionalProperties": true,
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "API Key",
+        "description": "Harness API Key for authentication",
+        "airbyte_secret": true
+      },
+      "account_id": {
+        "type": "string",
+        "title": "Account ID",
+        "description": "Harness Account ID"
+      },
+      "api_url": {
+        "type": "string",
+        "title": "API URL",
+        "description": "The API URL for fetching data from Harness NextGen",
+        "default": "https://app.harness.io",
+        "examples": ["https://app.harness.io", "https://my-harness-server.example.com"]
+      },
+      "organization_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Organization IDs",
+        "description": "Optional list of organization identifiers to filter. If empty, all organizations will be synced."
+      },
+      "project_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "title": "Project IDs",
+        "description": "Optional list of project identifiers to filter. If empty, all projects will be synced."
+      },
+      "cutoff_days": {
+        "type": "integer",
+        "title": "Cutoff Days",
+        "default": 90,
+        "description": "Only fetch executions updated after cutoff"
+      },
+      "page_size": {
+        "type": "integer",
+        "title": "Page Size",
+        "default": 100,
+        "description": "Number of records to fetch per API call (max 100)"
+      },
+      "deployment_timeout": {
+        "type": "integer",
+        "title": "Deployment Timeout",
+        "default": 24,
+        "description": "Max number of hours to consider for a deployment to be running/queued before giving up on syncing it"
+      }
+    }
+  }
+}

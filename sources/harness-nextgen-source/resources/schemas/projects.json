@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "orgIdentifier": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "color": {
+      "type": ["string", "null"]
+    },
+    "modules": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "tags": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}
