@@ -120,3 +120,47 @@ export function computeApplication(
     uid: platform ? `${name}_${platform}` : name,
   };
 }
+
+export interface CategoryDetail {
+  category: string;
+  detail: string;
+}
+
+export function toHarnessStatus(status: string): CategoryDetail {
+  const statusLower = status?.toLowerCase() ?? '';
+
+  switch (statusLower) {
+    case 'aborted':
+    case 'rejected':
+    case 'abortedbyfreeze':
+      return {category: 'Canceled', detail: status};
+    case 'error':
+    case 'expired':
+    case 'failed':
+    case 'errored':
+    case 'approvalrejected':
+      return {category: 'Failed', detail: status};
+    case 'paused':
+    case 'queued':
+    case 'waiting':
+    case 'resourcewaiting':
+    case 'asyncwaiting':
+    case 'taskwaiting':
+    case 'timedwaiting':
+    case 'interventionwaiting':
+    case 'approvalwaiting':
+    case 'inputwaiting':
+      return {category: 'Queued', detail: status};
+    case 'running':
+    case 'notstarted':
+      return {category: 'Running', detail: status};
+    case 'success':
+    case 'succeeded':
+    case 'ignorefailed':
+      return {category: 'Success', detail: status};
+    case 'skipped':
+    case 'suspended':
+    default:
+      return {category: 'Custom', detail: status};
+  }
+}
