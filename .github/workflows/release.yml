@@ -16,7 +16,7 @@ jobs:
       HUSKY: 0
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -94,7 +94,7 @@ jobs:
       id-token: write
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Extract tag version
         id: extract-tag-version
