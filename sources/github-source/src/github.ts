@@ -139,6 +139,7 @@ const COPILOT_USER_USAGE_DAILY_REPORTS_RETENTION_DAYS = 365;
 
 export abstract class GitHub {
   private static github: GitHub;
+  protected readonly fetchTeams: boolean;
   protected readonly fetchPullRequestFiles: boolean;
   protected readonly fetchPullRequestReviews: boolean;
   protected readonly bucketId: number;
@@ -162,6 +163,7 @@ export abstract class GitHub {
     protected readonly baseOctokit: ExtendedOctokit,
     protected readonly logger: AirbyteLogger
   ) {
+    this.fetchTeams = config.fetch_teams ?? DEFAULT_FETCH_TEAMS;
     this.fetchPullRequestFiles =
       config.fetch_pull_request_files ?? DEFAULT_FETCH_PR_FILES;
     this.fetchPullRequestReviews =
@@ -1010,6 +1012,18 @@ export abstract class GitHub {
         });
       }
     }
+
+    // Apply regex filter only if fetch_teams is false (only used for Copilot metrics)
+    if (!this.fetchTeams && this.copilotMetricsTeamsRegex) {
+      const beforeCount = teams.length;
+      const filtered = teams.filter((team) =>
+        this.copilotMetricsTeamsRegex.test(team.slug)
+      );
+      this.logger.debug(
+        `Filtered teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${filtered.length}`
+      );
+      return filtered;
+    }
     return teams;
   }
 
@@ -1144,17 +1158,6 @@ export abstract class GitHub {
       } else {
         const teamsResponse = await this.getTeams(org);
         teamSlugs = teamsResponse.map((team) => team.slug);
-
-        // Apply regex filter if specified
-        if (this.copilotMetricsTeamsRegex) {
-          const beforeCount = teamSlugs.length;
-          teamSlugs = teamSlugs.filter((slug) =>
-            this.copilotMetricsTeamsRegex.test(slug)
-          );
-          this.logger.debug(
-            `Filtered teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${teamSlugs.length}`
-          );
-        }
       }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
@@ -1874,6 +1877,18 @@ export abstract class GitHub {
         });
       }
     }
+
+    // Apply regex filter if specified
+    if (this.copilotMetricsTeamsRegex) {
+      const beforeCount = teams.length;
+      const filtered = teams.filter((team) =>
+        this.copilotMetricsTeamsRegex.test(team.slug)
+      );
+      this.logger.debug(
+        `Filtered enterprise teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${filtered.length}`
+      );
+      return filtered;
+    }
     return teams;
   }
 
@@ -2004,17 +2019,6 @@ export abstract class GitHub {
       } else {
         const teamsResponse = await this.getEnterpriseTeams(enterprise);
         teamSlugs = teamsResponse.map((team) => team.slug);
-
-        // Apply regex filter if specified
-        if (this.copilotMetricsTeamsRegex) {
-          const beforeCount = teamSlugs.length;
-          teamSlugs = teamSlugs.filter((slug) =>
-            this.copilotMetricsTeamsRegex.test(slug)
-          );
-          this.logger.debug(
-            `Filtered teams by regex ${this.copilotMetricsTeamsRegex}: ${beforeCount} -> ${teamSlugs.length}`
-          );
-        }
       }
     } catch (err: any) {
       if (err.status >= 400 && err.status < 500) {
