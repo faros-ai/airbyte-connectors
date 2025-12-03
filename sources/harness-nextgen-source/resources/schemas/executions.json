@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "planExecutionId": {
+      "type": "string"
+    },
+    "pipelineIdentifier": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "orgIdentifier": {
+      "type": "string"
+    },
+    "projectIdentifier": {
+      "type": "string"
+    },
+    "startTs": {
+      "type": ["number", "null"]
+    },
+    "endTs": {
+      "type": ["number", "null"]
+    },
+    "executionTriggerInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "triggerType": {
+          "type": "string"
+        },
+        "triggeredBy": {
+          "type": ["object", "null"],
+          "properties": {
+            "identifier": {
+              "type": ["string", "null"]
+            },
+            "extraInfo": {
+              "type": ["object", "null"],
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "moduleInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "cd": {
+          "type": ["object", "null"],
+          "properties": {
+            "serviceIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "envIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "infrastructureIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "runSequence": {
+      "type": ["integer", "null"]
+    },
+    "successfulStagesCount": {
+      "type": ["integer", "null"]
+    },
+    "failedStagesCount": {
+      "type": ["integer", "null"]
+    },
+    "runningStagesCount": {
+      "type": ["integer", "null"]
+    },
+    "totalStagesCount": {
+      "type": ["integer", "null"]
+    },
+    "gitDetails": {
+      "type": ["object", "null"],
+      "properties": {
+        "branch": {
+          "type": ["string", "null"]
+        },
+        "repoIdentifier": {
+          "type": ["string", "null"]
+        },
+        "repoName": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}
