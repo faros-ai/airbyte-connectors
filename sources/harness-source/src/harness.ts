@@ -184,7 +184,7 @@ export class Harness {
 
         const data = response.data.data;
         for (const item of data.content || []) {
-          pipelines.push(item.pipelineSummary);
+          pipelines.push(item);
         }
 
         page++;

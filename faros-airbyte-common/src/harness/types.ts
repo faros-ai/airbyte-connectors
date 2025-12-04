@@ -120,7 +120,7 @@ export interface ExecutionOutlineResponse {
 export interface PipelineListResponse {
   status: string;
   data: {
-    content: {pipelineSummary: Pipeline}[];
+    content: Pipeline[];
     totalElements?: number;
     totalPages?: number;
     pageNumber?: number;
