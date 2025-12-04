@@ -1,150 +1,260 @@
-import {AirbyteLogger} from 'faros-airbyte-cdk';
-import {ClientError, GraphQLClient} from 'graphql-request';
-import {VError} from 'verror';
+import {AxiosInstance} from 'axios';
+import {AirbyteLogger, wrapApiError} from 'faros-airbyte-cdk';
+import {makeAxiosInstanceWithRetry} from 'faros-js-client';
+import {Memoize} from 'typescript-memoize';
+import VError from 'verror';
 
 import {
-  ExecutionNode,
+  ExecutionOutlineResponse,
   HarnessConfig,
-  RequestOptionsExecutions,
-  RequestResultExecutions,
+  Organization,
+  OrganizationListResponse,
+  Pipeline,
+  PipelineExecution,
+  PipelineListResponse,
+  Project,
+  ProjectListResponse,
 } from './harness_models';
-import {getQueryExecution, getQueryToCheckConnection} from './resources';
 
 export const DEFAULT_CUTOFF_DAYS = 90;
 const DEFAULT_PAGE_SIZE = 100;
 const DEFAULT_HARNESS_API_URL = 'https://app.harness.io';
-
-/** These 4 params need to attach environments and services to each execution.
-  Then find a valid one in each lists */
-const APP_ENV_LIMIT = 10;
-const APP_ENV_OFFSET = 0;
-const APP_SERVICE_LIMIT = 10;
-const APP_SERVICE_OFFSET = 0;
+const DEFAULT_TIMEOUT_MS = 60000;
+const DEFAULT_RETRIES = 3;
 
 export class Harness {
   private static harness: Harness = null;
+  private readonly startDate: Date;
 
   constructor(
-    readonly client: GraphQLClient,
-    readonly pageSize: number,
-    readonly startDate: Date,
-    readonly logger: AirbyteLogger
-  ) {}
+    private readonly api: AxiosInstance,
+    private readonly config: HarnessConfig,
+    private readonly logger: AirbyteLogger
+  ) {
+    this.startDate = new Date();
+    this.startDate.setDate(this.startDate.getDate() - config.cutoff_days);
+  }
 
   static instance(config: HarnessConfig, logger: AirbyteLogger): Harness {
     if (Harness.harness) return Harness.harness;
 
     if (!config.account_id) {
-      throw new VError(
-        "Missing authentication information. Please provide a Harness user's accountId"
-      );
+      throw new VError('Missing account_id');
     }
     if (!config.api_key) {
-      throw new VError(
-        'Missing authentication information. Please provide a Harness apiKey'
-      );
-    }
-    if (!config.cutoff_days) {
-      throw new VError('cutoff_days is null or empty');
+      throw new VError('Missing api_key');
     }
 
     const apiUrl = config.api_url || DEFAULT_HARNESS_API_URL;
-    const pageSize = config.page_size || DEFAULT_PAGE_SIZE;
-    const client = new GraphQLClient(
-      `${apiUrl}/gateway/api/graphql?accountId=${config.account_id}`,
-      {headers: {'x-api-key': config.api_key}}
+    const api = makeAxiosInstanceWithRetry(
+      {
+        baseURL: `${apiUrl}/gateway`,
+        timeout: DEFAULT_TIMEOUT_MS,
+        headers: {
+          'x-api-key': config.api_key,
+          'Content-Type': 'application/json',
+          'Harness-Account': config.account_id,
+        },
+      },
+      logger.asPino(),
+      DEFAULT_RETRIES,
+      10000
     );
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - config.cutoff_days);
-    Harness.harness = new Harness(client, pageSize, startDate, logger);
-    return Harness.harness;
-  }
 
-  wrapGraphError(err: ClientError): string {
-    let message = '';
-    err?.response?.errors?.forEach((e) => {
-      message += e.message;
-    });
-    return message ? message : (err.message ?? '');
+    Harness.harness = new Harness(api, config, logger);
+    return Harness.harness;
   }
 
   async checkConnection(): Promise<void> {
     try {
-      await this.client.request(getQueryToCheckConnection());
+      await this.api.get<OrganizationListResponse>('/ng/api/organizations', {
+        params: {
+          accountIdentifier: this.config.account_id,
+          pageSize: 1,
+        },
+      });
     } catch (err: any) {
-      throw new VError(
-        `Please verify your API ID or key are correct. Error: ${this.wrapGraphError(
-          err
-        )}`
-      );
+      throw wrapApiError(err, 'Failed to connect to Harness');
     }
   }
 
-  private async *getIteratorExecution(
-    func: (
-      options: RequestOptionsExecutions
-    ) => Promise<RequestResultExecutions>,
-    options: RequestOptionsExecutions,
-    since: number,
-    logger: AirbyteLogger
-  ): AsyncGenerator<ExecutionNode> {
-    let offset = 0;
-    let hasMore = true;
-    do {
-      try {
-        const {executions} = await func({...options, offset});
-        for (const item of executions.nodes || []) {
-          const endedAt = item.endedAt;
-          const startedAt = item.startedAt;
-
-          // We get deployments sorted by desc order. Harness API however returns
-          // deployments without ended times
-          if (!endedAt && startedAt && since >= startedAt) {
-            logger.info(
-              `Skipping deployment: ${item.application.id} with no finished time but has started time: ${item.startedAt}, which is before current cutoff: ${since}`
-            );
-            continue;
-          }
-          if (endedAt && since >= endedAt) {
-            logger.info(
-              `Skipping execution ${item.id}, ended ${item.endedAt} before cutoff ${since}`
-            );
-            return null;
-          }
-
-          yield item;
-        }
-        offset += executions.pageInfo.limit ?? executions.nodes.length;
-        hasMore = executions.pageInfo.hasMore;
-      } catch (e: any) {
-        logger.error(e, e.stack);
-        throw e;
-      }
-    } while (hasMore);
+  private get pageSize(): number {
+    return this.config.page_size || DEFAULT_PAGE_SIZE;
   }
 
-  getExecutions(since?: number): AsyncGenerator<ExecutionNode> {
-    const sinceMax =
-      since > this.startDate.getTime() ? since : this.startDate.getTime();
-    const query = getQueryExecution();
+  @Memoize()
+  async getOrganizations(): Promise<ReadonlyArray<Organization>> {
+    const orgs: Organization[] = [];
+    let page = 0;
+    let hasMore = true;
 
-    const func = (
-      options: RequestOptionsExecutions
-    ): Promise<RequestResultExecutions> => {
-      const result = this.client.request(query, options);
-      return result as Promise<RequestResultExecutions>;
-    };
+    while (hasMore) {
+      try {
+        const response = await this.api.get<OrganizationListResponse>(
+          '/ng/api/organizations',
+          {
+            params: {
+              accountIdentifier: this.config.account_id,
+              pageIndex: page,
+              pageSize: this.pageSize,
+            },
+          }
+        );
 
-    const funcOptions: RequestOptionsExecutions = {
-      appEnvLimit: APP_ENV_LIMIT,
-      appEnvOffset: APP_ENV_OFFSET,
-      appServiceLimit: APP_SERVICE_LIMIT,
-      appServiceOffset: APP_SERVICE_OFFSET,
-      offset: 0,
-      limit: this.pageSize,
-      endedAt: sinceMax,
-    };
+        const data = response.data.data;
+        for (const item of data.content || []) {
+          orgs.push(item.organization);
+        }
 
-    return this.getIteratorExecution(func, funcOptions, sinceMax, this.logger);
+        page++;
+        hasMore = page < (data.totalPages ?? 0);
+      } catch (err: any) {
+        throw wrapApiError(err, 'Failed to fetch organizations');
+      }
+    }
+
+    return orgs;
+  }
+
+  @Memoize((orgIdentifier: string) => orgIdentifier)
+  async getProjects(orgIdentifier: string): Promise<ReadonlyArray<Project>> {
+    const projects: Project[] = [];
+    let page = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      try {
+        const response = await this.api.get<ProjectListResponse>(
+          '/ng/api/projects',
+          {
+            params: {
+              accountIdentifier: this.config.account_id,
+              orgIdentifier,
+              pageIndex: page,
+              pageSize: this.pageSize,
+            },
+          }
+        );
+
+        const data = response.data.data;
+        for (const item of data.content || []) {
+          projects.push(item.project);
+        }
+
+        page++;
+        hasMore = page < (data.totalPages ?? 0);
+      } catch (err: any) {
+        throw wrapApiError(
+          err,
+          `Failed to fetch projects for org ${orgIdentifier}`
+        );
+      }
+    }
+
+    return projects;
+  }
+
+  @Memoize(
+    (orgIdentifier: string, projectIdentifier: string) =>
+      `${orgIdentifier}/${projectIdentifier}`
+  )
+  async getPipelines(
+    orgIdentifier: string,
+    projectIdentifier: string
+  ): Promise<ReadonlyArray<Pipeline>> {
+    const pipelines: Pipeline[] = [];
+    let page = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      try {
+        const response = await this.api.post<PipelineListResponse>(
+          '/pipeline/api/pipelines/list',
+          {filterType: 'PipelineSetup'},
+          {
+            params: {
+              accountIdentifier: this.config.account_id,
+              orgIdentifier,
+              projectIdentifier,
+              page,
+              size: this.pageSize,
+            },
+          }
+        );
+
+        const data = response.data.data;
+        for (const item of data.content || []) {
+          pipelines.push(item.pipelineSummary);
+        }
+
+        page++;
+        hasMore = page < (data.totalPages ?? 0);
+      } catch (err: any) {
+        throw wrapApiError(
+          err,
+          `Failed to fetch pipelines for ${orgIdentifier}/${projectIdentifier}`
+        );
+      }
+    }
+
+    return pipelines;
+  }
+
+  async *getExecutions(
+    orgIdentifier: string,
+    projectIdentifier: string,
+    pipelineIdentifier: string,
+    cutoff?: number
+  ): AsyncGenerator<PipelineExecution> {
+    const sinceTime = cutoff || this.startDate.getTime();
+    let lastSeenExecutionId: string | undefined;
+    let lastSeenStartTime: number | undefined;
+    let hasMore = true;
+
+    while (hasMore) {
+      const params: Record<string, any> = {
+        accountIdentifier: this.config.account_id,
+        orgIdentifier,
+        projectIdentifier,
+        pipelineIdentifier,
+        size: this.pageSize,
+      };
+
+      if (lastSeenExecutionId && lastSeenStartTime) {
+        params.lastSeenExecutionId = lastSeenExecutionId;
+        params.lastSeenStartTime = lastSeenStartTime;
+      }
+
+      const requestBody = {
+        filterType: 'PipelineExecution',
+        moduleProperties: {cd: {}},
+        timeRange: {
+          startTime: sinceTime,
+          endTime: Date.now(),
+        },
+      };
+
+      try {
+        const response = await this.api.post<ExecutionOutlineResponse>(
+          '/pipeline/api/pipelines/execution/summary',
+          requestBody,
+          {params}
+        );
+
+        const data = response.data.data;
+        for (const execution of data.content || []) {
+          yield execution;
+        }
+
+        lastSeenExecutionId = data.lastSeenExecutionId;
+        lastSeenStartTime = data.lastSeenStartTime;
+        hasMore = data.hasMore;
+      } catch (err: any) {
+        throw wrapApiError(
+          err,
+          `Failed to fetch executions for ${orgIdentifier}/${projectIdentifier}/${pipelineIdentifier}`
+        );
+      }
+    }
   }
 }

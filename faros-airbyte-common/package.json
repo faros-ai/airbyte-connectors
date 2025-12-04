@@ -37,6 +37,7 @@
     "./github/queries": "./lib/github/queries.js",
     "./gitlab": "./lib/gitlab/index.js",
     "./googledrive": "./lib/googledrive/index.js",
+    "./harness": "./lib/harness/index.js",
     "./jira": "./lib/jira/index.js",
     "./vanta": "./lib/vanta/index.js",
     "./windsurf": "./lib/windsurf/index.js",
@@ -83,6 +84,9 @@
       ],
       "googledrive": [
         "./lib/googledrive/index.d.ts"
+      ],
+      "harness": [
+        "./lib/harness/index.d.ts"
       ],
       "jira": [
         "./lib/jira/index.d.ts"
