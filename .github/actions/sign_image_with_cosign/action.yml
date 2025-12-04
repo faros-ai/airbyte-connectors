@@ -16,6 +16,26 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.dockerhub-username }}" ]; then
+          echo "Error: dockerhub-username is required"
+          exit 1
+        fi
+        if [ -z "${{ inputs.dockerhub-token }}" ]; then
+          echo "Error: dockerhub-token is required"
+          exit 1
+        fi
+        if [ -z "${{ inputs.docker-image }}" ]; then
+          echo "Error: docker-image is required"
+          exit 1
+        fi
+        # Validate docker-image format: should be name:tag (no digest, no empty tag)
+        if ! [[ "${{ inputs.docker-image }}" =~ ^[a-zA-Z0-9._/-]+:[a-zA-Z0-9._-]+$ ]]; then
+          echo "Error: docker-image must be in the format 'name:tag' (e.g. farosai/airbyte-xyz:3.4.5)"
+          exit 1
+        fi
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.7.0
 
