@@ -1,44 +1,70 @@
 #!/usr/bin/env bash
 
 if [ -z "$1" ]; then
-  error "Connector path not specified"
+  echo "Error: Connector path not specified" >&2
+  exit 1
 fi
 if [ -z "$2" ]; then
-  error "Connector version not specified"
+  echo "Error: Version tag not specified" >&2
+  exit 1
 fi
 if [ -z "$3" ]; then
-  error "Path to sign-image script not specified"
+  echo "Error: Latest tag not specified" >&2
+  exit 1
 fi
-connector_path=$1
-connector_version=$2
-image_signing_script=$3
 
+connector_path=$1
+version_tag=$2
+latest_tag=$3
+
+# Normalize connector path (add trailing slash if missing)
 [[ "${connector_path}" != */ ]] && connector_path="${connector_path}/"
 
-org="farosai"
-connector_name="$(echo $connector_path | cut -f2 -d'/')"
-prefix="airbyte-"
-if [[ "$connector_name" = $prefix* ]]; then
-  image="$org/$connector_name"
-else
-  image="$org/$prefix$connector_name"
+# Extract connector name and version from the provided tags
+connector_version="${version_tag##*:}"
+image="${version_tag%:*}"
+
+echo "Publishing connector:"
+echo "  Path: $connector_path"
+echo "  Image: $image"
+echo "  Version tag: $version_tag"
+echo "  Latest tag: $latest_tag"
+
+# Check if image already exists
+docker manifest inspect "$version_tag" > /dev/null 2>&1
+if [ "$?" == 0 ]; then
+  echo "Image $version_tag already exists, skipping build and push"
+  exit 0
 fi
 
-latest_tag="$image:latest"
-version_tag="$image:$connector_version"
-echo "Image version tag: $version_tag"
+# Build and push the image
+echo "Building image..."
+docker build . \
+  --build-arg path="$connector_path" \
+  --build-arg version="$connector_version" \
+  --pull \
+  -t "$latest_tag" \
+  -t "$version_tag" \
+  --label "io.airbyte.version=$connector_version" \
+  --label "io.airbyte.name=$image"
 
-docker manifest inspect $version_tag > /dev/null
-if [ "$?" == 1 ]; then
-  docker build . \
-    --build-arg path=$connector_path \
-    --build-arg version=$connector_version \
-    --pull \
-    -t $latest_tag \
-    -t $version_tag \
-    --label "io.airbyte.version=$connector_version" \
-    --label "io.airbyte.name=$image"
-  docker push $latest_tag
-  docker push $version_tag
-  "${image_signing_script}" "$version_tag"
+if [ $? -ne 0 ]; then
+  echo "Error: Docker build failed for $connector_path" >&2
+  exit 1
 fi
+
+echo "Pushing latest tag: $latest_tag"
+docker push "$latest_tag"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to push $latest_tag" >&2
+  exit 1
+fi
+
+echo "Pushing version tag: $version_tag"
+docker push "$version_tag"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to push $version_tag" >&2
+  exit 1
+fi
+
+echo "Successfully published $version_tag"

@@ -113,14 +113,27 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y skopeo
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
 
-      - name: Publish connector images
-        env:
-          DOCKER_BUILDKIT: 1
-        run: |
-          for connector_path in $(ls -d sources/*/ destinations/*/)
-          do
-            ./scripts/publish-connector.sh $connector_path ${{ env.TAG_VERSION }} $GITHUB_WORKSPACE/scripts/sign-image-with-cosign.sh
-          done
+      - name: Generate connector image tags
+        run: ./scripts/list-connector-images.sh ${{ env.TAG_VERSION }} /tmp/connectors.txt
+      
+      - name: Print connector image tags
+        run: cat /tmp/connectors.txt
+
+      # - name: Publish connector images
+      #   env:
+      #     DOCKER_BUILDKIT: 1
+      #   run: |
+      #     while read -r connector_path version_tag latest_tag; do
+      #       ./scripts/publish-connector.sh "$connector_path" "$version_tag" "$latest_tag"
+      #     done < /tmp/connectors.txt
+
+      # - name: Sign connector images
+      #   run: |
+      #     while read -r connector_path version_tag latest_tag; do
+      #       ./scripts/sign-image-with-cosign.sh "$version_tag"
+      #       ./scripts/sign-image-with-cosign.sh "$latest_tag"
+      #     done < /tmp/connectors.txt
