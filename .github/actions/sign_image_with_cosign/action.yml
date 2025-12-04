@@ -52,9 +52,9 @@ runs:
         IMAGE="docker.io/${{ inputs.docker-image }}"
         echo "Inspecting remote image: $IMAGE"
 
-        DIGEST=$(skopeo inspect --raw "docker://$IMAGE" | sha256sum | awk '{print $1}')
+        DIGEST=$(skopeo inspect "docker://$IMAGE" --format "{{.Digest}}")
         echo "Digest: $DIGEST"
-        echo "digest=sha256:$DIGEST" >> "$GITHUB_OUTPUT"
+        echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
     - name: Sign and verify image
       shell: bash
