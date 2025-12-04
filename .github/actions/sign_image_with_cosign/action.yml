@@ -69,30 +69,30 @@ runs:
         IMAGE_NAME="${{ inputs.docker-image }}"
         IMAGE_REF="$IMAGE_NAME@${{ steps.get-digest.outputs.digest }}"
 
-        echo "Signing image: $IMAGE_REF"
-        if ! cosign sign --yes "$IMAGE_REF"; then
-          echo "Error: Failed to sign image $IMAGE_REF"
+        echo "Signing image: ${IMAGE_REF}"
+        if ! cosign sign --yes "${IMAGE_REF}"; then
+          echo "Error: Failed to sign image ${IMAGE_REF}" >&2
           exit 1
         fi
 
-        echo "Verifying image: $IMAGE_REF"
+        echo "Verifying image: ${IMAGE_REF}"
         MAX_ATTEMPTS=2
         ATTEMPT=1
         SLEEP_SECONDS=5
         while true; do
-          sleep $SLEEP_SECONDS
-          if [ "$ATTEMPT" -gt "$MAX_ATTEMPTS" ]; then
-            echo "Error: Verification failed after $ATTEMPT attempts for $IMAGE_REF"
+          if [ "${ATTEMPT}" -gt "${MAX_ATTEMPTS}" ]; then
+            echo "Error: Verification failed after ${MAX_ATTEMPTS} attempts for ${IMAGE_REF}" >&2
             exit 1
           fi
 
-          if cosign verify "$IMAGE_REF" \
+          if cosign verify "${IMAGE_REF}" \
             --certificate-identity-regexp="https://github.com/${{ github.repository }}/.*" \
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com"; then
-            echo "Verification succeeded for $IMAGE_REF"
+            echo "Verification succeeded for ${IMAGE_REF}"
             break
           fi
 
-          echo "Verification failed (attempt $ATTEMPT/$MAX_ATTEMPTS). Retrying in ${SLEEP_SECONDS} seconds."
+          echo "Verification failed (attempt ${ATTEMPT}/${MAX_ATTEMPTS}). Retrying in ${SLEEP_SECONDS} seconds."
           ATTEMPT=$(( ATTEMPT + 1 ))
+          sleep "${SLEEP_SECONDS}"
         done
