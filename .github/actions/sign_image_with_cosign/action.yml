@@ -10,7 +10,7 @@ inputs:
     description: "Docker Hub token or password"
     required: true
   docker-image:
-    description: "Docker image with tag (e.g. farosai/airbyte-xyz:3.4.5)"
+    description: "Docker image with tag without registry prefix (e.g. farosai/airbyte-xyz:3.4.5)"
     required: true
 
 runs:
