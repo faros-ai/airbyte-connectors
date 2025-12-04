@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Sign Docker images with Cosign using GitHub OIDC
+# We maintain this script rather than using the GitHub action because it doesn't redownload the
+# dependencies (cosign, skopeo) nor login to Docker Hub every time.
 #
 # Usage: sign-image-with-cosign.sh <image:tag>
 #   image:tag - Docker image reference with tag (e.g., farosai/airbyte-xyz:1.0.0)
