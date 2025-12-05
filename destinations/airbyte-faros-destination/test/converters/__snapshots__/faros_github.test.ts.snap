@@ -6496,17 +6496,6 @@ N/A
     },
   },
   Object {
-    "faros_MetricValue": Object {
-      "computedAt": "2024-12-02T20:42:22.727Z",
-      "definition": Object {
-        "uid": "merged_prs_per_month",
-      },
-      "source": "GitHub",
-      "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01t00:00:00.000z",
-      "value": "42",
-    },
-  },
-  Object {
     "faros_Tag": Object {
       "key": "start_timestamp",
       "source": "GitHub",
@@ -6523,6 +6512,17 @@ N/A
     },
   },
   Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2024-12-02T20:42:22.727Z",
+      "definition": Object {
+        "uid": "merged_prs_per_month",
+      },
+      "source": "GitHub",
+      "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
+      "value": "42",
+    },
+  },
+  Object {
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
@@ -6532,7 +6532,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
       },
     },
   },
@@ -6546,7 +6546,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
       },
     },
   },
@@ -6556,7 +6556,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
       },
       "repository": Object {
         "name": "hello-world",
@@ -6567,17 +6567,6 @@ N/A
         "uid": "hello-world",
       },
       "source": "GitHub",
-    },
-  },
-  Object {
-    "faros_MetricValue": Object {
-      "computedAt": "2024-12-02T20:42:22.727Z",
-      "definition": Object {
-        "uid": "merged_prs_per_month",
-      },
-      "source": "GitHub",
-      "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01t00:00:00.000z",
-      "value": "35",
     },
   },
   Object {
@@ -6597,6 +6586,17 @@ N/A
     },
   },
   Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2024-12-02T20:42:22.727Z",
+      "definition": Object {
+        "uid": "merged_prs_per_month",
+      },
+      "source": "GitHub",
+      "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
+      "value": "35",
+    },
+  },
+  Object {
     "faros_MetricValueTag": Object {
       "source": "GitHub",
       "tag": Object {
@@ -6606,7 +6606,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
       },
     },
   },
@@ -6620,7 +6620,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
       },
     },
   },
@@ -6630,7 +6630,7 @@ N/A
         "definition": Object {
           "uid": "merged_prs_per_month",
         },
-        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01t00:00:00.000z",
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
       },
       "repository": Object {
         "name": "hello-world",

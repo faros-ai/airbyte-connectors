@@ -7,8 +7,8 @@ import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosStats extends GitHubConverter {
-  private seenDefinitions = new Set<string>();
-  private seenTags = new Set<string>();
+  private readonly seenDefinitions = new Set<string>();
+  private readonly seenTags = new Set<string>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
@@ -28,8 +28,12 @@ export class FarosStats extends GitHubConverter {
     const source = this.streamName.source;
     const definitionUid = stats.type;
     const metricValueUid = toLower(
-      `${source}/${stats.org}/${stats.repo}/${stats.type}/${stats.start_timestamp}`
-    );
+      `${source}/${stats.org}/${stats.repo}/${stats.type}/`
+    ).concat(`${stats.start_timestamp}`);
+    const metricValueRef = {
+      definition: {uid: definitionUid},
+      uid: metricValueUid,
+    };
 
     // Write MetricDefinition once per type
     if (!this.seenDefinitions.has(definitionUid)) {
@@ -44,22 +48,7 @@ export class FarosStats extends GitHubConverter {
       });
     }
 
-    // Write MetricValue
-    const metricValueRef = {
-      definition: {uid: definitionUid},
-      uid: metricValueUid,
-    };
-    results.push({
-      model: 'faros_MetricValue',
-      record: {
-        uid: metricValueUid,
-        value: `${stats.count}`,
-        computedAt: Utils.toDate(record.record.emitted_at),
-        definition: {uid: definitionUid},
-      },
-    });
-
-    // Write tags for start_timestamp and end_timestamp
+    // Write tags for start_timestamp and end_timestamp (deduplicated)
     const startTagUid = `start_timestamp:${stats.start_timestamp}`;
     const endTagUid = `end_timestamp:${stats.end_timestamp}`;
 
@@ -85,40 +74,49 @@ export class FarosStats extends GitHubConverter {
         },
       });
     }
-    results.push({
-      model: 'faros_MetricValueTag',
-      record: {
-        value: metricValueRef,
-        tag: {uid: startTagUid},
-      },
-    });
-    results.push({
-      model: 'faros_MetricValueTag',
-      record: {
-        value: metricValueRef,
-        tag: {uid: endTagUid},
-      },
-    });
 
-    // Link to repository
+    // Write MetricValue, MetricValueTags, and RepositoryMetric
     const repoKey = GitHubCommon.repoKey(stats.org, stats.repo, source);
-    results.push({
-      model: 'vcs_RepositoryMetric',
-      record: {
-        repository: repoKey,
-        metricValue: metricValueRef,
+    results.push(
+      {
+        model: 'faros_MetricValue',
+        record: {
+          uid: metricValueUid,
+          value: `${stats.count}`,
+          computedAt: Utils.toDate(record.record.emitted_at),
+          definition: {uid: definitionUid},
+        },
       },
-    });
+      {
+        model: 'faros_MetricValueTag',
+        record: {
+          value: metricValueRef,
+          tag: {uid: startTagUid},
+        },
+      },
+      {
+        model: 'faros_MetricValueTag',
+        record: {
+          value: metricValueRef,
+          tag: {uid: endTagUid},
+        },
+      },
+      {
+        model: 'vcs_RepositoryMetric',
+        record: {
+          repository: repoKey,
+          metricValue: metricValueRef,
+        },
+      }
+    );
 
     return results;
   }
 
   private getMetricName(type: StatsType): string {
-    switch (type) {
-      case StatsType.MERGED_PRS_PER_MONTH:
-        return 'Merged PRs per Month';
-      default:
-        return type;
+    if (type === StatsType.MERGED_PRS_PER_MONTH) {
+      return 'Merged PRs per Month';
     }
+    return type;
   }
 }
