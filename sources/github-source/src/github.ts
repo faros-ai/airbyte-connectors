@@ -2196,6 +2196,29 @@ export abstract class GitHub {
     }
   }
 
+  /**
+   * Search for merged PRs count in a date range using GitHub Search API.
+   * The Search API returns total_count without needing to paginate through all results.
+   *
+   * API: GET /search/issues?q=is:pr repo:{org}/{repo} merged:{start}..{end}&per_page=1
+   */
+  async searchMergedPRsCount(
+    org: string,
+    repo: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<number> {
+    const startStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const query = `is:pr repo:${org}/${repo} merged:${startStr}..${endStr}`;
+
+    const response = await this.octokit(org).search.issuesAndPullRequests({
+      q: query,
+      per_page: 1, // We only need the count, not the results
+    });
+    return response.data.total_count;
+  }
+
   // GitHub GraphQL API may return partial data with a non 2xx status when
   // a particular record in a result list is not found (null) for some reason
   private async acceptPartialResponse<T>(
