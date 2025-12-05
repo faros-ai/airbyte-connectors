@@ -54,6 +54,7 @@ import {FarosReleases} from './streams/faros_releases';
 import {FarosRepositories} from './streams/faros_repositories';
 import {FarosSamlSsoUsers} from './streams/faros_saml_sso_users';
 import {FarosSecretScanningAlerts} from './streams/faros_secret_scanning_alerts';
+import {FarosStats} from './streams/faros_stats';
 import {FarosTags} from './streams/faros_tags';
 import {FarosTeamMemberships} from './streams/faros_team_memberships';
 import {FarosTeams} from './streams/faros_teams';
@@ -148,6 +149,7 @@ export class GitHubSource extends AirbyteSourceBase<GitHubConfig> {
       new FarosRepositories(config, this.logger, farosClient),
       new FarosSamlSsoUsers(config, this.logger, farosClient),
       new FarosSecretScanningAlerts(config, this.logger, farosClient),
+      new FarosStats(config, this.logger, farosClient),
       new FarosTags(config, this.logger, farosClient),
       new FarosTeams(config, this.logger, farosClient),
       new FarosTeamMemberships(config, this.logger, farosClient),

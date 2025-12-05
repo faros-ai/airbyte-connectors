@@ -8605,3 +8605,10 @@ export type ReviewsFragment = {
     } | null> | null;
   } | null;
 };
+
+export type SearchIssuesQueryVariables = Exact<{
+  q: Scalars['String']['input'];
+  first: Scalars['Int']['input'];
+}>;
+
+export type SearchIssuesQuery = {search: {issueCount: number}};

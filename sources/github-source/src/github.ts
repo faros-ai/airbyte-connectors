@@ -1,7 +1,4 @@
-import {
-  GetResponseDataTypeFromEndpointMethod,
-  OctokitResponse,
-} from '@octokit/types';
+import {OctokitResponse} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -68,6 +65,7 @@ import {
   PullRequestsCursorQuery,
   PullRequestsQuery,
   RepoTagsQuery,
+  SearchIssuesQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_QUERY,
@@ -87,6 +85,7 @@ import {
   REPOSITORY_TAGS_QUERY,
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
+  SEARCH_ISSUES_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
@@ -276,7 +275,7 @@ export abstract class GitHub {
         if (!recentPush) {
           reposWithoutRecentPush.push(repo.name);
         }
-        const repository: Repository = {
+        repos.push({
           org,
           ...pick(repo, [
             'name',
@@ -294,31 +293,6 @@ export abstract class GitHub {
             'archived',
           ]),
           recentPush,
-        };
-        let languagesResponse:
-          | GetResponseDataTypeFromEndpointMethod<
-              typeof this.baseOctokit.repos.listLanguages
-            >
-          | undefined;
-        try {
-          languagesResponse = (
-            await this.octokit(org).repos.listLanguages({
-              owner: org,
-              repo: repo.name,
-            })
-          ).data;
-        } catch (error: any) {
-          this.logger.warn(
-            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
-          );
-        }
-        repos.push({
-          ...repository,
-          ...(languagesResponse && {
-            languages: Object.entries(languagesResponse).map(
-              ([language, bytes]) => ({language, bytes})
-            ),
-          }),
         });
       }
     }
@@ -328,6 +302,27 @@ export abstract class GitHub {
       );
     }
     return repos;
+  }
+
+  async getRepositoryLanguages(
+    org: string,
+    repo: string
+  ): Promise<{language: string; bytes: number}[] | undefined> {
+    try {
+      const response = await this.octokit(org).repos.listLanguages({
+        owner: org,
+        repo,
+      });
+      return Object.entries(response.data).map(([language, bytes]) => ({
+        language,
+        bytes,
+      }));
+    } catch (error: any) {
+      this.logger.warn(
+        `Failed to fetch languages for repository ${org}/${repo}: ${error.status}`
+      );
+      return undefined;
+    }
   }
 
   async *getPullRequests(
@@ -2194,6 +2189,27 @@ export abstract class GitHub {
         }
       }
     }
+  }
+
+  /**
+   * Search for merged PRs count in a date range using GitHub GraphQL Search API.
+   * GraphQL API has higher rate limits than REST API.
+   */
+  async searchMergedPRsCount(
+    org: string,
+    repo: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<number> {
+    const startStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const query = `is:pr repo:${org}/${repo} merged:${startStr}..${endStr}`;
+
+    const res = await this.octokit(org).graphql<SearchIssuesQuery>(
+      SEARCH_ISSUES_QUERY,
+      {q: query, first: 0}
+    );
+    return res.search.issueCount;
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when
