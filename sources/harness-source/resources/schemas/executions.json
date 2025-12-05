@@ -2,160 +2,136 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "id": {
+    "planExecutionId": {
       "type": "string"
     },
-    "application": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "services": {
-          "type": "object",
-          "properties": {
-            "nodes": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "artifactType": {
-                    "type": "string"
-                  },
-                  "artifactSources": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "environments": {
-          "type": "object",
-          "properties": {
-            "nodes": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "value": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
+    "pipelineIdentifier": {
+      "type": "string"
+    },
+    "orgIdentifier": {
+      "type": "string"
+    },
+    "projectIdentifier": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
     },
     "status": {
       "type": "string"
     },
-    "createdAt": {
+    "startTs": {
       "type": "number"
     },
-    "startedAt": {
-      "type": "number"
+    "endTs": {
+      "type": ["number", "null"]
     },
-    "endedAt": {
-      "type": "number"
+    "runSequence": {
+      "type": ["number", "null"]
     },
-    "artifacts": {
-      "type": "array",
+    "successfulStagesCount": {
+      "type": ["number", "null"]
+    },
+    "failedStagesCount": {
+      "type": ["number", "null"]
+    },
+    "runningStagesCount": {
+      "type": ["number", "null"]
+    },
+    "totalStagesCount": {
+      "type": ["number", "null"]
+    },
+    "modules": {
+      "type": ["array", "null"],
       "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "buildNo": {
-            "type": "string"
-          },
-          "artifactSource": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
+        "type": "string"
+      }
+    },
+    "executorInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "triggerType": {
+          "type": "string"
+        },
+        "username": {
+          "type": ["string", "null"]
+        },
+        "email": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "executionTriggerInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "triggerType": {
+          "type": "string"
+        },
+        "triggeredBy": {
+          "type": ["object", "null"],
+          "properties": {
+            "identifier": {
+              "type": "string"
+            },
+            "extraInfo": {
+              "type": ["object", "null"]
             }
           }
         }
       }
     },
-    "outcomes": {
-      "type": "object",
+    "moduleInfo": {
+      "type": ["object", "null"],
       "properties": {
-        "nodes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "service": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "artifactType": {
-                    "type": "string"
-                  },
-                  "artifactSources": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "environment": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
+        "cd": {
+          "type": ["object", "null"],
+          "properties": {
+            "serviceIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "envIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "serviceDefinitionTypes": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "environmentTypes": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "infrastructureTypes": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "infrastructureIdentifiers": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "infrastructureNames": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "artifactDisplayNames": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "string"
               }
             }
           }

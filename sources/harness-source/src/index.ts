@@ -10,7 +10,7 @@ import VError from 'verror';
 
 import {Harness} from './harness';
 import {HarnessConfig} from './harness_models';
-import {Executions} from './streams';
+import {Executions, Organizations, Pipelines} from './streams';
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -39,6 +39,10 @@ export class HarnessSource extends AirbyteSourceBase<HarnessConfig> {
     return [true, undefined];
   }
   streams(config: HarnessConfig): AirbyteStreamBase[] {
-    return [new Executions(config, this.logger)];
+    return [
+      new Executions(config, this.logger),
+      new Organizations(config, this.logger),
+      new Pipelines(config, this.logger),
+    ];
   }
 }
