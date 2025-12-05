@@ -8,10 +8,13 @@ import {GitHubCommon, GitHubConverter} from './common';
 
 export class FarosStats extends GitHubConverter {
   private seenDefinitions = new Set<string>();
+  private seenTags = new Set<string>();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
     'faros_MetricDefinition',
     'faros_MetricValue',
+    'faros_MetricValueTag',
+    'faros_Tag',
     'vcs_RepositoryMetric',
   ];
 
@@ -42,6 +45,10 @@ export class FarosStats extends GitHubConverter {
     }
 
     // Write MetricValue
+    const metricValueRef = {
+      definition: {uid: definitionUid},
+      uid: metricValueUid,
+    };
     results.push({
       model: 'faros_MetricValue',
       record: {
@@ -52,16 +59,54 @@ export class FarosStats extends GitHubConverter {
       },
     });
 
+    // Write tags for start_timestamp and end_timestamp
+    const startTagUid = `start_timestamp:${stats.start_timestamp}`;
+    const endTagUid = `end_timestamp:${stats.end_timestamp}`;
+
+    if (!this.seenTags.has(startTagUid)) {
+      this.seenTags.add(startTagUid);
+      results.push({
+        model: 'faros_Tag',
+        record: {
+          uid: startTagUid,
+          key: 'start_timestamp',
+          value: stats.start_timestamp,
+        },
+      });
+    }
+    if (!this.seenTags.has(endTagUid)) {
+      this.seenTags.add(endTagUid);
+      results.push({
+        model: 'faros_Tag',
+        record: {
+          uid: endTagUid,
+          key: 'end_timestamp',
+          value: stats.end_timestamp,
+        },
+      });
+    }
+    results.push({
+      model: 'faros_MetricValueTag',
+      record: {
+        value: metricValueRef,
+        tag: {uid: startTagUid},
+      },
+    });
+    results.push({
+      model: 'faros_MetricValueTag',
+      record: {
+        value: metricValueRef,
+        tag: {uid: endTagUid},
+      },
+    });
+
     // Link to repository
     const repoKey = GitHubCommon.repoKey(stats.org, stats.repo, source);
     results.push({
       model: 'vcs_RepositoryMetric',
       record: {
         repository: repoKey,
-        metricValue: {
-          definition: {uid: definitionUid},
-          uid: metricValueUid,
-        },
+        metricValue: metricValueRef,
       },
     });
 
