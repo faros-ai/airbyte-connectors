@@ -37,6 +37,7 @@ describe('index', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    jest.useRealTimers();
     (GitHub as any).github = undefined;
     (OrgRepoFilter as any)._instance = undefined;
   });
@@ -1014,34 +1015,30 @@ describe('index', () => {
   test('streams - stats', async () => {
     // Mock current date to ensure consistent snapshots
     jest.useFakeTimers({now: new Date('2025-11-15T12:00:00Z')});
-    try {
-      await sourceReadTest({
-        source,
-        configOrPath: {
-          ...readTestResourceAsJSON('config.json'),
-          start_date: '2025-10-15',
-        },
-        catalogOrPath: 'stats/catalog.json',
-        onBeforeReadResultConsumer: (res) => {
-          setupGitHubInstance(
-            merge(
-              getRepositoriesMockedImplementation(
-                readTestResourceAsJSON('repositories/repositories.json')
-              ),
-              getStatsMockedImplementation(
-                readTestResourceAsJSON('stats/stats.json')
-              )
+    await sourceReadTest({
+      source,
+      configOrPath: {
+        ...readTestResourceAsJSON('config.json'),
+        start_date: '2025-10-15',
+      },
+      catalogOrPath: 'stats/catalog.json',
+      onBeforeReadResultConsumer: (res) => {
+        setupGitHubInstance(
+          merge(
+            getRepositoriesMockedImplementation(
+              readTestResourceAsJSON('repositories/repositories.json')
             ),
-            logger
-          );
-        },
-        checkRecordsData: (records) => {
-          expect(records).toMatchSnapshot();
-        },
-      });
-    } finally {
-      jest.useRealTimers();
-    }
+            getStatsMockedImplementation(
+              readTestResourceAsJSON('stats/stats.json')
+            )
+          ),
+          logger
+        );
+      },
+      checkRecordsData: (records) => {
+        expect(records).toMatchSnapshot();
+      },
+    });
   });
 
   const enterpriseConfig = {

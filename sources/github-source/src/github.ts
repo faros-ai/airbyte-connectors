@@ -1,7 +1,4 @@
-import {
-  GetResponseDataTypeFromEndpointMethod,
-  OctokitResponse,
-} from '@octokit/types';
+import {OctokitResponse} from '@octokit/types';
 import {AirbyteLogger} from 'faros-airbyte-cdk';
 import {bucket, validateBucketingConfig} from 'faros-airbyte-common/common';
 import {
@@ -276,7 +273,7 @@ export abstract class GitHub {
         if (!recentPush) {
           reposWithoutRecentPush.push(repo.name);
         }
-        const repository: Repository = {
+        repos.push({
           org,
           ...pick(repo, [
             'name',
@@ -294,31 +291,6 @@ export abstract class GitHub {
             'archived',
           ]),
           recentPush,
-        };
-        let languagesResponse:
-          | GetResponseDataTypeFromEndpointMethod<
-              typeof this.baseOctokit.repos.listLanguages
-            >
-          | undefined;
-        try {
-          languagesResponse = (
-            await this.octokit(org).repos.listLanguages({
-              owner: org,
-              repo: repo.name,
-            })
-          ).data;
-        } catch (error: any) {
-          this.logger.warn(
-            `Failed to fetch languages for repository ${org}/${repo.name}: ${error.status}`
-          );
-        }
-        repos.push({
-          ...repository,
-          ...(languagesResponse && {
-            languages: Object.entries(languagesResponse).map(
-              ([language, bytes]) => ({language, bytes})
-            ),
-          }),
         });
       }
     }
@@ -328,6 +300,27 @@ export abstract class GitHub {
       );
     }
     return repos;
+  }
+
+  async getRepositoryLanguages(
+    org: string,
+    repo: string
+  ): Promise<{language: string; bytes: number}[] | undefined> {
+    try {
+      const response = await this.octokit(org).repos.listLanguages({
+        owner: org,
+        repo,
+      });
+      return Object.entries(response.data).map(([language, bytes]) => ({
+        language,
+        bytes,
+      }));
+    } catch (error: any) {
+      this.logger.warn(
+        `Failed to fetch languages for repository ${org}/${repo}: ${error.status}`
+      );
+      return undefined;
+    }
   }
 
   async *getPullRequests(
