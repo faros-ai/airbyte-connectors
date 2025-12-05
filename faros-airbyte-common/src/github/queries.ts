@@ -66,6 +66,9 @@ export const DEPLOYMENTS_QUERY = loadQuery('deployments-query.gql');
 // Graphql query used to get an enterprise
 export const ENTERPRISE_QUERY = loadQuery('enterprise-query.gql');
 
+// GraphQL query used to search issues/PRs
+export const SEARCH_ISSUES_QUERY = loadQuery('search-issues-query.gql');
+
 /**
  * Load query file from resources
  * @param query query file name

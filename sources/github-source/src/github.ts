@@ -65,6 +65,7 @@ import {
   PullRequestsCursorQuery,
   PullRequestsQuery,
   RepoTagsQuery,
+  SearchIssuesQuery,
 } from 'faros-airbyte-common/github/generated';
 import {
   COMMITS_QUERY,
@@ -84,6 +85,7 @@ import {
   REPOSITORY_TAGS_QUERY,
   REVIEW_REQUESTS_FRAGMENT,
   REVIEWS_FRAGMENT,
+  SEARCH_ISSUES_QUERY,
 } from 'faros-airbyte-common/github/queries';
 import {EnterpriseCopilotSeatsStreamRecord} from 'faros-airbyte-common/lib/github';
 import {makeAxiosInstanceWithRetry, Utils} from 'faros-js-client';
@@ -2190,10 +2192,8 @@ export abstract class GitHub {
   }
 
   /**
-   * Search for merged PRs count in a date range using GitHub Search API.
-   * The Search API returns total_count without needing to paginate through all results.
-   *
-   * API: GET /search/issues?q=is:pr repo:{org}/{repo} merged:{start}..{end}&per_page=1
+   * Search for merged PRs count in a date range using GitHub GraphQL Search API.
+   * GraphQL API has higher rate limits than REST API.
    */
   async searchMergedPRsCount(
     org: string,
@@ -2205,11 +2205,11 @@ export abstract class GitHub {
     const endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
     const query = `is:pr repo:${org}/${repo} merged:${startStr}..${endStr}`;
 
-    const response = await this.octokit(org).search.issuesAndPullRequests({
-      q: query,
-      per_page: 1, // We only need the count, not the results
-    });
-    return response.data.total_count;
+    const res = await this.octokit(org).graphql<SearchIssuesQuery>(
+      SEARCH_ISSUES_QUERY,
+      {q: query, first: 0}
+    );
+    return res.search.issueCount;
   }
 
   // GitHub GraphQL API may return partial data with a non 2xx status when

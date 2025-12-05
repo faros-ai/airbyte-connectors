@@ -1552,7 +1552,5 @@ const getEnterpriseCopilotUserUsageJSONLBlobMockedImplementation = (
 };
 
 const getStatsMockedImplementation = (res: any) => ({
-  search: {
-    issuesAndPullRequests: jest.fn().mockReturnValue({data: res}),
-  },
+  graphql: jest.fn().mockResolvedValue(res),
 });
