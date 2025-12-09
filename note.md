@@ -2,6 +2,8 @@
 
 ## AirbyteStateMessage Schema
 
+[Airbyte protocol](https://github.com/airbytehq/airbyte-protocol/blob/main/protocol-models/src/main/resources/airbyte_protocol/v0/airbyte_protocol.yaml#L151)
+
 ```json
 {
   "type": "STATE",
