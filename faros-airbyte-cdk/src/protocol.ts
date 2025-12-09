@@ -2,6 +2,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {wrapApiError} from './errors';
+import {CompressedData, isCompressedState} from './utils';
 
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
@@ -268,8 +269,43 @@ export class AirbyteSpec implements AirbyteMessage {
   constructor(readonly spec: Spec) {}
 }
 
+/**
+ * The type of state the other fields represent.
+ * LEGACY: state data should be read from the `data` field for backwards compatibility.
+ * GLOBAL: state should be read from `global` and represents the state for all streams.
+ */
+export enum AirbyteStateType {
+  LEGACY = 'LEGACY',
+  GLOBAL = 'GLOBAL',
+  STREAM = 'STREAM', // Not implemented
+}
+
+// Internal states
 export interface AirbyteState {
   [stream: string]: any;
+}
+
+// Legacy state format: a simple key-value map where each key is a stream name
+export type AirbyteLegacyState = AirbyteState;
+
+// Global state format
+export interface AirbyteStreamState {
+  stream_descriptor: {
+    name: string;
+    namespace?: string;
+  };
+  stream_state?: any;
+}
+export interface AirbyteGlobalState {
+  shared_state?: any;
+  stream_states: AirbyteStreamState[];
+}
+
+/** The payload inside an AirbyteStateMessage (the `state` field) */
+export interface AirbyteStatePayload {
+  type?: AirbyteStateType;
+  global?: AirbyteGlobalState;
+  data?: AirbyteLegacyState;
 }
 
 export interface SyncMessage {
@@ -306,16 +342,47 @@ export type AirbyteSourceStatus =
   | AirbyteSourceRunningStatus
   | AirbyteSourceSuccessStatus;
 
+// Converts internal AirbyteState to GLOBAL state format for output
+function convertToGlobalState(state: AirbyteState): AirbyteGlobalState {
+  const streamStates: AirbyteStreamState[] = [];
+  for (const [streamName, streamState] of Object.entries(state)) {
+    streamStates.push({
+      stream_descriptor: {name: streamName},
+      stream_state: streamState,
+    });
+  }
+  return {stream_states: streamStates};
+}
+
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
-  constructor(readonly state: {data: AirbyteState}) {}
+  readonly state: AirbyteStatePayload;
+
+  constructor(stateData: AirbyteState | CompressedData) {
+    if (isCompressedState(stateData)) {
+      // Compressed state: put compressed blob in shared_state
+      this.state = {
+        type: AirbyteStateType.GLOBAL,
+        global: {
+          shared_state: stateData,
+          stream_states: [],
+        },
+      };
+    } else {
+      // Uncompressed state: convert to GLOBAL format with stream_states
+      this.state = {
+        type: AirbyteStateType.GLOBAL,
+        global: convertToGlobalState(stateData),
+      };
+    }
+  }
 }
 
 // We need to extend AirbyteStateMessage so that Airbyte Server will pass the message to the destination
 // Airbyte Server only passes records and state messages to the destination
 export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
   constructor(
-    readonly state: {data: AirbyteState},
+    stateData: AirbyteState | CompressedData,
     readonly sourceStatus: AirbyteSourceStatus,
     readonly streamStatus?: {
       name: string;
@@ -323,20 +390,19 @@ export class AirbyteSourceStatusMessage extends AirbyteStateMessage {
       recordsEmitted?: number;
     }
   ) {
-    super(state);
+    super(stateData);
   }
 }
 
 export class AirbyteSourceConfigMessage extends AirbyteStateMessage {
-  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
-    readonly state: {data: AirbyteState},
+    stateData: AirbyteState | CompressedData,
     readonly redactedConfig: AirbyteConfig,
     readonly sourceType: string,
     readonly sourceMode?: string,
     readonly sourceVersion?: string
   ) {
-    super(state);
+    super(stateData);
   }
 }
 
@@ -350,12 +416,11 @@ export interface AirbyteSourceLog {
 }
 
 export class AirbyteSourceLogsMessage extends AirbyteStateMessage {
-  readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   constructor(
-    readonly state: {data: AirbyteState},
+    stateData: AirbyteState | CompressedData,
     readonly logs: AirbyteSourceLog[]
   ) {
-    super(state);
+    super(stateData);
   }
 }
 

@@ -18,16 +18,14 @@ import {
   AirbyteSourceStatusMessage,
   AirbyteState,
   AirbyteStateMessage,
-  isSourceStatusMessage,
-  isStateMessage,
   SyncMode,
 } from '../protocol';
 import {ConnectorVersion} from '../runner';
-import {Data} from '../utils';
+import {CompressedData, Data} from '../utils';
 import {AirbyteSource} from './source';
 import {AirbyteStreamBase} from './streams/stream-base';
 
-type PartialAirbyteConfig = Pick<AirbyteConfig, 'backfill'>;
+type PartialAirbyteConfig = Pick<AirbyteConfig, 'backfill' | 'compress_state'>;
 
 /**
  * Airbyte Source base class providing additional boilerplate around the Check
@@ -138,7 +136,7 @@ export abstract class AirbyteSourceBase<
 
     this.logger.info(`Syncing ${this.name}`);
     yield new AirbyteSourceConfigMessage(
-      {data: maybeCompressState(config, state)},
+      maybeCompressState(config, state),
       redactedConfig,
       this.type,
       this.mode(config),
@@ -193,30 +191,17 @@ export abstract class AirbyteSourceBase<
           streamInstance,
           configuredStream,
           state,
-          pick(config, ['backfill'])
+          pick(config, ['backfill', 'compress_state'])
         );
 
         for await (const message of generator) {
-          if (isStateMessage(message)) {
-            const msgState = maybeCompressState(config, message.state.data);
-            if (isSourceStatusMessage(message)) {
-              yield new AirbyteSourceStatusMessage(
-                {data: msgState},
-                message.sourceStatus,
-                message.streamStatus
-              );
-            } else {
-              yield new AirbyteStateMessage({data: msgState});
-            }
-          } else {
-            if (message.type === AirbyteMessageType.RECORD) {
-              streamRecordCounter++;
-            }
-            yield message;
+          if (message.type === AirbyteMessageType.RECORD) {
+            streamRecordCounter++;
           }
+          yield message;
         }
         yield new AirbyteSourceStatusMessage(
-          {data: maybeCompressState(config, state)},
+          maybeCompressState(config, state),
           {status: 'RUNNING'},
           {
             name: streamName,
@@ -232,7 +217,7 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield new AirbyteSourceStatusMessage(
-          {data: maybeCompressState(config, state)},
+          maybeCompressState(config, state),
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
@@ -261,10 +246,9 @@ export abstract class AirbyteSourceBase<
         )}`
       );
     } else {
-      yield new AirbyteSourceStatusMessage(
-        {data: maybeCompressState(config, state)},
-        {status: 'SUCCESS'}
-      );
+      yield new AirbyteSourceStatusMessage(maybeCompressState(config, state), {
+        status: 'SUCCESS',
+      });
     }
 
     this.logger.info(`Finished syncing ${this.name}`);
@@ -374,6 +358,7 @@ export abstract class AirbyteSourceBase<
               sliceRecordCounter % checkpointInterval === 0
             ) {
               yield this.checkpointState(
+                config,
                 streamName,
                 streamState,
                 connectorState
@@ -382,7 +367,12 @@ export abstract class AirbyteSourceBase<
           }
         }
         if (!config.backfill) {
-          yield this.checkpointState(streamName, streamState, connectorState);
+          yield this.checkpointState(
+            config,
+            streamName,
+            streamState,
+            connectorState
+          );
         }
         if (slice) {
           this.logger.info(
@@ -442,12 +432,13 @@ export abstract class AirbyteSourceBase<
   }
 
   private checkpointState(
+    config: PartialAirbyteConfig,
     streamName: string,
     streamState: any,
     connectorState: AirbyteState
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
-    return new AirbyteStateMessage({data: connectorState});
+    return new AirbyteStateMessage(maybeCompressState(config, connectorState));
   }
 
   private sliceFailureState(
@@ -460,7 +451,7 @@ export abstract class AirbyteSourceBase<
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
     return new AirbyteSourceStatusMessage(
-      {data: maybeCompressState(config, connectorState)},
+      maybeCompressState(config, connectorState),
       {
         status: 'RUNNING',
         // TODO: complete error object with info from Source
@@ -489,6 +480,6 @@ export abstract class AirbyteSourceBase<
 export function maybeCompressState(
   config: AirbyteConfig,
   state: AirbyteState
-): AirbyteState {
+): AirbyteState | CompressedData {
   return config.compress_state === false ? state : Data.compress(state);
 }

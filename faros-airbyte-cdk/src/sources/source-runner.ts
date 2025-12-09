@@ -17,8 +17,8 @@ import {
 import {ConnectorVersion, Runner} from '../runner';
 import {
   addSourceCommonProperties,
-  Data,
   PACKAGE_VERSION,
+  parseStateInput,
   redactConfig,
 } from '../utils';
 import {AirbyteSource} from './source';
@@ -125,19 +125,16 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
 
           let state: AirbyteState | undefined = undefined;
           if (opts.state) {
-            state = require(path.resolve(opts.state));
-            this.logger.info(`State: ${JSON.stringify(state)}`);
+            const rawState = require(path.resolve(opts.state));
+            this.logger.info(`State: ${JSON.stringify(rawState)}`);
+            state = parseStateInput(rawState);
           }
 
           try {
             // Call onBeforeRead FIRST to get the final config that will be used
             // This ensures that any singletons initialized during the pre-read check
             // are created with the config returned by onBeforeRead (e.g., requestedStreams)
-            const res = await this.source.onBeforeRead(
-              config,
-              catalog,
-              Data.decompress(state)
-            );
+            const res = await this.source.onBeforeRead(config, catalog, state);
 
             // Always perform pre-read connection validation with the FINAL config
             // This ensures singletons are initialized with the final config
@@ -155,18 +152,15 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
               // Send a status message to the destination in case this
               // pre-connection check failed during a sync operation
               this.logger.write(
-                new AirbyteSourceStatusMessage(
-                  {data: state ?? {}},
-                  {
-                    status: 'ERRORED',
-                    message: {
-                      summary: checkStatus.connectionStatus.message,
-                      code: 0, // placeholder
-                      action: 'Check your source credentials', // placeholder
-                      type: 'ERROR',
-                    },
-                  }
-                )
+                new AirbyteSourceStatusMessage(state ?? {}, {
+                  status: 'ERRORED',
+                  message: {
+                    summary: checkStatus.connectionStatus.message,
+                    code: 0, // placeholder
+                    action: 'Check your source credentials', // placeholder
+                    type: 'ERROR',
+                  },
+                })
               );
 
               this.logger.flush();
@@ -176,7 +170,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             }
             this.logger.info('Pre-read connection validation succeeded');
 
-            const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
+            const clonedState = cloneDeep(res.state ?? {});
             this.logger.getState = () =>
               maybeCompressState(res.config, clonedState);
             const iter = this.source.read(

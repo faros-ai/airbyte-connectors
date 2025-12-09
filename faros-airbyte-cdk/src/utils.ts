@@ -7,7 +7,13 @@ import {Dictionary} from 'ts-essentials';
 import VError from 'verror';
 import zlib from 'zlib';
 
-import {AirbyteConfig, AirbyteSpec} from './protocol';
+import {
+  AirbyteConfig,
+  AirbyteSpec,
+  AirbyteState,
+  AirbyteStatePayload,
+  AirbyteStateType,
+} from './protocol';
 
 export const PACKAGE_ROOT = path.join(__dirname, '..');
 
@@ -218,4 +224,98 @@ export class Data {
     }
     return data;
   }
+}
+
+/**
+ * Check if state data is in compressed format ({format, data}).
+ */
+export function isCompressedState(
+  state: AirbyteState | CompressedData
+): state is CompressedData {
+  return (
+    typeof state === 'object' &&
+    'format' in state &&
+    'data' in state &&
+    typeof state.format === 'string' &&
+    typeof state.data === 'string'
+  );
+}
+
+/**
+ * Parses state input from a state file, supporting both legacy and new Global formats.
+ *
+ * Legacy compressed format:
+ *   {"format": "base64/gzip", "data": "..."}
+ *
+ * GLOBAL compressed format:
+ *   [{"type": "GLOBAL", "global": {"shared_state": {"format": "base64/gzip", "data": "..."}, ...}]}]
+ *
+ * Legacy non-compressed format:
+ *   {"stream1": {...}, "stream2": {...}}
+ *
+ * GLOBAL non-compressed format: (Supposedly states are always compressed and should show up as non-compressed)
+ *   [{"type": "GLOBAL", "global": {"stream_states": [...]}}]
+ *
+ * @param rawState The raw state input from file
+ * @returns The parsed state as AirbyteState
+ */
+export function parseStateInput(rawState: any): AirbyteState {
+  if (!rawState) {
+    return {};
+  }
+
+  // Try decompressing first
+  // If it's in legacy compressed format, decompress it. Otherwise return as is.
+  const state = Data.decompress(rawState);
+
+  // Check if it's the GLOBAL format
+  if (
+    Array.isArray(state) &&
+    state?.[0]?.type === AirbyteStateType.GLOBAL &&
+    state?.[0]?.global
+  ) {
+    return parseGlobalStateFormat(state);
+  }
+
+  // Otherwise, it's the legacy format
+  return state as AirbyteState;
+}
+
+/**
+ * Parse an array of GLOBAL state messages to the internal AirbyteState format.
+ * Take compressed state from `global.shared_state` ({format, data}) and decompress it.
+ *
+ * By default, states are always compressed in GLOBAL format.
+ * Fall back to iterating through each message, extracting stream states from the
+ * `global.stream_states` array and mapping them by stream name.
+ */
+function parseGlobalStateFormat(
+  stateMessages: AirbyteStatePayload[]
+): AirbyteState {
+  if (stateMessages.length === 0) {
+    return {};
+  }
+
+  const result: AirbyteState = {};
+
+  for (const msg of stateMessages) {
+    // Check if shared_state contains compressed state
+    // If there is, decompress to get state with internal format directly
+    const sharedState = msg.global?.shared_state;
+    if (sharedState && isCompressedState(sharedState)) {
+      return Data.decompress(sharedState) as AirbyteState;
+    }
+
+    // Fall back to extracting stream states
+    if (msg.global?.stream_states) {
+      for (const streamState of msg.global.stream_states) {
+        const streamName = streamState.stream_descriptor.name;
+        result[streamName] = streamState.stream_state ?? {};
+      }
+    } else if (msg.data) {
+      Object.assign(result, msg.data);
+    }
+  }
+
+  return result;
 }

@@ -46,13 +46,9 @@ I convert the schema from [Airbyte protocol](https://github.com/airbytehq/airbyt
 }
 ```
 
-How to store compressed json in the new Global format
-1. `state.global.shared_state`
-2. `state.global.stream_states[0].stream_state`. we will have to have some name for it since `stream_descriptor.name` is required
+Store compressed json in the new Global format `state.global.shared_state`
 
 We basically can only store the compressed json in fields that are AirbyteStateBlob which allows any json. (At least that's what i believe so)
-
-The rest of the page is based on using `shared_state` but it should be the same if we want to use 2. 
 
 --
 
@@ -183,7 +179,7 @@ In faros-airbyte-cdk
 1. State input can be possible 4 format
     * Legacy non-compressed
     * Legacy compressed
-    * Global non-compressed: convert to legacy format.
+    * Global non-compressed: convert to legacy format. Ideally it's always compressed so we can ignore this.
         * `stream_states.stream_descriptor.name` as stream name
         * `stream_states.stream_state` as the stream state
     * Global compressed: decompress `.state.global.shared_state`. doesnt need to convert since we compress it from legacy format
