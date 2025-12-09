@@ -1,7 +1,7 @@
 import {AirbyteLogger, AirbyteStreamBase} from 'faros-airbyte-cdk';
 
 import {Harness} from '../harness';
-import {HarnessConfig} from '../harness_models';
+import {HarnessConfig, Organization} from '../harness_models';
 
 // Stream slice types
 export interface OrgStreamSlice {
@@ -28,11 +28,25 @@ export abstract class HarnessStreamBase extends AirbyteStreamBase {
     super(logger);
   }
 
-  protected async getOrgIdentifiers(harness: Harness): Promise<string[]> {
-    if (this.config.organizations?.length) {
-      return this.config.organizations;
-    }
+  protected async getOrganizations(harness: Harness): Promise<ReadonlyArray<Organization>> {
+    // Server-side filtering is applied in harness.getOrganizations() if config.organizations is set
     const orgs = await harness.getOrganizations();
+
+    // Warn about any configured orgs that weren't returned (not found or not accessible)
+    if (this.config.organizations?.length) {
+      const returnedSet = new Set(orgs.map((org) => org.identifier));
+      for (const orgId of this.config.organizations) {
+        if (!returnedSet.has(orgId)) {
+          this.logger.warn(`Configured organization '${orgId}' not found or not accessible`);
+        }
+      }
+    }
+
+    return orgs;
+  }
+
+  protected async getOrgIdentifiers(harness: Harness): Promise<string[]> {
+    const orgs = await this.getOrganizations(harness);
     return orgs.map((org) => org.identifier);
   }
 }

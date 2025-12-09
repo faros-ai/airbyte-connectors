@@ -90,14 +90,20 @@ export class Harness {
 
     while (hasMore) {
       try {
+        const params: Record<string, any> = {
+          accountIdentifier: this.config.account_id,
+          pageIndex: page,
+          pageSize: this.pageSize,
+        };
+        if (this.config.organizations?.length) {
+          params.identifiers = this.config.organizations;
+        }
+
         const response = await this.api.get<OrganizationListResponse>(
           '/ng/api/organizations',
           {
-            params: {
-              accountIdentifier: this.config.account_id,
-              pageIndex: page,
-              pageSize: this.pageSize,
-            },
+            params,
+            paramsSerializer: {indexes: null}, // serialize arrays as repeated params
           }
         );
 
@@ -113,6 +119,7 @@ export class Harness {
       }
     }
 
+    this.logger.debug(`Fetched ${orgs.length} organizations: ${orgs.map((o) => o.identifier).join(', ')}`);
     return orgs;
   }
 

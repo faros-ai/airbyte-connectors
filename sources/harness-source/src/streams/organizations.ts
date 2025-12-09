@@ -16,6 +16,6 @@ export class Organizations extends HarnessStreamBase {
 
   async *readRecords(): AsyncGenerator<Organization> {
     const harness = Harness.instance(this.config, this.logger);
-    yield* await harness.getOrganizations();
+    yield* await this.getOrganizations(harness);
   }
 }
