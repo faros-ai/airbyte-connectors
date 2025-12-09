@@ -21,6 +21,8 @@ export class Pipelines extends StreamWithProjectSlices {
   ): AsyncGenerator<Pipeline> {
     const {orgIdentifier, projectIdentifier} = streamSlice;
     const harness = Harness.instance(this.config, this.logger);
-    yield* await harness.getPipelines(orgIdentifier, projectIdentifier);
+    for (const pipeline of await harness.getPipelines(orgIdentifier, projectIdentifier)) {
+      yield {...pipeline, orgIdentifier, projectIdentifier};
+    }
   }
 }
