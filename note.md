@@ -50,6 +50,8 @@ How to store compressed json in the new Global format
 1. `state.global.shared_state`
 2. `state.global.stream_states[0].stream_state`. we will have to have some name for it since `stream_descriptor.name` is required
 
+The rest of the page is based on using `shared_state` but it should be the same if we want to use 2. 
+
 --
 
 In Airbyte state message
