@@ -121,6 +121,8 @@ Global
 
 ## In local state file (when using CLI)
 
+Supposedly this should be the same as what Airbyte server does?
+
 Legacy:
 ```json
 // non-compressed
