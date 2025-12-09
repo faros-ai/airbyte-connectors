@@ -233,6 +233,7 @@ export function isCompressedState(
   state: AirbyteState | CompressedData
 ): state is CompressedData {
   return (
+    state !== null &&
     typeof state === 'object' &&
     'format' in state &&
     'data' in state &&
