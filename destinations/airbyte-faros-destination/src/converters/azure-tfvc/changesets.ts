@@ -12,16 +12,16 @@ import {
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureTfvcConverter, MAX_DESCRIPTION_LENGTH} from './common';
 
-// TODO: Add tms_TaskCommitAssociation support
-
 export class Changesets extends AzureTfvcConverter {
   private readonly branchCollector = new BranchCollector();
   private readonly fileCollector = new FileCollector();
 
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'tms_TaskCommitAssociation',
     'vcs_Branch',
-    'vcs_Commit',
     'vcs_BranchCommitAssociation',
+    'vcs_Commit',
+    'vcs_CommitFile',
     'vcs_File',
   ];
 
@@ -85,14 +85,84 @@ export class Changesets extends AzureTfvcConverter {
         record: {
           commit,
           branch,
+          committedAt: Utils.toDate(changeset.createdDate),
         },
       });
     }
 
-    // Collect files from changes
+    // Track merged changeset IDs to avoid duplicate associations
+    const mergedChangesetIds = new Set<number>();
+
+    // Create vcs_CommitFile records and collect files from changes
     for (const change of changeset.changes ?? []) {
       if (change.item?.path) {
-        this.fileCollector.collectFile(change.item.path, repository);
+        const filePath = change.item.path;
+        this.fileCollector.collectFile(filePath, repository);
+
+        res.push({
+          model: 'vcs_CommitFile',
+          record: {
+            commit,
+            file: {
+              uid: filePath,
+              repository,
+            },
+            // TFVC API doesn't provide line-level diff stats
+            additions: null,
+            deletions: null,
+          },
+        });
+      }
+
+      // Collect merged changeset IDs from merge sources
+      // These are changesets that were merged into this changeset
+      for (const mergeSource of change.mergeSources ?? []) {
+        if (mergeSource.isRename) {
+          continue; // Skip renames, only process actual merges
+        }
+        // versionFrom and versionTo represent an inclusive range of changesets merged
+        const from = mergeSource.versionFrom;
+        const to = mergeSource.versionTo ?? from;
+        if (from && to) {
+          Array.from({length: to - from + 1}, (_, i) => from + i).forEach(
+            (id) => mergedChangesetIds.add(id)
+          );
+        }
+      }
+    }
+
+    // Create vcs_BranchCommitAssociation for merged changesets
+    // This associates the merged commits with the target branch
+    if (branch) {
+      for (const mergedChangesetId of mergedChangesetIds) {
+        const mergedCommit: CommitKey = {
+          sha: String(mergedChangesetId),
+          repository,
+        };
+        res.push({
+          model: 'vcs_BranchCommitAssociation',
+          record: {
+            commit: mergedCommit,
+            branch,
+            committedAt: Utils.toDate(changeset.createdDate),
+          },
+        });
+      }
+    }
+
+    // Create tms_TaskCommitAssociation records for linked work items
+    for (const workItem of changeset.workItems ?? []) {
+      if (workItem.id) {
+        res.push({
+          model: 'tms_TaskCommitAssociation',
+          record: {
+            commit,
+            task: {
+              uid: String(workItem.id),
+              source: 'Azure-Workitems',
+            },
+          },
+        });
       }
     }
 
