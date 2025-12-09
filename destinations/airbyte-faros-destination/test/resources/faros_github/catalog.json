@@ -191,6 +191,12 @@
         "name": "mytestsource__github__faros_enterprise_team_memberships"
       },
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "mytestsource__github__faros_stats"
+      },
+      "destination_sync_mode": "append"
     }
   ]
 }

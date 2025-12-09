@@ -554,3 +554,16 @@ export type EnterpriseCopilotUserUsage = {
   used_agent?: boolean;
   used_chat?: boolean;
 };
+
+export enum StatsType {
+  MERGED_PRS_PER_MONTH = 'merged_prs_per_month',
+}
+
+export interface StatsRecord {
+  org: string;
+  repo: string;
+  type: StatsType;
+  start_timestamp: string;
+  end_timestamp: string;
+  count: number;
+}

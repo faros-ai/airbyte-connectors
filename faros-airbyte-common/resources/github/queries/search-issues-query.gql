@@ -1,0 +1,5 @@
+query searchIssues($q: String!, $first: Int!) {
+  search(query: $q, type: ISSUE, first: $first) {
+    issueCount
+  }
+}

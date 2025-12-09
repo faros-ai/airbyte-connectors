@@ -2630,6 +2630,27 @@ exports[`index streams - secret scanning alerts 1`] = `
 ]
 `;
 
+exports[`index streams - stats 1`] = `
+[
+  {
+    "count": 42,
+    "end_timestamp": "2025-10-31T23:59:59.999Z",
+    "org": "github",
+    "repo": "Hello-World",
+    "start_timestamp": "2025-10-01T00:00:00.000Z",
+    "type": "merged_prs_per_month",
+  },
+  {
+    "count": 42,
+    "end_timestamp": "2025-11-30T23:59:59.999Z",
+    "org": "github",
+    "repo": "Hello-World",
+    "start_timestamp": "2025-11-01T00:00:00.000Z",
+    "type": "merged_prs_per_month",
+  },
+]
+`;
+
 exports[`index streams - tags 1`] = `
 [
   {

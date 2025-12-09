@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "org": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["merged_prs_per_month"]
+    },
+    "start_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "count": {
+      "type": "integer"
+    }
+  },
+  "required": ["org", "repo", "type", "start_timestamp", "end_timestamp", "count"]
+}

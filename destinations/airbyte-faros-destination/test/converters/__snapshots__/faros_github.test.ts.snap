@@ -2,10 +2,10 @@
 
 exports[`faros_github process records from all streams 1`] = `
 Array [
-  "Processed 62 records",
-  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_deployments\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_usage\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
-  "Would write 362 records",
-  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":3,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":2,\\\\\\"cicd_Organization\\\\\\":2,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_Tag\\\\\\":1,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":169,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":8,\\\\\\"vcs_UserToolLicense\\\\\\":8,\\\\\\"vcs_UserToolUsage\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
+  "Processed 64 records",
+  "Processed records by stream: {\\\\\\"mytestsource__github__faros_artifacts\\\\\\":1,\\\\\\"mytestsource__github__faros_code_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_commits\\\\\\":2,\\\\\\"mytestsource__github__faros_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_copilot_usage\\\\\\":4,\\\\\\"mytestsource__github__faros_dependabot_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_deployments\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_seats\\\\\\":3,\\\\\\"mytestsource__github__faros_enterprise_copilot_usage\\\\\\":2,\\\\\\"mytestsource__github__faros_enterprise_copilot_user_usage\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprise_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_enterprises\\\\\\":1,\\\\\\"mytestsource__github__faros_issue_comments\\\\\\":2,\\\\\\"mytestsource__github__faros_issues\\\\\\":2,\\\\\\"mytestsource__github__faros_labels\\\\\\":3,\\\\\\"mytestsource__github__faros_organizations\\\\\\":1,\\\\\\"mytestsource__github__faros_outside_collaborators\\\\\\":2,\\\\\\"mytestsource__github__faros_projects\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_request_comments\\\\\\":3,\\\\\\"mytestsource__github__faros_pull_requests\\\\\\":3,\\\\\\"mytestsource__github__faros_releases\\\\\\":2,\\\\\\"mytestsource__github__faros_repositories\\\\\\":2,\\\\\\"mytestsource__github__faros_saml_sso_users\\\\\\":2,\\\\\\"mytestsource__github__faros_secret_scanning_alerts\\\\\\":2,\\\\\\"mytestsource__github__faros_stats\\\\\\":2,\\\\\\"mytestsource__github__faros_tags\\\\\\":3,\\\\\\"mytestsource__github__faros_team_memberships\\\\\\":1,\\\\\\"mytestsource__github__faros_teams\\\\\\":1,\\\\\\"mytestsource__github__faros_users\\\\\\":2,\\\\\\"mytestsource__github__faros_workflow_jobs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflow_runs\\\\\\":1,\\\\\\"mytestsource__github__faros_workflows\\\\\\":1}\\"},\\"type\\":\\"LOG\\"}",
+  "Would write 375 records",
+  "Would write records by model: {\\\\\\"__Flush\\\\\\":1,\\\\\\"cicd_Artifact\\\\\\":3,\\\\\\"cicd_ArtifactCommitAssociation\\\\\\":2,\\\\\\"cicd_ArtifactDeployment\\\\\\":2,\\\\\\"cicd_Build\\\\\\":1,\\\\\\"cicd_BuildCommitAssociation\\\\\\":1,\\\\\\"cicd_BuildStep\\\\\\":1,\\\\\\"cicd_Deployment\\\\\\":2,\\\\\\"cicd_Organization\\\\\\":2,\\\\\\"cicd_Pipeline\\\\\\":1,\\\\\\"cicd_Release\\\\\\":2,\\\\\\"cicd_ReleaseTagAssociation\\\\\\":2,\\\\\\"cicd_Repository\\\\\\":3,\\\\\\"compute_Application\\\\\\":2,\\\\\\"faros_MetricDefinition\\\\\\":1,\\\\\\"faros_MetricValue\\\\\\":2,\\\\\\"faros_MetricValueTag\\\\\\":4,\\\\\\"faros_Tag\\\\\\":5,\\\\\\"faros_TmsTaskBoardOptions\\\\\\":1,\\\\\\"faros_VcsRepositoryOptions\\\\\\":1,\\\\\\"qa_CodeQuality\\\\\\":1,\\\\\\"sec_Vulnerability\\\\\\":6,\\\\\\"sec_VulnerabilityIdentifier\\\\\\":4,\\\\\\"sec_VulnerabilityIdentifierRelationship\\\\\\":4,\\\\\\"tms_Label\\\\\\":4,\\\\\\"tms_Project\\\\\\":4,\\\\\\"tms_Task\\\\\\":2,\\\\\\"tms_TaskAssignment\\\\\\":2,\\\\\\"tms_TaskAssignment__Deletion\\\\\\":1,\\\\\\"tms_TaskBoard\\\\\\":4,\\\\\\"tms_TaskBoardProjectRelationship\\\\\\":4,\\\\\\"tms_TaskBoardRelationship\\\\\\":2,\\\\\\"tms_TaskProjectRelationship\\\\\\":2,\\\\\\"tms_TaskTag\\\\\\":4,\\\\\\"tms_User\\\\\\":2,\\\\\\"vcs_AssistantMetric\\\\\\":169,\\\\\\"vcs_Branch\\\\\\":4,\\\\\\"vcs_BranchCommitAssociation\\\\\\":2,\\\\\\"vcs_Commit\\\\\\":2,\\\\\\"vcs_File\\\\\\":3,\\\\\\"vcs_Label\\\\\\":5,\\\\\\"vcs_Membership\\\\\\":6,\\\\\\"vcs_Organization\\\\\\":2,\\\\\\"vcs_OrganizationTool\\\\\\":4,\\\\\\"vcs_PullRequest\\\\\\":3,\\\\\\"vcs_PullRequestComment\\\\\\":5,\\\\\\"vcs_PullRequestFile\\\\\\":6,\\\\\\"vcs_PullRequestFile__Deletion\\\\\\":3,\\\\\\"vcs_PullRequestLabel\\\\\\":3,\\\\\\"vcs_PullRequestReview\\\\\\":2,\\\\\\"vcs_PullRequestReviewRequest\\\\\\":3,\\\\\\"vcs_Repository\\\\\\":2,\\\\\\"vcs_RepositoryMetric\\\\\\":2,\\\\\\"vcs_RepositoryTag\\\\\\":1,\\\\\\"vcs_RepositoryVulnerability\\\\\\":6,\\\\\\"vcs_Tag\\\\\\":3,\\\\\\"vcs_Team\\\\\\":2,\\\\\\"vcs_TeamMembership\\\\\\":2,\\\\\\"vcs_User\\\\\\":24,\\\\\\"vcs_UserEmail\\\\\\":5,\\\\\\"vcs_UserTool\\\\\\":8,\\\\\\"vcs_UserToolLicense\\\\\\":8,\\\\\\"vcs_UserToolUsage\\\\\\":5}\\"},\\"type\\":\\"LOG\\"}",
   "Skipped 0 records",
   "Errored 0 records",
 ]
@@ -6483,6 +6483,164 @@ N/A
           "uid": "octocat",
         },
       },
+    },
+  },
+  Object {
+    "faros_MetricDefinition": Object {
+      "name": "Merged PRs per Month",
+      "source": "GitHub",
+      "uid": "merged_prs_per_month",
+      "valueType": Object {
+        "category": "Numeric",
+      },
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "start_timestamp",
+      "source": "GitHub",
+      "uid": "start_timestamp:2025-10-01T00:00:00.000Z",
+      "value": "2025-10-01T00:00:00.000Z",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "end_timestamp",
+      "source": "GitHub",
+      "uid": "end_timestamp:2025-10-31T23:59:59.999Z",
+      "value": "2025-10-31T23:59:59.999Z",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2024-12-02T20:42:22.727Z",
+      "definition": Object {
+        "uid": "merged_prs_per_month",
+      },
+      "source": "GitHub",
+      "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
+      "value": "42",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "start_timestamp:2025-10-01T00:00:00.000Z",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "end_timestamp:2025-10-31T23:59:59.999Z",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
+      },
+    },
+  },
+  Object {
+    "vcs_RepositoryMetric": Object {
+      "metricValue": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-10-01T00:00:00.000Z",
+      },
+      "repository": Object {
+        "name": "hello-world",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+        "uid": "hello-world",
+      },
+      "source": "GitHub",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "start_timestamp",
+      "source": "GitHub",
+      "uid": "start_timestamp:2025-11-01T00:00:00.000Z",
+      "value": "2025-11-01T00:00:00.000Z",
+    },
+  },
+  Object {
+    "faros_Tag": Object {
+      "key": "end_timestamp",
+      "source": "GitHub",
+      "uid": "end_timestamp:2025-11-30T23:59:59.999Z",
+      "value": "2025-11-30T23:59:59.999Z",
+    },
+  },
+  Object {
+    "faros_MetricValue": Object {
+      "computedAt": "2024-12-02T20:42:22.727Z",
+      "definition": Object {
+        "uid": "merged_prs_per_month",
+      },
+      "source": "GitHub",
+      "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
+      "value": "35",
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "start_timestamp:2025-11-01T00:00:00.000Z",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
+      },
+    },
+  },
+  Object {
+    "faros_MetricValueTag": Object {
+      "source": "GitHub",
+      "tag": Object {
+        "uid": "end_timestamp:2025-11-30T23:59:59.999Z",
+      },
+      "value": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
+      },
+    },
+  },
+  Object {
+    "vcs_RepositoryMetric": Object {
+      "metricValue": Object {
+        "definition": Object {
+          "uid": "merged_prs_per_month",
+        },
+        "uid": "github/github/hello-world/merged_prs_per_month/2025-11-01T00:00:00.000Z",
+      },
+      "repository": Object {
+        "name": "hello-world",
+        "organization": Object {
+          "source": "GitHub",
+          "uid": "github",
+        },
+        "uid": "hello-world",
+      },
+      "source": "GitHub",
     },
   },
   Object {

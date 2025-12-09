@@ -114,6 +114,7 @@ export const CustomStreamNames = [
   'faros_repositories',
   'faros_saml_sso_users',
   'faros_secret_scanning_alerts',
+  'faros_stats',
   'faros_tags',
   'faros_users',
   'faros_workflows',
