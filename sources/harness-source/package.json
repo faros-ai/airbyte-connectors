@@ -27,8 +27,9 @@
   },
   "dependencies": {
     "faros-airbyte-cdk": "*",
-    "graphql-request": "^5.0.0",
-    "luxon": "^3.4.4",
+    "faros-airbyte-common": "*",
+    "faros-js-client": "*",
+    "typescript-memoize": "^1.1.1",
     "verror": "^1.10.1"
   },
   "jest": {
