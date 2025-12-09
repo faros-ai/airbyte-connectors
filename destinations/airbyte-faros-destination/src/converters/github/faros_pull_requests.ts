@@ -49,7 +49,8 @@ export class FarosPullRequests extends GitHubConverter {
     if (this.fetchingPrFiles !== undefined) {
       return;
     }
-    this.fetchingPrFiles = ctx.getSourceConfig()?.fetch_pull_request_files ?? false;
+    this.fetchingPrFiles =
+      ctx.getSourceConfig()?.fetch_pull_request_files ?? false;
   }
 
   async convert(
@@ -129,7 +130,7 @@ export class FarosPullRequests extends GitHubConverter {
             ),
             createdAt: Utils.toDate(review.submittedAt),
             updatedAt: Utils.toDate(review.updatedAt),
-            author: review.author
+            author: review.author?.login
               ? {uid: review.author.login, source: this.streamName.source}
               : null,
             pullRequest: prKey,
@@ -205,7 +206,7 @@ export class FarosPullRequests extends GitHubConverter {
             linesDeleted: pr.deletions,
             filesChanged: pr.changedFiles,
           },
-          author: pr.author
+          author: pr.author?.login
             ? {uid: pr.author.login, source: this.streamName.source}
             : null,
           mergeCommit: pr.mergeCommit
@@ -232,7 +233,7 @@ export class FarosPullRequests extends GitHubConverter {
           uid: review.databaseId.toString(),
           htmlUrl: review.url,
           pullRequest: prKey,
-          reviewer: review.author
+          reviewer: review.author?.login
             ? {uid: review.author.login, source: this.streamName.source}
             : null,
           state: getReviewState(review.state),
@@ -243,10 +244,9 @@ export class FarosPullRequests extends GitHubConverter {
         model: 'vcs_PullRequestReviewRequest',
         record: {
           pullRequest: prKey,
-          requestedReviewer: {
-            uid: reviewer.login,
-            source: this.streamName.source,
-          },
+          requestedReviewer: reviewer.login
+            ? {uid: reviewer.login, source: this.streamName.source}
+            : null,
           asCodeOwner: reviewer.asCodeOwner,
         },
       })),
@@ -291,6 +291,7 @@ export class FarosPullRequests extends GitHubConverter {
     reviewer: PartialUser,
     asCodeOwner: boolean
   ): void {
+    if (!reviewer.login) return;
     const existingReviewer = reviewers.get(reviewer.login);
     // We might see the same reviewer requested as a code owner and as a member of a team (with asCodeOwner = false)
     if (!existingReviewer || (!existingReviewer.asCodeOwner && asCodeOwner)) {

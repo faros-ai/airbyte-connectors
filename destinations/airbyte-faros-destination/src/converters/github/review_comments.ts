@@ -26,7 +26,9 @@ export class ReviewComments extends GitHubConverter {
     const prNum = GitHubCommon.parsePRnumber(comment.pull_request_url);
     const pullRequest = {repository, number: prNum, uid: prNum.toString()};
 
-    const author = comment.user ? {uid: comment.user.login, source} : null;
+    const author = comment.user?.login
+      ? {uid: comment.user.login, source}
+      : null;
 
     return [
       {
