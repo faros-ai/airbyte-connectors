@@ -102,6 +102,18 @@ export class Windsurf {
     this.logger.debug(`Equivalent curl command: ${curlCommand}`);
   }
 
+  private async wrapApiRequest<T>(apiRequest: () => Promise<T>): Promise<T> {
+    try {
+      return await apiRequest();
+    } catch (error: any) {
+      this.logger.debug(
+        `API request failed: ${error.message} - Status: ${error.response?.status} - Data: ${JSON.stringify(error.response?.data)}`,
+        error.response?.data
+      );
+      throw error;
+    }
+  }
+
   async checkConnection(): Promise<void> {
     try {
       await this.getUserPageAnalytics();
@@ -122,9 +134,11 @@ export class Windsurf {
     // Log the curl command
     this.logCurlCommand('POST', '/UserPageAnalytics', requestBody);
 
-    const response = await this.api.post<UserPageAnalyticsResponse>(
-      '/UserPageAnalytics',
-      requestBody
+    const response = await this.wrapApiRequest(() =>
+      this.api.post<UserPageAnalyticsResponse>(
+        '/UserPageAnalytics',
+        requestBody
+      )
     );
 
     // Build the API key to email mapping and keep apiKey in results
@@ -195,9 +209,8 @@ export class Windsurf {
     // Log the curl command
     this.logCurlCommand('POST', '/Analytics', request);
 
-    const response = await this.api.post<CustomAnalyticsResponse>(
-      '/Analytics',
-      request
+    const response = await this.wrapApiRequest(() =>
+      this.api.post<CustomAnalyticsResponse>('/Analytics', request)
     );
 
     for (const responseItem of response.data?.queryResults?.[0]
@@ -244,9 +257,8 @@ export class Windsurf {
     // Log the curl command
     this.logCurlCommand('POST', '/CascadeAnalytics', request);
 
-    const response = await this.api.post<CascadeAnalyticsResponse>(
-      '/CascadeAnalytics',
-      request
+    const response = await this.wrapApiRequest(() =>
+      this.api.post<CascadeAnalyticsResponse>('/CascadeAnalytics', request)
     );
 
     if (response.data?.queryResults?.[0]?.cascadeLines?.cascadeLines) {
@@ -292,9 +304,8 @@ export class Windsurf {
     // Log the curl command
     this.logCurlCommand('POST', '/CascadeAnalytics', request);
 
-    const response = await this.api.post<CascadeAnalyticsResponse>(
-      '/CascadeAnalytics',
-      request
+    const response = await this.wrapApiRequest(() =>
+      this.api.post<CascadeAnalyticsResponse>('/CascadeAnalytics', request)
     );
 
     if (response.data?.queryResults?.[0]?.cascadeRuns?.cascadeRuns) {
@@ -374,9 +385,8 @@ export class Windsurf {
     // Log the curl command
     this.logCurlCommand('POST', '/Analytics', request);
 
-    const response = await this.api.post<CustomAnalyticsResponse>(
-      '/Analytics',
-      request
+    const response = await this.wrapApiRequest(() =>
+      this.api.post<CustomAnalyticsResponse>('/Analytics', request)
     );
 
     for (const responseItem of response.data?.queryResults?.[0]
@@ -459,9 +469,8 @@ export class Windsurf {
       // Log the curl command
       this.logCurlCommand('POST', '/Analytics', request);
 
-      const response = await this.api.post<CustomAnalyticsResponse>(
-        '/Analytics',
-        request
+      const response = await this.wrapApiRequest(() =>
+        this.api.post<CustomAnalyticsResponse>('/Analytics', request)
       );
 
       for (const responseItem of response.data?.queryResults?.[0]
