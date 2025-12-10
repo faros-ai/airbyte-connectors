@@ -254,7 +254,8 @@ export function isCompressedState(
  * Legacy non-compressed format:
  *   {"stream1": {...}, "stream2": {...}}
  *
- * GLOBAL non-compressed format: (Supposedly states are always compressed and should show up as non-compressed)
+ * GLOBAL non-compressed format:
+ * (Not expected. Should always be compressed. Fall back handled here. )
  *   [{"type": "GLOBAL", "global": {"stream_states": [...]}}]
  *
  * @param rawState The raw state input from file

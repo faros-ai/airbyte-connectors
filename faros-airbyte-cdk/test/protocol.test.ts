@@ -1,7 +1,6 @@
 import {
   AirbyteLog,
   AirbyteLogLevel,
-  AirbyteMessageType,
   AirbyteStateMessage,
   AirbyteStateType,
 } from '../src/protocol';
