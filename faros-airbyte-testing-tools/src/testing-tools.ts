@@ -6,7 +6,9 @@ import {
   AirbyteSourceBase,
   AirbyteState,
   AirbyteStateMessage,
+  AirbyteStatePayload,
   Data,
+  isCompressedState,
 } from 'faros-airbyte-cdk';
 import fs from 'fs';
 import {Dictionary} from 'ts-essentials';
@@ -92,19 +94,20 @@ export const sourceReadTest = async (
   }
   const generator = source.read(res.config, res.config, res.catalog, res.state);
   const records: Dictionary<any>[] = [];
-  let finalState: Dictionary<any>;
+  let finalStatePayload: AirbyteStatePayload;
   for await (const message of generator) {
     if (message.type === AirbyteMessageType.RECORD) {
       records.push((message as AirbyteRecord).record.data);
     } else if (message.type === AirbyteMessageType.STATE) {
-      finalState = (message as AirbyteStateMessage).state.data;
+      finalStatePayload = (message as AirbyteStateMessage).state;
     }
   }
   if (checkRecordsData) {
     checkRecordsData(records);
   }
   if (checkFinalState) {
-    checkFinalState(Data.decompress(finalState));
+    const parsedState = extractStateFromGlobalFormat(finalStatePayload);
+    checkFinalState(parsedState);
   }
 };
 
@@ -154,6 +157,22 @@ function resolveInput<T>(inputOrPath: string | T): T {
   return typeof inputOrPath === 'string'
     ? readTestResourceAsJSON(inputOrPath)
     : inputOrPath;
+}
+
+/**
+ * Extract state from GLOBAL format AirbyteStatePayload.
+ * State is stored in global.shared_state (compressed).
+ */
+function extractStateFromGlobalFormat(
+  statePayload: AirbyteStatePayload
+): AirbyteState {
+  if (!statePayload?.global) {
+    return {};
+  }
+  const sharedState = statePayload.global.shared_state;
+  if (sharedState && isCompressedState(sharedState)) {
+    return Data.decompress(sharedState) as AirbyteState;
+  }
 }
 
 export const customStreamsTest = async (
