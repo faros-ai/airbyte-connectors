@@ -358,7 +358,8 @@ export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   readonly state: AirbyteStatePayload;
 
-  // stateData should pass in as compressed data if config.compress_state is true
+  // stateData can be either compressed (CompressedData) or uncompressed (AirbyteState).
+  // Callers should use maybeCompressState(config, state) to conditionally compress based on config.
   constructor(stateData: AirbyteState | CompressedData) {
     if (isCompressedState(stateData)) {
       // Compressed state: put compressed blob in shared_state
