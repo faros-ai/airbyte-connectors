@@ -21,11 +21,10 @@ import {
   SyncMode,
 } from '../protocol';
 import {ConnectorVersion} from '../runner';
-import {CompressedData, Data} from '../utils';
 import {AirbyteSource} from './source';
 import {AirbyteStreamBase} from './streams/stream-base';
 
-type PartialAirbyteConfig = Pick<AirbyteConfig, 'backfill' | 'compress_state'>;
+type PartialAirbyteConfig = Pick<AirbyteConfig, 'backfill'>;
 
 /**
  * Airbyte Source base class providing additional boilerplate around the Check
@@ -136,7 +135,7 @@ export abstract class AirbyteSourceBase<
 
     this.logger.info(`Syncing ${this.name}`);
     yield new AirbyteSourceConfigMessage(
-      maybeCompressState(config, state),
+      state,
       redactedConfig,
       this.type,
       this.mode(config),
@@ -191,7 +190,7 @@ export abstract class AirbyteSourceBase<
           streamInstance,
           configuredStream,
           state,
-          pick(config, ['backfill', 'compress_state'])
+          pick(config, ['backfill'])
         );
 
         for await (const message of generator) {
@@ -201,7 +200,7 @@ export abstract class AirbyteSourceBase<
           yield message;
         }
         yield new AirbyteSourceStatusMessage(
-          maybeCompressState(config, state),
+          state,
           {status: 'RUNNING'},
           {
             name: streamName,
@@ -217,7 +216,7 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield new AirbyteSourceStatusMessage(
-          maybeCompressState(config, state),
+          state,
           // TODO: complete error object with info from Source
           {
             status: 'ERRORED',
@@ -246,7 +245,7 @@ export abstract class AirbyteSourceBase<
         )}`
       );
     } else {
-      yield new AirbyteSourceStatusMessage(maybeCompressState(config, state), {
+      yield new AirbyteSourceStatusMessage(state, {
         status: 'SUCCESS',
       });
     }
@@ -358,7 +357,6 @@ export abstract class AirbyteSourceBase<
               sliceRecordCounter % checkpointInterval === 0
             ) {
               yield this.checkpointState(
-                config,
                 streamName,
                 streamState,
                 connectorState
@@ -367,12 +365,7 @@ export abstract class AirbyteSourceBase<
           }
         }
         if (!config.backfill) {
-          yield this.checkpointState(
-            config,
-            streamName,
-            streamState,
-            connectorState
-          );
+          yield this.checkpointState(streamName, streamState, connectorState);
         }
         if (slice) {
           this.logger.info(
@@ -390,7 +383,6 @@ export abstract class AirbyteSourceBase<
           e.stack
         );
         yield this.sliceFailureState(
-          config,
           streamName,
           streamState,
           connectorState,
@@ -432,17 +424,15 @@ export abstract class AirbyteSourceBase<
   }
 
   private checkpointState(
-    config: PartialAirbyteConfig,
     streamName: string,
     streamState: any,
     connectorState: AirbyteState
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
-    return new AirbyteStateMessage(maybeCompressState(config, connectorState));
+    return new AirbyteStateMessage(connectorState);
   }
 
   private sliceFailureState(
-    config: PartialAirbyteConfig,
     streamName: string,
     streamState: any,
     connectorState: AirbyteState,
@@ -451,7 +441,7 @@ export abstract class AirbyteSourceBase<
   ): AirbyteStateMessage {
     connectorState[streamName] = streamState;
     return new AirbyteSourceStatusMessage(
-      maybeCompressState(config, connectorState),
+      connectorState,
       {
         status: 'RUNNING',
         // TODO: complete error object with info from Source
@@ -475,11 +465,4 @@ export abstract class AirbyteSourceBase<
       this.logger.level = AirbyteLogLevel.DEBUG;
     }
   }
-}
-
-export function maybeCompressState(
-  config: AirbyteConfig,
-  state: AirbyteState
-): AirbyteState | CompressedData {
-  return config.compress_state === false ? state : Data.compress(state);
 }

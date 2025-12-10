@@ -255,7 +255,7 @@ export function isCompressedState(
  *   {"stream1": {...}, "stream2": {...}}
  *
  * GLOBAL non-compressed format:
- * (Not expected. Should always be compressed. Fall back handled here. )
+ * (Not expected. Should always be compressed.)
  *   [{"type": "GLOBAL", "global": {"stream_states": [...]}}]
  *
  * @param rawState The raw state input from file
@@ -306,16 +306,6 @@ function parseGlobalStateFormat(
     const sharedState = msg.global?.shared_state;
     if (sharedState && isCompressedState(sharedState)) {
       return Data.decompress(sharedState) as AirbyteState;
-    }
-
-    // Fall back to extracting stream states
-    if (msg.global?.stream_states) {
-      for (const streamState of msg.global.stream_states) {
-        const streamName = streamState.stream_descriptor.name;
-        result[streamName] = streamState.stream_state ?? {};
-      }
-    } else if (msg.data) {
-      Object.assign(result, msg.data);
     }
   }
 

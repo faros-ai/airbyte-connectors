@@ -2,7 +2,7 @@ import {Dictionary} from 'ts-essentials';
 import {VError} from 'verror';
 
 import {wrapApiError} from './errors';
-import {CompressedData, isCompressedState} from './utils';
+import {CompressedData, Data, isCompressedState} from './utils';
 
 export enum AirbyteLogLevel {
   FATAL = 'FATAL',
@@ -342,41 +342,28 @@ export type AirbyteSourceStatus =
   | AirbyteSourceRunningStatus
   | AirbyteSourceSuccessStatus;
 
-// Converts internal AirbyteState to GLOBAL state format for output
-function convertToGlobalState(state: AirbyteState): AirbyteGlobalState {
-  const streamStates: AirbyteStreamState[] = [];
-  for (const [streamName, streamState] of Object.entries(state)) {
-    streamStates.push({
-      stream_descriptor: {name: streamName},
-      stream_state: streamState,
-    });
-  }
-  return {stream_states: streamStates};
-}
-
 export class AirbyteStateMessage implements AirbyteMessage {
   readonly type: AirbyteMessageType = AirbyteMessageType.STATE;
   readonly state: AirbyteStatePayload;
 
-  // stateData can be either compressed (CompressedData) or uncompressed (AirbyteState).
-  // Callers should use maybeCompressState(config, state) to conditionally compress based on config.
+  // State message should always be in GLOBAL format.
+  // Non-empty state is compressed and stored in shared_state.
+  // Empty/undefined/null state is stored as {} in shared_state without compression.
   constructor(stateData: AirbyteState | CompressedData) {
-    if (isCompressedState(stateData)) {
-      // Compressed state: put compressed blob in shared_state
-      this.state = {
-        type: AirbyteStateType.GLOBAL,
-        global: {
-          shared_state: stateData,
-          stream_states: [],
-        },
-      };
-    } else {
-      // Uncompressed state: convert to GLOBAL format with stream_states
-      this.state = {
-        type: AirbyteStateType.GLOBAL,
-        global: convertToGlobalState(stateData),
-      };
-    }
+    const isEmpty = !stateData || Object.keys(stateData).length === 0;
+    const sharedState = isEmpty
+      ? {}
+      : isCompressedState(stateData)
+        ? stateData
+        : Data.compress(stateData);
+
+    this.state = {
+      type: AirbyteStateType.GLOBAL,
+      global: {
+        shared_state: sharedState,
+        stream_states: [],
+      },
+    };
   }
 }
 

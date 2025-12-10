@@ -138,7 +138,9 @@ describe('utils', () => {
       expect(parseStateInput(compressedState)).toEqual(originalState);
     });
 
-    test('parses GLOBAL non-compressed state', () => {
+    test('parses GLOBAL non-compressed state returns empty (non-compressed not expected)', () => {
+      // GLOBAL state should always be compressed. Non-compressed GLOBAL format
+      // is not expected and will return an empty object.
       const globalState = [
         {
           type: AirbyteStateType.GLOBAL,
@@ -157,10 +159,7 @@ describe('utils', () => {
           },
         },
       ];
-      expect(parseStateInput(globalState)).toEqual({
-        stream1: {cursor: '2025-01-01'},
-        stream2: {cursor: '2025-01-02'},
-      });
+      expect(parseStateInput(globalState)).toEqual({});
     });
 
     test('parses GLOBAL compressed state from shared_state', () => {
