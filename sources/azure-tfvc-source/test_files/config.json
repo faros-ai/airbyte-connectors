@@ -1,0 +1,7 @@
+{
+  "instance": {
+    "type": "cloud"
+  },
+  "access_token": "your-access-token",
+  "organization": "your-organization"
+}
