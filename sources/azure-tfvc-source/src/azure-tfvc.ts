@@ -178,6 +178,11 @@ export class AzureTfvc extends AzureDevOps {
         false // includeLinks
       );
 
+      this.logger.info(
+        `Fetched ${allBranches?.length} branches for project ${project}: ` +
+          `${(allBranches ?? []).map((b) => b.path).join(', ')}`
+      );
+
       const branches: TfvcBranch[] = [];
       for (const branch of allBranches ?? []) {
         if (this.branchPattern && !this.branchPattern.test(branch.path)) {

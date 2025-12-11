@@ -99,6 +99,13 @@ export abstract class StreamWithBranchSlices extends AzureTfvcStreamBase {
     for (const project of await tfvc.getProjects(this.config.projects)) {
       const branches = await tfvc.getBranches(project.id);
 
+      this.logger.info(
+        `Project ${project.name}: ${branches.length} branches found` +
+          (this.config.branch_pattern
+            ? ` matching pattern ${this.config.branch_pattern}`
+            : '')
+      );
+
       if (branches.length === 0) {
         // No formal branches - fetch changesets at project level
         yield {project, organization: this.config.organization};
