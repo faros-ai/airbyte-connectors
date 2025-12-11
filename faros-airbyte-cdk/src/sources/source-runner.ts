@@ -17,12 +17,11 @@ import {
 import {ConnectorVersion, Runner} from '../runner';
 import {
   addSourceCommonProperties,
-  Data,
   PACKAGE_VERSION,
   redactConfig,
+  State,
 } from '../utils';
 import {AirbyteSource} from './source';
-import {maybeCompressState} from './source-base';
 import {AirbyteSourceLogger} from './source-logger';
 
 export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
@@ -136,7 +135,7 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             const res = await this.source.onBeforeRead(
               config,
               catalog,
-              Data.decompress(state)
+              State.decode(state)
             );
 
             // Always perform pre-read connection validation with the FINAL config
@@ -176,9 +175,8 @@ export class AirbyteSourceRunner<Config extends AirbyteConfig> extends Runner {
             }
             this.logger.info('Pre-read connection validation succeeded');
 
-            const clonedState = Data.decompress(cloneDeep(res.state ?? {}));
-            this.logger.getState = () =>
-              maybeCompressState(res.config, clonedState);
+            const clonedState = State.decode(cloneDeep(res.state ?? {}));
+            this.logger.getState = () => State.encode(clonedState);
             const iter = this.source.read(
               res.config,
               redactConfig(res.config, spec),
