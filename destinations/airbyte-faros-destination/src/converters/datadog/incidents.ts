@@ -15,9 +15,11 @@ enum IncidentStatusCategory {
 
 export class Incidents extends DatadogConverter {
   readonly destinationModels: ReadonlyArray<DestinationModel> = [
+    'faros_Tag',
     'ims_Incident',
     'ims_IncidentAssignment',
     'ims_IncidentApplicationImpact',
+    'ims_IncidentFarosTag',
   ];
 
   async convert(
@@ -85,7 +87,43 @@ export class Incidents extends DatadogConverter {
       });
     }
 
+    // Create Faros tag for public_id
+    const publicId = incident.attributes?.publicId;
+    if (publicId !== null && publicId !== undefined) {
+      res.push(...this.incidentTag(incidentKey, 'PublicId', String(publicId)));
+    }
+
     return res;
+  }
+
+  private incidentTag(
+    incidentKey: {uid: string; source: string},
+    key: string,
+    value: string
+  ): ReadonlyArray<DestinationRecord> {
+    if (!value) {
+      return [];
+    }
+    const tagKey = {
+      uid: `${key}__${value}`,
+    };
+    return [
+      {
+        model: 'faros_Tag',
+        record: {
+          ...tagKey,
+          key,
+          value,
+        },
+      },
+      {
+        model: 'ims_IncidentFarosTag',
+        record: {
+          incident: incidentKey,
+          tag: tagKey,
+        },
+      },
+    ];
   }
 
   private getSeverity(
