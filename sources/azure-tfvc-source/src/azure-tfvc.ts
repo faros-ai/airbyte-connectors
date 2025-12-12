@@ -98,7 +98,7 @@ export class AzureTfvc extends AzureDevOps {
         undefined, // maxCommentLength
         skip as number,
         top,
-        'id desc',
+        'id asc',
         searchCriteria
       );
 
