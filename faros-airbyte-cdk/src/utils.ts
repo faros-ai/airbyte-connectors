@@ -219,3 +219,29 @@ export class Data {
     return data;
   }
 }
+
+export class State {
+  /**
+   * Decode input state (any format) to internal state (plain object).
+   * Supports: plain JSON, legacy compressed, GLOBAL compressed.
+   */
+  static decode(state?: Dictionary<any>): Dictionary<any> | null | undefined {
+    if (state?.type === 'GLOBAL') {
+      return State.decode(state.global?.shared_state);
+    }
+    return Data.decompress(state);
+  }
+
+  /**
+   * Encode internal state (plain object) to output state (GLOBAL compressed).
+   */
+  static encode(state: Dictionary<any>): Dictionary<any> {
+    return {
+      type: 'GLOBAL',
+      global: {
+        shared_state: Data.compress(state),
+        stream_states: [],
+      },
+    };
+  }
+}
