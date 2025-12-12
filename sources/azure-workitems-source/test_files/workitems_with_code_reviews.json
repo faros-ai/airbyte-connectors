@@ -1,0 +1,99 @@
+{
+  "count": 3,
+  "value": [
+    {
+      "id": 300,
+      "rev": 1,
+      "fields": {
+        "System.AreaPath": "Fabrikam-Fiber-Git",
+        "System.TeamProject": "Fabrikam-Fiber-Git",
+        "System.IterationPath": "Fabrikam-Fiber-Git",
+        "System.WorkItemType": "Task",
+        "System.State": "To Do",
+        "System.CreatedDate": "2014-12-29T20:49:22.103Z",
+        "System.CreatedBy": {
+          "displayName": "Jamal Hartnett",
+          "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          "uniqueName": "fabrikamfiber4@hotmail.com"
+        },
+        "System.ChangedDate": "2014-12-29T20:49:22.103Z",
+        "System.ChangedBy": {
+          "displayName": "Jamal Hartnett",
+          "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          "uniqueName": "fabrikamfiber4@hotmail.com"
+        },
+        "System.Title": "Unit Testing for MSA login"
+      },
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300"
+    },
+    {
+      "id": 401,
+      "rev": 2,
+      "fields": {
+        "System.AreaPath": "Fabrikam-Fiber-Git",
+        "System.TeamProject": "Fabrikam-Fiber-Git",
+        "System.IterationPath": "Fabrikam-Fiber-Git",
+        "System.WorkItemType": "Code Review Request",
+        "System.State": "Closed",
+        "System.Reason": "Code Review Completed",
+        "System.CreatedDate": "2025-01-15T10:00:00.000Z",
+        "System.CreatedBy": {
+          "displayName": "Jamal Hartnett",
+          "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          "uniqueName": "fabrikamfiber4@hotmail.com"
+        },
+        "System.ChangedDate": "2025-01-16T14:30:00.000Z",
+        "System.ChangedBy": {
+          "displayName": "Jamal Hartnett",
+          "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          "uniqueName": "fabrikamfiber4@hotmail.com"
+        },
+        "System.Title": "Review authentication changes",
+        "Microsoft.CodeReview.Context": "auth-feature-shelveset",
+        "Microsoft.CodeReview.ContextType": "Shelveset",
+        "Microsoft.CodeReview.ContextCode": 1,
+        "Microsoft.CodeReview.ContextOwner": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "Microsoft.CodeReview.AcceptedBy": "Chuck Reinhart"
+      },
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/401"
+    },
+    {
+      "id": 402,
+      "rev": 3,
+      "fields": {
+        "System.AreaPath": "Fabrikam-Fiber-Git",
+        "System.TeamProject": "Fabrikam-Fiber-Git",
+        "System.IterationPath": "Fabrikam-Fiber-Git",
+        "System.WorkItemType": "Code Review Response",
+        "System.State": "Closed",
+        "System.Reason": "Review Completed",
+        "System.Parent": 401,
+        "System.AssignedTo": {
+          "displayName": "Chuck Reinhart",
+          "id": "e5a5014d-06e4-4cc7-a42f-8e8e-abc123456789",
+          "uniqueName": "chuck@fabrikam.com"
+        },
+        "System.CreatedDate": "2025-01-15T10:00:00.000Z",
+        "System.CreatedBy": {
+          "displayName": "Jamal Hartnett",
+          "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+          "uniqueName": "fabrikamfiber4@hotmail.com"
+        },
+        "System.ChangedDate": "2025-01-16T14:30:00.000Z",
+        "System.ChangedBy": {
+          "displayName": "Chuck Reinhart",
+          "id": "e5a5014d-06e4-4cc7-a42f-8e8e-abc123456789",
+          "uniqueName": "chuck@fabrikam.com"
+        },
+        "System.Title": "Chuck Reinhart's review of auth-feature-shelveset",
+        "Microsoft.CodeReview.AcceptedDate": "2025-01-16T14:30:00.000Z",
+        "Microsoft.CodeReview.ClosedStatus": "Looks Good",
+        "Microsoft.CodeReview.ClosedStatusCode": 1,
+        "Microsoft.CodeReview.ClosingComment": "LGTM! Good implementation of the auth flow.",
+        "Microsoft.Common.ReviewedBy": "Chuck Reinhart",
+        "Microsoft.Common.ReviewedDate": "2025-01-16T14:30:00.000Z"
+      },
+      "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/402"
+    }
+  ]
+}
