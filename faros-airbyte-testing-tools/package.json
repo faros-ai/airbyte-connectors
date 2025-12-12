@@ -31,7 +31,7 @@
   "dependencies": {
     "cross-spawn": "^7.0.3",
     "faros-airbyte-cdk": "*",
-    "mockttp": "^3.9.2",
+    "mockttp": "^4.2.0",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.0",
     "tmp-promise": "^3.0.3",
