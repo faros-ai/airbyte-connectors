@@ -98,7 +98,7 @@ export class AzureTfvc extends AzureDevOps {
         undefined, // maxCommentLength
         skip as number,
         top,
-        'id desc',
+        'id asc',
         searchCriteria
       );
 
@@ -176,6 +176,11 @@ export class AzureTfvc extends AzureDevOps {
         true, // includeChildren
         false, // includeDeleted
         false // includeLinks
+      );
+
+      this.logger.info(
+        `Fetched ${allBranches?.length} branches for project ${project}: ` +
+          `${(allBranches ?? []).map((b) => b.path).join(', ')}`
       );
 
       const branches: TfvcBranch[] = [];

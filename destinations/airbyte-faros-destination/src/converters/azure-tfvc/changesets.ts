@@ -1,16 +1,23 @@
 import {AirbyteRecord} from 'faros-airbyte-cdk';
 import {Changeset} from 'faros-airbyte-common/azure-devops';
+import {TfvcChange} from 'azure-devops-node-api/interfaces/TfvcInterfaces';
 import {Utils} from 'faros-js-client';
 
 import {
   BranchCollector,
   CommitKey,
   FileCollector,
+  RepoKey,
   repoKey,
   VcsDiffStats,
 } from '../common/vcs';
 import {DestinationModel, DestinationRecord, StreamContext} from '../converter';
 import {AzureTfvcConverter, MAX_DESCRIPTION_LENGTH} from './common';
+
+interface ProcessChangesResult {
+  commitFiles: DestinationRecord[];
+  mergedChangesetIds: Set<number>;
+}
 
 export class Changesets extends AzureTfvcConverter {
   private readonly branchCollector = new BranchCollector();
@@ -34,11 +41,10 @@ export class Changesets extends AzureTfvcConverter {
     ctx: StreamContext
   ): Promise<ReadonlyArray<DestinationRecord>> {
     const changeset = record.record.data as Changeset;
-    const res: DestinationRecord[] = [];
 
     if (!changeset.changesetId) {
       ctx.logger.warn(`Changeset ID not found: ${JSON.stringify(changeset)}`);
-      return res;
+      return [];
     }
 
     const repository = repoKey(
@@ -50,7 +56,7 @@ export class Changesets extends AzureTfvcConverter {
       ctx.logger.warn(
         `Organization or project name not found: ${JSON.stringify(changeset)}`
       );
-      return res;
+      return [];
     }
 
     const sha = String(changeset.changesetId);
@@ -59,7 +65,7 @@ export class Changesets extends AzureTfvcConverter {
       ? {uid: changeset.author.uniqueName.toLowerCase(), source: this.source}
       : undefined;
 
-    res.push({
+    const commitRecord: DestinationRecord = {
       model: 'vcs_Commit',
       record: {
         ...commit,
@@ -73,100 +79,28 @@ export class Changesets extends AzureTfvcConverter {
         author,
         diffStats: this.getDiffStats(changeset),
       },
-    });
+    };
 
-    const branch = this.branchCollector.collectBranch(
-      changeset.branch,
+    const {commitFiles, mergedChangesetIds} = this.processChanges(
+      changeset.changes,
+      commit,
       repository
     );
-    if (branch) {
-      res.push({
-        model: 'vcs_BranchCommitAssociation',
-        record: {
-          commit,
-          branch,
-          committedAt: Utils.toDate(changeset.createdDate),
-        },
-      });
-    }
 
-    // Track merged changeset IDs to avoid duplicate associations
-    const mergedChangesetIds = new Set<number>();
+    const branchAssociations = this.createBranchAssociations(
+      changeset.branch,
+      commit,
+      mergedChangesetIds,
+      repository,
+      Utils.toDate(changeset.createdDate)
+    );
 
-    // Create vcs_CommitFile records and collect files from changes
-    for (const change of changeset.changes ?? []) {
-      if (change.item?.path) {
-        const filePath = change.item.path;
-        this.fileCollector.collectFile(filePath, repository);
+    const taskAssociations = this.createTaskAssociations(
+      commit,
+      changeset.workItems
+    );
 
-        res.push({
-          model: 'vcs_CommitFile',
-          record: {
-            commit,
-            file: {
-              uid: filePath,
-              repository,
-            },
-            // TFVC API doesn't provide line-level diff stats
-            additions: null,
-            deletions: null,
-          },
-        });
-      }
-
-      // Collect merged changeset IDs from merge sources
-      // These are changesets that were merged into this changeset
-      for (const mergeSource of change.mergeSources ?? []) {
-        if (mergeSource.isRename) {
-          continue; // Skip renames, only process actual merges
-        }
-        // versionFrom and versionTo represent an inclusive range of changesets merged
-        const from = mergeSource.versionFrom;
-        const to = mergeSource.versionTo ?? from;
-        if (from && to) {
-          Array.from({length: to - from + 1}, (_, i) => from + i).forEach(
-            (id) => mergedChangesetIds.add(id)
-          );
-        }
-      }
-    }
-
-    // Create vcs_BranchCommitAssociation for merged changesets
-    // This associates the merged commits with the target branch
-    if (branch) {
-      for (const mergedChangesetId of mergedChangesetIds) {
-        const mergedCommit: CommitKey = {
-          sha: String(mergedChangesetId),
-          repository,
-        };
-        res.push({
-          model: 'vcs_BranchCommitAssociation',
-          record: {
-            commit: mergedCommit,
-            branch,
-            committedAt: Utils.toDate(changeset.createdDate),
-          },
-        });
-      }
-    }
-
-    // Create tms_TaskCommitAssociation records for linked work items
-    for (const workItem of changeset.workItems ?? []) {
-      if (workItem.id) {
-        res.push({
-          model: 'tms_TaskCommitAssociation',
-          record: {
-            commit,
-            task: {
-              uid: String(workItem.id),
-              source: 'Azure-Workitems',
-            },
-          },
-        });
-      }
-    }
-
-    return res;
+    return [commitRecord, ...commitFiles, ...branchAssociations, ...taskAssociations];
   }
 
   private getDiffStats(changeset: Changeset): VcsDiffStats | undefined {
@@ -179,6 +113,100 @@ export class Changesets extends AzureTfvcConverter {
       linesAdded: null,
       linesDeleted: null,
     };
+  }
+
+  private processChanges(
+    changes: TfvcChange[] | undefined,
+    commit: CommitKey,
+    repository: RepoKey
+  ): ProcessChangesResult {
+    const commitFiles: DestinationRecord[] = [];
+    const mergedChangesetIds = new Set<number>();
+
+    for (const change of changes ?? []) {
+      if (change.item?.path) {
+        const filePath = change.item.path;
+        this.fileCollector.collectFile(filePath, repository);
+        commitFiles.push({
+          model: 'vcs_CommitFile',
+          record: {
+            commit,
+            file: {uid: filePath, repository},
+            additions: null,
+            deletions: null,
+          },
+        });
+      }
+      this.collectMergedChangesetIds(change, mergedChangesetIds);
+    }
+    return {commitFiles, mergedChangesetIds};
+  }
+
+  private collectMergedChangesetIds(
+    change: TfvcChange,
+    mergedChangesetIds: Set<number>
+  ): void {
+    for (const mergeSource of change.mergeSources ?? []) {
+      if (mergeSource.isRename) {
+        continue;
+      }
+      const from = mergeSource.versionFrom;
+      const to = mergeSource.versionTo ?? from;
+      if (from && to) {
+        Array.from({length: to - from + 1}, (_, i) => from + i).forEach((id) =>
+          mergedChangesetIds.add(id)
+        );
+      }
+    }
+  }
+
+  private createBranchAssociations(
+    branchName: string | undefined,
+    commit: CommitKey,
+    mergedChangesetIds: Set<number>,
+    repository: RepoKey,
+    committedAt: Date | undefined
+  ): DestinationRecord[] {
+    const branch = this.branchCollector.collectBranch(branchName, repository);
+    if (!branch) {
+      return [];
+    }
+    const records: DestinationRecord[] = [
+      {
+        model: 'vcs_BranchCommitAssociation',
+        record: {commit, branch, committedAt},
+      },
+    ];
+    for (const mergedId of mergedChangesetIds) {
+      records.push({
+        model: 'vcs_BranchCommitAssociation',
+        record: {
+          commit: {sha: String(mergedId), repository},
+          branch,
+          committedAt,
+        },
+      });
+    }
+    return records;
+  }
+
+  private createTaskAssociations(
+    commit: CommitKey,
+    workItems: Changeset['workItems']
+  ): DestinationRecord[] {
+    const records: DestinationRecord[] = [];
+    for (const workItem of workItems ?? []) {
+      if (workItem.id) {
+        records.push({
+          model: 'tms_TaskCommitAssociation',
+          record: {
+            commit,
+            task: {uid: String(workItem.id), source: 'Azure-Workitems'},
+          },
+        });
+      }
+    }
+    return records;
   }
 
   async onProcessingComplete(
