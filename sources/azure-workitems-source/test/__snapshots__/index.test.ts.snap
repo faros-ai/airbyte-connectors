@@ -85,6 +85,205 @@ exports[`index streams - iterations, use full_refresh sync mode 1`] = `
 ]
 `;
 
+exports[`index streams - workitems with fetch_code_reviews enabled 1`] = `
+[
+  {
+    "additionalFields": [],
+    "comments": undefined,
+    "fields": {
+      "Faros": {
+        "EpicId": undefined,
+        "WorkItemStateCategory": {
+          "category": "Proposed",
+          "name": "To Do",
+        },
+      },
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.ChangedBy": {
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+      },
+      "System.ChangedDate": "2014-12-29T20:49:22.103Z",
+      "System.CreatedBy": {
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+      },
+      "System.CreatedDate": "2014-12-29T20:49:22.103Z",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.State": "To Do",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Unit Testing for MSA login",
+      "System.WorkItemType": "Task",
+    },
+    "id": 300,
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
+    "rev": 1,
+    "revisions": {
+      "assignees": [],
+      "iterations": [],
+      "states": [],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/300",
+  },
+  {
+    "additionalFields": [
+      {
+        "name": "Associated Context",
+        "value": "auth-feature-shelveset",
+      },
+      {
+        "name": "Associated Context Type",
+        "value": "Shelveset",
+      },
+      {
+        "name": "Associated Context Code",
+        "value": 1,
+      },
+      {
+        "name": "Associated Context Owner",
+        "value": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      },
+      {
+        "name": "Accepted By",
+        "value": "Chuck Reinhart",
+      },
+    ],
+    "comments": undefined,
+    "fields": {
+      "Faros": {
+        "EpicId": undefined,
+        "WorkItemStateCategory": {
+          "category": "Completed",
+          "name": "Closed",
+        },
+      },
+      "Microsoft.CodeReview.AcceptedBy": "Chuck Reinhart",
+      "Microsoft.CodeReview.Context": "auth-feature-shelveset",
+      "Microsoft.CodeReview.ContextCode": 1,
+      "Microsoft.CodeReview.ContextOwner": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+      "Microsoft.CodeReview.ContextType": "Shelveset",
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.ChangedBy": {
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+      },
+      "System.ChangedDate": "2025-01-16T14:30:00.000Z",
+      "System.CreatedBy": {
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+      },
+      "System.CreatedDate": "2025-01-15T10:00:00.000Z",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Reason": "Code Review Completed",
+      "System.State": "Closed",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Review authentication changes",
+      "System.WorkItemType": "Code Review Request",
+    },
+    "id": 401,
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
+    "rev": 2,
+    "revisions": {
+      "assignees": [],
+      "iterations": [],
+      "states": [],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/401",
+  },
+  {
+    "additionalFields": [
+      {
+        "name": "Accepted Date",
+        "value": "2025-01-16T14:30:00.000Z",
+      },
+      {
+        "name": "Closed Status",
+        "value": "Looks Good",
+      },
+      {
+        "name": "Closed Status Code",
+        "value": 1,
+      },
+      {
+        "name": "Closing Comment",
+        "value": "LGTM! Good implementation of the auth flow.",
+      },
+      {
+        "name": "Reviewed By",
+        "value": "Chuck Reinhart",
+      },
+      {
+        "name": "Reviewed Date",
+        "value": "2025-01-16T14:30:00.000Z",
+      },
+    ],
+    "comments": undefined,
+    "fields": {
+      "Faros": {
+        "EpicId": undefined,
+        "WorkItemStateCategory": {
+          "category": "Completed",
+          "name": "Closed",
+        },
+      },
+      "Microsoft.CodeReview.AcceptedDate": "2025-01-16T14:30:00.000Z",
+      "Microsoft.CodeReview.ClosedStatus": "Looks Good",
+      "Microsoft.CodeReview.ClosedStatusCode": 1,
+      "Microsoft.CodeReview.ClosingComment": "LGTM! Good implementation of the auth flow.",
+      "Microsoft.Common.ReviewedBy": "Chuck Reinhart",
+      "Microsoft.Common.ReviewedDate": "2025-01-16T14:30:00.000Z",
+      "System.AreaPath": "Fabrikam-Fiber-Git",
+      "System.AssignedTo": {
+        "displayName": "Chuck Reinhart",
+        "id": "e5a5014d-06e4-4cc7-a42f-8e8e-abc123456789",
+        "uniqueName": "chuck@fabrikam.com",
+      },
+      "System.ChangedBy": {
+        "displayName": "Chuck Reinhart",
+        "id": "e5a5014d-06e4-4cc7-a42f-8e8e-abc123456789",
+        "uniqueName": "chuck@fabrikam.com",
+      },
+      "System.ChangedDate": "2025-01-16T14:30:00.000Z",
+      "System.CreatedBy": {
+        "displayName": "Jamal Hartnett",
+        "id": "d291b0c4-a05c-4ea6-8df1-4b41d5f39eff",
+        "uniqueName": "fabrikamfiber4@hotmail.com",
+      },
+      "System.CreatedDate": "2025-01-15T10:00:00.000Z",
+      "System.IterationPath": "Fabrikam-Fiber-Git",
+      "System.Parent": 401,
+      "System.Reason": "Review Completed",
+      "System.State": "Closed",
+      "System.TeamProject": "Fabrikam-Fiber-Git",
+      "System.Title": "Chuck Reinhart's review of auth-feature-shelveset",
+      "System.WorkItemType": "Code Review Response",
+    },
+    "id": 402,
+    "project": {
+      "id": "123",
+      "name": "test",
+    },
+    "rev": 3,
+    "revisions": {
+      "assignees": [],
+      "iterations": [],
+      "states": [],
+    },
+    "url": "https://dev.azure.com/fabrikam/_apis/wit/workItems/402",
+  },
+]
+`;
+
 exports[`index streams - workitems, use full_refresh sync mode 1`] = `
 [
   {

@@ -32,8 +32,29 @@ const WORK_ITEM_TYPES = [
   "'Test Suite'",
 ];
 
+// Code Review specific fields to extract automatically
+// https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/guidance-code-review-feedback-field-reference
+// Maps reference name to display name
+const CODE_REVIEW_REQUEST_FIELDS: ReadonlyMap<string, string> = new Map([
+  ['Microsoft.CodeReview.Context', 'Associated Context'],
+  ['Microsoft.CodeReview.ContextType', 'Associated Context Type'],
+  ['Microsoft.CodeReview.ContextCode', 'Associated Context Code'],
+  ['Microsoft.CodeReview.ContextOwner', 'Associated Context Owner'],
+  ['Microsoft.CodeReview.AcceptedBy', 'Accepted By'],
+]);
+
+const CODE_REVIEW_RESPONSE_FIELDS: ReadonlyMap<string, string> = new Map([
+  ['Microsoft.CodeReview.AcceptedDate', 'Accepted Date'],
+  ['Microsoft.CodeReview.ClosedStatus', 'Closed Status'],
+  ['Microsoft.CodeReview.ClosedStatusCode', 'Closed Status Code'],
+  ['Microsoft.CodeReview.ClosingComment', 'Closing Comment'],
+  ['Microsoft.Common.ReviewedBy', 'Reviewed By'],
+  ['Microsoft.Common.ReviewedDate', 'Reviewed Date'],
+]);
+
 export class AzureWorkitems extends types.AzureDevOps {
   private additionalFieldReferences: Map<string, string>;
+
   constructor(
     protected readonly client: types.AzureDevOpsClient,
     protected readonly instanceType: 'cloud' | 'server',
@@ -41,11 +62,24 @@ export class AzureWorkitems extends types.AzureDevOps {
     protected readonly top: number,
     protected readonly logger: AirbyteLogger,
     private readonly additionalFields?: ReadonlyArray<string>,
-    private readonly fetchWorkItemComments?: boolean
+    private readonly fetchWorkItemComments?: boolean,
+    private readonly fetchCodeReviews?: boolean
   ) {
     super(client, instanceType, cutoffDays, top, logger);
     this.additionalFields = additionalFields;
     this.fetchWorkItemComments = fetchWorkItemComments ?? false;
+    this.fetchCodeReviews = fetchCodeReviews ?? false;
+  }
+
+  private getWorkItemTypes(): ReadonlyArray<string> {
+    if (this.fetchCodeReviews) {
+      return [
+        ...WORK_ITEM_TYPES,
+        "'Code Review Request'",
+        "'Code Review Response'",
+      ];
+    }
+    return WORK_ITEM_TYPES;
   }
 
   async checkConnection(projects?: ReadonlyArray<string>): Promise<void> {
@@ -136,7 +170,9 @@ export class AzureWorkitems extends types.AzureDevOps {
     const epicIds = Array.from(new Set(epicCache.values()));
 
     // Process non-epic work item types only (epics already fetched for cache)
-    const nonEpicTypes = WORK_ITEM_TYPES.filter((type) => type !== "'Epic'");
+    const nonEpicTypes = this.getWorkItemTypes().filter(
+      (type) => type !== "'Epic'"
+    );
     const promises = nonEpicTypes.map((type) =>
       this.getIdsFromAWorkItemType(project.name, type, dateRange)
     );
@@ -155,7 +191,8 @@ export class AzureWorkitems extends types.AzureDevOps {
       );
 
       for (const item of workitems ?? []) {
-        const states = stateCategories.get(item.fields['System.WorkItemType']);
+        const workItemType = item.fields['System.WorkItemType'];
+        const states = stateCategories.get(workItemType);
         const stateCategory = this.getStateCategory(
           item.fields['System.State'],
           states
@@ -164,7 +201,10 @@ export class AzureWorkitems extends types.AzureDevOps {
         // Find associated epic
         const epicId = epicCache.get(item.id);
 
-        const additionalFields = this.extractAdditionalFields(item.fields);
+        const additionalFields = this.extractAdditionalFields(
+          item.fields,
+          workItemType
+        );
         const revisions = await this.getWorkItemRevisions(
           item.id,
           project.id,
@@ -621,7 +661,7 @@ export class AzureWorkitems extends types.AzureDevOps {
     const stateCategories = new Map<string, Map<string, string>>();
 
     await Promise.all(
-      WORK_ITEM_TYPES.map(async (type) => {
+      this.getWorkItemTypes().map(async (type) => {
         const cleanType = type.replace(/'/g, '');
         const states = await this.client.wit.getWorkItemTypeStates(
           project,
@@ -648,19 +688,43 @@ export class AzureWorkitems extends types.AzureDevOps {
     return stateCategories;
   }
 
-  private extractAdditionalFields(fields?: {
-    [key: string]: any;
-  }): ReadonlyArray<types.AdditionalField> {
-    const additionalFields = [];
+  private extractAdditionalFields(
+    fields?: {[key: string]: any},
+    workItemType?: string
+  ): ReadonlyArray<types.AdditionalField> {
+    const additionalFields: types.AdditionalField[] = [];
     if (!fields) {
       return additionalFields;
     }
 
+    // Extract user-configured additional fields
     for (const [key, value] of this.additionalFieldReferences) {
       if (fields[key]) {
         additionalFields.push({name: value, value: fields[key]});
       }
     }
+
+    // Extract Code Review specific fields automatically
+    const codeReviewFields = this.getCodeReviewFields(workItemType);
+    for (const [key, name] of codeReviewFields) {
+      if (fields[key] !== undefined && fields[key] !== null) {
+        additionalFields.push({name, value: fields[key]});
+      }
+    }
+
     return additionalFields;
+  }
+
+  private getCodeReviewFields(
+    workItemType?: string
+  ): ReadonlyMap<string, string> {
+    switch (workItemType) {
+      case 'Code Review Request':
+        return CODE_REVIEW_REQUEST_FIELDS;
+      case 'Code Review Response':
+        return CODE_REVIEW_RESPONSE_FIELDS;
+      default:
+        return new Map();
+    }
   }
 }

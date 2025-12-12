@@ -30,7 +30,8 @@ export class Workitems extends StreamWithProjectSlices {
       this.config,
       this.logger,
       this.config.additional_fields,
-      this.config.fetch_work_item_comments
+      this.config.fetch_work_item_comments,
+      this.config.fetch_code_reviews
     );
     const {name} = streamSlice;
     const since =

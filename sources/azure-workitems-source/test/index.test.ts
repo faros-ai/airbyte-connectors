@@ -286,4 +286,59 @@ describe('index', () => {
       `[System.ChangedDate] >= '2025-04-01T00:00:00.000Z'`
     );
   });
+
+  test('streams - workitems with fetch_code_reviews enabled', async () => {
+    const workitemIdsFunc = jest.fn();
+
+    AzureWorkitems.instance = jest.fn().mockImplementation(() => {
+      return new AzureWorkitems(
+        {
+          wit: {
+            getFields: jest.fn().mockResolvedValue([]),
+            getWorkItems: jest
+              .fn()
+              .mockResolvedValue(
+                readTestFileAsJSON('workitems_with_code_reviews.json').value
+              ),
+            getWorkItemTypeStates: jest
+              .fn()
+              .mockResolvedValue(
+                readTestFileAsJSON('workitem_states.json').value
+              ),
+            getUpdates: jest.fn().mockResolvedValue([]),
+            queryByWiql: workitemIdsFunc
+              // First call: epic query
+              .mockResolvedValueOnce({workItems: []})
+              // Remaining calls: workitem queries (12 types: 10 base + 2 code review)
+              .mockResolvedValue(readTestFileAsJSON('workitem_ids.json')),
+          },
+        } as unknown as AzureDevOpsClient,
+        instanceType,
+        90,
+        100,
+        logger,
+        [], // no additional fields
+        false, // fetch_work_item_comments
+        true // fetch_code_reviews
+      );
+    });
+    const source = new sut.AzureWorkitemsSource(logger);
+    const streams = source.streams({} as any);
+
+    const workitemsStream = streams[1];
+    const workitemsIter = workitemsStream.readRecords(
+      SyncMode.FULL_REFRESH,
+      undefined,
+      {name: 'test', id: '123'},
+      {}
+    );
+    const workitems = [];
+    for await (const workitem of workitemsIter) {
+      workitems.push(workitem);
+    }
+
+    // 1 epic query + 12 non-epic workitem queries (10 base + 2 code review types)
+    expect(workitemIdsFunc).toHaveBeenCalledTimes(13);
+    expect(workitems).toMatchSnapshot();
+  });
 });

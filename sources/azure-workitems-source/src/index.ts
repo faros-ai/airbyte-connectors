@@ -38,7 +38,8 @@ export class AzureWorkitemsSource extends AirbyteSourceBase<AzureWorkitemsConfig
         config,
         this.logger,
         config.additional_fields,
-        config.fetch_work_item_comments
+        config.fetch_work_item_comments,
+        config.fetch_code_reviews
       );
       await azureWorkItems.checkConnection(config.projects);
     } catch (err: any) {
